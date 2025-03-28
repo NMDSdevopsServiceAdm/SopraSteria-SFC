@@ -17,7 +17,7 @@
   <ng-template #staffRecordButtonLogic>
     <ng-container *ngIf="!return; else summary">
       <div class="govuk-grid-column-two-thirds govuk__flex govuk-!-padding-left-0">
-        <div>
+        <div style="width: 250px">
           <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('continue', true)">
             {{ callToAction }}
           </button>

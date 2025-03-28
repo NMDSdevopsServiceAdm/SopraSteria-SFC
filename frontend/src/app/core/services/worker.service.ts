@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
+import { Contracts } from '@core/model/contracts.enum';
 import { LocalIdentifiersRequest, LocalIdentifiersResponse } from '@core/model/establishment.model';
 import {
   AvailableQualificationsResponse,
@@ -22,7 +23,6 @@ import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { Contracts } from '@core/model/contracts.enum';
 
 export interface Reason {
   id: number;
@@ -56,6 +56,7 @@ export class WorkerService {
   public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
   private _newWorkerMandatoryInfo: NewWorkerMandatoryInfo = null;
+  private _hasCompletedStaffRecordFlow: boolean = null;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
@@ -331,5 +332,17 @@ export class WorkerService {
 
   public clearNewWorkerMandatoryInfo(): void {
     this._newWorkerMandatoryInfo = null;
+  }
+
+  public set hasCompletedStaffRecordFlow(hasCompleted: boolean) {
+    this._hasCompletedStaffRecordFlow = hasCompleted;
+  }
+
+  public get hasCompletedStaffRecordFlow(): boolean {
+    return this._hasCompletedStaffRecordFlow;
+  }
+
+  public clearHasCompletedStaffRecordFlow(): void {
+    this._hasCompletedStaffRecordFlow = null;
   }
 }

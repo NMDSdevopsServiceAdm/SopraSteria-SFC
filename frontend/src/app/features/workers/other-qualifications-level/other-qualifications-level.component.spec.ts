@@ -2,11 +2,15 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { QualificationService } from '@core/services/qualification.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import {
+  MockWorkerServiceWithoutReturnUrl,
+  MockWorkerServiceWithUpdateWorker,
+} from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -15,56 +19,57 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level.
 
 describe('OtherQualificationsLevelComponent', () => {
   async function setup(returnUrl = true) {
-    const { fixture, getByText, queryByTestId, getByLabelText, getByTestId } = await render(
-      OtherQualificationsLevelComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              parent: {
-                snapshot: {
-                  url: [{ path: returnUrl ? 'staff-record-summary' : 'staff-uid' }],
-                  data: {
-                    establishment: { uid: 'mocked-uid' },
-                    primaryWorkplace: {},
-                  },
+    const setupTools = await render(OtherQualificationsLevelComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
+              snapshot: {
+                url: [{ path: returnUrl ? 'staff-record-summary' : 'staff-uid' }],
+                data: {
+                  establishment: { uid: 'mocked-uid' },
+                  primaryWorkplace: {},
                 },
               },
-              snapshot: {
-                params: {},
-              },
+            },
+            snapshot: {
+              params: {},
             },
           },
-          {
-            provide: WorkerService,
-            useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
-          },
-          {
-            provide: QualificationService,
-            useClass: MockQualificationService,
-          },
-        ],
-      },
-    );
+        },
+        {
+          provide: WorkerService,
+          useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
+        },
+        {
+          provide: QualificationService,
+          useClass: MockQualificationService,
+        },
+        AlertService,
+        WindowRef,
+      ],
+    });
     const injector = getTestBed();
 
-    const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
-
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.stub();
+
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const hasCompletedStaffRecordFlowSpy = spyOnProperty(workerService, 'hasCompletedStaffRecordFlow', 'set');
+
     return {
-      component,
-      fixture,
+      ...setupTools,
+      component: setupTools.fixture.componentInstance,
       router,
       routerSpy,
-      getByText,
-      queryByTestId,
-      getByLabelText,
-      getByTestId,
+      alertSpy,
+      hasCompletedStaffRecordFlowSpy,
     };
   }
 
@@ -82,13 +87,10 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it('should render the page with a save and continue button when there return value is null', async () => {
-      const { component, fixture, getByText } = await setup(false);
+    it('should render the page with a save button when the return value is null', async () => {
+      const { getByText } = await setup(false);
 
-      component.return = null;
-      fixture.detectChanges();
-
-      const button = getByText('Save and continue');
+      const button = getByText('Save');
       const viewRecordLink = getByText('View this staff record');
 
       expect(button).toBeTruthy();
@@ -121,7 +123,7 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to confirm-staff-record page when submitting from flow', async () => {
+    it('should navigate to staff-record-summary page when submitting from flow', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -130,7 +132,7 @@ describe('OtherQualificationsLevelComponent', () => {
       const select = getByLabelText('Qualification level', { exact: false });
       fireEvent.change(select, { target: { value: '1' } });
 
-      const saveButton = getByText('Save and continue');
+      const saveButton = getByText('Save');
       fireEvent.click(saveButton);
       fixture.detectChanges();
 
@@ -139,11 +141,11 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'confirm-staff-record',
+        'staff-record-summary',
       ]);
     });
 
-    it('should navigate to confirm-staff-record page when skipping the question in the flow', async () => {
+    it('should navigate to staff-record-summary page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -157,7 +159,7 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'confirm-staff-record',
+        'staff-record-summary',
       ]);
     });
 
@@ -231,6 +233,68 @@ describe('OtherQualificationsLevelComponent', () => {
       fireEvent.click(skipButton);
 
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+  });
+
+  describe('Completing Add details to staff record flow', () => {
+    it('should add Staff record added alert when submitting from flow', async () => {
+      const { getByText, getByLabelText, alertSpy } = await setup(false);
+
+      const select = getByLabelText('Qualification level', { exact: false });
+      fireEvent.change(select, { target: { value: '1' } });
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Staff record saved',
+      });
+    });
+
+    it('should set hasCompletedStaffRecordFlow in worker service when submitting in flow', async () => {
+      const { getByText, getByLabelText, hasCompletedStaffRecordFlowSpy } = await setup(false);
+
+      const select = getByLabelText('Qualification level', { exact: false });
+      fireEvent.change(select, { target: { value: '1' } });
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(hasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
+    });
+
+    ['Skip this question', 'View this staff record'].forEach((link) => {
+      it(`should add Staff record added alert when '${link}' is clicked`, async () => {
+        const { getByText, alertSpy } = await setup(false);
+
+        fireEvent.click(getByText(link));
+
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Staff record saved',
+        });
+      });
+
+      it(`should set hasCompletedStaffRecordFlow in worker service when '${link}' is clicked`, async () => {
+        const { getByText, hasCompletedStaffRecordFlowSpy } = await setup(false);
+
+        fireEvent.click(getByText(link));
+
+        expect(hasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
+      });
+    });
+
+    it('should not add Staff record added alert when user submits but not in flow', async () => {
+      const { getByText, getByLabelText, alertSpy } = await setup();
+
+      const select = getByLabelText('Qualification level', { exact: false });
+      fireEvent.change(select, { target: { value: '1' } });
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
+
+      expect(alertSpy).not.toHaveBeenCalled();
     });
   });
 });

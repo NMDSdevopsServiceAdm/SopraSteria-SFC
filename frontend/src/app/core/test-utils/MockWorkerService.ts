@@ -2,11 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { QualificationsByGroup, QualificationType } from '@core/model/qualification.model';
-import {
-  CreateTrainingRecordResponse,
-  MultipleTrainingResponse,
-  TrainingRecordRequest,
-} from '@core/model/training.model';
+import { CreateTrainingRecordResponse, MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { NewWorkerMandatoryInfo, Reason, WorkerService } from '@core/services/worker.service';
@@ -503,6 +499,10 @@ export class MockWorkerService extends WorkerService {
   getLeaveReasons(): Observable<Reason[]> {
     return of(mockLeaveReasons);
   }
+
+  updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
+    return of({ uid: '1' } as WorkerEditResponse);
+  }
 }
 
 @Injectable()
@@ -560,5 +560,26 @@ export class MockWorkerServiceWithoutReturnUrl extends MockWorkerServiceWithUpda
 
   public get returnTo(): URLStructure {
     return;
+  }
+}
+
+@Injectable()
+export class MockWorkerServiceWithOverrides extends MockWorkerService {
+  public static factory(overrides: any = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockWorkerServiceWithOverrides(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        if (overrideName == 'worker') {
+          const worker = { ...workerBuilder(), ...overrides[overrideName] };
+          service.worker = worker;
+          service.worker$ = of(worker as Worker);
+        } else {
+          service[overrideName] = overrides[overrideName];
+        }
+      });
+
+      return service;
+    };
   }
 }

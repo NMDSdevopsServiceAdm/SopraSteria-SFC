@@ -12,6 +12,7 @@ export class BasicRecordComponent extends StaffRecordSummaryComponent {
   @Input() public overallWdfEligibility: boolean;
   @Input() public canEditWorker: boolean;
   @Input() public mandatoryDetailsPage = false;
+  @Input() public continueRoute: string[] = null;
 
   public showWdfConfirmations: any = {
     contract: null,

@@ -45,6 +45,7 @@ import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contr
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
+import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
 import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
@@ -85,7 +86,6 @@ import {
 } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
 
 const routes: Routes = [
   {
@@ -167,7 +167,7 @@ const routes: Routes = [
     path: 'add-another-staff-record',
     component: AddAnotherStaffRecordComponent,
   },
-    {
+  {
     path: 'delete-another-staff-record',
     component: DeleteAnotherStaffRecordComponent,
   },
@@ -470,11 +470,6 @@ const routes: Routes = [
             data: { title: 'Flag long term absence' },
           },
         ],
-      },
-      {
-        path: 'confirm-staff-record',
-        component: StaffRecordComponent,
-        data: { title: 'Confirm Staff Record' },
       },
       {
         path: 'staff-details',
