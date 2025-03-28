@@ -190,7 +190,7 @@ describe('NewHomeTabComponent', () => {
 
         const link = getByText('Does your data meet funding requirements?');
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual('/wdf');
+        expect(link.getAttribute('href')).toEqual('/funding');
       });
 
       it('should not render the funding card or link when view reports is false', async () => {

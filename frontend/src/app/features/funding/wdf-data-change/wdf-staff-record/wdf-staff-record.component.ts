@@ -96,10 +96,10 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   private setExitUrl(): void {
     if (this.route.snapshot.params.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
-      this.exitUrl = { url: ['/wdf', 'workplaces', this.workplaceUid], fragment: 'staff' };
+      this.exitUrl = { url: ['/funding', 'workplaces', this.workplaceUid], fragment: 'staff' };
     } else {
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
-      this.exitUrl = { url: ['/wdf', 'data'], fragment: 'staff' };
+      this.exitUrl = { url: ['/funding', 'data'], fragment: 'staff' };
     }
   }
 
@@ -117,7 +117,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
     if (this.route.snapshot.params.establishmentuid) {
       this.returnTo = {
         url: [
-          '/wdf',
+          '/funding',
           'workplaces',
           this.route.snapshot.params.establishmentuid,
           'staff-record',
@@ -125,7 +125,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
         ],
       };
     } else {
-      this.returnTo = { url: ['/wdf', 'staff-record', this.route.snapshot.params.id] };
+      this.returnTo = { url: ['/funding', 'staff-record', this.route.snapshot.params.id] };
     }
     this.workerService.setReturnTo(this.returnTo);
   }

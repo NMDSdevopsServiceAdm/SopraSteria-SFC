@@ -73,11 +73,11 @@ export class WdfDataComponent implements OnInit {
       this.primaryWorkplaceNmdsId = this.establishmentService.primaryWorkplace.nmdsId;
 
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
-      this.returnUrl = { url: ['/wdf', 'workplaces', this.workplaceUid] };
+      this.returnUrl = { url: ['/funding', 'workplaces', this.workplaceUid] };
     } else {
       this.viewingSub = false;
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
-      this.returnUrl = { url: ['/wdf', 'data'] };
+      this.returnUrl = { url: ['/funding', 'data'] };
     }
 
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');

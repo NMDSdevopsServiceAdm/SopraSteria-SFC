@@ -286,9 +286,9 @@ describe('SocialCareQualificationComponent', () => {
       ]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing save and no is entered in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing save and no is entered in funding version of page', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -304,12 +304,12 @@ describe('SocialCareQualificationComponent', () => {
 
       expect(getByText('Save')).toBeTruthy();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing save and I do not know is entered in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing save and I do not know is entered in funding version of page', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -325,12 +325,12 @@ describe('SocialCareQualificationComponent', () => {
 
       expect(getByText('Save')).toBeTruthy();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf social-care-qualification-level-summary-flow page when pressing save and Yes is entered in wdf version of page', async () => {
+    it('should navigate to funding social-care-qualification-level-summary-flow page when pressing save and Yes is entered in funding version of page', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -346,12 +346,12 @@ describe('SocialCareQualificationComponent', () => {
 
       expect(getByText('Save')).toBeTruthy();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'social-care-qualification-level']);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId, 'social-care-qualification-level']);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
       const { component, routerSpy, getByText, router, fixture } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -360,7 +360,7 @@ describe('SocialCareQualificationComponent', () => {
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
   });
 });

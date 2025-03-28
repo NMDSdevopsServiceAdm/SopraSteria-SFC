@@ -245,14 +245,9 @@ const routes: Routes = [
         component: AdminComponent,
       },
       {
-        path: 'wdf',
-        loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
-        data: { title: 'Workforce Development Fund Data' },
-      },
-      {
-        path: 'wdf-claims',
-        loadChildren: () => import('@features/wdf/wdf-claims/wdf-claims.module').then((m) => m.WdfClaimsModule),
-        data: { title: 'Workforce Development Fund Claims' },
+        path: 'funding',
+        loadChildren: () => import('@features/funding/wdf-data-change/funding.module').then((m) => m.FundingModule),
+        data: { title: 'Funding' },
       },
       {
         path: 'notifications',

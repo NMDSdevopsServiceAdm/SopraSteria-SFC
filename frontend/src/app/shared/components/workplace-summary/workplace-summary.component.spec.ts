@@ -17,7 +17,7 @@ import {
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
+import { FundingModule } from '@features/funding/wdf-data-change/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
@@ -27,7 +27,7 @@ import { WorkplaceSummaryComponent } from './workplace-summary.component';
 describe('WorkplaceSummaryComponent', () => {
   const setup = async (shareWith = null) => {
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, FundingModule],
       declarations: [],
       providers: [
         {

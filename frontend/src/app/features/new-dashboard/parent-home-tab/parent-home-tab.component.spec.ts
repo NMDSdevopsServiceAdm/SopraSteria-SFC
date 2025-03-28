@@ -284,7 +284,7 @@ describe('ParentHomeTabComponent', () => {
 
       const wdfLink = getByText('Does your data meet funding requirements?');
 
-      expect(wdfLink.getAttribute('href')).toBe('/wdf');
+      expect(wdfLink.getAttribute('href')).toBe('/funding');
     });
 
     it('should not show the funding card if user does not have permission to view reports', async () => {

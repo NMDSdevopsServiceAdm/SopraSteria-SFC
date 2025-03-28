@@ -52,7 +52,7 @@ const routes: Routes = [
   {
     path: '',
     component: WdfOverviewComponent,
-    data: { title: 'Workforce Development Fund' },
+    data: { title: 'Funding' },
     resolve: {
       report: FundingReportResolver,
     },
@@ -61,7 +61,7 @@ const routes: Routes = [
     path: 'data',
     component: WdfDataComponent,
     canActivate: [HasPermissionsGuard],
-    data: { permissions: ['canViewWdfReport'], title: 'WDF data', withFunding: true },
+    data: { permissions: ['canViewWdfReport'], title: 'Funding data', withFunding: true },
     resolve: {
       workers: WorkersResolver,
       workplace: WorkplaceResolver,
@@ -78,7 +78,7 @@ const routes: Routes = [
             path: '',
             component: WdfDataComponent,
             canActivate: [HasPermissionsGuard],
-            data: { permissions: ['canViewWdfReport'], title: 'WDF data', withFunding: true },
+            data: { permissions: ['canViewWdfReport'], title: 'Funding data', withFunding: true },
             resolve: { workplace: WorkplaceResolver, report: FundingReportResolver },
           },
           {
@@ -90,7 +90,7 @@ const routes: Routes = [
               {
                 path: '',
                 component: WdfStaffRecordComponent,
-                data: { title: 'WDF Staff Record' },
+                data: { title: 'Funding Staff Record' },
                 resolve: { report: FundingReportResolver },
               },
               {
@@ -293,7 +293,7 @@ const routes: Routes = [
       {
         path: '',
         component: WdfStaffRecordComponent,
-        data: { title: 'WDF Staff Record' },
+        data: { title: 'Funding Staff Record' },
         resolve: { report: FundingReportResolver },
       },
       {
@@ -474,4 +474,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class WdfRoutingModule {}
+export class FundingRoutingModule {}

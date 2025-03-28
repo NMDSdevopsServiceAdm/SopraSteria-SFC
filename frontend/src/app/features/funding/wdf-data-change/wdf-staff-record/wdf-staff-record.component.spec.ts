@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -16,13 +15,13 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable } from 'rxjs';
 
-import { WdfModule } from '../wdf.module';
+import { FundingModule } from '../funding.module';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 
 describe('WdfStaffRecordComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfStaffRecordComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
+      imports: [ HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -58,7 +57,7 @@ describe('WdfStaffRecordComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the "update staff record" message and orange flag when user meets WDF requirements overall but current staff record does not', async () => {
+  it('should display the "update staff record" message and orange flag when user meets funding requirements overall but current staff record does not', async () => {
     const { component, fixture, getByText } = await setup();
     const expectedStatusMessage = 'Update this staff record to save yourself time next year';
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
@@ -73,7 +72,7 @@ describe('WdfStaffRecordComponent', () => {
     expect(getByText(expectedStatusMessage, { exact: false })).toBeTruthy();
   });
 
-  it('should display the "not meeting requirements" message and red flag when user does not meet WDF requirements overall and current staff record does not', async () => {
+  it('should display the "not meeting requirements" message and red flag when user does not meet funding requirements overall and current staff record does not', async () => {
     const { component, fixture, getByText } = await setup();
     const year = new Date().getFullYear();
     const expectedStatusMessage = `This staff record does not meet the funding requirements for ${year} to ${year + 1}`;
@@ -118,7 +117,7 @@ describe('WdfStaffRecordComponent', () => {
     const { getAllByText } = await setup();
 
     const closeRecordButtons = getAllByText('Close this staff record');
-    const expectedLink = '/wdf/data#staff';
+    const expectedLink = '/funding/data#staff';
 
     expect(closeRecordButtons.length).toEqual(2);
 
@@ -132,7 +131,7 @@ describe('WdfStaffRecordComponent', () => {
     const { getAllByText } = await setup({ establishmentuid });
 
     const closeRecordButtons = getAllByText('Close this staff record');
-    const expectedLink = `wdf/workplaces/${establishmentuid}#staff`;
+    const expectedLink = `funding/workplaces/${establishmentuid}#staff`;
 
     expect(closeRecordButtons.length).toEqual(2);
 

@@ -19,7 +19,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { WdfModule } from '../wdf.module';
+import { FundingModule } from '../funding.module';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary.component';
 
 describe('WdfWorkplacesSummaryComponent', () => {
@@ -56,7 +56,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfWorkplacesSummaryComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },

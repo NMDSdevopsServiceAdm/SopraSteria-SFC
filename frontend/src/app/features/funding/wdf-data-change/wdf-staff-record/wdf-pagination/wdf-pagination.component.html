@@ -8,8 +8,8 @@
           class="asc-chevron-before govuk-button--link govuk-link--no-visited-state govuk-!-margin-right-4"
           [routerLink]="
             this.route.snapshot.params.establishmentuid
-              ? ['/wdf', 'workplaces', workplaceUid, 'staff-record', previousID]
-              : ['/wdf', 'staff-record', previousID]
+              ? ['/funding', 'workplaces', workplaceUid, 'staff-record', previousID]
+              : ['/funding', 'staff-record', previousID]
           "
           [fragment]=""
           >Previous staff record</a
@@ -19,8 +19,8 @@
           class="asc-chevron-after govuk-button--link govuk-link--no-visited-state govuk-!-margin-left-6 govuk-!-margin-right-4"
           [routerLink]="
             this.route.snapshot.params.establishmentuid
-              ? ['/wdf', 'workplaces', workplaceUid, 'staff-record', nextID]
-              : ['/wdf', 'staff-record', nextID]
+              ? ['/funding', 'workplaces', workplaceUid, 'staff-record', nextID]
+              : ['/funding', 'staff-record', nextID]
           "
           [fragment]=""
           >Next staff record</a

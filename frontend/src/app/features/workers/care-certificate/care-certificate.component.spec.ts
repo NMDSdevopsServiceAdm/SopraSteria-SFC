@@ -224,9 +224,9 @@ describe('CareCertificateComponent', () => {
       ]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing save and return in funding version of page', async () => {
       const { component, router, fixture, routerSpy, getByText } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -235,12 +235,12 @@ describe('CareCertificateComponent', () => {
       const saveButton = getByText('Save and return');
       fireEvent.click(saveButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
       const { component, router, fixture, routerSpy, getByText } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -249,7 +249,7 @@ describe('CareCertificateComponent', () => {
       const link = getByText('Cancel');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
   });
 });
