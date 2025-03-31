@@ -33,33 +33,24 @@
 </div>
 <div class="govuk-grid-row govuk-!-margin-top-7">
   <div class="govuk-grid-column-three-quarters">
-    <ng-container
-      *ngIf="(overallWdfEligibility && !isParent) || (parentOverallWdfEligibility && isParent); else notEligible"
-    >
+    <ng-container *ngIf="(overallWdfEligibility && !isParent) || (parentOverallWdfEligibility && isParent)">
       <div data-testid="dataMetFunding">
         <p>
           Your data met the funding requirements on {{ parentOverallEligibilityDate ?? overallEligibilityDate }} and
           will continue to meet them until 31 March {{ wdfEndDate | date: 'yyyy' }}.
           <a [routerLink]="['data']" [relativeTo]="route">Keep your data current</a>, it might save you time next year.
         </p>
-        <p class="govuk-!-margin-bottom-6">
-          <a class="govuk-link" [routerLink]="['funding-requirements']" [relativeTo]="route">
-            View the ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
-            {{ wdfEndDate | date: 'yyyy' }}</a
-          >
-        </p>
       </div>
     </ng-container>
 
-    <ng-template #notEligible>
-      <div>
-        <p class="govuk-!-margin-bottom-7">
-          <a class="govuk-link govuk-!-margin-bottom-4" [routerLink]="['funding-requirements']" [relativeTo]="route">
-            The ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}</a
-          >
-        </p>
-      </div>
-    </ng-template>
+    <div>
+      <p class="govuk-!-margin-bottom-7">
+        <a class="govuk-link" [routerLink]="['funding-requirements']" [relativeTo]="route">
+          View the ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+          {{ wdfEndDate | date: 'yyyy' }}</a
+        >
+      </p>
+    </div>
 
     <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Find out more</h2>
     <p>
