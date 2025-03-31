@@ -9,35 +9,10 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { JobRoleType, SelectJobRolesToAddComponent } from './select-job-roles-to-add.component';
+import { MockJobRoles } from '@core/test-utils/MockJobService';
 
 describe('SelectJobRolesToAddComponent', () => {
-  const mockAvailableJobs = [
-    {
-      id: 4,
-      title: 'Allied health professional (not occupational therapist)',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 10,
-      title: 'Care worker',
-      jobRoleGroup: 'Care providing roles',
-    },
-    {
-      id: 23,
-      title: 'Registered nurse',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 27,
-      title: 'Social worker',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 20,
-      title: 'Other (directly involved in providing care)',
-      jobRoleGroup: 'Care providing roles',
-    },
-  ];
+  const mockAvailableJobs = MockJobRoles;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setup = async (override: any = {}) => {
