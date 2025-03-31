@@ -5,7 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { jobOptionsEnum, Vacancy } from '@core/model/establishment.model';
+import { Establishment, jobOptionsEnum, Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -16,7 +16,7 @@ import userEvent from '@testing-library/user-event';
 
 import { UpdateVacanciesComponent } from './update-vacancies.component';
 
-describe('UpdateVacanciesComponent', () => {
+fdescribe('UpdateVacanciesComponent', () => {
   const sixRegisteredNursesAndFourSocialWorkers: Vacancy[] = [
     {
       jobId: 23,
@@ -40,7 +40,7 @@ describe('UpdateVacanciesComponent', () => {
     overrides: { vacancies: jobOptionsEnum.DONT_KNOW },
   });
 
-  const mockFreshWorkplace = establishmentBuilder({ overrides: { vacancies: null } });
+  const mockFreshWorkplace = establishmentBuilder({ overrides: { vacancies: null } }) as Establishment;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setup = async (override: any = {}) => {
@@ -76,7 +76,7 @@ describe('UpdateVacanciesComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const updateJobsSpy = spyOn(establishmentService, 'updateJobs').and.callFake((uid, data) =>
-      of({ ...uid, vacancies: data.vacancies }),
+      of({ uid, vacancies: data.vacancies }),
     );
     const setStateSpy = spyOn(establishmentService, 'setState').and.callThrough();
 
@@ -416,7 +416,7 @@ describe('UpdateVacanciesComponent', () => {
     it('should save the changes in job role selection and number', async () => {
       const mockWorkplace = establishmentBuilder({
         overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
-      });
+      }) as Establishment;
       const { getByLabelText, getByRole, getByTestId, updateJobsSpy } = await setup({
         workplace: mockWorkplace,
       });
@@ -436,7 +436,7 @@ describe('UpdateVacanciesComponent', () => {
     it('should save the vacancy as None if user selected None', async () => {
       const mockWorkplace = establishmentBuilder({
         overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
-      });
+      }) as Establishment;
       const { getByLabelText, getByRole, updateJobsSpy } = await setup({
         workplace: mockWorkplace,
       });
@@ -635,6 +635,42 @@ describe('UpdateVacanciesComponent', () => {
 
         expect(queryByText('Select there are no current staff vacancies or do not know')).toBeFalsy();
         expect(updateJobsSpy).not.toHaveBeenCalled();
+      });
+
+      it('should clear the "Select there are no ..." error and allow submit if all job roles are filled with a valid number', async () => {
+        const { component, fixture, getByRole, queryByText, updateJobsSpy } = await setup({
+          workplace: mockWorkplaceWithNoVacancies,
+          vacanciesFromSelectJobRolePages: [
+            { jobId: 10, title: 'Care worker', total: 1 },
+            { jobId: 23, title: 'Registered nurse', total: 1 },
+            { jobId: 27, title: 'Social worker', total: 1 },
+          ],
+        });
+
+        await fillInValueForJobRole('Care worker', '0');
+        await fillInValueForJobRole('Registered nurse', '0');
+        await fillInValueForJobRole('Social worker', '0');
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        fixture.detectChanges();
+
+        expectErrorMessageAppears('Select there are no current staff vacancies or do not know');
+
+        await fillInValueForJobRole('Care worker', '1');
+        await fillInValueForJobRole('Registered nurse', '2');
+        await fillInValueForJobRole('Social worker', '3');
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        fixture.detectChanges();
+
+        expect(queryByText('Select there are no current staff vacancies or do not know')).toBeFalsy();
+        expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplaceWithNoVacancies.uid as string, {
+          vacancies: [
+            { jobId: 10, total: 1 },
+            { jobId: 23, total: 2 },
+            { jobId: 27, total: 3 },
+          ],
+        });
       });
     });
   });

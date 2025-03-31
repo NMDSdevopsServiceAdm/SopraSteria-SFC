@@ -163,10 +163,11 @@ export class CustomValidators extends Validators {
       const jobRoleNumbers: AbstractControl<Array<number | string>> = rootFormControl.get('jobRoleNumbers');
       const noOrDoNotKnow: AbstractControl<jobOptionsEnum> = rootFormControl.get('noOrDoNotKnow');
 
+      jobRoleNumbers.setErrors(null);
+      noOrDoNotKnow.setErrors(null);
+
       const userSelectedNoOrDoNotKnow = [jobOptionsEnum.DONT_KNOW, jobOptionsEnum.NONE].includes(noOrDoNotKnow.value);
       if (userSelectedNoOrDoNotKnow) {
-        jobRoleNumbers.setErrors(null);
-        noOrDoNotKnow.setErrors(null);
         return null;
       }
 
@@ -177,8 +178,6 @@ export class CustomValidators extends Validators {
         noOrDoNotKnow.setErrors({ required: true });
         return null;
       }
-
-      jobRoleNumbers.setErrors(null); // at least one job role is added, so "required" should be false;
 
       const jobRoleNumberIsInvalid = (jobRoleNumber: number | string) => {
         const parsedNumber = Number(jobRoleNumber);

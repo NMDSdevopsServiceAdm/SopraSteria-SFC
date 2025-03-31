@@ -321,7 +321,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   }
 
   private onSuccess() {
-    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = null;
+    this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
     this.returnToPreviousPage();
   }
 
@@ -335,7 +335,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
 
   public onCancel(event: Event) {
     event.preventDefault();
-    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = null;
+    this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
     this.returnToPreviousPage();
   }
 }
