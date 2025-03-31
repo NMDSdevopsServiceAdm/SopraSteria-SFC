@@ -240,9 +240,9 @@ describe('OtherQualificationsComponent', () => {
       ]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing save and not know is entered in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing save and not know is entered in funding version of page', async () => {
       const { component, fixture, routerSpy, getByText, router } = await setup(false, 'yes');
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -256,12 +256,12 @@ describe('OtherQualificationsComponent', () => {
 
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing save and No is entered in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing save and No is entered in funding version of page', async () => {
       const { component, fixture, routerSpy, getByText, router } = await setup(false, 'yes');
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -275,12 +275,12 @@ describe('OtherQualificationsComponent', () => {
 
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf other-qualifications-level page when pressing save and Yes is entered in wdf version of page', async () => {
+    it('should navigate to funding other-qualifications-level page when pressing save and Yes is entered in funding version of page', async () => {
       const { component, fixture, routerSpy, getByText, router } = await setup(false, 'yes');
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -294,12 +294,12 @@ describe('OtherQualificationsComponent', () => {
 
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'other-qualifications-level']);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId, 'other-qualifications-level']);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
       const { component, routerSpy, getByText, fixture, router } = await setup(false, 'yes');
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -308,7 +308,7 @@ describe('OtherQualificationsComponent', () => {
       const link = getByText('Cancel');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
   });
 

@@ -115,7 +115,6 @@ describe('DoYouHaveVacanciesComponent', () => {
 
     vacancyAnswers.forEach((option: any) => {
       it(`should preselect answer (${option.selectedRadio}) if workplace has value saved`, async () => {
-        console.log('option.vacanciesInDb: ', option.vacanciesInDb);
         const overrides = {
           workplace: { vacancies: option.vacanciesInDb },
         };

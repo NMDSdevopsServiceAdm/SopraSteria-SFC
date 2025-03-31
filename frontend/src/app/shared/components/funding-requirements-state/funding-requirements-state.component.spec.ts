@@ -1,7 +1,7 @@
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
-import { WdfModule } from '../../../features/wdf/wdf-data-change/wdf.module';
+import { FundingModule } from '../../../features/funding/funding.module';
 import { FundingRequirementsStateComponent } from './funding-requirements-state.component';
 
 describe('FundingRequirementsStateComponent', () => {
@@ -9,7 +9,7 @@ describe('FundingRequirementsStateComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
       FundingRequirementsStateComponent,
       {
-        imports: [SharedModule, WdfModule],
+        imports: [SharedModule, FundingModule],
         providers: [],
         componentProperties: {
           ...overrides,

@@ -35,5 +35,11 @@ module.exports = {
       parser: '@angular-eslint/template-parser',
       extends: 'plugin:@angular-eslint/template/recommended',
     },
+    {
+      files: ['*.spec.ts'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+      },
+    },
   ],
 };

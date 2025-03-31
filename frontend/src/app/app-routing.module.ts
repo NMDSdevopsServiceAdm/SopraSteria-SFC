@@ -26,7 +26,6 @@ import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.reso
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
-import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
@@ -245,14 +244,9 @@ const routes: Routes = [
         component: AdminComponent,
       },
       {
-        path: 'wdf',
-        loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
-        data: { title: 'Workforce Development Fund Data' },
-      },
-      {
-        path: 'wdf-claims',
-        loadChildren: () => import('@features/wdf/wdf-claims/wdf-claims.module').then((m) => m.WdfClaimsModule),
-        data: { title: 'Workforce Development Fund Claims' },
+        path: 'funding',
+        loadChildren: () => import('@features/funding/funding.module').then((m) => m.FundingModule),
+        data: { title: 'Funding' },
       },
       {
         path: 'notifications',

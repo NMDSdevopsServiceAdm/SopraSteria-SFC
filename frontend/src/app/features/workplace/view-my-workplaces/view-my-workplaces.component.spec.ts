@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
@@ -31,7 +30,7 @@ describe('ViewMyWorkplacesComponent', () => {
   async function setup(hasChildWorkplaces = true, qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText, queryByTestId } =
       await render(ViewMyWorkplacesComponent, {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule],
         declarations: [WorkplaceInfoPanelComponent],
         providers: [
           AlertService,
