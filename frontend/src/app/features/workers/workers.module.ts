@@ -28,6 +28,7 @@ import { NewQualificationsComponent } from '../training-and-qualifications/new-t
 import { NewTrainingAndQualificationsRecordSummaryComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
 import { NewTrainingAndQualificationsRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NewTrainingComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training/new-training.component';
+import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
@@ -38,6 +39,7 @@ import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contr
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
+import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
 import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
 import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 import { DeleteTrainingDialogComponent } from './delete-training-dialog/delete-training-dialog.component';
@@ -68,15 +70,13 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
-import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
+import { SelectJobRolesToAddComponent } from './update-workplace-details-after-staff-changes/select-job-roles-to-add/select-job-roles-to-add.component';
 import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
+import { UpdateVacanciesComponent } from './update-workplace-details-after-staff-changes/update-vacancies/update-vacancies.component';
+import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
-import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
-import { SelectJobRolesToAddComponent } from './update-workplace-details-after-staff-changes/select-job-roles-to-add/select-job-roles-to-add.component';
-import { UpdateVacanciesComponent } from './update-workplace-details-after-staff-changes/update-vacancies/update-vacancies.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],

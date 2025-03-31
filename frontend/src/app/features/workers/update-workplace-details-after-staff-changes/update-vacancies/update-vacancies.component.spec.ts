@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -13,7 +15,6 @@ import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UpdateVacanciesComponent } from './update-vacancies.component';
-import { of } from 'rxjs';
 
 describe('UpdateVacanciesComponent', () => {
   const sixRegisteredNursesAndFourSocialWorkers: Vacancy[] = [
