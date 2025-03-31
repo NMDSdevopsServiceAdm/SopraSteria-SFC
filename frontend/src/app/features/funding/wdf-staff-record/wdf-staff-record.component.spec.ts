@@ -21,7 +21,7 @@ import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 describe('WdfStaffRecordComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfStaffRecordComponent, {
-      imports: [ HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
+      imports: [HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },

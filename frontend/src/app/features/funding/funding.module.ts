@@ -8,13 +8,15 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { SharedModule } from '@shared/shared.module';
 
 import { FundingRequirementsComponent } from './funding-requirements/funding-requirements.component';
+import { FundingRoutingModule } from './funding-routing.module';
 import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn-more-about-funding.component';
 import { WdfDataStatusMessageComponent } from './wdf-data-status-message/wdf-data-status-message.component';
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfParentStatusMessageComponent } from './wdf-parent-status-message/wdf-parent-status-message.component';
-import { FundingRoutingModule } from './funding-routing.module';
-import { WdfStaffRecordStatusMessageComponent } from './wdf-staff-record-status-message/wdf-staff-record-status-message.component';
+import {
+  WdfStaffRecordStatusMessageComponent,
+} from './wdf-staff-record-status-message/wdf-staff-record-status-message.component';
 import { WdfPaginationComponent } from './wdf-staff-record/wdf-pagination/wdf-pagination.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary/wdf-staff-summary.component';

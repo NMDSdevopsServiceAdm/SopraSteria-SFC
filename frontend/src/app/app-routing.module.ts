@@ -26,7 +26,6 @@ import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.reso
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
-import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
@@ -246,7 +245,7 @@ const routes: Routes = [
       },
       {
         path: 'funding',
-        loadChildren: () => import('@features/funding/wdf-data-change/funding.module').then((m) => m.FundingModule),
+        loadChildren: () => import('@features/funding/funding.module').then((m) => m.FundingModule),
         data: { title: 'Funding' },
       },
       {

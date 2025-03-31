@@ -15,7 +15,7 @@ import {
   MockEstablishmentService,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { FundingModule } from '@features/funding/wdf-data-change/funding.module';
+import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 

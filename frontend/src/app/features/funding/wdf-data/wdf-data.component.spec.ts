@@ -20,8 +20,8 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
 import { FundingModule } from '../funding.module';
+import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
 import { WdfDataComponent } from './wdf-data.component';
 
 describe('WdfDataComponent', () => {

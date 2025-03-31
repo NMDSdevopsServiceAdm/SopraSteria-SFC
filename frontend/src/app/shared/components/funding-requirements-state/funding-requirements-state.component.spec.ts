@@ -1,7 +1,7 @@
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
-import { FundingModule } from '../../../features/funding/wdf-data-change/funding.module';
+import { FundingModule } from '../../../features/funding/funding.module';
 import { FundingRequirementsStateComponent } from './funding-requirements-state.component';
 
 describe('FundingRequirementsStateComponent', () => {
