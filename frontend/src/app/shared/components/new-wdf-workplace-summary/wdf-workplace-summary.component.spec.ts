@@ -15,7 +15,7 @@ import {
   MockEstablishmentService,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
+import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
@@ -26,7 +26,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     const workplace = establishmentWithWdfBuilder() as Establishment;
 
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WDFWorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, FundingModule],
       declarations: [],
       providers: [
         {

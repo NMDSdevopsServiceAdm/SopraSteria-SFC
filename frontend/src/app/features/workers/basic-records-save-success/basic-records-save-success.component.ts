@@ -25,7 +25,7 @@ export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
     if (this.total === 0) {
       this.router.navigate(this.returnUrl, { fragment: 'staff-records', replaceUrl: true });
     }
-    this.returnToWDF = this.workerService.returnTo && [...this.workerService.returnTo.url].pop() === 'wdf';
+    this.returnToWDF = this.workerService.returnTo && [...this.workerService.returnTo.url].pop() === 'funding';
   }
 
   ngOnDestroy() {

@@ -1,13 +1,13 @@
 import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
-  OVERVIEW = '/wdf',
-  LEARN_MORE = 'wdf/learn-more',
-  FUNDING_REQUIREMENTS = 'wdf/funding-requirements',
-  DATA = '/wdf/data',
-  STAFF_RECORD = 'wdf/staff-record/:id',
-  PARENT_DATA = 'wdf/workplaces/:establishmentuid',
-  PARENT_STAFF_RECORD = 'wdf/workplaces/:establishmentuid/staff-record/:id',
+  OVERVIEW = '/funding',
+  LEARN_MORE = 'funding/learn-more',
+  FUNDING_REQUIREMENTS = 'funding/funding-requirements',
+  DATA = '/funding/data',
+  STAFF_RECORD = 'funding/staff-record/:id',
+  PARENT_DATA = 'funding/workplaces/:establishmentuid',
+  PARENT_STAFF_RECORD = 'funding/workplaces/:establishmentuid/staff-record/:id',
 }
 
 export const wdfJourney: JourneyRoute = {

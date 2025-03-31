@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-wdf-overview',
   templateUrl: './wdf-overview.component.html',
-  styleUrls: ['../../../../shared/components/summary-section/summary-section.component.scss'],
+  styleUrls: ['../../../shared/components/summary-section/summary-section.component.scss'],
 })
 export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplace: Establishment;

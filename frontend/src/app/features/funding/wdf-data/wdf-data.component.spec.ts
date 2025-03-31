@@ -20,8 +20,8 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
+import { FundingModule } from '../funding.module';
 import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
-import { WdfModule } from '../wdf.module';
 import { WdfDataComponent } from './wdf-data.component';
 
 describe('WdfDataComponent', () => {
@@ -29,7 +29,7 @@ describe('WdfDataComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfDataComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
       declarations: [WdfStaffSummaryComponent],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },

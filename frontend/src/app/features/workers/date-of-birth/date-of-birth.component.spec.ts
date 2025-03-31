@@ -217,25 +217,25 @@ describe('DateOfBirthComponent', () => {
 
     it('should return to the wdf staff record summary when cancel is clicked and in wdf edit version of the page', async () => {
       const { fixture, router, component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
       userEvent.click(getByText('Cancel'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', fixture.componentInstance.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', fixture.componentInstance.worker.uid]);
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
     it('should return to the wdf staff record summary when save and return is clicked and in wdf edit version of the page', async () => {
       const { fixture, router, component, getByText, submitSpy, routerSpy, workerServiceSpy } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
       userEvent.click(getByText('Save and return'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', fixture.componentInstance.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', fixture.componentInstance.worker.uid]);
       expect(workerServiceSpy).toHaveBeenCalled();
     });
   });

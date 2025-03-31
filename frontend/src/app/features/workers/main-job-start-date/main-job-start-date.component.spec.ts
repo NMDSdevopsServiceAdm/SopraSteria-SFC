@@ -366,10 +366,10 @@ describe('MainJobStartDateComponent', () => {
     expect(workerServiceSpy).not.toHaveBeenCalled();
   });
 
-  it('allows the user to complete the fields and update the form data and then navigate back to the wdf staff record summary page when in wdf version of the page', async () => {
+  it('allows the user to complete the fields and update the form data and then navigate back to the funding staff record summary page when in funding version of the page', async () => {
     const { getByText, fixture, router, getByLabelText, component, submitSpy, workerServiceSpy, navigateSpy } =
       await setup(false, workerBuilder());
-    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
     component.returnUrl = undefined;
     component.ngOnInit();
     fixture.detectChanges();
@@ -389,21 +389,21 @@ describe('MainJobStartDateComponent', () => {
     expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
       mainJobStartDate: '1999-11-11',
     });
-    expect(navigateSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
+    expect(navigateSpy).toHaveBeenCalledWith(['/funding', 'staff-record', component.worker.uid]);
   });
 
-  it('allows the user to exit when not in the flow and navigate to wdf staff record summary page when in wdf version of the page', async () => {
+  it('allows the user to exit when not in the flow and navigate to funding staff record summary page when in funding version of the page', async () => {
     const { fixture, router, component, getByText, submitSpy, navigateSpy, workerServiceSpy } = await setup(
       false,
       workerBuilder(),
     );
-    spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
     component.returnUrl = undefined;
     component.ngOnInit();
     fixture.detectChanges();
     userEvent.click(getByText('Cancel'));
     expect(submitSpy).toHaveBeenCalledOnceWith({ action: 'return', save: false });
-    expect(navigateSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', fixture.componentInstance.worker.uid]);
+    expect(navigateSpy).toHaveBeenCalledWith(['/funding', 'staff-record', fixture.componentInstance.worker.uid]);
     expect(workerServiceSpy).not.toHaveBeenCalled();
   });
 
