@@ -55,16 +55,12 @@ describe('OtherQualificationsComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
-    const workerService = injector.inject(WorkerService) as WorkerService;
-    const hasCompletedStaffRecordFlowSpy = spyOnProperty(workerService, 'hasCompletedStaffRecordFlow', 'set');
-
     return {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
       routerSpy,
       router,
       alertSpy,
-      hasCompletedStaffRecordFlowSpy,
     };
   }
 
@@ -134,14 +130,6 @@ describe('OtherQualificationsComponent', () => {
             message: 'Staff record saved',
           });
         });
-
-        it(`should set hasCompletedStaffRecordFlow in worker service when '${link}' is clicked`, async () => {
-          const { getByText, hasCompletedStaffRecordFlowSpy } = await setup({ insideFlow: true });
-
-          fireEvent.click(getByText(link));
-
-          expect(hasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
-        });
       });
 
       ['No', 'I do not know', null].forEach((answer) => {
@@ -180,19 +168,6 @@ describe('OtherQualificationsComponent', () => {
             type: 'success',
             message: 'Staff record saved',
           });
-        });
-
-        it(`should set hasCompletedStaffRecordFlow in worker service when '${answer}' is selected`, async () => {
-          const { getByText, hasCompletedStaffRecordFlowSpy } = await setup({ insideFlow: true });
-
-          if (!userClicksSaveWithoutSelecting) {
-            const button = getByText(answer);
-            fireEvent.click(button);
-          }
-
-          fireEvent.click(getByText('Save'));
-
-          expect(hasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
         });
       });
     });

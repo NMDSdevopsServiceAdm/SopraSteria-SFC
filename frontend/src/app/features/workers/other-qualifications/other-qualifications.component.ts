@@ -77,7 +77,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
     const { otherQualification } = this.form.value;
 
     if ((!this.submitted || !otherQualification) && this.insideFlow) {
-      this.setCompletedStaffFlowAndAddAlert();
+      this.addCompletedStaffFlowAlert();
     }
   }
 
@@ -85,12 +85,11 @@ export class OtherQualificationsComponent extends QuestionComponent {
     const { otherQualification } = this.form.value;
 
     if (otherQualification !== 'Yes' && this.insideFlow) {
-      this.setCompletedStaffFlowAndAddAlert();
+      this.addCompletedStaffFlowAlert();
     }
   }
 
-  setCompletedStaffFlowAndAddAlert(): void {
-    this.workerService.hasCompletedStaffRecordFlow = true;
+  addCompletedStaffFlowAlert(): void {
     this.alertService.addAlert({
       type: 'success',
       message: 'Staff record saved',
