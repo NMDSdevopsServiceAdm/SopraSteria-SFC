@@ -1,6 +1,6 @@
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -666,10 +666,27 @@ describe('UpdateVacanciesComponent', () => {
     });
   });
 
-  it('should return to Check this information page when user clicked the cancel button', async () => {
-    const mockWorkplace = establishmentBuilder({
-      overrides: { vacancies: mockVacancies },
+  it('should show a server error if failed to update vacancies', async () => {
+    const { fixture, updateJobsSpy, getByRole } = await setup({
+      workplace: mockWorkplace,
     });
+    const errorResponse = new HttpErrorResponse({
+      error: { message: 'Internal server error' },
+      status: 500,
+      statusText: 'Internal server error',
+    });
+
+    updateJobsSpy.and.returnValue(throwError(errorResponse));
+
+    await fillInValueForJobRole('Social worker', '3');
+    userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+    fixture.detectChanges();
+
+    expectErrorMessageAppears('Failed to update current staff vacancies', false);
+  });
+
+  it('should return to Check this information page when user clicked the cancel button', async () => {
     const { component, getByText, updateJobsSpy, routerSpy, updateWorkplaceAfterStaffChangesService } = await setup({
       workplace: mockWorkplace,
     });

@@ -33,6 +33,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
   public submitted = false;
+  public serverError = null;
 
   public isAFreshWorkplace: boolean = false;
   public selectedJobRoles: Array<Vacancy> = [];
@@ -320,8 +321,9 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     this.returnToPreviousPage();
   }
 
-  private onError(error: Error): void {
-    console.log(error);
+  private onError(_error: Error): void {
+    this.form.setErrors({ serverError: true });
+    this.serverError = 'Failed to update current staff vacancies';
   }
 
   private returnToPreviousPage(): void {
