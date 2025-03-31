@@ -197,9 +197,9 @@ describe('StaffRecordComponent', () => {
 
   describe('Add details to worker flow', () => {
     describe('Continue buttons', () => {
-      it('should render a Continue button at top and bottom of page when hasCompletedStaffRecordFlow is true', async () => {
+      it('should render a Continue button at top and bottom of page when completed is false', async () => {
         const { getAllByText } = await setup({
-          workerService: { worker: { completed: false }, hasCompletedStaffRecordFlow: true },
+          workerService: { worker: { completed: false } },
         });
 
         const continueButtons = getAllByText('Continue');
@@ -207,10 +207,19 @@ describe('StaffRecordComponent', () => {
         expect(continueButtons.length).toEqual(2);
       });
 
-      it('should not render the Continue record button when hasCompletedStaffRecordFlow is false', async () => {
+      it('should render a Continue button at top and bottom of page when hasCompletedStaffRecordFlow is true', async () => {
+        const { getAllByText } = await setup({
+          workerService: { worker: { completed: true }, hasCompletedStaffRecordFlow: true },
+        });
+
+        const continueButtons = getAllByText('Continue');
+
+        expect(continueButtons.length).toEqual(2);
+      });
+
+      it('should not render the Continue record button when copmleted is true and hasCompletedStaffRecordFlow is false', async () => {
         const { queryByText } = await setup({
-          workerService: { worker: { completed: false } },
-          hasCompletedStaffRecordFlow: false,
+          workerService: { worker: { completed: true }, hasCompletedStaffRecordFlow: false },
         });
 
         const button = queryByText('Continue');
@@ -224,7 +233,7 @@ describe('StaffRecordComponent', () => {
       ].forEach((scenario) => {
         it(`should have "Add another staff record" href on Continue button at ${scenario.position} of page`, async () => {
           const { getAllByText, workplaceUid } = await setup({
-            workerService: { hasCompletedStaffRecordFlow: true, worker: { completed: false } },
+            workerService: { worker: { completed: false } },
           });
 
           const continueButtons = getAllByText('Continue');
@@ -238,7 +247,7 @@ describe('StaffRecordComponent', () => {
     });
 
     describe('Updating completed', () => {
-      it('should call updateWorker on load of page when hasCompletedStaffRecordFlow and completed is false for worker', async () => {
+      it('should call updateWorker on load of page when completed is false for worker', async () => {
         const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
 
         const { workplaceUid, workerUid } = await setup({
@@ -252,21 +261,7 @@ describe('StaffRecordComponent', () => {
         expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
       });
 
-      it('should not call updateWorker when completed is false for worker but hasCompletedStaffRecordFlow is not true', async () => {
-        const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
-
-        await setup({
-          workerService: {
-            hasCompletedStaffRecordFlow: null,
-            updateWorker: updateWorkerSpy,
-            worker: { completed: false },
-          },
-        });
-
-        expect(updateWorkerSpy).not.toHaveBeenCalled();
-      });
-
-      it('should not call updateWorker when hasCompletedStaffRecordFlow but completed is true for worker', async () => {
+      it('should not call updateWorker when completed is true for worker', async () => {
         const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
 
         await setup({

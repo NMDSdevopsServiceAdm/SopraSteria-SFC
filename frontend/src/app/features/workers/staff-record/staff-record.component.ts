@@ -49,15 +49,17 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
 
     if (this.hasCompletedStaffRecordFlow) {
-      this.continueRoute = ['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record'];
-      this.trackNavigationToClearHasCompletedStaffRecordFlow();
+      this.showContinueButtons();
     }
 
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
-        if (!this.worker?.completed && this.hasCompletedStaffRecordFlow) {
+        if (!this.worker?.completed) {
+          this.workerService.hasCompletedStaffRecordFlow = true;
+          this.hasCompletedStaffRecordFlow = true;
           this.updateCompleted();
+          this.showContinueButtons();
         }
       }),
     );
@@ -74,6 +76,11 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+  }
+
+  private showContinueButtons(): void {
+    this.continueRoute = ['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record'];
+    this.trackNavigationToClearHasCompletedStaffRecordFlow();
   }
 
   public backLinkNavigation(): URLStructure {
