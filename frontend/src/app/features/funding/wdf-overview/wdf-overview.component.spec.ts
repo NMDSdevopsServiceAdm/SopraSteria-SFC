@@ -10,7 +10,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { createMockWdfReport } from '@core/test-utils/MockReportService';
 import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { WdfOverviewComponent } from './wdf-overview.component';
@@ -162,12 +162,11 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should show the funding requirements link', async () => {
-      const { getByTestId, currentYear } = await setup();
+      const { getByText, currentYear } = await setup();
 
-      const dataMetFundingParagraph = getByTestId('dataMetFunding');
-
-      const fundingRequirementsLink = within(dataMetFundingParagraph).getByText(
+      const fundingRequirementsLink = getByText(
         `View the ASC-WDS funding requirements for ${currentYear} to ${currentYear + 1}`,
+        { selector: 'a' },
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
@@ -190,7 +189,7 @@ describe('WdfOverviewComponent', () => {
       const { getByText, currentYear } = await setup(overrides);
 
       const fundingRequirementsLink = getByText(
-        `The ASC-WDS funding requirements for ${currentYear} to ${currentYear + 1}`,
+        `View the ASC-WDS funding requirements for ${currentYear} to ${currentYear + 1}`,
         { selector: 'a' },
       );
 
@@ -334,7 +333,7 @@ describe('WdfOverviewComponent', () => {
       const { getByText, currentYear } = await setup(overrides);
 
       const fundingRequirementsLink = getByText(
-        `The ASC-WDS funding requirements for ${currentYear} to ${currentYear + 1}`,
+        `View the ASC-WDS funding requirements for ${currentYear} to ${currentYear + 1}`,
         { selector: 'a' },
       );
 
