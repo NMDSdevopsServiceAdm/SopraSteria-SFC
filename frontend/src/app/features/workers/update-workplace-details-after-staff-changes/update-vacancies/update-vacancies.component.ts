@@ -96,7 +96,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  protected setupTexts() {
+  protected setupTexts(): void {
     if (this.isAFreshWorkplace) {
       this.heading = 'Add your current staff vacancies';
       this.addJobRoleButtonText = 'Add job roles';
@@ -106,7 +106,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private setupForm() {
+  private setupForm(): void {
     this.form = this.formBuilder.group(
       {
         jobRoleNumbers: this.formBuilder.array([], { updateOn: 'submit', validators: [] }),
@@ -119,7 +119,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private prefill() {
+  private prefill(): void {
     const dataFromJobRoleSelectionPage = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
     const dataFromDatabase = this.establishmentService.establishment.vacancies;
 
@@ -131,7 +131,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     this.isAFreshWorkplace = dataFromDatabase === null;
   }
 
-  private prefillFromData(data: string | Vacancy[]) {
+  private prefillFromData(data: string | Vacancy[]): void {
     if (Array.isArray(data)) {
       this.selectedJobRoles = data;
       return;
@@ -147,7 +147,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     return this.form.get('jobRoleNumbers') as UntypedFormArray;
   }
 
-  private createJobRoleFormControl = (jobRole: Vacancy) => {
+  private createJobRoleFormControl = (jobRole: Vacancy): void => {
     const initialValue = jobRole.total ?? '';
     this.jobRoleNumbers.push(
       this.formBuilder.control(initialValue, {
@@ -162,7 +162,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     );
   };
 
-  protected setupFormErrorsMap() {
+  protected setupFormErrorsMap(): void {
     const errorMapForJobRoles = this.selectedJobRoles.map((jobRole, index) =>
       this.buildErrorMapForJobRole(jobRole, index),
     );
@@ -204,7 +204,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     return errorMap;
   }
 
-  protected getErrorMessageForJobRole(jobRole: Vacancy, errorType: string, inline: boolean = false) {
+  protected getErrorMessageForJobRole(jobRole: Vacancy, errorType: string, inline: boolean = false): string {
     const jobRoleTitleInLowerCase = jobRole.title.toLowerCase();
 
     switch (errorType) {
@@ -222,7 +222,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  public getInlineErrorMessageForJobRole(jobRoleWithError: Vacancy, index: number) {
+  public getInlineErrorMessageForJobRole(jobRoleWithError: Vacancy, index: number): string {
     const errorType = Object.keys(this.jobRoleNumbers.at(index).errors)[0];
     return this.getErrorMessageForJobRole(jobRoleWithError, errorType, true);
   }
@@ -232,11 +232,11 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public setBackLink() {
+  public setBackLink(): void {
     this.backlinkService.showBackLink();
   }
 
-  public removeJobRole = (jobRoleIndex: number) => {
+  public removeJobRole = (jobRoleIndex: number): void => {
     if (jobRoleIndex < 0 || jobRoleIndex >= this.selectedJobRoles.length) {
       return;
     }
@@ -245,26 +245,26 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     this.jobRoleNumbers.removeAt(jobRoleIndex);
   };
 
-  public removeAllSelectedJobRoles = () => {
+  public removeAllSelectedJobRoles = (): void => {
     this.selectedJobRoles = [];
     this.jobRoleNumbers.clear();
   };
 
-  private syncSelectedJobRolesNumberWithForm = () => {
+  private syncSelectedJobRolesNumberWithForm = (): void => {
     this.numberInputs.forEach((numberInput, index) => {
       const currentNumber = isNaN(numberInput.currentNumber) ? 0 : numberInput.currentNumber;
       this.selectedJobRoles[index].total = currentNumber;
     });
   };
 
-  public handleAddJobRole = () => {
+  public handleAddJobRole = (): void => {
     this.syncSelectedJobRolesNumberWithForm();
     this.updateWorkplaceAfterStaffChangesService.selectedVacancies = this.selectedJobRoles;
 
     this.router.navigate(['../update-vacancies-job-roles'], { relativeTo: this.route });
   };
 
-  public handleClickedNoOrDoNotKnow = (value: jobOptionsEnum) => {
+  public handleClickedNoOrDoNotKnow = (value: jobOptionsEnum): void => {
     this.selectedNoOrDoNotKnow = value;
     this.removeAllSelectedJobRoles();
   };
@@ -292,13 +292,8 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     return { vacancies: updatedVacancies };
   }
 
-  // private forceTriggerValidatorOfRadioButtons() {
-  //   this.form.controls['noOrDoNotKnow'].updateValueAndValidity();
-  // }
-
-  public onSubmit() {
+  public onSubmit(): void {
     this.submitted = true;
-    // this.forceTriggerValidatorOfRadioButtons();
 
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -320,20 +315,20 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private onSuccess() {
+  private onSuccess(): void {
     this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
     this.returnToPreviousPage();
   }
 
-  private onError(error: Error) {
+  private onError(error: Error): void {
     console.log(error);
   }
 
-  private returnToPreviousPage() {
+  private returnToPreviousPage(): void {
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 
-  public onCancel(event: Event) {
+  public onCancel(event: Event): void {
     event.preventDefault();
     this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
     this.returnToPreviousPage();

@@ -17,7 +17,12 @@ import userEvent from '@testing-library/user-event';
 import { UpdateVacanciesComponent } from './update-vacancies.component';
 
 fdescribe('UpdateVacanciesComponent', () => {
-  const sixRegisteredNursesAndFourSocialWorkers: Vacancy[] = [
+  const radioButtonLabels = {
+    No: 'There are no current staff vacancies',
+    DoNotKnow: 'I do not know if there are any current staff vacancies',
+  };
+
+  const mockVacancies: Vacancy[] = [
     {
       jobId: 23,
       title: 'Registered nurse',
@@ -30,11 +35,7 @@ fdescribe('UpdateVacanciesComponent', () => {
     },
   ];
 
-  const radioButtonLabels = {
-    No: 'There are no current staff vacancies',
-    DoNotKnow: 'I do not know if there are any current staff vacancies',
-  };
-
+  const mockWorkplace = establishmentBuilder({ overrides: { vacancies: mockVacancies } }) as Establishment;
   const mockWorkplaceWithNoVacancies = establishmentBuilder({ overrides: { vacancies: jobOptionsEnum.NONE } });
   const mockWorkplaceWithVacanciesNotKnown = establishmentBuilder({
     overrides: { vacancies: jobOptionsEnum.DONT_KNOW },
@@ -135,7 +136,6 @@ fdescribe('UpdateVacanciesComponent', () => {
     });
 
     it('should show the total number of vacancies', async () => {
-      const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers } });
       const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
 
       fixture.detectChanges();
@@ -186,7 +186,7 @@ fdescribe('UpdateVacanciesComponent', () => {
       describe('before adding new job roles', () => {
         it('should show a number input and a remove button for every vacancy job role from database', async () => {
           const mockWorkplace = establishmentBuilder({
-            overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+            overrides: { vacancies: mockVacancies },
           });
           const { getByTestId } = await setup({ workplace: mockWorkplace });
 
@@ -240,7 +240,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
           it('should show no job role selected instead of prefill from backend data, if user did not select any job roles in accordion page', async () => {
             const mockWorkplace = establishmentBuilder({
-              overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+              overrides: { vacancies: mockVacancies },
             });
             const { queryByText, queryByLabelText, getByTestId } = await setup({
               vacanciesFromSelectJobRolePages: [],
@@ -262,7 +262,6 @@ fdescribe('UpdateVacanciesComponent', () => {
 
   describe('interaction', () => {
     it('should update the total number when the vacancy number of a job role is changed', async () => {
-      const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers } });
       const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
 
       await fillInValueForJobRole('Registered nurse', '10');
@@ -287,7 +286,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
       it('should store the current job role selections in service', async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+          overrides: { vacancies: mockVacancies },
         });
         const { fixture, getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
           workplace: mockWorkplace,
@@ -298,14 +297,12 @@ fdescribe('UpdateVacanciesComponent', () => {
 
         fixture.detectChanges();
 
-        expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(
-          sixRegisteredNursesAndFourSocialWorkers,
-        );
+        expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(mockVacancies);
       });
 
       it('should bring along any changes made by user in current page', async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+          overrides: { vacancies: mockVacancies },
         });
         const { fixture, getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
           workplace: mockWorkplace,
@@ -332,7 +329,7 @@ fdescribe('UpdateVacanciesComponent', () => {
     describe('remove button', () => {
       it('should remove a job role from the list when remove button is clicked', async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+          overrides: { vacancies: mockVacancies },
         });
         const { fixture, queryByText, queryByLabelText } = await setup({ workplace: mockWorkplace });
 
@@ -346,7 +343,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
       it('should update the total number', async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+          overrides: { vacancies: mockVacancies },
         });
         const { fixture, getByTestId, getByText } = await setup({ workplace: mockWorkplace });
 
@@ -366,7 +363,7 @@ fdescribe('UpdateVacanciesComponent', () => {
     describe('radio buttons for "No" and "Do not know"', () => {
       it(`should remove all selected job roles when user clicked the radio button for "No"`, async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+          overrides: { vacancies: mockVacancies },
         });
         const { fixture, queryByText, queryByLabelText, getByText, getByLabelText, getByTestId } = await setup({
           workplace: mockWorkplace,
@@ -389,7 +386,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
       it(`should remove all selected job roles when user clicked the radio button for "Do not know"`, async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+          overrides: { vacancies: mockVacancies },
         });
         const { fixture, queryByText, queryByLabelText, getByText, getByLabelText, getByTestId } = await setup({
           workplace: mockWorkplace,
@@ -415,7 +412,7 @@ fdescribe('UpdateVacanciesComponent', () => {
   describe('submit form and validation', () => {
     it('should save the changes in job role selection and number', async () => {
       const mockWorkplace = establishmentBuilder({
-        overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+        overrides: { vacancies: mockVacancies },
       }) as Establishment;
       const { getByLabelText, getByRole, getByTestId, updateJobsSpy } = await setup({
         workplace: mockWorkplace,
@@ -435,7 +432,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
     it('should save the vacancy as None if user selected None', async () => {
       const mockWorkplace = establishmentBuilder({
-        overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+        overrides: { vacancies: mockVacancies },
       }) as Establishment;
       const { getByLabelText, getByRole, updateJobsSpy } = await setup({
         workplace: mockWorkplace,
@@ -450,7 +447,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
     it('should navigate to the update-workplace-details page', async () => {
       const mockWorkplace = establishmentBuilder({
-        overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+        overrides: { vacancies: mockVacancies },
       });
       const { component, routerSpy, getByRole } = await setup({
         workplace: mockWorkplace,
@@ -527,10 +524,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
       it('should still show the correct error messages even if some job roles were removed before submit', async () => {
         const { fixture, getByRole } = await setup({
-          vacanciesFromSelectJobRolePages: [
-            { jobId: 10, title: 'Care worker', total: 3 },
-            ...sixRegisteredNursesAndFourSocialWorkers,
-          ],
+          vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 3 }, ...mockVacancies],
         });
 
         await fillInValueForJobRole('Registered nurse', '9999');
@@ -550,10 +544,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
       it('should still show the correct error messages even if some job roles were removed after submit', async () => {
         const { fixture, getByRole } = await setup({
-          vacanciesFromSelectJobRolePages: [
-            { jobId: 10, title: 'Care worker', total: 3 },
-            ...sixRegisteredNursesAndFourSocialWorkers,
-          ],
+          vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 3 }, ...mockVacancies],
         });
 
         await fillInValueForJobRole('Registered nurse', '9999');
@@ -638,8 +629,8 @@ fdescribe('UpdateVacanciesComponent', () => {
       });
 
       it('should clear the "Select there are no ..." error and allow submit if all job roles are filled with a valid number', async () => {
-        const { component, fixture, getByRole, queryByText, updateJobsSpy } = await setup({
-          workplace: mockWorkplaceWithNoVacancies,
+        const { fixture, getByRole, queryByText, updateJobsSpy } = await setup({
+          workplace: mockWorkplace,
           vacanciesFromSelectJobRolePages: [
             { jobId: 10, title: 'Care worker', total: 1 },
             { jobId: 23, title: 'Registered nurse', total: 1 },
@@ -664,7 +655,7 @@ fdescribe('UpdateVacanciesComponent', () => {
         fixture.detectChanges();
 
         expect(queryByText('Select there are no current staff vacancies or do not know')).toBeFalsy();
-        expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplaceWithNoVacancies.uid as string, {
+        expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, {
           vacancies: [
             { jobId: 10, total: 1 },
             { jobId: 23, total: 2 },
@@ -677,7 +668,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
   it('should return to Check this information page when user clicked the cancel button', async () => {
     const mockWorkplace = establishmentBuilder({
-      overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+      overrides: { vacancies: mockVacancies },
     });
     const { component, getByText, updateJobsSpy, routerSpy, updateWorkplaceAfterStaffChangesService } = await setup({
       workplace: mockWorkplace,
