@@ -327,14 +327,7 @@ export class EstablishmentService {
     );
   }
 
-  updateJobs(establishmentId, data: UpdateJobsRequest): Observable<Establishment> {
-    // this.http
-    //   .post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data)
-    //   .subscribe((response) => {
-    //     this.setState({ ...this.establishment, ...response });
-    //     return of(response);
-    //   });
-
+  updateJobs(establishmentId: string, data: UpdateJobsRequest): Observable<Establishment> {
     return this.http
       .post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data)
       .pipe(
