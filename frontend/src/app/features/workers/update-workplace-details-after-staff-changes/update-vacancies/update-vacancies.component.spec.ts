@@ -135,11 +135,11 @@ fdescribe('UpdateVacanciesComponent', () => {
     });
 
     it('should show the total number of vacancies', async () => {
-      const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
+      const { getByText, getByTestId } = await setup({ workplace: mockWorkplace });
 
-      fixture.detectChanges();
       const totalNumber = getByTestId('total-number');
       expect(totalNumber.textContent).toEqual('10');
+      expect(getByText('Total number of vacancies'));
     });
 
     it('should show a radio button for "No", and another for "I do not know"', async () => {

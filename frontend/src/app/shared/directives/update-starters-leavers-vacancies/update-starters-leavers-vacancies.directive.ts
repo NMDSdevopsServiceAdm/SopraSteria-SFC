@@ -43,7 +43,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public heading: string;
   public addJobRoleButtonText: string;
   public jobRoleTitle = 'Current staff vacancies';
-  public totalNumberDescription = 'Total number of vacancies';
+  public totalNumberDescription: string;
   public revealText: string;
   public reminderText: string;
   public radioButtonOptions: { label: string; value: jobOptionsEnum }[];

@@ -12,6 +12,7 @@ import {
     '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.scss',
 })
 export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirective {
+  public totalNumberDescription = 'Total number of starters';
   public revealText =
     "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
 
