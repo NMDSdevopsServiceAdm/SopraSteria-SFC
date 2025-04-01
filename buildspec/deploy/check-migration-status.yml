@@ -2,7 +2,8 @@ version: 0.2
 
 phases:
   pre_build:
-    commands: if [[ $SELECTED_ENVIRONMENT == "staging" ]]; then exit 0; else exit 1; fi
+    commands:
+      - if [[ $SELECTED_ENVIRONMENT == "staging" ]]; then exit 0; else exit 1; fi
     on-failure: ABORT
 
   install:
