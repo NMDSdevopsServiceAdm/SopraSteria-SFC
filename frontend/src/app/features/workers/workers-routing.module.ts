@@ -491,11 +491,6 @@ const routes: Routes = [
         ],
       },
       {
-        path: 'confirm-staff-record',
-        component: StaffRecordComponent,
-        data: { title: 'Confirm Staff Record' },
-      },
-      {
         path: 'staff-details',
         component: StaffDetailsComponent,
         data: { title: 'Staff Details' },
