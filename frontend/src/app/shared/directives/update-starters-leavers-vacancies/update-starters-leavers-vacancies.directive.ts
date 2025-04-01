@@ -47,11 +47,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public revealText: string;
   public reminderText: string;
   public radioButtonOptions: { label: string; value: jobOptionsEnum }[];
-  public messageWhenNoJobRoleSelected = {
-    None: 'There are no current staff vacancies.',
-    DoNotKnow: 'You do not know if there are any current staff vacancies.',
-    Default: "You've not added any current staff vacancies.",
-  };
+  public messageWhenNoJobRoleSelected: { None: string; DoNotKnow: string; Default: string };
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

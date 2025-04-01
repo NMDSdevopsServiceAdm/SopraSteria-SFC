@@ -22,6 +22,11 @@ fdescribe('UpdateStartersComponent', () => {
     No: `No staff started on or after ${dateToday}`,
     DoNotKnow: `I do not know how many staff started on or after ${dateToday}`,
   };
+  const messageWhenNoJobRoleSelected = {
+    None: `No staff started on or after ${dateToday}.`,
+    DoNotKnow: `You do not know how many staff started on or after ${dateToday}.`,
+    Default: `You've not added any staff who've started since ${dateToday}.`,
+  };
 
   const mockVacancies: Vacancy[] = [
     {
@@ -199,10 +204,10 @@ fdescribe('UpdateStartersComponent', () => {
           expect(getByTestId('remove-button-Social worker')).toBeTruthy();
         });
 
-        it(`should show a message "You've not added any current staff vacancies." if for a fresh workplace`, async () => {
+        it(`should show a message "You've not added any staff who've started..." if for a fresh workplace`, async () => {
           const { getByText } = await setup({ workplace: mockFreshWorkplace });
 
-          expect(getByText("You've not added any current staff vacancies.")).toBeTruthy();
+          expect(getByText(messageWhenNoJobRoleSelected.Default)).toBeTruthy();
         });
 
         it('should select the "No" radio button and display a message if user previously selected "No"', async () => {
@@ -212,7 +217,7 @@ fdescribe('UpdateStartersComponent', () => {
           expect(radioButton.checked).toBe(true);
           expect(getByTestId('total-number').textContent).toEqual('0');
 
-          expect(getByText('There are no current staff vacancies.')).toBeTruthy();
+          expect(getByText(messageWhenNoJobRoleSelected.None)).toBeTruthy();
         });
 
         it('should select the "No" radio button and display a message if user previously selected "Do not know"', async () => {
@@ -224,7 +229,7 @@ fdescribe('UpdateStartersComponent', () => {
           expect(radioButton.checked).toBe(true);
           expect(getByTestId('total-number').textContent).toEqual('0');
 
-          expect(getByText('You do not know if there are any current staff vacancies.')).toBeTruthy();
+          expect(getByText(messageWhenNoJobRoleSelected.DoNotKnow)).toBeTruthy();
         });
 
         describe('after adding new add roles', () => {
@@ -358,7 +363,7 @@ fdescribe('UpdateStartersComponent', () => {
         await clickRemoveButtonForJobRole('Social worker');
         fixture.detectChanges();
         expect(totalNumber.textContent).toEqual('0');
-        expect(getByText("You've not added any current staff vacancies.")).toBeTruthy();
+        expect(getByText(messageWhenNoJobRoleSelected.Default)).toBeTruthy();
       });
     });
 
@@ -383,7 +388,7 @@ fdescribe('UpdateStartersComponent', () => {
 
         expect(getByTestId('total-number').textContent).toEqual('0');
 
-        expect(getByText('There are no current staff vacancies.')).toBeTruthy();
+        expect(getByText(messageWhenNoJobRoleSelected.None)).toBeTruthy();
       });
 
       it(`should remove all selected job roles when user clicked the radio button for "Do not know"`, async () => {
@@ -406,7 +411,7 @@ fdescribe('UpdateStartersComponent', () => {
 
         expect(getByTestId('total-number').textContent).toEqual('0');
 
-        expect(getByText('You do not know if there are any current staff vacancies.')).toBeTruthy();
+        expect(getByText(messageWhenNoJobRoleSelected.DoNotKnow)).toBeTruthy();
       });
     });
   });

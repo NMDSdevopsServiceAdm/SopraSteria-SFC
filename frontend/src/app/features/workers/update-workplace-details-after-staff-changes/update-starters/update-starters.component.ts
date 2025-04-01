@@ -37,5 +37,11 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
         value: jobOptionsEnum.DONT_KNOW,
       },
     ];
+
+    this.messageWhenNoJobRoleSelected = {
+      None: `No staff started on or after ${dateToday}.`,
+      DoNotKnow: `You do not know how many staff started on or after ${dateToday}.`,
+      Default: `You've not added any staff who've started since ${dateToday}.`,
+    };
   }
 }

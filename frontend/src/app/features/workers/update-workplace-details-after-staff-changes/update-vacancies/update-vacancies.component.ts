@@ -25,6 +25,11 @@ export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDire
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
+  public messageWhenNoJobRoleSelected = {
+    None: 'There are no current staff vacancies.',
+    DoNotKnow: 'You do not know if there are any current staff vacancies.',
+    Default: "You've not added any current staff vacancies.",
+  };
 
   protected setupTexts(): void {
     if (this.isAFreshWorkplace) {
