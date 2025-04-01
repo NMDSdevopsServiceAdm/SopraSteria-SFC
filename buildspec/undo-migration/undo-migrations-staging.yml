@@ -1,14 +1,6 @@
 version: 0.2
 
-env:
-  shell: bash
-
 phases:
-  pre_build:
-    commands:
-      - if [ -z "${MIGRATION_FILE_NAME}" ]; then echo "Error: No file name provided." && exit 1; fi
-    on-failure: ABORT
-
   install:
     runtime-versions:
       nodejs: 18
