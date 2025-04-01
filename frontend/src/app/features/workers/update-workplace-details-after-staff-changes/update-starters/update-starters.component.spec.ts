@@ -680,7 +680,7 @@ fdescribe('UpdateStartersComponent', () => {
     });
   });
 
-  it('should show a server error if failed to update vacancies', async () => {
+  it('should show a server error if failed to update starters', async () => {
     const { fixture, updateJobsSpy, getByRole } = await setup({
       workplace: mockWorkplace,
     });
@@ -697,7 +697,7 @@ fdescribe('UpdateStartersComponent', () => {
 
     fixture.detectChanges();
 
-    expectErrorMessageAppears('Failed to update current staff vacancies', false);
+    expectErrorMessageAppears('Failed to update starters', false);
   });
 
   it('should return to Check this information page when user clicked the cancel button', async () => {

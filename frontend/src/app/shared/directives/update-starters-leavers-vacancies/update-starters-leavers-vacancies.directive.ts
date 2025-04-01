@@ -48,6 +48,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public reminderText: string;
   public radioButtonOptions: { label: string; value: jobOptionsEnum }[];
   public messageWhenNoJobRoleSelected: { None: string; DoNotKnow: string; Default: string };
+  public serverErrorMessage: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -298,7 +299,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   private onError(_error: Error): void {
     this.form.setErrors({ serverError: true });
-    this.serverError = 'Failed to update current staff vacancies';
+    this.serverError = this.serverErrorMessage;
   }
 
   private returnToPreviousPage(): void {
