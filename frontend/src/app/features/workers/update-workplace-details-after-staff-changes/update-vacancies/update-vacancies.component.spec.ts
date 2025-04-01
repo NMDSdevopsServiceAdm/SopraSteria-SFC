@@ -1,5 +1,3 @@
-import { of, throwError } from 'rxjs';
-
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -13,6 +11,7 @@ import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/Mo
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { of, throwError } from 'rxjs';
 
 import { UpdateVacanciesComponent } from './update-vacancies.component';
 
