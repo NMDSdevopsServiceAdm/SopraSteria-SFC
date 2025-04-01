@@ -44,9 +44,8 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public addJobRoleButtonText: string;
   public jobRoleTitle = 'Current staff vacancies';
   public totalNumberDescription = 'Total number of vacancies';
-  public revealText =
-    'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
-  public reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are <strong>no longer vacancies</strong>.`;
+  public revealText: string;
+  public reminderText: string;
   public radioButtonOptions = [
     {
       label: 'There are no current staff vacancies',

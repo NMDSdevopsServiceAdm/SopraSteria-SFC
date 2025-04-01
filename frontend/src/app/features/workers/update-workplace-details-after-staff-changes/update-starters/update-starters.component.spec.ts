@@ -15,7 +15,7 @@ import { of, throwError } from 'rxjs';
 
 import { UpdateStartersComponent } from './update-starters.component';
 
-describe('UpdateStartersComponent', () => {
+fdescribe('UpdateStartersComponent', () => {
   const radioButtonLabels = {
     No: 'There are no current staff vacancies',
     DoNotKnow: 'I do not know if there are any current staff vacancies',
@@ -84,12 +84,15 @@ describe('UpdateStartersComponent', () => {
       UpdateWorkplaceAfterStaffChangesService,
     ) as UpdateWorkplaceAfterStaffChangesService;
 
+    const dateToday = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
     return {
       component,
       routerSpy,
       updateJobsSpy,
       setStateSpy,
       updateWorkplaceAfterStaffChangesService,
+      dateToday,
       ...setupTools,
     };
   };
@@ -101,10 +104,10 @@ describe('UpdateStartersComponent', () => {
 
   describe('rendering', () => {
     it('should show a page heading', async () => {
-      const { getByRole } = await setup();
+      const { getByRole, dateToday } = await setup();
       const heading = getByRole('heading', { level: 1 });
 
-      expect(heading.textContent).toEqual('Update your current staff vacancies');
+      expect(heading.textContent).toEqual(`Update the number of staff who've started SINCE ${dateToday}`);
     });
 
     it('should show a reveal text for "Why we ask for this information"', async () => {
@@ -112,7 +115,7 @@ describe('UpdateStartersComponent', () => {
 
       const reveal = getByText('Why we ask for this information');
       const revealText = getByText(
-        'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.',
+        "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.",
       );
 
       expect(reveal).toBeTruthy();
@@ -120,9 +123,9 @@ describe('UpdateStartersComponent', () => {
     });
 
     it('should show a warning text to remind about subtract or remove vacancies', async () => {
-      const { getByTestId } = await setup();
+      const { getByTestId, dateToday } = await setup();
       const warningText = getByTestId('warning-text');
-      const expectedTextContent = 'Remember to SUBTRACT or REMOVE any that are no longer vacancies.';
+      const expectedTextContent = `Remember to SUBTRACT or REMOVE any staff who started before ${dateToday}.`;
 
       expect(warningText.textContent).toContain(expectedTextContent);
     });
