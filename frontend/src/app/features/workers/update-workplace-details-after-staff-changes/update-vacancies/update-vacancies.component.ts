@@ -34,7 +34,7 @@ export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDire
   };
 
   protected setupTexts(): void {
-    if (this.isAFreshWorkplace) {
+    if (!this.questionPreviouslyAnswered) {
       this.heading = 'Add your current staff vacancies';
       this.addJobRoleButtonText = 'Add job roles';
     } else {

@@ -20,7 +20,11 @@
           </p>
         </app-details>
 
-        <div *ngIf="!isAFreshWorkplace" class="govuk-warning-text govuk-!-margin-bottom-3" data-testid="warning-text">
+        <div
+          *ngIf="questionPreviouslyAnswered"
+          class="govuk-warning-text govuk-!-margin-bottom-3"
+          data-testid="warning-text"
+        >
           <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
           <span class="govuk-warning-text__text">
             <span class="govuk-visually-hidden">Warning</span>

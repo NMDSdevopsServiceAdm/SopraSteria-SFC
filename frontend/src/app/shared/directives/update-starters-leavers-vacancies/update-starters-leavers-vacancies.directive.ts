@@ -32,7 +32,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public submitted = false;
   public serverError = null;
 
-  public isAFreshWorkplace: boolean = false;
+  public questionPreviouslyAnswered: boolean = false;
   public selectedJobRoles: Array<Vacancy> = [];
   public selectedNoOrDoNotKnow: jobOptionsEnum = null;
   public totalNumber: number = 0;
@@ -104,7 +104,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.prefillFromData(dataToPrefillFrom);
     this.selectedJobRoles.forEach((jobRole) => this.createJobRoleFormControl(jobRole));
 
-    this.isAFreshWorkplace = dataFromDatabase === null;
+    this.questionPreviouslyAnswered = dataFromDatabase !== null;
   }
 
   private prefillFromData(data: string | Vacancy[]): void {

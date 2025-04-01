@@ -20,7 +20,7 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
   protected setupTexts(): void {
     const dateToday = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
-    if (this.isAFreshWorkplace) {
+    if (!this.questionPreviouslyAnswered) {
       this.heading = `Add the number of staff who've started SINCE ${dateToday}`;
       this.addJobRoleButtonText = 'Add job roles';
     } else {
