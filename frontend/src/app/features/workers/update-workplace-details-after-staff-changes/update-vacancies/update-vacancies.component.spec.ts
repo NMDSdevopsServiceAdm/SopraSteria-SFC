@@ -127,6 +127,13 @@ fdescribe('UpdateVacanciesComponent', () => {
       expect(warningText.textContent).toContain(expectedTextContent);
     });
 
+    it('should have "Current staff vacancies" as the table title', async () => {
+      const { getByText } = await setup();
+      const tableTitle = getByText('Current staff vacancies');
+
+      expect(tableTitle).toBeTruthy();
+    });
+
     it('should show an "Add more job roles" button', async () => {
       const { getByRole } = await setup();
       const addButton = getByRole('button', { name: 'Add more job roles' });

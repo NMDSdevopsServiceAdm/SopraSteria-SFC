@@ -42,7 +42,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   public heading: string;
   public addJobRoleButtonText: string;
-  public jobRoleTitle = 'Current staff vacancies';
+  public tableTitle: string;
   public totalNumberDescription: string;
   public revealText: string;
   public reminderText: string;

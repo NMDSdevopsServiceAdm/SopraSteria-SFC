@@ -15,6 +15,7 @@ export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDire
   public revealText =
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
   public reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are <strong>no longer vacancies</strong>.`;
+  public tableTitle = 'Current staff vacancies';
   public totalNumberDescription = 'Total number of vacancies';
   public radioButtonOptions = [
     {

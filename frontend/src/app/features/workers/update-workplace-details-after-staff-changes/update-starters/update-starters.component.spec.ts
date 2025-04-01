@@ -92,13 +92,13 @@ fdescribe('UpdateStartersComponent', () => {
     ) as UpdateWorkplaceAfterStaffChangesService;
 
     return {
+      ...setupTools,
       component,
       routerSpy,
       updateJobsSpy,
       setStateSpy,
       updateWorkplaceAfterStaffChangesService,
       dateToday,
-      ...setupTools,
     };
   };
 
@@ -133,6 +133,13 @@ fdescribe('UpdateStartersComponent', () => {
       const expectedTextContent = `Remember to SUBTRACT or REMOVE any staff who started before ${dateToday}.`;
 
       expect(warningText.textContent).toContain(expectedTextContent);
+    });
+
+    it('should have "Starters in the last 12 months" as the table title', async () => {
+      const { getByText } = await setup();
+      const tableTitle = getByText('Starters in the last 12 months');
+
+      expect(tableTitle).toBeTruthy();
     });
 
     it('should show an "Add more job roles" button', async () => {
