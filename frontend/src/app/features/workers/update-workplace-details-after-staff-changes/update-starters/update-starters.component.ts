@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { jobOptionsEnum } from '@core/model/establishment.model';
 import {
   UpdateStartersLeaversVacanciesDirective,
 } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
@@ -26,5 +27,15 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
     }
 
     this.reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any staff who started <strong>before ${dateToday}</strong>.`;
+    this.radioButtonOptions = [
+      {
+        label: `No staff started on or after ${dateToday}`,
+        value: jobOptionsEnum.NONE,
+      },
+      {
+        label: `I do not know how many staff started on or after ${dateToday}`,
+        value: jobOptionsEnum.DONT_KNOW,
+      },
+    ];
   }
 }

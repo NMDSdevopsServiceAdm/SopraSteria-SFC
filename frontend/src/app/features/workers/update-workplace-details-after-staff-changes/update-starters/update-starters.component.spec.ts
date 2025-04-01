@@ -16,9 +16,11 @@ import { of, throwError } from 'rxjs';
 import { UpdateStartersComponent } from './update-starters.component';
 
 fdescribe('UpdateStartersComponent', () => {
+  const dateToday = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
   const radioButtonLabels = {
-    No: 'There are no current staff vacancies',
-    DoNotKnow: 'I do not know if there are any current staff vacancies',
+    No: `No staff started on or after ${dateToday}`,
+    DoNotKnow: `I do not know how many staff started on or after ${dateToday}`,
   };
 
   const mockVacancies: Vacancy[] = [
@@ -84,8 +86,6 @@ fdescribe('UpdateStartersComponent', () => {
       UpdateWorkplaceAfterStaffChangesService,
     ) as UpdateWorkplaceAfterStaffChangesService;
 
-    const dateToday = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-
     return {
       component,
       routerSpy,
@@ -122,7 +122,7 @@ fdescribe('UpdateStartersComponent', () => {
       expect(revealText).toBeTruthy();
     });
 
-    it('should show a warning text to remind about subtract or remove vacancies', async () => {
+    it('should show a warning text to remind user to subtract or remove starters', async () => {
       const { getByTestId, dateToday } = await setup();
       const warningText = getByTestId('warning-text');
       const expectedTextContent = `Remember to SUBTRACT or REMOVE any staff who started before ${dateToday}.`;
@@ -148,8 +148,8 @@ fdescribe('UpdateStartersComponent', () => {
     it('should show a radio button for "No", and another for "I do not know"', async () => {
       const { getByLabelText } = await setup();
 
-      expect(getByLabelText('There are no current staff vacancies')).toBeTruthy();
-      expect(getByLabelText('I do not know if there are any current staff vacancies')).toBeTruthy();
+      expect(getByLabelText(radioButtonLabels.No)).toBeTruthy();
+      expect(getByLabelText(radioButtonLabels.DoNotKnow)).toBeTruthy();
     });
 
     it('should show a "Save and return" CTA button and a Cancel link', async () => {

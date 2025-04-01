@@ -46,16 +46,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public totalNumberDescription = 'Total number of vacancies';
   public revealText: string;
   public reminderText: string;
-  public radioButtonOptions = [
-    {
-      label: 'There are no current staff vacancies',
-      value: jobOptionsEnum.NONE,
-    },
-    {
-      label: 'I do not know if there are any current staff vacancies',
-      value: jobOptionsEnum.DONT_KNOW,
-    },
-  ];
+  public radioButtonOptions: { label: string; value: jobOptionsEnum }[];
   public messageWhenNoJobRoleSelected = {
     None: 'There are no current staff vacancies.',
     DoNotKnow: 'You do not know if there are any current staff vacancies.',
@@ -93,15 +84,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  protected setupTexts(): void {
-    if (this.isAFreshWorkplace) {
-      this.heading = 'Add your current staff vacancies';
-      this.addJobRoleButtonText = 'Add job roles';
-    } else {
-      this.heading = 'Update your current staff vacancies';
-      this.addJobRoleButtonText = 'Add more job roles';
-    }
-  }
+  protected setupTexts(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group(

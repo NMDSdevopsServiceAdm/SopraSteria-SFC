@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { jobOptionsEnum } from '@core/model/establishment.model';
 import {
   UpdateStartersLeaversVacanciesDirective,
 } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
@@ -14,6 +15,16 @@ export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDire
   public revealText =
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
   public reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are <strong>no longer vacancies</strong>.`;
+  public radioButtonOptions = [
+    {
+      label: 'There are no current staff vacancies',
+      value: jobOptionsEnum.NONE,
+    },
+    {
+      label: 'I do not know if there are any current staff vacancies',
+      value: jobOptionsEnum.DONT_KNOW,
+    },
+  ];
 
   protected setupTexts(): void {
     if (this.isAFreshWorkplace) {
