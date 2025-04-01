@@ -164,15 +164,15 @@ fdescribe('UpdateStartersComponent', () => {
         const { getByRole } = await setup({ workplace: mockFreshWorkplace });
         const heading = getByRole('heading', { level: 1 });
 
-        expect(heading.textContent).toEqual('Add your current staff vacancies');
+        expect(heading.textContent).toEqual(`Add the number of staff who've started SINCE ${dateToday}`);
       });
 
-      it('should not show the reminder text for subtract or remove vacancies', async () => {
+      it('should not show the reminder text for subtracting or removing starters', async () => {
         const { queryByTestId, queryByText } = await setup({ workplace: mockFreshWorkplace });
 
         const warningText = queryByTestId('warning-text');
         expect(warningText).toBeFalsy();
-        expect(queryByText('Remember to SUBTRACT or REMOVE any that are no longer vacancies.')).toBeFalsy();
+        expect(queryByText(`Remember to SUBTRACT or REMOVE any staff who started before ${dateToday}.`)).toBeFalsy();
       });
 
       it('should show "Add job roles" as the text of add job role button', async () => {
