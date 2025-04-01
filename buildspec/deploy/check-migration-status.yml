@@ -1,6 +1,9 @@
 version: 0.2
 
 phases:
+  env:
+    shell: bash
+
   pre_build:
     commands:
       - if [[ $SELECTED_ENVIRONMENT == "staging" ]]; then exit 0; else exit 1; fi
