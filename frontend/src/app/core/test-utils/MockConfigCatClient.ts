@@ -47,11 +47,6 @@ export const mockConfigCatClient = {
         return resolve(false);
       });
     }
-    if (flagName === 'wdfNewDesign') {
-      return new Promise((resolve) => {
-        return resolve(false);
-      });
-    }
     if (flagName === 'homePageNewDesign') {
       return new Promise((resolve) => {
         return resolve(true);
