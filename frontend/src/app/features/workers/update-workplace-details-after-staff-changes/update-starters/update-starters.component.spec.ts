@@ -16,16 +16,19 @@ import { of, throwError } from 'rxjs';
 import { UpdateStartersComponent } from './update-starters.component';
 
 fdescribe('UpdateStartersComponent', () => {
-  const dateToday = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const today = new Date();
+  today.setFullYear(today.getFullYear() - 1);
+
+  const todayOneYearAgo = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const radioButtonLabels = {
-    No: `No staff started on or after ${dateToday}`,
-    DoNotKnow: `I do not know how many staff started on or after ${dateToday}`,
+    No: `No staff started on or after ${todayOneYearAgo}`,
+    DoNotKnow: `I do not know how many staff started on or after ${todayOneYearAgo}`,
   };
   const messageWhenNoJobRoleSelected = {
-    None: `No staff started on or after ${dateToday}.`,
-    DoNotKnow: `You do not know how many staff started on or after ${dateToday}.`,
-    Default: `You've not added any staff who've started since ${dateToday}.`,
+    None: `No staff started on or after ${todayOneYearAgo}.`,
+    DoNotKnow: `You do not know how many staff started on or after ${todayOneYearAgo}.`,
+    Default: `You've not added any staff who've started since ${todayOneYearAgo}.`,
   };
 
   const mockVacancies: Vacancy[] = [
@@ -98,7 +101,6 @@ fdescribe('UpdateStartersComponent', () => {
       updateJobsSpy,
       setStateSpy,
       updateWorkplaceAfterStaffChangesService,
-      dateToday,
     };
   };
 
@@ -109,10 +111,10 @@ fdescribe('UpdateStartersComponent', () => {
 
   describe('rendering', () => {
     it('should show a page heading', async () => {
-      const { getByRole, dateToday } = await setup();
+      const { getByRole } = await setup();
       const heading = getByRole('heading', { level: 1 });
 
-      expect(heading.textContent).toEqual(`Update the number of staff who've started SINCE ${dateToday}`);
+      expect(heading.textContent).toEqual(`Update the number of staff who've started SINCE ${todayOneYearAgo}`);
     });
 
     it('should show a reveal text for "Why we ask for this information"', async () => {
@@ -128,9 +130,9 @@ fdescribe('UpdateStartersComponent', () => {
     });
 
     it('should show a warning text to remind user to subtract or remove starters', async () => {
-      const { getByTestId, dateToday } = await setup();
+      const { getByTestId } = await setup();
       const warningText = getByTestId('warning-text');
-      const expectedTextContent = `Remember to SUBTRACT or REMOVE any staff who started before ${dateToday}.`;
+      const expectedTextContent = `Remember to SUBTRACT or REMOVE any staff who started before ${todayOneYearAgo}.`;
 
       expect(warningText.textContent).toContain(expectedTextContent);
     });
@@ -176,7 +178,7 @@ fdescribe('UpdateStartersComponent', () => {
         const { getByRole } = await setup({ workplace: mockFreshWorkplace });
         const heading = getByRole('heading', { level: 1 });
 
-        expect(heading.textContent).toEqual(`Add the number of staff who've started SINCE ${dateToday}`);
+        expect(heading.textContent).toEqual(`Add the number of staff who've started SINCE ${todayOneYearAgo}`);
       });
 
       it('should not show the reminder text for subtracting or removing starters', async () => {
@@ -184,7 +186,9 @@ fdescribe('UpdateStartersComponent', () => {
 
         const warningText = queryByTestId('warning-text');
         expect(warningText).toBeFalsy();
-        expect(queryByText(`Remember to SUBTRACT or REMOVE any staff who started before ${dateToday}.`)).toBeFalsy();
+        expect(
+          queryByText(`Remember to SUBTRACT or REMOVE any staff who started before ${todayOneYearAgo}.`),
+        ).toBeFalsy();
       });
 
       it('should show "Add job roles" as the text of add job role button', async () => {

@@ -19,32 +19,39 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
   public serverErrorMessage = 'Failed to update starters';
 
   protected setupTexts(): void {
-    const dateToday = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const todayOneYearAgo = this.getDateForOneYearAgo();
 
     if (!this.questionPreviouslyAnswered) {
-      this.heading = `Add the number of staff who've started SINCE ${dateToday}`;
+      this.heading = `Add the number of staff who've started SINCE ${todayOneYearAgo}`;
       this.addJobRoleButtonText = 'Add job roles';
     } else {
-      this.heading = `Update the number of staff who've started SINCE ${dateToday}`;
+      this.heading = `Update the number of staff who've started SINCE ${todayOneYearAgo}`;
       this.addJobRoleButtonText = 'Add more job roles';
     }
 
-    this.reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any staff who started <strong>before ${dateToday}</strong>.`;
+    this.reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any staff who started <strong>before ${todayOneYearAgo}</strong>.`;
     this.radioButtonOptions = [
       {
-        label: `No staff started on or after ${dateToday}`,
+        label: `No staff started on or after ${todayOneYearAgo}`,
         value: jobOptionsEnum.NONE,
       },
       {
-        label: `I do not know how many staff started on or after ${dateToday}`,
+        label: `I do not know how many staff started on or after ${todayOneYearAgo}`,
         value: jobOptionsEnum.DONT_KNOW,
       },
     ];
 
     this.messageWhenNoJobRoleSelected = {
-      None: `No staff started on or after ${dateToday}.`,
-      DoNotKnow: `You do not know how many staff started on or after ${dateToday}.`,
-      Default: `You've not added any staff who've started since ${dateToday}.`,
+      None: `No staff started on or after ${todayOneYearAgo}.`,
+      DoNotKnow: `You do not know how many staff started on or after ${todayOneYearAgo}.`,
+      Default: `You've not added any staff who've started since ${todayOneYearAgo}.`,
     };
+  }
+
+  private getDateForOneYearAgo(): string {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 1);
+
+    return today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 }
