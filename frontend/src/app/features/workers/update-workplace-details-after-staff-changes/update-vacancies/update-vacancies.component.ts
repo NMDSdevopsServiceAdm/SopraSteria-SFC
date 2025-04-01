@@ -5,7 +5,9 @@ import {
 
 @Component({
   selector: 'app-update-vacancies',
-  templateUrl: './update-vacancies.component.html',
-  styleUrl: './update-vacancies.component.scss',
+  templateUrl:
+    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+  styleUrl:
+    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.scss',
 })
 export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDirective {}
