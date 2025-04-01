@@ -496,29 +496,29 @@ fdescribe('UpdateStartersComponent', () => {
         {
           inputValue: '',
           expectedErrorMessage: {
-            summaryBox: 'Enter the number of current staff vacancies or remove care worker',
-            inline: 'Enter the number of current staff vacancies or remove care worker',
+            summaryBox: 'Enter the number of starters or remove care worker',
+            inline: 'Enter the number of starters or remove care worker',
           },
         },
         {
           inputValue: '0',
           expectedErrorMessage: {
-            summaryBox: 'Number of vacancies must be between 1 and 999 (care worker)',
-            inline: 'Number of vacancies must be between 1 and 999',
+            summaryBox: 'Number of starters must be between 1 and 999 (care worker)',
+            inline: 'Number of starters must be between 1 and 999',
           },
         },
         {
           inputValue: 'apple',
           expectedErrorMessage: {
-            summaryBox: 'Number of vacancies must be between 1 and 999 (care worker)',
-            inline: 'Number of vacancies must be between 1 and 999',
+            summaryBox: 'Number of starters must be between 1 and 999 (care worker)',
+            inline: 'Number of starters must be between 1 and 999',
           },
         },
         {
           inputValue: '9999',
           expectedErrorMessage: {
-            summaryBox: 'Number of vacancies must be between 1 and 999 (care worker)',
-            inline: 'Number of vacancies must be between 1 and 999',
+            summaryBox: 'Number of starters must be between 1 and 999 (care worker)',
+            inline: 'Number of starters must be between 1 and 999',
           },
         },
       ];
@@ -554,10 +554,10 @@ fdescribe('UpdateStartersComponent', () => {
         fixture.detectChanges();
 
         expectErrorMessageAppears(
-          'Number of vacancies must be between 1 and 999 (registered nurse)',
-          'Number of vacancies must be between 1 and 999',
+          'Number of starters must be between 1 and 999 (registered nurse)',
+          'Number of starters must be between 1 and 999',
         );
-        expectErrorMessageAppears('Enter the number of current staff vacancies or remove social worker');
+        expectErrorMessageAppears('Enter the number of starters or remove social worker');
       });
 
       it('should still show the correct error messages even if some job roles were removed after submit', async () => {
@@ -574,10 +574,10 @@ fdescribe('UpdateStartersComponent', () => {
         fixture.detectChanges();
 
         expectErrorMessageAppears(
-          'Number of vacancies must be between 1 and 999 (registered nurse)',
-          'Number of vacancies must be between 1 and 999',
+          'Number of starters must be between 1 and 999 (registered nurse)',
+          'Number of starters must be between 1 and 999',
         );
-        expectErrorMessageAppears('Enter the number of current staff vacancies or remove social worker');
+        expectErrorMessageAppears('Enter the number of starters or remove social worker');
       });
 
       it('should show error messages when no job roles were added and user did not chose "No" or "Do not know"', async () => {
@@ -585,7 +585,7 @@ fdescribe('UpdateStartersComponent', () => {
           workplace: mockFreshWorkplace,
         });
         const expectedErrorMessage1 = 'Add a job role';
-        const expectedErrorMessage2 = 'Select there are no current staff vacancies or do not know';
+        const expectedErrorMessage2 = 'Select there are no starters or do not know';
 
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
@@ -616,10 +616,10 @@ fdescribe('UpdateStartersComponent', () => {
         fixture.detectChanges();
 
         expectErrorMessageAppears(
-          'Number of vacancies must be between 1 and 999 (care worker)',
-          'Number of vacancies must be between 1 and 999',
+          'Number of starters must be between 1 and 999 (care worker)',
+          'Number of starters must be between 1 and 999',
         );
-        expectErrorMessageAppears('Select there are no current staff vacancies or do not know');
+        expectErrorMessageAppears('Select there are no starters or do not know');
         expect(queryByText('Add a job role')).toBeFalsy();
 
         expect(updateJobsSpy).not.toHaveBeenCalled();
@@ -642,7 +642,7 @@ fdescribe('UpdateStartersComponent', () => {
 
         fixture.detectChanges();
 
-        expect(queryByText('Select there are no current staff vacancies or do not know')).toBeFalsy();
+        expect(queryByText('Select there are no starters or do not know')).toBeFalsy();
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
 
@@ -663,7 +663,7 @@ fdescribe('UpdateStartersComponent', () => {
 
         fixture.detectChanges();
 
-        expectErrorMessageAppears('Select there are no current staff vacancies or do not know');
+        expectErrorMessageAppears('Select there are no starters or do not know');
 
         await fillInValueForJobRole('Care worker', '1');
         await fillInValueForJobRole('Registered nurse', '2');
@@ -672,7 +672,7 @@ fdescribe('UpdateStartersComponent', () => {
 
         fixture.detectChanges();
 
-        expect(queryByText('Select there are no current staff vacancies or do not know')).toBeFalsy();
+        expect(queryByText('Select there are no starters or do not know')).toBeFalsy();
         expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, {
           vacancies: [
             { jobId: 10, total: 1 },

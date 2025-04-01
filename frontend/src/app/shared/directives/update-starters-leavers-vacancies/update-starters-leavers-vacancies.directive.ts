@@ -48,7 +48,11 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public reminderText: string;
   public radioButtonOptions: { label: string; value: jobOptionsEnum }[];
   public messageWhenNoJobRoleSelected: { None: string; DoNotKnow: string; Default: string };
+
   public serverErrorMessage: string;
+  public noOrDoNotKnowErrorMessage: string;
+  public numberRequiredErrorMessage: string;
+  public validNumberErrorMessage: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -158,7 +162,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
         type: [
           {
             name: 'required',
-            message: 'Select there are no current staff vacancies or do not know',
+            message: this.noOrDoNotKnowErrorMessage,
           },
         ],
       },
@@ -186,15 +190,15 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
     switch (errorType) {
       case 'required': {
-        return `Enter the number of current staff vacancies or remove ${jobRoleTitleInLowerCase}`;
+        return `${this.numberRequiredErrorMessage} ${jobRoleTitleInLowerCase}`;
       }
       case 'min':
       case 'max':
       case 'pattern': {
         if (inline) {
-          return `Number of vacancies must be between 1 and 999`;
+          return this.validNumberErrorMessage;
         }
-        return `Number of vacancies must be between 1 and 999 (${jobRoleTitleInLowerCase})`;
+        return `${this.validNumberErrorMessage} (${jobRoleTitleInLowerCase})`;
       }
     }
   }

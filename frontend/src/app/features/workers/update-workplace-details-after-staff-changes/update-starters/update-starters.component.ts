@@ -16,7 +16,11 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
   public tableTitle = 'Starters in the last 12 months';
   public revealText =
     "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
+
   public serverErrorMessage = 'Failed to update starters';
+  public noOrDoNotKnowErrorMessage = 'Select there are no starters or do not know';
+  public numberRequiredErrorMessage = 'Enter the number of starters or remove';
+  public validNumberErrorMessage = 'Number of starters must be between 1 and 999';
 
   protected setupTexts(): void {
     const todayOneYearAgo = this.getDateForOneYearAgo();

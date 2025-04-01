@@ -17,7 +17,12 @@ export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDire
   public reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are <strong>no longer vacancies</strong>.`;
   public tableTitle = 'Current staff vacancies';
   public totalNumberDescription = 'Total number of vacancies';
+
   public serverErrorMessage = 'Failed to update current staff vacancies';
+  public noOrDoNotKnowErrorMessage = 'Select there are no current staff vacancies or do not know';
+  public numberRequiredErrorMessage = 'Enter the number of current staff vacancies or remove';
+  public validNumberErrorMessage = 'Number of vacancies must be between 1 and 999';
+
   public radioButtonOptions = [
     {
       label: 'There are no current staff vacancies',
