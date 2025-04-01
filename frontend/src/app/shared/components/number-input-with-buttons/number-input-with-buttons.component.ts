@@ -2,6 +2,8 @@ import { Component, ElementRef, Input, ViewChild, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { inRange } from 'lodash';
 
+type OnChangeFunction = (newValue: number | string) => void;
+
 @Component({
   selector: 'app-number-input-with-buttons',
   templateUrl: './number-input-with-buttons.component.html',
@@ -28,7 +30,7 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor, On
   public touched = false;
   public disabled = false;
   private onTouched = () => {};
-  private onChange = (_newValue: number | string) => {};
+  private onChangeFunctions: Array<OnChangeFunction> = [];
 
   ngOnInit(): void {
     this.min = Number(this.min);
@@ -103,8 +105,12 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor, On
     return !inRange(newValue, this.min - 1, this.max + 1);
   }
 
-  public registerOnChange(fn: (newValue: number) => void): void {
-    this.onChange = fn;
+  private onChange = (newValue: number | string) => {
+    this.onChangeFunctions.forEach((fn) => fn(newValue));
+  };
+
+  public registerOnChange(fn: OnChangeFunction): void {
+    this.onChangeFunctions.push(fn);
   }
 
   public registerOnTouched(fn: () => void): void {
