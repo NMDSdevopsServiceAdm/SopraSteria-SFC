@@ -17,6 +17,12 @@ export class SelectJobRolesToAddComponent implements OnInit {
   @ViewChild('accordion') accordion: AccordionGroupComponent;
 
   public jobRoleType: JobRoleType;
+  private selectedFieldStatesInService = {
+    [JobRoleType.Vacancies]: 'selectedVacancies',
+    [JobRoleType.Starters]: 'selectedStarters',
+    [JobRoleType.Leavers]: 'selectedLeavers',
+  };
+  private selectedFieldState: string;
 
   public form: UntypedFormGroup;
   public submitted = false;
@@ -52,6 +58,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
 
   private setupJobRoleType(): void {
     this.jobRoleType = this.route.snapshot?.data?.jobRoleType;
+    this.selectedFieldState = this.selectedFieldStatesInService[this.jobRoleType];
   }
 
   private setupForm(): void {
@@ -65,11 +72,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
   }
 
   private prefill(): void {
-    switch (this.jobRoleType) {
-      case JobRoleType.Vacancies: {
-        this.prefillData = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
-      }
-    }
+    this.prefillData = this.updateWorkplaceAfterStaffChangesService[this.selectedFieldState] || [];
 
     this.disabledJobIds = this.prefillData.map((jobRole) => jobRole.jobId) ?? [];
     this.jobGroupsToOpenAtStart = this.jobGroups
@@ -109,11 +112,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
   private storeUpdatedJobRoles(): void {
     const updatedJobRoles = this.getUpdatedJobRoles();
 
-    switch (this.jobRoleType) {
-      case JobRoleType.Vacancies: {
-        this.updateWorkplaceAfterStaffChangesService.selectedVacancies = updatedJobRoles;
-      }
-    }
+    this.updateWorkplaceAfterStaffChangesService[this.selectedFieldState] = updatedJobRoles;
   }
 
   private getUpdatedJobRoles(): Array<Vacancy | Starter | Leaver> {
@@ -128,11 +127,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
   }
 
   private returnToPreviousPage(): void {
-    switch (this.jobRoleType) {
-      case JobRoleType.Vacancies: {
-        this.router.navigate(['../update-vacancies'], { relativeTo: this.route });
-      }
-    }
+    this.router.navigate([`../update-${this.jobRoleType}`], { relativeTo: this.route });
   }
 }
 

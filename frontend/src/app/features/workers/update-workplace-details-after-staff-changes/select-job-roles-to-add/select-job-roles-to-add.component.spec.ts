@@ -1,7 +1,7 @@
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Vacancy } from '@core/model/establishment.model';
+import { Starter, Vacancy } from '@core/model/establishment.model';
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { MockJobRoles } from '@core/test-utils/MockJobService';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
@@ -16,7 +16,8 @@ fdescribe('SelectJobRolesToAddComponent', () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setup = async (override: any = {}) => {
-    const preselectedVacancies: Vacancy[] = override.preselectedVacancies ?? [];
+    const selectedVacancies: Vacancy[] = override.preselectedVacancies ?? [];
+    const selectedStarters: Starter[] = override.preselectedStarters ?? [];
 
     const setupTools = await render(SelectJobRolesToAddComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -36,7 +37,7 @@ fdescribe('SelectJobRolesToAddComponent', () => {
         },
         {
           provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedVacancies: preselectedVacancies }),
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedVacancies, selectedStarters }),
         },
       ],
     });
@@ -69,161 +70,168 @@ fdescribe('SelectJobRolesToAddComponent', () => {
       preselectedField: 'preselectedVacancies',
       selectedField: 'selectedVacancies',
     },
+    {
+      jobRoleType: JobRoleType.Starters,
+      preselectedField: 'preselectedStarters',
+      selectedField: 'selectedStarters',
+    },
   ];
 
   pageStates.forEach(({ jobRoleType, selectedField, preselectedField }) => {
-    describe('rendering', () => {
-      it('should display a page heading', async () => {
-        const { getByRole } = await setup({ jobRoleType });
-        const heading = getByRole('heading', { level: 1 });
+    describe(`${jobRoleType} version of page`, () => {
+      describe('rendering', () => {
+        it('should display a page heading', async () => {
+          const { getByRole } = await setup({ jobRoleType });
+          const heading = getByRole('heading', { level: 1 });
 
-        expect(heading.textContent).toEqual(`Select job roles for the ${jobRoleType} you want to add`);
-      });
-
-      it('should display a text description', async () => {
-        const { getByText } = await setup({ jobRoleType });
-
-        const expectedText = `You can review the number of ${jobRoleType} for each role after you click Continue.`;
-
-        expect(getByText(expectedText)).toBeTruthy();
-      });
-
-      describe('accordion', () => {
-        it('should render an accordion for job role selection', async () => {
-          const { getByTestId, getByText } = await setup({ jobRoleType });
-
-          expect(getByTestId('selectJobRolesAccordion')).toBeTruthy();
-          expect(getByText('Show all job roles')).toBeTruthy();
+          expect(heading.textContent).toEqual(`Select job roles for the ${jobRoleType} you want to add`);
         });
 
-        it('should render an accordion section for each job role group', async () => {
+        it('should display a text description', async () => {
           const { getByText } = await setup({ jobRoleType });
 
-          expect(getByText('Care providing roles')).toBeTruthy();
-          expect(getByText('Professional and related roles')).toBeTruthy();
+          const expectedText = `You can review the number of ${jobRoleType} for each role after you click Continue.`;
+
+          expect(getByText(expectedText)).toBeTruthy();
         });
 
-        it('should render a checkbox for each job role', async () => {
-          const { getByRole } = await setup({ jobRoleType });
+        describe('accordion', () => {
+          it('should render an accordion for job role selection', async () => {
+            const { getByTestId, getByText } = await setup({ jobRoleType });
 
-          mockAvailableJobs.forEach((job) => {
-            const checkbox = getByRole('checkbox', { name: job.title });
-            expect(checkbox).toBeTruthy();
+            expect(getByTestId('selectJobRolesAccordion')).toBeTruthy();
+            expect(getByText('Show all job roles')).toBeTruthy();
+          });
+
+          it('should render an accordion section for each job role group', async () => {
+            const { getByText } = await setup({ jobRoleType });
+
+            expect(getByText('Care providing roles')).toBeTruthy();
+            expect(getByText('Professional and related roles')).toBeTruthy();
+          });
+
+          it('should render a checkbox for each job role', async () => {
+            const { getByRole } = await setup({ jobRoleType });
+
+            mockAvailableJobs.forEach((job) => {
+              const checkbox = getByRole('checkbox', { name: job.title });
+              expect(checkbox).toBeTruthy();
+            });
+          });
+
+          it('should render the checkbox as disabled if the job role is already selected before', async () => {
+            const preselected = [
+              {
+                jobId: 10,
+                title: 'Care worker',
+                total: 3,
+              },
+            ];
+            const { getByLabelText } = await setup({
+              jobRoleType,
+              [preselectedField]: preselected,
+            });
+
+            const careWorkerCheckbox = getByLabelText('Care worker (role already added)') as HTMLInputElement;
+            expect(careWorkerCheckbox.getAttributeNames()).toContain('disabled');
+          });
+
+          it('should expand the accordion for job groups that have job roles selected before', async () => {
+            const preselected = [
+              {
+                jobId: 10,
+                title: 'Care worker',
+                total: 3,
+              },
+            ];
+
+            const { getByLabelText } = await setup({
+              jobRoleType,
+              [preselectedField]: preselected,
+            });
+
+            const accordionSection = getByLabelText('Care providing roles');
+            expect(within(accordionSection).getByText('Hide')).toBeTruthy(); // is expanded
           });
         });
 
-        it('should render the checkbox as disabled if the job role is already selected before', async () => {
-          const preselected = [
-            {
-              jobId: 10,
-              title: 'Care worker',
-              total: 3,
-            },
-          ];
-          const { getByLabelText } = await setup({
-            jobRoleType,
-            [preselectedField]: preselected,
-          });
-
-          const careWorkerCheckbox = getByLabelText('Care worker (role already added)') as HTMLInputElement;
-          expect(careWorkerCheckbox.getAttributeNames()).toContain('disabled');
-        });
-
-        it('should expand the accordion for job groups that have job roles selected before', async () => {
-          const preselected = [
-            {
-              jobId: 10,
-              title: 'Care worker',
-              total: 3,
-            },
-          ];
-
-          const { getByLabelText } = await setup({
-            jobRoleType,
-            [preselectedField]: preselected,
-          });
-
-          const accordionSection = getByLabelText('Care providing roles');
-          expect(within(accordionSection).getByText('Hide')).toBeTruthy(); // is expanded
+        it('should render a "Continue" CTA button and a cancel button', async () => {
+          const { getByRole, getByText } = await setup({ jobRoleType });
+          expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
+          expect(getByText('Cancel')).toBeTruthy();
         });
       });
 
-      it('should render a "Continue" CTA button and a cancel button', async () => {
-        const { getByRole, getByText } = await setup({ jobRoleType });
-        expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
-        expect(getByText('Cancel')).toBeTruthy();
-      });
-    });
+      describe('form submit', () => {
+        const preselected = [
+          {
+            jobId: 10,
+            title: 'Care worker',
+            total: 3,
+          },
+        ];
 
-    describe('form submit', () => {
-      const preselected = [
-        {
-          jobId: 10,
-          title: 'Care worker',
-          total: 3,
-        },
-      ];
+        describe('on Success', () => {
+          it(`should update the selected ${jobRoleType} stored in service`, async () => {
+            const { getByText, updateWorkplaceAfterStaffChangesService } = await setup({
+              jobRoleType,
+              [preselectedField]: preselected,
+            });
+            userEvent.click(getByText('Show all job roles'));
+            userEvent.click(getByText('Registered nurse'));
+            userEvent.click(getByText('Social worker'));
 
-      describe('on Success', () => {
-        it('should update the selected vacancies stored in service', async () => {
-          const { getByText, updateWorkplaceAfterStaffChangesService } = await setup({
-            jobRoleType,
-            [preselectedField]: preselected,
+            userEvent.click(getByText('Continue'));
+
+            const expectedUpdatedField = [
+              {
+                jobId: 10,
+                title: 'Care worker',
+                total: 3,
+              },
+              {
+                jobId: 23,
+                title: 'Registered nurse',
+                total: 1,
+              },
+              {
+                jobId: 27,
+                title: 'Social worker',
+                total: 1,
+              },
+            ];
+
+            expect(updateWorkplaceAfterStaffChangesService[selectedField]).toEqual(expectedUpdatedField);
           });
-          userEvent.click(getByText('Show all job roles'));
-          userEvent.click(getByText('Registered nurse'));
-          userEvent.click(getByText('Social worker'));
 
-          userEvent.click(getByText('Continue'));
+          it(`should navigate to update ${jobRoleType} page after submit`, async () => {
+            const { component, getByText, routerSpy } = await setup({ jobRoleType });
+            userEvent.click(getByText('Show all job roles'));
+            userEvent.click(getByText('Registered nurse'));
 
-          const expectedUpdatedField = [
-            {
-              jobId: 10,
-              title: 'Care worker',
-              total: 3,
-            },
-            {
-              jobId: 23,
-              title: 'Registered nurse',
-              total: 1,
-            },
-            {
-              jobId: 27,
-              title: 'Social worker',
-              total: 1,
-            },
-          ];
+            userEvent.click(getByText('Continue'));
 
-          expect(updateWorkplaceAfterStaffChangesService[selectedField]).toEqual(expectedUpdatedField);
+            // @ts-expect-error: TS2445: Property 'route' is protected
+            expect(routerSpy).toHaveBeenCalledWith([`../update-${jobRoleType}`], { relativeTo: component.route });
+          });
         });
 
-        it('should navigate to update staff vacancy page after submit', async () => {
+        it('should allow user to click continue and return to previous page even if no job role were selected', async () => {
           const { component, getByText, routerSpy } = await setup({ jobRoleType });
-          userEvent.click(getByText('Show all job roles'));
-          userEvent.click(getByText('Registered nurse'));
 
           userEvent.click(getByText('Continue'));
 
           // @ts-expect-error: TS2445: Property 'route' is protected
-          expect(routerSpy).toHaveBeenCalledWith(['../update-vacancies'], { relativeTo: component.route });
+          expect(routerSpy).toHaveBeenCalledWith([`../update-${jobRoleType}`], { relativeTo: component.route });
         });
-      });
 
-      it('should allow user to click continue and return to previous page even if no job role were selected', async () => {
-        const { component, getByText, routerSpy } = await setup({ jobRoleType });
+        it(`should return to the update ${jobRoleType} page when cancel button is clicked`, async () => {
+          const { component, getByText, routerSpy } = await setup({ jobRoleType });
+          userEvent.click(getByText('Cancel'));
 
-        userEvent.click(getByText('Continue'));
-
-        // @ts-expect-error: TS2445: Property 'route' is protected
-        expect(routerSpy).toHaveBeenCalledWith([`../update-${jobRoleType}`], { relativeTo: component.route });
-      });
-
-      it('should return to the update staff vacancy page when cancel button is clicked', async () => {
-        const { component, getByText, routerSpy } = await setup({ jobRoleType });
-        userEvent.click(getByText('Cancel'));
-
-        // @ts-expect-error: TS2445: Property 'route' is protected
-        expect(routerSpy).toHaveBeenCalledWith([`../update-${jobRoleType}`], { relativeTo: component.route });
+          // @ts-expect-error: TS2445: Property 'route' is protected
+          expect(routerSpy).toHaveBeenCalledWith([`../update-${jobRoleType}`], { relativeTo: component.route });
+        });
       });
     });
   });
