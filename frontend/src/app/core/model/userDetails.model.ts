@@ -24,7 +24,6 @@ export interface UserDetails {
   updated?: string;
   updatedBy?: string;
   username?: string;
-  canManageWdfClaims?: boolean;
   lastViewedVacanciesAndTurnoverMessage?: string;
 }
 
@@ -36,7 +35,6 @@ export enum UserStatus {
 export interface UserPermissionsType {
   userTableValue?: string;
   role?: Roles;
-  canManageWdfClaims?: boolean;
   permissionsQuestionValue?: string;
   isPrimary?: boolean;
 }
