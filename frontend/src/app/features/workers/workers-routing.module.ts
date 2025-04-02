@@ -147,6 +147,17 @@ const routes: Routes = [
           title: 'Select job roles to add',
         },
       },
+      {
+        path: 'update-starters-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Starters,
+          title: 'Select job roles to add',
+        },
+      },
     ],
   },
   {
