@@ -22,6 +22,9 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
   public numberRequiredErrorMessage = 'Enter the number of starters or remove';
   public validNumberErrorMessage = 'Number of starters must be between 1 and 999';
 
+  protected slvField = 'starters';
+  protected selectedField = 'selectedStarters';
+
   protected setupTexts(): void {
     const todayOneYearAgo = this.getDateForOneYearAgo();
 

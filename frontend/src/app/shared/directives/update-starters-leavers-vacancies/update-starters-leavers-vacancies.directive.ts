@@ -11,7 +11,7 @@ import {
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { jobOptionsEnum, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
+import { jobOptionsEnum, StarterLeaverVacancy, UpdateJobsRequest } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -33,7 +33,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public serverError = null;
 
   public questionPreviouslyAnswered: boolean = false;
-  public selectedJobRoles: Array<Vacancy> = [];
+  public selectedJobRoles: Array<StarterLeaverVacancy> = [];
   public selectedNoOrDoNotKnow: jobOptionsEnum = null;
   public totalNumber: number = 0;
 
@@ -53,6 +53,9 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public noOrDoNotKnowErrorMessage: string;
   public numberRequiredErrorMessage: string;
   public validNumberErrorMessage: string;
+
+  protected slvField: string;
+  protected selectedField: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -101,8 +104,8 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   }
 
   private prefill(): void {
-    const dataFromJobRoleSelectionPage = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
-    const dataFromDatabase = this.establishmentService.establishment.vacancies;
+    const dataFromJobRoleSelectionPage = this.updateWorkplaceAfterStaffChangesService[this.selectedField];
+    const dataFromDatabase = this.establishmentService.establishment?.[this.slvField];
 
     const dataToPrefillFrom = dataFromJobRoleSelectionPage === null ? dataFromDatabase : dataFromJobRoleSelectionPage;
 
@@ -112,7 +115,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.questionPreviouslyAnswered = dataFromDatabase !== null;
   }
 
-  private prefillFromData(data: string | Vacancy[]): void {
+  private prefillFromData(data: string | StarterLeaverVacancy[]): void {
     if (Array.isArray(data)) {
       this.selectedJobRoles = data;
       return;
@@ -128,7 +131,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     return this.form.get('jobRoleNumbers') as UntypedFormArray;
   }
 
-  private createJobRoleFormControl = (jobRole: Vacancy): void => {
+  private createJobRoleFormControl = (jobRole: StarterLeaverVacancy): void => {
     const initialValue = jobRole.total ?? '';
     this.jobRoleNumbers.push(
       this.formBuilder.control(initialValue, {
@@ -171,7 +174,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.formErrorsMap = [...errorMapForJobRoles, ...otherErrorMap];
   }
 
-  private buildErrorMapForJobRole(jobRole: Vacancy, index: number): ErrorDetails {
+  private buildErrorMapForJobRole(jobRole: StarterLeaverVacancy, index: number): ErrorDetails {
     const errorTypes = ['required', 'min', 'max', 'pattern'];
 
     const errorMap = {
@@ -185,7 +188,11 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     return errorMap;
   }
 
-  protected getErrorMessageForJobRole(jobRole: Vacancy, errorType: string, inline: boolean = false): string {
+  protected getErrorMessageForJobRole(
+    jobRole: StarterLeaverVacancy,
+    errorType: string,
+    inline: boolean = false,
+  ): string {
     const jobRoleTitleInLowerCase = jobRole.title.toLowerCase();
 
     switch (errorType) {
@@ -203,7 +210,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     }
   }
 
-  public getInlineErrorMessageForJobRole(jobRoleWithError: Vacancy, index: number): string {
+  public getInlineErrorMessageForJobRole(jobRoleWithError: StarterLeaverVacancy, index: number): string {
     const errorType = Object.keys(this.jobRoleNumbers.at(index).errors)[0];
     return this.getErrorMessageForJobRole(jobRoleWithError, errorType, true);
   }
@@ -240,9 +247,9 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   public handleAddJobRole = (): void => {
     this.syncSelectedJobRolesNumberWithForm();
-    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = this.selectedJobRoles;
+    this.updateWorkplaceAfterStaffChangesService[this.selectedField] = this.selectedJobRoles;
 
-    this.router.navigate(['../update-vacancies-job-roles'], { relativeTo: this.route });
+    this.router.navigate([`../update-${this.slvField}-job-roles`], { relativeTo: this.route });
   };
 
   public handleClickedNoOrDoNotKnow = (value: jobOptionsEnum): void => {
@@ -259,18 +266,17 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   protected generateUpdateProps(): UpdateJobsRequest {
     if (this.selectedNoOrDoNotKnow) {
-      return { vacancies: this.form.get('noOrDoNotKnow').value };
+      return { [this.slvField]: this.form.get('noOrDoNotKnow').value };
     }
 
-    const updatedVacancies = this.selectedJobRoles.map((job, index) => {
-      const fieldsToUpdate: Vacancy = {
+    const updatedField = this.selectedJobRoles.map((job, index) => {
+      return {
         jobId: Number(job.jobId),
         total: parseInt(this.jobRoleNumbers.value[index]),
       };
-      return fieldsToUpdate;
     });
 
-    return { vacancies: updatedVacancies };
+    return { [this.slvField]: updatedField };
   }
 
   public onSubmit(): void {

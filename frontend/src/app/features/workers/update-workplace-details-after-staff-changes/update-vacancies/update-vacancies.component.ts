@@ -39,6 +39,9 @@ export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDire
     Default: "You've not added any current staff vacancies.",
   };
 
+  protected slvField = 'vacancies';
+  protected selectedField = 'selectedVacancies';
+
   protected setupTexts(): void {
     if (!this.questionPreviouslyAnswered) {
       this.heading = 'Add your current staff vacancies';

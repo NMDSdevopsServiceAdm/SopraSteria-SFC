@@ -3,7 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Establishment, jobOptionsEnum, Vacancy } from '@core/model/establishment.model';
+import { Establishment, jobOptionsEnum, Starter } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -31,7 +31,7 @@ fdescribe('UpdateStartersComponent', () => {
     Default: `You've not added any staff who've started since ${todayOneYearAgo}.`,
   };
 
-  const mockVacancies: Vacancy[] = [
+  const mockStarters: Starter[] = [
     {
       jobId: 23,
       title: 'Registered nurse',
@@ -44,18 +44,18 @@ fdescribe('UpdateStartersComponent', () => {
     },
   ];
 
-  const mockWorkplace = establishmentBuilder({ overrides: { vacancies: mockVacancies } }) as Establishment;
-  const mockWorkplaceWithNoVacancies = establishmentBuilder({ overrides: { vacancies: jobOptionsEnum.NONE } });
-  const mockWorkplaceWithVacanciesNotKnown = establishmentBuilder({
-    overrides: { vacancies: jobOptionsEnum.DONT_KNOW },
+  const mockWorkplace = establishmentBuilder({ overrides: { starters: mockStarters } }) as Establishment;
+  const mockWorkplaceWithNoStarters = establishmentBuilder({ overrides: { starters: jobOptionsEnum.NONE } });
+  const mockWorkplaceWithStartersNotKnown = establishmentBuilder({
+    overrides: { starters: jobOptionsEnum.DONT_KNOW },
   });
 
-  const mockFreshWorkplace = establishmentBuilder({ overrides: { vacancies: null } }) as Establishment;
+  const mockFreshWorkplace = establishmentBuilder({ overrides: { starters: null } }) as Establishment;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setup = async (override: any = {}) => {
-    const workplace = override.workplace ?? mockWorkplaceWithNoVacancies;
-    const selectedVacancies = override.vacanciesFromSelectJobRolePages ?? null;
+    const workplace = override.workplace ?? mockWorkplaceWithNoStarters;
+    const selectedStarters = override.startersFromSelectJobRolePages ?? null;
 
     const setupTools = await render(UpdateStartersComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -63,7 +63,7 @@ fdescribe('UpdateStartersComponent', () => {
         UntypedFormBuilder,
         {
           provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedVacancies }),
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedStarters }),
         },
         {
           provide: EstablishmentService,
@@ -86,7 +86,7 @@ fdescribe('UpdateStartersComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const updateJobsSpy = spyOn(establishmentService, 'updateJobs').and.callFake((uid, data) =>
-      of({ uid, vacancies: data.vacancies }),
+      of({ uid, starters: data.starters }),
     );
     const setStateSpy = spyOn(establishmentService, 'setState').and.callThrough();
 
@@ -204,7 +204,7 @@ fdescribe('UpdateStartersComponent', () => {
       describe('before adding new job roles', () => {
         it('should show a number input and a remove button for every vacancy job role from database', async () => {
           const mockWorkplace = establishmentBuilder({
-            overrides: { vacancies: mockVacancies },
+            overrides: { starters: mockStarters },
           });
           const { getByTestId } = await setup({ workplace: mockWorkplace });
 
@@ -222,7 +222,7 @@ fdescribe('UpdateStartersComponent', () => {
         });
 
         it('should select the "No" radio button and display a message if user previously selected "No"', async () => {
-          const { getByLabelText, getByTestId, getByText } = await setup({ workplace: mockWorkplaceWithNoVacancies });
+          const { getByLabelText, getByTestId, getByText } = await setup({ workplace: mockWorkplaceWithNoStarters });
 
           const radioButton = getByLabelText(radioButtonLabels.No) as HTMLInputElement;
           expect(radioButton.checked).toBe(true);
@@ -233,7 +233,7 @@ fdescribe('UpdateStartersComponent', () => {
 
         it('should select the "No" radio button and display a message if user previously selected "Do not know"', async () => {
           const { getByLabelText, getByTestId, getByText } = await setup({
-            workplace: mockWorkplaceWithVacanciesNotKnown,
+            workplace: mockWorkplaceWithStartersNotKnown,
           });
 
           const radioButton = getByLabelText(radioButtonLabels.DoNotKnow) as HTMLInputElement;
@@ -246,7 +246,7 @@ fdescribe('UpdateStartersComponent', () => {
         describe('after adding new add roles', () => {
           it('should show every vacancy job role that user selected in accordion page', async () => {
             await setup({
-              vacanciesFromSelectJobRolePages: [
+              startersFromSelectJobRolePages: [
                 { jobId: 10, title: 'Care worker', total: 1 },
                 { jobId: 27, title: 'Registered nurse', total: 1 },
               ],
@@ -258,10 +258,10 @@ fdescribe('UpdateStartersComponent', () => {
 
           it('should show no job role selected instead of prefill from backend data, if user did not select any job roles in accordion page', async () => {
             const mockWorkplace = establishmentBuilder({
-              overrides: { vacancies: mockVacancies },
+              overrides: { starters: mockStarters },
             });
             const { queryByText, queryByLabelText, getByTestId } = await setup({
-              vacanciesFromSelectJobRolePages: [],
+              startersFromSelectJobRolePages: [],
               workplace: mockWorkplace,
             });
 
@@ -299,12 +299,12 @@ fdescribe('UpdateStartersComponent', () => {
         fixture.detectChanges();
 
         // @ts-expect-error: TS2341: Property 'route' is private
-        expect(routerSpy).toHaveBeenCalledWith(['../update-vacancies-job-roles'], { relativeTo: component.route });
+        expect(routerSpy).toHaveBeenCalledWith(['../update-starters-job-roles'], { relativeTo: component.route });
       });
 
       it('should store the current job role selections in service', async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: mockVacancies },
+          overrides: { starters: mockStarters },
         });
         const { fixture, getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
           workplace: mockWorkplace,
@@ -315,12 +315,12 @@ fdescribe('UpdateStartersComponent', () => {
 
         fixture.detectChanges();
 
-        expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(mockVacancies);
+        expect(updateWorkplaceAfterStaffChangesService.selectedStarters).toEqual(mockStarters);
       });
 
       it('should bring along any changes made by user in current page', async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: mockVacancies },
+          overrides: { starters: mockStarters },
         });
         const { fixture, getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
           workplace: mockWorkplace,
@@ -334,7 +334,7 @@ fdescribe('UpdateStartersComponent', () => {
 
         fixture.detectChanges();
 
-        expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual([
+        expect(updateWorkplaceAfterStaffChangesService.selectedStarters).toEqual([
           {
             jobId: 27,
             title: 'Social worker',
@@ -347,7 +347,7 @@ fdescribe('UpdateStartersComponent', () => {
     describe('remove button', () => {
       it('should remove a job role from the list when remove button is clicked', async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: mockVacancies },
+          overrides: { starters: mockStarters },
         });
         const { fixture, queryByText, queryByLabelText } = await setup({ workplace: mockWorkplace });
 
@@ -361,7 +361,7 @@ fdescribe('UpdateStartersComponent', () => {
 
       it('should update the total number', async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: mockVacancies },
+          overrides: { starters: mockStarters },
         });
         const { fixture, getByTestId, getByText } = await setup({ workplace: mockWorkplace });
 
@@ -381,7 +381,7 @@ fdescribe('UpdateStartersComponent', () => {
     describe('radio buttons for "No" and "Do not know"', () => {
       it(`should remove all selected job roles when user clicked the radio button for "No"`, async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: mockVacancies },
+          overrides: { starters: mockStarters },
         });
         const { fixture, queryByText, queryByLabelText, getByText, getByLabelText, getByTestId } = await setup({
           workplace: mockWorkplace,
@@ -404,7 +404,7 @@ fdescribe('UpdateStartersComponent', () => {
 
       it(`should remove all selected job roles when user clicked the radio button for "Do not know"`, async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: mockVacancies },
+          overrides: { starters: mockStarters },
         });
         const { fixture, queryByText, queryByLabelText, getByText, getByLabelText, getByTestId } = await setup({
           workplace: mockWorkplace,
@@ -430,7 +430,7 @@ fdescribe('UpdateStartersComponent', () => {
   describe('submit form and validation', () => {
     it('should save the changes in job role selection and number', async () => {
       const mockWorkplace = establishmentBuilder({
-        overrides: { vacancies: mockVacancies },
+        overrides: { starters: mockStarters },
       }) as Establishment;
       const { getByLabelText, getByRole, getByTestId, updateJobsSpy } = await setup({
         workplace: mockWorkplace,
@@ -445,12 +445,12 @@ fdescribe('UpdateStartersComponent', () => {
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
 
-      expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, { vacancies: [{ jobId: 27, total: 10 }] });
+      expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, { starters: [{ jobId: 27, total: 10 }] });
     });
 
     it('should save the vacancy as None if user selected None', async () => {
       const mockWorkplace = establishmentBuilder({
-        overrides: { vacancies: mockVacancies },
+        overrides: { starters: mockStarters },
       }) as Establishment;
       const { getByLabelText, getByRole, updateJobsSpy } = await setup({
         workplace: mockWorkplace,
@@ -460,12 +460,12 @@ fdescribe('UpdateStartersComponent', () => {
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
 
-      expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, { vacancies: jobOptionsEnum.NONE });
+      expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, { starters: jobOptionsEnum.NONE });
     });
 
     it('should navigate to the update-workplace-details page', async () => {
       const mockWorkplace = establishmentBuilder({
-        overrides: { vacancies: mockVacancies },
+        overrides: { starters: mockStarters },
       });
       const { component, routerSpy, getByRole } = await setup({
         workplace: mockWorkplace,
@@ -477,9 +477,9 @@ fdescribe('UpdateStartersComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
     });
 
-    it('should clear the selectedVacancies value in UpdateWorkplaceAfterStaffChangesService', async () => {
+    it('should clear the selectedStarters value in UpdateWorkplaceAfterStaffChangesService', async () => {
       const { getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
-        vacanciesFromSelectJobRolePages: [
+        startersFromSelectJobRolePages: [
           { jobId: 10, title: 'Care worker', total: 1 },
           { jobId: 27, title: 'Registered nurse', total: 1 },
         ],
@@ -488,7 +488,7 @@ fdescribe('UpdateStartersComponent', () => {
       await fillInValueForJobRole('Care worker', '10');
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
-      expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(null);
+      expect(updateWorkplaceAfterStaffChangesService.selectedStarters).toEqual(null);
     });
 
     describe('validation', () => {
@@ -526,7 +526,7 @@ fdescribe('UpdateStartersComponent', () => {
       testCases.forEach(({ inputValue, expectedErrorMessage }) => {
         it(`should show an error when user input "${inputValue}" for a job role`, async () => {
           const { fixture, getByRole, updateJobsSpy } = await setup({
-            vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
+            startersFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
           });
 
           await fillInValueForJobRole('Care worker', inputValue);
@@ -542,7 +542,7 @@ fdescribe('UpdateStartersComponent', () => {
 
       it('should still show the correct error messages even if some job roles were removed before submit', async () => {
         const { fixture, getByRole } = await setup({
-          vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 3 }, ...mockVacancies],
+          startersFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 3 }, ...mockStarters],
         });
 
         await fillInValueForJobRole('Registered nurse', '9999');
@@ -562,7 +562,7 @@ fdescribe('UpdateStartersComponent', () => {
 
       it('should still show the correct error messages even if some job roles were removed after submit', async () => {
         const { fixture, getByRole } = await setup({
-          vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 3 }, ...mockVacancies],
+          startersFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 3 }, ...mockStarters],
         });
 
         await fillInValueForJobRole('Registered nurse', '9999');
@@ -607,7 +607,7 @@ fdescribe('UpdateStartersComponent', () => {
 
       it('should show error messages user entered "0" for a job role and did not chose "No" or "Do not know"', async () => {
         const { fixture, getByRole, updateJobsSpy, queryByText } = await setup({
-          vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
+          startersFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
         });
 
         await fillInValueForJobRole('Care worker', '0');
@@ -627,7 +627,7 @@ fdescribe('UpdateStartersComponent', () => {
 
       it('should not show the "Select there are no ..." error message if at least one job role is added with a valid number', async () => {
         const { fixture, getByRole, queryByText, updateJobsSpy } = await setup({
-          vacanciesFromSelectJobRolePages: [
+          startersFromSelectJobRolePages: [
             { jobId: 10, title: 'Care worker', total: 1 },
             { jobId: 23, title: 'Registered nurse', total: 1 },
             { jobId: 27, title: 'Social worker', total: 1 },
@@ -649,7 +649,7 @@ fdescribe('UpdateStartersComponent', () => {
       it('should clear the "Select there are no ..." error and allow submit if all job roles are filled with a valid number', async () => {
         const { fixture, getByRole, queryByText, updateJobsSpy } = await setup({
           workplace: mockWorkplace,
-          vacanciesFromSelectJobRolePages: [
+          startersFromSelectJobRolePages: [
             { jobId: 10, title: 'Care worker', total: 1 },
             { jobId: 23, title: 'Registered nurse', total: 1 },
             { jobId: 27, title: 'Social worker', total: 1 },
@@ -674,7 +674,7 @@ fdescribe('UpdateStartersComponent', () => {
 
         expect(queryByText('Select there are no starters or do not know')).toBeFalsy();
         expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, {
-          vacancies: [
+          starters: [
             { jobId: 10, total: 1 },
             { jobId: 23, total: 2 },
             { jobId: 27, total: 3 },
@@ -714,7 +714,7 @@ fdescribe('UpdateStartersComponent', () => {
     expect(updateJobsSpy).not.toHaveBeenCalled();
     // @ts-expect-error: TS2341: Property 'route' is private
     expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
-    expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(null);
+    expect(updateWorkplaceAfterStaffChangesService.selectedStarters).toEqual(null);
   });
 
   const fillInValueForJobRole = async (jobRoleTitle: string, inputText: string) => {
