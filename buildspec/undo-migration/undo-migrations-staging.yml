@@ -16,6 +16,6 @@ phases:
       - export DB_PASS=$(aws ssm get-parameter --name $DB_PASS_PATH --with-decryption --query Parameter.Value --output text)
       - export DB_NAME=$(aws ssm get-parameter --name $DB_NAME_PATH --with-decryption --query Parameter.Value --output text)
       - export NODE_ENV=$(aws ssm get-parameter --name $NODE_ENV_PATH --with-decryption --query Parameter.Value --output text)
-      - echo Reverting migration...
+      - echo Reverting migration of file name: $MIGRATION_FILE_NAME
       # - npm run db:migrate:undo -- --name $MIGRATION_FILE_NAME
       - npm run db:migrate:status
