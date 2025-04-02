@@ -21,7 +21,6 @@ describe('createUser', () => {
         phone: '043243242343',
         securityQuestion: 'What is your favourite colour?',
         securityQuestionAnswer: 'Blue',
-        canManageWdfClaims: false,
         isActive: false,
         status: 'PENDING',
         role: 'Edit',

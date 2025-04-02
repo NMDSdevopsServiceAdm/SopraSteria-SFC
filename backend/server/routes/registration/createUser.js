@@ -19,7 +19,6 @@ const saveUserToDatabase = async (userData, newUser, transaction) => {
 const createUser = async (reqUser, establishmentId, transaction) => {
   const userData = {
     ...reqUser,
-    canManageWdfClaims: reqUser.canManageWdfClaims || false,
     isActive: false,
     status: 'PENDING',
     role: 'Edit',

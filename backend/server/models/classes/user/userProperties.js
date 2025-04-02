@@ -10,7 +10,6 @@ const securityQuestionProperty = require('./properties/securityQuestionProperty'
 const securityQuestionAnswerProperty =
   require('./properties/securityQuestionAnswerProperty').UserSecurityQuestionAnswerProperty;
 const roleProperty = require('./properties/roleProperty').UserRoleProperty;
-const canManageWdfClaimsProperty = require('./properties/canManageWdfClaimsProperty').UserCanManageWdfClaimsProperty;
 
 class UserPropertyManager {
   constructor() {
@@ -23,7 +22,6 @@ class UserPropertyManager {
     this._thisManager.registerProperty(roleProperty);
     this._thisManager.registerProperty(securityQuestionProperty);
     this._thisManager.registerProperty(securityQuestionAnswerProperty);
-    this._thisManager.registerProperty(canManageWdfClaimsProperty);
   }
 
   get manager() {

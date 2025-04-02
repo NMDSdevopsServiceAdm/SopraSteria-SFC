@@ -3,8 +3,7 @@ const models = require('../../models');
 
 const getPermissions = async (req) => {
   const rawEstablishmentInfo = await models.establishment.getInfoForPermissions(req.establishmentId);
-  const rawUserInfo = await models.user.getCanManageWdfClaims(req.userUid);
-  const establishmentAndUserInfo = convertEstablishmentAndUserInfo(rawEstablishmentInfo, rawUserInfo);
+  const establishmentAndUserInfo = convertEstablishmentAndUserInfo(rawEstablishmentInfo);
 
   const estabType = getEstablishmentType(req.establishment);
 
@@ -48,11 +47,7 @@ const getViewingPermissions = (dataPermissions = 'None', role, establishmentAndU
   return dataPermissionNone(establishmentAndUserInfo);
 };
 
-const nonePermissions = (establishmentAndUserInfo) =>
-  [_canManageWdfClaims(establishmentAndUserInfo)].filter((item) => item !== undefined);
-
 const readPermissions = (establishmentAndUserInfo) => [
-  ...nonePermissions(establishmentAndUserInfo),
   'canViewEstablishment',
   'canViewWdfReport',
   'canViewUser',
@@ -189,17 +184,13 @@ const _canViewBenchmarks = (establishmentAndUserInfo) =>
 const _canChangeDataOwner = (establishmentAndUserInfo) =>
   !establishmentAndUserInfo.dataOwnershipRequested ? 'canChangeDataOwner' : undefined;
 
-const _canManageWdfClaims = (establishmentAndUserInfo) =>
-  establishmentAndUserInfo.canManageWdfClaims ? 'canManageWdfClaims' : undefined;
-
-const convertEstablishmentAndUserInfo = (rawEstablishmentInfo, rawUserInfo) => {
+const convertEstablishmentAndUserInfo = (rawEstablishmentInfo) => {
   return {
     hasParent: rawEstablishmentInfo.get('hasParent'),
     mainServiceId: rawEstablishmentInfo.mainService.id,
     hasRequestedToBecomeAParent: rawEstablishmentInfo.get('hasRequestedToBecomeAParent'),
     isRegulated: rawEstablishmentInfo.get('IsRegulated'),
     dataOwnershipRequested: rawEstablishmentInfo.dataOwnershipRequested,
-    canManageWdfClaims: rawUserInfo.CanManageWdfClaimsValue,
   };
 };
 

@@ -249,31 +249,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'RegistrationSurveyCompleted',
       },
-      CanManageWdfClaimsValue: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        field: '"CanManageWdfClaimsValue"',
-      },
-      CanManageWdfClaimsSavedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"CanManageWdfClaimsSavedAt"',
-      },
-      CanManageWdfClaimsChangedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: '"CanManageWdfClaimsChangedAt"',
-      },
-      CanManageWdfClaimsSavedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"CanManageWdfClaimsSavedBy"',
-      },
-      CanManageWdfClaimsChangedBy: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"CanManageWdfClaimsChangedBy"',
-      },
       lastViewedVacanciesAndTurnoverMessage: {
         type: DataTypes.DATE,
         allowNull: true,
@@ -330,13 +305,6 @@ module.exports = function (sequelize, DataTypes) {
     return this.findOne({
       where: { id: loginId },
       attributes: ['id'],
-    });
-  };
-
-  User.getCanManageWdfClaims = function (userUid) {
-    return this.findOne({
-      where: { uid: userUid },
-      attributes: ['CanManageWdfClaimsValue'],
     });
   };
 
@@ -458,7 +426,6 @@ module.exports = function (sequelize, DataTypes) {
       PhoneValue: phone,
       UserRoleValue: role,
       isPrimary: false,
-      CanManageWdfClaimsValue: false,
       archived: false,
       uid,
       updatedBy,

@@ -24,10 +24,6 @@ describe('permissions', () => {
       };
     });
 
-    sinon.stub(models.user, 'getCanManageWdfClaims').callsFake(() => {
-      return { CanManageWdfClaimsValue: false };
-    });
-
     req = {
       role: 'Edit',
       parentIsOwner: false,
@@ -572,42 +568,6 @@ describe('permissions', () => {
 
           expect(returnedPermissions).not.to.include('canViewBenchmarks');
         });
-      });
-
-      describe('canManageWdfClaims', async () => {
-        it('should not include canManageWdfClaims in returned array when canManageWdfClaims is false', async () => {
-          const returnedPermissions = await getPermissions(req);
-
-          expect(returnedPermissions).not.to.include('canManageWdfClaims');
-        });
-
-        it('should include canManageWdfClaims in returned array when is Wdf user', async () => {
-          models.user.getCanManageWdfClaims.restore();
-          sinon.stub(models.user, 'getCanManageWdfClaims').callsFake(() => {
-            return { CanManageWdfClaimsValue: true };
-          });
-
-          const returnedPermissions = await getPermissions(req);
-
-          expect(returnedPermissions).to.include('canManageWdfClaims');
-        });
-      });
-    });
-
-    describe('None user', async () => {
-      beforeEach(() => {
-        req.role = 'None';
-      });
-
-      it('should return array with canManageWdfClaims when is Wdf user', async () => {
-        models.user.getCanManageWdfClaims.restore();
-        sinon.stub(models.user, 'getCanManageWdfClaims').callsFake(() => {
-          return { CanManageWdfClaimsValue: true };
-        });
-
-        const returnedPermissions = await getPermissions(req);
-
-        expect(returnedPermissions).to.deep.equal(['canManageWdfClaims']);
       });
     });
   });
