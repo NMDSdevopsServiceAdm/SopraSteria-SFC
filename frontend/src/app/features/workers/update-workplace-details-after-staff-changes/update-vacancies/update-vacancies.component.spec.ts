@@ -15,7 +15,7 @@ import { of, throwError } from 'rxjs';
 
 import { UpdateVacanciesComponent } from './update-vacancies.component';
 
-fdescribe('UpdateVacanciesComponent', () => {
+describe('UpdateVacanciesComponent', () => {
   const radioButtonLabels = {
     No: 'There are no current staff vacancies',
     DoNotKnow: 'I do not know if there are any current staff vacancies',

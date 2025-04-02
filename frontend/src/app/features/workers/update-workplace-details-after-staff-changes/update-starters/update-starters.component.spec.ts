@@ -15,7 +15,7 @@ import { of, throwError } from 'rxjs';
 
 import { UpdateStartersComponent } from './update-starters.component';
 
-fdescribe('UpdateStartersComponent', () => {
+describe('UpdateStartersComponent', () => {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 1);
 
@@ -202,7 +202,7 @@ fdescribe('UpdateStartersComponent', () => {
 
     describe('job roles', () => {
       describe('before adding new job roles', () => {
-        it('should show a number input and a remove button for every vacancy job role from database', async () => {
+        it('should show a number input and a remove button for every starter job role from database', async () => {
           const mockWorkplace = establishmentBuilder({
             overrides: { starters: mockStarters },
           });
@@ -244,7 +244,7 @@ fdescribe('UpdateStartersComponent', () => {
         });
 
         describe('after adding new add roles', () => {
-          it('should show every vacancy job role that user selected in accordion page', async () => {
+          it('should show every starter job role that user selected in accordion page', async () => {
             await setup({
               startersFromSelectJobRolePages: [
                 { jobId: 10, title: 'Care worker', total: 1 },
@@ -279,7 +279,7 @@ fdescribe('UpdateStartersComponent', () => {
   });
 
   describe('interaction', () => {
-    it('should update the total number when the vacancy number of a job role is changed', async () => {
+    it('should update the total number when the starter number of a job role is changed', async () => {
       const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
 
       await fillInValueForJobRole('Registered nurse', '10');
@@ -448,7 +448,7 @@ fdescribe('UpdateStartersComponent', () => {
       expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, { starters: [{ jobId: 27, total: 10 }] });
     });
 
-    it('should save the vacancy as None if user selected None', async () => {
+    it('should save starters as None if user selected None', async () => {
       const mockWorkplace = establishmentBuilder({
         overrides: { starters: mockStarters },
       }) as Establishment;

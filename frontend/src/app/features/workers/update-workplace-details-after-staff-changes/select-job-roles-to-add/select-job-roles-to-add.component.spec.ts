@@ -11,7 +11,7 @@ import userEvent from '@testing-library/user-event';
 
 import { JobRoleType, SelectJobRolesToAddComponent } from './select-job-roles-to-add.component';
 
-fdescribe('SelectJobRolesToAddComponent', () => {
+describe('SelectJobRolesToAddComponent', () => {
   const mockAvailableJobs = MockJobRoles;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
