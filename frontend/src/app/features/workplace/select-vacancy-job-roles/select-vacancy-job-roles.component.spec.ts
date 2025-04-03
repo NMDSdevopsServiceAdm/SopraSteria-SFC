@@ -370,14 +370,14 @@ describe('SelectVacancyJobRolesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
     });
 
-    it('should return to the wdf workplace summary page when visited from wdf and cancel button is clicked', async () => {
+    it('should return to the funding workplace summary page when visited from funding and cancel button is clicked', async () => {
       const { component, getByText, routerSpy } = await setup({ returnToUrl: true });
-      component.return = { url: ['/wdf', 'workplaces', 'mock-uid'] };
+      component.return = { url: ['/funding', 'workplaces', 'mock-uid'] };
 
       const cancelButton = getByText('Cancel');
 
       userEvent.click(cancelButton);
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'workplaces', 'mock-uid'], jasmine.anything());
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'workplaces', 'mock-uid'], jasmine.anything());
     });
 
     it('should set the backlink to "do you have vacancy" page', async () => {

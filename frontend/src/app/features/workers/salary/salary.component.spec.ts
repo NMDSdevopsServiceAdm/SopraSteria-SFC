@@ -238,10 +238,10 @@ describe('SalaryComponent', () => {
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('should call submit data and return to the wdf staff record summary when Annual salary is selected, in-range annual salary is entered and save and return is clicked in wdf version of page', async () => {
+    it('should call submit data and return to the funding staff record summary when Annual salary is selected, in-range annual salary is entered and save and return is clicked in funding version of page', async () => {
       const { fixture, router, getByLabelText, component, getByText, submitSpy, routerSpy, workerServiceSpy } =
         await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -262,19 +262,19 @@ describe('SalaryComponent', () => {
         annualHourlyPay: { value: 'Annually', rate: '20000' },
       });
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', component.worker.uid]);
     });
 
-    it('return to the wdf staff record summary when cancel is clicked in wdf version of page', async () => {
+    it('return to the funding staff record summary when cancel is clicked in funding version of page', async () => {
       const { component, getByText, submitSpy, routerSpy, workerServiceSpy, fixture, router } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
 
       userEvent.click(getByText('Cancel'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', component.worker.uid]);
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
   });

@@ -189,11 +189,11 @@ describe('EmployedFromOutsideUkComponent', () => {
       });
     });
 
-    describe('Wdf view', () => {
+    describe('funding view', () => {
       const setupForWdfView = async () => {
         const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
 
-        spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+        spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
         component.returnUrl = undefined;
         component.ngOnInit();
         fixture.detectChanges();
@@ -202,7 +202,7 @@ describe('EmployedFromOutsideUkComponent', () => {
         return { component, fixture, routerSpy, getByText, getByLabelText, router, workerId };
       };
 
-      it('should navigate to wdf staff-summary-page page when pressing save and Yes is entered', async () => {
+      it('should navigate to funding staff-summary-page page when pressing save and Yes is entered', async () => {
         const { fixture, routerSpy, getByText, getByLabelText, workerId } = await setupForWdfView();
 
         const radioButtonNo = getByLabelText('Outside the UK');
@@ -213,16 +213,16 @@ describe('EmployedFromOutsideUkComponent', () => {
         const saveButton = getByText('Save and return');
         fireEvent.click(saveButton);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
       });
 
-      it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+      it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
         const { routerSpy, getByText, workerId } = await setupForWdfView();
 
         const cancelButton = getByText('Cancel');
         fireEvent.click(cancelButton);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
       });
     });
   });

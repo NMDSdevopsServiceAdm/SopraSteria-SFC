@@ -17,7 +17,7 @@ import {
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
+import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
@@ -27,7 +27,7 @@ import { WorkplaceSummaryComponent } from './workplace-summary.component';
 describe('WorkplaceSummaryComponent', () => {
   const setup = async (shareWith = null) => {
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, FundingModule],
       declarations: [],
       providers: [
         {
@@ -77,9 +77,8 @@ describe('WorkplaceSummaryComponent', () => {
     expect(getByTestId('employerType')).toBeTruthy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
   it('should render the certain sections when on the check-answers page', async () => {
@@ -94,9 +93,8 @@ describe('WorkplaceSummaryComponent', () => {
     expect(queryByTestId('employerType')).toBeFalsy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
   it('should render the services section with top margin when removeServiceSectionMargin is false, and without margin when true', async () => {
@@ -1096,74 +1094,6 @@ describe('WorkplaceSummaryComponent', () => {
   });
 
   describe('Recruitment section', () => {
-    describe('Advertising spend', () => {
-      it('should show dash and have Add information button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(within(advertisingSpendRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(
-          within(advertisingSpendRow).getByText(
-            `£${component.formatMonetaryValue(component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks)}`,
-          ),
-        ).toBeTruthy();
-      });
-    });
-
-    describe('People interviewed', () => {
-      it('should show dash and have Add information button on People Interviewed row when peopleInterviewedInTheLastFourWeeks is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.peopleInterviewedInTheLastFourWeeks = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(within(peopleInterviewedRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on People Interviewed row when peopleInterviewedInTheLastFourWeeks has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(
-          within(peopleInterviewedRow).queryByText(component.workplace.peopleInterviewedInTheLastFourWeeks),
-        ).toBeTruthy();
-      });
-    });
-
     describe('Repeat training', () => {
       it('should show dash and have Add information button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is set to null (not answered)', async () => {
         const { component, fixture } = await setup();

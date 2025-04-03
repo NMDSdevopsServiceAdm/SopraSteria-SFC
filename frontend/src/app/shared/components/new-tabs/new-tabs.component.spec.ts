@@ -1,24 +1,26 @@
+import { BehaviorSubject } from 'rxjs';
 import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { TabsService } from '@core/services/tabs.service';
+import { MainDashboardTabs, Tab, TabsService } from '@core/services/tabs.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 import { MockRouter, setUpRouterState } from '@core/test-utils/MockRouter';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { NewTabsComponent } from './new-tabs.component';
 
 describe('NewTabsComponent', () => {
+  const allTabs: Tab[] = Object.values(MainDashboardTabs);
+
   const setup = async (overrides: any = {}) => {
     const { fixture, getByTestId } = await render(NewTabsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         TabsService,
         {
@@ -36,13 +38,7 @@ describe('NewTabsComponent', () => {
       ],
       declarations: [],
       componentProperties: {
-        tabs: [
-          { title: 'Home', slug: 'home', active: false },
-          { title: 'Workplace', slug: 'workplace', active: false },
-          { title: 'Staff records', slug: 'staff-records', active: false },
-          { title: 'Training and qualifications', slug: 'training-and-qualifications', active: false },
-          { title: 'Benchmarks', slug: 'benchmarks', active: false },
-        ],
+        tabs: allTabs,
         dashboardView: overrides.dashboardView ?? true,
       },
     });
@@ -74,11 +70,21 @@ describe('NewTabsComponent', () => {
       keyUpSpy,
       keyDownSpy,
       tabsService,
+      router,
       routerSpy,
       locationSpy,
       parentSubsidiaryViewService,
-      router,
     };
+  };
+
+  const getAllActiveTabs = (): string[] => {
+    return allTabs
+      .map((tab) => tab.slug)
+      .filter((tabSlug) => {
+        const tabElement = screen.getByTestId(`tab_${tabSlug}`);
+        const tabIsActive = tabElement.getAttribute('class').includes('asc-tab--active');
+        return tabIsActive;
+      });
   };
 
   it('should create', async () => {
@@ -102,19 +108,12 @@ describe('NewTabsComponent', () => {
 
       component.ngOnInit();
       const workplaceTab = getByTestId('tab_workplace');
-      const homeTab = getByTestId('tab_home');
-      const staffRecordsTab = getByTestId('tab_staff-records');
-      const tAndQTab = getByTestId('tab_training-and-qualifications');
-      const benchmarksTab = getByTestId('tab_benchmarks');
 
       fireEvent.click(workplaceTab);
       fixture.detectChanges();
 
-      expect(workplaceTab.getAttribute('class')).toContain('asc-tab--active');
-      expect(homeTab.getAttribute('class')).not.toContain('asc-tab--active');
-      expect(staffRecordsTab.getAttribute('class')).not.toContain('asc-tab--active');
-      expect(tAndQTab.getAttribute('class')).not.toContain('asc-tab--active');
-      expect(benchmarksTab.getAttribute('class')).not.toContain('asc-tab--active');
+      const activeTabs = getAllActiveTabs();
+      expect(activeTabs).toEqual(['workplace']);
     });
 
     it('should call selectTab, set the selected tab property in the tabs service and emit the tab selected when a tab is clicked', async () => {
@@ -140,6 +139,7 @@ describe('NewTabsComponent', () => {
 
       fireEvent.click(tAndQTab);
       fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(locationSpy).toHaveBeenCalledWith('/dashboard#training-and-qualifications');
       expect(routerSpy).not.toHaveBeenCalled();
@@ -167,6 +167,83 @@ describe('NewTabsComponent', () => {
       fireEvent.click(tAndQTab);
 
       expect(routerSpy).toHaveBeenCalledWith([`/subsidiary/${subUid}/training-and-qualifications`]);
+    });
+  });
+
+  describe('when navigating to a page under another section', () => {
+    const mockUid1 = 'c9a65ed6-db19-4add-94cb-af200036653c';
+    const mockUid2 = 'ba50476b-7f3b-4bab-a36b-6bfcb3c37d62';
+
+    describe('in standAloneAccount', () => {
+      const testCases = [
+        {
+          mockUrl: `/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+        {
+          mockUrl: `/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training#all-records`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+        {
+          mockUrl: `/workplace/${mockUid1}/staff-record/${mockUid2}/staff-record-summary`,
+          expectedActiveTab: 'staff-records',
+        },
+        {
+          mockUrl: `/workplace/${mockUid1}/training-and-qualifications/missing-mandatory-training`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+      ];
+
+      testCases.forEach(({ mockUrl, expectedActiveTab }) => {
+        it(`should update active tab to ${expectedActiveTab}`, async () => {
+          const { component, fixture, router, routerSpy } = await setup(false);
+          const navigateEvent = new NavigationEnd(0, mockUrl, mockUrl);
+          (router.events as BehaviorSubject<any>).next(navigateEvent);
+          fixture.detectChanges();
+
+          const activeTabs = getAllActiveTabs();
+          expect(activeTabs).toEqual([expectedActiveTab]);
+          expect(component.tabsService.selectedTab).toEqual(expectedActiveTab);
+
+          expect(routerSpy).not.toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('in subsidiaryAccount', () => {
+      const testCases = [
+        {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+        {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training#all-records`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+        {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/staff-record/${mockUid2}/staff-record-summary`,
+          expectedActiveTab: 'staff-records',
+        },
+        {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/training-and-qualifications/missing-mandatory-training`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+      ];
+
+      testCases.forEach(({ mockUrl, expectedActiveTab }) => {
+        it(`should update active tab to ${expectedActiveTab}`, async () => {
+          const { component, fixture, router, routerSpy } = await setup();
+          const navigateEvent = new NavigationEnd(0, mockUrl, mockUrl);
+          (router.events as BehaviorSubject<any>).next(navigateEvent);
+          fixture.detectChanges();
+
+          const activeTabs = getAllActiveTabs();
+          expect(activeTabs).toEqual([expectedActiveTab]);
+          expect(component.tabsService.selectedTab).toEqual(expectedActiveTab);
+
+          expect(routerSpy).not.toHaveBeenCalled();
+        });
+      });
     });
   });
 
@@ -256,13 +333,13 @@ describe('NewTabsComponent', () => {
   });
 
   describe('getTabSlugFromSubsidiaryUrl', async () => {
-    it(`should return correct tab when third section of url is the tab slug`, async () => {
+    it(`should return correct tab slug when third section of url is the tab slug`, async () => {
       const { component } = await setup();
       component.tabs.forEach((tab) => {
         const url = `/subsidiary/test-uid/${tab.slug}`;
         const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, url, url));
 
-        expect(result).toEqual(tab);
+        expect(result).toEqual(tab.slug);
       });
     });
 

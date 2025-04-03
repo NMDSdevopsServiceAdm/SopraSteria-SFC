@@ -1,6 +1,3 @@
-import { from, merge, Subscription } from 'rxjs';
-import { mergeMap, tap, toArray } from 'rxjs/operators';
-
 import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
@@ -25,6 +22,8 @@ import { WorkerService } from '@core/services/worker.service';
 import { FileUtil } from '@core/utils/file-util';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { from, merge, Subscription } from 'rxjs';
+import { mergeMap, toArray } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-training-and-qualifications-record',
@@ -295,7 +294,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     });
   }
 
-  public actionsListNavigate(actionListItem): void {
+  public actionsListNavigate(event: Event, actionListItem): void {
+    event.preventDefault();
     const url = actionListItem.uid
       ? [
           'workplace',
@@ -315,7 +315,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
-  public navigateToNewTab(fragmentString): void {
+  public navigateToNewTab(event: Event, fragmentString: string): void {
+    event.preventDefault();
     this.router
       .navigate(['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'], {
         fragment: fragmentString,
@@ -332,7 +333,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
-  public navigateToLongTermAbsence(): void {
+  public navigateToLongTermAbsence(event: Event): void {
+    event.preventDefault();
     this.router.navigate(
       ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'long-term-absence'],
       { queryParams: { returnToTrainingAndQuals: 'true' } },

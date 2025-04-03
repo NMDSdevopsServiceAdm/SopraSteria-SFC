@@ -30,7 +30,6 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.establishmentService.setInStaffRecruitmentFlow(false);
     this.breadcrumbService.show(JourneyType.WORKPLACE_TAB);
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;

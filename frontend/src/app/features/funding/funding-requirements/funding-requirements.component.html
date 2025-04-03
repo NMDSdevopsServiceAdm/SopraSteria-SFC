@@ -1,0 +1,18 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl">{{ workplace.name }}</span>
+    <span class="govuk-caption-xl">(Workplace ID: {{ workplace.nmdsId | removeTrailingWhitespace }})</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">
+      The ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}
+    </h1>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
+    <div class="asc-cms-content" [innerHTML]="pages?.content"></div>
+
+    <div class="govuk-!-margin-top-8">
+      <button type="button" class="govuk-button" data-module="govuk-button" (click)="viewFundingOverviewPage()">
+        Does your data meet funding requirements?
+      </button>
+    </div>
+  </div>
+</div>

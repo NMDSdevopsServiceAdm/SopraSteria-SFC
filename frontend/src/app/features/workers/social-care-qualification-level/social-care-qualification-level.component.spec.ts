@@ -181,9 +181,9 @@ describe('SocialCareQualificationLevelComponent', () => {
       ]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version', async () => {
+    it('should navigate to funding staff-summary-page page when pressing save and return in funding version', async () => {
       const { component, fixture, routerSpy, getByText, router } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -197,12 +197,12 @@ describe('SocialCareQualificationLevelComponent', () => {
 
       expect(getByText('Save and return')).toBeTruthy();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing cancel when in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing cancel when in funding version of page', async () => {
       const { component, routerSpy, fixture, getByText, router } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -211,7 +211,7 @@ describe('SocialCareQualificationLevelComponent', () => {
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
   });
 });

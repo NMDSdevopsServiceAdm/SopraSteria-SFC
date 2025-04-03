@@ -43,7 +43,7 @@ describe('WdfSummaryPanel', () => {
   });
 
   describe('meeting funding requirements', () => {
-    it('should display the correct message with timeframe for meeting WDF requirements for the workplace', async () => {
+    it('should display the correct message with timeframe for meeting funding requirements for the workplace', async () => {
       const overrides = {
         workplaceWdfEligibilityStatus: true,
         overallWdfEligibility: false,
@@ -59,7 +59,7 @@ describe('WdfSummaryPanel', () => {
       expect(within(workplaceRow).getByTestId('green-tick')).toBeTruthy();
     });
 
-    it('should display the correct message with timeframe for meeting WDF requirements for the workplace if overall has met but workplace hasn\t', async () => {
+    it('should display the correct message with timeframe for meeting funding requirements for the workplace if overall has met but workplace hasn\t', async () => {
       const overrides = {
         workplaceWdfEligibilityStatus: false,
         overallWdfEligibility: true,
@@ -75,7 +75,7 @@ describe('WdfSummaryPanel', () => {
       expect(within(workplaceRow).getByTestId('green-tick')).toBeTruthy();
     });
 
-    it('should display the correct message with timeframe for meeting WDF requirements for staff', async () => {
+    it('should display the correct message with timeframe for meeting funding requirements for staff', async () => {
       const overrides = {
         staffWdfEligibilityStatus: true,
         overallWdfEligibility: false,
@@ -91,7 +91,7 @@ describe('WdfSummaryPanel', () => {
       expect(within(staffRow).getByTestId('green-tick')).toBeTruthy();
     });
 
-    it("should display the correct message with timeframe for meeting WDF requirements for staff if overall has met but staff hasn't", async () => {
+    it("should display the correct message with timeframe for meeting funding requirements for staff if overall has met but staff hasn't", async () => {
       const overrides = {
         staffWdfEligibilityStatus: false,
         overallWdfEligibility: true,
@@ -107,7 +107,7 @@ describe('WdfSummaryPanel', () => {
       expect(within(staffRow).getByTestId('green-tick')).toBeTruthy();
     });
 
-    it('should display the correct message with timeframe for meeting WDF requirements for all other workplaces', async () => {
+    it('should display the correct message with timeframe for meeting funding requirements for all other workplaces', async () => {
       const overrides = {
         subsidiariesOverallWdfEligibility: true,
         isParent: true,
@@ -232,7 +232,7 @@ describe('WdfSummaryPanel', () => {
   });
 
   describe('not meeting funding requirements', () => {
-    it('should display the not meeting WDF requirements message for the workplace', async () => {
+    it('should display the not meeting funding requirements message for the workplace', async () => {
       const overrides = {
         workplaceWdfEligibilityStatus: false,
         staffWdfEligibilityStatus: false,
@@ -249,7 +249,7 @@ describe('WdfSummaryPanel', () => {
       expect(within(workplaceRow).getByTestId('red-flag')).toBeTruthy();
     });
 
-    it('should display the not meeting WDF requirements message for staff', async () => {
+    it('should display the not meeting funding requirements message for staff', async () => {
       const overrides = {
         workplaceWdfEligibilityStatus: false,
         staffWdfEligibilityStatus: false,
@@ -266,7 +266,7 @@ describe('WdfSummaryPanel', () => {
       expect(within(staffRow).getByTestId('red-flag')).toBeTruthy();
     });
 
-    it('should display the not meeting WDF requirements message for all other workplaces', async () => {
+    it('should display the not meeting funding requirements message for all other workplaces', async () => {
       const overrides = {
         workplaceWdfEligibilityStatus: false,
         staffWdfEligibilityStatus: false,
@@ -310,8 +310,8 @@ describe('WdfSummaryPanel', () => {
   describe('Navigation', () => {
     [
       {
-        scenario: 'with wdf/data in url when not on data page',
-        expectedLink: ['/wdf/data'],
+        scenario: 'with funding/data in url when not on data page',
+        expectedLink: ['/funding/data'],
         onDataPage: false,
       },
       {

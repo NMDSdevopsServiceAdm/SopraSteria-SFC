@@ -382,9 +382,9 @@ describe('MainJobRoleComponent', () => {
       ]);
     });
 
-    it(`should navigate to the nursing-category page if the main job role is Registered nurse and in the wdf edit version of the page`, async () => {
+    it(`should navigate to the nursing-category page if the main job role is Registered nurse and in the funding edit version of the page`, async () => {
       const { component, fixture, router, routerSpy, getByText, workerService } = await setup(false, false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -395,7 +395,7 @@ describe('MainJobRoleComponent', () => {
       userEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid, 'nursing-category']);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', component.worker.uid, 'nursing-category']);
     });
 
     it(`should navigate to the mental-health-professional page if the main job role is Social worker and outside of the flow`, async () => {
@@ -417,9 +417,9 @@ describe('MainJobRoleComponent', () => {
       ]);
     });
 
-    it(`should navigate to the mental-health-professional page if the main job role is Social worker and in wdf version of page`, async () => {
+    it(`should navigate to the mental-health-professional page if the main job role is Social worker and in funding version of page`, async () => {
       const { component, fixture, routerSpy, router, getByText, workerService } = await setup(false, false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -431,7 +431,7 @@ describe('MainJobRoleComponent', () => {
       fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith([
-        '/wdf',
+        '/funding',
         'staff-record',
         component.worker.uid,
         'mental-health-professional',
