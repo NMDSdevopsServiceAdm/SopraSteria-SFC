@@ -106,6 +106,7 @@ import {
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { UpdateLeaversComponent } from './update-workplace-details-after-staff-changes/update-leavers/update-leavers.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -169,6 +170,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     UpdateVacanciesComponent,
     UpdateStartersComponent,
     SelectJobRolesToAddComponent,
+    UpdateLeaversComponent,
   ],
   providers: [
     DialogService,

@@ -96,6 +96,7 @@ import {
 } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { UpdateLeaversComponent } from './update-workplace-details-after-staff-changes/update-leavers/update-leavers.component';
 
 const routes: Routes = [
   {
@@ -182,6 +183,12 @@ const routes: Routes = [
         component: UpdateVacanciesComponent,
         canActivate: [CheckPermissionsGuard],
         data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies' },
+      },
+      {
+        path: 'update-leavers',
+        component: UpdateLeaversComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: { permissions: ['canEditEstablishment'], title: 'Update leavers' },
       },
       {
         path: 'update-vacancies-job-roles',
