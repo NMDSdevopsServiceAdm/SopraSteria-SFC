@@ -20,7 +20,11 @@
           </p>
         </app-details>
 
-        <div *ngIf="!isAFreshWorkplace" class="govuk-warning-text govuk-!-margin-bottom-3" data-testid="warning-text">
+        <div
+          *ngIf="questionPreviouslyAnswered"
+          class="govuk-warning-text govuk-!-margin-bottom-3"
+          data-testid="warning-text"
+        >
           <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
           <span class="govuk-warning-text__text">
             <span class="govuk-visually-hidden">Warning</span>
@@ -42,7 +46,7 @@
               {{ 'Add a job role' }}
             </p>
             <div class="add-job-roles-button-row">
-              <h2>{{ jobRoleTitle }}</h2>
+              <h2>{{ tableTitle }}</h2>
               <button type="button" class="govuk-button govuk-button--secondary" (click)="handleAddJobRole()">
                 {{ addJobRoleButtonText }}
               </button>
