@@ -1,6 +1,6 @@
 # NgSfcV2
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.3.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli)
 
 ## Development server
 1. Run `npm run server` for a dev server. This will compile the assets using `npm run build:watch` and also start the Express app using `npm run server`.
