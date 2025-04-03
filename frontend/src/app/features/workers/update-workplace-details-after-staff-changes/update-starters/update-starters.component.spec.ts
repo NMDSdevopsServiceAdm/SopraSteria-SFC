@@ -23,11 +23,11 @@ describe('UpdateStartersComponent', () => {
 
   const radioButtonLabels = {
     No: `No staff started on or after ${todayOneYearAgo}`,
-    DoNotKnow: `I do not know how many staff started on or after ${todayOneYearAgo}`,
+    DoNotKnow: `I do not know if any staff started on or after ${todayOneYearAgo}`,
   };
   const messageWhenNoJobRoleSelected = {
     None: `No staff started on or after ${todayOneYearAgo}.`,
-    DoNotKnow: `You do not know how many staff started on or after ${todayOneYearAgo}.`,
+    DoNotKnow: `You do not know if any staff started on or after ${todayOneYearAgo}.`,
     Default: `You've not added any staff who've started since ${todayOneYearAgo}.`,
   };
 
