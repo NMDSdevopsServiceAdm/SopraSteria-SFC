@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Starter, Vacancy } from '@core/model/establishment.model';
+import { Starter, Vacancy, Leaver } from '@core/model/establishment.model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +10,7 @@ export class UpdateWorkplaceAfterStaffChangesService {
   private visitedPages: Set<WorkplaceUpdatePage> = new Set();
   private _selectedVacancies: Vacancy[] = null;
   private _selectedStarters: Starter[] = null;
+  private _selectedLeavers: Leaver[] = null;
 
   public addToVisitedPages(page: WorkplaceUpdatePage): void {
     this.visitedPages.add(page);
@@ -31,6 +32,7 @@ export class UpdateWorkplaceAfterStaffChangesService {
   public clearAllSelectedJobRoles() {
     this.selectedVacancies = null;
     this.selectedStarters = null;
+    this.selectedLeavers = null;
   }
 
   get selectedVacancies(): Vacancy[] {
@@ -47,6 +49,14 @@ export class UpdateWorkplaceAfterStaffChangesService {
 
   set selectedStarters(updatedStarters: Starter[]) {
     this._selectedStarters = updatedStarters;
+  }
+
+  get selectedLeavers(): Vacancy[] {
+    return this._selectedLeavers;
+  }
+
+  set selectedLeavers(updatedVacancies: Vacancy[]) {
+    this._selectedLeavers = updatedVacancies;
   }
 }
 

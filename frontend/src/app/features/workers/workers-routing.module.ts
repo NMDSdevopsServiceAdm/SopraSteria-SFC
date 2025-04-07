@@ -185,12 +185,6 @@ const routes: Routes = [
         data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies' },
       },
       {
-        path: 'update-leavers',
-        component: UpdateLeaversComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update leavers' },
-      },
-      {
         path: 'update-vacancies-job-roles',
         component: SelectJobRolesToAddComponent,
         canActivate: [CheckPermissionsGuard],
@@ -198,6 +192,23 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Vacancies,
+          title: 'Select job roles to add',
+        },
+      },
+      {
+        path: 'update-leavers',
+        component: UpdateLeaversComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: { permissions: ['canEditEstablishment'], title: 'Update leavers' },
+      },
+      {
+        path: 'update-leavers-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Leavers,
           title: 'Select job roles to add',
         },
       },
