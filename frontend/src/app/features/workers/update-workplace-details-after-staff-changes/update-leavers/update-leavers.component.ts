@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
-import { FormatUtil } from '@core/utils/format-util';
 import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
@@ -53,12 +52,5 @@ export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirect
       DoNotKnow: `You do not know if any staff left on or after ${todayOneYearAgo}.`,
       Default: `You've not added any staff who've left SINCE ${todayOneYearAgo}.`,
     };
-  }
-
-  private getDateForOneYearAgo(): string {
-    const today = new Date();
-    today.setFullYear(today.getFullYear() - 1);
-
-    return FormatUtil.formatDateToLocaleDateString(today);
   }
 }
