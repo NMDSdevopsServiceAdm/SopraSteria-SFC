@@ -22,8 +22,8 @@ describe('UpdateLeaversComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
 
   const radioButtonLabels = {
-    None: `No staff left on or after ${todayOneYearAgo}`,
-    DoNotKnow: `I do not know how many staff left on or after ${todayOneYearAgo}`,
+    NONE: `No staff left on or after ${todayOneYearAgo}`,
+    DONT_KNOW: `I do not know how many staff left on or after ${todayOneYearAgo}`,
   };
 
   const mockLeavers: Leaver[] = [
@@ -227,8 +227,8 @@ describe('UpdateLeaversComponent', () => {
   it('should show a radio button for "No", and another for "I do not know"', async () => {
     const { getByLabelText } = await setup();
 
-    expect(getByLabelText(radioButtonLabels.None)).toBeTruthy();
-    expect(getByLabelText(radioButtonLabels.DoNotKnow)).toBeTruthy();
+    expect(getByLabelText(radioButtonLabels.NONE)).toBeTruthy();
+    expect(getByLabelText(radioButtonLabels.DONT_KNOW)).toBeTruthy();
   });
 
   it('should show the description below the total number', async () => {
@@ -252,7 +252,7 @@ describe('UpdateLeaversComponent', () => {
     it('should show the message when none is selected', async () => {
       const { fixture, getByText, getByLabelText } = await setup();
 
-      const noneLabel = getByLabelText(radioButtonLabels.None);
+      const noneLabel = getByLabelText(radioButtonLabels.NONE);
       fireEvent.click(noneLabel);
       fixture.detectChanges();
 
@@ -264,7 +264,7 @@ describe('UpdateLeaversComponent', () => {
     it("should show the message when don't know is selected", async () => {
       const { fixture, getByText, getByLabelText } = await setup();
 
-      const donNotKnowLabel = getByLabelText(radioButtonLabels.DoNotKnow);
+      const donNotKnowLabel = getByLabelText(radioButtonLabels.DONT_KNOW);
       fireEvent.click(donNotKnowLabel);
       fixture.detectChanges();
 
@@ -278,16 +278,13 @@ describe('UpdateLeaversComponent', () => {
     describe('from database', () => {
       it('should populate the previously saved answer with job roles', async () => {
         const { getByLabelText, getByTestId } = await setup({ workplace: mockWorkplaceWithLeavers });
-        const leaver1 = getByLabelText(mockLeavers[0].title) as HTMLInputElement;
-        expect(leaver1).toBeTruthy();
-        expect(getByTestId(`remove-button-${mockLeavers[0].title}`)).toBeTruthy();
-        expect(leaver1.value).toEqual(`${mockLeavers[0].total}`);
 
-        const leaver2 = getByLabelText(mockLeavers[0].title) as HTMLInputElement;
-        expect(leaver2).toBeTruthy();
-        expect(getByTestId(`remove-button-${mockLeavers[1].title}`)).toBeTruthy();
-        expect(leaver2.value).toEqual(`${mockLeavers[1].total}`);
-
+        mockLeavers.forEach((leaver) => {
+          const mockLeaver = getByLabelText(leaver.title) as HTMLInputElement;
+          expect(mockLeaver).toBeTruthy();
+          expect(getByTestId(`remove-button-${leaver.title}`)).toBeTruthy();
+          expect(mockLeaver.value).toEqual(`${leaver.total}`);
+        });
         expect(getByTestId('total-number').textContent).toEqual(`${totalJobRoles(mockLeavers)}`);
       });
 
@@ -312,7 +309,7 @@ describe('UpdateLeaversComponent', () => {
       });
     });
 
-    it('should populate the selected job roles', async () => {
+    it('should populate the selected job roles from the select job role page', async () => {
       const { getByLabelText, getByTestId } = await setup({ leaversFromSelectJobRolePages: selectedJobRoles });
 
       const leaver1 = getByLabelText(selectedJobRoles[0].title) as HTMLInputElement;
@@ -320,7 +317,7 @@ describe('UpdateLeaversComponent', () => {
       expect(getByTestId(`remove-button-${selectedJobRoles[0].title}`)).toBeTruthy();
       expect(leaver1.value).toEqual(`${selectedJobRoles[0].total}`);
 
-      expect(getByTestId('total-number').textContent).toEqual(JSON.stringify(selectedJobRoles[0].total));
+      expect(getByTestId('total-number').textContent).toEqual(`${selectedJobRoles[0].total}`);
     });
   });
 
@@ -345,53 +342,32 @@ describe('UpdateLeaversComponent', () => {
       });
     });
 
-    it('should call updateJobs to save when none is selected', async () => {
-      const {
-        getByRole,
-        component,
-        fixture,
-        routerSpy,
-        updateWorkplaceAfterStaffChangesService,
-        updateJobsSpy,
-        getByLabelText,
-      } = await setup({ workplace: mockWorkplace, leaversFromSelectJobRolePages: selectedJobRoles });
+    Object.keys(radioButtonLabels).forEach((label) => {
+      // const labelAnswers = { None: jobOptionsEnum.NONE, DONT_KNOW: jobOptionsEnum.DONT_KNOW };
+      it(`should call updateJobs to save when ${radioButtonLabels[label]} is selected`, async () => {
+        const {
+          getByRole,
+          component,
+          fixture,
+          routerSpy,
+          updateWorkplaceAfterStaffChangesService,
+          updateJobsSpy,
+          getByLabelText,
+        } = await setup({ workplace: mockWorkplace, leaversFromSelectJobRolePages: selectedJobRoles });
 
-      const doNotKnowRadio = getByLabelText(radioButtonLabels.None);
-      fireEvent.click(doNotKnowRadio);
-      const saveButton = getByRole('button', { name: 'Save and return' });
-      fireEvent.click(saveButton);
-      fixture.detectChanges();
+        const radio = getByLabelText(radioButtonLabels[label]);
 
-      // @ts-expect-error: TS2341: Property 'route' is private
-      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
-      expect(updateWorkplaceAfterStaffChangesService.selectedLeavers).toEqual(null);
-      expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, {
-        leavers: jobOptionsEnum.NONE,
-      });
-    });
+        fireEvent.click(radio);
+        const saveButton = getByRole('button', { name: 'Save and return' });
+        fireEvent.click(saveButton);
+        fixture.detectChanges();
 
-    it('should call updateJobs to save when do not know is selected', async () => {
-      const {
-        getByRole,
-        component,
-        fixture,
-        routerSpy,
-        updateWorkplaceAfterStaffChangesService,
-        updateJobsSpy,
-        getByLabelText,
-      } = await setup({ workplace: mockWorkplace, leaversFromSelectJobRolePages: selectedJobRoles });
-
-      const doNotKnowRadio = getByLabelText(radioButtonLabels.DoNotKnow);
-      fireEvent.click(doNotKnowRadio);
-      const saveButton = getByRole('button', { name: 'Save and return' });
-      fireEvent.click(saveButton);
-      fixture.detectChanges();
-
-      // @ts-expect-error: TS2341: Property 'route' is private
-      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
-      expect(updateWorkplaceAfterStaffChangesService.selectedLeavers).toEqual(null);
-      expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, {
-        leavers: jobOptionsEnum.DONT_KNOW,
+        // @ts-expect-error: TS2341: Property 'route' is private
+        expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+        expect(updateWorkplaceAfterStaffChangesService.selectedLeavers).toEqual(null);
+        expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, {
+          leavers: jobOptionsEnum[label],
+        });
       });
     });
   });
@@ -460,30 +436,19 @@ describe('UpdateLeaversComponent', () => {
   });
 
   describe('job roles table', () => {
-    it('should be empty there are selected jobs then none is clicked', async () => {
-      const { getByLabelText, queryByLabelText } = await setup({
-        leaversFromSelectJobRolePages: selectedJobRoles,
+    Object.keys(radioButtonLabels).forEach((label) => {
+      it(`should remove all job roles when ${label} is clicked`, async () => {
+        const { getByLabelText, queryByLabelText } = await setup({
+          leaversFromSelectJobRolePages: selectedJobRoles,
+        });
+
+        const leaver = selectedJobRoles[0].title;
+        expect(getByLabelText(leaver)).toBeTruthy();
+        const radio = getByLabelText(radioButtonLabels[label]);
+        fireEvent.click(radio);
+
+        expect(queryByLabelText(selectedJobRoles[0].title)).toBeFalsy();
       });
-
-      const leaver = selectedJobRoles[0].title;
-      expect(getByLabelText(leaver)).toBeTruthy();
-      const noneRadio = getByLabelText(radioButtonLabels.None);
-      fireEvent.click(noneRadio);
-
-      expect(queryByLabelText(selectedJobRoles[0].title)).toBeFalsy();
-    });
-
-    it('should be empty there are selected jobs then do not know is clicked', async () => {
-      const { getByLabelText, queryByLabelText } = await setup({
-        leaversFromSelectJobRolePages: selectedJobRoles,
-      });
-
-      const leaver = selectedJobRoles[0].title;
-      expect(getByLabelText(leaver)).toBeTruthy();
-      const doNotKnowRadio = getByLabelText(radioButtonLabels.DoNotKnow);
-      fireEvent.click(doNotKnowRadio);
-
-      expect(queryByLabelText(selectedJobRoles[0].title)).toBeFalsy();
     });
 
     it('should remove the selected job when "Remove" is clicked', async () => {
