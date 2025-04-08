@@ -51,12 +51,12 @@ export class UpdateWorkplaceAfterStaffChangesService {
     this._selectedStarters = updatedStarters;
   }
 
-  get selectedLeavers(): Vacancy[] {
+  get selectedLeavers(): Leaver[] {
     return this._selectedLeavers;
   }
 
-  set selectedLeavers(updatedVacancies: Vacancy[]) {
-    this._selectedLeavers = updatedVacancies;
+  set selectedLeavers(updatedLeavers: Leaver[]) {
+    this._selectedLeavers = updatedLeavers;
   }
 }
 
