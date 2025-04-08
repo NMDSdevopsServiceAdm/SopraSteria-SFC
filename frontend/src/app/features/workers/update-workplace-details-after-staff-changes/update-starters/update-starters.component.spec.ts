@@ -14,12 +14,13 @@ import userEvent from '@testing-library/user-event';
 import { of, throwError } from 'rxjs';
 
 import { UpdateStartersComponent } from './update-starters.component';
+import { FormatUtil } from '@core/utils/format-util';
 
 describe('UpdateStartersComponent', () => {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 1);
 
-  const todayOneYearAgo = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
 
   const radioButtonLabels = {
     No: `No staff started on or after ${todayOneYearAgo}`,

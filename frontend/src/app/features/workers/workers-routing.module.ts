@@ -96,6 +96,7 @@ import {
 } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { UpdateLeaversComponent } from './update-workplace-details-after-staff-changes/update-leavers/update-leavers.component';
 
 const routes: Routes = [
   {
@@ -191,6 +192,23 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           jobRoleType: JobRoleType.Vacancies,
+          title: 'Select job roles to add',
+        },
+      },
+      {
+        path: 'update-leavers',
+        component: UpdateLeaversComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: { permissions: ['canEditEstablishment'], title: 'Update leavers' },
+      },
+      {
+        path: 'update-leavers-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Leavers,
           title: 'Select job roles to add',
         },
       },

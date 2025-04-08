@@ -11,6 +11,15 @@ describe('FormatUtil', () => {
     });
   });
 
+  describe('formatDateToLocaleDateString', () => {
+    it('should return the given date', async () => {
+      const date = new Date('2025-03-31');
+      const formattedDate = FormatUtil.formatDateToLocaleDateString(date);
+
+      expect(formattedDate).toEqual('31 March 2025');
+    });
+  });
+
   describe('formatSingleDigit', () => {
     it('should a string of number', async () => {
       const formatSingleDigit = FormatUtil.formatSingleDigit(10);

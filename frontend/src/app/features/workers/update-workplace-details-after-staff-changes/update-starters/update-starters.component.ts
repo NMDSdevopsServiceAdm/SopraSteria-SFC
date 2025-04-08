@@ -52,11 +52,4 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
       Default: `You've not added any staff who've started since ${todayOneYearAgo}.`,
     };
   }
-
-  private getDateForOneYearAgo(): string {
-    const today = new Date();
-    today.setFullYear(today.getFullYear() - 1);
-
-    return today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-  }
 }
