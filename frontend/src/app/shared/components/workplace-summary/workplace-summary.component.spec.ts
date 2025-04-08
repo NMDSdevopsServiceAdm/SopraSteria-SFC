@@ -122,7 +122,7 @@ describe('WorkplaceSummaryComponent', () => {
     expect(queryByTestId('vacancies-and-turnover-section')).toBeFalsy();
     expect(queryByTestId('recruitment-section')).toBeFalsy();
     expect(queryByTestId('permissions-section')).toBeFalsy();
-    expect(queryByTestId('staff-benefits-section')).toBeFalsy();
+    expect(queryByTestId('recruitment-and-benefits-section')).toBeFalsy();
   });
 
   describe('workplace-section', () => {
