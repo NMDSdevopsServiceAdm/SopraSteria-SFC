@@ -2,10 +2,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import {
-  AddStaffWorkplaceUpdatePage,
-  DeleteStaffWorkplaceUpdatePage,
   UpdateWorkplaceAfterStaffChangesService,
   WorkplaceUpdateFlowType,
+  WorkplaceUpdatePage,
 } from './update-workplace-after-staff-changes.service';
 
 describe('UpdateWorkplaceAfterStaffChangesService', () => {
@@ -26,8 +25,8 @@ describe('UpdateWorkplaceAfterStaffChangesService', () => {
   describe('allUpdatePagesVisited', () => {
     [
       [],
-      [AddStaffWorkplaceUpdatePage.TOTAL_STAFF],
-      [AddStaffWorkplaceUpdatePage.TOTAL_STAFF, AddStaffWorkplaceUpdatePage.UPDATE_VACANCIES],
+      [WorkplaceUpdatePage.TOTAL_STAFF],
+      [WorkplaceUpdatePage.TOTAL_STAFF, WorkplaceUpdatePage.UPDATE_VACANCIES],
     ].forEach((visitedPages) => {
       it(`should return false when not all add pages in visitedPages when ADD passed in (${visitedPages})`, async () => {
         visitedPages.forEach((page) => {
@@ -48,9 +47,9 @@ describe('UpdateWorkplaceAfterStaffChangesService', () => {
 
     it('should return true when all pages in visitedPages for add flow', async () => {
       [
-        AddStaffWorkplaceUpdatePage.TOTAL_STAFF,
-        AddStaffWorkplaceUpdatePage.UPDATE_VACANCIES,
-        AddStaffWorkplaceUpdatePage.UPDATE_STARTERS,
+        WorkplaceUpdatePage.TOTAL_STAFF,
+        WorkplaceUpdatePage.UPDATE_VACANCIES,
+        WorkplaceUpdatePage.UPDATE_STARTERS,
       ].forEach((page) => {
         service.addToVisitedPages(page);
       });
@@ -60,9 +59,9 @@ describe('UpdateWorkplaceAfterStaffChangesService', () => {
 
     it('should return true when all pages in visitedPages for delete flow', async () => {
       [
-        DeleteStaffWorkplaceUpdatePage.TOTAL_STAFF,
-        DeleteStaffWorkplaceUpdatePage.UPDATE_VACANCIES,
-        DeleteStaffWorkplaceUpdatePage.UPDATE_LEAVERS,
+        WorkplaceUpdatePage.TOTAL_STAFF,
+        WorkplaceUpdatePage.UPDATE_VACANCIES,
+        WorkplaceUpdatePage.UPDATE_LEAVERS,
       ].forEach((page) => {
         service.addToVisitedPages(page);
       });

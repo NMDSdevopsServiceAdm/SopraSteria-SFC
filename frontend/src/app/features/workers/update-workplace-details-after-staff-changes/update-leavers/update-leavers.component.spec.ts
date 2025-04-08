@@ -1,19 +1,23 @@
-import { fireEvent, render } from '@testing-library/angular';
-import { UpdateLeaversComponent } from './update-leavers.component';
-import { SharedModule } from '@shared/shared.module';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { FormatUtil } from '@core/utils/format-util';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
-import userEvent from '@testing-library/user-event';
-import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment, jobOptionsEnum, Leaver } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { getTestBed } from '@angular/core/testing';
+import {
+  UpdateWorkplaceAfterStaffChangesService,
+  WorkplaceUpdatePage,
+} from '@core/services/update-workplace-after-staff-changes.service';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { FormatUtil } from '@core/utils/format-util';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { of, throwError } from 'rxjs';
+
+import { UpdateLeaversComponent } from './update-leavers.component';
 
 describe('UpdateLeaversComponent', () => {
   const today = new Date();
@@ -67,6 +71,8 @@ describe('UpdateLeaversComponent', () => {
   const setup = async (override: any = {}) => {
     const selectedLeavers = override.leaversFromSelectJobRolePages ?? null;
     const workplace = override.workplace ?? mockWorkplace;
+    const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
+
     const setupTools = await render(UpdateLeaversComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
       providers: [
@@ -79,7 +85,10 @@ describe('UpdateLeaversComponent', () => {
         },
         {
           provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedLeavers }),
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+            selectedLeavers,
+            addToVisitedPages: addToVisitedPagesSpy,
+          }),
         },
         {
           provide: EstablishmentService,
@@ -110,6 +119,7 @@ describe('UpdateLeaversComponent', () => {
       routerSpy,
       updateWorkplaceAfterStaffChangesService,
       updateJobsSpy,
+      addToVisitedPagesSpy,
     };
   };
 
@@ -117,6 +127,12 @@ describe('UpdateLeaversComponent', () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
+  });
+
+  it('should add page to visitedPages in updateWorkplaceAfterStaffChangesService', async () => {
+    const { addToVisitedPagesSpy } = await setup();
+
+    expect(addToVisitedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_LEAVERS);
   });
 
   describe('page heading', () => {
@@ -466,7 +482,7 @@ describe('UpdateLeaversComponent', () => {
     });
 
     it('should increase the selected job number when "+" is clicked', async () => {
-      const { getByLabelText, getByTestId, fixture, queryByLabelText, component } = await setup({
+      const { getByLabelText, getByTestId, fixture } = await setup({
         workplace: mockWorkplaceWithLeavers,
       });
 

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
+import { WorkplaceUpdatePage } from '@core/services/update-workplace-after-staff-changes.service';
 import {
   UpdateStartersLeaversVacanciesDirective,
 } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
@@ -41,6 +42,7 @@ export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDire
 
   protected slvField = 'vacancies';
   protected selectedField = 'selectedVacancies';
+  protected updatePage = WorkplaceUpdatePage.UPDATE_VACANCIES;
 
   protected setupTexts(): void {
     if (!this.questionPreviouslyAnswered) {

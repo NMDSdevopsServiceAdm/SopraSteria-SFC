@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
-import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import { WorkplaceUpdatePage } from '@core/services/update-workplace-after-staff-changes.service';
+import {
+  UpdateStartersLeaversVacanciesDirective,
+} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-leavers',
@@ -20,6 +23,8 @@ export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirect
   public numberRequiredErrorMessage = 'Enter the number of leavers or remove';
   public validNumberErrorMessage = 'Number of leavers must be between 1 and 999';
   public serverErrorMessage = 'Failed to update leavers';
+
+  protected updatePage = WorkplaceUpdatePage.UPDATE_LEAVERS;
 
   protected setupTexts(): void {
     const todayOneYearAgo = this.getDateForOneYearAgo();
