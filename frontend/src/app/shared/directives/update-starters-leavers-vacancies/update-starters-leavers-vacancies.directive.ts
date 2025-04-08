@@ -15,9 +15,14 @@ import { jobOptionsEnum, StarterLeaverVacancy, UpdateJobsRequest } from '@core/m
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import {
+  UpdateWorkplaceAfterStaffChangesService,
+  WorkplaceUpdatePage,
+} from '@core/services/update-workplace-after-staff-changes.service';
 import { FormatUtil } from '@core/utils/format-util';
-import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
+import {
+  NumberInputWithButtonsComponent,
+} from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import lodash from 'lodash';
 
@@ -55,6 +60,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   protected slvField: string;
   protected selectedField: string;
+  protected updatePage: WorkplaceUpdatePage;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -73,6 +79,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.setupFormErrorsMap();
     this.setupTexts();
     this.setBackLink();
+    this.updateWorkplaceAfterStaffChangesService.addToVisitedPages(this.updatePage);
   }
 
   ngAfterViewInit() {

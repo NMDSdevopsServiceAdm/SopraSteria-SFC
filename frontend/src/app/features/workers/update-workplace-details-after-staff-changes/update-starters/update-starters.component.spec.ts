@@ -5,16 +5,19 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment, jobOptionsEnum, Starter } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import {
+  UpdateWorkplaceAfterStaffChangesService,
+  WorkplaceUpdatePage,
+} from '@core/services/update-workplace-after-staff-changes.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { FormatUtil } from '@core/utils/format-util';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of, throwError } from 'rxjs';
 
 import { UpdateStartersComponent } from './update-starters.component';
-import { FormatUtil } from '@core/utils/format-util';
 
 describe('UpdateStartersComponent', () => {
   const today = new Date();
@@ -57,6 +60,7 @@ describe('UpdateStartersComponent', () => {
   const setup = async (override: any = {}) => {
     const workplace = override.workplace ?? mockWorkplaceWithNoStarters;
     const selectedStarters = override.startersFromSelectJobRolePages ?? null;
+    const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
 
     const setupTools = await render(UpdateStartersComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -64,7 +68,10 @@ describe('UpdateStartersComponent', () => {
         UntypedFormBuilder,
         {
           provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedStarters }),
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+            selectedStarters,
+            addToVisitedPages: addToVisitedPagesSpy,
+          }),
         },
         {
           provide: EstablishmentService,
@@ -102,12 +109,19 @@ describe('UpdateStartersComponent', () => {
       updateJobsSpy,
       setStateSpy,
       updateWorkplaceAfterStaffChangesService,
+      addToVisitedPagesSpy,
     };
   };
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should add page to visitedPages in updateWorkplaceAfterStaffChangesService', async () => {
+    const { addToVisitedPagesSpy } = await setup();
+
+    expect(addToVisitedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_STARTERS);
   });
 
   describe('rendering', () => {
