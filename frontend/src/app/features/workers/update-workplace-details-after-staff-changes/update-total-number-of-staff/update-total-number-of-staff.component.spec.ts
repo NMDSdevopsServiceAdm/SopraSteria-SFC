@@ -1,6 +1,3 @@
-import lodash from 'lodash';
-import { of, throwError } from 'rxjs';
-
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -8,14 +5,20 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import {
+  UpdateWorkplaceAfterStaffChangesService,
+  WorkplaceUpdatePage,
+} from '@core/services/update-workplace-after-staff-changes.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import lodash from 'lodash';
+import { of, throwError } from 'rxjs';
 
 import { UpdateTotalNumberOfStaffComponent } from './update-total-number-of-staff.component';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 
 describe('UpdateTotalNumberOfStaffComponent', () => {
   const mockEstablishment = establishmentBuilder() as Establishment;
@@ -23,9 +26,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const setup = async (overrides: any = {}) => {
     const numberOfStaff = overrides?.numberOfStaff ?? 10;
-    const returnTo = {
-      url: ['workplace', mockEstablishment.uid, 'staff-record', 'update-workplace-details-after-staff-changes'],
-    };
+    const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
 
     const setupTools = await render(UpdateTotalNumberOfStaffComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -56,7 +57,9 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
         },
         {
           provide: UpdateWorkplaceAfterStaffChangesService,
-          useValue: { returnTo },
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+            addToVisitedPages: addToVisitedPagesSpy,
+          }),
         },
       ],
     });
@@ -77,12 +80,19 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
       routerSpy,
       mockEstablishment,
       establishmentService,
+      addToVisitedPagesSpy,
     };
   };
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should add page to visitedPages in updateWorkplaceAfterStaffChangesService', async () => {
+    const { addToVisitedPagesSpy } = await setup();
+
+    expect(addToVisitedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.TOTAL_STAFF);
   });
 
   describe('rendering', () => {

@@ -1,5 +1,3 @@
-import { Subscription } from 'rxjs';
-
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
@@ -10,6 +8,11 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffConstraints, TotalStaffFormService } from '@core/services/total-staff-form.service';
+import {
+  UpdateWorkplaceAfterStaffChangesService,
+  WorkplaceUpdatePage,
+} from '@core/services/update-workplace-after-staff-changes.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-update-total-number-of-staff',
@@ -35,6 +38,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     private establishmentService: EstablishmentService,
     private backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
+    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
   ) {}
 
   ngOnInit(): void {
@@ -44,6 +48,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     this.setupFormError();
     this.setBackLink();
     this.prefill();
+    this.updateWorkplaceAfterStaffChangesService.addToVisitedPages(WorkplaceUpdatePage.TOTAL_STAFF);
   }
 
   private setupForm(): void {
