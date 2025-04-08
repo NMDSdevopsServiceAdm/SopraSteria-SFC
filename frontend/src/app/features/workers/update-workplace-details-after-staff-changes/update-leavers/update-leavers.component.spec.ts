@@ -343,7 +343,6 @@ describe('UpdateLeaversComponent', () => {
     });
 
     Object.keys(radioButtonLabels).forEach((label) => {
-      // const labelAnswers = { None: jobOptionsEnum.NONE, DONT_KNOW: jobOptionsEnum.DONT_KNOW };
       it(`should call updateJobs to save when ${radioButtonLabels[label]} is selected`, async () => {
         const {
           getByRole,
