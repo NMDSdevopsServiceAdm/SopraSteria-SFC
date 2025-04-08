@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Starter, Vacancy, Leaver } from '@core/model/establishment.model';
+import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,9 +22,9 @@ export class UpdateWorkplaceAfterStaffChangesService {
 
   public allUpdatePagesVisited(flowType: WorkplaceUpdateFlowType): boolean {
     const pages =
-      flowType === WorkplaceUpdateFlowType.ADD ? AddStaffWorkplaceUpdatePage : DeleteStaffWorkplaceUpdatePage;
+      flowType === WorkplaceUpdateFlowType.ADD ? addStaffWorkplaceUpdatePages : deleteStaffWorkplaceUpdatePages;
 
-    return Object.values(pages).every((page) => {
+    return pages.every((page) => {
       return this.visitedPages.has(page);
     });
   }
@@ -60,19 +60,24 @@ export class UpdateWorkplaceAfterStaffChangesService {
   }
 }
 
-export enum AddStaffWorkplaceUpdatePage {
+export enum WorkplaceUpdatePage {
   TOTAL_STAFF = 'update-total-staff',
   UPDATE_VACANCIES = 'update-vacancies',
   UPDATE_STARTERS = 'update-starters',
-}
-
-export enum DeleteStaffWorkplaceUpdatePage {
-  TOTAL_STAFF = 'update-total-staff',
-  UPDATE_VACANCIES = 'update-vacancies',
   UPDATE_LEAVERS = 'update-leavers',
 }
 
-type WorkplaceUpdatePage = AddStaffWorkplaceUpdatePage | DeleteStaffWorkplaceUpdatePage;
+const addStaffWorkplaceUpdatePages = [
+  WorkplaceUpdatePage.TOTAL_STAFF,
+  WorkplaceUpdatePage.UPDATE_VACANCIES,
+  WorkplaceUpdatePage.UPDATE_STARTERS,
+];
+
+const deleteStaffWorkplaceUpdatePages = [
+  WorkplaceUpdatePage.TOTAL_STAFF,
+  WorkplaceUpdatePage.UPDATE_VACANCIES,
+  WorkplaceUpdatePage.UPDATE_LEAVERS,
+];
 
 export enum WorkplaceUpdateFlowType {
   ADD = 'ADD',
