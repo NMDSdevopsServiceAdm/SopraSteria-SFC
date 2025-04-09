@@ -117,3 +117,16 @@ Cypress.Commands.add('deleteTestWorkerFromDb', (workerName) => {
 
   cy.task('multipleDbQueries', dbQueries);
 });
+
+Cypress.Commands.add('resetStartersLeaversVacancies', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "NumberOfStaffValue" = 4,
+      "VacanciesValue" = null,
+      "StartersValue" = null,
+      "LeaversValue" = null
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
