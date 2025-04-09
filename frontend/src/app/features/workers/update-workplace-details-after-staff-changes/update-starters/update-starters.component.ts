@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
-import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import { WorkplaceUpdatePage } from '@core/services/update-workplace-after-staff-changes.service';
+import {
+  UpdateStartersLeaversVacanciesDirective,
+} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-starters',
@@ -22,6 +25,7 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
 
   protected slvField = 'starters';
   protected selectedField = 'selectedStarters';
+  protected updatePage = WorkplaceUpdatePage.UPDATE_STARTERS;
 
   protected setupTexts(): void {
     const todayOneYearAgo = this.getDateForOneYearAgo();

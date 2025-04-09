@@ -5,7 +5,10 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment, jobOptionsEnum, Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import {
+  UpdateWorkplaceAfterStaffChangesService,
+  WorkplaceUpdatePage,
+} from '@core/services/update-workplace-after-staff-changes.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { SharedModule } from '@shared/shared.module';
@@ -46,6 +49,7 @@ describe('UpdateVacanciesComponent', () => {
   const setup = async (override: any = {}) => {
     const workplace = override.workplace ?? mockWorkplaceWithNoVacancies;
     const selectedVacancies = override.vacanciesFromSelectJobRolePages ?? null;
+    const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
 
     const setupTools = await render(UpdateVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -53,7 +57,10 @@ describe('UpdateVacanciesComponent', () => {
         UntypedFormBuilder,
         {
           provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedVacancies }),
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+            selectedVacancies,
+            addToVisitedPages: addToVisitedPagesSpy,
+          }),
         },
         {
           provide: EstablishmentService,
@@ -90,6 +97,7 @@ describe('UpdateVacanciesComponent', () => {
       updateJobsSpy,
       setStateSpy,
       updateWorkplaceAfterStaffChangesService,
+      addToVisitedPagesSpy,
       ...setupTools,
     };
   };
@@ -97,6 +105,12 @@ describe('UpdateVacanciesComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should add page to visitedPages in updateWorkplaceAfterStaffChangesService', async () => {
+    const { addToVisitedPagesSpy } = await setup();
+
+    expect(addToVisitedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_VACANCIES);
   });
 
   describe('rendering', () => {
