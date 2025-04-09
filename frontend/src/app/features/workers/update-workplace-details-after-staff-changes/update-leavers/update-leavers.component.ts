@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/update-workplace-after-staff-changes.service';
-import {
-  UpdateStartersLeaversVacanciesDirective,
-} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-leavers',
@@ -19,7 +17,7 @@ export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirect
     'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
   public tableTitle = 'Leavers in the last 12 months';
   public totalNumberDescription = 'Total number of leavers';
-  public noOrDoNotKnowErrorMessage = 'Select there are no leavers or do not know';
+  public noOrDoNotKnowErrorMessage = 'Select no staff left or do not know';
   public numberRequiredErrorMessage = 'Enter the number of leavers or remove';
   public validNumberErrorMessage = 'Number of leavers must be between 1 and 999';
   public serverErrorMessage = 'Failed to update leavers';
