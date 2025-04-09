@@ -258,6 +258,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   public handleClickedNoOrDoNotKnow = (value: jobOptionsEnum): void => {
     this.selectedNoOrDoNotKnow = value;
+    this.form.patchValue({ noOrDoNotKnow: value });
     this.removeAllSelectedJobRoles();
   };
 
