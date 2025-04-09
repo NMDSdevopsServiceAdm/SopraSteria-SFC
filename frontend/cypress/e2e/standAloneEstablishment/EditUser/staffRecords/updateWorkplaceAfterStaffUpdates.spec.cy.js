@@ -1,29 +1,39 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
+import { StandAloneEstablishment } from '../../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../../support/page_objects/onHomePage';
 
-describe.only('Updating workplace after staff updates', () => {
+describe('Updating workplace after staff updates', () => {
   const noOfStaffBeforeUpdate = 4;
-  const name1 = 'New Staff 01';
-  const name2 = 'New Staff 02';
+  const worker1 = 'Staff 01';
+  const worker2 = 'Staff 02';
+  const worker3 = 'Staff 03';
   const contractType = 'Permanent';
   const mainJobRole1 = 'Care worker';
-  const mainJobRole2 = 'Senior care worker'
-  const testWorkerNames = [name1, name2];
+  const mainJobRole2 = 'Senior care worker';
+
+  const testWorkerNames = ['Cypress test worker', worker1, worker2, worker3];
 
   before(() => {
     testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
-    cy.resetStartersLeaversVacancies(180)
+    cy.resetStartersLeaversVacancies(180);
   });
 
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+  });
 
+  afterEach(() => {
+    testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
+    cy.resetStartersLeaversVacancies(180);
+  });
+
+  it('updates successfully after adding staff', () => {
     onHomePage.clickTab('Workplace');
-    // cy.get('[data-testid="number-of-staff-top-row"]').contains('Change').click();
-    // cy.getByLabel('Number of staff').clear().type(noOfStaffBeforeUpdate);
-    // cy.contains('button', 'Save and return').click();
+    cy.get('[data-testid="number-of-staff-top-row"]').contains('Change').click();
+    cy.getByLabel('Number of staff').clear().type(noOfStaffBeforeUpdate);
+    cy.contains('button', 'Save and return').click();
 
     cy.get('[data-testid="vacancies-top-row"]').contains('Add').click();
 
@@ -37,20 +47,13 @@ describe.only('Updating workplace after staff updates', () => {
     cy.getByLabel(mainJobRole2).clear().type(1);
     cy.contains('button', 'Save and return').click();
     onHomePage.clickTab('Staff records');
-  });
-
-  afterEach(() => {
-    testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
-  });
-
-  it('updates successfully after adding staff', () => {
     cy.get('a[role="button"]').contains('Add a staff record').click();
 
-    addAndConfirmMandatoryStaffDetails(name1, contractType, mainJobRole1);
+    addAndConfirmMandatoryStaffDetails(worker1, contractType, mainJobRole1);
     cy.getByLabel('Yes').click();
     cy.contains('button', 'Continue').click();
 
-    addAndConfirmMandatoryStaffDetails(name2, contractType, mainJobRole1);
+    addAndConfirmMandatoryStaffDetails(worker2, contractType, mainJobRole1);
     cy.getByLabel('No').click();
     cy.contains('button', 'Continue').click();
 
@@ -77,13 +80,69 @@ describe.only('Updating workplace after staff updates', () => {
     cy.get('[data-testid="plus-button-job-0"]').click();
     cy.contains('button', 'Save and return').click();
 
-    cy.get('[data-testid="numberOfStaff"]').contains('6')
-    cy.get('[data-testid="vacancies"]').contains('1 x senior care worker')
-    cy.get('[data-testid="starters"]').contains('2 x care worker')
-    cy.contains("Total number of staff, vacancies and starters information saved")
+    cy.get('[data-testid="numberOfStaff"]').contains('6');
+    cy.get('[data-testid="vacancies"]').contains('1 x senior care worker');
+    cy.get('[data-testid="starters"]').contains('2 x care worker');
+    cy.contains('Total number of staff, vacancies and starters information saved');
     cy.contains('button', 'Continue').click();
-    cy.contains(`${mainJobRole1}`)
-    cy.contains(`${mainJobRole2}`)
+    cy.contains(`${worker1}`);
+    cy.contains(`${worker2}`);
+  });
+
+  it('updates successfully after deleting staff', () => {
+    onHomePage.clickTab('Staff records');
+    cy.intercept('DELETE', '/api/establishment/*/worker/*').as('deleteWorker');
+
+    cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: worker3 });
+    cy.reload();
+
+    cy.get('a').contains(worker3).click();
+
+    cy.get('h1').invoke('text').should('eq', 'Staff record');
+    cy.contains('a', 'Delete staff record').click();
+    cy.getByLabel('Reason not known').check();
+    cy.get('input#confirmDelete').check();
+
+    cy.get('button').contains('Delete this staff record').click();
+    cy.wait('@deleteWorker');
+
+    cy.contains(`Staff record deleted (${worker3})`).should('be.visible');
+
+    cy.getByLabel('No').click();
+    cy.contains('button', 'Continue').click();
+
+    cy.get('[data-testid="numberOfStaff"]').contains('Change').click();
+    cy.contains('h1', 'Update the total number of staff for your workplace').should('be.visible');
+
+    cy.get('[data-testid="minus-button-total-number-of-staff"]').click();
+    cy.contains('button', 'Save and return').click();
+    cy.get('[data-testid="numberOfStaff"]').contains(`${noOfStaffBeforeUpdate - 1}`);
+
+    cy.get('[data-testid="vacancies"]').contains('Add').click();
+    cy.contains('button', 'Add job roles').click();
+    cy.contains('button', 'Show all job roles').click();
+    cy.getByLabel(mainJobRole1).click();
+    cy.contains('button', 'Continue').click();
+
+    cy.get('[data-testid="total-number"]').contains(1);
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('[data-testid="leavers"]').contains('Add').click();
+    cy.contains('button', 'Add job roles').click();
+    cy.contains('button', 'Show all job roles').click();
+    cy.getByLabel(mainJobRole1).click();
+    cy.contains('button', 'Continue').click();
+
+    cy.get('[data-testid="total-number"]').contains(1);
+    cy.contains('button', 'Save and return').click();
+
+    cy.contains('Total number of staff, vacancies and leavers information saved');
+    cy.get('[data-testid="numberOfStaff"]').contains('3');
+    cy.get('[data-testid="vacancies"]').contains('1 x care worker');
+    cy.get('[data-testid="leavers"]').contains('1 x care worker');
+
+    cy.contains('button', 'Continue').click();
+    cy.get('a').contains(worker3).should('not.exist');
   });
 
   const addAndConfirmMandatoryStaffDetails = (name = 'Bob', contractType = 'Permanent', mainJobRole) => {

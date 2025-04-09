@@ -119,14 +119,40 @@ Cypress.Commands.add('deleteTestWorkerFromDb', (workerName) => {
 });
 
 Cypress.Commands.add('resetStartersLeaversVacancies', (establishmentID) => {
-  const queryString = `UPDATE cqc."Establishment"
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
       SET "NumberOfStaffValue" = 4,
       "VacanciesValue" = null,
       "StartersValue" = null,
       "LeaversValue" = null
-      WHERE "EstablishmentID" = $1;`;
+      WHERE "EstablishmentID" = $1;`,
 
+    `DELETE FROM cqc."EstablishmentJobs"
+    WHERE "EstablishmentID" = $1;`,
+  ];
   const parameters = [establishmentID];
 
-  cy.task('dbQuery', { queryString, parameters });
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('updateStartersLeaversVacancies', (establishmentID) => {
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+      SET "NumberOfStaffValue" = 4,
+      "VacanciesValue" = null,
+      "StartersValue" = null,
+      "LeaversValue" = null
+      WHERE "EstablishmentID" = $1;`,
+
+    `INSERT INTO cqc."EstablishmentJobs"
+      ("JobID", "EstablishmentID", "JobType", "Total")
+      VALUES (10, $1, 'Vacancies', 1);`,
+  ];
+  const parameters = [establishmentID];
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
 });
