@@ -13,6 +13,7 @@ export class UpdateWorkplaceAfterStaffChangesService {
   private _selectedStarters: Starter[] = null;
   private _selectedLeavers: Leaver[] = null;
   private _hasViewedSavedBanner: boolean = false;
+  private _doYouWantToAddOrDeleteAnswer: DoYouWantToAddOrDeleteAnswer;
 
   public addToVisitedPages(page: WorkplaceUpdatePage): void {
     this.visitedPages.add(page);
@@ -83,6 +84,14 @@ export class UpdateWorkplaceAfterStaffChangesService {
   set hasViewedSavedBanner(hasViewed: boolean) {
     this._hasViewedSavedBanner = hasViewed;
   }
+
+  get doYouWantToAddOrDeleteAnswer(): DoYouWantToAddOrDeleteAnswer {
+    return this._doYouWantToAddOrDeleteAnswer;
+  }
+
+  set doYouWantToAddOrDeleteAnswer(answer: DoYouWantToAddOrDeleteAnswer) {
+    this._doYouWantToAddOrDeleteAnswer = answer;
+  }
 }
 
 export enum WorkplaceUpdatePage {
@@ -107,4 +116,9 @@ const deleteStaffWorkplaceUpdatePages = [
 export enum WorkplaceUpdateFlowType {
   ADD = 'ADD',
   DELETE = 'DELETE',
+}
+
+export enum DoYouWantToAddOrDeleteAnswer {
+  YES = 'Yes',
+  NO = 'No',
 }

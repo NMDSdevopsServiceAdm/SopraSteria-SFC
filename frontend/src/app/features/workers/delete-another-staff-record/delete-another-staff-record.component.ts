@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import {
+  DoYouWantToAddOrDeleteAnswer,
+  UpdateWorkplaceAfterStaffChangesService,
+} from '@core/services/update-workplace-after-staff-changes.service';
 
 @Component({
   selector: 'app-delete-add-another-staff-record',
@@ -24,10 +27,19 @@ export class DeleteAnotherStaffRecordComponent implements OnInit {
   }
   ngOnInit(): void {
     this.workplaceUid = this.establishmentService.establishment.uid;
+    this.prefillRadioIfUserHasComeBackToPage();
+  }
+
+  private prefillRadioIfUserHasComeBackToPage(): void {
+    const previousAnswer = this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer;
+
+    if (previousAnswer) {
+      this.form.get('deleteAnotherStaffRecord').setValue(previousAnswer);
+    }
   }
 
   public onSubmit(): void {
-    if (this.form.controls['deleteAnotherStaffRecord'].value === 'YES') {
+    if (this.form.controls['deleteAnotherStaffRecord'].value === DoYouWantToAddOrDeleteAnswer.YES) {
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
     } else {
       this.updateWorkplaceAfterStaffChangesService.resetVisitedAndSubmittedPages();
