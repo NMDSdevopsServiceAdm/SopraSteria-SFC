@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/update-workplace-after-staff-changes.service';
-import {
-  UpdateStartersLeaversVacanciesDirective,
-} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-starters',
@@ -19,7 +17,7 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
     "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
 
   public serverErrorMessage = 'Failed to update starters';
-  public noOrDoNotKnowErrorMessage = 'Select there are no starters or do not know';
+  public noOrDoNotKnowErrorMessage = 'Select no staff started or do not know';
   public numberRequiredErrorMessage = 'Enter the number of starters or remove';
   public validNumberErrorMessage = 'Number of starters must be between 1 and 999';
 

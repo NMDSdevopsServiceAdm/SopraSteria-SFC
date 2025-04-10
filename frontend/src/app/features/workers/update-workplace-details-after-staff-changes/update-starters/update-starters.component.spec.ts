@@ -610,7 +610,7 @@ describe('UpdateStartersComponent', () => {
           workplace: mockFreshWorkplace,
         });
         const expectedErrorMessage1 = 'Add a job role';
-        const expectedErrorMessage2 = 'Select there are no starters or do not know';
+        const expectedErrorMessage2 = 'Select no staff started or do not know';
 
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
@@ -644,7 +644,7 @@ describe('UpdateStartersComponent', () => {
           'Number of starters must be between 1 and 999 (care worker)',
           'Number of starters must be between 1 and 999',
         );
-        expectErrorMessageAppears('Select there are no starters or do not know');
+        expectErrorMessageAppears('Select no staff started or do not know');
         expect(queryByText('Add a job role')).toBeFalsy();
 
         expect(updateJobsSpy).not.toHaveBeenCalled();
@@ -667,7 +667,7 @@ describe('UpdateStartersComponent', () => {
 
         fixture.detectChanges();
 
-        expect(queryByText('Select there are no starters or do not know')).toBeFalsy();
+        expect(queryByText('Select no staff started or do not know')).toBeFalsy();
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
 
@@ -688,7 +688,7 @@ describe('UpdateStartersComponent', () => {
 
         fixture.detectChanges();
 
-        expectErrorMessageAppears('Select there are no starters or do not know');
+        expectErrorMessageAppears('Select no staff started or do not know');
 
         await fillInValueForJobRole('Care worker', '1');
         await fillInValueForJobRole('Registered nurse', '2');
@@ -697,7 +697,7 @@ describe('UpdateStartersComponent', () => {
 
         fixture.detectChanges();
 
-        expect(queryByText('Select there are no starters or do not know')).toBeFalsy();
+        expect(queryByText('Select no staff started or do not know')).toBeFalsy();
         expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, {
           starters: [
             { jobId: 10, total: 1 },
