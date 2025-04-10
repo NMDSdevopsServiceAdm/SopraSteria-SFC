@@ -92,6 +92,10 @@ export class UpdateWorkplaceAfterStaffChangesService {
   set doYouWantToAddOrDeleteAnswer(answer: DoYouWantToAddOrDeleteAnswer) {
     this._doYouWantToAddOrDeleteAnswer = answer;
   }
+
+  public clearDoYouWantToAddOrDeleteAnswer(): void {
+    this._doYouWantToAddOrDeleteAnswer = null;
+  }
 }
 
 export enum WorkplaceUpdatePage {
