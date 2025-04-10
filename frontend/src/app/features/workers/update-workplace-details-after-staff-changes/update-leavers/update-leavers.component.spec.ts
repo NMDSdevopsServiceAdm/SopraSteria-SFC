@@ -19,7 +19,7 @@ import { of, throwError } from 'rxjs';
 
 import { UpdateLeaversComponent } from './update-leavers.component';
 
-fdescribe('UpdateLeaversComponent', () => {
+describe('UpdateLeaversComponent', () => {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 1);
 

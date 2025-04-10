@@ -5,7 +5,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { WindowRef } from './window.ref';
 
-fdescribe('BackLinkService', () => {
+describe('BackLinkService', () => {
   let service: AlertService;
   let router: Router;
 

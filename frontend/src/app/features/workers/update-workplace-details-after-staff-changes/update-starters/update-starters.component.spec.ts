@@ -19,7 +19,7 @@ import { of, throwError } from 'rxjs';
 
 import { UpdateStartersComponent } from './update-starters.component';
 
-fdescribe('UpdateStartersComponent', () => {
+describe('UpdateStartersComponent', () => {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 1);
 

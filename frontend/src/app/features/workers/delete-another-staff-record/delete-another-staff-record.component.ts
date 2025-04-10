@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 
@@ -14,7 +13,6 @@ export class DeleteAnotherStaffRecordComponent implements OnInit {
   private workplaceUid: string;
 
   constructor(
-    private backLinkService: BackLinkService,
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private establishmentService: EstablishmentService,
@@ -25,7 +23,6 @@ export class DeleteAnotherStaffRecordComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    this.backLinkService.showBackLink();
     this.workplaceUid = this.establishmentService.establishment.uid;
   }
 
