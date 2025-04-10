@@ -40,9 +40,12 @@ export class DeleteAnotherStaffRecordComponent implements OnInit {
 
   public onSubmit(): void {
     if (this.form.controls['deleteAnotherStaffRecord'].value === DoYouWantToAddOrDeleteAnswer.YES) {
+      this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.YES;
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
     } else {
       this.updateWorkplaceAfterStaffChangesService.resetVisitedAndSubmittedPages();
+      this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.NO;
+
       this.router.navigate([
         '/workplace',
         this.workplaceUid,

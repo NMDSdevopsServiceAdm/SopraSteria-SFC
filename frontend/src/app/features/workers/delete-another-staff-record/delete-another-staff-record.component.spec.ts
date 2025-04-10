@@ -43,11 +43,21 @@ describe('DeleteAnotherStaffRecordComponent', () => {
     const router = injector.inject(Router) as Router;
     const navigateSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const updateWorkplaceAfterStaffChangesService = injector.inject(
+      UpdateWorkplaceAfterStaffChangesService,
+    ) as UpdateWorkplaceAfterStaffChangesService;
+    const doYouWantToAddOrDeleteAnswerSpy = spyOnProperty(
+      updateWorkplaceAfterStaffChangesService,
+      'doYouWantToAddOrDeleteAnswer',
+      'set',
+    );
+
     return {
       ...setupTools,
       component,
       navigateSpy,
       resetVisitedAndSubmittedPagesSpy,
+      doYouWantToAddOrDeleteAnswerSpy,
     };
   }
 
@@ -163,6 +173,26 @@ describe('DeleteAnotherStaffRecordComponent', () => {
 
       expect(yesRadioButton.checked).toBeFalsy();
       expect(noRadioButton.checked).toBeFalsy();
+    });
+
+    it('should set doYouWantToAddOrDeleteAnswer as Yes in service when Yes submitted', async () => {
+      const { getByLabelText, getByText, doYouWantToAddOrDeleteAnswerSpy } = await setup();
+
+      const yesRadioButton = getByLabelText('Yes') as HTMLInputElement;
+      userEvent.click(yesRadioButton);
+      userEvent.click(getByText('Continue'));
+
+      expect(doYouWantToAddOrDeleteAnswerSpy).toHaveBeenCalledWith(DoYouWantToAddOrDeleteAnswer.YES);
+    });
+
+    it('should set doYouWantToAddOrDeleteAnswer as No in service when No submitted', async () => {
+      const { getByLabelText, getByText, doYouWantToAddOrDeleteAnswerSpy } = await setup();
+
+      const noRadioButton = getByLabelText('No') as HTMLInputElement;
+      userEvent.click(noRadioButton);
+      userEvent.click(getByText('Continue'));
+
+      expect(doYouWantToAddOrDeleteAnswerSpy).toHaveBeenCalledWith(DoYouWantToAddOrDeleteAnswer.NO);
     });
   });
 });
