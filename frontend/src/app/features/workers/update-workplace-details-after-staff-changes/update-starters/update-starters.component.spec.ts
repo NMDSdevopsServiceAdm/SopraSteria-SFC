@@ -61,6 +61,7 @@ describe('UpdateStartersComponent', () => {
     const workplace = override.workplace ?? mockWorkplaceWithNoStarters;
     const selectedStarters = override.startersFromSelectJobRolePages ?? null;
     const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
+    const addToSubmittedPagesSpy = jasmine.createSpy('addToSubmittedPages');
 
     const setupTools = await render(UpdateStartersComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -71,6 +72,7 @@ describe('UpdateStartersComponent', () => {
           useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
             selectedStarters,
             addToVisitedPages: addToVisitedPagesSpy,
+            addToSubmittedPages: addToSubmittedPagesSpy,
           }),
         },
         {
@@ -110,6 +112,7 @@ describe('UpdateStartersComponent', () => {
       setStateSpy,
       updateWorkplaceAfterStaffChangesService,
       addToVisitedPagesSpy,
+      addToSubmittedPagesSpy,
     };
   };
 
@@ -504,6 +507,13 @@ describe('UpdateStartersComponent', () => {
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
       expect(updateWorkplaceAfterStaffChangesService.selectedStarters).toEqual(null);
+    });
+
+    it('should add starters page to submittedPages in UpdateWorkplaceAfterStaffChangesService', async () => {
+      const { getByRole, addToSubmittedPagesSpy } = await setup();
+
+      userEvent.click(getByRole('button', { name: 'Save and return' }));
+      expect(addToSubmittedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_STARTERS);
     });
 
     describe('validation', () => {
