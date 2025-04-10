@@ -13,7 +13,7 @@ export class UpdateWorkplaceAfterStaffChangesService {
   private _selectedStarters: Starter[] = null;
   private _selectedLeavers: Leaver[] = null;
   private _hasViewedSavedBanner: boolean = false;
-  private _doYouWantToAddOrDeleteAnswer: DoYouWantToAddOrDeleteAnswer;
+  private _doYouWantToAddOrDeleteAnswer: DoYouWantToAddOrDeleteAnswer = null;
 
   public addToVisitedPages(page: WorkplaceUpdatePage): void {
     this.visitedPages.add(page);

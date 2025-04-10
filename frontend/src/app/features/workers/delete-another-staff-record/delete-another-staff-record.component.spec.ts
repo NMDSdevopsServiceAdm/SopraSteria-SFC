@@ -163,9 +163,9 @@ describe('DeleteAnotherStaffRecordComponent', () => {
       expect(noRadioButton.checked).toBeTruthy();
     });
 
-    it('should not prefill either radio button when doYouWantToAddOrDeleteAnswer is not defined in service', async () => {
+    it('should not prefill either radio button when doYouWantToAddOrDeleteAnswer is null in service', async () => {
       const { getByLabelText } = await setup({
-        updateWorkplaceService: { doYouWantToAddOrDeleteAnswer: undefined },
+        updateWorkplaceService: { doYouWantToAddOrDeleteAnswer: null },
       });
 
       const yesRadioButton = getByLabelText('Yes') as HTMLInputElement;
