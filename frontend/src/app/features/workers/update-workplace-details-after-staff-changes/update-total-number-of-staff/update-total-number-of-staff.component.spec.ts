@@ -27,6 +27,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
   const setup = async (overrides: any = {}) => {
     const numberOfStaff = overrides?.numberOfStaff ?? 10;
     const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
+    const addToSubmittedPagesSpy = jasmine.createSpy('addToSubmittedPages');
 
     const setupTools = await render(UpdateTotalNumberOfStaffComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -59,6 +60,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
           provide: UpdateWorkplaceAfterStaffChangesService,
           useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
             addToVisitedPages: addToVisitedPagesSpy,
+            addToSubmittedPages: addToSubmittedPagesSpy,
           }),
         },
       ],
@@ -81,6 +83,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
       mockEstablishment,
       establishmentService,
       addToVisitedPagesSpy,
+      addToSubmittedPagesSpy,
     };
   };
 
@@ -168,6 +171,14 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
       fixture.detectChanges();
 
       expect(postStaffSpy).toHaveBeenCalledWith(mockEstablishment.uid, 10);
+    });
+
+    it('should add total staff page to submittedPages in UpdateWorkplaceAfterStaffChangesService when successful', async () => {
+      const { addToSubmittedPagesSpy } = await setup();
+
+      await fillInNumberAndSubmitForm('10');
+
+      expect(addToSubmittedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.TOTAL_STAFF);
     });
 
     it('should update numberOfStaff in establishment service if backend call is successful', async () => {

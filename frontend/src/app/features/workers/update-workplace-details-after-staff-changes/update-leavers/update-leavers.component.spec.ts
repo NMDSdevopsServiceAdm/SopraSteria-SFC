@@ -62,7 +62,7 @@ describe('UpdateLeaversComponent', () => {
   const totalJobRoles = (jobRoles: any) => {
     let total = 0;
 
-    for (let i in jobRoles) {
+    for (const i in jobRoles) {
       total += jobRoles[i].total;
     }
     return total;
@@ -72,6 +72,7 @@ describe('UpdateLeaversComponent', () => {
     const selectedLeavers = override.leaversFromSelectJobRolePages ?? null;
     const workplace = override.workplace ?? mockWorkplace;
     const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
+    const addToSubmittedPagesSpy = jasmine.createSpy('addToSubmittedPages');
 
     const setupTools = await render(UpdateLeaversComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -88,6 +89,7 @@ describe('UpdateLeaversComponent', () => {
           useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
             selectedLeavers,
             addToVisitedPages: addToVisitedPagesSpy,
+            addToSubmittedPages: addToSubmittedPagesSpy,
           }),
         },
         {
@@ -120,6 +122,7 @@ describe('UpdateLeaversComponent', () => {
       updateWorkplaceAfterStaffChangesService,
       updateJobsSpy,
       addToVisitedPagesSpy,
+      addToSubmittedPagesSpy,
     };
   };
 
@@ -385,6 +388,16 @@ describe('UpdateLeaversComponent', () => {
         });
       });
     });
+
+    it('should add leavers page to submittedPages in UpdateWorkplaceAfterStaffChangesService', async () => {
+      const { getByRole, addToSubmittedPagesSpy } = await setup({
+        workplace: mockWorkplace,
+        leaversFromSelectJobRolePages: selectedJobRoles,
+      });
+
+      userEvent.click(getByRole('button', { name: 'Save and return' }));
+      expect(addToSubmittedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_LEAVERS);
+    });
   });
 
   describe('validation', () => {
@@ -396,7 +409,7 @@ describe('UpdateLeaversComponent', () => {
       fixture.detectChanges();
 
       const errorMessage1 = getAllByText('Add a job role');
-      const errorMessage2 = getAllByText('Select there are no leavers or do not know');
+      const errorMessage2 = getAllByText('Select no staff left or do not know');
 
       expect(errorMessage1.length).toEqual(2);
       expect(errorMessage2.length).toEqual(2);
@@ -419,7 +432,7 @@ describe('UpdateLeaversComponent', () => {
       const errorMessage1Text = 'Enter the number of leavers or remove';
 
       const errorMessage1 = getAllByText(`${errorMessage1Text} ${jobRole.toLowerCase()}`);
-      const errorMessage2 = getAllByText('Select there are no leavers or do not know');
+      const errorMessage2 = getAllByText('Select no staff left or do not know');
 
       expect(errorMessage1.length).toEqual(2);
       expect(errorMessage2.length).toEqual(2);
@@ -442,7 +455,7 @@ describe('UpdateLeaversComponent', () => {
       const errorMessage1Text = 'Number of leavers must be between 1 and 999';
       const errorMessage1 = getByText(errorMessage1Text);
       const errorMessage1WithJobRole = getByText(`${errorMessage1Text} (${jobRole.toLowerCase()})`);
-      const errorMessage2 = getAllByText('Select there are no leavers or do not know');
+      const errorMessage2 = getAllByText('Select no staff left or do not know');
 
       expect(errorMessage1).toBeTruthy();
       expect(errorMessage1WithJobRole).toBeTruthy();

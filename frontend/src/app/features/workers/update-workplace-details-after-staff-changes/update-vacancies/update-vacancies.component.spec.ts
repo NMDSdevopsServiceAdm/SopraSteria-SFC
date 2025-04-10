@@ -50,6 +50,7 @@ describe('UpdateVacanciesComponent', () => {
     const workplace = override.workplace ?? mockWorkplaceWithNoVacancies;
     const selectedVacancies = override.vacanciesFromSelectJobRolePages ?? null;
     const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
+    const addToSubmittedPagesSpy = jasmine.createSpy('addToSubmittedPages');
 
     const setupTools = await render(UpdateVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -60,6 +61,7 @@ describe('UpdateVacanciesComponent', () => {
           useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
             selectedVacancies,
             addToVisitedPages: addToVisitedPagesSpy,
+            addToSubmittedPages: addToSubmittedPagesSpy,
           }),
         },
         {
@@ -98,6 +100,7 @@ describe('UpdateVacanciesComponent', () => {
       setStateSpy,
       updateWorkplaceAfterStaffChangesService,
       addToVisitedPagesSpy,
+      addToSubmittedPagesSpy,
       ...setupTools,
     };
   };
@@ -493,6 +496,13 @@ describe('UpdateVacanciesComponent', () => {
       expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(null);
     });
 
+    it('should add vacancies page to submittedPages in UpdateWorkplaceAfterStaffChangesService', async () => {
+      const { getByRole, addToSubmittedPagesSpy } = await setup();
+
+      userEvent.click(getByRole('button', { name: 'Save and return' }));
+      expect(addToSubmittedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_VACANCIES);
+    });
+
     describe('validation', () => {
       const testCases = [
         {
@@ -560,6 +570,31 @@ describe('UpdateVacanciesComponent', () => {
           'Number of vacancies must be between 1 and 999',
         );
         expectErrorMessageAppears('Enter the number of current staff vacancies or remove social worker');
+      });
+
+      it('should not show any error message when some error message is appearing and user selected "There are no current staff vacancies"', async () => {
+        const { fixture, getByRole, getByLabelText, queryByText } = await setup({
+          vacanciesFromSelectJobRolePages: mockVacancies,
+        });
+
+        await fillInValueForJobRole('Registered nurse', '9999');
+        await fillInValueForJobRole('Social worker', '');
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        fixture.detectChanges();
+
+        expectErrorMessageAppears(
+          'Number of vacancies must be between 1 and 999 (registered nurse)',
+          'Number of vacancies must be between 1 and 999',
+        );
+
+        userEvent.click(getByLabelText(radioButtonLabels.No));
+
+        fixture.detectChanges();
+
+        expect(queryByText('There is a problem')).toBeFalsy();
+        expect(queryByText('Select there are no current staff vacancies or do not know')).toBeFalsy();
       });
 
       it('should still show the correct error messages even if some job roles were removed after submit', async () => {
