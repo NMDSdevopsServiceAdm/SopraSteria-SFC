@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NavigationStart, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -13,7 +13,7 @@ export class AlertService {
   private _alert$: BehaviorSubject<Alert> = new BehaviorSubject(null);
 
   constructor(private router: Router, private windowRef: WindowRef) {
-    this.router.events.pipe(filter((event) => event instanceof NavigationStart)).subscribe(() => {
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
       this.removeAlert();
     });
   }
