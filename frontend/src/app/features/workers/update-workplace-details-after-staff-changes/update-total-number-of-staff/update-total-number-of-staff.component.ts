@@ -97,6 +97,8 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
 
   onSuccess(data: { numberOfStaff: number }): void {
     this.updateWorkplaceState(data.numberOfStaff);
+    this.updateWorkplaceAfterStaffChangesService.addToSubmittedPages(WorkplaceUpdatePage.TOTAL_STAFF);
+
     this.returnToPreviousPage();
   }
 
