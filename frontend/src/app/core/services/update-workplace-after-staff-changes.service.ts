@@ -12,6 +12,7 @@ export class UpdateWorkplaceAfterStaffChangesService {
   private _selectedVacancies: Vacancy[] = null;
   private _selectedStarters: Starter[] = null;
   private _selectedLeavers: Leaver[] = null;
+  private _hasViewedSavedBanner: boolean = false;
 
   public addToVisitedPages(page: WorkplaceUpdatePage): void {
     this.visitedPages.add(page);
@@ -72,6 +73,14 @@ export class UpdateWorkplaceAfterStaffChangesService {
 
   set selectedLeavers(updatedLeavers: Leaver[]) {
     this._selectedLeavers = updatedLeavers;
+  }
+
+  get hasViewedSavedBanner(): boolean {
+    return this._hasViewedSavedBanner;
+  }
+
+  set hasViewedSavedBanner(hasViewed: boolean) {
+    this._hasViewedSavedBanner = hasViewed;
   }
 }
 

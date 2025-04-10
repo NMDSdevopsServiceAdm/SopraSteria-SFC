@@ -168,6 +168,18 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
         expect(alertSpy).not.toHaveBeenCalled();
       });
+
+      it('should not add alert when user has submitted on all update question pages but has already seen banner', async () => {
+        const { alertSpy } = await setup({
+          updateWorkplaceAfterStaffChangesService: {
+            allUpdatePagesVisited: () => true,
+            allUpdatePagesSubmitted: () => true,
+            hasViewedSavedBanner: true,
+          },
+        });
+
+        expect(alertSpy).not.toHaveBeenCalled();
+      });
     });
   });
 

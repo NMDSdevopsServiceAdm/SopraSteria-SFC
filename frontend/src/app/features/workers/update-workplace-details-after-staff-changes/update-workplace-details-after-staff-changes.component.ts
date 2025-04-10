@@ -38,13 +38,15 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
     this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
     this.backLinkService.showBackLink();
 
-    if (this.allPagesSubmitted) {
+    if (this.allPagesSubmitted && !this.updateWorkplaceAfterStaffChangesService.hasViewedSavedBanner) {
       this.alertService.addAlert({
         type: 'success',
         message: `Total number of staff, vacancies and ${
           this.flowType === WorkplaceUpdateFlowType.ADD ? 'starters' : 'leavers'
         } information saved`,
       });
+
+      this.updateWorkplaceAfterStaffChangesService.hasViewedSavedBanner = true;
     }
   }
 
