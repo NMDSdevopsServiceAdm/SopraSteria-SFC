@@ -156,3 +156,31 @@ Cypress.Commands.add('updateStartersLeaversVacancies', (establishmentID) => {
 
   cy.task('multipleDbQueries', dbQueries);
 });
+
+
+Cypress.Commands.add('addJobRoles', (jobRoles, action) => {
+  if (jobRoles?.length > 0) {
+    cy.contains('button', 'Show all job roles').click();
+
+    jobRoles.forEach((jobRole) => {
+      cy.getByLabel(jobRole.job).click();
+    });
+
+    cy.contains('button', 'Continue').click();
+
+    let jobTotal = 0;
+
+    if (action === 'type') {
+      jobRoles.forEach((jobRole) => {
+        cy.getByLabel(jobRole.job).clear().type(jobRole.total);
+        jobTotal += jobRole.total;
+      });
+      cy.get('button').first().focus();
+      cy.get('[data-testid="total-number"]').contains(jobTotal);
+    } else {
+      cy.get('[data-testid="total-number"]').contains(jobRoles.length);
+    }
+
+    cy.contains('button', 'Save and return').click();
+  }
+});

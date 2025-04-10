@@ -47,7 +47,9 @@ describe('Standalone home page as edit user', () => {
   it('can add current staff vacancies successfully', () => {
     cy.get('[data-testid="vacancies-top-row"]').contains('Add').click();
 
-    addJobRoles(jobRoles);
+    cy.getByLabel('Yes').click();
+    cy.contains('button', 'Continue').click();
+    cy.addJobRoles(jobRoles, 'type');
 
     jobRoles.forEach((jobRole) => {
       cy.get('[data-testid="vacancies-top-row"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
@@ -57,7 +59,9 @@ describe('Standalone home page as edit user', () => {
   it('can add new starters successfully', () => {
     cy.get('[data-testid="starters"]').contains('Add').click();
 
-    addJobRoles(jobRoles);
+    cy.getByLabel('Yes').click();
+    cy.contains('button', 'Continue').click();
+    cy.addJobRoles(jobRoles, 'type');
 
     jobRoles.forEach((jobRole) => {
       cy.get('[data-testid="starters"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
@@ -67,31 +71,13 @@ describe('Standalone home page as edit user', () => {
   it('can add staff leavers successfully', () => {
     cy.get('[data-testid="leavers"]').contains('Add').click();
 
-    addJobRoles(jobRoles);
+    cy.getByLabel('Yes').click();
+    cy.contains('button', 'Continue').click();
+    cy.addJobRoles(jobRoles, 'type');
 
     jobRoles.forEach((jobRole) => {
       cy.get('[data-testid="leavers"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
     });
   });
-
-  const addJobRoles = (jobRoles) => {
-    if (jobRoles?.length > 0) {
-      cy.getByLabel('Yes').click();
-      cy.contains('button', 'Continue').click();
-      cy.contains('button', 'Show all job roles').click();
-
-      jobRoles.forEach((jobRole) => {
-        cy.getByLabel(jobRole.job).click();
-      });
-
-      cy.contains('button', 'Continue').click();
-
-      jobRoles.forEach((jobRole) => {
-        cy.getByLabel(jobRole.job).clear().type(jobRole.total);
-      });
-
-      cy.contains('button', 'Save and return').click();
-    }
-  };
 });
 
