@@ -43,6 +43,7 @@ export class UpdateWorkplaceAfterStaffChangesService {
   public resetVisitedAndSubmittedPages(): void {
     this.visitedPages.clear();
     this.submittedPages.clear();
+    this._hasViewedSavedBanner = false;
   }
 
   public clearAllSelectedJobRoles() {
