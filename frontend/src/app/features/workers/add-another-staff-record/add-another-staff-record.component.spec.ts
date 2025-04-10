@@ -2,9 +2,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
@@ -12,13 +13,21 @@ import { AddAnotherStaffRecordComponent } from './add-another-staff-record.compo
 
 describe('AddAnotherStaffRecordComponent', () => {
   async function setup() {
+    const resetVisitedAndSubmittedPagesSpy = jasmine.createSpy('resetVisitedAndSubmittedPages');
+
     const setupTools = await render(AddAnotherStaffRecordComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: UpdateWorkplaceAfterStaffChangesService,
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+            resetVisitedAndSubmittedPages: resetVisitedAndSubmittedPagesSpy,
+          }),
         },
       ],
     });
@@ -33,6 +42,7 @@ describe('AddAnotherStaffRecordComponent', () => {
       ...setupTools,
       component,
       navigateSpy,
+      resetVisitedAndSubmittedPagesSpy,
     };
   }
 
@@ -114,6 +124,14 @@ describe('AddAnotherStaffRecordComponent', () => {
         'staff-record',
         'update-workplace-details-after-adding-staff',
       ]);
+    });
+
+    it('should call resetVisitedAndSubmittedPages when navigating to update-workplace-details-after-adding-staff', async () => {
+      const { getByText, resetVisitedAndSubmittedPagesSpy } = await setup();
+
+      userEvent.click(getByText('Continue'));
+
+      expect(resetVisitedAndSubmittedPagesSpy).toHaveBeenCalled();
     });
   });
 });

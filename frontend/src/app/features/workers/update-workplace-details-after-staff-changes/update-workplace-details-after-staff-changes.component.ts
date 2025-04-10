@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
@@ -13,7 +13,7 @@ import {
   selector: 'app-update-workplace-details-after-staff-changes',
   templateUrl: './update-workplace-details-after-staff-changes.component.html',
 })
-export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
+export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit {
   constructor(
     private establishmentService: EstablishmentService,
     private router: Router,
@@ -25,6 +25,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
 
   public workplace: Establishment;
   public allPagesVisited: boolean;
+  public allPagesSubmitted: boolean;
   public WorkplaceUpdateFlowType = WorkplaceUpdateFlowType;
   public flowType: WorkplaceUpdateFlowType;
 
@@ -32,20 +33,24 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
     this.flowType = this.route.snapshot?.data?.flowType;
     this.workplace = this.establishmentService.establishment;
     this.allPagesVisited = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesVisited(this.flowType);
+    this.allPagesSubmitted = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesSubmitted(this.flowType);
+
     this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
     this.backLinkService.showBackLink();
 
-    if (this.allPagesVisited) {
+    if (this.allPagesSubmitted && !this.updateWorkplaceAfterStaffChangesService.hasViewedSavedBanner) {
       this.alertService.addAlert({
         type: 'success',
         message: `Total number of staff, vacancies and ${
           this.flowType === WorkplaceUpdateFlowType.ADD ? 'starters' : 'leavers'
         } information saved`,
       });
+
+      this.updateWorkplaceAfterStaffChangesService.hasViewedSavedBanner = true;
     }
   }
 
-  public isArray(variable: any): boolean {
+  public isArray(variable: unknown): boolean {
     return Array.isArray(variable);
   }
 

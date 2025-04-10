@@ -1,29 +1,37 @@
-import { render } from '@testing-library/angular';
-import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record.component'
-import userEvent from '@testing-library/user-event';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+
+import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record.component';
 
 describe('DeleteAnotherStaffRecordComponent', () => {
   async function setup() {
-    const setupTools = await render(
-      DeleteAnotherStaffRecordComponent,
-      {
-        imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService
-          },
-        ]
-      }
-    );
+    const resetVisitedAndSubmittedPagesSpy = jasmine.createSpy('resetVisitedAndSubmittedPages');
+
+    const setupTools = await render(DeleteAnotherStaffRecordComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: UpdateWorkplaceAfterStaffChangesService,
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+            resetVisitedAndSubmittedPages: resetVisitedAndSubmittedPagesSpy,
+          }),
+        },
+      ],
+    });
 
     const component = setupTools.fixture.componentInstance;
 
@@ -34,7 +42,8 @@ describe('DeleteAnotherStaffRecordComponent', () => {
     return {
       ...setupTools,
       component,
-      navigateSpy
+      navigateSpy,
+      resetVisitedAndSubmittedPagesSpy,
     };
   }
 
@@ -44,19 +53,19 @@ describe('DeleteAnotherStaffRecordComponent', () => {
   });
 
   it('displays the header text', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
 
     expect(getByText('Do you want to delete another staff record?')).toBeTruthy();
   });
 
   it('displays the section text', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
 
     expect(getByText('Staff records')).toBeTruthy();
   });
 
   it('displays the yes/no radio buttons', async () => {
-    const { component, fixture, getByLabelText } = await setup();
+    const { getByLabelText } = await setup();
 
     const yesRadioButton = getByLabelText('Yes');
     const noRadioButton = getByLabelText('No');
@@ -78,9 +87,7 @@ describe('DeleteAnotherStaffRecordComponent', () => {
       userEvent.click(getByText('Continue'));
       fixture.detectChanges();
 
-      expect(navigateSpy).toHaveBeenCalledWith([
-        '/dashboard'
-      ], {fragment: 'staff-records'});
+      expect(navigateSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
     });
 
     it(`navigates to staff changes summary when 'no' is selected`, async () => {
@@ -94,7 +101,7 @@ describe('DeleteAnotherStaffRecordComponent', () => {
         '/workplace',
         'mocked-uid',
         'staff-record',
-        'update-workplace-details-after-deleting-staff'
+        'update-workplace-details-after-deleting-staff',
       ]);
     });
 
@@ -108,8 +115,16 @@ describe('DeleteAnotherStaffRecordComponent', () => {
         '/workplace',
         'mocked-uid',
         'staff-record',
-        'update-workplace-details-after-deleting-staff'
+        'update-workplace-details-after-deleting-staff',
       ]);
     });
+
+    it('should call resetVisitedAndSubmittedPages when navigating to staff changes summary', async () => {
+      const { getByText, resetVisitedAndSubmittedPagesSpy } = await setup();
+
+      userEvent.click(getByText('Continue'));
+
+      expect(resetVisitedAndSubmittedPagesSpy).toHaveBeenCalled();
+    });
   });
-})
+});

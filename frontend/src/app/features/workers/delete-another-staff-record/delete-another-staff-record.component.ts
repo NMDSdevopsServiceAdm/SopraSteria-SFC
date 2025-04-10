@@ -3,20 +3,22 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 
 @Component({
   selector: 'app-delete-add-another-staff-record',
   templateUrl: './delete-another-staff-record.component.html',
 })
-export class DeleteAnotherStaffRecordComponent implements OnInit{
+export class DeleteAnotherStaffRecordComponent implements OnInit {
   public form: UntypedFormGroup;
   private workplaceUid: string;
 
   constructor(
-    protected backLinkService: BackLinkService,
-    protected formBuilder: UntypedFormBuilder,
-    protected router: Router,
-    protected establishmentService: EstablishmentService,
+    private backLinkService: BackLinkService,
+    private formBuilder: UntypedFormBuilder,
+    private router: Router,
+    private establishmentService: EstablishmentService,
+    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
   ) {
     this.form = this.formBuilder.group({
       deleteAnotherStaffRecord: null,
@@ -29,11 +31,15 @@ export class DeleteAnotherStaffRecordComponent implements OnInit{
 
   public onSubmit(): void {
     if (this.form.controls['deleteAnotherStaffRecord'].value === 'YES') {
-      this.router.navigate(['/dashboard'], {fragment: 'staff-records'});
+      this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
     } else {
-      this.router.navigate(['/workplace', this.workplaceUid, 'staff-record', 'update-workplace-details-after-deleting-staff']);
+      this.updateWorkplaceAfterStaffChangesService.resetVisitedAndSubmittedPages();
+      this.router.navigate([
+        '/workplace',
+        this.workplaceUid,
+        'staff-record',
+        'update-workplace-details-after-deleting-staff',
+      ]);
     }
   }
-
-
 }

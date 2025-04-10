@@ -72,6 +72,7 @@ describe('UpdateLeaversComponent', () => {
     const selectedLeavers = override.leaversFromSelectJobRolePages ?? null;
     const workplace = override.workplace ?? mockWorkplace;
     const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
+    const addToSubmittedPagesSpy = jasmine.createSpy('addToSubmittedPages');
 
     const setupTools = await render(UpdateLeaversComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -88,6 +89,7 @@ describe('UpdateLeaversComponent', () => {
           useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
             selectedLeavers,
             addToVisitedPages: addToVisitedPagesSpy,
+            addToSubmittedPages: addToSubmittedPagesSpy,
           }),
         },
         {
@@ -120,6 +122,7 @@ describe('UpdateLeaversComponent', () => {
       updateWorkplaceAfterStaffChangesService,
       updateJobsSpy,
       addToVisitedPagesSpy,
+      addToSubmittedPagesSpy,
     };
   };
 
@@ -384,6 +387,16 @@ describe('UpdateLeaversComponent', () => {
           leavers: jobOptionsEnum[label],
         });
       });
+    });
+
+    it('should add leavers page to submittedPages in UpdateWorkplaceAfterStaffChangesService', async () => {
+      const { getByRole, addToSubmittedPagesSpy } = await setup({
+        workplace: mockWorkplace,
+        leaversFromSelectJobRolePages: selectedJobRoles,
+      });
+
+      userEvent.click(getByRole('button', { name: 'Save and return' }));
+      expect(addToSubmittedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_LEAVERS);
     });
   });
 

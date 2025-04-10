@@ -69,4 +69,52 @@ describe('UpdateWorkplaceAfterStaffChangesService', () => {
       expect(service.allUpdatePagesVisited(WorkplaceUpdateFlowType.DELETE)).toBeTrue();
     });
   });
+
+  describe('allUpdatePagesSubmitted', () => {
+    [
+      [],
+      [WorkplaceUpdatePage.TOTAL_STAFF],
+      [WorkplaceUpdatePage.TOTAL_STAFF, WorkplaceUpdatePage.UPDATE_VACANCIES],
+    ].forEach((submittedPages) => {
+      it(`should return false when not all add pages in submittedPages when ADD passed in (${submittedPages})`, async () => {
+        submittedPages.forEach((page) => {
+          service.addToSubmittedPages(page);
+        });
+
+        expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.ADD)).toBeFalse();
+      });
+
+      it(`should return false when not all delete pages in submittedPages when DELETE passed in (${submittedPages})`, async () => {
+        submittedPages.forEach((page) => {
+          service.addToSubmittedPages(page);
+        });
+
+        expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.DELETE)).toBeFalse();
+      });
+    });
+
+    it('should return true when all pages in submittedPages for add flow', async () => {
+      [
+        WorkplaceUpdatePage.TOTAL_STAFF,
+        WorkplaceUpdatePage.UPDATE_VACANCIES,
+        WorkplaceUpdatePage.UPDATE_STARTERS,
+      ].forEach((page) => {
+        service.addToSubmittedPages(page);
+      });
+
+      expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.ADD)).toBeTrue();
+    });
+
+    it('should return true when all pages in submittedPages for delete flow', async () => {
+      [
+        WorkplaceUpdatePage.TOTAL_STAFF,
+        WorkplaceUpdatePage.UPDATE_VACANCIES,
+        WorkplaceUpdatePage.UPDATE_LEAVERS,
+      ].forEach((page) => {
+        service.addToSubmittedPages(page);
+      });
+
+      expect(service.allUpdatePagesSubmitted(WorkplaceUpdateFlowType.DELETE)).toBeTrue();
+    });
+  });
 });

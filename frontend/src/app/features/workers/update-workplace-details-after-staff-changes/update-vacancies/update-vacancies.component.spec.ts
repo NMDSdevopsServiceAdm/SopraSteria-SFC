@@ -50,6 +50,7 @@ describe('UpdateVacanciesComponent', () => {
     const workplace = override.workplace ?? mockWorkplaceWithNoVacancies;
     const selectedVacancies = override.vacanciesFromSelectJobRolePages ?? null;
     const addToVisitedPagesSpy = jasmine.createSpy('addToVisitedPages');
+    const addToSubmittedPagesSpy = jasmine.createSpy('addToSubmittedPages');
 
     const setupTools = await render(UpdateVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -60,6 +61,7 @@ describe('UpdateVacanciesComponent', () => {
           useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
             selectedVacancies,
             addToVisitedPages: addToVisitedPagesSpy,
+            addToSubmittedPages: addToSubmittedPagesSpy,
           }),
         },
         {
@@ -98,6 +100,7 @@ describe('UpdateVacanciesComponent', () => {
       setStateSpy,
       updateWorkplaceAfterStaffChangesService,
       addToVisitedPagesSpy,
+      addToSubmittedPagesSpy,
       ...setupTools,
     };
   };
@@ -491,6 +494,13 @@ describe('UpdateVacanciesComponent', () => {
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
       expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(null);
+    });
+
+    it('should add vacancies page to submittedPages in UpdateWorkplaceAfterStaffChangesService', async () => {
+      const { getByRole, addToSubmittedPagesSpy } = await setup();
+
+      userEvent.click(getByRole('button', { name: 'Save and return' }));
+      expect(addToSubmittedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_VACANCIES);
     });
 
     describe('validation', () => {
