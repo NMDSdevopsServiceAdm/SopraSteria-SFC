@@ -8,16 +8,13 @@ export class UpdateWorkplaceAfterStaffChangesService {
   constructor() {}
 
   private visitedPages: Set<WorkplaceUpdatePage> = new Set();
+  private submittedPages: Set<WorkplaceUpdatePage> = new Set();
   private _selectedVacancies: Vacancy[] = null;
   private _selectedStarters: Starter[] = null;
   private _selectedLeavers: Leaver[] = null;
 
   public addToVisitedPages(page: WorkplaceUpdatePage): void {
     this.visitedPages.add(page);
-  }
-
-  public resetVisitedPages(): void {
-    this.visitedPages.clear();
   }
 
   public allUpdatePagesVisited(flowType: WorkplaceUpdateFlowType): boolean {
@@ -27,6 +24,24 @@ export class UpdateWorkplaceAfterStaffChangesService {
     return pages.every((page) => {
       return this.visitedPages.has(page);
     });
+  }
+
+  public addToSubmittedPages(page: WorkplaceUpdatePage): void {
+    this.submittedPages.add(page);
+  }
+
+  public allUpdatePagesSubmitted(flowType: WorkplaceUpdateFlowType): boolean {
+    const pages =
+      flowType === WorkplaceUpdateFlowType.ADD ? addStaffWorkplaceUpdatePages : deleteStaffWorkplaceUpdatePages;
+
+    return pages.every((page) => {
+      return this.submittedPages.has(page);
+    });
+  }
+
+  public resetVisitedAndSubmittedPages(): void {
+    this.visitedPages.clear();
+    this.submittedPages.clear();
   }
 
   public clearAllSelectedJobRoles() {
