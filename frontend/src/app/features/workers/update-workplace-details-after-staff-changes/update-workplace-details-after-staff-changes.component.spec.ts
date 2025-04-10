@@ -82,63 +82,91 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     expect(clearJobRolesSpy).toHaveBeenCalled();
   });
 
-  describe('Views when user has visited pages', () => {
-    it('should display warning text when user has not visited all of the update question pages in add view', async () => {
-      const { getByText } = await setup({
-        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisited: () => false },
+  describe('Views when user has visited/submitted on update pages', () => {
+    describe('Warning text', () => {
+      it('should display when user has not visited all of the update question pages in add view', async () => {
+        const { getByText } = await setup({
+          updateWorkplaceAfterStaffChangesService: {
+            allUpdatePagesVisited: () => false,
+            allUpdatePagesSubmitted: () => false,
+          },
+        });
+
+        expect(
+          getByText('This data does not update automatically when you add staff records.', { exact: false }),
+        ).toBeTruthy();
+        expect(getByText('You need to check and change these yourself.', { exact: false })).toBeTruthy();
       });
 
-      expect(
-        getByText('This data does not update automatically when you add staff records.', { exact: false }),
-      ).toBeTruthy();
-      expect(getByText('You need to check and change these yourself.', { exact: false })).toBeTruthy();
-    });
+      it('should display when user has not visited all of the update question pages in delete view', async () => {
+        const { getByText } = await setup({
+          flowType: WorkplaceUpdateFlowType.DELETE,
+          updateWorkplaceAfterStaffChangesService: {
+            allUpdatePagesVisited: () => false,
+            allUpdatePagesSubmitted: () => false,
+          },
+        });
 
-    it('should display warning text when user has not visited all of the update question pages in delete view', async () => {
-      const { getByText } = await setup({
-        flowType: WorkplaceUpdateFlowType.DELETE,
-        updateWorkplaceAfterStaffChangesService: {
-          allUpdatePagesVisited: () => false,
-        },
+        expect(
+          getByText('This data does not update automatically when you delete staff records.', { exact: false }),
+        ).toBeTruthy();
+        expect(getByText('You need to check and change these yourself.', { exact: false })).toBeTruthy();
       });
 
-      expect(
-        getByText('This data does not update automatically when you delete staff records.', { exact: false }),
-      ).toBeTruthy();
-      expect(getByText('You need to check and change these yourself.', { exact: false })).toBeTruthy();
-    });
+      it('should not display when user has visited all of the update question pages', async () => {
+        const { queryByText } = await setup({
+          updateWorkplaceAfterStaffChangesService: {
+            allUpdatePagesVisited: () => true,
+            allUpdatePagesSubmitted: () => false,
+          },
+        });
 
-    it('should not display warning text when user has visited all of the update question pages', async () => {
-      const { queryByText } = await setup({
-        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisited: () => true },
-      });
-
-      expect(
-        queryByText('This data does not update automatically when you add staff records.', { exact: false }),
-      ).toBeFalsy();
-      expect(queryByText('You need to check and change these yourself.', { exact: false })).toBeFalsy();
-    });
-
-    it('should add alert with starters in message when user has visited all update question pages from add version', async () => {
-      const { alertSpy } = await setup({
-        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisited: () => true },
-      });
-
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Total number of staff, vacancies and starters information saved',
+        expect(
+          queryByText('This data does not update automatically when you add staff records.', { exact: false }),
+        ).toBeFalsy();
+        expect(queryByText('You need to check and change these yourself.', { exact: false })).toBeFalsy();
       });
     });
 
-    it('should add alert with leavers in message when user has visited all update question pages from delete version', async () => {
-      const { alertSpy } = await setup({
-        flowType: WorkplaceUpdateFlowType.DELETE,
-        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisited: () => true },
+    describe('Saved banner', () => {
+      it('should add alert with starters in message when user has submitted on all update question pages from add version', async () => {
+        const { alertSpy } = await setup({
+          updateWorkplaceAfterStaffChangesService: {
+            allUpdatePagesVisited: () => true,
+            allUpdatePagesSubmitted: () => true,
+          },
+        });
+
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Total number of staff, vacancies and starters information saved',
+        });
       });
 
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Total number of staff, vacancies and leavers information saved',
+      it('should add alert with leavers in message when user has submitted on all update question pages from delete version', async () => {
+        const { alertSpy } = await setup({
+          flowType: WorkplaceUpdateFlowType.DELETE,
+          updateWorkplaceAfterStaffChangesService: {
+            allUpdatePagesVisited: () => true,
+            allUpdatePagesSubmitted: () => true,
+          },
+        });
+
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Total number of staff, vacancies and leavers information saved',
+        });
+      });
+
+      it('should not add alert when user has visited but not submitted on all update question pages', async () => {
+        const { alertSpy } = await setup({
+          updateWorkplaceAfterStaffChangesService: {
+            allUpdatePagesVisited: () => true,
+            allUpdatePagesSubmitted: () => false,
+          },
+        });
+
+        expect(alertSpy).not.toHaveBeenCalled();
       });
     });
   });
