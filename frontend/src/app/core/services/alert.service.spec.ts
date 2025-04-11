@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { AlertService } from './alert.service';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationStart, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { WindowRef } from './window.ref';
 
@@ -26,7 +26,7 @@ describe('AlertService', () => {
     const removeAlertSpy = spyOn(service, 'removeAlert');
 
     const routerEvent$ = router.events as BehaviorSubject<any>;
-    routerEvent$.next(new NavigationEnd(1, '/test/mock/page/url', '/test/mock/page/url'));
+    routerEvent$.next(new NavigationStart(1, '/test/mock/page/url'));
 
     expect(removeAlertSpy).toHaveBeenCalled();
   });
