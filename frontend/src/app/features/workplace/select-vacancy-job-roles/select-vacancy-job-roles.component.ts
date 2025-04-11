@@ -8,8 +8,9 @@ import { SelectJobRolesDirective } from '../vacancies-and-turnover/select-job-ro
   templateUrl: '../vacancies-and-turnover/select-job-roles.html',
 })
 export class SelectVacancyJobRolesComponent extends SelectJobRolesDirective implements OnInit, OnDestroy {
-  public errorMessageOnEmptyInput = 'Select job roles for all your current staff vacancies';
-  public heading = 'Select job roles for all your current staff vacancies';
+  public errorMessageOnEmptyInput = 'Select job roles for the vacancies you want to add';
+  public heading = 'Select job roles for the vacancies you want to add';
+  public hintText = 'You can review the number of vacancies for each role after you click Save and continue.';
   protected numbersField = 'vacanciesJobRoles';
   protected hasStartersLeaversVacanciesField = 'hasVacancies';
   protected prefillData: Vacancy[] = [];
