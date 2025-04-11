@@ -6,9 +6,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { mockLeaveReasons, MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -21,7 +23,7 @@ import { DeleteStaffRecordComponent } from './delete-staff-record.component';
 describe('DeleteStaffRecordComponent', () => {
   const mockWorker = workerBuilder() as Worker;
 
-  const setup = async (overrides: any = {}) => {
+  const setup = async () => {
     const setupTools = await render(DeleteStaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -42,6 +44,10 @@ describe('DeleteStaffRecordComponent', () => {
             },
           },
         },
+        {
+          provide: UpdateWorkplaceAfterStaffChangesService,
+          useClass: MockUpdateWorkplaceAfterStaffChangesService,
+        },
         AlertService,
         WindowRef,
       ],
@@ -58,6 +64,10 @@ describe('DeleteStaffRecordComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
+    const updateWorkplaceAfterStaffChangesService = injector.inject(
+      UpdateWorkplaceAfterStaffChangesService,
+    ) as UpdateWorkplaceAfterStaffChangesService;
+
     return {
       ...setupTools,
       component,
@@ -65,6 +75,7 @@ describe('DeleteStaffRecordComponent', () => {
       workerService,
       deleteWorkerSpy,
       alertServiceSpy,
+      updateWorkplaceAfterStaffChangesService,
     };
   };
 
@@ -165,13 +176,32 @@ describe('DeleteStaffRecordComponent', () => {
       userEvent.click(getByRole('checkbox', { name: /I know that/ }));
       userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-record', 'delete-another-staff-record']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        'delete-another-staff-record',
+      ]);
 
       await routerSpy.calls.mostRecent().returnValue;
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
         message: `Staff record deleted (${component.worker.nameOrId})`,
       });
+    });
+
+    it('should clear doYouWantToAddOrDeleteAnswer on deletion to ensure no side effects from previous visits to delete another page', async () => {
+      const { getByRole, updateWorkplaceAfterStaffChangesService } = await setup();
+
+      const clearDoYouWantToAddOrDeleteAnswerSpy = spyOn(
+        updateWorkplaceAfterStaffChangesService,
+        'clearDoYouWantToAddOrDeleteAnswer',
+      );
+
+      userEvent.click(getByRole('checkbox', { name: /I know that/ }));
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+
+      expect(clearDoYouWantToAddOrDeleteAnswerSpy).toHaveBeenCalled();
     });
 
     it('should show an error message if confirmation checkbox is not ticked', async () => {

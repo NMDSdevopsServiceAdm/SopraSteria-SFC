@@ -3,7 +3,10 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import {
+  DoYouWantToAddOrDeleteAnswer,
+  UpdateWorkplaceAfterStaffChangesService,
+} from '@core/services/update-workplace-after-staff-changes.service';
 
 @Component({
   selector: 'app-add-another-staff-record',
@@ -27,13 +30,25 @@ export class AddAnotherStaffRecordComponent implements OnInit {
   ngOnInit(): void {
     this.backLinkService.showBackLink();
     this.workplaceUid = this.establishmentService.establishment.uid;
+    this.prefillRadioIfUserHasComeBackToPage();
+  }
+
+  private prefillRadioIfUserHasComeBackToPage(): void {
+    const previousAnswer = this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer;
+
+    if (previousAnswer) {
+      this.form.get('addAnotherStaffRecord').setValue(previousAnswer);
+    }
   }
 
   public onSubmit() {
-    if (this.form.controls['addAnotherStaffRecord'].value === 'YES') {
+    if (this.form.controls['addAnotherStaffRecord'].value === DoYouWantToAddOrDeleteAnswer.YES) {
+      this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.YES;
       this.router.navigate(['/workplace', this.workplaceUid, 'staff-record', 'create-staff-record', 'staff-details']);
     } else {
       this.updateWorkplaceAfterStaffChangesService.resetVisitedAndSubmittedPages();
+      this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.NO;
+
       this.router.navigate([
         '/workplace',
         this.workplaceUid,
