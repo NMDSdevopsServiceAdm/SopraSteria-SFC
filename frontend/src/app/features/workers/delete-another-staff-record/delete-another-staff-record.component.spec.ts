@@ -4,7 +4,10 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import {
+  DoYouWantToAddOrDeleteAnswer,
+  UpdateWorkplaceAfterStaffChangesService,
+} from '@core/services/update-workplace-after-staff-changes.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { render } from '@testing-library/angular';
@@ -13,7 +16,7 @@ import userEvent from '@testing-library/user-event';
 import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record.component';
 
 describe('DeleteAnotherStaffRecordComponent', () => {
-  async function setup() {
+  async function setup(overrides: any = {}) {
     const resetVisitedAndSubmittedPagesSpy = jasmine.createSpy('resetVisitedAndSubmittedPages');
 
     const setupTools = await render(DeleteAnotherStaffRecordComponent, {
@@ -28,6 +31,7 @@ describe('DeleteAnotherStaffRecordComponent', () => {
           provide: UpdateWorkplaceAfterStaffChangesService,
           useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
             resetVisitedAndSubmittedPages: resetVisitedAndSubmittedPagesSpy,
+            ...overrides.updateWorkplaceService,
           }),
         },
       ],
@@ -39,11 +43,21 @@ describe('DeleteAnotherStaffRecordComponent', () => {
     const router = injector.inject(Router) as Router;
     const navigateSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const updateWorkplaceAfterStaffChangesService = injector.inject(
+      UpdateWorkplaceAfterStaffChangesService,
+    ) as UpdateWorkplaceAfterStaffChangesService;
+    const doYouWantToAddOrDeleteAnswerSpy = spyOnProperty(
+      updateWorkplaceAfterStaffChangesService,
+      'doYouWantToAddOrDeleteAnswer',
+      'set',
+    );
+
     return {
       ...setupTools,
       component,
       navigateSpy,
       resetVisitedAndSubmittedPagesSpy,
+      doYouWantToAddOrDeleteAnswerSpy,
     };
   }
 
@@ -125,6 +139,60 @@ describe('DeleteAnotherStaffRecordComponent', () => {
       userEvent.click(getByText('Continue'));
 
       expect(resetVisitedAndSubmittedPagesSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Prefilling radio buttons when user has navigated back to page', () => {
+    it('should prefill yes radio button when doYouWantToAddOrDeleteAnswer is yes in service', async () => {
+      const { getByLabelText } = await setup({
+        updateWorkplaceService: { doYouWantToAddOrDeleteAnswer: DoYouWantToAddOrDeleteAnswer.YES },
+      });
+
+      const yesRadioButton = getByLabelText(DoYouWantToAddOrDeleteAnswer.YES) as HTMLInputElement;
+
+      expect(yesRadioButton.checked).toBeTruthy();
+    });
+
+    it('should prefill no radio button when doYouWantToAddOrDeleteAnswer is no in service', async () => {
+      const { getByLabelText } = await setup({
+        updateWorkplaceService: { doYouWantToAddOrDeleteAnswer: DoYouWantToAddOrDeleteAnswer.NO },
+      });
+
+      const noRadioButton = getByLabelText(DoYouWantToAddOrDeleteAnswer.NO) as HTMLInputElement;
+
+      expect(noRadioButton.checked).toBeTruthy();
+    });
+
+    it('should not prefill either radio button when doYouWantToAddOrDeleteAnswer is null in service', async () => {
+      const { getByLabelText } = await setup({
+        updateWorkplaceService: { doYouWantToAddOrDeleteAnswer: null },
+      });
+
+      const yesRadioButton = getByLabelText('Yes') as HTMLInputElement;
+      const noRadioButton = getByLabelText('No') as HTMLInputElement;
+
+      expect(yesRadioButton.checked).toBeFalsy();
+      expect(noRadioButton.checked).toBeFalsy();
+    });
+
+    it('should set doYouWantToAddOrDeleteAnswer as Yes in service when Yes submitted', async () => {
+      const { getByLabelText, getByText, doYouWantToAddOrDeleteAnswerSpy } = await setup();
+
+      const yesRadioButton = getByLabelText('Yes') as HTMLInputElement;
+      userEvent.click(yesRadioButton);
+      userEvent.click(getByText('Continue'));
+
+      expect(doYouWantToAddOrDeleteAnswerSpy).toHaveBeenCalledWith(DoYouWantToAddOrDeleteAnswer.YES);
+    });
+
+    it('should set doYouWantToAddOrDeleteAnswer as No in service when No submitted', async () => {
+      const { getByLabelText, getByText, doYouWantToAddOrDeleteAnswerSpy } = await setup();
+
+      const noRadioButton = getByLabelText('No') as HTMLInputElement;
+      userEvent.click(noRadioButton);
+      userEvent.click(getByText('Continue'));
+
+      expect(doYouWantToAddOrDeleteAnswerSpy).toHaveBeenCalledWith(DoYouWantToAddOrDeleteAnswer.NO);
     });
   });
 });
