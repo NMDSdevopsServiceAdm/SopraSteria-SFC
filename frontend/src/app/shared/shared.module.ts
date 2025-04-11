@@ -104,6 +104,7 @@ import { TrainingAndQualificationsTabComponent } from './components/training-and
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { TrainingSelectViewPanelComponent } from './components/training-select-view-panel/training-select-view-panel.component';
+import { SelectJobRolesToAddComponent } from './components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
 import { UpdateVacanciesComponent } from './components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
@@ -276,6 +277,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     HelpContentComponent,
     NumberInputWithButtonsComponent,
     UpdateVacanciesComponent,
+    SelectJobRolesToAddComponent,
   ],
   exports: [
     AbsoluteNumberPipe,

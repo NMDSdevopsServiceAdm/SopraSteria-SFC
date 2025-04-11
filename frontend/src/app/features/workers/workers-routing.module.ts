@@ -18,6 +18,10 @@ import { SelectQualificationTypeComponent } from '@features/training-and-qualifi
 import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
 import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 
+import {
+  JobRoleType,
+  SelectJobRolesToAddComponent,
+} from '../../shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
 import { UpdateVacanciesComponent } from '../../shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from '../training-and-qualifications/add-edit-training/add-edit-training.component';
@@ -63,10 +67,6 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
-import {
-  JobRoleType,
-  SelectJobRolesToAddComponent,
-} from './update-workplace-details-after-staff-changes/select-job-roles-to-add/select-job-roles-to-add.component';
 import { UpdateLeaversComponent } from './update-workplace-details-after-staff-changes/update-leavers/update-leavers.component';
 import { UpdateStartersComponent } from './update-workplace-details-after-staff-changes/update-starters/update-starters.component';
 import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
