@@ -160,6 +160,7 @@ Cypress.Commands.add('updateStartersLeaversVacancies', (establishmentID) => {
 
 Cypress.Commands.add('addJobRoles', (jobRoles, action) => {
   if (jobRoles?.length > 0) {
+    // select job roles
     cy.contains('button', 'Show all job roles').click();
 
     jobRoles.forEach((jobRole) => {
@@ -170,6 +171,7 @@ Cypress.Commands.add('addJobRoles', (jobRoles, action) => {
 
     let jobTotal = 0;
 
+    // update total
     if (action === 'type') {
       jobRoles.forEach((jobRole) => {
         cy.getByLabel(jobRole.job).clear().type(jobRole.total);

@@ -148,6 +148,7 @@ describe('Standalone staff records page as edit user', () => {
     ];
 
     it('updates successfully after adding staff', () => {
+      // add vacancies via workplace as part of setup
       onHomePage.clickTab('Workplace');
 
       cy.get('[data-testid="vacancies-top-row"]').contains('Add').click();
@@ -158,40 +159,55 @@ describe('Standalone staff records page as edit user', () => {
 
       onHomePage.clickTab('Staff records');
 
+      // add staff records
       cy.get('a[role="button"]').contains('Add a staff record').click();
 
+      // add staff record flow
       addAndConfirmMandatoryStaffDetails(worker1, contractType, mainJobRole);
+
+      // add another staff question page
       cy.getByLabel('Yes').click();
       cy.contains('button', 'Continue').click();
 
+      // add staff record flow
       addAndConfirmMandatoryStaffDetails(worker2, contractType, mainJobRole);
+
+      // add another staff question page
       cy.getByLabel('No').click();
       cy.contains('button', 'Continue').click();
 
+      // number of staff, starters and vacancies summary page
       cy.contains('h1', 'Check this information and make any changes before you continue').should('be.visible');
       cy.contains('h2', 'Total number of staff, vacancies and starters').should('be.visible');
 
+      // update number of staff page
       cy.get('[data-testid="numberOfStaff"]').contains('Change').click();
       cy.contains('h1', 'Update the total number of staff for your workplace').should('be.visible');
-
       cy.get('[data-testid="plus-button-total-number-of-staff"]').dblclick();
-
       cy.contains('button', 'Save and return').click();
-      cy.get('[data-testid="numberOfStaff"]').contains(`${noOfStaffBeforeUpdate + 2}`);
 
+      // number of staff, leavers and vacancies summary page
       cy.get('[data-testid="vacancies"]').contains('Change').click();
+
+      // update vacancies
       cy.getByLabel('There are no current staff vacancies').click();
       cy.contains('button', 'Save and return').click();
 
+      // number of staff, leavers and vacancies summary page
       cy.get('[data-testid="starters"]').contains('Add').click();
+
+      // update starters
       cy.contains('button', 'Add job roles').click();
       cy.addJobRoles(jobRolesToAdd, 'type');
 
-      cy.get('[data-testid="numberOfStaff"]').contains('6');
+      // number of staff, leavers and vacancies summary page
+      cy.get('[data-testid="numberOfStaff"]').contains(`${noOfStaffBeforeUpdate + 2}`);
       cy.get('[data-testid="vacancies"]').contains('None');
       cy.get('[data-testid="starters"]').contains('2 x care worker');
       cy.contains('Total number of staff, vacancies and starters information saved');
       cy.contains('button', 'Continue').click();
+
+      // staff records tab
       cy.contains(`${worker1}`);
       cy.contains(`${worker2}`);
     });
@@ -203,8 +219,10 @@ describe('Standalone staff records page as edit user', () => {
       cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: worker3 });
       cy.reload();
 
+      // staff records tab
       cy.get('a').contains(worker3).click();
 
+      // staff record of staff to delete
       cy.get('h1').invoke('text').should('eq', 'Staff record');
       cy.contains('a', 'Delete staff record').click();
       cy.getByLabel('Reason not known').check();
@@ -213,32 +231,41 @@ describe('Standalone staff records page as edit user', () => {
       cy.get('button').contains('Delete this staff record').click();
       cy.wait('@deleteWorker');
 
+      // delete another staff question page
       cy.contains(`Staff record deleted (${worker3})`).should('be.visible');
-
       cy.getByLabel('No').click();
       cy.contains('button', 'Continue').click();
 
+      // number of staff, leavers and vacancies summary page
       cy.get('[data-testid="numberOfStaff"]').contains('Change').click();
-      cy.contains('h1', 'Update the total number of staff for your workplace').should('be.visible');
 
+      // update number of staff
+      cy.contains('h1', 'Update the total number of staff for your workplace').should('be.visible');
       cy.get('[data-testid="minus-button-total-number-of-staff"]').click();
       cy.contains('button', 'Save and return').click();
-      cy.get('[data-testid="numberOfStaff"]').contains(`${noOfStaffBeforeUpdate - 1}`);
 
+      // number of staff, leavers and vacancies summary page
       cy.get('[data-testid="vacancies"]').contains('Add').click();
+
+      // update vacancies page
       cy.contains('button', 'Add job roles').click();
       cy.addJobRoles(jobRolesToAdd);
 
+      // number of staff, leavers and vacancies summary page
       cy.get('[data-testid="leavers"]').contains('Add').click();
+
+      // update leavers page
       cy.contains('button', 'Add job roles').click();
       cy.addJobRoles(jobRolesToAdd);
 
+      // number of staff, leavers and vacancies summary page
       cy.contains('Total number of staff, vacancies and leavers information saved');
-      cy.get('[data-testid="numberOfStaff"]').contains(3);
+      cy.get('[data-testid="numberOfStaff"]').contains(`${noOfStaffBeforeUpdate - 1}`);
       cy.get('[data-testid="vacancies"]').contains('1 x care worker');
       cy.get('[data-testid="leavers"]').contains('1 x care worker');
-
       cy.contains('button', 'Continue').click();
+
+      // staff records tab
       cy.get('a').contains(worker3).should('not.exist');
     });
   });
