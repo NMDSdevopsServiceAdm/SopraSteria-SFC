@@ -58,6 +58,7 @@ import { NewTabsComponent } from './components/new-tabs/new-tabs.component';
 import { WDFTabComponent } from './components/new-wdf-tabs/new-wdf-tab.component';
 import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-summary/wdf-workplace-summary.component';
 import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/workplace-summary.component';
+import { NumberInputWithButtonsComponent } from './components/number-input-with-buttons/number-input-with-buttons.component';
 import { OtherLinksComponent } from './components/other-links/other-links.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
@@ -103,6 +104,7 @@ import { TrainingAndQualificationsTabComponent } from './components/training-and
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { TrainingSelectViewPanelComponent } from './components/training-select-view-panel/training-select-view-panel.component';
+import { UpdateVacanciesComponent } from './components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { UserTableComponent } from './components/users-table/user.table.component';
@@ -136,7 +138,6 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { NumberInputWithButtonsComponent } from './components/number-input-with-buttons/number-input-with-buttons.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -274,6 +275,7 @@ import { NumberInputWithButtonsComponent } from './components/number-input-with-
     RemoveTrailingWhitespacePipe,
     HelpContentComponent,
     NumberInputWithButtonsComponent,
+    UpdateVacanciesComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
