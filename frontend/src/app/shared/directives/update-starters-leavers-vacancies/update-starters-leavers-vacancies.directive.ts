@@ -20,7 +20,9 @@ import {
   WorkplaceUpdatePage,
 } from '@core/services/update-workplace-after-staff-changes.service';
 import { FormatUtil } from '@core/utils/format-util';
-import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
+import {
+  NumberInputWithButtonsComponent,
+} from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import lodash from 'lodash';
 
@@ -59,6 +61,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   protected slvField: string;
   protected selectedField: string;
   protected updatePage: WorkplaceUpdatePage;
+  protected fromWorkplaceSummary: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -72,6 +75,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   ) {}
 
   ngOnInit() {
+    this.fromWorkplaceSummary = this.route.snapshot?.data?.fromWorkplaceSummary;
     this.setupForm();
     this.prefill();
     this.setupFormErrorsMap();
@@ -320,7 +324,11 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   }
 
   private returnToPreviousPage(): void {
-    this.router.navigate(['../'], { relativeTo: this.route });
+    if (this.fromWorkplaceSummary) {
+      this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+    } else {
+      this.router.navigate(['../'], { relativeTo: this.route });
+    }
   }
 
   public onCancel(event: Event): void {

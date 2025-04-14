@@ -72,7 +72,11 @@ describe('UpdateVacanciesComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: {},
+            snapshot: {
+              data: {
+                ...override.snapshot,
+              },
+            },
           },
         },
       ],
@@ -480,6 +484,20 @@ describe('UpdateVacanciesComponent', () => {
 
       // @ts-expect-error: TS2341: Property 'route' is private
       expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+    });
+
+    it('should navigate to the workplace tab on dashboard when fromWorkplaceSummary is passed in as true from routing', async () => {
+      const mockWorkplace = establishmentBuilder({
+        overrides: { vacancies: mockVacancies },
+      });
+      const { routerSpy, getByRole } = await setup({
+        workplace: mockWorkplace,
+        snapshot: { fromWorkplaceSummary: true },
+      });
+
+      userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
     });
 
     it('should clear the selectedVacancies value in UpdateWorkplaceAfterStaffChangesService', async () => {
