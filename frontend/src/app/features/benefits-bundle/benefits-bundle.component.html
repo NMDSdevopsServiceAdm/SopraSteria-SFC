@@ -20,7 +20,10 @@
     <div class="govuk-accordion" data-module="govuk-accordion">
       <div class="govuk-accordion__controls">
         <button type="button" (click)="toggleAll($event)" class="govuk-accordion__show-all" aria-expanded="false">
-          <span class="govuk-accordion-nav__chevron" [class]="{'govuk-accordion-nav__chevron--up' : allOpen, 'govuk-accordion-nav__chevron--down': !allOpen} "></span>
+          <span
+            class="govuk-accordion-nav__chevron"
+            [class]="{ 'govuk-accordion-nav__chevron--up': allOpen, 'govuk-accordion-nav__chevron--down': !allOpen }"
+          ></span>
           <span class="govuk-accordion__show-all-text">{{ !allOpen ? 'Show all' : 'Hide all' }}</span>
         </button>
       </div>
@@ -112,7 +115,7 @@
       <app-benefit-accordion [benefit]="benefits[2]" [index]="2" (toggleEmitter)="toggleAccordion(2)">
         <p>
           <a href="https://bookshop.skillsforcare.org.uk/Shop" target="_blank">Visit the Skills for Care bookshop</a>
-          and use voucher code <strong>ASCWDS-2425</strong> to claim your discount.
+          and use voucher code <strong>ASCWDS-2526</strong> to claim your discount.
         </p>
       </app-benefit-accordion>
 
