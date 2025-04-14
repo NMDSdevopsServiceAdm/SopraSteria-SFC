@@ -27,7 +27,7 @@ describe('UpdateLeaversComponent', () => {
 
   const radioButtonLabels = {
     NONE: `No staff left on or after ${todayOneYearAgo}`,
-    DONT_KNOW: `I do not know how many staff left on or after ${todayOneYearAgo}`,
+    DONT_KNOW: `I do not know if any staff left on or after ${todayOneYearAgo}`,
   };
 
   const mockLeavers: Leaver[] = [

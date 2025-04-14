@@ -45,7 +45,7 @@ export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirect
         value: jobOptionsEnum.NONE,
       },
       {
-        label: `I do not know how many staff left on or after ${todayOneYearAgo}`,
+        label: `I do not know if any staff left on or after ${todayOneYearAgo}`,
         value: jobOptionsEnum.DONT_KNOW,
       },
     ];
