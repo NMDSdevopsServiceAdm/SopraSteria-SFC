@@ -22,11 +22,18 @@
           <app-details title="Why we ask for this information">
             <p>{{ revealTextContent }}</p>
           </app-details>
-          <button class="govuk-button govuk-button--secondary" type="button" (click)="handleAddJobRole()">
-            Add job role
-          </button>
 
-          <div class="asc-job-role-numbers-table asc-font-19" data-testid="number-inputs-table">
+          <app-job-role-numbers-table
+            tableTitle="Current staff vacancies"
+            totalNumberDescription="Total number of vacancies"
+            [jobRoleNumbers]="jobRoleNumbers"
+            [selectedJobRoles]="selectedJobRoles"
+            [submitted]="submitted"
+            [jobRoleErrorMessages]="jobRoleErrorMessages"
+          >
+          </app-job-role-numbers-table>
+
+          <!-- <div class="asc-job-role-numbers-table asc-font-19" data-testid="number-inputs-table">
             <div class="asc-job-role-numbers-table__row">
               <span class="asc-job-role-numbers-table__cell govuk-util__bold">Job role</span>
               <span class="asc-job-role-numbers-table__cell--number-input-header govuk-util__bold"
@@ -87,7 +94,7 @@
                 >
               </div>
             </ng-container>
-          </div>
+          </div> -->
         </div>
       </fieldset>
 

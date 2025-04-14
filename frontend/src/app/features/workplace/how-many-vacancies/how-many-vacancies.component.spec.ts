@@ -83,7 +83,7 @@ fdescribe('HowManyVacanciesComponent', () => {
   };
 
   const getInputBoxForJobRole = (jobTitle: string): HTMLInputElement => {
-    return screen.getByRole('spinbutton', { name: 'Number of vacancies for ' + jobTitle });
+    return screen.getByRole('textbox', { name: jobTitle });
   };
 
   it('should create', async () => {
@@ -119,24 +119,8 @@ fdescribe('HowManyVacanciesComponent', () => {
 
         mockSelectedJobRoles.forEach((role) => {
           expect(getByText(role.title)).toBeTruthy();
-          const numberInput = getByRole('spinbutton', { name: 'Number of vacancies for ' + role.title });
-          expect(numberInput).toBeTruthy();
+          expect(getInputBoxForJobRole(role.title)).toBeTruthy();
         });
-      });
-
-      it('should show the job role title together with additonal optional text if given', async () => {
-        const selectedJobRoles = [
-          {
-            jobId: 20,
-            title: 'Other (directly involved in providing care)',
-            other: 'Special care worker',
-            total: null,
-          },
-        ];
-        const { getByText } = await setup({ selectedJobRoles });
-
-        const expectedText = 'Other (directly involved in providing care): Special care worker';
-        expect(getByText(expectedText)).toBeTruthy();
       });
     });
 
@@ -234,26 +218,6 @@ fdescribe('HowManyVacanciesComponent', () => {
         });
       });
 
-      it('should call updateJobs with any optional job role name from previous page', async () => {
-        const selectedJobRoles = [
-          {
-            jobId: 20,
-            title: 'Other (directly involved in providing care)',
-            other: 'Special care worker',
-            total: null,
-          },
-        ];
-        const { component, getByRole, updateJobsSpy } = await setup({ selectedJobRoles });
-        const jobRoleTitle = 'Other (directly involved in providing care): Special care worker';
-
-        userEvent.type(getInputBoxForJobRole(jobRoleTitle), '5');
-        userEvent.click(getByRole('button', { name: 'Save and continue' }));
-
-        expect(updateJobsSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          vacancies: [{ jobId: 20, total: 5, other: 'Special care worker' }],
-        });
-      });
-
       it('should navigate to the do-you-have-starters page if in the flow', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
@@ -341,7 +305,7 @@ fdescribe('HowManyVacanciesComponent', () => {
 
   describe('navigation', async () => {
     it('should navigate to "Do you have vacancies" page if failed to load selected job roles data', async () => {
-      const { component, routerSpy } = await setup({ selectedJobRoles: '[]' });
+      const { component, routerSpy } = await setup({ selectedJobRoles: [] });
       component.loadSelectedJobRoles();
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-vacancies']);
     });
@@ -362,16 +326,16 @@ fdescribe('HowManyVacanciesComponent', () => {
       });
     });
 
-    describe('Add job role button', () => {
-      it('should show an "Add job role" button', async () => {
+    describe('Add job roles button', () => {
+      it('should show an "Add job roles" button', async () => {
         const { getByRole } = await setup({ returnToUrl: true });
-        expect(getByRole('button', { name: 'Add job role' })).toBeTruthy();
+        expect(getByRole('button', { name: 'Add job roles' })).toBeTruthy();
       });
 
-      it('should navigate to job role selection page when Add job role button is clicked', async () => {
+      it('should navigate to job role selection page when Add job roles button is clicked', async () => {
         const { component, fixture, getByRole, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
 
-        userEvent.click(getByRole('button', { name: 'Add job role' }));
+        userEvent.click(getByRole('button', { name: 'Add job roles' }));
         fixture.detectChanges();
 
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'select-vacancy-job-roles']);
@@ -385,7 +349,7 @@ fdescribe('HowManyVacanciesComponent', () => {
         userEvent.type(getInputBoxForJobRole('Care worker'), '10');
         userEvent.type(getInputBoxForJobRole('Registered nurse'), '20');
 
-        userEvent.click(getByRole('button', { name: 'Add job role' }));
+        userEvent.click(getByRole('button', { name: 'Add job roles' }));
         expect(vacanciesAndTurnoverService.selectedVacancies).toEqual([
           { jobId: 10, title: 'Care worker', total: 10 },
           { jobId: 23, title: 'Registered nurse', total: 20 },

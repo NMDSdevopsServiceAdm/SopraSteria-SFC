@@ -84,4 +84,23 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
   protected onSuccess(): void {
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-starters'];
   }
+
+  protected createDynamicErrorMessaging(): void {
+    this.updateJobRoleErrorMessages();
+  }
+
+  protected updateJobRoleErrorMessages(): void {
+    const jobRoleErrorMessages = {};
+
+    this.selectedJobRoles.forEach((job, index) => {
+      const errors = this.jobRoleNumbers.at(index).errors;
+      if (!errors) {
+        return null;
+      }
+      const errorType = Object.keys(errors)[0];
+      jobRoleErrorMessages[job.jobId] = this.getErrorMessage(errorType);
+    });
+
+    this.jobRoleErrorMessages = jobRoleErrorMessages;
+  }
 }

@@ -24,6 +24,7 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
   public totalNumber = 0;
 
   protected selectedJobRoles: Array<Starter | Leaver | Vacancy> = [];
+  protected jobRoleErrorMessages: Record<number, string> = {};
 
   private minNumberPerJobRole = 1;
   private maxNumberPerJobRole = 999;
