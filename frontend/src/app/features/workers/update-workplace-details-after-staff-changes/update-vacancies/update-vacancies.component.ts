@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/update-workplace-after-staff-changes.service';
-import {
-  UpdateStartersLeaversVacanciesDirective,
-} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-vacancies',
@@ -15,7 +13,7 @@ import {
 export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDirective {
   public revealText =
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
-  public reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are <strong>no longer vacancies</strong>.`;
+  public reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are <br><strong>no longer vacancies</strong>.`;
   public tableTitle = 'Current staff vacancies';
   public totalNumberDescription = 'Total number of vacancies';
 

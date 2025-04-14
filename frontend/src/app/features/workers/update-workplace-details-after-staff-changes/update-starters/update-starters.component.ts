@@ -36,7 +36,7 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
       this.addJobRoleButtonText = 'Add more job roles';
     }
 
-    this.reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any staff who started <strong>before ${todayOneYearAgo}</strong>.`;
+    this.reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any staff who started <br><strong>before ${todayOneYearAgo}</strong>.`;
     this.radioButtonOptions = [
       {
         label: `No staff started on or after ${todayOneYearAgo}`,
