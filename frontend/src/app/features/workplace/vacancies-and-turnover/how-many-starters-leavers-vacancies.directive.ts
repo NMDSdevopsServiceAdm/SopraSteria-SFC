@@ -1,10 +1,15 @@
 import { Directive, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { UntypedFormArray, Validators } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { sum } from 'lodash';
 
 import { Question } from '../question/question.component';
+import { Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService } from '../../../core/services/vacancies-and-turnover.service';
 
 @Directive()
 export class HowManyStartersLeaversVacanciesDirective extends Question implements OnInit, OnDestroy {
@@ -23,6 +28,17 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
   private minNumberPerJobRole = 1;
   private maxNumberPerJobRole = 999;
 
+  constructor(
+    protected formBuilder: UntypedFormBuilder,
+    protected router: Router,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    protected vacanciesAndTurnoverService: VacanciesAndTurnoverService,
+  ) {
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+  }
+
   protected init(): void {
     this.loadSelectedJobRoles();
     this.setPreviousRoute();
@@ -32,6 +48,8 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
   protected clearLocalStorageData(): void {}
 
   protected returnToFirstPage(): void {}
+
+  protected returnToJobRoleSelectionPage(): void {}
 
   protected setPreviousRoute(): void {}
 
@@ -124,6 +142,13 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
     if (!Array.isArray(this.selectedJobRoles) || this.selectedJobRoles?.length === 0) {
       this.returnToFirstPage();
     }
+  }
+
+  public saveSelectedJobRoles(): void {}
+
+  protected handleAddJobRole(): void {
+    this.saveSelectedJobRoles();
+    this.returnToJobRoleSelectionPage();
   }
 
   protected setupFormErrorsMap(): void {

@@ -3,17 +3,18 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { HowManyVacanciesComponent } from './how-many-vacancies.component';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 
-describe('HowManyVacanciesComponent', () => {
+fdescribe('HowManyVacanciesComponent', () => {
   const mockSelectedJobRoles: Vacancy[] = [
     {
       jobId: 10,
@@ -32,14 +33,10 @@ describe('HowManyVacanciesComponent', () => {
     const availableJobs = override.availableJobs;
     const workplace = override.workplace ?? {};
 
-    const selectedJobRoles = override.selectedJobRoles ?? mockSelectedJobRoles;
-    const localStorageData = override.noLocalStorageData
-      ? null
-      : JSON.stringify({ establishmentUid: 'mock-uid', vacancies: selectedJobRoles });
-    spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
+    const selectedJobRoles = override.noLocalStorageData ? null : override.selectedJobRoles ?? mockSelectedJobRoles;
 
     const renderResults = await render(HowManyVacanciesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -58,6 +55,10 @@ describe('HowManyVacanciesComponent', () => {
             },
           },
         },
+        {
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({ selectedVacancies: selectedJobRoles }),
+        },
       ],
     });
 
@@ -65,6 +66,8 @@ describe('HowManyVacanciesComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService) as VacanciesAndTurnoverService;
+
     const updateJobsSpy = spyOn(establishmentService, 'updateJobs').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
@@ -74,6 +77,7 @@ describe('HowManyVacanciesComponent', () => {
       router,
       routerSpy,
       updateJobsSpy,
+      vacanciesAndTurnoverService,
       ...renderResults,
     };
   };
@@ -93,7 +97,7 @@ describe('HowManyVacanciesComponent', () => {
       const heading = getByRole('heading', { level: 1 });
       const sectionHeading = heading.previousSibling;
 
-      expect(heading.textContent).toEqual('How many current staff vacancies do you have for each job role?');
+      expect(heading.textContent).toEqual('How many current staff vacancies do you have?');
       expect(sectionHeading.textContent).toEqual('Vacancies and turnover');
     });
 
@@ -355,6 +359,37 @@ describe('HowManyVacanciesComponent', () => {
         expect(component.back).toEqual({
           url: ['/workplace', component.establishment.uid, 'select-vacancy-job-roles'],
         });
+      });
+    });
+
+    describe('Add job role button', () => {
+      it('should show an "Add job role" button', async () => {
+        const { getByRole } = await setup({ returnToUrl: true });
+        expect(getByRole('button', { name: 'Add job role' })).toBeTruthy();
+      });
+
+      it('should navigate to job role selection page when Add job role button is clicked', async () => {
+        const { component, fixture, getByRole, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
+
+        userEvent.click(getByRole('button', { name: 'Add job role' }));
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'select-vacancy-job-roles']);
+      });
+
+      it('should save the change in job role number before navigation', async () => {
+        const { getByRole, vacanciesAndTurnoverService } = await setup({
+          returnToUrl: '/dashboard#workplace',
+        });
+
+        userEvent.type(getInputBoxForJobRole('Care worker'), '10');
+        userEvent.type(getInputBoxForJobRole('Registered nurse'), '20');
+
+        userEvent.click(getByRole('button', { name: 'Add job role' }));
+        expect(vacanciesAndTurnoverService.selectedVacancies).toEqual([
+          { jobId: 10, title: 'Care worker', total: 10 },
+          { jobId: 23, title: 'Registered nurse', total: 20 },
+        ]);
       });
     });
 
