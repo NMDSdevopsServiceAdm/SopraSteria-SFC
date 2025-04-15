@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
+import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 
 import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turnover/how-many-starters-leavers-vacancies.directive';
 
@@ -22,36 +22,38 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
   protected clearLocalStorageData(): void {
     localStorage.removeItem('hasVacancies');
     localStorage.removeItem('vacanciesJobRoles');
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
   }
 
   public loadSelectedJobRoles(): void {
     try {
-      this.selectedJobRoles = this.vacanciesAndTurnoverService.selectedVacancies;
+      this.selectedJobRoles = this.getSelectedJobRoleFromService();
       if (!this.selectedJobRoles) {
         this.selectedJobRoles = this.establishment[this.fieldName];
       }
     } catch (err) {
       this.returnToFirstPage();
     }
-
     if (!Array.isArray(this.selectedJobRoles) || this.selectedJobRoles?.length === 0) {
       this.returnToFirstPage();
     }
+
+    this.selectedJobRoles = this.replaceNullWithOne(this.selectedJobRoles);
   }
 
-  public saveSelectedJobRoles(): void {
-    const nativeNumberInputs = this.numberInputs.map((ref) => ref.nativeElement);
-    const updatedVacancies = this.selectedJobRoles.map((job, index) => {
-      const parsedNumber = parseInt(nativeNumberInputs[index].value);
-      const fieldsToUpdate: Vacancy = {
-        jobId: Number(job.jobId),
-        title: job.title,
-        total: isNaN(parsedNumber) ? null : parsedNumber,
-      };
-      return fieldsToUpdate;
-    });
+  protected getSelectedJobRoleFromService(): Vacancy[] {
+    return this.vacanciesAndTurnoverService.selectedVacancies;
+  }
 
-    this.vacanciesAndTurnoverService.selectedVacancies = updatedVacancies;
+  protected replaceNullWithOne(selectedJobRoles: Array<Vacancy | Starter | Leaver>): Array<Vacancy | Starter | Leaver> {
+    return selectedJobRoles.map((job) => {
+      const updatedNumber = job.total ?? 1;
+      return { ...job, total: updatedNumber };
+    });
+  }
+
+  public saveSelectedJobRolesToService(): void {
+    this.vacanciesAndTurnoverService.selectedVacancies = this.jobRoleNumbersTable.currentValues;
   }
 
   protected returnToFirstPage(): void {
@@ -72,9 +74,6 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
         jobId: Number(job.jobId),
         total: parseInt(this.jobRoleNumbers.value[index]),
       };
-      if (job.other) {
-        fieldsToUpdate.other = job.other;
-      }
       return fieldsToUpdate;
     });
 
@@ -82,6 +81,7 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
   }
 
   protected onSuccess(): void {
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-starters'];
   }
 

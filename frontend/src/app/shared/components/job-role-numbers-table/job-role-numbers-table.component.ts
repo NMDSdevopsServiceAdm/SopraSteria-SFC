@@ -26,7 +26,7 @@ export class JobRoleNumbersTableComponent implements AfterViewInit {
   @Input() totalNumberDescription: string;
 
   @Input() jobRoleNumbers: UntypedFormArray;
-  @Input() jobRoleErrorMessages: Array<string>;
+  @Input() jobRoleErrorMessages: Record<number, string>;
   @Input() selectedJobRoles: Array<Vacancy | Starter | Leaver>;
   @Input() allowRemoveJobRole: boolean = true;
   @Input() submitted: boolean = false;

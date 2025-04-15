@@ -86,6 +86,12 @@ fdescribe('HowManyVacanciesComponent', () => {
     return screen.getByRole('textbox', { name: jobTitle });
   };
 
+  const fillInValueForJobRole = async (jobRoleTitle: string, inputText: string) => {
+    const numberInputForJobRole = screen.getByLabelText(jobRoleTitle) as HTMLInputElement;
+    userEvent.clear(numberInputForJobRole);
+    userEvent.type(numberInputForJobRole, inputText);
+  };
+
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -115,7 +121,7 @@ fdescribe('HowManyVacanciesComponent', () => {
 
     describe('vacancy numbers input form', () => {
       it('should render a input box for each selected job roles', async () => {
-        const { getByText, getByRole } = await setup();
+        const { getByText } = await setup();
 
         mockSelectedJobRoles.forEach((role) => {
           expect(getByText(role.title)).toBeTruthy();
@@ -172,6 +178,27 @@ fdescribe('HowManyVacanciesComponent', () => {
           {
             jobId: 23,
             title: 'Registered nurse',
+            total: 2,
+          },
+        ];
+
+        const { getByTestId } = await setup({ selectedJobRoles: mockSelectedJobRoles });
+
+        expect(getInputBoxForJobRole('Care worker').value).toEqual('3');
+        expect(getInputBoxForJobRole('Registered nurse').value).toEqual('2');
+        expect(getByTestId('total-number').innerText).toEqual('5');
+      });
+
+      it('should fill any missing job role number as 1', async () => {
+        const mockSelectedJobRoles = [
+          {
+            jobId: 10,
+            title: 'Care worker',
+            total: 3,
+          },
+          {
+            jobId: 23,
+            title: 'Registered nurse',
             total: null,
           },
         ];
@@ -179,8 +206,8 @@ fdescribe('HowManyVacanciesComponent', () => {
         const { getByTestId } = await setup({ selectedJobRoles: mockSelectedJobRoles });
 
         expect(getInputBoxForJobRole('Care worker').value).toEqual('3');
-        expect(getInputBoxForJobRole('Registered nurse').value).toEqual('');
-        expect(getByTestId('total-number').innerText).toEqual('3');
+        expect(getInputBoxForJobRole('Registered nurse').value).toEqual('1');
+        expect(getByTestId('total-number').innerText).toEqual('4');
       });
 
       it('should prefill job roles from workplace when not in local storage (when user has submitted previously and gone back to third page)', async () => {
@@ -206,8 +233,9 @@ fdescribe('HowManyVacanciesComponent', () => {
       it('should call updateJobs with the input vacancies number', async () => {
         const { component, getByRole, updateJobsSpy } = await setup();
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
+        await fillInValueForJobRole('Care worker', '2');
+        await fillInValueForJobRole('Registered nurse', '4');
+        // userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
         expect(updateJobsSpy).toHaveBeenCalledWith(component.establishment.uid, {
@@ -221,8 +249,6 @@ fdescribe('HowManyVacanciesComponent', () => {
       it('should navigate to the do-you-have-starters page if in the flow', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-starters']);
@@ -231,8 +257,6 @@ fdescribe('HowManyVacanciesComponent', () => {
       it('should navigate to workplace summary page if not in the flow', async () => {
         const { getByRole, routerSpy } = await setup({ returnToUrl: true });
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
@@ -242,8 +266,6 @@ fdescribe('HowManyVacanciesComponent', () => {
         const { component, getByRole, routerSpy } = await setup({ returnToUrl: true });
         component.return = { url: ['/funding', 'workplaces', 'mock-uid'] };
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
         expect(routerSpy).toHaveBeenCalledWith(['/funding', 'workplaces', 'mock-uid'], jasmine.anything());
@@ -253,8 +275,6 @@ fdescribe('HowManyVacanciesComponent', () => {
         const { getByRole } = await setup({ returnToUrl: true });
         const localStorageSpy = spyOn(localStorage, 'removeItem');
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
         expect(localStorageSpy).toHaveBeenCalled();
@@ -265,6 +285,8 @@ fdescribe('HowManyVacanciesComponent', () => {
       it('should show an error message if number input box is empty', async () => {
         const { fixture, getByRole, getByText, getByTestId, updateJobsSpy } = await setup();
 
+        userEvent.clear(getInputBoxForJobRole('Care worker'));
+        userEvent.clear(getInputBoxForJobRole('Registered nurse'));
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
 
@@ -282,8 +304,8 @@ fdescribe('HowManyVacanciesComponent', () => {
       it('should show an error message if the input number is out of range', async () => {
         const { fixture, getByRole, getByText, getByTestId, updateJobsSpy } = await setup();
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '-10');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '99999');
+        await fillInValueForJobRole('Care worker', '-10');
+        await fillInValueForJobRole('Registered nurse', '99999');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
 
@@ -346,8 +368,8 @@ fdescribe('HowManyVacanciesComponent', () => {
           returnToUrl: '/dashboard#workplace',
         });
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '10');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '20');
+        await fillInValueForJobRole('Care worker', '10');
+        await fillInValueForJobRole('Registered nurse', '20');
 
         userEvent.click(getByRole('button', { name: 'Add job roles' }));
         expect(vacanciesAndTurnoverService.selectedVacancies).toEqual([

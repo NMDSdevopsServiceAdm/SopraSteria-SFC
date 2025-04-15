@@ -24,12 +24,15 @@
           </app-details>
 
           <app-job-role-numbers-table
+            #jobRoleNumbersTable
             tableTitle="Current staff vacancies"
             totalNumberDescription="Total number of vacancies"
             [jobRoleNumbers]="jobRoleNumbers"
             [selectedJobRoles]="selectedJobRoles"
             [submitted]="submitted"
             [jobRoleErrorMessages]="jobRoleErrorMessages"
+            [allowRemoveJobRole]="false"
+            (addJobRole)="handleAddJobRole()"
           >
           </app-job-role-numbers-table>
 

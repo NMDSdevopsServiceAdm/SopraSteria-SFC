@@ -1,8 +1,7 @@
-import { Directive, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Directive, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, Validators } from '@angular/forms';
 import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { sum } from 'lodash';
 
 import { Question } from '../question/question.component';
 import { Router } from '@angular/router';
@@ -10,10 +9,11 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService } from '../../../core/services/vacancies-and-turnover.service';
+import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
 
 @Directive()
 export class HowManyStartersLeaversVacanciesDirective extends Question implements OnInit, OnDestroy {
-  @ViewChildren('numberInputRef') numberInputs: QueryList<ElementRef<HTMLInputElement>>;
+  @ViewChild('jobRoleNumbersTable') jobRoleNumbersTable: JobRoleNumbersTableComponent;
   public heading: string;
   public instruction: string;
   public revealTextContent: string;
@@ -21,7 +21,6 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
   public fieldName: string;
   public fieldJobRoles: string;
   public section: string = WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
-  public totalNumber = 0;
 
   protected selectedJobRoles: Array<Starter | Leaver | Vacancy> = [];
   protected jobRoleErrorMessages: Record<number, string> = {};
@@ -72,19 +71,10 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
         }),
       );
     });
-
-    const inputValues = this.jobRoleNumbers.value as Array<number | null>;
-    this.totalNumber = inputValues.reduce((total, current) => (current ? total + current : total), 0);
   }
 
   get jobRoleNumbers(): UntypedFormArray {
     return this.form.get('jobRoleNumbers') as UntypedFormArray;
-  }
-
-  protected updateTotalNumber(): void {
-    const nativeNumberInputs = this.numberInputs.map((ref) => ref.nativeElement);
-    const inputValues = nativeNumberInputs.map((input) => (input.value ? parseInt(input.value) : 0));
-    this.totalNumber = sum(inputValues);
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -145,10 +135,10 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
     }
   }
 
-  public saveSelectedJobRoles(): void {}
+  public saveSelectedJobRolesToService(): void {}
 
   protected handleAddJobRole(): void {
-    this.saveSelectedJobRoles();
+    this.saveSelectedJobRolesToService();
     this.returnToJobRoleSelectionPage();
   }
 
