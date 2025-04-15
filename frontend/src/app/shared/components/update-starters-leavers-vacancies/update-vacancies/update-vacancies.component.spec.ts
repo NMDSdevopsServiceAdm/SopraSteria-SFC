@@ -87,7 +87,6 @@ describe('UpdateVacanciesComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const navigateByUrlSpy = spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const updateJobsSpy = spyOn(establishmentService, 'updateJobs').and.callFake((uid, data) =>
       of({ uid, vacancies: data.vacancies }),
@@ -101,7 +100,6 @@ describe('UpdateVacanciesComponent', () => {
     return {
       component,
       routerSpy,
-      navigateByUrlSpy,
       updateJobsSpy,
       setStateSpy,
       updateWorkplaceAfterStaffChangesService,
@@ -488,18 +486,18 @@ describe('UpdateVacanciesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
     });
 
-    it('should navigate to the workplace tab on dashboard when passed in as returnUrl from routing', async () => {
+    it('should navigate to the workplace tab on dashboard when passed in as return from routing', async () => {
       const mockWorkplace = establishmentBuilder({
         overrides: { vacancies: mockVacancies },
       });
-      const { navigateByUrlSpy, getByRole } = await setup({
+      const { routerSpy, getByRole } = await setup({
         workplace: mockWorkplace,
-        snapshot: { returnUrl: '/dashboard#workplace' },
+        snapshot: { return: { url: '/dashboard', fragment: 'workplace' } },
       });
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
 
-      expect(navigateByUrlSpy).toHaveBeenCalledWith('/dashboard#workplace');
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
     });
 
     it('should clear the selectedVacancies value in UpdateWorkplaceAfterStaffChangesService', async () => {

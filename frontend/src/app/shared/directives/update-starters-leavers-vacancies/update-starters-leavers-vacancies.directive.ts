@@ -12,6 +12,7 @@ import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } fr
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { jobOptionsEnum, StarterLeaverVacancy, UpdateJobsRequest } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -61,7 +62,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   protected slvField: string;
   protected selectedField: string;
   protected updatePage: WorkplaceUpdatePage;
-  protected returnUrl: string;
+  protected return: URLStructure;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -75,7 +76,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   ) {}
 
   ngOnInit() {
-    this.returnUrl = this.route.snapshot?.data?.returnUrl;
+    this.return = this.route.snapshot?.data?.return;
     this.setupForm();
     this.prefill();
     this.setupFormErrorsMap();
@@ -324,8 +325,8 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   }
 
   private returnToPreviousPage(): void {
-    if (this.returnUrl) {
-      this.router.navigateByUrl(this.returnUrl);
+    if (this.return) {
+      this.router.navigate([this.return.url], { fragment: this.return.fragment });
     } else {
       this.router.navigate(['../'], { relativeTo: this.route });
     }

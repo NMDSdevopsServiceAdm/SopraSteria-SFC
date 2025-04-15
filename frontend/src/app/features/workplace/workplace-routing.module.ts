@@ -311,7 +311,10 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Update Vacancies',
-          returnUrl: '/dashboard#workplace',
+          return: {
+            url: '/dashboard',
+            fragment: 'workplace',
+          },
         },
       },
       {
