@@ -72,13 +72,21 @@ fdescribe('JobRolesNumberTableComponent', () => {
     expect(getByRole('button', { name: 'Add more job roles' })).toBeTruthy();
   });
 
-  it('should show a description for total number', async () => {
-    const { getByText, getByTestId } = await setup({ totalNumberDescription: 'Total number of leavers' });
+  describe('total number', () => {
+    fit('should show a total number and a description', async () => {
+      const { getByText, getByTestId } = await setup({ totalNumberDescription: 'Total number of leavers' });
 
-    const totalNumberDescription = getByText('Total number of leavers');
+      const totalNumberDescription = getByText('Total number of leavers');
 
-    expect(totalNumberDescription).toBeTruthy();
-    expect(getByTestId('total-number').textContent).toEqual(`${totalNumberAtStart}`);
+      expect(totalNumberDescription).toBeTruthy();
+      expect(getByTestId('total-number').textContent).toEqual(`${totalNumberAtStart}`);
+    });
+
+    it('should display the total number as 0 if no job roles were selected', async () => {
+      const { getByTestId } = await setup({ selectedJobRoles: [] });
+
+      expect(getByTestId('total-number').textContent).toEqual('0');
+    });
   });
 
   describe('job role numbers', async () => {
@@ -132,6 +140,20 @@ fdescribe('JobRolesNumberTableComponent', () => {
       fixture.detectChanges();
 
       const expectedNewTotalNumber = 10 + mockSelectedJobRoles[1].total;
+
+      expect(getByTestId('total-number').textContent).toEqual(`${expectedNewTotalNumber}`);
+    });
+
+    it('should ignore any invalid input when calculating the total number', async () => {
+      const { getByLabelText, getByTestId, fixture } = await setup();
+
+      const jobRoleInput = getByLabelText(mockSelectedJobRoles[0].title) as HTMLInputElement;
+
+      userEvent.clear(jobRoleInput);
+      userEvent.type(jobRoleInput, 'not a number');
+      fixture.detectChanges();
+
+      const expectedNewTotalNumber = mockSelectedJobRoles[1].total;
 
       expect(getByTestId('total-number').textContent).toEqual(`${expectedNewTotalNumber}`);
     });

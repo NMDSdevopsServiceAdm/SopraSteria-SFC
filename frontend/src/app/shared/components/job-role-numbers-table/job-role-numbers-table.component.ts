@@ -6,7 +6,6 @@ import {
   Output,
   QueryList,
   ViewChildren,
-  OnInit,
   AfterViewInit,
 } from '@angular/core';
 import { UntypedFormArray } from '@angular/forms';
@@ -19,7 +18,7 @@ import { NumberInputWithButtonsComponent } from '../number-input-with-buttons/nu
   templateUrl: './job-role-numbers-table.component.html',
   styleUrl: './job-role-numbers-table.component.scss',
 })
-export class JobRoleNumbersTableComponent implements OnInit, AfterViewInit {
+export class JobRoleNumbersTableComponent implements AfterViewInit {
   @ViewChildren('numberInputRef') numberInputs: QueryList<NumberInputWithButtonsComponent>;
   @Input() tableTitle: string;
   @Input() addJobRoleButtonText: string = 'Add job roles';
@@ -41,12 +40,8 @@ export class JobRoleNumbersTableComponent implements OnInit, AfterViewInit {
 
   constructor(protected cd: ChangeDetectorRef) {}
 
-  ngOnInit() {
-    const inputValues = this.jobRoleNumbers.value as Array<number | null>;
-    this.totalNumber = lodash.sum(inputValues);
-  }
-
   ngAfterViewInit() {
+    this.updateTotalNumber();
     this.numberInputs.forEach((input) => input.registerOnChange(() => this.updateTotalNumber()));
     this.numberInputs.changes.subscribe(() => {
       this.updateTotalNumber();
