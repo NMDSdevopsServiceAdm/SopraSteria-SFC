@@ -7,7 +7,7 @@ import {
   WorkplaceUpdatePage,
 } from './vacancies-and-turnover.service';
 
-fdescribe('VacanciesAndTurnoverService', () => {
+describe('VacanciesAndTurnoverService', () => {
   let service: VacanciesAndTurnoverService;
 
   beforeEach(() => {

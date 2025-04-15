@@ -7,7 +7,7 @@ import { Vacancy } from '@core/model/establishment.model';
 import userEvent from '@testing-library/user-event';
 import lodash from 'lodash';
 
-fdescribe('JobRolesNumberTableComponent', () => {
+describe('JobRolesNumberTableComponent', () => {
   const mockSelectedJobRoles: Vacancy[] = [
     {
       jobId: 10,
@@ -73,7 +73,7 @@ fdescribe('JobRolesNumberTableComponent', () => {
   });
 
   describe('total number', () => {
-    fit('should show a total number and a description', async () => {
+    it('should show a total number and a description', async () => {
       const { getByText, getByTestId } = await setup({ totalNumberDescription: 'Total number of leavers' });
 
       const totalNumberDescription = getByText('Total number of leavers');
