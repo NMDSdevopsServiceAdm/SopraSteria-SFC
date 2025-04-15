@@ -62,7 +62,8 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   protected slvField: string;
   protected selectedField: string;
   protected updatePage: WorkplaceUpdatePage;
-  protected return: URLStructure;
+  protected returnInEstablishmentService: URLStructure;
+  protected staffUpdatesView: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -76,7 +77,9 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   ) {}
 
   ngOnInit() {
-    this.return = this.route.snapshot?.data?.return;
+    this.staffUpdatesView = this.route.snapshot?.data?.staffUpdatesView;
+    this.returnInEstablishmentService = this.establishmentService.returnTo;
+
     this.setupForm();
     this.prefill();
     this.setupFormErrorsMap();
@@ -325,10 +328,14 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   }
 
   private returnToPreviousPage(): void {
-    if (this.return) {
-      this.router.navigate([this.return.url], { fragment: this.return.fragment });
-    } else {
+    if (this.staffUpdatesView) {
       this.router.navigate(['../'], { relativeTo: this.route });
+    } else if (this.returnInEstablishmentService) {
+      this.router.navigate(this.returnInEstablishmentService.url, {
+        fragment: this.returnInEstablishmentService.fragment,
+      });
+    } else {
+      this.router.navigate(['/dashboard'], { fragment: 'workplace' });
     }
   }
 

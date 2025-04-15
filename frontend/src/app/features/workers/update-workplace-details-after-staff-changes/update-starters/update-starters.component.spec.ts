@@ -83,7 +83,7 @@ describe('UpdateStartersComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: {},
+            snapshot: { data: override.snapshot },
           },
         },
       ],
@@ -487,6 +487,7 @@ describe('UpdateStartersComponent', () => {
       });
       const { component, routerSpy, getByRole } = await setup({
         workplace: mockWorkplace,
+        snapshot: { staffUpdatesView: true },
       });
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
@@ -732,6 +733,7 @@ describe('UpdateStartersComponent', () => {
   it('should return to Check this information page when user clicked the cancel button', async () => {
     const { component, getByText, updateJobsSpy, routerSpy, updateWorkplaceAfterStaffChangesService } = await setup({
       workplace: mockWorkplace,
+      snapshot: { staffUpdatesView: true },
     });
 
     userEvent.click(getByText('Cancel'));
