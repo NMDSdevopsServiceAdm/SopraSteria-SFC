@@ -61,7 +61,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   protected slvField: string;
   protected selectedField: string;
   protected updatePage: WorkplaceUpdatePage;
-  protected fromWorkplaceSummary: boolean;
+  protected returnUrl: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -75,7 +75,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   ) {}
 
   ngOnInit() {
-    this.fromWorkplaceSummary = this.route.snapshot?.data?.fromWorkplaceSummary;
+    this.returnUrl = this.route.snapshot?.data?.returnUrl;
     this.setupForm();
     this.prefill();
     this.setupFormErrorsMap();
@@ -324,8 +324,8 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   }
 
   private returnToPreviousPage(): void {
-    if (this.fromWorkplaceSummary) {
-      this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+    if (this.returnUrl) {
+      this.router.navigateByUrl(this.returnUrl);
     } else {
       this.router.navigate(['../'], { relativeTo: this.route });
     }

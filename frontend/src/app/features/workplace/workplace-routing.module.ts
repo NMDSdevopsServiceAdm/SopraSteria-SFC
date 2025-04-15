@@ -311,7 +311,7 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Update Vacancies',
-          fromWorkplaceSummary: true,
+          returnUrl: '/dashboard#workplace',
         },
       },
       {
