@@ -235,7 +235,6 @@ describe('HowManyVacanciesComponent', () => {
 
         await fillInValueForJobRole('Care worker', '2');
         await fillInValueForJobRole('Registered nurse', '4');
-        // userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
         expect(updateJobsSpy).toHaveBeenCalledWith(component.establishment.uid, {
@@ -244,6 +243,18 @@ describe('HowManyVacanciesComponent', () => {
             { jobId: 23, total: 4 },
           ],
         });
+      });
+
+      it('should clear the selected job roles stored in service', async () => {
+        const { getByRole, vacanciesAndTurnoverService } = await setup();
+
+        const clearJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
+
+        await fillInValueForJobRole('Care worker', '2');
+        await fillInValueForJobRole('Registered nurse', '4');
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+
+        expect(clearJobRolesSpy).toHaveBeenCalled();
       });
 
       it('should navigate to the do-you-have-starters page if in the flow', async () => {
@@ -304,7 +315,7 @@ describe('HowManyVacanciesComponent', () => {
       it('should show an error message if the input number is out of range', async () => {
         const { fixture, getByRole, getByText, getByTestId, updateJobsSpy } = await setup();
 
-        await fillInValueForJobRole('Care worker', '-10');
+        await fillInValueForJobRole('Care worker', '0');
         await fillInValueForJobRole('Registered nurse', '99999');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();

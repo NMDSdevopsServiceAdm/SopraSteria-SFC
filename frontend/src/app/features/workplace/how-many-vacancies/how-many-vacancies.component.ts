@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
+import { UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 
 import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turnover/how-many-starters-leavers-vacancies.directive';
 
@@ -21,38 +21,14 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
 
   protected clearLocalStorageData(): void {
     localStorage.removeItem('hasVacancies');
-    localStorage.removeItem('vacanciesJobRoles');
     this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
-  }
-
-  public loadSelectedJobRoles(): void {
-    try {
-      this.selectedJobRoles = this.getSelectedJobRoleFromService();
-      if (!this.selectedJobRoles) {
-        this.selectedJobRoles = this.establishment[this.fieldName];
-      }
-    } catch (err) {
-      this.returnToFirstPage();
-    }
-    if (!Array.isArray(this.selectedJobRoles) || this.selectedJobRoles?.length === 0) {
-      this.returnToFirstPage();
-    }
-
-    this.selectedJobRoles = this.replaceNullWithOne(this.selectedJobRoles);
   }
 
   protected getSelectedJobRoleFromService(): Vacancy[] {
     return this.vacanciesAndTurnoverService.selectedVacancies;
   }
 
-  protected replaceNullWithOne(selectedJobRoles: Array<Vacancy | Starter | Leaver>): Array<Vacancy | Starter | Leaver> {
-    return selectedJobRoles.map((job) => {
-      const updatedNumber = job.total ?? 1;
-      return { ...job, total: updatedNumber };
-    });
-  }
-
-  public saveSelectedJobRolesToService(): void {
+  protected saveSelectedJobRolesToService(): void {
     this.vacanciesAndTurnoverService.selectedVacancies = this.jobRoleNumbersTable.currentValues;
   }
 
@@ -83,24 +59,5 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
   protected onSuccess(): void {
     this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-starters'];
-  }
-
-  protected createDynamicErrorMessaging(): void {
-    this.updateJobRoleErrorMessages();
-  }
-
-  protected updateJobRoleErrorMessages(): void {
-    const jobRoleErrorMessages = {};
-
-    this.selectedJobRoles.forEach((job, index) => {
-      const errors = this.jobRoleNumbers.at(index).errors;
-      if (!errors) {
-        return null;
-      }
-      const errorType = Object.keys(errors)[0];
-      jobRoleErrorMessages[job.jobId] = this.getErrorMessage(errorType);
-    });
-
-    this.jobRoleErrorMessages = jobRoleErrorMessages;
   }
 }

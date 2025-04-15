@@ -66,6 +66,7 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
             Validators.required,
             Validators.min(this.minNumberPerJobRole),
             Validators.max(this.maxNumberPerJobRole),
+            Validators.pattern('^[0-9]+$'),
           ],
           updateOn: 'submit',
         }),
@@ -115,27 +116,39 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
 
       case 'min':
       case 'max':
+      case 'pattern':
         return `Number of ${this.jobRoleType} must be between ${this.minNumberPerJobRole} and ${this.maxNumberPerJobRole}${jobRoleTitleSuffix}`;
     }
   }
 
   public loadSelectedJobRoles(): void {
     try {
-      const loadedJobRoles = JSON.parse(localStorage.getItem(this.fieldJobRoles));
-      this.selectedJobRoles = loadedJobRoles?.[this.fieldName];
+      this.selectedJobRoles = this.getSelectedJobRoleFromService();
       if (!this.selectedJobRoles) {
         this.selectedJobRoles = this.establishment[this.fieldName];
       }
     } catch (err) {
       this.returnToFirstPage();
     }
-
     if (!Array.isArray(this.selectedJobRoles) || this.selectedJobRoles?.length === 0) {
       this.returnToFirstPage();
     }
+
+    this.selectedJobRoles = this.replaceNullWithOne(this.selectedJobRoles);
   }
 
-  public saveSelectedJobRolesToService(): void {}
+  protected getSelectedJobRoleFromService(): Array<Vacancy | Starter | Leaver> {
+    throw new Error('To be implemented at component');
+  }
+
+  protected replaceNullWithOne(selectedJobRoles: Array<Vacancy | Starter | Leaver>): Array<Vacancy | Starter | Leaver> {
+    return selectedJobRoles.map((job) => {
+      const updatedNumber = job.total ?? 1;
+      return { ...job, total: updatedNumber };
+    });
+  }
+
+  protected saveSelectedJobRolesToService(): void {}
 
   protected handleAddJobRole(): void {
     this.saveSelectedJobRolesToService();
@@ -162,13 +175,31 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
             name: 'max',
             message: this.getErrorMessage('max', jobRoleTitle),
           },
+          {
+            name: 'pattern',
+            message: this.getErrorMessage('pattern', jobRoleTitle),
+          },
         ],
       });
     });
   }
 
-  public getInlineErrorMessage(formControlItemKey: string): string {
-    const errorType = Object.keys(this.form.get(formControlItemKey).errors)[0];
-    return this.getErrorMessage(errorType);
+  protected createDynamicErrorMessaging(): void {
+    this.updateJobRoleErrorMessages();
+  }
+
+  protected updateJobRoleErrorMessages(): void {
+    const jobRoleErrorMessages = {};
+
+    this.selectedJobRoles.forEach((job, index) => {
+      const errors = this.jobRoleNumbers.at(index).errors;
+      if (!errors) {
+        return null;
+      }
+      const errorType = Object.keys(errors)[0];
+      jobRoleErrorMessages[job.jobId] = this.getErrorMessage(errorType);
+    });
+
+    this.jobRoleErrorMessages = jobRoleErrorMessages;
   }
 }
