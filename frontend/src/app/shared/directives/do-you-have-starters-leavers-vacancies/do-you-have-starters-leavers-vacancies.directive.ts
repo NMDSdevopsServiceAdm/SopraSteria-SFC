@@ -20,6 +20,7 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
   public startersLeaversOrVacanciesPageTwo: string;
   public valueToUpdate: string;
   public requiredWarningMessage: string;
+  public todayOneYearAgo: string;
   public knownOptions = [
     {
       label: 'Yes',
@@ -141,6 +142,12 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
   protected clearLocalStorageData(): void {
     localStorage.removeItem(this.hasStartersLeaversVacanciesField);
     localStorage.removeItem(this.numbersField);
+  }
+
+  protected getDateForOneYearAgo(): string {
+    const today = new Date();
+    today.setFullYear(today.getFullYear() - 1);
+    return today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   }
 
   ngOnDestroy(): void {
