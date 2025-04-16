@@ -14,7 +14,7 @@ export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanci
   public valueToUpdate = 'vacancies';
   public revealText =
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
-  public requiredWarningMessage = "Select yes if you've any current staff vacancies";
+  public requiredWarningMessage = "Select yes if you've got current staff vacancies";
 
   protected setupRoutes(): void {
     this.previousRoute = ['/workplace', this.establishment?.uid, 'service-users'];

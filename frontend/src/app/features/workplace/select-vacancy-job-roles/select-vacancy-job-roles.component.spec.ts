@@ -76,8 +76,15 @@ describe('SelectVacancyJobRolesComponent', () => {
       const heading = getByRole('heading', { level: 1 });
       const sectionHeading = heading.previousSibling;
 
-      expect(heading.textContent).toEqual('Select job roles for all your current staff vacancies');
+      expect(heading.textContent).toEqual('Select job roles for the vacancies you want to add');
       expect(sectionHeading.textContent).toEqual('Vacancies and turnover');
+    });
+
+    it('should display hint text', async () => {
+      const { getByText } = await setup();
+      const hintText = 'You can review the number of vacancies for each role after you click Save and continue.';
+
+      expect(getByText(hintText)).toBeTruthy();
     });
 
     describe('accordion', () => {
@@ -314,7 +321,7 @@ describe('SelectVacancyJobRolesComponent', () => {
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
 
-        const expectedErrorMessage = 'Select job roles for all your current staff vacancies';
+        const expectedErrorMessage = 'Select job roles for the vacancies you want to add';
 
         const accordion = getByTestId('selectJobRolesAccordion');
         expect(within(accordion).getByText(expectedErrorMessage)).toBeTruthy();
@@ -341,7 +348,7 @@ describe('SelectVacancyJobRolesComponent', () => {
         fixture.detectChanges();
 
         const errorSummaryBoxHeading = 'There is a problem';
-        const expectedErrorMessage = 'Select job roles for all your current staff vacancies';
+        const expectedErrorMessage = 'Select job roles for the vacancies you want to add';
 
         const errorSummaryBox = getByText(errorSummaryBoxHeading).parentElement;
 

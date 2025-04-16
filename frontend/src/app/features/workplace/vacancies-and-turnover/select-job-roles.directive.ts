@@ -20,6 +20,7 @@ export class SelectJobRolesDirective extends Question {
   public errorMessageOnEmptyInput: string;
   public jobGroupsToOpenAtStart: string[] = [];
   public jobGroups: JobGroup[] = [];
+  public hintText: string;
 
   protected field: string;
   protected numbersField: string;
