@@ -196,7 +196,7 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
     this.selectedJobRoles.forEach((job, index) => {
       const errors = this.jobRoleNumbers.at(index).errors;
       if (!errors) {
-        return null;
+        return;
       }
       const errorType = Object.keys(errors)[0];
       jobRoleErrorMessages[job.jobId] = this.getErrorMessage(errorType);

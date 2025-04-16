@@ -26,7 +26,6 @@ describe('SelectVacancyJobRolesComponent', () => {
 
     const renderResults = await render(SelectVacancyJobRolesComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {

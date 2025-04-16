@@ -7,8 +7,6 @@ import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/upda
   selector: 'app-update-leavers',
   templateUrl:
     '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
-  styleUrl:
-    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.scss',
 })
 export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirective {
   protected slvField = 'leavers';

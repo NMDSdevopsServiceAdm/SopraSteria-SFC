@@ -1,13 +1,4 @@
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Directive,
-  ElementRef,
-  OnInit,
-  QueryList,
-  ViewChild,
-  ViewChildren,
-} from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -21,15 +12,12 @@ import {
   WorkplaceUpdatePage,
 } from '@core/services/update-workplace-after-staff-changes.service';
 import { FormatUtil } from '@core/utils/format-util';
-import {
-  NumberInputWithButtonsComponent,
-} from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
+import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import lodash from 'lodash';
 
 @Directive()
 export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterViewInit {
-  @ViewChildren('numberInputRef') numberInputs: QueryList<NumberInputWithButtonsComponent>;
+  @ViewChild('jobRoleNumbersTable') jobRoleNumbersTable: JobRoleNumbersTableComponent;
   @ViewChild('formEl') formEl: ElementRef;
 
   public form: UntypedFormGroup;
@@ -53,11 +41,13 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public reminderText: string;
   public radioButtonOptions: { label: string; value: jobOptionsEnum }[];
   public messageWhenNoJobRoleSelected: { None: string; DoNotKnow: string; Default: string };
+  public currentMessageWhenNoJobRoleSelected: string;
 
   public serverErrorMessage: string;
   public noOrDoNotKnowErrorMessage: string;
   public numberRequiredErrorMessage: string;
   public validNumberErrorMessage: string;
+  public jobRoleErrorMessages: Record<number, string> = {};
 
   protected slvField: string;
   protected selectedField: string;
@@ -84,19 +74,12 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.prefill();
     this.setupFormErrorsMap();
     this.setupTexts();
+    this.updateMessageWhenNoJobRoleSelected();
     this.setBackLink();
     this.updateWorkplaceAfterStaffChangesService.addToVisitedPages(this.updatePage);
   }
 
   ngAfterViewInit() {
-    this.updateTotalNumber();
-
-    this.numberInputs.forEach((input) => input.registerOnChange(() => this.updateTotalNumber()));
-    this.numberInputs.changes.subscribe(() => {
-      this.setupFormErrorsMap(); // rebuild form errors map as job role index changed
-      this.updateTotalNumber();
-    });
-
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
@@ -157,6 +140,22 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
       }),
     );
   };
+
+  public updateMessageWhenNoJobRoleSelected() {
+    switch (this.selectedNoOrDoNotKnow) {
+      case jobOptionsEnum.NONE: {
+        this.currentMessageWhenNoJobRoleSelected = this.messageWhenNoJobRoleSelected.None;
+        break;
+      }
+      case jobOptionsEnum.DONT_KNOW: {
+        this.currentMessageWhenNoJobRoleSelected = this.messageWhenNoJobRoleSelected.DoNotKnow;
+        break;
+      }
+      default: {
+        this.currentMessageWhenNoJobRoleSelected = this.messageWhenNoJobRoleSelected.Default;
+      }
+    }
+  }
 
   protected setupFormErrorsMap(): void {
     const errorMapForJobRoles = this.selectedJobRoles.map((jobRole, index) =>
@@ -236,6 +235,14 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.backlinkService.showBackLink();
   }
 
+  public handleRemoveJobRole(jobRoleIndex: number): void {
+    this.removeJobRole(jobRoleIndex);
+    this.setupFormErrorsMap(); // rebuild form errors map as job role index changed
+    this.updateJobRoleErrorMessages();
+
+    this.cd.detectChanges();
+  }
+
   public removeJobRole = (jobRoleIndex: number): void => {
     if (jobRoleIndex < 0 || jobRoleIndex >= this.selectedJobRoles.length) {
       return;
@@ -250,32 +257,18 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.jobRoleNumbers.clear();
   };
 
-  private syncSelectedJobRolesNumberWithForm = (): void => {
-    this.numberInputs.forEach((numberInput, index) => {
-      const currentNumber = isNaN(numberInput.currentNumber) ? 0 : numberInput.currentNumber;
-      this.selectedJobRoles[index].total = currentNumber;
-    });
-  };
-
   public handleAddJobRole = (): void => {
-    this.syncSelectedJobRolesNumberWithForm();
-    this.updateWorkplaceAfterStaffChangesService[this.selectedField] = this.selectedJobRoles;
+    this.updateWorkplaceAfterStaffChangesService[this.selectedField] = this.jobRoleNumbersTable.currentValues;
 
     this.router.navigate([`../update-${this.slvField}-job-roles`], { relativeTo: this.route });
   };
 
   public handleClickedNoOrDoNotKnow = (value: jobOptionsEnum): void => {
     this.selectedNoOrDoNotKnow = value;
+    this.updateMessageWhenNoJobRoleSelected();
     this.form.patchValue({ noOrDoNotKnow: value });
     this.removeAllSelectedJobRoles();
   };
-
-  private updateTotalNumber(): void {
-    const allJobRoleNumbers =
-      this.numberInputs?.map((input) => input.currentNumber).filter((number) => !isNaN(number)) ?? [];
-    this.totalNumber = lodash.sum(allJobRoleNumbers);
-    this.cd.detectChanges();
-  }
 
   protected generateUpdateProps(): UpdateJobsRequest {
     if (this.selectedNoOrDoNotKnow) {
@@ -297,6 +290,8 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
+    this.updateJobRoleErrorMessages();
+
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
@@ -313,6 +308,21 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
         this.onError(error);
       },
     );
+  }
+
+  private updateJobRoleErrorMessages(): void {
+    const jobRoleErrorMessages = {};
+
+    this.selectedJobRoles.forEach((job, index) => {
+      const errors = this.jobRoleNumbers.at(index).errors;
+      if (!errors) {
+        return;
+      }
+      const errorType = Object.keys(errors)[0];
+      jobRoleErrorMessages[job.jobId] = this.getErrorMessageForJobRole(job, errorType, true);
+    });
+
+    this.jobRoleErrorMessages = jobRoleErrorMessages;
   }
 
   private onSuccess(): void {

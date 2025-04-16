@@ -7,8 +7,6 @@ import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/upda
   selector: 'app-update-starters',
   templateUrl:
     '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
-  styleUrl:
-    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.scss',
 })
 export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirective {
   public totalNumberDescription = 'Total number of starters';
