@@ -8,7 +8,6 @@ import {
 @Component({
   selector: 'app-update-starters',
   templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
-  styleUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.scss',
 })
 export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirective {
   public totalNumberDescription = 'Total number of starters';
