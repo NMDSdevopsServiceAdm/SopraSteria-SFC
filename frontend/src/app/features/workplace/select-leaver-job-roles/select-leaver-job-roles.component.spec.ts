@@ -76,8 +76,15 @@ describe('SelectLeaverJobRolesComponent', () => {
       const heading = getByRole('heading', { level: 1 });
       const sectionHeading = heading.previousSibling;
 
-      expect(heading.textContent).toEqual('Select job roles of all your staff leavers');
+      expect(heading.textContent).toEqual('Select job roles for the leavers you want to add');
       expect(sectionHeading.textContent).toEqual('Vacancies and turnover');
+    });
+
+    it('should display the hint text', async () => {
+      const { getByText } = await setup();
+
+      const hintText = 'You can review the number of leavers for each role after you click Save and continue.';
+      expect(getByText(hintText)).toBeTruthy();
     });
 
     describe('accordion', () => {
@@ -314,7 +321,7 @@ describe('SelectLeaverJobRolesComponent', () => {
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
 
-        const expectedErrorMessage = 'Select job roles of all your staff leavers';
+        const expectedErrorMessage = 'Select job roles for the leavers you want to add';
 
         const accordion = getByTestId('selectJobRolesAccordion');
         expect(within(accordion).getByText(expectedErrorMessage)).toBeTruthy();
@@ -341,7 +348,7 @@ describe('SelectLeaverJobRolesComponent', () => {
         fixture.detectChanges();
 
         const errorSummaryBoxHeading = 'There is a problem';
-        const expectedErrorMessage = 'Select job roles of all your staff leavers';
+        const expectedErrorMessage = 'Select job roles for the leavers you want to add';
 
         const errorSummaryBox = getByText(errorSummaryBoxHeading).parentElement;
 
