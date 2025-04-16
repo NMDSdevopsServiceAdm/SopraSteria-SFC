@@ -5,7 +5,7 @@ import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { JobService } from '@core/services/job.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
 
 @Component({
@@ -39,7 +39,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backlinkService: BackLinkService,
-    protected updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    protected updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
     protected route: ActivatedRoute,
   ) {}
 

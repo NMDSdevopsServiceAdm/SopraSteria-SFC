@@ -2,9 +2,9 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Starter, Vacancy } from '@core/model/establishment.model';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockJobRoles } from '@core/test-utils/MockJobService';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -36,8 +36,8 @@ describe('SelectJobRolesToAddComponent', () => {
           },
         },
         {
-          provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedVacancies, selectedStarters }),
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({ selectedVacancies, selectedStarters }),
         },
       ],
     });
@@ -48,8 +48,8 @@ describe('SelectJobRolesToAddComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const updateWorkplaceAfterStaffChangesService = injector.inject(
-      UpdateWorkplaceAfterStaffChangesService,
-    ) as UpdateWorkplaceAfterStaffChangesService;
+      VacanciesAndTurnoverService,
+    ) as VacanciesAndTurnoverService;
 
     return {
       component,

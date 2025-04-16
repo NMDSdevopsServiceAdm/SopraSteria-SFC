@@ -2,20 +2,20 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import {
-  UpdateWorkplaceAfterStaffChangesService,
+  VacanciesAndTurnoverService,
   WorkplaceUpdateFlowType,
   WorkplaceUpdatePage,
-} from './update-workplace-after-staff-changes.service';
+} from './vacancies-and-turnover.service';
 
-describe('UpdateWorkplaceAfterStaffChangesService', () => {
-  let service: UpdateWorkplaceAfterStaffChangesService;
+describe('VacanciesAndTurnoverService', () => {
+  let service: VacanciesAndTurnoverService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [UpdateWorkplaceAfterStaffChangesService],
+      providers: [VacanciesAndTurnoverService],
     });
-    service = TestBed.inject(UpdateWorkplaceAfterStaffChangesService);
+    service = TestBed.inject(VacanciesAndTurnoverService);
   });
 
   it('should create the service', () => {

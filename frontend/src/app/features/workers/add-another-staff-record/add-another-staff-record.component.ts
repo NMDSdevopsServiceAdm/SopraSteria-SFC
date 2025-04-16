@@ -5,8 +5,8 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import {
   DoYouWantToAddOrDeleteAnswer,
-  UpdateWorkplaceAfterStaffChangesService,
-} from '@core/services/update-workplace-after-staff-changes.service';
+  VacanciesAndTurnoverService,
+} from '@core/services/vacancies-and-turnover.service';
 
 @Component({
   selector: 'app-add-another-staff-record',
@@ -21,7 +21,7 @@ export class AddAnotherStaffRecordComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private establishmentService: EstablishmentService,
-    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    private updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
   ) {
     this.form = this.formBuilder.group({
       addAnotherStaffRecord: null,

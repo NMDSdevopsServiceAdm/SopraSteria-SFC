@@ -14,7 +14,7 @@ import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver
 import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
 import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-for-leaving.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
-import { WorkplaceUpdateFlowType } from '@core/services/update-workplace-after-staff-changes.service';
+import { WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
 import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
 import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
 import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';

@@ -4,10 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-  UpdateWorkplaceAfterStaffChangesService,
-  WorkplaceUpdateFlowType,
-} from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
 
 @Component({
   selector: 'app-update-workplace-details-after-staff-changes',
@@ -18,7 +15,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
     private establishmentService: EstablishmentService,
     private router: Router,
     private backLinkService: BackLinkService,
-    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    private updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
     private alertService: AlertService,
     private route: ActivatedRoute,
   ) {}

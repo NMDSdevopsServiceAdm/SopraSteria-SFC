@@ -5,12 +5,9 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment, jobOptionsEnum, Starter } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-  UpdateWorkplaceAfterStaffChangesService,
-  WorkplaceUpdatePage,
-} from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { FormatUtil } from '@core/utils/format-util';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
@@ -68,8 +65,8 @@ describe('UpdateStartersComponent', () => {
       providers: [
         UntypedFormBuilder,
         {
-          provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({
             selectedStarters,
             addToVisitedPages: addToVisitedPagesSpy,
             addToSubmittedPages: addToSubmittedPagesSpy,
@@ -101,8 +98,8 @@ describe('UpdateStartersComponent', () => {
     const setStateSpy = spyOn(establishmentService, 'setState').and.callThrough();
 
     const updateWorkplaceAfterStaffChangesService = injector.inject(
-      UpdateWorkplaceAfterStaffChangesService,
-    ) as UpdateWorkplaceAfterStaffChangesService;
+      VacanciesAndTurnoverService,
+    ) as VacanciesAndTurnoverService;
 
     return {
       ...setupTools,

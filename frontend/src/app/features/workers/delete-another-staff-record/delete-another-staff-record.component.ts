@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import {
   DoYouWantToAddOrDeleteAnswer,
-  UpdateWorkplaceAfterStaffChangesService,
-} from '@core/services/update-workplace-after-staff-changes.service';
+  VacanciesAndTurnoverService,
+} from '@core/services/vacancies-and-turnover.service';
 
 @Component({
   selector: 'app-delete-add-another-staff-record',
@@ -19,7 +19,7 @@ export class DeleteAnotherStaffRecordComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private establishmentService: EstablishmentService,
-    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    private updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
   ) {
     this.form = this.formBuilder.group({
       deleteAnotherStaffRecord: null,

@@ -7,10 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-  UpdateWorkplaceAfterStaffChangesService,
-  WorkplaceUpdatePage,
-} from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { FormatUtil } from '@core/utils/format-util';
 import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
@@ -61,7 +58,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     protected backlinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    protected updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    protected updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
     protected route: ActivatedRoute,
     protected cd: ChangeDetectorRef,
   ) {}

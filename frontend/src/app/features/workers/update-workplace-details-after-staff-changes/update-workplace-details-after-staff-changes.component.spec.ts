@@ -5,12 +5,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-  UpdateWorkplaceAfterStaffChangesService,
-  WorkplaceUpdateFlowType,
-} from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -34,10 +31,8 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
           useValue: { establishment: workplace },
         },
         {
-          provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory(
-            overrides?.updateWorkplaceAfterStaffChangesService,
-          ),
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory(overrides?.updateWorkplaceAfterStaffChangesService),
         },
         {
           provide: AlertService,

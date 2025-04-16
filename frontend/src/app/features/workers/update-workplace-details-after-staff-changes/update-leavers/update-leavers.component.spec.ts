@@ -5,12 +5,9 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment, jobOptionsEnum, Leaver } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-  UpdateWorkplaceAfterStaffChangesService,
-  WorkplaceUpdatePage,
-} from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { FormatUtil } from '@core/utils/format-util';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -85,8 +82,8 @@ describe('UpdateLeaversComponent', () => {
           },
         },
         {
-          provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({
             selectedLeavers,
             addToVisitedPages: addToVisitedPagesSpy,
             addToSubmittedPages: addToSubmittedPagesSpy,
@@ -107,8 +104,8 @@ describe('UpdateLeaversComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     const updateWorkplaceAfterStaffChangesService = injector.inject(
-      UpdateWorkplaceAfterStaffChangesService,
-    ) as UpdateWorkplaceAfterStaffChangesService;
+      VacanciesAndTurnoverService,
+    ) as VacanciesAndTurnoverService;
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const updateJobsSpy = spyOn(establishmentService, 'updateJobs').and.callFake((uid, data) =>

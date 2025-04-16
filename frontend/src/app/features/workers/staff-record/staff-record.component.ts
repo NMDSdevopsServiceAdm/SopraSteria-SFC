@@ -10,7 +10,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -42,7 +42,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     protected backLinkService: BackLinkService,
     public breadcrumbService: BreadcrumbService,
-    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    private updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
   ) {}
 
   ngOnInit(): void {

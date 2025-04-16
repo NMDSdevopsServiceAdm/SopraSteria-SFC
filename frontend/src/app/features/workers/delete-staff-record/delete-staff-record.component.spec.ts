@@ -6,11 +6,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { mockLeaveReasons, MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -45,8 +45,8 @@ describe('DeleteStaffRecordComponent', () => {
           },
         },
         {
-          provide: UpdateWorkplaceAfterStaffChangesService,
-          useClass: MockUpdateWorkplaceAfterStaffChangesService,
+          provide: VacanciesAndTurnoverService,
+          useClass: MockVacanciesAndTurnoverService,
         },
         AlertService,
         WindowRef,
@@ -65,8 +65,8 @@ describe('DeleteStaffRecordComponent', () => {
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
     const updateWorkplaceAfterStaffChangesService = injector.inject(
-      UpdateWorkplaceAfterStaffChangesService,
-    ) as UpdateWorkplaceAfterStaffChangesService;
+      VacanciesAndTurnoverService,
+    ) as VacanciesAndTurnoverService;
 
     return {
       ...setupTools,
