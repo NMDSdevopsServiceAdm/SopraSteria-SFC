@@ -22,7 +22,9 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   async function setup(overrides: any = {}) {
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
     const flowType = overrides?.flowType || WorkplaceUpdateFlowType.ADD;
+    const totalNumberOfStaff = overrides?.totalNumberOfStaff ?? 10;
     const alertSpy = jasmine.createSpy('addAlert').and.returnValue(Promise.resolve(true));
+    const showBackLinkSpy = jasmine.createSpy('setBacklink').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(UpdateWorkplaceDetailsAfterStaffChangesComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -45,11 +47,16 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { flowType },
+              data: { flowType, totalNumberOfStaff },
             },
           },
         },
-        BackLinkService,
+        {
+          provide: BackLinkService,
+          useValue: {
+            showBackLink: showBackLinkSpy,
+          },
+        },
       ],
     });
 
@@ -65,6 +72,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       workplace,
       routerSpy,
       alertSpy,
+      showBackLinkSpy,
     };
   }
 
@@ -468,6 +476,20 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
       fragment: 'staff-records',
+    });
+  });
+
+  describe('Displaying back link', () => {
+    it('should display back link when there is at least 1 staff record', async () => {
+      const { showBackLinkSpy } = await setup({ totalNumberOfStaff: 1 });
+
+      expect(showBackLinkSpy).toHaveBeenCalled();
+    });
+
+    it('should not display a back link when there are no staff records (come to page directly from delete)', async () => {
+      const { showBackLinkSpy } = await setup({ totalNumberOfStaff: 0 });
+
+      expect(showBackLinkSpy).not.toHaveBeenCalled();
     });
   });
 });

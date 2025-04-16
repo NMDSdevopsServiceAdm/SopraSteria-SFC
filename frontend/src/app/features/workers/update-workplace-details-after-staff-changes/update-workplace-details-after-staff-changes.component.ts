@@ -28,15 +28,17 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
   public allPagesSubmitted: boolean;
   public WorkplaceUpdateFlowType = WorkplaceUpdateFlowType;
   public flowType: WorkplaceUpdateFlowType;
+  private totalNumberOfStaff: number;
 
   ngOnInit(): void {
     this.flowType = this.route.snapshot?.data?.flowType;
+    this.totalNumberOfStaff = this.route.snapshot?.data?.totalNumberOfStaff;
     this.workplace = this.establishmentService.establishment;
     this.allPagesVisited = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesVisited(this.flowType);
     this.allPagesSubmitted = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesSubmitted(this.flowType);
 
     this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
-    this.backLinkService.showBackLink();
+    this.showBackLink();
 
     if (this.allPagesSubmitted && !this.updateWorkplaceAfterStaffChangesService.hasViewedSavedBanner) {
       this.alertService.addAlert({
@@ -57,5 +59,11 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
   public clickContinue(event: Event): void {
     event.preventDefault();
     this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+  }
+
+  private showBackLink(): void {
+    if (this.totalNumberOfStaff > 0) {
+      this.backLinkService.showBackLink();
+    }
   }
 }
