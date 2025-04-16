@@ -8,7 +8,7 @@ import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/d
 })
 export class DoYouHaveStartersComponent extends DoYouHaveStartersLeaversVacanciesDirective {
   public todayOneYearAgo = this.getDateForOneYearAgo();
-  public heading = `Have you had any starters since ${this.todayOneYearAgo}?`;
+  public heading = `Have you had any starters SINCE ${this.todayOneYearAgo}?`;
   public hintText = "We only want to know about starters who're in permanent and temporary job roles.";
   public hasStartersLeaversVacanciesField = 'hasStarters';
   public numbersField = 'startersJobRoles';

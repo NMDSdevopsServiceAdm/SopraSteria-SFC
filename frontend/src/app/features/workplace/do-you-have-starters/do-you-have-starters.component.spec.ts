@@ -73,7 +73,7 @@ describe('DoYouHaveStartersComponent', () => {
     const { getByRole, getByTestId } = await setup();
 
     const heading = getByRole('heading', {
-      name: `Have you had any starters since ${todayOneYearAgo}?`,
+      name: `Have you had any starters SINCE ${todayOneYearAgo}?`,
     });
 
     const sectionHeading = within(getByTestId('section-heading'));
