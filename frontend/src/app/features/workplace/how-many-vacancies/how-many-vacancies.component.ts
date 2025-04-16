@@ -16,6 +16,8 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
   public jobRoleType = 'vacancies';
   public fieldName = 'vacancies';
   public fieldJobRoles = 'vacanciesJobRoles';
+  public jobRolesTableTitle = 'Current staff vacancies';
+  public totalNumberDescription = 'Total number of vacancies';
 
   protected selectedJobRoles: Array<Vacancy> = [];
 

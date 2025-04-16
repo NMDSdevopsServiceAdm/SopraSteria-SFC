@@ -128,6 +128,16 @@ describe('HowManyVacanciesComponent', () => {
           expect(getInputBoxForJobRole(role.title)).toBeTruthy();
         });
       });
+
+      it('should show a title for the job roles number table', async () => {
+        const { getByText } = await setup();
+        expect(getByText('Current staff vacancies')).toBeTruthy();
+      });
+
+      it('should show a description for the total number', async () => {
+        const { getByText } = await setup();
+        expect(getByText('Total number of vacancies')).toBeTruthy();
+      });
     });
 
     describe('buttons', () => {

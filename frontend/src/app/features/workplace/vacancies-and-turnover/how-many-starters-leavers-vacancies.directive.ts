@@ -21,6 +21,8 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
   public fieldName: string;
   public fieldJobRoles: string;
   public section: string = WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
+  public jobRolesTableTitle: string;
+  public totalNumberDescription: string;
 
   protected selectedJobRoles: Array<Starter | Leaver | Vacancy> = [];
   protected jobRoleErrorMessages: Record<number, string> = {};
