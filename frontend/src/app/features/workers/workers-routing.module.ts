@@ -95,6 +95,9 @@ const routes: Routes = [
           title: 'Update workplace details',
           flowType: WorkplaceUpdateFlowType.ADD,
         },
+        resolve: {
+          totalNumberOfStaff: TotalStaffRecordsResolver,
+        },
       },
       {
         path: 'update-total-staff',
@@ -147,6 +150,9 @@ const routes: Routes = [
         data: {
           title: 'Update workplace details',
           flowType: WorkplaceUpdateFlowType.DELETE,
+        },
+        resolve: {
+          totalNumberOfStaff: TotalStaffRecordsResolver,
         },
       },
       {
