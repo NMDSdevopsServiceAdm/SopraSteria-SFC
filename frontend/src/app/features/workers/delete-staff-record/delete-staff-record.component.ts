@@ -32,6 +32,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
   public otherReasonDetailMaxLength = 500;
   public confirmationMissingErrorMessage =
     'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
+  public totalNumberOfStaffBeforeDelete: number;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -51,6 +52,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
     this.worker = this.workerService.worker;
     this.workplace = this.establishmentService.establishment;
     this.reasons = this.route.snapshot.data?.reasonsForLeaving;
+    this.totalNumberOfStaffBeforeDelete = this.route.snapshot.data?.totalNumberOfStaff;
 
     this.setupForm();
     this.setupFormErrorsMap();
@@ -141,7 +143,13 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
 
   private onSuccess(): void {
     this.updateWorkplaceAfterStaffChangesService.clearDoYouWantToAddOrDeleteAnswer();
-    this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'delete-another-staff-record']).then(() =>
+
+    const nextPage =
+      this.totalNumberOfStaffBeforeDelete > 1
+        ? 'delete-another-staff-record'
+        : 'update-workplace-details-after-deleting-staff';
+
+    this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', nextPage]).then(() =>
       this.alertService.addAlert({
         type: 'success',
         message: `Staff record deleted (${this.worker.nameOrId})`,
