@@ -75,7 +75,7 @@
           <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
             <app-summary-record-change
               [explanationText]="' new starters'"
-              [link]="['/workplace', workplace.uid, 'do-you-have-starters']"
+              [link]="['/workplace', workplace.uid, 'update-starters']"
               [hasData]="workplace.starters?.length"
               (setReturnClicked)="this.setReturn()"
             ></app-summary-record-change>
