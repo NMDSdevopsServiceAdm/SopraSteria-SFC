@@ -25,6 +25,9 @@ import {
   ViewTrainingComponent,
 } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 import {
+  UpdateLeaversComponent,
+} from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import {
   UpdateStartersComponent,
 } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
 import {
@@ -89,9 +92,6 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
-import {
-  UpdateLeaversComponent,
-} from './update-workplace-details-after-staff-changes/update-leavers/update-leavers.component';
 import {
   UpdateTotalNumberOfStaffComponent,
 } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';

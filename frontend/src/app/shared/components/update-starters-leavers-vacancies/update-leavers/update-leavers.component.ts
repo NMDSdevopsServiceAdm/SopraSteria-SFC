@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
-import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import {
+  UpdateStartersLeaversVacanciesDirective,
+} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-leavers',
-  templateUrl:
-    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+  templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
 })
 export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirective {
   protected slvField = 'leavers';

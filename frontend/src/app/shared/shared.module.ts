@@ -105,6 +105,7 @@ import { TrainingInfoPanelComponent } from './components/training-info-panel/tra
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { TrainingSelectViewPanelComponent } from './components/training-select-view-panel/training-select-view-panel.component';
 import { SelectJobRolesToAddComponent } from './components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
+import { UpdateLeaversComponent } from './components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
 import { UpdateStartersComponent } from './components/update-starters-leavers-vacancies/update-starters/update-starters.component';
 import { UpdateVacanciesComponent } from './components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
@@ -280,6 +281,7 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
     NumberInputWithButtonsComponent,
     UpdateVacanciesComponent,
     UpdateStartersComponent,
+    UpdateLeaversComponent,
     SelectJobRolesToAddComponent,
     NumberInputWithButtonsComponent,
     JobRoleNumbersTableComponent,
