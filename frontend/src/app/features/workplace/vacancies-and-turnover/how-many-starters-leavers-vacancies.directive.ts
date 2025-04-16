@@ -1,6 +1,6 @@
 import { Directive, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, Validators } from '@angular/forms';
-import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
+import { Leaver, Starter, StarterLeaverVacancy, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { Question } from '../question/question.component';
@@ -139,11 +139,11 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
     this.selectedJobRoles = this.replaceNullWithOne(this.selectedJobRoles);
   }
 
-  protected getSelectedJobRoleFromService(): Array<Vacancy | Starter | Leaver> {
+  protected getSelectedJobRoleFromService(): Array<StarterLeaverVacancy> {
     throw new Error('To be implemented at component');
   }
 
-  protected replaceNullWithOne(selectedJobRoles: Array<Vacancy | Starter | Leaver>): Array<Vacancy | Starter | Leaver> {
+  protected replaceNullWithOne(selectedJobRoles: Array<StarterLeaverVacancy>): Array<StarterLeaverVacancy> {
     return selectedJobRoles.map((job) => {
       const updatedNumber = job.total ?? 1;
       return { ...job, total: updatedNumber };

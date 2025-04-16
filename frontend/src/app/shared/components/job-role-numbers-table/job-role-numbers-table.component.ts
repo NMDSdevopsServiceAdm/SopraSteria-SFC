@@ -9,7 +9,7 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { UntypedFormArray } from '@angular/forms';
-import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
+import { StarterLeaverVacancy } from '@core/model/establishment.model';
 import lodash from 'lodash';
 import { NumberInputWithButtonsComponent } from '../number-input-with-buttons/number-input-with-buttons.component';
 
@@ -27,7 +27,7 @@ export class JobRoleNumbersTableComponent implements AfterViewInit {
 
   @Input() jobRoleNumbers: UntypedFormArray;
   @Input() jobRoleErrorMessages: Record<number, string>;
-  @Input() selectedJobRoles: Array<Vacancy | Starter | Leaver>;
+  @Input() selectedJobRoles: Array<StarterLeaverVacancy>;
   @Input() allowRemoveJobRole: boolean = true;
   @Input() submitted: boolean = false;
 
@@ -63,7 +63,7 @@ export class JobRoleNumbersTableComponent implements AfterViewInit {
     this.cd.detectChanges();
   }
 
-  public get currentValues(): Vacancy[] {
+  public get currentValues(): StarterLeaverVacancy[] {
     return this.selectedJobRoles.map((job, index) => {
       const { jobId, title } = job;
       const currentNumber = this.numberInputs.get(index).currentNumber;

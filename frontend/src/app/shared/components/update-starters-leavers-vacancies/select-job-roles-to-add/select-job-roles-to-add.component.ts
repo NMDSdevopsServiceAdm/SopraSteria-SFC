@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
+import { StarterLeaverVacancy } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { JobService } from '@core/services/job.service';
@@ -32,7 +32,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
   public disabledJobIds: number[] = [];
   public jobGroupsToOpenAtStart: string[] = [];
 
-  protected prefillData: Array<Vacancy | Starter | Leaver> = [];
+  protected prefillData: Array<StarterLeaverVacancy> = [];
   protected selectedJobIds: number[] = [];
 
   constructor(
@@ -115,7 +115,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
     this.updateWorkplaceAfterStaffChangesService[this.selectedFieldState] = updatedJobRoles;
   }
 
-  private getUpdatedJobRoles(): Array<Vacancy | Starter | Leaver> {
+  private getUpdatedJobRoles(): Array<StarterLeaverVacancy> {
     const selectedJobIds = this.form.get('selectedJobRoles').value;
     const jobRolesToAdd = this.jobsAvailable
       .filter((job) => selectedJobIds.includes(job.id))
