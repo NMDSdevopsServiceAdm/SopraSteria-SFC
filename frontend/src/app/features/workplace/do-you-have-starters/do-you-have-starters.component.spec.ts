@@ -11,11 +11,12 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveStartersComponent } from './do-you-have-starters.component';
+import { FormatUtil } from '@core/utils/format-util';
 
 describe('DoYouHaveStartersComponent', () => {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 1);
-  const todayOneYearAgo = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
 
   async function setup(overrides: any = {}) {
     const setupTools = await render(DoYouHaveStartersComponent, {
