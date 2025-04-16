@@ -424,7 +424,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' leavers'"
-          [link]="['/workplace', workplace.uid, 'do-you-have-leavers']"
+          [link]="['/workplace', workplace.uid, 'update-leavers']"
           [hasData]="workplace.leavers?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
