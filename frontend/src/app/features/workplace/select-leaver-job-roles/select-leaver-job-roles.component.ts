@@ -8,8 +8,9 @@ import { SelectJobRolesDirective } from '../vacancies-and-turnover/select-job-ro
   templateUrl: '../vacancies-and-turnover/select-job-roles.html',
 })
 export class SelectLeaverJobRolesComponent extends SelectJobRolesDirective {
-  public errorMessageOnEmptyInput = 'Select job roles of all your staff leavers';
-  public heading = 'Select job roles of all your staff leavers';
+  public errorMessageOnEmptyInput = 'Select job roles for the leavers you want to add';
+  public heading = 'Select job roles for the leavers you want to add';
+  public hintText = 'You can review the number of leavers for each role after you click Save and continue.';
   protected numbersField = 'leaversJobRoles';
   protected hasStartersLeaversVacanciesField = 'hasLeavers';
   protected prefillData: Leaver[] = [];
