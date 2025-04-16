@@ -208,14 +208,14 @@ describe('SelectVacancyJobRolesComponent', () => {
       });
 
       it('should prefill from the vacancies data from database if selectedVacancies is null', async () => {
-        const { queryAllByRole } = await setup({ localStorageData: null, vacanciesFromDatabase: mockVacancies });
+        const { queryAllByRole } = await setup({ selectedVacancies: null, vacanciesFromDatabase: mockVacancies });
 
         const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(2);
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
       });
 
-      it('should clear data in local storage when user clicks "Cancel" button', async () => {
+      it('should clear data in local storage and service when user clicks "Cancel" button', async () => {
         const { getByText, vacanciesAndTurnoverService } = await setup({ returnToUrl: true });
 
         const localStorageRemoveItemSpy = spyOn(localStorage, 'removeItem');
@@ -234,7 +234,7 @@ describe('SelectVacancyJobRolesComponent', () => {
   describe('form submit and validation', () => {
     describe('on Success', () => {
       it('should store the user input data in vacanciesAndTurnover service', async () => {
-        const { getByText, setSelectedVacanciesSpy: setLocalStorageSpy } = await setup();
+        const { getByText, setSelectedVacanciesSpy } = await setup();
 
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Care worker'));
@@ -261,7 +261,7 @@ describe('SelectVacancyJobRolesComponent', () => {
           },
         ];
 
-        expect(setLocalStorageSpy).toHaveBeenCalledWith(expectedData);
+        expect(setSelectedVacanciesSpy).toHaveBeenCalledWith(expectedData);
       });
 
       it('should keep the vacancies numbers that was loaded from database', async () => {
@@ -278,7 +278,7 @@ describe('SelectVacancyJobRolesComponent', () => {
           },
         ];
 
-        const { getByText, setSelectedVacanciesSpy: setLocalStorageSpy } = await setup({
+        const { getByText, setSelectedVacanciesSpy } = await setup({
           vacanciesFromDatabase: mockVacanciesFromDatabase,
         });
 
@@ -300,7 +300,7 @@ describe('SelectVacancyJobRolesComponent', () => {
           },
         ];
 
-        expect(setLocalStorageSpy).toHaveBeenCalledWith(expectedData);
+        expect(setSelectedVacanciesSpy).toHaveBeenCalledWith(expectedData);
       });
 
       it('should navigate to the vacancies number input page after submit', async () => {
@@ -316,13 +316,7 @@ describe('SelectVacancyJobRolesComponent', () => {
 
     describe('errors', () => {
       it('should display an error message on submit if no job roles are selected', async () => {
-        const {
-          fixture,
-          getByRole,
-          getByText,
-          getByTestId,
-          setSelectedVacanciesSpy: setLocalStorageSpy,
-        } = await setup();
+        const { fixture, getByRole, getByText, getByTestId, setSelectedVacanciesSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
@@ -336,7 +330,7 @@ describe('SelectVacancyJobRolesComponent', () => {
         const errorSummaryBox = getByText('There is a problem').parentElement;
         expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
 
-        expect(setLocalStorageSpy).not.toHaveBeenCalled();
+        expect(setSelectedVacanciesSpy).not.toHaveBeenCalled();
       });
 
       it('should expand the whole accordion on error', async () => {
