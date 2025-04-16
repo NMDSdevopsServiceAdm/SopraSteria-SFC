@@ -23,7 +23,7 @@ import { DeleteStaffRecordComponent } from './delete-staff-record.component';
 describe('DeleteStaffRecordComponent', () => {
   const mockWorker = workerBuilder() as Worker;
 
-  const setup = async () => {
+  const setup = async (overrides: any = {}) => {
     const setupTools = await render(DeleteStaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -40,7 +40,7 @@ describe('DeleteStaffRecordComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { reasonsForLeaving: mockLeaveReasons },
+              data: { reasonsForLeaving: mockLeaveReasons, totalNumberOfStaff: 2, ...overrides.snapshot },
             },
           },
         },
@@ -170,7 +170,7 @@ describe('DeleteStaffRecordComponent', () => {
       });
     });
 
-    it('should navigate to staff record page and show an alert when worker is successfully deleted', async () => {
+    it('should navigate to staff record page and show an alert when worker is successfully deleted and more than one staff record', async () => {
       const { component, getByRole, routerSpy, alertServiceSpy } = await setup();
 
       userEvent.click(getByRole('checkbox', { name: /I know that/ }));
@@ -181,6 +181,26 @@ describe('DeleteStaffRecordComponent', () => {
         'mocked-uid',
         'staff-record',
         'delete-another-staff-record',
+      ]);
+
+      await routerSpy.calls.mostRecent().returnValue;
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `Staff record deleted (${component.worker.nameOrId})`,
+      });
+    });
+
+    it('should navigate to check this information page and show an alert when worker is successfully deleted and is last staff record', async () => {
+      const { component, getByRole, routerSpy, alertServiceSpy } = await setup({ snapshot: { totalNumberOfStaff: 1 } });
+
+      userEvent.click(getByRole('checkbox', { name: /I know that/ }));
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        'update-workplace-details-after-deleting-staff',
       ]);
 
       await routerSpy.calls.mostRecent().returnValue;
