@@ -647,7 +647,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
         expect(within(startersRow).queryByText('-')).toBeTruthy();
       });
 
@@ -662,7 +662,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
         expect(within(startersRow).queryByText(`Don't know`)).toBeTruthy();
       });
 
@@ -677,7 +677,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
         expect(within(startersRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -692,7 +692,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
         expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
