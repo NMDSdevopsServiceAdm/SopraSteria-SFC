@@ -64,9 +64,7 @@ describe('DeleteStaffRecordComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
-    const updateWorkplaceAfterStaffChangesService = injector.inject(
-      VacanciesAndTurnoverService,
-    ) as VacanciesAndTurnoverService;
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService) as VacanciesAndTurnoverService;
 
     return {
       ...setupTools,
@@ -75,7 +73,7 @@ describe('DeleteStaffRecordComponent', () => {
       workerService,
       deleteWorkerSpy,
       alertServiceSpy,
-      updateWorkplaceAfterStaffChangesService,
+      vacanciesAndTurnoverService,
     };
   };
 
@@ -211,10 +209,10 @@ describe('DeleteStaffRecordComponent', () => {
     });
 
     it('should clear doYouWantToAddOrDeleteAnswer on deletion to ensure no side effects from previous visits to delete another page', async () => {
-      const { getByRole, updateWorkplaceAfterStaffChangesService } = await setup();
+      const { getByRole, vacanciesAndTurnoverService } = await setup();
 
       const clearDoYouWantToAddOrDeleteAnswerSpy = spyOn(
-        updateWorkplaceAfterStaffChangesService,
+        vacanciesAndTurnoverService,
         'clearDoYouWantToAddOrDeleteAnswer',
       );
 

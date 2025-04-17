@@ -45,7 +45,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
     private formBuilder: UntypedFormBuilder,
     private backLinkService: BackLinkService,
     private route: ActivatedRoute,
-    private updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {}
 
   ngOnInit(): void {
@@ -142,7 +142,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
   }
 
   private onSuccess(): void {
-    this.updateWorkplaceAfterStaffChangesService.clearDoYouWantToAddOrDeleteAnswer();
+    this.vacanciesAndTurnoverService.clearDoYouWantToAddOrDeleteAnswer();
 
     const nextPage =
       this.totalNumberOfStaffBeforeDelete > 1

@@ -39,7 +39,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backlinkService: BackLinkService,
-    protected updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
+    protected vacanciesAndTurnoverService: VacanciesAndTurnoverService,
     protected route: ActivatedRoute,
   ) {}
 
@@ -72,7 +72,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
   }
 
   private prefill(): void {
-    this.prefillData = this.updateWorkplaceAfterStaffChangesService[this.selectedFieldState] || [];
+    this.prefillData = this.vacanciesAndTurnoverService[this.selectedFieldState] || [];
 
     this.disabledJobIds = this.prefillData.map((jobRole) => jobRole.jobId) ?? [];
     this.jobGroupsToOpenAtStart = this.jobGroups
@@ -112,7 +112,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
   private storeUpdatedJobRoles(): void {
     const updatedJobRoles = this.getUpdatedJobRoles();
 
-    this.updateWorkplaceAfterStaffChangesService[this.selectedFieldState] = updatedJobRoles;
+    this.vacanciesAndTurnoverService[this.selectedFieldState] = updatedJobRoles;
   }
 
   private getUpdatedJobRoles(): Array<StarterLeaverVacancy> {

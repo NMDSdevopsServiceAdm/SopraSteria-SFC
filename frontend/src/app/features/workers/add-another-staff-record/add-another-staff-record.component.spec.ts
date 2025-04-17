@@ -42,11 +42,9 @@ describe('AddAnotherStaffRecordComponent', () => {
     const router = injector.inject(Router) as Router;
     const navigateSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    const updateWorkplaceAfterStaffChangesService = injector.inject(
-      VacanciesAndTurnoverService,
-    ) as VacanciesAndTurnoverService;
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService) as VacanciesAndTurnoverService;
     const doYouWantToAddOrDeleteAnswerSpy = spyOnProperty(
-      updateWorkplaceAfterStaffChangesService,
+      vacanciesAndTurnoverService,
       'doYouWantToAddOrDeleteAnswer',
       'set',
     );

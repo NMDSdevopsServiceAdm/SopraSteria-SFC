@@ -47,14 +47,12 @@ describe('SelectJobRolesToAddComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const updateWorkplaceAfterStaffChangesService = injector.inject(
-      VacanciesAndTurnoverService,
-    ) as VacanciesAndTurnoverService;
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService) as VacanciesAndTurnoverService;
 
     return {
       component,
       routerSpy,
-      updateWorkplaceAfterStaffChangesService,
+      vacanciesAndTurnoverService,
       ...setupTools,
     };
   };
@@ -173,7 +171,7 @@ describe('SelectJobRolesToAddComponent', () => {
 
         describe('on Success', () => {
           it(`should update the selected ${jobRoleType} stored in service`, async () => {
-            const { getByText, updateWorkplaceAfterStaffChangesService } = await setup({
+            const { getByText, vacanciesAndTurnoverService } = await setup({
               jobRoleType,
               [preselectedField]: preselected,
             });
@@ -201,7 +199,7 @@ describe('SelectJobRolesToAddComponent', () => {
               },
             ];
 
-            expect(updateWorkplaceAfterStaffChangesService[selectedField]).toEqual(expectedUpdatedField);
+            expect(vacanciesAndTurnoverService[selectedField]).toEqual(expectedUpdatedField);
           });
 
           it(`should navigate to update ${jobRoleType} page after submit`, async () => {

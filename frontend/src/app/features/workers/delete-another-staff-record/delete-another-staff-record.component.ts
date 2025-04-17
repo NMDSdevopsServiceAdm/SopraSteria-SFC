@@ -19,7 +19,7 @@ export class DeleteAnotherStaffRecordComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private establishmentService: EstablishmentService,
-    private updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {
     this.form = this.formBuilder.group({
       deleteAnotherStaffRecord: null,
@@ -31,7 +31,7 @@ export class DeleteAnotherStaffRecordComponent implements OnInit {
   }
 
   private prefillRadioIfUserHasComeBackToPage(): void {
-    const previousAnswer = this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer;
+    const previousAnswer = this.vacanciesAndTurnoverService.doYouWantToAddOrDeleteAnswer;
 
     if (previousAnswer) {
       this.form.get('deleteAnotherStaffRecord').setValue(previousAnswer);
@@ -40,11 +40,11 @@ export class DeleteAnotherStaffRecordComponent implements OnInit {
 
   public onSubmit(): void {
     if (this.form.controls['deleteAnotherStaffRecord'].value === DoYouWantToAddOrDeleteAnswer.YES) {
-      this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.YES;
+      this.vacanciesAndTurnoverService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.YES;
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
     } else {
-      this.updateWorkplaceAfterStaffChangesService.resetVisitedAndSubmittedPages();
-      this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.NO;
+      this.vacanciesAndTurnoverService.resetVisitedAndSubmittedPages();
+      this.vacanciesAndTurnoverService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.NO;
 
       this.router.navigate([
         '/workplace',

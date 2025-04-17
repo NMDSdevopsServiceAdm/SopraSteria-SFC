@@ -15,7 +15,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
     private establishmentService: EstablishmentService,
     private router: Router,
     private backLinkService: BackLinkService,
-    private updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
     private alertService: AlertService,
     private route: ActivatedRoute,
   ) {}
@@ -31,13 +31,13 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
     this.flowType = this.route.snapshot?.data?.flowType;
     this.totalNumberOfStaff = this.route.snapshot?.data?.totalNumberOfStaff;
     this.workplace = this.establishmentService.establishment;
-    this.allPagesVisited = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesVisited(this.flowType);
-    this.allPagesSubmitted = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesSubmitted(this.flowType);
+    this.allPagesVisited = this.vacanciesAndTurnoverService.allUpdatePagesVisited(this.flowType);
+    this.allPagesSubmitted = this.vacanciesAndTurnoverService.allUpdatePagesSubmitted(this.flowType);
 
-    this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
     this.showBackLink();
 
-    if (this.allPagesSubmitted && !this.updateWorkplaceAfterStaffChangesService.hasViewedSavedBanner) {
+    if (this.allPagesSubmitted && !this.vacanciesAndTurnoverService.hasViewedSavedBanner) {
       this.alertService.addAlert({
         type: 'success',
         message: `Total number of staff, vacancies and ${
@@ -45,7 +45,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit 
         } information saved`,
       });
 
-      this.updateWorkplaceAfterStaffChangesService.hasViewedSavedBanner = true;
+      this.vacanciesAndTurnoverService.hasViewedSavedBanner = true;
     }
   }
 

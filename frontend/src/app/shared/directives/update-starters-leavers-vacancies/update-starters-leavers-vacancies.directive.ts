@@ -58,7 +58,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     protected backlinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    protected updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
+    protected vacanciesAndTurnoverService: VacanciesAndTurnoverService,
     protected route: ActivatedRoute,
     protected cd: ChangeDetectorRef,
   ) {}
@@ -73,7 +73,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.setupTexts();
     this.updateNoJobRoleSelectedMessage();
     this.setBackLink();
-    this.updateWorkplaceAfterStaffChangesService.addToVisitedPages(this.updatePage);
+    this.vacanciesAndTurnoverService.addToVisitedPages(this.updatePage);
   }
 
   ngAfterViewInit() {
@@ -96,7 +96,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   }
 
   private prefill(): void {
-    const dataFromJobRoleSelectionPage = this.updateWorkplaceAfterStaffChangesService[this.selectedField];
+    const dataFromJobRoleSelectionPage = this.vacanciesAndTurnoverService[this.selectedField];
     const dataFromDatabase = this.establishmentService.establishment?.[this.slvField];
 
     const dataToPrefillFrom = dataFromJobRoleSelectionPage === null ? dataFromDatabase : dataFromJobRoleSelectionPage;
@@ -250,7 +250,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   };
 
   public handleAddJobRole = (): void => {
-    this.updateWorkplaceAfterStaffChangesService[this.selectedField] = this.jobRoleNumbersTable.currentValues;
+    this.vacanciesAndTurnoverService[this.selectedField] = this.jobRoleNumbersTable.currentValues;
 
     this.router.navigate([`../update-${this.slvField}-job-roles`], { relativeTo: this.route });
   };
@@ -318,8 +318,8 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   }
 
   private onSuccess(): void {
-    this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
-    this.updateWorkplaceAfterStaffChangesService.addToSubmittedPages(this.updatePage);
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
+    this.vacanciesAndTurnoverService.addToSubmittedPages(this.updatePage);
 
     this.returnToPreviousPage();
   }
@@ -343,7 +343,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   public onCancel(event: Event): void {
     event.preventDefault();
-    this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
     this.returnToPreviousPage();
   }
 

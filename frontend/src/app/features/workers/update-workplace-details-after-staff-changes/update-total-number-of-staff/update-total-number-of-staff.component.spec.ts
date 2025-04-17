@@ -89,7 +89,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should add page to visitedPages in updateWorkplaceAfterStaffChangesService', async () => {
+  it('should add page to visitedPages in vacanciesAndTurnoverService', async () => {
     const { addToVisitedPagesSpy } = await setup();
 
     expect(addToVisitedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.TOTAL_STAFF);
@@ -170,7 +170,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
       expect(postStaffSpy).toHaveBeenCalledWith(mockEstablishment.uid, 10);
     });
 
-    it('should add total staff page to submittedPages in UpdateWorkplaceAfterStaffChangesService when successful', async () => {
+    it('should add total staff page to submittedPages in vacanciesAndTurnoverService when successful', async () => {
       const { addToSubmittedPagesSpy } = await setup();
 
       await fillInNumberAndSubmitForm('10');

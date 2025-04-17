@@ -32,7 +32,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
         },
         {
           provide: VacanciesAndTurnoverService,
-          useFactory: MockVacanciesAndTurnoverService.factory(overrides?.updateWorkplaceAfterStaffChangesService),
+          useFactory: MockVacanciesAndTurnoverService.factory(overrides?.vacanciesAndTurnoverService),
         },
         {
           provide: AlertService,
@@ -79,7 +79,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   it('should clear any previous job roles selection stored in local service when page is loaded', async () => {
     const clearJobRolesSpy = jasmine.createSpy();
     await setup({
-      updateWorkplaceAfterStaffChangesService: { clearAllSelectedJobRoles: clearJobRolesSpy },
+      vacanciesAndTurnoverService: { clearAllSelectedJobRoles: clearJobRolesSpy },
     });
 
     expect(clearJobRolesSpy).toHaveBeenCalled();
@@ -89,7 +89,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     describe('Warning text', () => {
       it('should display when user has not visited all of the update question pages in add view', async () => {
         const { getByText } = await setup({
-          updateWorkplaceAfterStaffChangesService: {
+          vacanciesAndTurnoverService: {
             allUpdatePagesVisited: () => false,
             allUpdatePagesSubmitted: () => false,
           },
@@ -104,7 +104,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       it('should display when user has not visited all of the update question pages in delete view', async () => {
         const { getByText } = await setup({
           flowType: WorkplaceUpdateFlowType.DELETE,
-          updateWorkplaceAfterStaffChangesService: {
+          vacanciesAndTurnoverService: {
             allUpdatePagesVisited: () => false,
             allUpdatePagesSubmitted: () => false,
           },
@@ -118,7 +118,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
       it('should not display when user has visited all of the update question pages', async () => {
         const { queryByText } = await setup({
-          updateWorkplaceAfterStaffChangesService: {
+          vacanciesAndTurnoverService: {
             allUpdatePagesVisited: () => true,
             allUpdatePagesSubmitted: () => false,
           },
@@ -134,7 +134,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     describe('Saved banner', () => {
       it('should add alert with starters in message when user has submitted on all update question pages from add version', async () => {
         const { alertSpy } = await setup({
-          updateWorkplaceAfterStaffChangesService: {
+          vacanciesAndTurnoverService: {
             allUpdatePagesVisited: () => true,
             allUpdatePagesSubmitted: () => true,
           },
@@ -149,7 +149,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       it('should add alert with leavers in message when user has submitted on all update question pages from delete version', async () => {
         const { alertSpy } = await setup({
           flowType: WorkplaceUpdateFlowType.DELETE,
-          updateWorkplaceAfterStaffChangesService: {
+          vacanciesAndTurnoverService: {
             allUpdatePagesVisited: () => true,
             allUpdatePagesSubmitted: () => true,
           },
@@ -163,7 +163,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
       it('should not add alert when user has visited but not submitted on all update question pages', async () => {
         const { alertSpy } = await setup({
-          updateWorkplaceAfterStaffChangesService: {
+          vacanciesAndTurnoverService: {
             allUpdatePagesVisited: () => true,
             allUpdatePagesSubmitted: () => false,
           },
@@ -174,7 +174,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
       it('should not add alert when user has submitted on all update question pages but has already seen banner', async () => {
         const { alertSpy } = await setup({
-          updateWorkplaceAfterStaffChangesService: {
+          vacanciesAndTurnoverService: {
             allUpdatePagesVisited: () => true,
             allUpdatePagesSubmitted: () => true,
             hasViewedSavedBanner: true,

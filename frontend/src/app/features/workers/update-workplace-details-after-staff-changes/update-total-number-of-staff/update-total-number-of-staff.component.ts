@@ -35,7 +35,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     private establishmentService: EstablishmentService,
     private backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
-    private updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +45,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     this.setupFormError();
     this.setBackLink();
     this.prefill();
-    this.updateWorkplaceAfterStaffChangesService.addToVisitedPages(WorkplaceUpdatePage.TOTAL_STAFF);
+    this.vacanciesAndTurnoverService.addToVisitedPages(WorkplaceUpdatePage.TOTAL_STAFF);
   }
 
   private setupForm(): void {
@@ -94,7 +94,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
 
   onSuccess(data: { numberOfStaff: number }): void {
     this.updateWorkplaceState(data.numberOfStaff);
-    this.updateWorkplaceAfterStaffChangesService.addToSubmittedPages(WorkplaceUpdatePage.TOTAL_STAFF);
+    this.vacanciesAndTurnoverService.addToSubmittedPages(WorkplaceUpdatePage.TOTAL_STAFF);
 
     this.returnToPreviousPage();
   }

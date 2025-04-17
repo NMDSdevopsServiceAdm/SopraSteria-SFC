@@ -42,7 +42,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     protected backLinkService: BackLinkService,
     public breadcrumbService: BreadcrumbService,
-    private updateWorkplaceAfterStaffChangesService: VacanciesAndTurnoverService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {}
 
   ngOnInit(): void {
@@ -82,7 +82,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
   private showContinueButtons(): void {
     this.continueRoute = ['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record'];
-    this.updateWorkplaceAfterStaffChangesService.clearDoYouWantToAddOrDeleteAnswer();
+    this.vacanciesAndTurnoverService.clearDoYouWantToAddOrDeleteAnswer();
     this.trackNavigationToClearHasCompletedStaffRecordFlow();
   }
 
