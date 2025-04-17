@@ -20,7 +20,9 @@ import {
   WorkplaceUpdatePage,
 } from '@core/services/update-workplace-after-staff-changes.service';
 import { FormatUtil } from '@core/utils/format-util';
-import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
+import {
+  NumberInputWithButtonsComponent,
+} from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import lodash from 'lodash';
 
@@ -197,7 +199,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     errorType: string,
     inline: boolean = false,
   ): string {
-    const jobRoleTitleInLowerCase = jobRole.title.toLowerCase();
+    const jobRoleTitleInLowerCase = FormatUtil.formatToLowercaseExcludingAcronyms(jobRole.title);
 
     switch (errorType) {
       case 'required': {
