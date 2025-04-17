@@ -12,6 +12,7 @@ import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } fr
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { jobOptionsEnum, StarterLeaverVacancy, UpdateJobsRequest } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -20,7 +21,9 @@ import {
   WorkplaceUpdatePage,
 } from '@core/services/update-workplace-after-staff-changes.service';
 import { FormatUtil } from '@core/utils/format-util';
-import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
+import {
+  NumberInputWithButtonsComponent,
+} from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import lodash from 'lodash';
 
@@ -59,6 +62,8 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   protected slvField: string;
   protected selectedField: string;
   protected updatePage: WorkplaceUpdatePage;
+  protected returnInEstablishmentService: URLStructure;
+  protected staffUpdatesView: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -72,6 +77,9 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   ) {}
 
   ngOnInit() {
+    this.staffUpdatesView = this.route.snapshot?.data?.staffUpdatesView;
+    this.returnInEstablishmentService = this.establishmentService.returnTo;
+
     this.setupForm();
     this.prefill();
     this.setupFormErrorsMap();
@@ -320,7 +328,15 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   }
 
   private returnToPreviousPage(): void {
-    this.router.navigate(['../'], { relativeTo: this.route });
+    if (this.staffUpdatesView) {
+      this.router.navigate(['../'], { relativeTo: this.route });
+    } else if (this.returnInEstablishmentService) {
+      this.router.navigate(this.returnInEstablishmentService.url, {
+        fragment: this.returnInEstablishmentService.fragment,
+      });
+    } else {
+      this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+    }
   }
 
   public onCancel(event: Event): void {

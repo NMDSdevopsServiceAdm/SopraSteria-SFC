@@ -27,6 +27,11 @@ import { UserAccountSavedComponent } from '@features/workplace/user-account-save
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
+import {
+  JobRoleType,
+  SelectJobRolesToAddComponent,
+} from '@shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
+import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
@@ -281,6 +286,26 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'How many vacancies',
+        },
+      },
+      {
+        path: 'update-vacancies',
+        component: UpdateVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update Vacancies',
+        },
+      },
+      {
+        path: 'update-vacancies-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Vacancies,
+          title: 'Select job roles to add',
         },
       },
       {

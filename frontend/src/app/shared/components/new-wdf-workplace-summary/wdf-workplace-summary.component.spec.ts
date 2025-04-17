@@ -63,7 +63,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
   });
 
   it('should render a heading', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
 
     expect(getByText('Your workplace details')).toBeTruthy();
   });
@@ -306,7 +306,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show the Change link when there is a main service', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const mainServiceRow = within(document.body).queryByTestId('mainService');
         const link = within(mainServiceRow).queryByText('Change');
@@ -558,7 +558,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
         expect(within(vacanciesRow).queryByText('-')).toBeTruthy();
       });
 
@@ -573,7 +573,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
         expect(within(vacanciesRow).queryByText(`Don't know`)).toBeTruthy();
       });
 
@@ -588,7 +588,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
         expect(within(vacanciesRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -603,7 +603,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
         expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
@@ -823,7 +823,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment has a value (answered)', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const repeatTrainingRow = within(document.body).queryByTestId('repeat-training');
 
@@ -860,7 +860,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment has a value (answered)', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const acceptCareCertificateRow = within(document.body).queryByTestId('accept-care-certificate');
         const link = within(acceptCareCertificateRow).queryByText('Change');
@@ -893,7 +893,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears has a value (answered)', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
         const link = within(careWorkersCashLoyaltyRow).queryByText('Change');
@@ -924,7 +924,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on statutory sick pay row when sickPay has a value (answered)', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const statutorySickPayRow = within(document.body).queryByTestId('offer-more-than-statutory-sick-pay');
         const link = within(statutorySickPayRow).queryByText('Change');
@@ -1034,7 +1034,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
       it('should show Not sharing and have Change button on Data sharing when cqc and localAuthorities are set to false', async () => {
         const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: false });
-        const { component, fixture } = await setup({ workplace });
+        await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
 
@@ -1044,7 +1044,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
       it('should show Not sharing and have Change button on Data sharing when cqc is set to false and localAuthorities is null (not answered)', async () => {
         const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: null });
-        const { component, fixture } = await setup({ workplace });
+        await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
 
@@ -1123,7 +1123,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         value: 3,
       },
     ].forEach((field) => {
-      const establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective = (fieldName, value) => {
+      const establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective = (field) => {
         const workplace = establishmentWithWdfBuilder() as Establishment;
         workplace.wdf[field.fieldName].isEligible = Eligibility.YES;
         workplace.wdf[field.fieldName].updatedSinceEffectiveDate = false;
@@ -1133,7 +1133,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       };
 
       it(`should show WdfFieldConfirmation when is eligible but needs to be confirmed for ${field.fieldName}`, async () => {
-        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field.fieldName, field.value);
+        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
 
         const { getByText } = await setup({ workplace });
 
@@ -1143,7 +1143,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it(`should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for ${field.fieldName}`, async () => {
-        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field.fieldName, field.value);
+        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
 
         const { fixture, getByText } = await setup({ workplace });
 

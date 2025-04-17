@@ -81,7 +81,7 @@ describe('UpdateLeaversComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: {},
+            snapshot: { data: override.snapshot },
           },
         },
         {
@@ -203,7 +203,9 @@ describe('UpdateLeaversComponent', () => {
   });
 
   it('should go back to check this information when the cancel link is clicked', async () => {
-    const { component, getByText, routerSpy, updateWorkplaceAfterStaffChangesService, updateJobsSpy } = await setup();
+    const { component, getByText, routerSpy, updateWorkplaceAfterStaffChangesService, updateJobsSpy } = await setup({
+      snapshot: { staffUpdatesView: true },
+    });
 
     const cancelLink = getByText('Cancel');
     fireEvent.click(cancelLink);
@@ -347,7 +349,11 @@ describe('UpdateLeaversComponent', () => {
 
     it('should call updateJobs to save selected job roles', async () => {
       const { getByRole, component, fixture, routerSpy, updateWorkplaceAfterStaffChangesService, updateJobsSpy } =
-        await setup({ workplace: mockWorkplace, leaversFromSelectJobRolePages: selectedJobRoles });
+        await setup({
+          workplace: mockWorkplace,
+          leaversFromSelectJobRolePages: selectedJobRoles,
+          snapshot: { staffUpdatesView: true },
+        });
 
       const saveButton = getByRole('button', { name: 'Save and return' });
       fireEvent.click(saveButton);
@@ -371,7 +377,11 @@ describe('UpdateLeaversComponent', () => {
           updateWorkplaceAfterStaffChangesService,
           updateJobsSpy,
           getByLabelText,
-        } = await setup({ workplace: mockWorkplace, leaversFromSelectJobRolePages: selectedJobRoles });
+        } = await setup({
+          workplace: mockWorkplace,
+          leaversFromSelectJobRolePages: selectedJobRoles,
+          snapshot: { staffUpdatesView: true },
+        });
 
         const radio = getByLabelText(radioButtonLabels[label]);
 

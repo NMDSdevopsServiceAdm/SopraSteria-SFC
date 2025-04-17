@@ -5,10 +5,8 @@ import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/upda
 
 @Component({
   selector: 'app-update-vacancies',
-  templateUrl:
-    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
-  styleUrl:
-    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.scss',
+  templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+  styleUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.scss',
 })
 export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDirective {
   public revealText =
