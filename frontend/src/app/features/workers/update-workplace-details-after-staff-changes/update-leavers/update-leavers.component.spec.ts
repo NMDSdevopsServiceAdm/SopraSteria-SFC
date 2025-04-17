@@ -5,12 +5,9 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment, jobOptionsEnum, Leaver } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-  UpdateWorkplaceAfterStaffChangesService,
-  WorkplaceUpdatePage,
-} from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { FormatUtil } from '@core/utils/format-util';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -85,8 +82,8 @@ describe('UpdateLeaversComponent', () => {
           },
         },
         {
-          provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({
             selectedLeavers,
             addToVisitedPages: addToVisitedPagesSpy,
             addToSubmittedPages: addToSubmittedPagesSpy,
@@ -106,9 +103,7 @@ describe('UpdateLeaversComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    const updateWorkplaceAfterStaffChangesService = injector.inject(
-      UpdateWorkplaceAfterStaffChangesService,
-    ) as UpdateWorkplaceAfterStaffChangesService;
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService) as VacanciesAndTurnoverService;
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const updateJobsSpy = spyOn(establishmentService, 'updateJobs').and.callFake((uid, data) =>
@@ -119,7 +114,7 @@ describe('UpdateLeaversComponent', () => {
       ...setupTools,
       component,
       routerSpy,
-      updateWorkplaceAfterStaffChangesService,
+      vacanciesAndTurnoverService,
       updateJobsSpy,
       addToVisitedPagesSpy,
       addToSubmittedPagesSpy,
@@ -132,7 +127,7 @@ describe('UpdateLeaversComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should add page to visitedPages in updateWorkplaceAfterStaffChangesService', async () => {
+  it('should add page to visitedPages in vacanciesAndTurnoverService', async () => {
     const { addToVisitedPagesSpy } = await setup();
 
     expect(addToVisitedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_LEAVERS);
@@ -203,7 +198,7 @@ describe('UpdateLeaversComponent', () => {
   });
 
   it('should go back to check this information when the cancel link is clicked', async () => {
-    const { component, getByText, routerSpy, updateWorkplaceAfterStaffChangesService, updateJobsSpy } = await setup({
+    const { component, getByText, routerSpy, vacanciesAndTurnoverService, updateJobsSpy } = await setup({
       snapshot: { staffUpdatesView: true },
     });
 
@@ -212,7 +207,7 @@ describe('UpdateLeaversComponent', () => {
 
     // @ts-expect-error: TS2341: Property 'route' is private
     expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
-    expect(updateWorkplaceAfterStaffChangesService.selectedLeavers).toEqual(null);
+    expect(vacanciesAndTurnoverService.selectedLeavers).toEqual(null);
     expect(updateJobsSpy).not.toHaveBeenCalled();
   });
 
@@ -348,12 +343,11 @@ describe('UpdateLeaversComponent', () => {
     }) as Establishment;
 
     it('should call updateJobs to save selected job roles', async () => {
-      const { getByRole, component, fixture, routerSpy, updateWorkplaceAfterStaffChangesService, updateJobsSpy } =
-        await setup({
-          workplace: mockWorkplace,
-          leaversFromSelectJobRolePages: selectedJobRoles,
-          snapshot: { staffUpdatesView: true },
-        });
+      const { getByRole, component, fixture, routerSpy, vacanciesAndTurnoverService, updateJobsSpy } = await setup({
+        workplace: mockWorkplace,
+        leaversFromSelectJobRolePages: selectedJobRoles,
+        snapshot: { staffUpdatesView: true },
+      });
 
       const saveButton = getByRole('button', { name: 'Save and return' });
       fireEvent.click(saveButton);
@@ -361,7 +355,7 @@ describe('UpdateLeaversComponent', () => {
 
       // @ts-expect-error: TS2341: Property 'route' is private
       expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
-      expect(updateWorkplaceAfterStaffChangesService.selectedLeavers).toEqual(null);
+      expect(vacanciesAndTurnoverService.selectedLeavers).toEqual(null);
       expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, {
         leavers: [{ jobId: selectedJobRoles[0].jobId, total: selectedJobRoles[0].total }],
       });
@@ -369,19 +363,12 @@ describe('UpdateLeaversComponent', () => {
 
     Object.keys(radioButtonLabels).forEach((label) => {
       it(`should call updateJobs to save when ${radioButtonLabels[label]} is selected`, async () => {
-        const {
-          getByRole,
-          component,
-          fixture,
-          routerSpy,
-          updateWorkplaceAfterStaffChangesService,
-          updateJobsSpy,
-          getByLabelText,
-        } = await setup({
-          workplace: mockWorkplace,
-          leaversFromSelectJobRolePages: selectedJobRoles,
-          snapshot: { staffUpdatesView: true },
-        });
+        const { getByRole, component, fixture, routerSpy, vacanciesAndTurnoverService, updateJobsSpy, getByLabelText } =
+          await setup({
+            workplace: mockWorkplace,
+            leaversFromSelectJobRolePages: selectedJobRoles,
+            snapshot: { staffUpdatesView: true },
+          });
 
         const radio = getByLabelText(radioButtonLabels[label]);
 
@@ -392,14 +379,14 @@ describe('UpdateLeaversComponent', () => {
 
         // @ts-expect-error: TS2341: Property 'route' is private
         expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
-        expect(updateWorkplaceAfterStaffChangesService.selectedLeavers).toEqual(null);
+        expect(vacanciesAndTurnoverService.selectedLeavers).toEqual(null);
         expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, {
           leavers: jobOptionsEnum[label],
         });
       });
     });
 
-    it('should add leavers page to submittedPages in UpdateWorkplaceAfterStaffChangesService', async () => {
+    it('should add leavers page to submittedPages in vacanciesAndTurnoverService', async () => {
       const { getByRole, addToSubmittedPagesSpy } = await setup({
         workplace: mockWorkplace,
         leaversFromSelectJobRolePages: selectedJobRoles,

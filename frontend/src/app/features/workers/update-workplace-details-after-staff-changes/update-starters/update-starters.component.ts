@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
-import { WorkplaceUpdatePage } from '@core/services/update-workplace-after-staff-changes.service';
+import { WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-starters',
   templateUrl:
     '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
-  styleUrl:
-    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.scss',
 })
 export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirective {
   public totalNumberDescription = 'Total number of starters';

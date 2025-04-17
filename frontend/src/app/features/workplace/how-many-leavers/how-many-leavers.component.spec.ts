@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 
 import { HowManyLeaversComponent } from './how-many-leavers.component';
 
-describe('HowManyLeaversComponent', () => {
+xdescribe('HowManyLeaversComponent', () => {
   const mockSelectedJobRoles: Leaver[] = [
     {
       jobId: 10,

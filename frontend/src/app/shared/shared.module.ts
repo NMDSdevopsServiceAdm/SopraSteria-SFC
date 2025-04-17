@@ -139,6 +139,7 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { JobRoleNumbersTableComponent } from './components/job-role-numbers-table/job-role-numbers-table.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -278,6 +279,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NumberInputWithButtonsComponent,
     UpdateVacanciesComponent,
     SelectJobRolesToAddComponent,
+    NumberInputWithButtonsComponent,
+    JobRoleNumbersTableComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -411,6 +414,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     HelpContentComponent,
     FormatStartersLeaversVacanciesPipe,
     NumberInputWithButtonsComponent,
+    NumberInputWithButtonsComponent,
+    JobRoleNumbersTableComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver, QuestionsAndAnswersResolver],
 })

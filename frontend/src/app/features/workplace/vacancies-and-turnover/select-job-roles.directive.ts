@@ -7,6 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '@features/workplace/question/question.component';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
@@ -36,6 +37,7 @@ export class SelectJobRolesDirective extends Question {
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private route: ActivatedRoute,
+    protected vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -156,7 +158,6 @@ export class SelectJobRolesDirective extends Question {
 
   protected onSuccess(): void {
     const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
-    const otherCareProvidingRoleName: string = this.form.get('otherCareProvidingRoleName').value;
     const fieldFromDatabase = Array.isArray(this.establishment[this.field]) ? this.establishment[this.field] : [];
 
     const updatedField: Vacancy | Starter | Leaver[] = selectedJobIds.map((jobId) => {

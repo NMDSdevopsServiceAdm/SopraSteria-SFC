@@ -5,12 +5,9 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment, jobOptionsEnum, Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-  UpdateWorkplaceAfterStaffChangesService,
-  WorkplaceUpdatePage,
-} from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -57,8 +54,8 @@ describe('UpdateVacanciesComponent', () => {
       providers: [
         UntypedFormBuilder,
         {
-          provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({
             selectedVacancies,
             addToVisitedPages: addToVisitedPagesSpy,
             addToSubmittedPages: addToSubmittedPagesSpy,
@@ -95,16 +92,14 @@ describe('UpdateVacanciesComponent', () => {
     );
     const setStateSpy = spyOn(establishmentService, 'setState').and.callThrough();
 
-    const updateWorkplaceAfterStaffChangesService = injector.inject(
-      UpdateWorkplaceAfterStaffChangesService,
-    ) as UpdateWorkplaceAfterStaffChangesService;
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService) as VacanciesAndTurnoverService;
 
     return {
       component,
       routerSpy,
       updateJobsSpy,
       setStateSpy,
-      updateWorkplaceAfterStaffChangesService,
+      vacanciesAndTurnoverService,
       addToVisitedPagesSpy,
       addToSubmittedPagesSpy,
       ...setupTools,
@@ -116,7 +111,7 @@ describe('UpdateVacanciesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should add page to visitedPages in updateWorkplaceAfterStaffChangesService', async () => {
+  it('should add page to visitedPages in vacanciesAndTurnoverService', async () => {
     const { addToVisitedPagesSpy } = await setup();
 
     expect(addToVisitedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.UPDATE_VACANCIES);
@@ -317,7 +312,7 @@ describe('UpdateVacanciesComponent', () => {
         const mockWorkplace = establishmentBuilder({
           overrides: { vacancies: mockVacancies },
         });
-        const { fixture, getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
+        const { fixture, getByRole, vacanciesAndTurnoverService } = await setup({
           workplace: mockWorkplace,
         });
 
@@ -326,14 +321,14 @@ describe('UpdateVacanciesComponent', () => {
 
         fixture.detectChanges();
 
-        expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(mockVacancies);
+        expect(vacanciesAndTurnoverService.selectedVacancies).toEqual(mockVacancies);
       });
 
       it('should bring along any changes made by user in current page', async () => {
         const mockWorkplace = establishmentBuilder({
           overrides: { vacancies: mockVacancies },
         });
-        const { fixture, getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
+        const { fixture, getByRole, vacanciesAndTurnoverService } = await setup({
           workplace: mockWorkplace,
         });
 
@@ -345,7 +340,7 @@ describe('UpdateVacanciesComponent', () => {
 
         fixture.detectChanges();
 
-        expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual([
+        expect(vacanciesAndTurnoverService.selectedVacancies).toEqual([
           {
             jobId: 27,
             title: 'Social worker',
@@ -534,8 +529,8 @@ describe('UpdateVacanciesComponent', () => {
       });
     });
 
-    it('should clear the selectedVacancies value in UpdateWorkplaceAfterStaffChangesService', async () => {
-      const { getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
+    it('should clear the selectedVacancies value in vacanciesAndTurnoverService', async () => {
+      const { getByRole, vacanciesAndTurnoverService } = await setup({
         vacanciesFromSelectJobRolePages: [
           { jobId: 10, title: 'Care worker', total: 1 },
           { jobId: 27, title: 'Registered nurse', total: 1 },
@@ -545,10 +540,10 @@ describe('UpdateVacanciesComponent', () => {
       await fillInValueForJobRole('Care worker', '10');
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
-      expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(null);
+      expect(vacanciesAndTurnoverService.selectedVacancies).toEqual(null);
     });
 
-    it('should add vacancies page to submittedPages in UpdateWorkplaceAfterStaffChangesService', async () => {
+    it('should add vacancies page to submittedPages in vacanciesAndTurnoverService', async () => {
       const { getByRole, addToSubmittedPagesSpy } = await setup();
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));

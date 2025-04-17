@@ -12,6 +12,8 @@ import userEvent from '@testing-library/user-event';
 
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles.component';
 import { MockJobRoles } from '@core/test-utils/MockJobService';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 
 describe('SelectVacancyJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
@@ -20,10 +22,7 @@ describe('SelectVacancyJobRolesComponent', () => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
     const vacanciesFromDatabase = override.vacanciesFromDatabase ?? null;
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
-    const localStorageData = override.localStorageData ?? null;
-
-    const setLocalStorageSpy = spyOn(localStorage, 'setItem');
-    const getLocalStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
+    const selectedVacancies = override.selectedVacancies ?? null;
 
     const renderResults = await render(SelectVacancyJobRolesComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -47,6 +46,10 @@ describe('SelectVacancyJobRolesComponent', () => {
             },
           },
         },
+        {
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({ selectedVacancies: selectedVacancies }),
+        },
       ],
     });
 
@@ -56,11 +59,21 @@ describe('SelectVacancyJobRolesComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService);
+
+    const setSelectedVacanciesSpy = spyOnProperty(vacanciesAndTurnoverService, 'selectedVacancies', 'set');
+    const getSelectedVacanciesSpy = spyOnProperty(
+      vacanciesAndTurnoverService,
+      'selectedVacancies',
+      'get',
+    ).and.returnValue(selectedVacancies);
+
     return {
       component,
       routerSpy,
-      setLocalStorageSpy,
-      getLocalStorageSpy,
+      vacanciesAndTurnoverService,
+      setSelectedVacanciesSpy,
+      getSelectedVacanciesSpy,
       ...renderResults,
     };
   };
@@ -193,42 +206,34 @@ describe('SelectVacancyJobRolesComponent', () => {
         expect(within(professionalRolesAccordion).getByText('Show')).toBeTruthy(); // not expanded
       });
 
-      it('should prefill from the data in localStorage if editing the same workplace', async () => {
-        const mockLocalStorageData = { establishmentUid: 'mocked-uid', vacancies: mockVacancies };
-        const { getAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
+      it('should prefill from the vacancies data from database if selectedVacancies is null', async () => {
+        const { queryAllByRole } = await setup({ selectedVacancies: null, vacanciesFromDatabase: mockVacancies });
 
-        const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
+        const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(2);
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
       });
 
-      it('should not prefill from the data in localStorage if editing a different workplace', async () => {
-        const mockLocalStorageData = { establishmentUid: 'other-workplace-uid', vacancies: mockVacancies };
-        const { queryAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
-
-        const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
-        expect(tickedCheckboxes.length).toEqual(0);
-      });
-
-      it('should clear data in local storage when user clicks "Cancel" button', async () => {
-        const { getByText } = await setup({ returnToUrl: true });
+      it('should clear data in local storage and service when user clicks "Cancel" button', async () => {
+        const { getByText, vacanciesAndTurnoverService } = await setup({ returnToUrl: true });
 
         const localStorageRemoveItemSpy = spyOn(localStorage, 'removeItem');
+        const clearAllJobRoleSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
         const cancelButton = getByText('Cancel');
 
         userEvent.click(cancelButton);
 
-        expect(localStorageRemoveItemSpy).toHaveBeenCalledTimes(2);
-        expect(localStorageRemoveItemSpy.calls.all()[0].args).toEqual(['hasVacancies']);
-        expect(localStorageRemoveItemSpy.calls.all()[1].args).toEqual(['vacanciesJobRoles']);
+        expect(localStorageRemoveItemSpy).toHaveBeenCalledWith('hasVacancies');
+
+        expect(clearAllJobRoleSpy).toHaveBeenCalled();
       });
     });
   });
 
   describe('form submit and validation', () => {
     describe('on Success', () => {
-      it('should store the user input data in localStorage', async () => {
-        const { component, getByText, getByRole, setLocalStorageSpy } = await setup();
+      it('should store the user input data in vacanciesAndTurnover service', async () => {
+        const { getByText, setSelectedVacanciesSpy } = await setup();
 
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Care worker'));
@@ -237,28 +242,25 @@ describe('SelectVacancyJobRolesComponent', () => {
 
         userEvent.click(getByText('Save and continue'));
 
-        const expectedData = {
-          establishmentUid: component.establishment.uid,
-          vacancies: [
-            {
-              jobId: 10,
-              title: 'Care worker',
-              total: null,
-            },
-            {
-              jobId: 23,
-              title: 'Registered nurse',
-              total: null,
-            },
-            {
-              jobId: 20,
-              title: 'Other (directly involved in providing care)',
-              total: null,
-            },
-          ],
-        };
+        const expectedData = [
+          {
+            jobId: 10,
+            title: 'Care worker',
+            total: null,
+          },
+          {
+            jobId: 23,
+            title: 'Registered nurse',
+            total: null,
+          },
+          {
+            jobId: 20,
+            title: 'Other (directly involved in providing care)',
+            total: null,
+          },
+        ];
 
-        expect(setLocalStorageSpy).toHaveBeenCalledWith('vacanciesJobRoles', JSON.stringify(expectedData));
+        expect(setSelectedVacanciesSpy).toHaveBeenCalledWith(expectedData);
       });
 
       it('should keep the vacancies numbers that was loaded from database', async () => {
@@ -275,7 +277,7 @@ describe('SelectVacancyJobRolesComponent', () => {
           },
         ];
 
-        const { component, getByText, setLocalStorageSpy } = await setup({
+        const { getByText, setSelectedVacanciesSpy } = await setup({
           vacanciesFromDatabase: mockVacanciesFromDatabase,
         });
 
@@ -284,23 +286,20 @@ describe('SelectVacancyJobRolesComponent', () => {
         userEvent.click(getByText('Social worker')); // add this job
         userEvent.click(getByText('Save and continue'));
 
-        const expectedData = {
-          establishmentUid: component.establishment.uid,
-          vacancies: [
-            {
-              jobId: 10,
-              title: 'Care worker',
-              total: 3, // should keep this number for next page
-            },
-            {
-              jobId: 27,
-              title: 'Social worker',
-              total: null,
-            },
-          ],
-        };
+        const expectedData = [
+          {
+            jobId: 10,
+            title: 'Care worker',
+            total: 3, // should keep this number for next page
+          },
+          {
+            jobId: 27,
+            title: 'Social worker',
+            total: null,
+          },
+        ];
 
-        expect(setLocalStorageSpy).toHaveBeenCalledWith('vacanciesJobRoles', JSON.stringify(expectedData));
+        expect(setSelectedVacanciesSpy).toHaveBeenCalledWith(expectedData);
       });
 
       it('should navigate to the vacancies number input page after submit', async () => {
@@ -316,7 +315,7 @@ describe('SelectVacancyJobRolesComponent', () => {
 
     describe('errors', () => {
       it('should display an error message on submit if no job roles are selected', async () => {
-        const { fixture, getByRole, getByText, getByTestId, setLocalStorageSpy } = await setup();
+        const { fixture, getByRole, getByText, getByTestId, setSelectedVacanciesSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
@@ -330,7 +329,7 @@ describe('SelectVacancyJobRolesComponent', () => {
         const errorSummaryBox = getByText('There is a problem').parentElement;
         expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
 
-        expect(setLocalStorageSpy).not.toHaveBeenCalled();
+        expect(setSelectedVacanciesSpy).not.toHaveBeenCalled();
       });
 
       it('should expand the whole accordion on error', async () => {
