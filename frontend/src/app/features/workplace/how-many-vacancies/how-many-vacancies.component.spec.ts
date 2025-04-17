@@ -29,7 +29,6 @@ describe('HowManyVacanciesComponent', () => {
   ];
 
   const setup = async (override: any = {}) => {
-    const returnToUrl = override.returnToUrl ?? false;
     const availableJobs = override.availableJobs;
     const workplace = override.workplace ?? {};
 
@@ -41,7 +40,7 @@ describe('HowManyVacanciesComponent', () => {
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnToUrl, workplace),
+          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, null, workplace),
           deps: [HttpClient],
         },
         {
@@ -146,14 +145,9 @@ describe('HowManyVacanciesComponent', () => {
         expect(getByRole('button', { name: 'Save and continue' })).toBeTruthy();
       });
 
-      it('should render a "Save and return" CTA button when not in the flow', async () => {
-        const { getByRole } = await setup({ returnToUrl: true });
-        expect(getByRole('button', { name: 'Save and return' })).toBeTruthy();
-      });
-
-      it('should render a "Cancel" button when not in the flow', async () => {
-        const { getByText } = await setup({ returnToUrl: true });
-        expect(getByText('Cancel')).toBeTruthy();
+      it('should not render a "Cancel" button', async () => {
+        const { queryByText } = await setup();
+        expect(queryByText('Cancel')).toBeFalsy();
       });
 
       it('should not render a "Skip this question" button', async () => {
@@ -167,13 +161,6 @@ describe('HowManyVacanciesComponent', () => {
         const { getByTestId } = await setup();
 
         expect(getByTestId('progress-bar')).toBeTruthy();
-      });
-
-      it('should not render a progress bar when not in the flow', async () => {
-        const { getByTestId, queryByTestId } = await setup({ returnToUrl: true });
-
-        expect(getByTestId('section-heading')).toBeTruthy();
-        expect(queryByTestId('progress-bar')).toBeFalsy();
       });
     });
 
@@ -255,19 +242,7 @@ describe('HowManyVacanciesComponent', () => {
         });
       });
 
-      it('should clear the selected job roles stored in service', async () => {
-        const { getByRole, vacanciesAndTurnoverService } = await setup();
-
-        const clearJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
-
-        await fillInValueForJobRole('Care worker', '2');
-        await fillInValueForJobRole('Registered nurse', '4');
-        userEvent.click(getByRole('button', { name: 'Save and continue' }));
-
-        expect(clearJobRolesSpy).toHaveBeenCalled();
-      });
-
-      it('should navigate to the do-you-have-starters page if in the flow', async () => {
+      it('should navigate to the do-you-have-starters page', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
@@ -275,30 +250,14 @@ describe('HowManyVacanciesComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-starters']);
       });
 
-      it('should navigate to workplace summary page if not in the flow', async () => {
-        const { getByRole, routerSpy } = await setup({ returnToUrl: true });
+      it('should clear the selected job roles stored in service after submit', async () => {
+        const { getByRole, vacanciesAndTurnoverService } = await setup();
 
-        userEvent.click(getByRole('button', { name: 'Save and return' }));
+        const clearJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
 
-        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
-      });
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
-      it('should navigate to funding summary page if not in the flow and visited from funding page', async () => {
-        const { component, getByRole, routerSpy } = await setup({ returnToUrl: true });
-        component.return = { url: ['/funding', 'workplaces', 'mock-uid'] };
-
-        userEvent.click(getByRole('button', { name: 'Save and return' }));
-
-        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'workplaces', 'mock-uid'], jasmine.anything());
-      });
-
-      it('should clear the cache data in local storage after submit', async () => {
-        const { getByRole } = await setup({ returnToUrl: true });
-        const localStorageSpy = spyOn(localStorage, 'removeItem');
-
-        userEvent.click(getByRole('button', { name: 'Save and return' }));
-
-        expect(localStorageSpy).toHaveBeenCalled();
+        expect(clearJobRolesSpy).toHaveBeenCalled();
       });
     });
 
@@ -360,23 +319,16 @@ describe('HowManyVacanciesComponent', () => {
           url: ['/workplace', component.establishment.uid, 'select-vacancy-job-roles'],
         });
       });
-
-      it('should set the backlink to job role selection page when not in the flow', async () => {
-        const { component } = await setup({ returnToUrl: '/dashboard#workplace' });
-        expect(component.back).toEqual({
-          url: ['/workplace', component.establishment.uid, 'select-vacancy-job-roles'],
-        });
-      });
     });
 
     describe('Add job roles button', () => {
       it('should show an "Add job roles" button', async () => {
-        const { getByRole } = await setup({ returnToUrl: true });
+        const { getByRole } = await setup();
         expect(getByRole('button', { name: 'Add job roles' })).toBeTruthy();
       });
 
-      it('should navigate to job role selection page when Add job roles button is clicked', async () => {
-        const { component, fixture, getByRole, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
+      it('should navigate to job role selection page when AddJobRoles button is clicked', async () => {
+        const { component, fixture, getByRole, routerSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Add job roles' }));
         fixture.detectChanges();
@@ -384,10 +336,8 @@ describe('HowManyVacanciesComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'select-vacancy-job-roles']);
       });
 
-      it('should save the change in job role number before navigation', async () => {
-        const { getByRole, vacanciesAndTurnoverService } = await setup({
-          returnToUrl: '/dashboard#workplace',
-        });
+      it('should save any change in job role number to vacanciesAndTurnoverService before navigation', async () => {
+        const { getByRole, vacanciesAndTurnoverService } = await setup();
 
         await fillInValueForJobRole('Care worker', '10');
         await fillInValueForJobRole('Registered nurse', '20');
@@ -397,37 +347,6 @@ describe('HowManyVacanciesComponent', () => {
           { jobId: 10, title: 'Care worker', total: 10 },
           { jobId: 23, title: 'Registered nurse', total: 20 },
         ]);
-      });
-    });
-
-    describe('cancel button', () => {
-      it('should navigate to workplace summary page when cancel button is clicked', async () => {
-        const { getByText, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
-
-        userEvent.click(getByText('Cancel'));
-
-        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
-      });
-
-      it('should return to the funding workplace summary page when visited from funding and cancel button is clicked', async () => {
-        const { component, getByText, routerSpy } = await setup({
-          returnToUrl: true,
-        });
-        component.return = { url: ['/funding', 'workplaces', 'mock-uid'] };
-
-        const cancelButton = getByText('Cancel');
-
-        userEvent.click(cancelButton);
-        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'workplaces', 'mock-uid'], jasmine.anything());
-      });
-
-      it('should clear the cache data in local storage on cancel', async () => {
-        const { getByText } = await setup({ returnToUrl: '/dashboard#workplace' });
-        const localStorageSpy = spyOn(localStorage, 'removeItem');
-
-        userEvent.click(getByText('Cancel'));
-
-        expect(localStorageSpy).toHaveBeenCalled();
       });
     });
   });
