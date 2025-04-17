@@ -81,8 +81,6 @@ describe('AddAnotherStaffRecordComponent', () => {
     const yesRadioButton = getByLabelText('Yes');
     const noRadioButton = getByLabelText('No');
 
-    console.log(yesRadioButton);
-
     expect(yesRadioButton).toBeTruthy();
     expect(noRadioButton).toBeTruthy();
   });
