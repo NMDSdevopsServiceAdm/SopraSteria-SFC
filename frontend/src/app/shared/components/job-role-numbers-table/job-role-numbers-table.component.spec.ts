@@ -1,14 +1,16 @@
-import { render } from '@testing-library/angular';
-import { JobRoleNumbersTableComponent } from './job-role-numbers-table.component';
-import { SharedModule } from '@shared/shared.module';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Vacancy } from '@core/model/establishment.model';
-import userEvent from '@testing-library/user-event';
 import lodash from 'lodash';
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { StarterLeaverVacancy } from '@core/model/establishment.model';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+
+import { JobRoleNumbersTableComponent } from './job-role-numbers-table.component';
+
 describe('JobRolesNumberTableComponent', () => {
-  const mockSelectedJobRoles: Vacancy[] = [
+  const mockSelectedJobRoles: StarterLeaverVacancy[] = [
     {
       jobId: 10,
       title: 'Care worker',
@@ -24,7 +26,7 @@ describe('JobRolesNumberTableComponent', () => {
 
   const setup = async (override: any = {}) => {
     const { tableTitle, addJobRoleButtonText, totalNumberDescription, messageWhenNoJobRoleSelected } = override;
-    const selectedJobRoles: Vacancy[] = override.selectedJobRoles ?? [...mockSelectedJobRoles];
+    const selectedJobRoles: StarterLeaverVacancy[] = override.selectedJobRoles ?? [...mockSelectedJobRoles];
     const allowRemoveJobRole = override.allowRemoveJobRole ?? true;
 
     const formBuilder = new UntypedFormBuilder();
@@ -62,14 +64,21 @@ describe('JobRolesNumberTableComponent', () => {
     expect(getByText('Starters in the last 12 months')).toBeTruthy();
   });
 
-  it('should show the table title', async () => {
-    const { getByText } = await setup({ tableTitle: 'Starters in the last 12 months' });
-    expect(getByText('Starters in the last 12 months')).toBeTruthy();
-  });
+  describe('add job role', () => {
+    it('should show an add job role button with the given text', async () => {
+      const { getByRole } = await setup({ addJobRoleButtonText: 'Add more job roles' });
+      expect(getByRole('button', { name: 'Add more job roles' })).toBeTruthy();
+    });
 
-  it('should show an add job role button with the given text', async () => {
-    const { getByRole } = await setup({ addJobRoleButtonText: 'Add more job roles' });
-    expect(getByRole('button', { name: 'Add more job roles' })).toBeTruthy();
+    it('should call addJobRole when add job role button is clicked', async () => {
+      const { component, fixture, getByRole } = await setup({ addJobRoleButtonText: 'Add more job roles' });
+      const addJobRoleButton = spyOn(component.addJobRole, 'emit');
+
+      userEvent.click(getByRole('button', { name: 'Add more job roles' }));
+      fixture.detectChanges();
+
+      expect(addJobRoleButton).toHaveBeenCalled();
+    });
   });
 
   describe('total number', () => {
@@ -115,7 +124,7 @@ describe('JobRolesNumberTableComponent', () => {
       expect(getByTestId('total-number').textContent).toEqual(`${totalNumberAtStart + 1}`);
     });
 
-    it('should describe the selected job number when "-" is clicked', async () => {
+    it('should decrease the selected job number when "-" is clicked', async () => {
       const { getByLabelText, getByTestId, fixture } = await setup();
 
       const minusButton = getByTestId('minus-button-job-0');
@@ -130,7 +139,7 @@ describe('JobRolesNumberTableComponent', () => {
       expect(getByTestId('total-number').textContent).toEqual(`${totalNumberAtStart - 1}`);
     });
 
-    it('should update the total number when user typed in a job role number', async () => {
+    it('should update the total number when user changed a job role number', async () => {
       const { getByLabelText, getByTestId, fixture } = await setup();
 
       const jobRoleInput = getByLabelText(mockSelectedJobRoles[0].title) as HTMLInputElement;
@@ -158,7 +167,7 @@ describe('JobRolesNumberTableComponent', () => {
       expect(getByTestId('total-number').textContent).toEqual(`${expectedNewTotalNumber}`);
     });
 
-    it('should show the messageWhenNoJobRoleSelected about no job role is given', async () => {
+    it('should show a given messageWhenNoJobRoleSelected if no job role selected', async () => {
       const messageWhenNoJobRoleSelected = "You've not added any staff who've started since 15 April 2024.";
       const { getByText } = await setup({
         selectedJobRoles: [],
@@ -167,22 +176,32 @@ describe('JobRolesNumberTableComponent', () => {
 
       expect(getByText(messageWhenNoJobRoleSelected)).toBeTruthy();
     });
+
+    it('should not show the message if some job roles were selected', async () => {
+      const messageWhenNoJobRoleSelected = "You've not added any staff who've started since 15 April 2024.";
+      const { queryByText } = await setup({
+        selectedJobRoles: mockSelectedJobRoles,
+        messageWhenNoJobRoleSelected,
+      });
+
+      expect(queryByText(messageWhenNoJobRoleSelected)).toBeFalsy();
+    });
   });
 
   describe('remove buttons', async () => {
     it('should show an remove button for each job role', async () => {
       const { getAllByText } = await setup();
 
-      expect(getAllByText('Remove')).toHaveSize(2);
+      expect(getAllByText('Remove')).toHaveSize(mockSelectedJobRoles.length);
     });
 
-    it('should not display remove buttons if allowRemoveJobRole is given as false', async () => {
+    it('should not show remove buttons if allowRemoveJobRole is given as false', async () => {
       const { queryAllByText } = await setup({ allowRemoveJobRole: false });
 
       expect(queryAllByText('Remove')).toHaveSize(0);
     });
 
-    it('should call removeJobRole with the job role index when the remove button is clicked', async () => {
+    it('should call removeJobRole with the job role index when a remove button is clicked', async () => {
       const { component, fixture, getAllByText } = await setup();
       const removeJobRoleSpy = spyOn(component.removeJobRole, 'emit');
 
