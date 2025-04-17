@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Starter, UpdateJobsRequest } from '@core/model/establishment.model';
 
 import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turnover/how-many-starters-leavers-vacancies.directive';
+import { DateUtil } from '@core/utils/date-util';
 
 @Component({
   selector: 'app-how-many-starters',
@@ -9,19 +10,29 @@ import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turno
   styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
 })
 export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDirective {
-  public heading = 'How many new starters have you had for each job role in the last 12 months?';
-  public instruction = 'Only add the number of new starters who are in permanent and temporary job roles.';
+  public heading = `How many starters have you had SINCE ${DateUtil.getDateForOneYearAgo()}?`;
+  public instruction = 'Only add the number of starters in permanent and temporary job roles.';
   public revealTextContent =
     "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
-  public jobRoleType = 'new starters';
+  public jobRoleType = 'starters';
   public fieldName = 'starters';
   public fieldJobRoles = 'startersJobRoles';
+  public jobRolesTableTitle = 'Starters in the last 12 months';
+  public totalNumberDescription = 'Total number of starters';
 
   protected selectedJobRoles: Array<Starter> = [];
 
   protected clearLocalStorageData(): void {
     localStorage.removeItem('hasStarters');
-    localStorage.removeItem('startersJobRoles');
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
+  }
+
+  protected getSelectedJobRoleFromService(): Starter[] {
+    return this.vacanciesAndTurnoverService.selectedStarters;
+  }
+
+  protected saveSelectedJobRolesToService(): void {
+    this.vacanciesAndTurnoverService.selectedVacancies = this.jobRoleNumbersTable.currentValues;
   }
 
   protected returnToFirstPage(): void {
