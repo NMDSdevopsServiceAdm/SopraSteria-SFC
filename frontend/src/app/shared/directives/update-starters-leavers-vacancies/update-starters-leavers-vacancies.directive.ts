@@ -71,7 +71,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     this.prefill();
     this.setupFormErrorsMap();
     this.setupTexts();
-    this.updateMessageWhenNoJobRoleSelected();
+    this.updateNoJobRoleSelectedMessage();
     this.setBackLink();
     this.updateWorkplaceAfterStaffChangesService.addToVisitedPages(this.updatePage);
   }
@@ -138,7 +138,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     );
   };
 
-  public updateMessageWhenNoJobRoleSelected() {
+  public updateNoJobRoleSelectedMessage() {
     switch (this.selectedNoOrDoNotKnow) {
       case jobOptionsEnum.NONE: {
         this.currentMessageWhenNoJobRoleSelected = this.messageWhenNoJobRoleSelected.None;
@@ -218,11 +218,6 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     }
   }
 
-  public getInlineErrorMessageForJobRole(jobRoleWithError: StarterLeaverVacancy, index: number): string {
-    const errorType = Object.keys(this.jobRoleNumbers.at(index).errors)[0];
-    return this.getErrorMessageForJobRole(jobRoleWithError, errorType, true);
-  }
-
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
@@ -262,7 +257,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
 
   public handleClickedNoOrDoNotKnow = (value: jobOptionsEnum): void => {
     this.selectedNoOrDoNotKnow = value;
-    this.updateMessageWhenNoJobRoleSelected();
+    this.updateNoJobRoleSelectedMessage();
     this.form.patchValue({ noOrDoNotKnow: value });
     this.removeAllSelectedJobRoles();
   };
