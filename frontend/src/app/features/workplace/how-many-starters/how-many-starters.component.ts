@@ -32,11 +32,15 @@ export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDir
   }
 
   protected saveSelectedJobRolesToService(): void {
-    this.vacanciesAndTurnoverService.selectedVacancies = this.jobRoleNumbersTable.currentValues;
+    this.vacanciesAndTurnoverService.selectedStarters = this.jobRoleNumbersTable.currentValues;
   }
 
   protected returnToFirstPage(): void {
     this.router.navigate(['/workplace', `${this.establishment.uid}`, 'do-you-have-starters']);
+  }
+
+  protected returnToJobRoleSelectionPage(): void {
+    this.router.navigate(['/workplace', `${this.establishment.uid}`, 'select-starter-job-roles']);
   }
 
   protected setPreviousRoute(): void {
@@ -49,9 +53,6 @@ export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDir
         jobId: Number(job.jobId),
         total: parseInt(this.jobRoleNumbers.value[index]),
       };
-      if (job.other) {
-        fieldsToUpdate.other = job.other;
-      }
       return fieldsToUpdate;
     });
 

@@ -7,15 +7,15 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Starter } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { FormatUtil } from '@core/utils/format-util';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { HowManyStartersComponent } from './how-many-starters.component';
-import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
-import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 
 fdescribe('HowManyStartersComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(dayjs().subtract(1, 'years').toDate());
@@ -45,7 +45,7 @@ fdescribe('HowManyStartersComponent', () => {
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, false, workplace),
+          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, null, workplace),
           deps: [HttpClient],
         },
         {
@@ -126,7 +126,7 @@ fdescribe('HowManyStartersComponent', () => {
     });
 
     describe('starters numbers input form', () => {
-      it('should render a input box for each selected job roles', async () => {
+      it('should render a input box for each selected job role', async () => {
         const { getByText } = await setup();
 
         mockSelectedJobRoles.forEach((role) => {
@@ -322,6 +322,35 @@ fdescribe('HowManyStartersComponent', () => {
         expect(component.back).toEqual({
           url: ['/workplace', component.establishment.uid, 'select-starter-job-roles'],
         });
+      });
+    });
+
+    describe('Add job roles button', () => {
+      it('should show an "Add job roles" button', async () => {
+        const { getByRole } = await setup();
+        expect(getByRole('button', { name: 'Add job roles' })).toBeTruthy();
+      });
+
+      it('should navigate to job role selection page when AddJobRoles button is clicked', async () => {
+        const { component, fixture, getByRole, routerSpy } = await setup();
+
+        userEvent.click(getByRole('button', { name: 'Add job roles' }));
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'select-starter-job-roles']);
+      });
+
+      it('should save any change in job role number to vacanciesAndTurnoverService before navigation', async () => {
+        const { getByRole, vacanciesAndTurnoverService } = await setup();
+
+        await fillInValueForJobRole('Care worker', '10');
+        await fillInValueForJobRole('Registered nurse', '20');
+
+        userEvent.click(getByRole('button', { name: 'Add job roles' }));
+        expect(vacanciesAndTurnoverService.selectedStarters).toEqual([
+          { jobId: 10, title: 'Care worker', total: 10 },
+          { jobId: 23, title: 'Registered nurse', total: 20 },
+        ]);
       });
     });
   });
