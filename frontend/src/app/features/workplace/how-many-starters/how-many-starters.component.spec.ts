@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 
 import { HowManyStartersComponent } from './how-many-starters.component';
 
-fdescribe('HowManyStartersComponent', () => {
+describe('HowManyStartersComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(dayjs().subtract(1, 'years').toDate());
 
   const mockSelectedJobRoles: Starter[] = [

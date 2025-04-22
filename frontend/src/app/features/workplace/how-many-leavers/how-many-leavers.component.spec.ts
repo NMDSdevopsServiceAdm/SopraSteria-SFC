@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 
 import { HowManyLeaversComponent } from './how-many-leavers.component';
 
-fdescribe('HowManyLeaversComponent', () => {
+describe('HowManyLeaversComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(dayjs().subtract(1, 'years').toDate());
   const mockSelectedJobRoles: Leaver[] = [
     {

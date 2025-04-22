@@ -15,7 +15,7 @@ import userEvent from '@testing-library/user-event';
 
 import { SelectStarterJobRolesComponent } from './select-starter-job-roles.component';
 
-fdescribe('SelectStarterJobRolesComponent', () => {
+describe('SelectStarterJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
 
   const setup = async (override: any = {}) => {

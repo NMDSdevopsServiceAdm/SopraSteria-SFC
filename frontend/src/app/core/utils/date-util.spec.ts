@@ -1,6 +1,6 @@
 import { DateUtil } from './date-util';
 
-fdescribe('DateUtil', () => {
+describe('DateUtil', () => {
   describe('getDateForOneYearAgo', () => {
     beforeEach(() => {
       jasmine.clock().install();
