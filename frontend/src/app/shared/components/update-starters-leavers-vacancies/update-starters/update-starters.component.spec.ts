@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -6,7 +6,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment, jobOptionsEnum, Starter } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
-import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { FormatUtil } from '@core/utils/format-util';
 import { SharedModule } from '@shared/shared.module';
@@ -74,8 +74,12 @@ describe('UpdateStartersComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, null, workplace),
-          deps: [HttpClient],
+          useValue: {
+            establishment: workplace,
+            updateJobs: () => {},
+            setState: () => {},
+            ...override.establishmentService,
+          },
         },
         {
           provide: ActivatedRoute,
@@ -476,19 +480,64 @@ describe('UpdateStartersComponent', () => {
       expect(updateJobsSpy).toHaveBeenCalledWith(mockWorkplace.uid, { starters: jobOptionsEnum.NONE });
     });
 
-    it('should navigate to the update-workplace-details page', async () => {
-      const mockWorkplace = establishmentBuilder({
-        overrides: { starters: mockStarters },
-      });
-      const { component, routerSpy, getByRole } = await setup({
-        workplace: mockWorkplace,
-        snapshot: { staffUpdatesView: true },
+    describe('Navigation on save', () => {
+      it('should navigate to the update-workplace-details page if staffUpdatesView passed in as true from routing', async () => {
+        const mockWorkplace = establishmentBuilder({
+          overrides: { starters: mockStarters },
+        });
+        const { component, routerSpy, getByRole } = await setup({
+          workplace: mockWorkplace,
+          snapshot: { staffUpdatesView: true },
+        });
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        // @ts-expect-error: TS2341: Property 'route' is private
+        expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
       });
 
-      userEvent.click(getByRole('button', { name: 'Save and return' }));
+      it('should navigate to the workplace tab on dashboard when set as returnTo in establishment service', async () => {
+        const mockWorkplace = establishmentBuilder({
+          overrides: { starters: mockStarters },
+        });
+        const { routerSpy, getByRole } = await setup({
+          workplace: mockWorkplace,
+          establishmentService: {
+            returnTo: { url: ['/dashboard'], fragment: 'workplace' },
+          },
+        });
 
-      // @ts-expect-error: TS2341: Property 'route' is private
-      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
+      });
+
+      it('should navigate to the funding workplace tab when set as returnTo in establishment service', async () => {
+        const mockWorkplace = establishmentBuilder({
+          overrides: { starters: mockStarters },
+        });
+        const { routerSpy, getByRole } = await setup({
+          workplace: mockWorkplace,
+          establishmentService: { returnTo: { url: ['/funding/data'], fragment: 'workplace' } },
+        });
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/funding/data'], { fragment: 'workplace' });
+      });
+
+      it('should navigate to the workplace tab on dashboard when no returnTo and not in staffUpdatesView', async () => {
+        const mockWorkplace = establishmentBuilder({
+          overrides: { starters: mockStarters },
+        });
+        const { routerSpy, getByRole } = await setup({
+          workplace: mockWorkplace,
+        });
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
+      });
     });
 
     it('should clear the selectedStarters value in vacanciesAndTurnoverService', async () => {
@@ -725,18 +774,64 @@ describe('UpdateStartersComponent', () => {
     expectErrorMessageAppears('Failed to update starters', false);
   });
 
-  it('should return to Check this information page when user clicked the cancel button', async () => {
-    const { component, getByText, updateJobsSpy, routerSpy, vacanciesAndTurnoverService } = await setup({
-      workplace: mockWorkplace,
-      snapshot: { staffUpdatesView: true },
+  describe('Navigation on cancel', () => {
+    it('should navigate to the update-workplace-details page if staffUpdates view passed in as true from routing', async () => {
+      const mockWorkplace = establishmentBuilder({
+        overrides: { starters: mockStarters },
+      });
+      const { component, routerSpy, getByText } = await setup({
+        workplace: mockWorkplace,
+        snapshot: { staffUpdatesView: true },
+      });
+
+      userEvent.click(getByText('Cancel'));
+
+      // @ts-expect-error: TS2341: Property 'route' is private
+      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
     });
 
-    userEvent.click(getByText('Cancel'));
+    it('should navigate to the workplace tab on dashboard when set as returnTo in establishment service', async () => {
+      const mockWorkplace = establishmentBuilder({
+        overrides: { starters: mockStarters },
+      });
+      const { routerSpy, getByText } = await setup({
+        workplace: mockWorkplace,
+        establishmentService: {
+          returnTo: { url: ['/dashboard'], fragment: 'workplace' },
+        },
+      });
 
-    expect(updateJobsSpy).not.toHaveBeenCalled();
-    // @ts-expect-error: TS2341: Property 'route' is private
-    expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
-    expect(vacanciesAndTurnoverService.selectedStarters).toEqual(null);
+      userEvent.click(getByText('Cancel'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
+    });
+
+    it('should navigate to the funding workplace tab when set as returnTo in establishment service', async () => {
+      const mockWorkplace = establishmentBuilder({
+        overrides: { starters: mockStarters },
+      });
+      const { routerSpy, getByText } = await setup({
+        workplace: mockWorkplace,
+        establishmentService: { returnTo: { url: ['/funding/data'], fragment: 'workplace' } },
+      });
+
+      userEvent.click(getByText('Cancel'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/funding/data'], { fragment: 'workplace' });
+    });
+
+    it('should navigate to the workplace tab on dashboard when no returnTo and not in staffUpdatesView', async () => {
+      const mockWorkplace = establishmentBuilder({
+        overrides: { starters: mockStarters },
+      });
+      const { routerSpy, getByText } = await setup({
+        workplace: mockWorkplace,
+      });
+
+      userEvent.click(getByText('Cancel'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
+    });
   });
 
   const fillInValueForJobRole = async (jobRoleTitle: string, inputText: string) => {

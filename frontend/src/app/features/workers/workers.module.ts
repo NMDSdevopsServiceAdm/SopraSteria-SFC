@@ -71,7 +71,6 @@ import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { UpdateLeaversComponent } from './update-workplace-details-after-staff-changes/update-leavers/update-leavers.component';
-import { UpdateStartersComponent } from './update-workplace-details-after-staff-changes/update-starters/update-starters.component';
 import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
@@ -137,7 +136,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DeleteStaffRecordComponent,
     UpdateWorkplaceDetailsAfterStaffChangesComponent,
     UpdateTotalNumberOfStaffComponent,
-    UpdateStartersComponent,
     UpdateLeaversComponent,
   ],
   providers: [
