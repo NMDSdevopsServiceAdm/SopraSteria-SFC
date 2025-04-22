@@ -8,7 +8,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
-import { FormatUtil } from '@core/utils/format-util';
+import { DateUtil } from '@core/utils/date-util';
 import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
@@ -348,9 +348,6 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   }
 
   protected getDateForOneYearAgo(): string {
-    const today = new Date();
-    today.setFullYear(today.getFullYear() - 1);
-
-    return FormatUtil.formatDateToLocaleDateString(today);
+    return DateUtil.getDateForOneYearAgo();
   }
 }
