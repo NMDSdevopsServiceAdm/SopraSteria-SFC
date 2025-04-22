@@ -46,7 +46,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       ],
       componentProperties: {
         workplace: establishmentWithShareWith(shareWith) as Establishment,
-        navigateToTab(event, tabSlug) {
+        navigateToTab(event) {
           event.preventDefault();
         },
       },
@@ -1007,7 +1007,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
         expect(within(leaversRow).queryByText('-')).toBeTruthy();
       });
 
@@ -1022,7 +1022,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
         expect(within(leaversRow).queryByText(`Don't know`)).toBeTruthy();
       });
 
@@ -1037,7 +1037,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
         expect(within(leaversRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -1052,7 +1052,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
         expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
