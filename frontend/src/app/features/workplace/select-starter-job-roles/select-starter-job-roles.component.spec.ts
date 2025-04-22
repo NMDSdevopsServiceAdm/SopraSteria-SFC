@@ -5,15 +5,15 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Starter } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockJobRoles } from '@core/test-utils/MockJobService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectStarterJobRolesComponent } from './select-starter-job-roles.component';
-import { MockJobRoles } from '@core/test-utils/MockJobService';
-import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
-import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 
 fdescribe('SelectStarterJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
@@ -174,7 +174,7 @@ fdescribe('SelectStarterJobRolesComponent', () => {
       ];
 
       it('should tick the checkboxes according to previously saved starters for the workplace', async () => {
-        const { getAllByRole } = await setup({ startersFromDatabase: mockStarters });
+        const { getAllByRole } = await setup({ selectedStarters: mockStarters });
         const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(2);
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
@@ -188,27 +188,12 @@ fdescribe('SelectStarterJobRolesComponent', () => {
             total: 2,
           },
         ];
-        const { getByLabelText } = await setup({ startersFromDatabase: careWorkerOnly });
+        const { getByLabelText } = await setup({ selectedStarters: careWorkerOnly });
         const careProvidingRolesAccordion = getByLabelText('Care providing roles');
         const professionalRolesAccordion = getByLabelText('Professional and related roles');
         expect(within(careProvidingRolesAccordion).getByText('Hide')).toBeTruthy(); // is expanded
         expect(within(professionalRolesAccordion).getByText('Show')).toBeTruthy(); // not expanded
       });
-
-      // it('should prefill from the data in localStorage if editing the same workplace', async () => {
-      //   const mockselectedStarters = { establishmentUid: 'mocked-uid', starters: mockStarters };
-      //   const { getAllByRole } = await setup({ selectedStarters: JSON.stringify(mockselectedStarters) });
-      //   const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
-      //   expect(tickedCheckboxes.length).toEqual(2);
-      //   expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
-      // });
-
-      // it('should not prefill from the data in localStorage if editing a different workplace', async () => {
-      //   const mockselectedStarters = { establishmentUid: 'other-workplace-uid', starters: mockStarters };
-      //   const { queryAllByRole } = await setup({ selectedStarters: JSON.stringify(mockselectedStarters) });
-      //   const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
-      //   expect(tickedCheckboxes.length).toEqual(0);
-      // });
 
       it('should prefill from the starters data from database if selectedStarters is null', async () => {
         const { queryAllByRole } = await setup({ selectedStarters: null, startersFromDatabase: mockStarters });
