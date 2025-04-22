@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -22,35 +21,10 @@ import { throwError } from 'rxjs';
 
 import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { SelectJobRolesMandatoryComponent } from './select-job-roles-mandatory.component';
+import { MockJobRoles } from '@core/test-utils/MockJobService';
 
 describe('SelectJobRolesMandatoryComponent', () => {
-  const mockAvailableJobs = [
-    {
-      id: 4,
-      title: 'Allied health professional (not occupational therapist)',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 10,
-      title: 'Care worker',
-      jobRoleGroup: 'Care providing roles',
-    },
-    {
-      id: 23,
-      title: 'Registered nurse',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 27,
-      title: 'Social worker',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 20,
-      title: 'Other (directly involved in providing care)',
-      jobRoleGroup: 'Care providing roles',
-    },
-  ];
+  const mockAvailableJobs = MockJobRoles;
 
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
@@ -65,7 +39,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
     };
 
     const setupTools = await render(SelectJobRolesMandatoryComponent, {
-      imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMandatoryTrainingModule],
+      imports: [HttpClientTestingModule, SharedModule, RouterModule, AddMandatoryTrainingModule],
       declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
         BackLinkService,

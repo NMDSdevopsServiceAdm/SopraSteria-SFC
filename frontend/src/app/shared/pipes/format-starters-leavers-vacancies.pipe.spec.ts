@@ -1,4 +1,5 @@
 import { Vacancy } from '@core/model/establishment.model';
+
 import { FormatStartersLeaversVacanciesPipe } from './format-starters-leavers-vacancies.pipe';
 
 describe('FormatStartersLeaversVacanciesPipe', () => {
@@ -11,7 +12,7 @@ describe('FormatStartersLeaversVacanciesPipe', () => {
     const jobRole: Vacancy = { jobId: 10, title: 'Care worker', total: 2 };
     const pipe = new FormatStartersLeaversVacanciesPipe();
 
-    const expected = '2 Care worker';
+    const expected = '2 x care worker';
     expect(pipe.transform(jobRole)).toEqual(expected);
   });
 
@@ -24,7 +25,7 @@ describe('FormatStartersLeaversVacanciesPipe', () => {
     };
     const pipe = new FormatStartersLeaversVacanciesPipe();
 
-    const expected = '3 Other (directly involved in providing care): Special care worker';
+    const expected = '3 x other (directly involved in providing care): special care worker';
     expect(pipe.transform(jobRole)).toEqual(expected);
   });
 
@@ -32,8 +33,22 @@ describe('FormatStartersLeaversVacanciesPipe', () => {
     const jobRole: Vacancy = { jobId: 10, title: 'Care worker', total: 2 };
     const pipe = new FormatStartersLeaversVacanciesPipe();
 
-    const expected = '2 Care worker';
+    const expected = '2 x care worker';
     expect(pipe.transform({ ...jobRole, other: null })).toEqual(expected);
     expect(pipe.transform({ ...jobRole, other: undefined })).toEqual(expected);
+  });
+
+  it('should not put acronyms to lower case', () => {
+    const testCases: { expected: string; jobRole: Vacancy }[] = [
+      { jobRole: { jobId: 10, title: 'IT manager', total: 2 }, expected: '2 x IT manager' },
+      { jobRole: { jobId: 11, title: 'Manager of IT', total: 2 }, expected: '2 x manager of IT' },
+      { jobRole: { jobId: 12, title: 'People and HR manager', total: 4 }, expected: '4 x people and HR manager' },
+    ];
+
+    const pipe = new FormatStartersLeaversVacanciesPipe();
+
+    testCases.forEach(({ jobRole, expected }) => {
+      expect(pipe.transform(jobRole)).toEqual(expected);
+    });
   });
 });

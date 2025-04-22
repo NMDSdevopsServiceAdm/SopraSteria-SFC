@@ -117,3 +117,72 @@ Cypress.Commands.add('deleteTestWorkerFromDb', (workerName) => {
 
   cy.task('multipleDbQueries', dbQueries);
 });
+
+Cypress.Commands.add('resetStartersLeaversVacancies', (establishmentID) => {
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+      SET "NumberOfStaffValue" = 4,
+      "VacanciesValue" = null,
+      "StartersValue" = null,
+      "LeaversValue" = null
+      WHERE "EstablishmentID" = $1;`,
+
+    `DELETE FROM cqc."EstablishmentJobs"
+    WHERE "EstablishmentID" = $1;`,
+  ];
+  const parameters = [establishmentID];
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('updateStartersLeaversVacancies', (establishmentID) => {
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+      SET "NumberOfStaffValue" = 4,
+      "VacanciesValue" = null,
+      "StartersValue" = null,
+      "LeaversValue" = null
+      WHERE "EstablishmentID" = $1;`,
+
+    `INSERT INTO cqc."EstablishmentJobs"
+      ("JobID", "EstablishmentID", "JobType", "Total")
+      VALUES (10, $1, 'Vacancies', 1);`,
+  ];
+  const parameters = [establishmentID];
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
+
+Cypress.Commands.add('addJobRoles', (jobRoles, action) => {
+  if (jobRoles?.length > 0) {
+    // select job roles
+    cy.contains('button', 'Show all job roles').click();
+
+    jobRoles.forEach((jobRole) => {
+      cy.getByLabel(jobRole.job).click();
+    });
+
+    cy.contains('button', 'Continue').click();
+
+    let jobTotal = 0;
+
+    // update total
+    if (action === 'type') {
+      jobRoles.forEach((jobRole) => {
+        cy.getByLabel(jobRole.job).clear().type(jobRole.total);
+        jobTotal += jobRole.total;
+      });
+      cy.get('button').first().focus();
+      cy.get('[data-testid="total-number"]').contains(jobTotal);
+    } else {
+      cy.get('[data-testid="total-number"]').contains(jobRoles.length);
+    }
+
+    cy.contains('button', 'Save and return').click();
+  }
+});

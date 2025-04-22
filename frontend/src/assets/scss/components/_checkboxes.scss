@@ -1,3 +1,15 @@
 .govuk-checkboxes__item {
-   @include govuk-responsive-margin(4, "bottom")
+  @include govuk-responsive-margin(4, 'bottom');
+}
+
+.asc-checkboxes__item--disabled {
+  .govuk-checkboxes__input:disabled + .govuk-checkboxes__label,
+  .govuk-checkboxes__input:disabled ~ .govuk-hint {
+    opacity: 100%;
+  }
+
+  .govuk-checkboxes__label::before {
+    background-color: govuk-colour('light-grey');
+    border: none;
+  }
 }

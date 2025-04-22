@@ -44,6 +44,7 @@ import { ValidationErrorMessageComponent } from './components/drag-and-drop/vali
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
 import { FundingRequirementsStateComponent } from './components/funding-requirements-state/funding-requirements-state.component';
+import { HelpContentComponent } from './components/help-content/help-content.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
 import { LinkToParentCancelDialogComponent } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
@@ -135,7 +136,7 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { HelpContentComponent } from './components/help-content/help-content.component';
+import { NumberInputWithButtonsComponent } from './components/number-input-with-buttons/number-input-with-buttons.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -272,6 +273,7 @@ import { HelpContentComponent } from './components/help-content/help-content.com
     WorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
     HelpContentComponent,
+    NumberInputWithButtonsComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -403,6 +405,8 @@ import { HelpContentComponent } from './components/help-content/help-content.com
     WorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
     HelpContentComponent,
+    FormatStartersLeaversVacanciesPipe,
+    NumberInputWithButtonsComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver, QuestionsAndAnswersResolver],
 })

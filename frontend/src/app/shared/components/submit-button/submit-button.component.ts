@@ -6,7 +6,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
   styleUrls: ['./submit-button.component.scss'],
 })
 export class SubmitButtonComponent implements OnInit {
-  @Input() showSaveAndCancelButton = false; // delete
   @Input() return: boolean;
   @Input() saveCallback: any;
   @Input() callToAction = 'Save and continue';

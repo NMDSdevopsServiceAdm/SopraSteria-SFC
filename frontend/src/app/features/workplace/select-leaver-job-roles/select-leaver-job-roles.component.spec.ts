@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Leaver } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -12,35 +11,10 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles.component';
+import { MockJobRoles } from '@core/test-utils/MockJobService';
 
 describe('SelectLeaverJobRolesComponent', () => {
-  const mockAvailableJobs = [
-    {
-      id: 4,
-      title: 'Allied health professional (not occupational therapist)',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 10,
-      title: 'Care worker',
-      jobRoleGroup: 'Care providing roles',
-    },
-    {
-      id: 23,
-      title: 'Registered nurse',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 27,
-      title: 'Social worker',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 20,
-      title: 'Other (directly involved in providing care)',
-      jobRoleGroup: 'Care providing roles',
-    },
-  ];
+  const mockAvailableJobs = MockJobRoles;
 
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
@@ -52,7 +26,7 @@ describe('SelectLeaverJobRolesComponent', () => {
     const getLocalStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
 
     const renderResults = await render(SelectLeaverJobRolesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
