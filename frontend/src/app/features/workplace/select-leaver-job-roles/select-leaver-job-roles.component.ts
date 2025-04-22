@@ -15,4 +15,11 @@ export class SelectLeaverJobRolesComponent extends SelectJobRolesDirective {
   protected hasStartersLeaversVacanciesField = 'hasLeavers';
   protected prefillData: Leaver[] = [];
   protected field = 'leavers';
+
+  protected getSelectedJobRoleFromService(): Leaver[] {
+    return this.vacanciesAndTurnoverService.selectedLeavers;
+  }
+  protected saveToService(updatedJobRoles: Leaver[]): void {
+    this.vacanciesAndTurnoverService.selectedLeavers = updatedJobRoles;
+  }
 }

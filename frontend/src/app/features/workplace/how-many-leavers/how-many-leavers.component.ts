@@ -11,7 +11,7 @@ import { DateUtil } from '@core/utils/date-util';
 })
 export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDirective {
   public heading = `How many leavers have you had SINCE ${DateUtil.getDateForOneYearAgo()}?`;
-  public instruction = 'Only add the number of leavers who have left permanent and temporary job roles.';
+  public instruction = 'Only add the number of leavers who left permanent and temporary job roles.';
   public revealTextContent =
     'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
   public jobRoleType = 'leavers';
