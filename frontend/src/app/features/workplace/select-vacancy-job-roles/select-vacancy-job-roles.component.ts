@@ -12,12 +12,11 @@ export class SelectVacancyJobRolesComponent extends SelectJobRolesDirective impl
   public heading = 'Select job roles for the vacancies you want to add';
   public hintText = 'You can review the number of vacancies for each role after you click Save and continue.';
   protected numbersField = 'vacanciesJobRoles';
-  protected numbersFieldInService = 'selectedVacancies';
   protected hasStartersLeaversVacanciesField = 'hasVacancies';
   protected prefillData: Vacancy[] = [];
   protected field = 'vacancies';
 
-  protected loadSelectedJobRolesFromService(): Vacancy[] {
+  protected getSelectedJobRoleFromService(): Vacancy[] {
     return this.vacanciesAndTurnoverService.selectedVacancies;
   }
   protected saveToService(updatedJobRoles: Vacancy[]): void {

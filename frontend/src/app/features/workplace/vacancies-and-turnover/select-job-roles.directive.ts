@@ -25,7 +25,6 @@ export class SelectJobRolesDirective extends Question {
 
   protected field: string;
   protected numbersField: string;
-  protected numbersFieldInService: string;
   protected hasStartersLeaversVacanciesField: string;
   protected jobsAvailable: Job[] = [];
   protected prefillData: Array<Vacancy | Starter | Leaver>;
@@ -89,7 +88,7 @@ export class SelectJobRolesDirective extends Question {
   }
 
   protected getPrefillData(): void {
-    const previousData = this.loadSelectedJobRolesFromService();
+    const previousData = this.getSelectedJobRoleFromService();
     if (Array.isArray(previousData)) {
       this.prefillData = previousData;
     } else if (Array.isArray(this.establishment[this.field])) {
@@ -126,7 +125,7 @@ export class SelectJobRolesDirective extends Question {
     this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
   }
 
-  protected loadSelectedJobRolesFromService(): StarterLeaverVacancy[] {
+  protected getSelectedJobRoleFromService(): StarterLeaverVacancy[] {
     throw new Error('To be implemented at component');
   }
 

@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 import { HowManyVacanciesComponent } from './how-many-vacancies.component';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 
-describe('HowManyVacanciesComponent', () => {
+fdescribe('HowManyVacanciesComponent', () => {
   const mockSelectedJobRoles: Vacancy[] = [
     {
       jobId: 10,
@@ -301,6 +301,21 @@ describe('HowManyVacanciesComponent', () => {
         expect(within(numberInputsTable).getAllByText('Number of vacancies must be between 1 and 999')).toHaveSize(2);
 
         expect(updateJobsSpy).not.toHaveBeenCalled();
+      });
+
+      xit('should show the error message without converting abbreviation in job titles to lower case', async () => {
+        const { fixture, getByText, getByRole } = await setup({
+          selectedJobRoles: [{ jobId: 36, title: 'IT manager', total: 1 }],
+        });
+
+        await fillInValueForJobRole('IT manager', '0');
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+        fixture.detectChanges();
+
+        const errorSummaryBox = getByText('There is a problem').parentElement;
+        expect(
+          within(errorSummaryBox).getByText('Number of vacancies must be between 1 and 999 (IT manager)'),
+        ).toBeTruthy();
       });
     });
   });

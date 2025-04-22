@@ -14,7 +14,7 @@ export class SelectStarterJobRolesComponent extends SelectJobRolesDirective {
   protected field = 'starters';
   public hintText = 'You can review the number of starters for each role after you click Save and continue.';
 
-  protected loadSelectedJobRolesFromService(): Starter[] {
+  protected getSelectedJobRoleFromService(): Starter[] {
     return this.vacanciesAndTurnoverService.selectedStarters;
   }
   protected saveToService(updatedJobRoles: Starter[]): void {

@@ -12,7 +12,6 @@ export class SelectLeaverJobRolesComponent extends SelectJobRolesDirective {
   public heading = 'Select job roles for the leavers you want to add';
   public hintText = 'You can review the number of leavers for each role after you click Save and continue.';
   protected numbersField = 'leaversJobRoles';
-  protected numbersFieldInService = 'selectedLeavers';
   protected hasStartersLeaversVacanciesField = 'hasLeavers';
   protected prefillData: Leaver[] = [];
   protected field = 'leavers';
