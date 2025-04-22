@@ -37,4 +37,18 @@ describe('FormatStartersLeaversVacanciesPipe', () => {
     expect(pipe.transform({ ...jobRole, other: null })).toEqual(expected);
     expect(pipe.transform({ ...jobRole, other: undefined })).toEqual(expected);
   });
+
+  it('should not put acronyms to lower case', () => {
+    const testCases: { expected: string; jobRole: Vacancy }[] = [
+      { jobRole: { jobId: 10, title: 'IT manager', total: 2 }, expected: '2 x IT manager' },
+      { jobRole: { jobId: 11, title: 'Manager of IT', total: 2 }, expected: '2 x manager of IT' },
+      { jobRole: { jobId: 12, title: 'People and HR manager', total: 4 }, expected: '4 x people and HR manager' },
+    ];
+
+    const pipe = new FormatStartersLeaversVacanciesPipe();
+
+    testCases.forEach(({ jobRole, expected }) => {
+      expect(pipe.transform(jobRole)).toEqual(expected);
+    });
+  });
 });

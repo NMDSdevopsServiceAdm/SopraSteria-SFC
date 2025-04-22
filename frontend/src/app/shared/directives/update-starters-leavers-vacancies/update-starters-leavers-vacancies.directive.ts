@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -201,7 +201,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
     errorType: string,
     inline: boolean = false,
   ): string {
-    const jobRoleTitleInLowerCase = jobRole.title.toLowerCase();
+    const jobRoleTitleInLowerCase = FormatUtil.formatToLowercaseExcludingAcronyms(jobRole.title);
 
     switch (errorType) {
       case 'required': {

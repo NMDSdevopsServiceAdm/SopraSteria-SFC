@@ -68,4 +68,31 @@ describe('FormatUtil', () => {
       expect(FormatUtil.formatPercent(0.5)).toEqual('50%');
     });
   });
+
+  describe('formatToLowercaseExcludingAcronyms', () => {
+    it('should put text with no acronyms to lower case', () => {
+      const testCases: { input: string; expected: string }[] = [
+        { input: 'Software engineer', expected: 'software engineer' },
+        { input: 'Support Worker', expected: 'support worker' },
+        { input: 'People and HR manager', expected: 'people and HR manager' },
+      ];
+
+      testCases.forEach(({ input, expected }) => {
+        expect(FormatUtil.formatToLowercaseExcludingAcronyms(input)).toEqual(expected);
+      });
+    });
+
+    it('should not put acronyms to lower case', () => {
+      const testCases: { input: string; expected: string }[] = [
+        { input: 'IT manager', expected: 'IT manager' },
+        { input: 'Manager of IT', expected: 'manager of IT' },
+        { input: 'People and HR manager', expected: 'people and HR manager' },
+        { input: 'ABC Acronym', expected: 'ABC acronym' },
+      ];
+
+      testCases.forEach(({ input, expected }) => {
+        expect(FormatUtil.formatToLowercaseExcludingAcronyms(input)).toEqual(expected);
+      });
+    });
+  });
 });
