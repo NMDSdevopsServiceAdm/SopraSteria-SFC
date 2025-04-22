@@ -153,7 +153,7 @@ export class SelectJobRolesDirective extends Question {
 
     const updatedJobRoles: StarterLeaverVacancy[] = selectedJobIds.map((jobId) => {
       const job = this.jobsAvailable.find((job) => job.id === jobId);
-      const fieldCount = this.prefillData.find((field) => field.jobId === jobId)?.total ?? null;
+      const fieldCount = this.prefillData?.find((field) => field.jobId === jobId)?.total ?? null;
 
       return { jobId, title: job.title, total: fieldCount };
     });
