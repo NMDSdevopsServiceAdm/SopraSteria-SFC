@@ -10,7 +10,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
-fdescribe('StaffRecruitmentCaptureTrainingRequirement', () => {
+describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(returnUrl = true, repeatTraining = undefined) {
     const { fixture, getByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       StaffRecruitmentCaptureTrainingRequirementComponent,
