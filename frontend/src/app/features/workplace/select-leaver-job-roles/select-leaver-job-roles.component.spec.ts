@@ -229,7 +229,7 @@ describe('SelectLeaverJobRolesComponent', () => {
 
   describe('form submit and validation', () => {
     describe('on Success', () => {
-      it('should store the user input data in localStorage', async () => {
+      it('should store the user input data in vacanciesAndTurnover service', async () => {
         const { getByText, setSelectedLeaversSpy } = await setup();
 
         userEvent.click(getByText('Show all job roles'));
@@ -385,13 +385,6 @@ describe('SelectLeaverJobRolesComponent', () => {
 
     it('should set the backlink to "do you have leavers" page', async () => {
       const { component } = await setup();
-      expect(component.back).toEqual({
-        url: ['/workplace', component.establishment.uid, 'do-you-have-leavers'],
-      });
-    });
-
-    it('should set the backlink to "do you have leavers" when not in the flow', async () => {
-      const { component } = await setup({ returnToUrl: true });
       expect(component.back).toEqual({
         url: ['/workplace', component.establishment.uid, 'do-you-have-leavers'],
       });

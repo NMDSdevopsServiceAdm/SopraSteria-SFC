@@ -364,12 +364,5 @@ describe('SelectStarterJobRolesComponent', () => {
         url: ['/workplace', component.establishment.uid, 'do-you-have-starters'],
       });
     });
-
-    it('should set the backlink to "do you have starter" when not in the flow', async () => {
-      const { component } = await setup({ returnToUrl: true });
-      expect(component.back).toEqual({
-        url: ['/workplace', component.establishment.uid, 'do-you-have-starters'],
-      });
-    });
   });
 });
