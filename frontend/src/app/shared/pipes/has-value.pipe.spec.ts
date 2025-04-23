@@ -1,6 +1,6 @@
 import { HasValuePipe } from './has-value.pipe';
 
-fdescribe('HasValuePipe', () => {
+describe('HasValuePipe', () => {
   it('create an instance', () => {
     const pipe = new HasValuePipe();
     expect(pipe).toBeTruthy();
