@@ -137,28 +137,58 @@ Cypress.Commands.add('resetStartersLeaversVacancies', (establishmentID) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
-Cypress.Commands.add('updateStartersLeaversVacancies', (establishmentID) => {
-  const queryStrings = [
-    `UPDATE cqc."Establishment"
-      SET "NumberOfStaffValue" = 4,
-      "VacanciesValue" = null,
-      "StartersValue" = null,
-      "LeaversValue" = null
-      WHERE "EstablishmentID" = $1;`,
+Cypress.Commands.add('updateStarters', (args) => {
+  const { establishmentID = '180', jobId = '10', total = '1' } = args;
+  const queryString1 = `UPDATE cqc."Establishment"
+      SET "StartersValue" = 'With Jobs'
+      WHERE "EstablishmentID" = $1`;
 
-    `INSERT INTO cqc."EstablishmentJobs"
-      ("JobID", "EstablishmentID", "JobType", "Total")
-      VALUES (10, $1, 'Vacancies', 1);`,
-  ];
-  const parameters = [establishmentID];
+  const parameters1 = [establishmentID];
 
-  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+  const queryString2 = `INSERT INTO cqc."EstablishmentJobs"
+      ("EstablishmentID", "JobID", "Total", "JobType")
+      VALUES ($1, $2, $3, 'Starters')`;
+  const parameters2 = [establishmentID, jobId, total];
 
-  cy.task('multipleDbQueries', dbQueries);
+  cy.task('dbQuery', { queryString: queryString1, parameters: parameters1 });
+  cy.task('dbQuery', { queryString: queryString2, parameters: parameters2 });
 });
 
+Cypress.Commands.add('updateLeavers', (args) => {
+  const { establishmentID = '180', jobId = '10', total = '1' } = args;
+  const queryString1 = `UPDATE cqc."Establishment"
+      SET "LeaversValue" = 'With Jobs'
+      WHERE "EstablishmentID" = $1;`;
+  const parameters1 = [establishmentID];
 
-Cypress.Commands.add('addJobRoles', (jobRoles, action) => {
+  const queryString2 = `INSERT INTO cqc."EstablishmentJobs"
+      ("JobID", "EstablishmentID", "JobType", "Total")
+      VALUES ($2, $1, 'Leavers', $3);`;
+  const parameters2 = [establishmentID, jobId, total];
+
+  cy.task('dbQuery', { queryString: queryString1, parameters: parameters1 });
+  cy.task('dbQuery', { queryString: queryString2, parameters: parameters2 });
+});
+
+Cypress.Commands.add('updateVacancies', (args) => {
+  const { establishmentID = '180', jobId = '10', total = '1' } = args;
+  const queryString1 = `UPDATE cqc."Establishment"
+      SET "VacanciesValue" = 'With Jobs'
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters1 = [establishmentID];
+
+  const queryString2 = `INSERT INTO cqc."EstablishmentJobs"
+      ("JobID", "EstablishmentID", "JobType", "Total")
+      VALUES ($2, $1, 'Vacancies', $3);`;
+
+  const parameters2 = [establishmentID, jobId, total];
+
+  cy.task('dbQuery', { queryString: queryString1, parameters: parameters1 });
+  cy.task('dbQuery', { queryString: queryString2, parameters: parameters2 });
+});
+
+Cypress.Commands.add('addJobRoles', (jobRoles) => {
   if (jobRoles?.length > 0) {
     // select job roles
     cy.contains('button', 'Show all job roles').click();
@@ -168,21 +198,21 @@ Cypress.Commands.add('addJobRoles', (jobRoles, action) => {
     });
 
     cy.contains('button', 'Continue').click();
+  }
+});
 
-    let jobTotal = 0;
-
-    // update total
-    if (action === 'type') {
-      jobRoles.forEach((jobRole) => {
-        cy.getByLabel(jobRole.job).clear().type(jobRole.total);
-        jobTotal += jobRole.total;
-      });
-      cy.get('button').first().focus();
-      cy.get('[data-testid="total-number"]').contains(jobTotal);
-    } else {
-      cy.get('[data-testid="total-number"]').contains(jobRoles.length);
-    }
-
-    cy.contains('button', 'Save and return').click();
+Cypress.Commands.add('updateJobRoleTotal', (jobRoles, action) => {
+  let jobTotal = 0;
+  if (action === 'type') {
+    jobRoles.forEach((jobRole) => {
+      cy.getByLabel(jobRole.job).as('label');
+      cy.get('@label').clear();
+      cy.get('@label').type(jobRole.total);
+      jobTotal += jobRole.total;
+    });
+    cy.get('button').first().focus();
+    cy.get('[data-testid="total-number"]').contains(jobTotal);
+  } else {
+    cy.get('[data-testid="total-number"]').contains(jobRoles.length);
   }
 });

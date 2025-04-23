@@ -4,7 +4,7 @@ import { StandAloneEstablishment } from '../../../support/mockEstablishmentData'
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Standalone staff records page as edit user', () => {
-  const establishmentId = 180;
+  const establishmentId = StandAloneEstablishment.id;
   const worker1 = 'Staff 01';
   const worker2 = 'Staff 02';
   const worker3 = 'Staff 03';
@@ -148,16 +148,8 @@ describe('Standalone staff records page as edit user', () => {
     ];
 
     it('updates successfully after adding staff', () => {
-      // add vacancies via workplace as part of setup
-      onHomePage.clickTab('Workplace');
-
-      cy.get('[data-testid="vacancies-top-row"]').contains('Add').click();
-
-      cy.getByLabel('Yes').click();
-      cy.contains('button', 'Continue').click();
-      cy.addJobRoles(jobRolesToAdd, 'type');
-
-      onHomePage.clickTab('Staff records');
+      // add vacancies as part of setup
+      cy.updateVacancies(establishmentId, 10, jobRolesToAdd.total);
 
       // add staff records
       cy.get('a[role="button"]').contains('Add a staff record').click();
@@ -198,7 +190,9 @@ describe('Standalone staff records page as edit user', () => {
 
       // update starters
       cy.contains('button', 'Add job roles').click();
-      cy.addJobRoles(jobRolesToAdd, 'type');
+      cy.addJobRoles(jobRolesToAdd);
+      cy.updateJobRoleTotal(jobRolesToAdd, 'type');
+      cy.contains('button', 'Save and return').click();
 
       // number of staff, leavers and vacancies summary page
       cy.get('[data-testid="numberOfStaff"]').contains(`${noOfStaffBeforeUpdate + 2}`);
@@ -250,6 +244,7 @@ describe('Standalone staff records page as edit user', () => {
       // update vacancies page
       cy.contains('button', 'Add job roles').click();
       cy.addJobRoles(jobRolesToAdd);
+      cy.contains('button', 'Save and return').click();
 
       // number of staff, leavers and vacancies summary page
       cy.get('[data-testid="leavers"]').contains('Add').click();
@@ -257,6 +252,7 @@ describe('Standalone staff records page as edit user', () => {
       // update leavers page
       cy.contains('button', 'Add job roles').click();
       cy.addJobRoles(jobRolesToAdd);
+      cy.contains('button', 'Save and return').click();
 
       // number of staff, leavers and vacancies summary page
       cy.contains('Total number of staff, vacancies and leavers information saved');
