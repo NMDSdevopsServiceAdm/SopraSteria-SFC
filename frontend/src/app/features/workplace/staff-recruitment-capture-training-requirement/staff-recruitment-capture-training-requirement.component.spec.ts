@@ -3,22 +3,19 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import {
-  StaffRecruitmentCaptureTrainingRequirementComponent,
-} from './staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(returnUrl = true, repeatTraining = undefined) {
     const { fixture, getByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       StaffRecruitmentCaptureTrainingRequirementComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -272,10 +269,10 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   });
 
   describe('Back button', () => {
-    it('should set the back link to service-users', async () => {
+    it('should set the back link to how-many-leavers page', async () => {
       const { component } = await setup(false);
 
-      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'service-users']);
+      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
     });
   });
 });
