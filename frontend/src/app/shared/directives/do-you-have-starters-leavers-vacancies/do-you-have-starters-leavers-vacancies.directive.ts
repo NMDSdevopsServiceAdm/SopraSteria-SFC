@@ -5,7 +5,7 @@ import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.mod
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { FormatUtil } from '@core/utils/format-util';
+import { DateUtil } from '@core/utils/date-util';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '@features/workplace/question/question.component';
 
@@ -146,9 +146,7 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
   }
 
   protected getDateForOneYearAgo(): string {
-    const today = new Date();
-    today.setFullYear(today.getFullYear() - 1);
-    return FormatUtil.formatDateToLocaleDateString(today);
+    return DateUtil.getDateForOneYearAgo();
   }
 
   ngOnDestroy(): void {
