@@ -36,15 +36,15 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
   }
 
   protected returnToFirstPage(): void {
-    this.router.navigate(['/workplace', `${this.establishment.uid}`, 'do-you-have-leavers']);
+    this.router.navigate(['/workplace', this.establishment.uid, 'do-you-have-leavers']);
   }
 
   protected returnToJobRoleSelectionPage(): void {
-    this.router.navigate(['/workplace', `${this.establishment.uid}`, 'select-leaver-job-roles']);
+    this.router.navigate(['/workplace', this.establishment.uid, 'select-leaver-job-roles']);
   }
 
   protected setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'select-leaver-job-roles'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'select-leaver-job-roles'];
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
