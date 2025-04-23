@@ -33,6 +33,10 @@ describe('Standalone home page as edit user', () => {
     cy.reload();
   });
 
+  afterEach(() => {
+    cy.resetStartersLeaversVacancies(establishmentId);
+  });
+
   it('should see the standalone establishment workplace page', () => {
     cy.url().should('include', '#workplace');
     cy.get('[data-testid="standAloneDashboard"]').contains('Workplace');
