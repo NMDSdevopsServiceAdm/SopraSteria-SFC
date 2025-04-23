@@ -9,6 +9,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { DateUtil } from '@core/utils/date-util';
+import { FormatUtil } from '@core/utils/format-util';
 import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
