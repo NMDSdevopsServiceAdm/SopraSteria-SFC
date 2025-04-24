@@ -5,57 +5,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
+import { mockQualifications, MockQualificationService } from '@core/test-utils/MockQualificationsService';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByLabelText, render } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { SocialCareQualificationLevelComponent } from './social-care-qualification-level.component';
 
 describe('SocialCareQualificationLevelComponent', () => {
-  const mockQualifications = [
-    {
-      id: 1,
-      level: 'Entry level',
-    },
-    {
-      id: 2,
-      level: 'Level 1',
-    },
-    {
-      id: 3,
-      level: 'Level 2',
-    },
-    {
-      id: 4,
-      level: 'Level 3',
-    },
-    {
-      id: 5,
-      level: 'Level 4',
-    },
-    {
-      id: 6,
-      level: 'Level 5',
-    },
-    {
-      id: 7,
-      level: 'Level 6',
-    },
-    {
-      id: 8,
-      level: 'Level 7',
-    },
-    {
-      id: 9,
-      level: 'Level 8 or above',
-    },
-    {
-      id: 10,
-      level: "Don't know",
-    },
-  ];
-
   async function setup(overrides: any = {}) {
     const setupTools = await render(SocialCareQualificationLevelComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -92,11 +49,7 @@ describe('SocialCareQualificationLevelComponent', () => {
         },
         {
           provide: QualificationService,
-          useValue: {
-            getQualifications: () => {
-              return of(mockQualifications);
-            },
-          },
+          useClass: MockQualificationService,
         },
       ],
     });
