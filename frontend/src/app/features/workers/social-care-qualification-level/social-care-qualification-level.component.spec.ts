@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { mockQualifications, MockQualificationService } from '@core/test-utils/MockQualificationsService';
@@ -15,7 +14,7 @@ import { SocialCareQualificationLevelComponent } from './social-care-qualificati
 describe('SocialCareQualificationLevelComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(SocialCareQualificationLevelComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
