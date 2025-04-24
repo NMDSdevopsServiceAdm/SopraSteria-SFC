@@ -17,18 +17,23 @@
           </a>
           on the GOV.UK website.
         </app-details>
-        <label class="govuk-label" for="qualification"> Qualification level </label>
-        <select
-          class="govuk-select govuk-!-width-one-half"
-          [formControlName]="'qualification'"
-          id="qualification"
-          name="qualification"
-        >
-          <option [ngValue]="null">Select</option>
-          <option *ngFor="let qualification of qualifications" [value]="qualification.id">
-            {{ qualification.level }}
-          </option>
-        </select>
+        <p class="govuk-!-font-weight-bold">Qualification level</p>
+
+        <div class="govuk-radios">
+          <div *ngFor="let qualification of qualifications; let idx = index" class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              formControlName="qualification"
+              id="qualification-{{ idx }}"
+              name="qualification"
+              type="radio"
+              [value]="qualification.id"
+            />
+            <label class="govuk-label govuk-radios__label" for="qualification-{{ idx }}">
+              {{ qualification.level }}
+            </label>
+          </div>
+        </div>
       </div>
     </div>
     <div class="govuk-grid-column-one-third" *ngIf="insideFlow && !insideSocialCareQualificationLevelSummaryFlow">

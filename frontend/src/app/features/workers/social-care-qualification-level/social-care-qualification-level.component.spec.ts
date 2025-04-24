@@ -3,14 +3,59 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByLabelText, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { SocialCareQualificationLevelComponent } from './social-care-qualification-level.component';
 
-fdescribe('SocialCareQualificationLevelComponent', () => {
+describe('SocialCareQualificationLevelComponent', () => {
+  const mockQualifications = [
+    {
+      id: 1,
+      level: 'Entry level',
+    },
+    {
+      id: 2,
+      level: 'Level 1',
+    },
+    {
+      id: 3,
+      level: 'Level 2',
+    },
+    {
+      id: 4,
+      level: 'Level 3',
+    },
+    {
+      id: 5,
+      level: 'Level 4',
+    },
+    {
+      id: 6,
+      level: 'Level 5',
+    },
+    {
+      id: 7,
+      level: 'Level 6',
+    },
+    {
+      id: 8,
+      level: 'Level 7',
+    },
+    {
+      id: 9,
+      level: 'Level 8 or above',
+    },
+    {
+      id: 10,
+      level: "Don't know",
+    },
+  ];
+
   async function setup(overrides: any = {}) {
     const setupTools = await render(SocialCareQualificationLevelComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -44,6 +89,14 @@ fdescribe('SocialCareQualificationLevelComponent', () => {
                 : null;
             },
           }),
+        },
+        {
+          provide: QualificationService,
+          useValue: {
+            getQualifications: () => {
+              return of(mockQualifications);
+            },
+          },
         },
       ],
     });
@@ -105,10 +158,10 @@ fdescribe('SocialCareQualificationLevelComponent', () => {
 
   describe('navigation', () => {
     it(`should navigate to other-qualifications page when submitting from flow`, async () => {
-      const { component, fixture, routerSpy, getByText, workerId, workplaceId } = await setup();
+      const { routerSpy, getByText, workerId, workplaceId, getByLabelText } = await setup();
 
-      component.form.controls.qualification.setValue('2');
-      fixture.detectChanges();
+      const secondRadioButton = getByLabelText(mockQualifications[1].level);
+      fireEvent.click(secondRadioButton);
 
       const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
@@ -140,10 +193,10 @@ fdescribe('SocialCareQualificationLevelComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
-      const { component, fixture, routerSpy, workerId, workplaceId, getByText } = await setup({ returnUrl: true });
+      const { routerSpy, workerId, workplaceId, getByText, getByLabelText } = await setup({ returnUrl: true });
 
-      component.form.controls.qualification.setValue('2');
-      fixture.detectChanges();
+      const secondRadioButton = getByLabelText(mockQualifications[1].level);
+      fireEvent.click(secondRadioButton);
 
       const saveButton = getByText('Save and return');
       fireEvent.click(saveButton);
@@ -175,14 +228,14 @@ fdescribe('SocialCareQualificationLevelComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing save and return in funding version', async () => {
-      const { component, fixture, workerId, routerSpy, getByText, router } = await setup();
+      const { component, fixture, workerId, routerSpy, getByText, router, getByLabelText } = await setup();
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
 
-      component.form.controls.qualification.setValue('2');
-      fixture.detectChanges();
+      const secondRadioButton = getByLabelText(mockQualifications[1].level);
+      fireEvent.click(secondRadioButton);
 
       const saveButton = getByText('Save and return');
       fireEvent.click(saveButton);
