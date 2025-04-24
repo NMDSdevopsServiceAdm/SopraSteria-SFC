@@ -10,64 +10,60 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { SocialCareQualificationLevelComponent } from './social-care-qualification-level.component';
 
-describe('SocialCareQualificationLevelComponent', () => {
+fdescribe('SocialCareQualificationLevelComponent', () => {
   async function setup(overrides: any = {}) {
-    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
-      SocialCareQualificationLevelComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              parent: {
-                snapshot: {
-                  data: {
-                    establishment: { uid: 'mocked-uid' },
-                  },
-                  url: [{ path: overrides.returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
-                },
-              },
+    const setupTools = await render(SocialCareQualificationLevelComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
               snapshot: {
-                params: {},
+                data: {
+                  establishment: { uid: 'mocked-uid' },
+                },
+                url: [{ path: overrides.returnUrl ? 'staff-record-summary' : 'mocked-uid' }],
               },
             },
+            snapshot: {
+              params: {},
+            },
           },
-          {
-            provide: WorkerService,
-            useFactory: MockWorkerServiceWithOverrides.factory({
-              returnTo: () => {
-                return overrides.returnUrl
-                  ? {
-                      url: ['/dashboard'],
-                      fragment: 'workplace',
-                    }
-                  : null;
-              },
-            }),
-          },
-        ],
-      },
-    );
+        },
+        {
+          provide: WorkerService,
+          useFactory: MockWorkerServiceWithOverrides.factory({
+            returnTo: () => {
+              return overrides.returnUrl
+                ? {
+                    url: ['/dashboard'],
+                    fragment: 'workplace',
+                  }
+                : null;
+            },
+          }),
+        },
+      ],
+    });
 
     const injector = getTestBed();
-
-    const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
-
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const component = setupTools.fixture.componentInstance;
+
+    const workerId = component.worker.uid;
+    const workplaceId = component.workplace.uid;
+
     return {
+      ...setupTools,
       component,
-      fixture,
       routerSpy,
       router,
-      getByText,
-      getAllByText,
-      getByLabelText,
-      getByTestId,
-      queryByTestId,
+      workerId,
+      workplaceId,
     };
   }
 
@@ -109,16 +105,10 @@ describe('SocialCareQualificationLevelComponent', () => {
 
   describe('navigation', () => {
     it(`should navigate to other-qualifications page when submitting from flow`, async () => {
-      const { component, fixture, routerSpy, getByText } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
+      const { component, fixture, routerSpy, getByText, workerId, workplaceId } = await setup();
 
       component.form.controls.qualification.setValue('2');
       fixture.detectChanges();
-
-      // const radioButton = getByText('No');
-      // fireEvent.click(radioButton);
 
       const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
@@ -135,10 +125,7 @@ describe('SocialCareQualificationLevelComponent', () => {
     });
 
     it('should navigate to other-qualifications page when skipping the question in the flow', async () => {
-      const { component, routerSpy, getByText } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
+      const { routerSpy, getByText, workerId, workplaceId } = await setup();
 
       const skipButton = getByText('Skip this question');
       fireEvent.click(skipButton);
@@ -153,10 +140,7 @@ describe('SocialCareQualificationLevelComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup({ returnUrl: true });
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
+      const { component, fixture, routerSpy, workerId, workplaceId, getByText } = await setup({ returnUrl: true });
 
       component.form.controls.qualification.setValue('2');
       fixture.detectChanges();
@@ -176,10 +160,7 @@ describe('SocialCareQualificationLevelComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const { component, routerSpy, getByText } = await setup({ returnUrl: true });
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
+      const { workerId, workplaceId, routerSpy, getByText } = await setup({ returnUrl: true });
 
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
@@ -194,12 +175,11 @@ describe('SocialCareQualificationLevelComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing save and return in funding version', async () => {
-      const { component, fixture, routerSpy, getByText, router } = await setup();
+      const { component, fixture, workerId, routerSpy, getByText, router } = await setup();
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
-      const workerId = component.worker.uid;
 
       component.form.controls.qualification.setValue('2');
       fixture.detectChanges();
@@ -213,12 +193,11 @@ describe('SocialCareQualificationLevelComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing cancel when in funding version of page', async () => {
-      const { component, routerSpy, fixture, getByText, router } = await setup();
+      const { component, routerSpy, fixture, getByText, router, workerId } = await setup();
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
-      const workerId = component.worker.uid;
 
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
