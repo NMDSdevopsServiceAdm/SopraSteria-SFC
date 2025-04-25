@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -26,15 +27,16 @@ export class TablePaginationWrapperComponent implements OnInit {
   private tab: string;
   public sortBySelected: string;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private location: Location) {}
 
   ngOnInit(): void {
     this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
   }
 
   private checkForFragment(): void {
-    if (this.router.url.includes('#')) {
-      this.fragment = this.router.url.split('#')[1];
+    const currentPathWithFragment = this.location.path(true);
+    if (currentPathWithFragment.includes('#')) {
+      this.fragment = currentPathWithFragment.split('#')[1];
       this.tab = this.fragment.split('-')[0];
     }
   }

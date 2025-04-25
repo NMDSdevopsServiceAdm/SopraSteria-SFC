@@ -1,8 +1,8 @@
+import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SortStaffOptions } from '@core/model/establishment.model';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -16,7 +16,7 @@ describe('TablePaginationWrapperCompnent', () => {
     const { fixture, getByTestId, queryByTestId, getByLabelText, getByRole, getByText } = await render(
       TablePaginationWrapperComponent,
       {
-        imports: [HttpClientTestingModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [HttpClientTestingModule, RouterModule, ReactiveFormsModule],
         declarations: [PaginationComponent, SearchInputComponent],
         componentProperties: {
           totalCount,
@@ -37,7 +37,9 @@ describe('TablePaginationWrapperCompnent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    spyOnProperty(router, 'url').and.returnValue('dashboard#staff-records');
+
+    const location = injector.inject(Location) as Location;
+    spyOn(location, 'path').and.returnValue('dashboard#staff-records');
 
     const emitSpy = spyOn(component.fetchData, 'emit');
     const handleSearchSpy = spyOn(component, 'handleSearch').and.callThrough();
