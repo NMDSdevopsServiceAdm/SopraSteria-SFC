@@ -67,8 +67,8 @@ describe('AlertService', () => {
     });
 
     const testCases = [
-      { situation: 'when there is no alert', alreadyHaveAlert: false },
-      { situation: 'when already have an alert', alreadyHaveAlert: true },
+      { situation: 'when there is no alert before navigation', alreadyHaveAlert: false },
+      { situation: 'when already have an alert before navigation', alreadyHaveAlert: true },
     ];
 
     testCases.forEach((testCase) => {
