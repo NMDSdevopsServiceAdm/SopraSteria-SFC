@@ -13,26 +13,23 @@ import { TablePaginationWrapperComponent } from './table-pagination-wrapper.comp
 
 describe('TablePaginationWrapperCompnent', () => {
   const setup = async (totalCount = 20) => {
-    const { fixture, getByTestId, queryByTestId, getByLabelText, getByRole, getByText } = await render(
-      TablePaginationWrapperComponent,
-      {
-        imports: [HttpClientTestingModule, RouterModule, ReactiveFormsModule],
-        declarations: [PaginationComponent, SearchInputComponent],
-        componentProperties: {
-          totalCount,
-          count: totalCount,
-          sortByParamMap: {
-            '0_asc': 'staffNameAsc',
-            '0_dsc': 'staffNameDesc',
-            '1_asc': 'jobRoleAsc',
-            '1_dsc': 'jobRoleDesc',
-          },
-          sortOptions: SortStaffOptions,
-          searchTerm: '',
+    const setupTools = await render(TablePaginationWrapperComponent, {
+      imports: [HttpClientTestingModule, RouterModule, ReactiveFormsModule],
+      declarations: [PaginationComponent, SearchInputComponent],
+      componentProperties: {
+        totalCount,
+        count: totalCount,
+        sortByParamMap: {
+          '0_asc': 'staffNameAsc',
+          '0_dsc': 'staffNameDesc',
+          '1_asc': 'jobRoleAsc',
+          '1_dsc': 'jobRoleDesc',
         },
+        sortOptions: SortStaffOptions,
+        searchTerm: '',
       },
-    );
-    const component = fixture.componentInstance;
+    });
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -46,13 +43,8 @@ describe('TablePaginationWrapperCompnent', () => {
     const handlePageUpdateSpy = spyOn(component, 'handlePageUpdate').and.callThrough();
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByTestId,
-      queryByTestId,
-      getByLabelText,
-      getByRole,
-      getByText,
       routerSpy,
       emitSpy,
       handleSearchSpy,
