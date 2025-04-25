@@ -37,6 +37,13 @@ describe('ParentSubsidiaryViewService', () => {
           });
         },
       );
+
+      it(`should return true if url for page with query params is passed in`, async () => {
+        const subUid = 'some-uid';
+        service.setViewingSubAsParent(subUid);
+
+        expect(service.getViewingSubAsParentDashboard(`/subsidiary/${subUid}/workplace?search=bob`)).toBeTruthy();
+      });
     });
 
     describe('url is not on checked list', () => {
@@ -44,7 +51,7 @@ describe('ParentSubsidiaryViewService', () => {
         expect(service.getViewingSubAsParentDashboard('/subsidiary/home')).toBeFalsy();
       });
 
-      it('should return false if url has additional characters after url in checked list', async () => {
+      it('should return false if url has additional path section after url in checked list', async () => {
         const subUid = 'some-uid';
         service.setViewingSubAsParent(subUid);
 
