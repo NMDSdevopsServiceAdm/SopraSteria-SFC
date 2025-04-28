@@ -75,12 +75,13 @@ describe('AlertService', () => {
       const { situation, alreadyHaveAlert } = testCase;
 
       describe(situation, () => {
+        const mockOldAlert: Alert = {
+          type: 'warning',
+          message: 'an old alert that is not closed yet',
+        };
+
         beforeEach(() => {
           if (alreadyHaveAlert) {
-            const mockOldAlert: Alert = {
-              type: 'warning',
-              message: 'an old alert that is not closed yet',
-            };
             service.addAlert(mockOldAlert);
           }
         });
