@@ -1120,6 +1120,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       {
         fieldName: 'vacancies',
         shouldClearJobRoles: true,
+        expectedPath: 'update-vacancies',
         value: [
           {
             jobId: 1,
@@ -1131,6 +1132,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       {
         fieldName: 'starters',
         shouldClearJobRoles: true,
+        expectedPath: 'update-starters',
         value: [
           {
             jobId: 1,
@@ -1142,6 +1144,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       {
         fieldName: 'leavers',
         shouldClearJobRoles: true,
+        expectedPath: 'update-leavers',
         value: [
           {
             jobId: 1,
@@ -1152,18 +1155,22 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'mainService',
+        expectedPath: 'main-service-cqc',
         value: { name: 'Care Giving' },
       },
       {
         fieldName: 'capacities',
+        expectedPath: 'capacity-of-services',
         value: [{ message: '4 beds' }],
       },
       {
         fieldName: 'serviceUsers',
+        expectedPath: 'service-users',
         value: [{ service: 'Care Giving' }],
       },
       {
         fieldName: 'numberOfStaff',
+        expectedPath: 'total-staff',
         value: 3,
       },
     ].forEach((field) => {
@@ -1181,9 +1188,11 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         const { getByText } = await setup({ workplace });
 
+        const noChangeItLink = getByText('No, change it');
+
         expect(getByText('Is this still correct?')).toBeTruthy();
         expect(getByText('Yes, it is')).toBeTruthy();
-        expect(getByText('No, change it')).toBeTruthy();
+        expect(noChangeItLink.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/${field.expectedPath}`);
       });
 
       it(`should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for ${field.fieldName}`, async () => {
