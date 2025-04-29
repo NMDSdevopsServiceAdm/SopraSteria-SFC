@@ -1119,6 +1119,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     [
       {
         fieldName: 'vacancies',
+        shouldClearJobRoles: true,
         value: [
           {
             jobId: 1,
@@ -1129,6 +1130,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'starters',
+        shouldClearJobRoles: true,
         value: [
           {
             jobId: 1,
@@ -1139,6 +1141,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'leavers',
+        shouldClearJobRoles: true,
         value: [
           {
             jobId: 1,
@@ -1195,6 +1198,19 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(getByText('Meeting requirements')).toBeTruthy();
       });
+
+      if (field.shouldClearJobRoles) {
+        it('should clear selected job roles on click of No, change it', async () => {
+          const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
+
+          const { getByText, clearAllSelectedJobRolesSpy } = await setup({ workplace });
+
+          const changeLink = getByText('No, change it');
+          fireEvent.click(changeLink);
+
+          expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
+        });
+      }
     });
   });
 
