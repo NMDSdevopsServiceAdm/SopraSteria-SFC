@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -9,6 +10,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentWithShareWith,
@@ -16,12 +18,13 @@ import {
   MockEstablishmentServiceWithNoCapacities,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
-describe('NewWorkplaceSummaryComponent', () => {
+fdescribe('NewWorkplaceSummaryComponent', () => {
   const setup = async (
     shareWith = null,
     permissions = ['canEditEstablishment'] as PermissionType[],
@@ -43,6 +46,10 @@ describe('NewWorkplaceSummaryComponent', () => {
           provide: CqcStatusChangeService,
           useClass: MockCqcStatusChangeService,
         },
+        {
+          provide: VacanciesAndTurnoverService,
+          useClass: MockVacanciesAndTurnoverService,
+        },
       ],
       componentProperties: {
         workplace: establishmentWithShareWith(shareWith) as Establishment,
@@ -53,6 +60,11 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
 
     const component = fixture.componentInstance;
+    const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
+    const clearAllSelectedJobRolesSpy = spyOn(
+      vacanciesAndTurnoverService,
+      'clearAllSelectedJobRoles',
+    ).and.callThrough();
 
     return {
       component,
@@ -61,6 +73,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       queryByText,
       getByTestId,
       queryByTestId,
+      clearAllSelectedJobRolesSpy,
     };
   };
 
@@ -895,6 +908,16 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(vacanciesRow).getByTestId('vacancies-top-row').getAttribute('class')).toContain(
           'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
         );
+      });
+
+      it('should clear selected job roles on navigation to update vacancies page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const vacanciesRow = getByTestId('vacancies');
+        const link = within(vacanciesRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
       });
     });
 

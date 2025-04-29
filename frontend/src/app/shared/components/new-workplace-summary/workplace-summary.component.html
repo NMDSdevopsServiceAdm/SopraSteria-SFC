@@ -41,7 +41,7 @@
                 [explanationText]="' staff vacancies'"
                 [link]="['/workplace', workplace.uid, 'update-vacancies']"
                 [hasData]="workplace.vacancies?.length"
-                (setReturnClicked)="this.setReturn()"
+                (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
               ></app-summary-record-change>
             </dd>
           </div>
