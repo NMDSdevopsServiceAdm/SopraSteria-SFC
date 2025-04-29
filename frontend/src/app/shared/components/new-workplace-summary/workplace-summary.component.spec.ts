@@ -24,7 +24,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
-fdescribe('NewWorkplaceSummaryComponent', () => {
+describe('NewWorkplaceSummaryComponent', () => {
   const setup = async (
     shareWith = null,
     permissions = ['canEditEstablishment'] as PermissionType[],
@@ -1107,6 +1107,16 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+    });
+
+    it('should clear selected job roles on navigation to update leavers page', async () => {
+      const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Add');
+
+      fireEvent.click(link);
+      expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
     });
   });
 
