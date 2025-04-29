@@ -1008,6 +1008,16 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
         expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+
+      it('should clear selected job roles on navigation to update starters page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const startersRow = getByTestId('starters');
+        const link = within(startersRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
+      });
     });
 
     describe('Staff leavers', () => {

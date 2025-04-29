@@ -77,7 +77,7 @@
               [explanationText]="' new starters'"
               [link]="['/workplace', workplace.uid, 'update-starters']"
               [hasData]="workplace.starters?.length"
-              (setReturnClicked)="this.setReturn()"
+              (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
             ></app-summary-record-change>
           </dd>
         </div>
