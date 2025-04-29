@@ -10,6 +10,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService } from '../../../core/services/vacancies-and-turnover.service';
 import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
+import { FormatUtil } from '@core/utils/format-util';
 
 @Directive()
 export class HowManyStartersLeaversVacanciesDirective extends Question implements OnInit, OnDestroy {
@@ -161,25 +162,25 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
     this.formErrorsMap = [];
 
     this.jobRoleNumbers.controls.forEach((_, index) => {
-      const jobRoleTitle = this.selectedJobRoles[index].title.toLowerCase();
+      const jobRoleTitleInLowerCase = FormatUtil.formatToLowercaseExcludingAcronyms(this.selectedJobRoles[index].title);
       this.formErrorsMap.push({
         item: `jobRoleNumbers.${index}`,
         type: [
           {
             name: 'required',
-            message: this.getErrorMessage('required', jobRoleTitle),
+            message: this.getErrorMessage('required', jobRoleTitleInLowerCase),
           },
           {
             name: 'min',
-            message: this.getErrorMessage('min', jobRoleTitle),
+            message: this.getErrorMessage('min', jobRoleTitleInLowerCase),
           },
           {
             name: 'max',
-            message: this.getErrorMessage('max', jobRoleTitle),
+            message: this.getErrorMessage('max', jobRoleTitleInLowerCase),
           },
           {
             name: 'pattern',
-            message: this.getErrorMessage('pattern', jobRoleTitle),
+            message: this.getErrorMessage('pattern', jobRoleTitleInLowerCase),
           },
         ],
       });

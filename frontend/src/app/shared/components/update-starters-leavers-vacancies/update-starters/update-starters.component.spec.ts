@@ -610,6 +610,26 @@ describe('UpdateStartersComponent', () => {
         });
       });
 
+      it('should show the error message without converting abbreviation in job titles to lower case', async () => {
+        const { fixture, getByRole, updateJobsSpy } = await setup({
+          startersFromSelectJobRolePages: [{ jobId: 36, title: 'IT manager', total: 1 }],
+        });
+
+        await fillInValueForJobRole('IT manager', '0');
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        const expectedErrorMessage = {
+          summaryBox: 'Number of starters must be between 1 and 999 (IT manager)',
+          inline: 'Number of starters must be between 1 and 999',
+        };
+
+        fixture.detectChanges();
+
+        expectErrorMessageAppears(expectedErrorMessage.summaryBox, expectedErrorMessage.inline);
+        expect(updateJobsSpy).not.toHaveBeenCalled();
+      });
+
       it('should still show the correct error messages even if some job roles were removed before submit', async () => {
         const { fixture, getByRole } = await setup({
           startersFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 3 }, ...mockStarters],

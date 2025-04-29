@@ -585,7 +585,7 @@ describe('UpdateVacanciesComponent', () => {
       testCases.forEach(({ inputValue, expectedErrorMessage }) => {
         it(`should show an error when user input "${inputValue}" for a job role`, async () => {
           const { fixture, getByRole, updateJobsSpy } = await setup({
-            vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
+            vacanciesFromSelectJobRolePages: [{ jobId: 36, title: 'Care worker', total: 1 }],
           });
 
           await fillInValueForJobRole('Care worker', inputValue);
@@ -597,6 +597,26 @@ describe('UpdateVacanciesComponent', () => {
           expectErrorMessageAppears(expectedErrorMessage.summaryBox, expectedErrorMessage.inline);
           expect(updateJobsSpy).not.toHaveBeenCalled();
         });
+      });
+
+      it('should show the error message without converting abbreviation in job titles to lower case', async () => {
+        const { fixture, getByRole, updateJobsSpy } = await setup({
+          vacanciesFromSelectJobRolePages: [{ jobId: 36, title: 'IT manager', total: 1 }],
+        });
+
+        await fillInValueForJobRole('IT manager', '0');
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        const expectedErrorMessage = {
+          summaryBox: 'Number of vacancies must be between 1 and 999 (IT manager)',
+          inline: 'Number of vacancies must be between 1 and 999',
+        };
+
+        fixture.detectChanges();
+
+        expectErrorMessageAppears(expectedErrorMessage.summaryBox, expectedErrorMessage.inline);
+        expect(updateJobsSpy).not.toHaveBeenCalled();
       });
 
       it('should still show the correct error messages even if some job roles were removed before submit', async () => {

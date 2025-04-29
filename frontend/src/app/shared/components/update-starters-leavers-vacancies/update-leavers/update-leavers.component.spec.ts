@@ -333,7 +333,7 @@ describe('UpdateLeaversComponent', () => {
     }) as Establishment;
 
     it('should call updateJobs to save selected job roles', async () => {
-      const { getByRole, component, fixture, routerSpy, vacanciesAndTurnoverService, updateJobsSpy } = await setup({
+      const { getByRole, fixture, vacanciesAndTurnoverService, updateJobsSpy } = await setup({
         workplace: mockWorkplace,
         leaversFromSelectJobRolePages: selectedJobRoles,
         snapshot: { staffUpdatesView: true },
@@ -565,6 +565,32 @@ describe('UpdateLeaversComponent', () => {
       expect(errorMessage1).toBeTruthy();
       expect(errorMessage1WithJobRole).toBeTruthy();
       expect(errorMessage2.length).toEqual(2);
+    });
+
+    it('should show the error message without converting abbreviation in job titles to lower case', async () => {
+      const { fixture, getByRole, updateJobsSpy, getByLabelText, getByText } = await setup({
+        leaversFromSelectJobRolePages: [{ jobId: 36, title: 'IT manager', total: 1 }],
+      });
+
+      const numberInputForJobRole = getByLabelText('IT manager') as HTMLInputElement;
+      userEvent.clear(numberInputForJobRole);
+      userEvent.type(numberInputForJobRole, '0');
+
+      userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+      fixture.detectChanges();
+
+      const expectedErrorMessage = {
+        summaryBox: 'Number of leavers must be between 1 and 999 (IT manager)',
+        inline: 'Number of leavers must be between 1 and 999',
+      };
+
+      fixture.detectChanges();
+
+      expect(getByText(expectedErrorMessage.summaryBox)).toBeTruthy();
+      expect(getByText(expectedErrorMessage.inline)).toBeTruthy();
+
+      expect(updateJobsSpy).not.toHaveBeenCalled();
     });
   });
 
