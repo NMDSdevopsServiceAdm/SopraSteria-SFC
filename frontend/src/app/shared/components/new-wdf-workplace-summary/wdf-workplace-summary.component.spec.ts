@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
@@ -8,6 +9,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentWithShareWith,
@@ -15,9 +17,10 @@ import {
   MockEstablishmentService,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 
@@ -42,6 +45,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
           provide: CqcStatusChangeService,
           useClass: MockCqcStatusChangeService,
         },
+        {
+          provide: VacanciesAndTurnoverService,
+          useClass: MockVacanciesAndTurnoverService,
+        },
       ],
       componentProperties: {
         wdfView: true,
@@ -51,9 +58,13 @@ describe('WDFWorkplaceSummaryComponent', () => {
         ...overrides,
       },
     });
+
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getByTestId, queryByTestId, rerender };
+    const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
+    const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
+
+    return { component, fixture, getByText, getByTestId, queryByTestId, rerender, clearAllSelectedJobRolesSpy };
   };
 
   it('should render a WorkplaceSummaryComponent', async () => {
@@ -625,6 +636,16 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(vacanciesRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(vacanciesRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+
+      it('should clear selected job roles on navigation to update vacancies page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const vacanciesRow = getByTestId('vacancies');
+        const link = within(vacanciesRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
+      });
     });
 
     describe('New starters', () => {
@@ -714,6 +735,16 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+
+      it('should clear selected job roles on navigation to update starters page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const startersRow = getByTestId('starters');
+        const link = within(startersRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
+      });
     });
 
     describe('Staff leavers', () => {
@@ -801,6 +832,16 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+    });
+
+    it('should clear selected job roles on navigation to update leavers page', async () => {
+      const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Add');
+
+      fireEvent.click(link);
+      expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
     });
   });
 

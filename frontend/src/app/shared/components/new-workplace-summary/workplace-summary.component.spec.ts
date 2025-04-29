@@ -61,10 +61,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     const component = fixture.componentInstance;
     const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
-    const clearAllSelectedJobRolesSpy = spyOn(
-      vacanciesAndTurnoverService,
-      'clearAllSelectedJobRoles',
-    ).and.callThrough();
+    const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
 
     return {
       component,

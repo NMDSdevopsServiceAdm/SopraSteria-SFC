@@ -336,7 +336,7 @@
           [explanationText]="' staff vacancies'"
           [link]="['/workplace', workplace.uid, 'update-vacancies']"
           [hasData]="workplace.vacancies?.length"
-          (setReturnClicked)="this.setReturn()"
+          (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
         ></app-summary-record-change>
       </dd>
     </div>
@@ -345,7 +345,7 @@
       [staffRecordView]="true"
       [changeLink]="getRoutePath('vacancies', wdfView)"
       (fieldConfirmation)="this.confirmField('vacancies')"
-      (setReturnClicked)="this.setReturn()"
+      (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
@@ -381,7 +381,7 @@
           [explanationText]="' new starters'"
           [link]="['/workplace', workplace.uid, 'update-starters']"
           [hasData]="workplace.starters?.length"
-          (setReturnClicked)="this.setReturn()"
+          (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
         ></app-summary-record-change>
       </dd>
     </div>
@@ -390,7 +390,7 @@
       [changeLink]="getRoutePath('starters', wdfView)"
       [staffRecordView]="true"
       (fieldConfirmation)="this.confirmField('starters')"
-      (setReturnClicked)="this.setReturn()"
+      (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
@@ -426,7 +426,7 @@
           [explanationText]="' leavers'"
           [link]="['/workplace', workplace.uid, 'update-leavers']"
           [hasData]="workplace.leavers?.length"
-          (setReturnClicked)="this.setReturn()"
+          (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
         ></app-summary-record-change>
       </dd>
     </div>
@@ -435,7 +435,7 @@
       [staffRecordView]="true"
       [changeLink]="getRoutePath('leavers', wdfView)"
       (fieldConfirmation)="this.confirmField('leavers')"
-      (setReturnClicked)="this.setReturn()"
+      (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
