@@ -1078,7 +1078,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     [
       {
         fieldName: 'vacancies',
-        expectedPath: 'update-vacancies',
+        expectedPath: 'do-you-have-vacancies',
         value: [
           {
             jobId: 1,
@@ -1089,7 +1089,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'starters',
-        expectedPath: 'update-starters',
+        expectedPath: 'do-you-have-starters',
         value: [
           {
             jobId: 1,
@@ -1100,7 +1100,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'leavers',
-        expectedPath: 'update-leavers',
+        expectedPath: 'do-you-have-leavers',
         value: [
           {
             jobId: 1,
