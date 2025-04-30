@@ -1188,10 +1188,16 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         const { getByText } = await setup({ workplace });
 
-        const noChangeItLink = getByText('No, change it');
-
         expect(getByText('Is this still correct?')).toBeTruthy();
         expect(getByText('Yes, it is')).toBeTruthy();
+      });
+
+      it(`should have No, change it link when is eligible but needs to be confirmed for ${field.fieldName}`, async () => {
+        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
+
+        const { getByText } = await setup({ workplace });
+
+        const noChangeItLink = getByText('No, change it');
         expect(noChangeItLink.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/${field.expectedPath}`);
       });
 
