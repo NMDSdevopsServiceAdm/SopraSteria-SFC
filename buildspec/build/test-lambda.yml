@@ -6,7 +6,8 @@ phases:
       nodejs: 18
   pre_build:
     commands:
-      - cd lambdas/bulkUpload && npm ci
+      - cd backend && npm ci
+      - cd ../lambdas/bulkUpload && npm ci
   build:
     commands:
       - npm run test
