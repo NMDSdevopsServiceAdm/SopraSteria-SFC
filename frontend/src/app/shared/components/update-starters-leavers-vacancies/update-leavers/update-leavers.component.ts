@@ -20,6 +20,7 @@ export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirect
   public numberRequiredErrorMessage = 'Enter the number of leavers or remove';
   public validNumberErrorMessage = 'Number of leavers must be between 1 and 999';
   public serverErrorMessage = 'Failed to update leavers';
+  public addExplanationMessage = 'Only add the number of leavers who left permanent and temporary job roles.';
 
   protected updatePage = WorkplaceUpdatePage.UPDATE_LEAVERS;
 
