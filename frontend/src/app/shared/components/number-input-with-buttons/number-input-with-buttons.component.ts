@@ -1,6 +1,5 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { INT_PATTERN } from '@core/constants/constants';
 import { inRange } from 'lodash';
 
 type OnChangeFunction = (newValue: number | string) => void;
@@ -30,7 +29,6 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor, On
   public showMinusButton: boolean = false;
   public touched = false;
   public disabled = false;
-  public intPattern = INT_PATTERN.toString();
   private onTouched = () => {};
   private onChangeFunctions: Array<OnChangeFunction> = [];
 
