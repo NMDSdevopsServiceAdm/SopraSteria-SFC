@@ -154,6 +154,14 @@ describe('UpdateStartersComponent', () => {
       expect(warningText.textContent).toContain(expectedTextContent);
     });
 
+    it('should not show explanation message for adding when question answered', async () => {
+      const { queryByText } = await setup();
+
+      const addMessage = queryByText('Only add the number of starters in permanent and temporary job roles.');
+
+      expect(addMessage).toBeFalsy();
+    });
+
     it('should have "Starters in the last 12 months" as the table title', async () => {
       const { getByText } = await setup();
       const tableTitle = getByText('Starters in the last 12 months');
@@ -214,6 +222,14 @@ describe('UpdateStartersComponent', () => {
         const addButton = getByRole('button', { name: 'Add job roles' });
 
         expect(addButton).toBeTruthy();
+      });
+
+      it('should show explanation message for adding', async () => {
+        const { getByText } = await setup({ workplace: mockFreshWorkplace });
+
+        const addMessage = getByText('Only add the number of starters in permanent and temporary job roles.');
+
+        expect(addMessage).toBeTruthy();
       });
     });
 
