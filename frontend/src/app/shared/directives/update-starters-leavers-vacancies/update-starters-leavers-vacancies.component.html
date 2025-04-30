@@ -14,6 +14,13 @@
       <fieldset class="govuk-fieldset">
         <h1 class="govuk-heading-l">{{ heading }}</h1>
 
+        <div
+          *ngIf="addExplanationMessage && !questionPreviouslyAnswered"
+          class="govuk-!-margin-top-8 govuk-!-margin-bottom-6"
+        >
+          <p>{{ addExplanationMessage }}</p>
+        </div>
+
         <app-details title="Why we ask for this information">
           <p class="govuk-body-m">
             {{ revealText }}

@@ -40,6 +40,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public radioButtonOptions: { label: string; value: jobOptionsEnum }[];
   public messageWhenNoJobRoleSelected: { None: string; DoNotKnow: string; Default: string };
   public currentMessageWhenNoJobRoleSelected: string;
+  public addExplanationMessage: string;
 
   public serverErrorMessage: string;
   public noOrDoNotKnowErrorMessage: string;

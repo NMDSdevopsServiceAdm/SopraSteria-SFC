@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
@@ -8,6 +9,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentWithShareWith,
@@ -15,9 +17,10 @@ import {
   MockEstablishmentService,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 
@@ -42,6 +45,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
           provide: CqcStatusChangeService,
           useClass: MockCqcStatusChangeService,
         },
+        {
+          provide: VacanciesAndTurnoverService,
+          useClass: MockVacanciesAndTurnoverService,
+        },
       ],
       componentProperties: {
         wdfView: true,
@@ -51,9 +58,13 @@ describe('WDFWorkplaceSummaryComponent', () => {
         ...overrides,
       },
     });
+
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getByTestId, queryByTestId, rerender };
+    const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
+    const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
+
+    return { component, fixture, getByText, getByTestId, queryByTestId, rerender, clearAllSelectedJobRolesSpy };
   };
 
   it('should render a WorkplaceSummaryComponent', async () => {
@@ -625,6 +636,16 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(vacanciesRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(vacanciesRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+
+      it('should clear selected job roles on navigation to update vacancies page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const vacanciesRow = getByTestId('vacancies');
+        const link = within(vacanciesRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
+      });
     });
 
     describe('New starters', () => {
@@ -714,6 +735,16 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+
+      it('should clear selected job roles on navigation to update starters page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const startersRow = getByTestId('starters');
+        const link = within(startersRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
+      });
     });
 
     describe('Staff leavers', () => {
@@ -801,6 +832,16 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+    });
+
+    it('should clear selected job roles on navigation to update leavers page', async () => {
+      const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Add');
+
+      fireEvent.click(link);
+      expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
     });
   });
 
@@ -1078,6 +1119,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
     [
       {
         fieldName: 'vacancies',
+        shouldClearJobRoles: true,
+        expectedPath: 'update-vacancies',
         value: [
           {
             jobId: 1,
@@ -1088,6 +1131,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'starters',
+        shouldClearJobRoles: true,
+        expectedPath: 'update-starters',
         value: [
           {
             jobId: 1,
@@ -1098,6 +1143,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'leavers',
+        shouldClearJobRoles: true,
+        expectedPath: 'update-leavers',
         value: [
           {
             jobId: 1,
@@ -1108,18 +1155,22 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'mainService',
+        expectedPath: 'main-service-cqc',
         value: { name: 'Care Giving' },
       },
       {
         fieldName: 'capacities',
+        expectedPath: 'capacity-of-services',
         value: [{ message: '4 beds' }],
       },
       {
         fieldName: 'serviceUsers',
+        expectedPath: 'service-users',
         value: [{ service: 'Care Giving' }],
       },
       {
         fieldName: 'numberOfStaff',
+        expectedPath: 'total-staff',
         value: 3,
       },
     ].forEach((field) => {
@@ -1139,7 +1190,15 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(getByText('Is this still correct?')).toBeTruthy();
         expect(getByText('Yes, it is')).toBeTruthy();
-        expect(getByText('No, change it')).toBeTruthy();
+      });
+
+      it(`should have No, change it link when is eligible but needs to be confirmed for ${field.fieldName}`, async () => {
+        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
+
+        const { getByText } = await setup({ workplace });
+
+        const noChangeItLink = getByText('No, change it');
+        expect(noChangeItLink.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/${field.expectedPath}`);
       });
 
       it(`should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for ${field.fieldName}`, async () => {
@@ -1154,6 +1213,19 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(getByText('Meeting requirements')).toBeTruthy();
       });
+
+      if (field.shouldClearJobRoles) {
+        it('should clear selected job roles on click of No, change it', async () => {
+          const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
+
+          const { getByText, clearAllSelectedJobRolesSpy } = await setup({ workplace });
+
+          const changeLink = getByText('No, change it');
+          fireEvent.click(changeLink);
+
+          expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
+        });
+      }
     });
   });
 

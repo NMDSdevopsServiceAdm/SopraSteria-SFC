@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -9,6 +10,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentWithShareWith,
@@ -16,6 +18,7 @@ import {
   MockEstablishmentServiceWithNoCapacities,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
@@ -43,6 +46,10 @@ describe('NewWorkplaceSummaryComponent', () => {
           provide: CqcStatusChangeService,
           useClass: MockCqcStatusChangeService,
         },
+        {
+          provide: VacanciesAndTurnoverService,
+          useClass: MockVacanciesAndTurnoverService,
+        },
       ],
       componentProperties: {
         workplace: establishmentWithShareWith(shareWith) as Establishment,
@@ -53,6 +60,8 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
 
     const component = fixture.componentInstance;
+    const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
+    const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
 
     return {
       component,
@@ -61,6 +70,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       queryByText,
       getByTestId,
       queryByTestId,
+      clearAllSelectedJobRolesSpy,
     };
   };
 
@@ -896,6 +906,16 @@ describe('NewWorkplaceSummaryComponent', () => {
           'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
         );
       });
+
+      it('should clear selected job roles on navigation to update vacancies page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const vacanciesRow = getByTestId('vacancies');
+        const link = within(vacanciesRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
+      });
     });
 
     describe('New starters', () => {
@@ -984,6 +1004,16 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
         expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
+      });
+
+      it('should clear selected job roles on navigation to update starters page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const startersRow = getByTestId('starters');
+        const link = within(startersRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
       });
     });
 
@@ -1074,6 +1104,16 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
         expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+    });
+
+    it('should clear selected job roles on navigation to update leavers page', async () => {
+      const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Add');
+
+      fireEvent.click(link);
+      expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
     });
   });
 

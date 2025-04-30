@@ -186,6 +186,24 @@ describe('UpdateLeaversComponent', () => {
     });
   });
 
+  describe('add explanation message', () => {
+    it('should show when question has not been answered previously', async () => {
+      const { getByText } = await setup({ workplace: mockWorkplace });
+
+      const addMessage = getByText('Only add the number of leavers who left permanent and temporary job roles.');
+
+      expect(addMessage).toBeTruthy();
+    });
+
+    it('should not show when question has been answered previously', async () => {
+      const { queryByText } = await setup({ workplace: mockWorkplaceWithLeavers });
+
+      const addMessage = queryByText('Only add the number of leavers who left permanent and temporary job roles.');
+
+      expect(addMessage).toBeFalsy();
+    });
+  });
+
   it('should show the table title', async () => {
     const { getByText } = await setup();
 

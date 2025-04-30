@@ -19,6 +19,7 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
   public noOrDoNotKnowErrorMessage = 'Select no staff started or do not know';
   public numberRequiredErrorMessage = 'Enter the number of starters or remove';
   public validNumberErrorMessage = 'Number of starters must be between 1 and 999';
+  public addExplanationMessage = 'Only add the number of starters in permanent and temporary job roles.';
 
   protected slvField = 'starters';
   protected selectedField = 'selectedStarters';

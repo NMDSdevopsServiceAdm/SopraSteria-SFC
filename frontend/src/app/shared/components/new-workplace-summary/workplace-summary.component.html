@@ -41,7 +41,7 @@
                 [explanationText]="' staff vacancies'"
                 [link]="['/workplace', workplace.uid, 'update-vacancies']"
                 [hasData]="workplace.vacancies?.length"
-                (setReturnClicked)="this.setReturn()"
+                (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
               ></app-summary-record-change>
             </dd>
           </div>
@@ -77,7 +77,7 @@
               [explanationText]="' new starters'"
               [link]="['/workplace', workplace.uid, 'update-starters']"
               [hasData]="workplace.starters?.length"
-              (setReturnClicked)="this.setReturn()"
+              (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
             ></app-summary-record-change>
           </dd>
         </div>
@@ -104,7 +104,7 @@
               [explanationText]="' leavers'"
               [link]="['/workplace', workplace.uid, 'update-leavers']"
               [hasData]="workplace.leavers?.length"
-              (setReturnClicked)="this.setReturn()"
+              (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
             ></app-summary-record-change>
           </dd>
         </div>
