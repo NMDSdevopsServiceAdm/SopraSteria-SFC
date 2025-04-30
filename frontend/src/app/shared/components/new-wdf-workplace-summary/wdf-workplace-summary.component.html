@@ -343,7 +343,7 @@
     <app-wdf-field-confirmation
       *ngIf="showWdfConfirmations.vacancies"
       [staffRecordView]="true"
-      [changeLink]="getRoutePath('vacancies', wdfView)"
+      [changeLink]="getRoutePath('do-you-have-vacancies', wdfView)"
       (fieldConfirmation)="this.confirmField('vacancies')"
       (setReturnClicked)="this.setReturn()"
     >
@@ -387,7 +387,7 @@
     </div>
     <app-wdf-field-confirmation
       *ngIf="showWdfConfirmations.starters"
-      [changeLink]="getRoutePath('starters', wdfView)"
+      [changeLink]="getRoutePath('do-you-have-starters', wdfView)"
       [staffRecordView]="true"
       (fieldConfirmation)="this.confirmField('starters')"
       (setReturnClicked)="this.setReturn()"
@@ -433,7 +433,7 @@
     <app-wdf-field-confirmation
       *ngIf="showWdfConfirmations.leavers"
       [staffRecordView]="true"
-      [changeLink]="getRoutePath('leavers', wdfView)"
+      [changeLink]="getRoutePath('do-you-have-leavers', wdfView)"
       (fieldConfirmation)="this.confirmField('leavers')"
       (setReturnClicked)="this.setReturn()"
     >

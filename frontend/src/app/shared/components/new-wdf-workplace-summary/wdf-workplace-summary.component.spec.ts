@@ -1078,6 +1078,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     [
       {
         fieldName: 'vacancies',
+        expectedPath: 'do-you-have-vacancies',
         value: [
           {
             jobId: 1,
@@ -1088,6 +1089,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'starters',
+        expectedPath: 'do-you-have-starters',
         value: [
           {
             jobId: 1,
@@ -1098,6 +1100,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'leavers',
+        expectedPath: 'do-you-have-leavers',
         value: [
           {
             jobId: 1,
@@ -1108,18 +1111,22 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'mainService',
+        expectedPath: 'main-service-cqc',
         value: { name: 'Care Giving' },
       },
       {
         fieldName: 'capacities',
+        expectedPath: 'capacity-of-services',
         value: [{ message: '4 beds' }],
       },
       {
         fieldName: 'serviceUsers',
+        expectedPath: 'service-users',
         value: [{ service: 'Care Giving' }],
       },
       {
         fieldName: 'numberOfStaff',
+        expectedPath: 'total-staff',
         value: 3,
       },
     ].forEach((field) => {
@@ -1139,7 +1146,15 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(getByText('Is this still correct?')).toBeTruthy();
         expect(getByText('Yes, it is')).toBeTruthy();
-        expect(getByText('No, change it')).toBeTruthy();
+      });
+
+      it(`should have No, change it link when is eligible but needs to be confirmed for ${field.fieldName}`, async () => {
+        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field.fieldName, field.value);
+
+        const { getByText } = await setup({ workplace });
+
+        const noChangeItLink = getByText('No, change it');
+        expect(noChangeItLink.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/${field.expectedPath}`);
       });
 
       it(`should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for ${field.fieldName}`, async () => {
