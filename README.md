@@ -24,7 +24,7 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 ## Running unit tests
 
 ### Frontend
-Run `ng test-fe` to execute the unit tests for frontend.
+Run `make test-fe` to execute the unit tests for frontend.
 The test runner will watch the source files and automatically re-run all tests whenever a frontend file is modified.
 
 To run only one or a few specific tests, open the relavent `.spec.ts` file and modify the `describe` block to `fdescribe`. This will let the test runner to focus on the chosen tests and skip all others.
@@ -33,13 +33,13 @@ Also, after running all tests, the test runner will dump the results at `fronten
 If in case multiple tests are failing, we can check the file to find out which tests are the failed ones.
 
 ### Backend
-Run `ng test-be` to execute the unit tests for backend.
+Run `make test-be` to execute the unit tests for backend.
 This test runner does not watch file changes, so re-run the test manually if neccessary.
 
 To focus on specific tests, modify the `describe` block to `describe.only`, then run the tests again.
 
 ### Bulk upload lambda
-Run `ng test-bu` to execute the unit tests for bulk upload lambda.
+Run `make test-bu` to execute the unit tests for bulk upload lambda.
 
 
 ## Running end-to-end tests
