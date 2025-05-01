@@ -18,7 +18,7 @@ import { WorkersModule } from '../workers.module';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level.component';
 
 describe('OtherQualificationsLevelComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(overrides: any = {}) {
     const setupTools = await render(OtherQualificationsLevelComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -28,7 +28,7 @@ describe('OtherQualificationsLevelComponent', () => {
           useValue: {
             parent: {
               snapshot: {
-                url: [{ path: returnUrl ? 'staff-record-summary' : 'staff-uid' }],
+                url: [{ path: overrides.returnUrl ? 'staff-record-summary' : 'staff-uid' }],
                 data: {
                   establishment: { uid: 'mocked-uid' },
                   primaryWorkplace: {},
@@ -42,7 +42,7 @@ describe('OtherQualificationsLevelComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
+          useClass: overrides.returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
         },
         {
           provide: QualificationService,
@@ -74,17 +74,29 @@ describe('OtherQualificationsLevelComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the OtherQualificationsLevelComponent heading, subheading and select box', async () => {
-    const { getByText, getByLabelText, getByTestId } = await setup();
+  it('should render the OtherQualificationsLevelComponent caption, section heading and subheading', async () => {
+    const { getByText, getByTestId } = await setup();
 
     expect(getByText(`What's the highest level of their other qualifications?`)).toBeTruthy;
     expect(getByTestId('section-heading')).toBeTruthy();
-    expect(getByLabelText('Qualification level')).toBeTruthy();
+    expect(getByText('Qualification level')).toBeTruthy();
+  });
+
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Get help with qualification levels')).toBeTruthy();
+  });
+
+  it("should show the correct format for don't know answer", async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('I do not know')).toBeTruthy();
   });
 
   describe('submit buttons', () => {
     it('should render the page with a save button when the return value is null', async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup({ returnUrl: false });
 
       const button = getByText('Save');
       const viewRecordLink = getByText('View this staff record');
@@ -93,8 +105,8 @@ describe('OtherQualificationsLevelComponent', () => {
       expect(viewRecordLink).toBeTruthy();
     });
 
-    it('should render the page with a save and return button and an cancel link when there is a return value', async () => {
-      const { getByText } = await setup();
+    it('should render the page with a save and return button and a cancel link when there is a return value', async () => {
+      const { getByText } = await setup({ returnUrl: true });
 
       const button = getByText('Save and return');
       const exitLink = getByText('Cancel');
@@ -106,13 +118,13 @@ describe('OtherQualificationsLevelComponent', () => {
 
   describe('progress bar', () => {
     it('should render the workplace progress bar', async () => {
-      const { getByTestId } = await setup(false);
+      const { getByTestId } = await setup({ returnUrl: false });
 
       expect(getByTestId('progress-bar-1')).toBeTruthy();
     });
 
     it('should not render the progress bars when accessed from outside the flow', async () => {
-      const { queryByTestId } = await setup();
+      const { queryByTestId } = await setup({ returnUrl: true });
 
       expect(queryByTestId('progress-bar-1')).toBeFalsy();
     });
@@ -120,13 +132,14 @@ describe('OtherQualificationsLevelComponent', () => {
 
   describe('navigation', () => {
     it('should navigate to staff-record-summary page when submitting from flow', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup({ returnUrl: false });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
       const saveButton = getByText('Save');
       fireEvent.click(saveButton);
@@ -142,7 +155,7 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to staff-record-summary page when skipping the question in the flow', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
+      const { component, routerSpy, getByText } = await setup({ returnUrl: false });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -160,13 +173,14 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup({ returnUrl: true });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
       const skipButton = getByText('Save and return');
       fireEvent.click(skipButton);
@@ -182,7 +196,7 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const { component, routerSpy, getByText } = await setup();
+      const { component, routerSpy, getByText } = await setup({ returnUrl: true });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -200,15 +214,16 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing save and return in funding version of page', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup({ returnUrl: false });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
       const workerId = component.worker.uid;
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
       const skipButton = getByText('Save and return');
       fireEvent.click(skipButton);
@@ -218,7 +233,7 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
-      const { component, routerSpy, getByText, router, fixture } = await setup(false);
+      const { component, routerSpy, getByText, router, fixture } = await setup({ returnUrl: false });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
@@ -234,10 +249,11 @@ describe('OtherQualificationsLevelComponent', () => {
 
   describe('Completing Add details to staff record flow', () => {
     it('should add Staff record added alert when submitting from flow', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup(false);
+      const { getByText, getByLabelText, alertSpy, fixture } = await setup({ returnUrl: false });
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
       const saveButton = getByText('Save');
       fireEvent.click(saveButton);
@@ -250,7 +266,7 @@ describe('OtherQualificationsLevelComponent', () => {
 
     ['Skip this question', 'View this staff record'].forEach((link) => {
       it(`should add Staff record added alert when '${link}' is clicked`, async () => {
-        const { getByText, alertSpy } = await setup(false);
+        const { getByText, alertSpy } = await setup({ returnUrl: false });
 
         fireEvent.click(getByText(link));
 
@@ -262,10 +278,11 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should not add Staff record added alert when user submits but not in flow', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup();
+      const { getByText, getByLabelText, alertSpy, fixture } = await setup({ returnUrl: true });
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
       const saveButton = getByText('Save and return');
       fireEvent.click(saveButton);
