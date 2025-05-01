@@ -1,8 +1,6 @@
-import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { SortStaffOptions } from '@core/model/establishment.model';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -29,14 +27,8 @@ describe('TablePaginationWrapperCompnent', () => {
         searchTerm: '',
       },
     });
+
     const component = setupTools.fixture.componentInstance;
-
-    const injector = getTestBed();
-    const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
-    const location = injector.inject(Location) as Location;
-    spyOn(location, 'path').and.returnValue('dashboard#staff-records');
 
     const emitSpy = spyOn(component.fetchData, 'emit');
     const handleSearchSpy = spyOn(component, 'handleSearch').and.callThrough();
@@ -45,7 +37,6 @@ describe('TablePaginationWrapperCompnent', () => {
     return {
       ...setupTools,
       component,
-      routerSpy,
       emitSpy,
       handleSearchSpy,
       handlePageUpdateSpy,
@@ -69,25 +60,19 @@ describe('TablePaginationWrapperCompnent', () => {
       expect(queryByTestId('search')).toBeFalsy();
     });
 
-    it('should call handleSearch, add query string to url and emit the properties for getting the worker when searching for a worker', async () => {
-      const { component, routerSpy, emitSpy, handleSearchSpy, getByLabelText, getByRole } = await setup();
+    it('should call handleSearch and emit the properties for getting the worker when searching for a worker', async () => {
+      const { component, emitSpy, handleSearchSpy, getByLabelText, getByRole } = await setup();
 
       userEvent.type(getByLabelText('Search'), 'Someone');
       userEvent.click(getByRole('button', { name: 'search' }));
 
       expect(handleSearchSpy).toHaveBeenCalledWith('Someone');
-      expect(routerSpy).toHaveBeenCalledWith([], {
-        fragment: 'staff-records',
-        queryParams: { search: 'Someone', tab: 'staff' },
-        queryParamsHandling: 'merge',
-      });
       const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
       expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
     });
 
-    it('should call handleSearch, remove the query params from url and emit the properties for getting all workers when clearing the search', async () => {
-      const { component, fixture, routerSpy, emitSpy, handleSearchSpy, getByLabelText, getByRole, getByText } =
-        await setup();
+    it('should call handleSearch and emit the properties for getting all workers when clearing the search', async () => {
+      const { component, fixture, emitSpy, handleSearchSpy, getByLabelText, getByRole, getByText } = await setup();
 
       userEvent.type(getByLabelText('Search'), 'Someone');
       userEvent.click(getByRole('button', { name: 'search' }));
@@ -96,9 +81,6 @@ describe('TablePaginationWrapperCompnent', () => {
       userEvent.click(clearSearch);
 
       expect(handleSearchSpy.calls.mostRecent().args[0]).toEqual('');
-      expect(routerSpy).toHaveBeenCalledWith([], {
-        fragment: 'staff-records',
-      });
       const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
       expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
     });
