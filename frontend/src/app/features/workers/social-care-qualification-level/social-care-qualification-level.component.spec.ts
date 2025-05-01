@@ -108,8 +108,16 @@ describe('SocialCareQualificationLevelComponent', () => {
     });
   });
 
+  it("should display I do not know as radio button label for Don't know option", async () => {
+    const { getByLabelText } = await setup();
+
+    const dontKnowRadioButton = getByLabelText('I do not know');
+
+    expect(dontKnowRadioButton).toBeTruthy();
+  });
+
   describe('navigation', () => {
-    it(`should navigate to other-qualifications page when submitting from flow`, async () => {
+    it('should navigate to other-qualifications page when submitting from flow', async () => {
       const { routerSpy, getByText, workerId, workplaceId, getByLabelText } = await setup();
 
       const secondRadioButton = getByLabelText(mockQualifications[1].level);
