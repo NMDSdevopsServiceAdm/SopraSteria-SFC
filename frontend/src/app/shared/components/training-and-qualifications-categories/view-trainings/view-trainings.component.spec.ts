@@ -26,49 +26,51 @@ import { ViewTrainingComponent } from './view-trainings.component';
 const training = [expiredTrainingBuilder(), expiresSoonTrainingBuilder(), missingTrainingBuilder(), trainingBuilder()];
 
 describe('ViewTrainingComponent', () => {
-  async function setup(isMandatory = false, fixTrainingCount = false) {
+  async function setup(overrides: any = {}) {
     let trainingObj = {
       training,
       category: 'trainingCategory',
       trainingCount: 4,
-      isMandatory,
+      isMandatory: overrides.isMandatory ?? false,
     };
-    if (fixTrainingCount) trainingObj = { ...trainingObj, training: [trainingBuilder()], trainingCount: 1 };
+    if (overrides.fixTrainingCount) trainingObj = { ...trainingObj, training: [trainingBuilder()], trainingCount: 1 };
 
-    const { fixture, getByText, getAllByText, getByTestId, queryByTestId, getByLabelText, queryByLabelText } =
-      await render(ViewTrainingComponent, {
-        imports: [SharedModule, RouterModule, HttpClientTestingModule],
-        providers: [
-          WindowRef,
-          {
-            provide: ActivatedRoute,
-            useValue: new MockActivatedRoute({
-              snapshot: {
-                params: {
-                  categoryId: '2',
-                },
-                data: {
-                  training: trainingObj,
-                },
+    const setupTools = await render(ViewTrainingComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      providers: [
+        WindowRef,
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            snapshot: {
+              queryParamMap: {
+                get: overrides.qsParamGetMock ?? sinon.fake(),
               },
-            }),
-          },
-          {
-            provide: TrainingCategoryService,
-            useClass: MockTrainingCategoryService,
-          },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: PermissionsService,
-            useClass: MockPermissionsService,
-          },
-        ],
-      });
+              params: {
+                categoryId: '2',
+              },
+              data: {
+                training: trainingObj,
+              },
+            },
+          }),
+        },
+        {
+          provide: TrainingCategoryService,
+          useClass: MockTrainingCategoryService,
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: PermissionsService,
+          useClass: MockPermissionsService,
+        },
+      ],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
     const router = injector.inject(Router) as Router;
@@ -80,14 +82,8 @@ describe('ViewTrainingComponent', () => {
     );
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByTestId,
-      queryByTestId,
-      getByLabelText,
-      queryByLabelText,
       router,
       routerSpy,
       trainingCategoriesSpy,
@@ -250,13 +246,13 @@ describe('ViewTrainingComponent', () => {
 
   describe('sort', () => {
     it('should not show the sort by dropdown if there is only 1 staff record', async () => {
-      const { queryByTestId } = await setup(false, true);
+      const { queryByTestId } = await setup({ fixTrainingCount: true });
 
       expect(queryByTestId('sortBy')).toBeFalsy();
     });
 
     it('should have a sort by values of expired, expires soon, missing and staff name for mandatory training', async () => {
-      const { component } = await setup(true);
+      const { component } = await setup({ isMandatory: true });
 
       const mandatorySortByParamMap = {
         '0_expired': 'trainingExpired',
@@ -324,7 +320,7 @@ describe('ViewTrainingComponent', () => {
     });
 
     it('should handle sort by missing training for mandatory training', async () => {
-      const { component, getByLabelText, trainingCategoriesSpy } = await setup(true);
+      const { component, getByLabelText, trainingCategoriesSpy } = await setup({ isMandatory: true });
 
       expect(trainingCategoriesSpy).not.toHaveBeenCalled();
 
@@ -394,6 +390,20 @@ describe('ViewTrainingComponent', () => {
 
       expect(getByText('There are no matching results')).toBeTruthy();
       expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
+    });
+  });
+
+  describe('Query search params update correctly', () => {
+    it('sets the searchTerm for staff record input if query params are found on render', async () => {
+      const qsParamGetMock = sinon.stub();
+      qsParamGetMock.onCall(0).returns('mysupersearch');
+      qsParamGetMock.onCall(1).returns('training');
+
+      const { component, fixture, getByLabelText } = await setup({ qsParamGetMock });
+
+      component.totalTrainingCount = 16;
+      fixture.detectChanges();
+      expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
 });
