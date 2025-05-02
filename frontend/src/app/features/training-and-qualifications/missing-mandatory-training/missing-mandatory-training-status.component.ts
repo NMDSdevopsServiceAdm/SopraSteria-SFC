@@ -45,7 +45,13 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.setBackLink();
+    this.setSearchIfPrevious();
     localStorage.setItem('previousUrl', this.router.url);
+  }
+
+  private setSearchIfPrevious(): void {
+    const search = this.route.snapshot.queryParamMap.get('search');
+    if (search) this.searchTerm = search;
   }
 
   private setMissingTrainingAndCount(): void {
