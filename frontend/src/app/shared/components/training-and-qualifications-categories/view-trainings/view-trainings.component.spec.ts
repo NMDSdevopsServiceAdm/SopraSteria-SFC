@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
@@ -27,7 +26,7 @@ import { ViewTrainingComponent } from './view-trainings.component';
 const training = [expiredTrainingBuilder(), expiresSoonTrainingBuilder(), missingTrainingBuilder(), trainingBuilder()];
 
 describe('ViewTrainingComponent', () => {
-  async function setup(qsParamGetMock = sinon.fake(), isMandatory = false, fixTrainingCount = false) {
+  async function setup(isMandatory = false, fixTrainingCount = false) {
     let trainingObj = {
       training,
       category: 'trainingCategory',
@@ -38,16 +37,13 @@ describe('ViewTrainingComponent', () => {
 
     const { fixture, getByText, getAllByText, getByTestId, queryByTestId, getByLabelText, queryByLabelText } =
       await render(ViewTrainingComponent, {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule],
         providers: [
           WindowRef,
           {
             provide: ActivatedRoute,
             useValue: new MockActivatedRoute({
               snapshot: {
-                queryParamMap: {
-                  get: qsParamGetMock,
-                },
                 params: {
                   categoryId: '2',
                 },
@@ -254,13 +250,13 @@ describe('ViewTrainingComponent', () => {
 
   describe('sort', () => {
     it('should not show the sort by dropdown if there is only 1 staff record', async () => {
-      const { queryByTestId } = await setup(sinon.fake(), false, true);
+      const { queryByTestId } = await setup(false, true);
 
       expect(queryByTestId('sortBy')).toBeFalsy();
     });
 
     it('should have a sort by values of expired, expires soon, missing and staff name for mandatory training', async () => {
-      const { component } = await setup(sinon.fake(), true);
+      const { component } = await setup(true);
 
       const mandatorySortByParamMap = {
         '0_expired': 'trainingExpired',
@@ -328,7 +324,7 @@ describe('ViewTrainingComponent', () => {
     });
 
     it('should handle sort by missing training for mandatory training', async () => {
-      const { component, getByLabelText, trainingCategoriesSpy } = await setup(sinon.fake(), true);
+      const { component, getByLabelText, trainingCategoriesSpy } = await setup(true);
 
       expect(trainingCategoriesSpy).not.toHaveBeenCalled();
 
@@ -398,20 +394,6 @@ describe('ViewTrainingComponent', () => {
 
       expect(getByText('There are no matching results')).toBeTruthy();
       expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
-    });
-  });
-
-  describe('Query search params update correctly', () => {
-    it('sets the searchTerm for staff record input if query params are found on render', async () => {
-      const qsParamGetMock = sinon.stub();
-      qsParamGetMock.onCall(0).returns('mysupersearch');
-      qsParamGetMock.onCall(1).returns('training');
-
-      const { component, fixture, getByLabelText } = await setup(qsParamGetMock);
-
-      component.totalTrainingCount = 16;
-      fixture.detectChanges();
-      expect((getByLabelText('Search staff training records') as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
 });

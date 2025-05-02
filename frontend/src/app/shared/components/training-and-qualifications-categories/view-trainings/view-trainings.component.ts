@@ -55,13 +55,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
     this.setExpiresSoonAlertDates();
     this.setBackLink();
     this.setSortParamMapAndOptions();
-    this.setSearchIfPrevious();
     localStorage.setItem('previousUrl', this.router.url);
-  }
-
-  private setSearchIfPrevious(): void {
-    const search = this.route.snapshot.queryParamMap.get('search');
-    if (search) this.searchTerm = search;
   }
 
   private setWorkersAndCount(): void {
