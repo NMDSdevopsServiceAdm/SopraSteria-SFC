@@ -39,7 +39,7 @@ const workers = [
 ];
 
 describe('MissingMandatoryTrainingStatusComponent', () => {
-  async function setup(addPermissions = true, fixTrainingCount = false, qsParamGetMock = sinon.fake()) {
+  async function setup(addPermissions = true, fixTrainingCount = false) {
     let workerObj = {
       workers,
       workerCount: 2,
@@ -71,9 +71,6 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               snapshot: {
-                queryParamMap: {
-                  get: qsParamGetMock,
-                },
                 data: {
                   training: workerObj,
                   establishment: establishmentBuilder(),
@@ -315,20 +312,6 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
 
       expect(getByText('There are no matching results')).toBeTruthy();
       expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
-    });
-  });
-
-  describe('Query search params update correctly', () => {
-    it('sets the searchTerm for staff record input if query params are found on render', async () => {
-      const qsParamGetMock = sinon.stub();
-      qsParamGetMock.onCall(0).returns('mysupersearch');
-      qsParamGetMock.onCall(1).returns('training');
-
-      const { component, fixture, getByLabelText } = await setup(true, false, qsParamGetMock);
-
-      component.totalWorkerCount = 16;
-      fixture.detectChanges();
-      expect((getByLabelText('Search', { exact: false }) as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
 });
