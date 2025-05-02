@@ -131,7 +131,6 @@ describe('ExpiredTrainingComponent', () => {
       trainingService,
       trainingServiceSpy,
       alertSpy,
-      qsParamGetMock,
     };
   }
 
@@ -353,9 +352,6 @@ describe('ExpiredTrainingComponent', () => {
       qsParamGetMock.onCall(1).returns('training');
 
       const { component, fixture, getByLabelText } = await setup(true, false, qsParamGetMock);
-
-      qsParamGetMock.onCall(0).returns('mysupersearch');
-      qsParamGetMock.onCall(1).returns('training');
 
       component.totalWorkerCount = 16;
       fixture.detectChanges();
