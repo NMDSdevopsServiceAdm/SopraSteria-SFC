@@ -7,10 +7,7 @@ import { QualificationService } from '@core/services/qualification.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -42,7 +39,16 @@ describe('OtherQualificationsLevelComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: overrides.returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
+          useFactory: MockWorkerServiceWithOverrides.factory({
+            returnTo: () => {
+              return overrides.returnUrl
+                ? {
+                    url: ['/dashboard'],
+                    fragment: 'workplace',
+                  }
+                : null;
+            },
+          }),
         },
         {
           provide: QualificationService,
@@ -98,7 +104,7 @@ describe('OtherQualificationsLevelComponent', () => {
     it('should render the page with a save button when the return value is null', async () => {
       const { getByText } = await setup({ returnUrl: false });
 
-      const button = getByText('Save');
+      const button = getByText('Save and continue');
       const viewRecordLink = getByText('View this staff record');
 
       expect(button).toBeTruthy();
@@ -141,7 +147,7 @@ describe('OtherQualificationsLevelComponent', () => {
       fireEvent.click(radioButton);
       fixture.detectChanges();
 
-      const saveButton = getByText('Save');
+      const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
       fixture.detectChanges();
 
@@ -255,7 +261,7 @@ describe('OtherQualificationsLevelComponent', () => {
       fireEvent.click(radioButton);
       fixture.detectChanges();
 
-      const saveButton = getByText('Save');
+      const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
 
       expect(alertSpy).toHaveBeenCalledWith({
