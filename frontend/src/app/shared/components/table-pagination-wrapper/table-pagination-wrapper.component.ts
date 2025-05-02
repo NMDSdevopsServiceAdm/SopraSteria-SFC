@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-table-pagination-wrapper',
@@ -13,6 +14,7 @@ export class TablePaginationWrapperComponent implements OnInit {
   @Input() searchTerm: string;
   @Input() label = 'Search';
   @Input() accessibleLabel: string;
+  @Input() setQueryInParams: boolean = false;
   @Output() fetchData = new EventEmitter<{
     index: number;
     itemsPerPage: number;
@@ -25,10 +27,30 @@ export class TablePaginationWrapperComponent implements OnInit {
   private tab: string;
   public sortBySelected: string;
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
+  }
+
+  private checkForFragment(): void {
+    if (this.router.url.includes('#')) {
+      this.fragment = this.router.url.split('#')[1];
+      this.tab = this.fragment.split('-')[0];
+    }
+  }
+
+  private addQueryParams(): void {
+    this.checkForFragment();
+    if (this.searchTerm) {
+      this.router.navigate([], {
+        fragment: this.fragment,
+        queryParams: { search: this.searchTerm, tab: this.tab },
+        queryParamsHandling: 'merge',
+      });
+    } else {
+      this.router.navigate([], { fragment: this.fragment });
+    }
   }
 
   public sortBy(sortType: string): void {
@@ -40,6 +62,11 @@ export class TablePaginationWrapperComponent implements OnInit {
   public handleSearch(searchTerm: string): void {
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
+
+    if (this.setQueryInParams) {
+      this.addQueryParams();
+    }
+
     this.getData();
   }
 

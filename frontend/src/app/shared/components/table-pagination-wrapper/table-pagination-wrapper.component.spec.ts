@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { SortStaffOptions } from '@core/model/establishment.model';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -10,12 +11,16 @@ import { SearchInputComponent } from '../search-input/search-input.component';
 import { TablePaginationWrapperComponent } from './table-pagination-wrapper.component';
 
 describe('TablePaginationWrapperCompnent', () => {
-  const setup = async (totalCount = 20) => {
+  const setup = async (overrides: any = {}) => {
+    const totalCount = overrides.totalCount ?? 20;
+    const setQueryInParams = overrides.setQueryInParams ?? false;
+
     const setupTools = await render(TablePaginationWrapperComponent, {
       imports: [HttpClientTestingModule, RouterModule, ReactiveFormsModule],
       declarations: [PaginationComponent, SearchInputComponent],
       componentProperties: {
         totalCount,
+        setQueryInParams,
         count: totalCount,
         sortByParamMap: {
           '0_asc': 'staffNameAsc',
@@ -30,6 +35,11 @@ describe('TablePaginationWrapperCompnent', () => {
 
     const component = setupTools.fixture.componentInstance;
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    spyOnProperty(router, 'url').and.returnValue('dashboard#staff-records');
+
     const emitSpy = spyOn(component.fetchData, 'emit');
     const handleSearchSpy = spyOn(component, 'handleSearch').and.callThrough();
     const handlePageUpdateSpy = spyOn(component, 'handlePageUpdate').and.callThrough();
@@ -40,6 +50,7 @@ describe('TablePaginationWrapperCompnent', () => {
       emitSpy,
       handleSearchSpy,
       handlePageUpdateSpy,
+      routerSpy,
     };
   };
 
@@ -56,7 +67,7 @@ describe('TablePaginationWrapperCompnent', () => {
     });
 
     it('should not display the search box if the total worker count is less than the items per page', async () => {
-      const { queryByTestId } = await setup(14);
+      const { queryByTestId } = await setup({ totalCount: 14 });
       expect(queryByTestId('search')).toBeFalsy();
     });
 
@@ -85,43 +96,93 @@ describe('TablePaginationWrapperCompnent', () => {
       expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
     });
 
-    describe('Sort', () => {
-      it('should call the sortBy function when selecting a different parameter for sorting and emit properties for getting workers', async () => {
-        const { component, emitSpy, getByLabelText } = await setup();
+    describe('Setting query in params', () => {
+      it('should set query in params on search when setQueryInParams is passed in as true', async () => {
+        const { getByLabelText, getByRole, routerSpy } = await setup({ setQueryInParams: true });
 
-        const handleSortSpy = spyOn(component, 'sortBy').and.callThrough();
+        userEvent.type(getByLabelText('Search'), 'Someone');
+        userEvent.click(getByRole('button', { name: 'search' }));
 
-        const sortByObjectKeys = Object.keys(component.sortOptions);
-        userEvent.selectOptions(getByLabelText('Sort by'), sortByObjectKeys[1]);
+        expect(routerSpy).toHaveBeenCalledWith([], {
+          fragment: 'staff-records',
+          queryParams: { search: 'Someone', tab: 'staff' },
+          queryParamsHandling: 'merge',
+        });
+      });
 
-        expect(handleSortSpy).toHaveBeenCalledWith(sortByObjectKeys[1]);
-        const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
-        expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
+      it('should remove the query params from url when clearing the search when setQueryInParams is passed in as true', async () => {
+        const { fixture, getByText, getByLabelText, getByRole, routerSpy } = await setup({ setQueryInParams: true });
+
+        userEvent.type(getByLabelText('Search'), 'Someone');
+        userEvent.click(getByRole('button', { name: 'search' }));
+        fixture.detectChanges();
+        const clearSearch = getByText('Clear search results');
+        userEvent.click(clearSearch);
+
+        expect(routerSpy).toHaveBeenCalledWith([], {
+          fragment: 'staff-records',
+        });
+      });
+
+      it('should not set query in params on search when setQueryInParams is not passed in', async () => {
+        const { getByLabelText, getByRole, routerSpy } = await setup();
+
+        userEvent.type(getByLabelText('Search'), 'Someone');
+        userEvent.click(getByRole('button', { name: 'search' }));
+
+        expect(routerSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not call router navigate when clearing the search when setQueryInParams is not passed in', async () => {
+        const { fixture, getByText, getByLabelText, getByRole, routerSpy } = await setup();
+
+        userEvent.type(getByLabelText('Search'), 'Someone');
+        userEvent.click(getByRole('button', { name: 'search' }));
+        fixture.detectChanges();
+        const clearSearch = getByText('Clear search results');
+        userEvent.click(clearSearch);
+
+        expect(routerSpy).not.toHaveBeenCalled();
       });
     });
+  });
 
-    describe('handlePageUpdate', () => {
-      it('should call the handlePageUpdate function when clicking Next on the pagination and emit properties for getting workers', async () => {
-        const { component, fixture, emitSpy, handlePageUpdateSpy, getByText } = await setup();
+  describe('Sort', () => {
+    it('should call the sortBy function when selecting a different parameter for sorting and emit properties for getting workers', async () => {
+      const { component, emitSpy, getByLabelText } = await setup();
 
-        userEvent.click(getByText('Next'));
-        await fixture.whenStable();
+      const handleSortSpy = spyOn(component, 'sortBy').and.callThrough();
 
-        expect(handlePageUpdateSpy).toHaveBeenCalledWith(1);
-        const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
-        expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
-      });
+      const sortByObjectKeys = Object.keys(component.sortOptions);
+      userEvent.selectOptions(getByLabelText('Sort by'), sortByObjectKeys[1]);
 
-      it('should call the handlePageUpdate function when clicking `3` on the pagination and emit properties for getting workers', async () => {
-        const { component, fixture, emitSpy, handlePageUpdateSpy, getByText } = await setup(35);
+      expect(handleSortSpy).toHaveBeenCalledWith(sortByObjectKeys[1]);
+      const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
+      expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
+    });
+  });
 
-        userEvent.click(getByText('3'));
-        await fixture.whenStable();
+  describe('handlePageUpdate', () => {
+    it('should call the handlePageUpdate function when clicking Next on the pagination and emit properties for getting workers', async () => {
+      const { component, fixture, emitSpy, handlePageUpdateSpy, getByText } = await setup();
 
-        expect(handlePageUpdateSpy).toHaveBeenCalledWith(2);
-        const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
-        expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
-      });
+      userEvent.click(getByText('Next'));
+      await fixture.whenStable();
+
+      expect(handlePageUpdateSpy).toHaveBeenCalledWith(1);
+      const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
+      expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
+    });
+
+    it('should call the handlePageUpdate function when clicking "3" on the pagination and emit properties for getting workers', async () => {
+      const { component, fixture, emitSpy, handlePageUpdateSpy, getByText } = await setup({ totalCount: 35 });
+
+      userEvent.click(getByText('3'));
+      await fixture.whenStable();
+
+      expect(handlePageUpdateSpy).toHaveBeenCalledWith(2);
+      const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
+      expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
     });
   });
 });
