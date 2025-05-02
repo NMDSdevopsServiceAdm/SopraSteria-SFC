@@ -317,6 +317,16 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
       // "HOURLYRATE"
       columns.push('');
       break;
+
+    case "Don't know":
+      // "SALARYINT"
+      columns.push(999);
+      // "SALARY"
+      columns.push('');
+      // "HOURLYRATE"
+      columns.push('');
+      break;
+
     default:
       // "SALARYINT"
       columns.push('');
