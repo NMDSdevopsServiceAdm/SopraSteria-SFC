@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -40,7 +40,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    private router: Router,
     private alertService: AlertService,
   ) {}
 
@@ -56,19 +55,10 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.setWorkplaceVariables(childWorkplaces);
 
     this.setupServerErrorsMap();
-    this.setSearchIfPrevious();
 
     this.providerId = this.primaryWorkplace.provId;
 
     this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
-  }
-
-  private setSearchIfPrevious(): void {
-    const search = this.route.snapshot.queryParamMap.get('search');
-
-    if (search) {
-      this.searchTerm = search;
-    }
   }
 
   public setupServerErrorsMap(): void {
@@ -118,10 +108,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   }
 
   public handleSearch(searchTerm: string): void {
-    this.router.navigate([], {
-      queryParams: { search: searchTerm },
-      queryParamsHandling: 'merge',
-    });
     this.searchTerm = searchTerm;
     this.handlePageUpdate(0);
   }
