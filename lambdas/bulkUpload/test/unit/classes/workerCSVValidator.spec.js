@@ -1499,6 +1499,135 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
+    describe('_validateSalaryInt()', () => {
+      it(`should set _salaryInt as "Annually" when SalaryInt was given as "1"`, async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '1',
+            SALARY: '20000',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._salaryInt).to.equal('Annually');
+      });
+
+      it(`should set _salaryInt as "Hourly" when SalaryInt was given as "3"`, async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '3',
+            SALARY: '',
+            HOURLYRATE: '10.00',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._salaryInt).to.equal('Hourly');
+      });
+
+      it(`should set _salaryInt as "Don't know" when SalaryInt was given as "999"`, async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '999',
+            SALARY: '',
+            HOURLYRATE: '',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._salaryInt).to.equal("Don't know");
+      });
+
+      it('should not error when SalaryInt was empty', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '',
+            SALARY: '',
+            HOURLYRATE: '',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._salaryInt).to.equal(null);
+      });
+
+      it('should error when SalaryInt was given with an incorrect code', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '2',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors[0]).to.include({
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.SALARY_ERROR,
+          errType: 'SALARYINT_ERROR',
+          error: 'The code you have entered for SALARYINT is incorrect',
+          source: worker.SALARYINT,
+          column: 'SALARYINT',
+          name: 'MARMA',
+          worker: '3',
+        });
+        expect(validator._salaryInt).to.equal(null);
+      });
+
+      it('should error when SalaryInt was given with a non integer value', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: 'apple',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors[0]).to.include({
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.SALARY_ERROR,
+          errType: 'SALARYINT_ERROR',
+          error: 'Salary Int (SALARYINT) must be an integer',
+          source: worker.SALARYINT,
+          column: 'SALARYINT',
+          name: 'MARMA',
+          worker: '3',
+        });
+        expect(validator._salaryInt).to.equal(null);
+      });
+    });
+
     describe('_validateLevel2CareCert()', () => {
       let clock;
       before(() => {

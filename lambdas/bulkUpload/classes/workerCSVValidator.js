@@ -1687,53 +1687,49 @@ class WorkerCsvValidator {
   }
 
   _validateSalaryInt() {
-    const salaryIntValues = [1, 3];
+    const allAllowedValues = [1, 3, 999];
+    const allStringValues = ['Annually', 'Hourly', "Don't know"];
+
     const mySalaryInt = parseInt(this._currentLine.SALARYINT, 10);
 
-    // optional
-    if (this._currentLine.SALARYINT && this._currentLine.SALARYINT.length > 0) {
-      if (isNaN(mySalaryInt)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.SALARY_ERROR,
-          errType: 'SALARYINT_ERROR',
-          error: 'Salary Int (SALARYINT) must be an integer',
-          source: this._currentLine.SALARYINT,
-          column: 'SALARYINT',
-        });
-        return false;
-      } else if (!salaryIntValues.includes(parseInt(mySalaryInt, 10))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.SALARY_ERROR,
-          errType: 'SALARYINT_ERROR',
-          error: 'The code you have entered for SALARYINT is incorrect',
-          source: this._currentLine.SALARYINT,
-          column: 'SALARYINT',
-        });
-        return false;
-      } else {
-        switch (mySalaryInt) {
-          case 1:
-            this._salaryInt = 'Annually';
-            break;
-          case 3:
-            this._salaryInt = 'Hourly';
-            break;
-          default:
-            // not doing anything with unpaid
-            this._salaryInt = null;
-        }
+    const fieldIsEmpty = !(this._currentLine.SALARYINT && this._currentLine.SALARYINT.length > 0);
 
-        return true;
-      }
-    } else {
+    if (fieldIsEmpty) {
       return true;
     }
+
+    if (isNaN(mySalaryInt)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: WorkerCsvValidator.SALARY_ERROR,
+        errType: 'SALARYINT_ERROR',
+        error: 'Salary Int (SALARYINT) must be an integer',
+        source: this._currentLine.SALARYINT,
+        column: 'SALARYINT',
+      });
+      return false;
+    }
+
+    const salaryIntValueInString = allStringValues[allAllowedValues.indexOf(mySalaryInt)];
+
+    if (!salaryIntValueInString) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: WorkerCsvValidator.SALARY_ERROR,
+        errType: 'SALARYINT_ERROR',
+        error: 'The code you have entered for SALARYINT is incorrect',
+        source: this._currentLine.SALARYINT,
+        column: 'SALARYINT',
+      });
+      return false;
+    }
+
+    this._salaryInt = salaryIntValueInString;
+    return true;
   }
 
   _validateSalary() {
@@ -3164,6 +3160,9 @@ class WorkerCsvValidator {
       }
       if (this._salaryInt === 'Hourly') {
         changeProperties.annualHourlyPay.rate = this._hourlyRate ? this._hourlyRate : undefined;
+      }
+      if (this._salaryInt === "Don't know") {
+        changeProperties.annualHourlyPay.rate = undefined;
       }
     }
 
