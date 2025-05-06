@@ -1,17 +1,21 @@
-# NgSfcV2
+# Skills for Care - Adult Social Care Workforce Data Set
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.3.
+This repository contains the web application code for Skill for Care's Adult Social Care Workforce Data Set (ASC-WDS) service.
+Currently the application is running with [Angular](https://angular.dev/) version 17 as frontend and [Express](https://expressjs.com/) as backend.
+
 
 ## Development server
-1. Run `npm run server` for a dev server. This will compile the assets using `npm run build:watch` and also start the Express app using `npm run server`.
+1. Run `make run` for a dev server. This will start the Angular frontend by `npm run build:watch` and also start the backend Express app using `npm run new-start`
 2. Navigate to `http://localhost:8080/` to view the application
 
-#### Note: ####
-Any FE changes should re-compile the assets and refresh the browser automatically.
+#### Note:
+Any frontend file changes will re-compile the assets and refresh the browser automatically.
 
 ## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+First, pick a sub-directory under `frontend` where we want to create the files, for example `frontend/src/app/shared/components` where we store the shared component.
+Then, `cd` into the chosen sub-directory and run `ng generate component component-name` to generate a new component.
+You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module` to generate other Angular items.
 
 ## Build
 
@@ -19,11 +23,41 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Frontend
+Run `make test-fe` to execute the unit tests for the frontend.
+The test runner will watch the source files and automatically re-run all tests whenever a frontend file is modified.
+
+To run only one or a few specific tests, open the relevant `.spec.ts` file and modify the `describe` block to `fdescribe`. This will let the test runner to focus on the chosen tests and skip all others.
+
+Also, after running all tests, the test runner will dump the results at `frontend/TESTS.xml`.
+If in case multiple tests are failing, we can check the file to find out which tests are the failed ones.
+
+### Backend
+Run `make test-be` to execute the unit tests for the backend.
+This test runner does not watch file changes, so re-run the test manually if necessary.
+
+To focus on specific tests, modify the `describe` block to `describe.only`, then run the tests again.
+
+### Bulk upload lambda
+Run `make test-bu` to execute the unit tests for bulk upload lambda.
+
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+For the moment we run our end-to-end tests with [Cypress](https://www.cypress.io/) under a configuration of `docker-compose`.
+
+Refer to the confluence document "End to end (e2e) testing configuration" for the steps to set up the environments first.
+
+After the docker configurations are set up correctly, we can run the e2e test by the below steps:
+
+1. Run `docker-compose up` to start up the necessary docker containers. Wait for both the frontend and backend to be ready.
+2. In another terminal, run `make test-e2e` to run the whole e2e test suite in "headless" mode.
+
+Alternatively, we can run the e2e tests in browser mode by `cd frontend` and then `npx cypress open`.
+This will start up a test browser instance that allows us to run and debug specific tests more easily.
+
+3. After running the test, run `make stop-containers` to stop the docker containers. This will help to reduce the time needed to initiate the docker containers for the next time.
+
 
 ## Further help
 
