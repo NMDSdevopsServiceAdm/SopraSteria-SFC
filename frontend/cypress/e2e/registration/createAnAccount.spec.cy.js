@@ -1,11 +1,11 @@
-import { fillUserRegistrationForm } from '../../support/page_objects/userRegistrationForms';
-import { onHomePage } from '../../support/page_objects/onHomePage';
 import { MockNewEstablishment } from '../../support/mockEstablishmentData';
 import {
-  inputLocationOrPostcode,
-  fillInAddress,
   approveRegistrationRequestAsAdmin,
+  fillInAddress,
+  inputLocationOrPostcode,
 } from '../../support/page_objects/createNewWorkplaceForms';
+import { onHomePage } from '../../support/page_objects/onHomePage';
+import { fillUserRegistrationForm } from '../../support/page_objects/userRegistrationForms';
 
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
@@ -58,7 +58,7 @@ describe('Create account', () => {
     );
   });
 
-  it('should be able to create a new account', () => {
+  it.only('should be able to create a new account', () => {
     cy.contains('Create an account').click();
     cy.contains('Start now').click();
     cy.get('button').contains('Continue').click();
@@ -113,5 +113,76 @@ describe('Create account', () => {
 
     cy.get('h1').contains('Test workplace for cypress').should('be.visible');
     onHomePage.allTabs('edit');
+
+    cy.contains('Add more details to your workplace').click(); // on home page
+    cy.contains('Start to add more details about your workplace').click(); // on workplace tab
+    cy.get('button').contains('Continue').click(); // on add more details page
+
+    // Other services
+    cy.contains('Do you provide any other services?');
+    cy.getByLabel('No').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Capacity of your services
+    cy.getByLabel('Number of people using the service at the moment').type('12');
+    cy.get('button').contains('Save and continue').click();
+
+    // Who are your service users?
+    cy.contains('Who are your service users?');
+    cy.getByLabel('Older people with dementia').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Do you have any current staff vacancies?
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Select job roles for the vacancies
+    cy.contains('Care providing roles').click();
+    cy.getByLabel('Care worker').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // How many current staff vacancies do you have?
+    cy.get('button').contains('Save and continue').click();
+
+    // Have you had any starters SINCE...
+    cy.getByLabel('No').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Have you had any leavers SINCE...
+    cy.getByLabel('I do not know').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Repeat training
+    cy.getByLabel('Yes, always').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Would you accept a Care Certificate...
+    cy.getByLabel('No, never').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Cash loyalty bonus
+    cy.getByLabel('Yes').check();
+    cy.getByLabel('Amount (optional)').type('300.00');
+    cy.get('button').contains('Save and continue').click();
+
+    // Statutory Sick Pay
+    cy.getByLabel('No').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Workplace pensions
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // How many days leave
+    cy.getByLabel('Number of days').type(25);
+    cy.get('button').contains('Save and continue').click();
+
+    // Share your data
+    cy.getByLabel('Yes, I agree to you sharing our data with the CQC').check();
+    cy.getByLabel('Yes, I agree to you sharing our data with local authorities').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Check answers
+    cy.contains('Check these details before you confirm them.').should('be.visible');
   });
 });

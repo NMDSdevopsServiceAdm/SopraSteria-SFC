@@ -39,7 +39,7 @@
                   [value]="option.value"
                   (click)="onChange(option.value)"
                 />
-                <label class="govuk-label govuk-radios__label" for="cashLoyalty">
+                <label class="govuk-label govuk-radios__label" for="cashLoyalty-{{ i }}">
                   {{ option.label }}
                 </label>
               </div>
@@ -51,7 +51,7 @@
                 data-testid="cashLoyaltyRadio-conditional"
               >
                 <div class="govuk-form-group" *ngIf="this.form.get('cashAmount')">
-                  <label class="govuk-label" for="amountSpent">Amount (optional)</label>
+                  <label class="govuk-label" for="cashAmount">Amount (optional)</label>
                   <span id="amountSpent-hint" class="govuk-hint">For example, 299.99</span>
                   <span
                     *ngIf="submitted && this.form.get('cashAmount').invalid"

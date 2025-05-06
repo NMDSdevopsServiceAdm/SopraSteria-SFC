@@ -38,7 +38,7 @@ Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
         WHERE "Login"."RegistrationID" = "User"."RegistrationID"
         AND "User"."FullNameValue" = $1;`,
 
-    `DELETE FROM cqc."User" WHERE "FullNameValue" = $1;`,
+    'DELETE FROM cqc."User" WHERE "FullNameValue" = $1;',
   ];
 
   const parameters = [userFullName];
@@ -56,6 +56,26 @@ Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
     AND "Establishment"."NameValue" = $1
     AND "When" >= CURRENT_DATE;`,
 
+    `DELETE FROM "cqc"."EstablishmentCapacity"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentCapacity"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
+    `DELETE FROM "cqc"."EstablishmentJobs"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentJobs"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
+    `DELETE FROM "cqc"."EstablishmentServices"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentServices"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
+    `DELETE FROM "cqc"."EstablishmentServiceUsers"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentServiceUsers"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
     `DELETE FROM "cqc"."Establishment"
     WHERE "NameValue" = $1;`,
   ];
@@ -65,5 +85,3 @@ Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
 
   cy.task('multipleDbQueries', dbQueries);
 });
-
-
