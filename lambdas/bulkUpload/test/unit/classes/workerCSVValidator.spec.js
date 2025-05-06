@@ -68,7 +68,7 @@ const buildWorkerRecord = build('WorkerRecord', {
   },
 });
 
-describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
+describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
   describe('validations', () => {
     describe('days sick', () => {
       it('should emit a warning when days sick not already changed today', async () => {
@@ -1377,128 +1377,6 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
-    describe('_validateSalary()', () => {
-      it('should not error when the worker is not a senior manager and the salary is between £500 and £200000', async () => {
-        const worker = buildWorkerCsv({
-          overrides: {
-            STATUS: 'NEW',
-            SALARY: '20000',
-          },
-        });
-
-        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
-
-        await validator.validate();
-        await validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._validationErrors.length).to.equal(0);
-      });
-
-      it('should not error when the worker is a senior manager and the salary entered is over £200000 and under £250000', async () => {
-        const worker = buildWorkerCsv({
-          overrides: {
-            STATUS: 'NEW',
-            SALARY: '240000',
-            MAINJOBROLE: '1',
-          },
-        });
-
-        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
-
-        await validator.validate();
-        await validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([]);
-        expect(validator._validationErrors.length).to.equal(0);
-      });
-
-      it('should error when salary entered is below £500', async () => {
-        const worker = buildWorkerCsv({
-          overrides: {
-            STATUS: 'NEW',
-            SALARY: '300',
-          },
-        });
-
-        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
-
-        await validator.validate();
-        await validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([
-          {
-            lineNumber: 2,
-            errCode: WorkerCsvValidator.SALARY_ERROR,
-            errType: 'SALARY_ERROR',
-            error: 'SALARY must be between £500 and £200000',
-            source: worker.SALARY,
-            column: 'SALARY',
-            name: 'MARMA',
-            worker: '3',
-          },
-        ]);
-        expect(validator._validationErrors.length).to.equal(1);
-      });
-
-      it('should error when worker is not a senior manager and salary is over £200000', async () => {
-        const worker = buildWorkerCsv({
-          overrides: {
-            STATUS: 'NEW',
-            SALARY: '250000',
-          },
-        });
-
-        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
-
-        await validator.validate();
-        await validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([
-          {
-            lineNumber: 2,
-            errCode: WorkerCsvValidator.SALARY_ERROR,
-            errType: 'SALARY_ERROR',
-            error: 'SALARY must be between £500 and £200000',
-            source: worker.SALARY,
-            column: 'SALARY',
-            name: 'MARMA',
-            worker: '3',
-          },
-        ]);
-        expect(validator._validationErrors.length).to.equal(1);
-      });
-
-      it('should error when the worker is a senior manager and the salary entered is over £250000', async () => {
-        const worker = buildWorkerCsv({
-          overrides: {
-            STATUS: 'NEW',
-            SALARY: '260000',
-            MAINJOBROLE: '1',
-          },
-        });
-
-        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
-
-        await validator.validate();
-        await validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([
-          {
-            lineNumber: 2,
-            errCode: WorkerCsvValidator.SALARY_ERROR,
-            errType: 'SALARY_ERROR',
-            error: 'SALARY must be between £500 and £250000',
-            source: worker.SALARY,
-            column: 'SALARY',
-            name: 'MARMA',
-            worker: '3',
-          },
-        ]);
-        expect(validator._validationErrors.length).to.equal(1);
-      });
-    });
-
     describe('_validateSalaryInt()', () => {
       it(`should set _salaryInt as "Annually" when SalaryInt was given as "1"`, async () => {
         const worker = buildWorkerCsv({
@@ -1628,6 +1506,311 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
+    describe('_validateSalary()', () => {
+      it('should not error when the worker is not a senior manager and the salary is between £500 and £200000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '20000',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should not error when the worker is a senior manager and the salary entered is over £200000 and under £250000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '240000',
+            MAINJOBROLE: '1',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should error when salary entered is below £500', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '300',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.SALARY_ERROR,
+            errType: 'SALARY_ERROR',
+            error: 'SALARY must be between £500 and £200000',
+            source: worker.SALARY,
+            column: 'SALARY',
+            name: 'MARMA',
+            worker: '3',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it('should error when worker is not a senior manager and salary is over £200000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '250000',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.SALARY_ERROR,
+            errType: 'SALARY_ERROR',
+            error: 'SALARY must be between £500 and £200000',
+            source: worker.SALARY,
+            column: 'SALARY',
+            name: 'MARMA',
+            worker: '3',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it('should error when the worker is a senior manager and the salary entered is over £250000', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARY: '260000',
+            MAINJOBROLE: '1',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.SALARY_ERROR,
+            errType: 'SALARY_ERROR',
+            error: 'SALARY must be between £500 and £250000',
+            source: worker.SALARY,
+            column: 'SALARY',
+            name: 'MARMA',
+            worker: '3',
+          },
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it(`should give a warning when SalaryInt was "Don't know" and Salary column was filled`, async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '999',
+            SALARY: '30000',
+            HOURLYRATE: '',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const expectedWarning = {
+          lineNumber: 2,
+          warnCode: WorkerCsvValidator.SALARY_WARNING,
+          warnType: 'SALARY_WARNING',
+          warning: `The code you have entered for SALARY will be ignored as SALARYINT is 999`,
+          source: `SALARYINT (${worker.SALARYINT}) - SALARY (${worker.SALARY})`,
+          column: 'SALARY',
+          name: 'MARMA',
+          worker: '3',
+        };
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._salaryInt).to.equal("Don't know");
+        expect(validator._salary).to.equal(null);
+      });
+    });
+
+    describe('_validateHourlyRate', () => {
+      describe('should set the hourly rate when SalaryInt was "3" and Hourly rate column was filled with decimal number', () => {
+        const test_cases = ['15.53', '0.53', '3', '3.00'];
+        const expected_results = [15.53, 0.53, 3, 3];
+
+        test_cases.forEach((input_hourly_rate, index) => {
+          it(`hourly rate = ${input_hourly_rate}`, async () => {
+            const worker = buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                SALARYINT: '3',
+                SALARY: '',
+                HOURLYRATE: input_hourly_rate,
+              },
+            });
+
+            const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+            validator.validate();
+            validator.transform();
+
+            const expected_hourly_rate = expected_results[index];
+
+            expect(validator._validationErrors).to.deep.equal([]);
+            expect(validator._salaryInt).to.equal('Hourly');
+            expect(validator._hourlyRate).to.equal(expected_hourly_rate);
+          });
+        });
+      });
+
+      it('should give an error if SalaryInt was "Annual" and Hourly rate column was filled', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '1',
+            SALARY: '',
+            HOURLYRATE: '15',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const expectedError = {
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
+          errType: 'HOURLY_RATE_ERROR',
+          error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
+          source: `SALARYINT(${worker.SALARYINT}) - HOURLYRATE (${worker.HOURLYRATE})`,
+          column: 'SALARYINT/HOURLYRATE',
+          name: 'MARMA',
+          worker: '3',
+        };
+
+        expect(validator._validationErrors).to.deep.equal([expectedError]);
+      });
+
+      it('should give an error if SalaryInt was empty and Hourly rate column was filled', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '',
+            SALARY: '',
+            HOURLYRATE: '15',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const expectedError = {
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
+          errType: 'HOURLY_RATE_ERROR',
+          error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
+          source: `SALARYINT(${worker.SALARYINT}) - HOURLYRATE (${worker.HOURLYRATE})`,
+          column: 'SALARYINT/HOURLYRATE',
+          name: 'MARMA',
+          worker: '3',
+        };
+
+        expect(validator._validationErrors).to.deep.equal([expectedError]);
+      });
+
+      it(`should give an error if Hourly rate column was filled with invalid value`, async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '3',
+            SALARY: '',
+            HOURLYRATE: 'a banana',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const expectedWarning = {
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
+          errType: 'HOURLY_RATE_ERROR',
+          error: 'The code you have entered for HOURLYRATE is incorrect',
+          source: worker.HOURLYRATE,
+          column: 'HOURLYRATE',
+          name: 'MARMA',
+          worker: '3',
+        };
+        console.log(validator._validationErrors, '<--- validator._validationErrors');
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._salaryInt).to.equal('Hourly');
+        expect(validator._hourlyRate).to.equal(null);
+      });
+
+      it(`should give a warning if SalaryInt was "Don't know" and Hourly rate column was filled`, async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '999',
+            SALARY: '',
+            HOURLYRATE: '15',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const expectedWarning = {
+          lineNumber: 2,
+          warnCode: WorkerCsvValidator.HOURLY_RATE_WARNING,
+          warnType: 'HOURLY_RATE_WARNING',
+          warning: `The code you have entered for HOURLYRATE will be ignored as SALARYINT is 999`,
+          source: `SALARYINT (${worker.SALARYINT}) - HOURLYRATE (${worker.HOURLYRATE})`,
+          column: 'SALARYINT/HOURLYRATE',
+          name: 'MARMA',
+          worker: '3',
+        };
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._salaryInt).to.equal("Don't know");
+        expect(validator._hourlyRate).to.equal(null);
+      });
+    });
+
     describe('_validateLevel2CareCert()', () => {
       let clock;
       before(() => {
@@ -1707,8 +1890,16 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             warningMessage: warningMessages.yearBefore2024,
             warnType: warnTypes.yearBefore2024,
           },
-          { l2CareCertInput: '1;2099', warningMessage: warningMessages.yearInFuture, warnType: warnTypes.yearInFuture },
-          { l2CareCertInput: '1;2026', warningMessage: warningMessages.yearInFuture, warnType: warnTypes.yearInFuture },
+          {
+            l2CareCertInput: '1;2099',
+            warningMessage: warningMessages.yearInFuture,
+            warnType: warnTypes.yearInFuture,
+          },
+          {
+            l2CareCertInput: '1;2026',
+            warningMessage: warningMessages.yearInFuture,
+            warnType: warnTypes.yearInFuture,
+          },
           { l2CareCertInput: '1;abc', warningMessage: warningMessages.otherCase, warnType: warnTypes.otherCase },
         ];
         testCasesWithInvalidYears.forEach(({ l2CareCertInput, warningMessage, warnType }) => {
