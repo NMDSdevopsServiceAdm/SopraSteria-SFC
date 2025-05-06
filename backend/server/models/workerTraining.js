@@ -113,8 +113,9 @@ module.exports = function (sequelize, DataTypes) {
     sortBy = '',
     searchTerm = '',
   ) {
-    const addSearchToCount = searchTerm ? `WHERE w1."NameOrIdValue1" ILIKE '%${searchTerm}%'` : '';
-
+    const addSearchToCount = searchTerm
+      ? `WHERE w1."NameOrIdValue1" ILIKE '%${searchTerm}%' OR w2."NameOrIdValue2" ILIKE '%${searchTerm}%'`
+      : '';
     const category = await sequelize.models.workerTrainingCategories.findOne({
       where: {
         id: trainingCategoryId,
