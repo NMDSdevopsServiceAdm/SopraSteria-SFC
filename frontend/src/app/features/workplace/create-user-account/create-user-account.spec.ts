@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -23,7 +23,7 @@ import { CreateUserAccountComponent } from './create-user-account.component';
 
 describe('CreateUserAccountComponent', () => {
   async function setup() {
-    const { fixture, getByText } = await render(CreateUserAccountComponent, {
+    const setupTools = await render(CreateUserAccountComponent, {
       imports: [
         SharedModule,
         RouterModule,
@@ -55,7 +55,7 @@ describe('CreateUserAccountComponent', () => {
       ],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const createAccountService = injector.inject(CreateAccountService) as CreateAccountService;
@@ -71,13 +71,16 @@ describe('CreateUserAccountComponent', () => {
       }),
     );
 
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     setUserInfoFields(component);
 
     return {
-      fixture,
+      ...setupTools,
       component,
       createAccountSpy,
-      getByText,
+      routerSpy,
     };
   }
 
@@ -100,105 +103,68 @@ describe('CreateUserAccountComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Calling createAccount in user service', async () => {
-    it('should call createAccount with user info entered', async () => {
-      const { fixture, getByText, createAccountSpy } = await setup();
+  it('should call createAccount with user info entered', async () => {
+    const { fixture, getByText, createAccountSpy } = await setup();
 
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        const radioButton = getByText('ASC-WDS edit with manage WDF claims');
-        fireEvent.click(radioButton);
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      const radioButton = getByText('Edit');
+      fireEvent.click(radioButton);
 
-        const saveButton = getByText('Save user');
-        fireEvent.click(saveButton);
+      const saveButton = getByText('Save user');
+      fireEvent.click(saveButton);
 
-        expect(createAccountSpy.calls.mostRecent().args[1].email).toEqual('bob@email.com');
-        expect(createAccountSpy.calls.mostRecent().args[1].jobTitle).toEqual('Care Giver');
-        expect(createAccountSpy.calls.mostRecent().args[1].fullname).toEqual('Bob Bobson');
-        expect(createAccountSpy.calls.mostRecent().args[1].phone).toEqual('01822213131');
-      });
+      expect(createAccountSpy.calls.mostRecent().args[1].email).toEqual('bob@email.com');
+      expect(createAccountSpy.calls.mostRecent().args[1].jobTitle).toEqual('Care Giver');
+      expect(createAccountSpy.calls.mostRecent().args[1].fullname).toEqual('Bob Bobson');
+      expect(createAccountSpy.calls.mostRecent().args[1].phone).toEqual('01822213131');
     });
+  });
 
-    describe('Permissions types', async () => {
-      it('should call createAccount with role Edit and canManageWdfClaims true when ASC-WDS edit with manage WDF claims selected', async () => {
-        const { fixture, getByText, createAccountSpy } = await setup();
+  it('should call createAccount with role Edit', async () => {
+    const { fixture, getByText, createAccountSpy } = await setup();
 
-        fixture.detectChanges();
-        fixture.whenStable().then(() => {
-          const radioButton = getByText('ASC-WDS edit with manage WDF claims');
-          fireEvent.click(radioButton);
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      const radioButton = getByText('Edit');
+      fireEvent.click(radioButton);
 
-          const saveButton = getByText('Save user');
-          fireEvent.click(saveButton);
+      const saveButton = getByText('Save user');
+      fireEvent.click(saveButton);
 
-          expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
-          expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(true);
-        });
-      });
+      expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
     });
+  });
 
-    it('should call createAccount with role Edit and canManageWdfClaims false when ASC-WDS edit selected', async () => {
-      const { fixture, getByText, createAccountSpy } = await setup();
+  it('should call createAccount with role Read', async () => {
+    const { fixture, getByText, createAccountSpy } = await setup();
 
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        const radioButton = getByText('ASC-WDS edit');
-        fireEvent.click(radioButton);
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      const radioButton = getByText('Read');
+      fireEvent.click(radioButton);
 
-        const saveButton = getByText('Save user');
-        fireEvent.click(saveButton);
+      const saveButton = getByText('Save user');
+      fireEvent.click(saveButton);
 
-        expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
-        expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(false);
-      });
+      expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Read');
     });
+  });
 
-    it('should call createAccount with role Read and canManageWdfClaims true when ASC-WDS read only with manage WDF claims selected', async () => {
-      const { fixture, getByText, createAccountSpy } = await setup();
+  it('should call router to navigate after saving user', async () => {
+    const { component, fixture, getByText, routerSpy } = await setup();
 
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        const radioButton = getByText('ASC-WDS read only with manage WDF claims');
-        fireEvent.click(radioButton);
+    fixture.detectChanges();
+    fixture.whenStable().then(() => {
+      const radioButton = getByText('Edit');
+      fireEvent.click(radioButton);
 
-        const saveButton = getByText('Save user');
-        fireEvent.click(saveButton);
+      const saveButton = getByText('Save user');
+      fireEvent.click(saveButton);
 
-        expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Read');
-        expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(true);
-      });
-    });
-
-    it('should call createAccount with role Read and canManageWdfClaims false when ASC-WDS read only selected', async () => {
-      const { fixture, getByText, createAccountSpy } = await setup();
-
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        const radioButton = getByText('ASC-WDS read only');
-        fireEvent.click(radioButton);
-
-        const saveButton = getByText('Save user');
-        fireEvent.click(saveButton);
-
-        expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Read');
-        expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(false);
-      });
-    });
-
-    it('should call createAccount with role None and canManageWdfClaims true when Manage WDF claims only selected', async () => {
-      const { fixture, getByText, createAccountSpy } = await setup();
-
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        const radioButton = getByText('Manage WDF claims only');
-        fireEvent.click(radioButton);
-
-        const saveButton = getByText('Save user');
-        fireEvent.click(saveButton);
-
-        expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('None');
-        expect(createAccountSpy.calls.mostRecent().args[1].canManageWdfClaims).toEqual(true);
-      });
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishmentUid, 'user', 'saved', 'testuid']);
     });
   });
 });
+
+

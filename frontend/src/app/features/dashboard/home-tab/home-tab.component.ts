@@ -70,7 +70,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRunLocalAuthorityReport: boolean;
   public workplaceUid: string;
   public now: Date = new Date();
-  public wdfNewDesignFlag: boolean;
   public addWorkplaceDetailsBanner: boolean;
 
   constructor(
@@ -130,7 +129,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         event: 'firstLogin',
       });
     }
-    this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
   }
 
   public downloadLocalAuthorityReport(event: Event) {

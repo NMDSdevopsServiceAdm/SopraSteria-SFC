@@ -1,6 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AdminManagerUser, AdminUser, PendingAdminUser } from '@core/test-utils/admin/MockAdminUsersService';
@@ -13,13 +12,23 @@ import { Establishment } from '../../../../mockdata/establishment';
 import { UserTableComponent } from './user.table.component';
 
 describe('UserTableComponent', () => {
-  const userArr = [ReadUser(), EditUser(), EditUser()] as UserDetails[];
+  const userArr = [ReadUser(), EditUser()] as UserDetails[];
   const adminUserArr = [AdminUser(), AdminManagerUser(), PendingAdminUser()] as UserDetails[];
   const permissionTypes = getUserPermissionsTypes(true);
 
   const setup = async (admin = false, canViewUser = true) => {
-    const { fixture, getByText, getByTestId, queryByText, queryAllByText, queryByTestId, queryAllByTestId } = await render(UserTableComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+    const setupTools = await render(UserTableComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {},
+            },
+          },
+        },
+      ],
       componentProperties: {
         workplace: !admin && Establishment,
         users: admin ? adminUserArr : userArr,
@@ -28,9 +37,9 @@ describe('UserTableComponent', () => {
       },
       declarations: [],
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
-    return { component, fixture, getByText, getByTestId, queryByText, queryAllByText, queryByTestId,queryAllByTestId };
+    return { ...setupTools, component };
   };
 
   it('should render a User Account Summary Workplace Component', async () => {
@@ -49,7 +58,6 @@ describe('UserTableComponent', () => {
 
     expect(getByTestId('row-0')).toBeTruthy();
     expect(getByTestId('row-1')).toBeTruthy();
-    expect(getByTestId('row-2')).toBeTruthy();
   });
 
   it('should render a pending user row with additional highlight class', async () => {
@@ -122,88 +130,37 @@ describe('UserTableComponent', () => {
       expect(queryByText('Admin manager')).toBeTruthy();
     });
 
-    it('should have permission as Primary edit and WDF when user isPrimary and canManageWdfClaims are true and role is Edit', async () => {
+    it('should have permission as Primary edit when user isPrimary is true and role is Edit', async () => {
       const { component, fixture, queryByText } = await setup();
 
-      component.users[0].role = 'Edit' as Roles;
-      component.users[0].isPrimary = true;
-      component.users[0].canManageWdfClaims = true;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Primary edit and WDF')).toBeTruthy();
-    });
-
-    it('should have permission as Primary edit when user isPrimary is true, canManageWdfClaims is false and role is Edit', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.users[0].role = 'Edit' as Roles;
-      component.users[0].isPrimary = true;
-      component.users[0].canManageWdfClaims = false;
+      component.users[1].role = 'Edit' as Roles;
+      component.users[1].isPrimary = true;
 
       fixture.detectChanges();
 
       expect(queryByText('Primary edit')).toBeTruthy();
     });
 
-    it('should have permission as Edit and WDF when user isPrimary is false, canManageWdfClaims is true and role is Edit', async () => {
+    it('should have permission as Edit when user isPrimary is false and role is Edit', async () => {
       const { component, fixture, queryByText } = await setup();
 
-      component.users[0].role = 'Edit' as Roles;
-      component.users[0].isPrimary = false;
-      component.users[0].canManageWdfClaims = true;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Edit and WDF')).toBeTruthy();
-    });
-
-    it('should have permission as Edit when user isPrimary is false, canManageWdfClaims is false and role is Edit', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.users[0].role = 'Edit' as Roles;
-      component.users[0].isPrimary = false;
-      component.users[0].canManageWdfClaims = false;
+      component.users[1].role = 'Edit' as Roles;
+      component.users[1].isPrimary = false;
 
       fixture.detectChanges();
 
       expect(queryByText('Edit')).toBeTruthy();
     });
 
-    it('should have permission as Read only and WDF when user canManageWdfClaims is true and role is Read', async () => {
+    it('should have permission as Read only when role is Read', async () => {
       const { component, fixture, queryByText } = await setup();
 
       component.users[0].role = 'Read' as Roles;
-      component.users[0].canManageWdfClaims = true;
-      component.users[0].isPrimary = false;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Read only and WDF')).toBeTruthy();
-    });
-
-    it('should have permission as Read only when user canManageWdfClaims is false and role is Read', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.users[0].role = 'Read' as Roles;
-      component.users[0].canManageWdfClaims = false;
       component.users[0].isPrimary = false;
 
       fixture.detectChanges();
 
       expect(queryByText('Read only')).toBeTruthy();
-    });
-
-    it('should have permission as WDF when user canManageWdfClaims is true and role is None', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.users[0].role = 'None' as Roles;
-      component.users[0].canManageWdfClaims = true;
-      component.users[0].isPrimary = false;
-
-      fixture.detectChanges();
-
-      expect(queryByText('WDF')).toBeTruthy();
     });
   });
 });

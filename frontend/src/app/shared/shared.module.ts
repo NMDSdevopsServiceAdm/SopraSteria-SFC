@@ -55,7 +55,6 @@ import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-w
 import { NavigateToWorkplaceDropdownComponent } from './components/navigate-to-workplace-dropdown/navigate-to-workplace-dropdown.component';
 import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
 import { NewTabsComponent } from './components/new-tabs/new-tabs.component';
-import { WDFTabComponent } from './components/new-wdf-tabs/new-wdf-tab.component';
 import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-summary/wdf-workplace-summary.component';
 import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/workplace-summary.component';
 import { OtherLinksComponent } from './components/other-links/other-links.component';
@@ -106,11 +105,9 @@ import { TrainingSelectViewPanelComponent } from './components/training-select-v
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { UserTableComponent } from './components/users-table/user.table.component';
-import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
 import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
-import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
@@ -188,7 +185,6 @@ import { NumberInputWithButtonsComponent } from './components/number-input-with-
     TrainingLinkPanelComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
-    WdfConfirmationPanelComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
@@ -227,7 +223,6 @@ import { NumberInputWithButtonsComponent } from './components/number-input-with-
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
-    WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
@@ -249,7 +244,6 @@ import { NumberInputWithButtonsComponent } from './components/number-input-with-
     NewWorkplaceSummaryComponent,
     NewArticleListComponent,
     LinkWithArrowComponent,
-    WDFTabComponent,
     WDFWorkplaceSummaryComponent,
     NewDashboardHeaderComponent,
     ServiceNamePipe,
@@ -319,7 +313,6 @@ import { NumberInputWithButtonsComponent } from './components/number-input-with-
     TabsComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
-    WdfConfirmationPanelComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
@@ -359,7 +352,6 @@ import { NumberInputWithButtonsComponent } from './components/number-input-with-
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
-    WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
@@ -382,7 +374,6 @@ import { NumberInputWithButtonsComponent } from './components/number-input-with-
     NewWorkplaceSummaryComponent,
     NewArticleListComponent,
     LinkWithArrowComponent,
-    WDFTabComponent,
     WDFWorkplaceSummaryComponent,
     NewDashboardHeaderComponent,
     ServiceNamePipe,
