@@ -5,8 +5,8 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import {
   DoYouWantToAddOrDeleteAnswer,
-  UpdateWorkplaceAfterStaffChangesService,
-} from '@core/services/update-workplace-after-staff-changes.service';
+  VacanciesAndTurnoverService,
+} from '@core/services/vacancies-and-turnover.service';
 
 @Component({
   selector: 'app-add-another-staff-record',
@@ -21,7 +21,7 @@ export class AddAnotherStaffRecordComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private establishmentService: EstablishmentService,
-    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {
     this.form = this.formBuilder.group({
       addAnotherStaffRecord: null,
@@ -34,7 +34,7 @@ export class AddAnotherStaffRecordComponent implements OnInit {
   }
 
   private prefillRadioIfUserHasComeBackToPage(): void {
-    const previousAnswer = this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer;
+    const previousAnswer = this.vacanciesAndTurnoverService.doYouWantToAddOrDeleteAnswer;
 
     if (previousAnswer) {
       this.form.get('addAnotherStaffRecord').setValue(previousAnswer);
@@ -43,11 +43,11 @@ export class AddAnotherStaffRecordComponent implements OnInit {
 
   public onSubmit() {
     if (this.form.controls['addAnotherStaffRecord'].value === DoYouWantToAddOrDeleteAnswer.YES) {
-      this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.YES;
+      this.vacanciesAndTurnoverService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.YES;
       this.router.navigate(['/workplace', this.workplaceUid, 'staff-record', 'create-staff-record', 'staff-details']);
     } else {
-      this.updateWorkplaceAfterStaffChangesService.resetVisitedAndSubmittedPages();
-      this.updateWorkplaceAfterStaffChangesService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.NO;
+      this.vacanciesAndTurnoverService.resetVisitedAndSubmittedPages();
+      this.vacanciesAndTurnoverService.doYouWantToAddOrDeleteAnswer = DoYouWantToAddOrDeleteAnswer.NO;
 
       this.router.navigate([
         '/workplace',

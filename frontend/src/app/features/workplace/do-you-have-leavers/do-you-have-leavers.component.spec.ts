@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { jobOptionsEnum, Starter } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -12,11 +11,15 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers.component';
+import { FormatUtil } from '@core/utils/format-util';
 
 describe('DoYouHaveLeaversComponent', () => {
+  const today = new Date();
+  today.setFullYear(today.getFullYear() - 1);
+  const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
   async function setup(overrides: any = {}) {
     const setupTools = await render(DoYouHaveLeaversComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
         UntypedFormBuilder,
@@ -28,6 +31,15 @@ describe('DoYouHaveLeaversComponent', () => {
             overrides?.workplace,
           ),
           deps: [HttpClient],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {},
+              data: {},
+            },
+          },
         },
       ],
     });
@@ -60,7 +72,7 @@ describe('DoYouHaveLeaversComponent', () => {
     const { getByRole, getByTestId } = await setup();
 
     const heading = getByRole('heading', {
-      name: /Have you had any staff leave in the last 12 months?/i,
+      name: `Have you had any leavers SINCE ${todayOneYearAgo}?`,
     });
 
     const sectionHeading = within(getByTestId('section-heading'));
@@ -72,7 +84,7 @@ describe('DoYouHaveLeaversComponent', () => {
   it('should show the hint text', async () => {
     const { getByTestId } = await setup();
 
-    const hintText = 'We only want to know about leavers who have left permanent and temporary job roles.';
+    const hintText = 'We only want to know about leavers who were in permanent and temporary job roles.';
 
     expect(within(getByTestId('hint-text')).getByText(hintText)).toBeTruthy();
   });
@@ -417,7 +429,7 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(continueButton);
       fixture.detectChanges();
 
-      expect(getAllByText("Select yes if you've had any staff leave in the last 12 months").length).toBe(2);
+      expect(getAllByText(`Select yes if you've had leavers since ${todayOneYearAgo}`).length).toBe(2);
     });
   });
 

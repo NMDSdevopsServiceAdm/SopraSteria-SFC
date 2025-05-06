@@ -4,7 +4,7 @@ import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 @Injectable({
   providedIn: 'root',
 })
-export class UpdateWorkplaceAfterStaffChangesService {
+export class VacanciesAndTurnoverService {
   constructor() {}
 
   private visitedPages: Set<WorkplaceUpdatePage> = new Set();

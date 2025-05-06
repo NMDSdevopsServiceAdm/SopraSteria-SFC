@@ -8,7 +8,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { Reason, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
@@ -45,7 +45,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
     private formBuilder: UntypedFormBuilder,
     private backLinkService: BackLinkService,
     private route: ActivatedRoute,
-    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {}
 
   ngOnInit(): void {
@@ -142,7 +142,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
   }
 
   private onSuccess(): void {
-    this.updateWorkplaceAfterStaffChangesService.clearDoYouWantToAddOrDeleteAnswer();
+    this.vacanciesAndTurnoverService.clearDoYouWantToAddOrDeleteAnswer();
 
     const nextPage =
       this.totalNumberOfStaffBeforeDelete > 1

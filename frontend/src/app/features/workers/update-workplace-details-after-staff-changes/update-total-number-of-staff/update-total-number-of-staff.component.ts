@@ -8,10 +8,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffConstraints, TotalStaffFormService } from '@core/services/total-staff-form.service';
-import {
-  UpdateWorkplaceAfterStaffChangesService,
-  WorkplaceUpdatePage,
-} from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -38,7 +35,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     private establishmentService: EstablishmentService,
     private backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
-    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {}
 
   ngOnInit(): void {
@@ -48,7 +45,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     this.setupFormError();
     this.setBackLink();
     this.prefill();
-    this.updateWorkplaceAfterStaffChangesService.addToVisitedPages(WorkplaceUpdatePage.TOTAL_STAFF);
+    this.vacanciesAndTurnoverService.addToVisitedPages(WorkplaceUpdatePage.TOTAL_STAFF);
   }
 
   private setupForm(): void {
@@ -97,7 +94,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
 
   onSuccess(data: { numberOfStaff: number }): void {
     this.updateWorkplaceState(data.numberOfStaff);
-    this.updateWorkplaceAfterStaffChangesService.addToSubmittedPages(WorkplaceUpdatePage.TOTAL_STAFF);
+    this.vacanciesAndTurnoverService.addToSubmittedPages(WorkplaceUpdatePage.TOTAL_STAFF);
 
     this.returnToPreviousPage();
   }

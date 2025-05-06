@@ -14,15 +14,40 @@ import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver
 import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
 import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-for-leaving.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
-import { WorkplaceUpdateFlowType } from '@core/services/update-workplace-after-staff-changes.service';
-import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
-import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
-import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
+import { WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
+import {
+  SelectQualificationTypeComponent,
+} from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
+import {
+  SelectTrainingCategoryComponent,
+} from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
+import {
+  ViewTrainingComponent,
+} from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
+import {
+  UpdateLeaversComponent,
+} from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import {
+  UpdateStartersComponent,
+} from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
+import {
+  UpdateVacanciesComponent,
+} from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 
-import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
+import {
+  JobRoleType,
+  SelectJobRolesToAddComponent,
+} from '../../shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
+import {
+  AddEditQualificationComponent,
+} from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from '../training-and-qualifications/add-edit-training/add-edit-training.component';
-import { DeleteRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
-import { NewTrainingAndQualificationsRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
+import {
+  DeleteRecordComponent,
+} from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
+import {
+  NewTrainingAndQualificationsRecordComponent,
+} from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
@@ -43,7 +68,9 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
-import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
+import {
+  Level2AdultSocialCareCertificateComponent,
+} from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
@@ -58,20 +85,19 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
+import {
+  SocialCareQualificationLevelComponent,
+} from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import {
-  JobRoleType,
-  SelectJobRolesToAddComponent,
-} from './update-workplace-details-after-staff-changes/select-job-roles-to-add/select-job-roles-to-add.component';
-import { UpdateLeaversComponent } from './update-workplace-details-after-staff-changes/update-leavers/update-leavers.component';
-import { UpdateStartersComponent } from './update-workplace-details-after-staff-changes/update-starters/update-starters.component';
-import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
-import { UpdateVacanciesComponent } from './update-workplace-details-after-staff-changes/update-vacancies/update-vacancies.component';
-import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
+  UpdateTotalNumberOfStaffComponent,
+} from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
+import {
+  UpdateWorkplaceDetailsAfterStaffChangesComponent,
+} from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
@@ -109,13 +135,13 @@ const routes: Routes = [
         path: 'update-vacancies',
         component: UpdateVacanciesComponent,
         canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies' },
+        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies', staffUpdatesView: true },
       },
       {
         path: 'update-starters',
         component: UpdateStartersComponent,
         canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies' },
+        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies', staffUpdatesView: true },
       },
       {
         path: 'update-vacancies-job-roles',
@@ -165,7 +191,7 @@ const routes: Routes = [
         path: 'update-vacancies',
         component: UpdateVacanciesComponent,
         canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies' },
+        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies', staffUpdatesView: true },
       },
       {
         path: 'update-vacancies-job-roles',
@@ -182,7 +208,7 @@ const routes: Routes = [
         path: 'update-leavers',
         component: UpdateLeaversComponent,
         canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update leavers' },
+        data: { permissions: ['canEditEstablishment'], title: 'Update leavers', staffUpdatesView: true },
       },
       {
         path: 'update-leavers-job-roles',

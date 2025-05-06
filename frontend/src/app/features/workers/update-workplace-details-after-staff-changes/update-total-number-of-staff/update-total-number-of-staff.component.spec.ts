@@ -5,13 +5,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-  UpdateWorkplaceAfterStaffChangesService,
-  WorkplaceUpdatePage,
-} from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -57,8 +54,8 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
           }),
         },
         {
-          provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({
             addToVisitedPages: addToVisitedPagesSpy,
             addToSubmittedPages: addToSubmittedPagesSpy,
           }),
@@ -92,7 +89,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should add page to visitedPages in updateWorkplaceAfterStaffChangesService', async () => {
+  it('should add page to visitedPages in vacanciesAndTurnoverService', async () => {
     const { addToVisitedPagesSpy } = await setup();
 
     expect(addToVisitedPagesSpy).toHaveBeenCalledWith(WorkplaceUpdatePage.TOTAL_STAFF);
@@ -173,7 +170,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
       expect(postStaffSpy).toHaveBeenCalledWith(mockEstablishment.uid, 10);
     });
 
-    it('should add total staff page to submittedPages in UpdateWorkplaceAfterStaffChangesService when successful', async () => {
+    it('should add total staff page to submittedPages in vacanciesAndTurnoverService when successful', async () => {
       const { addToSubmittedPagesSpy } = await setup();
 
       await fillInNumberAndSubmitForm('10');

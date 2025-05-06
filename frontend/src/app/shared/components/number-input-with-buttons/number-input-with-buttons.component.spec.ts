@@ -1,8 +1,7 @@
-import lodash from 'lodash';
-
 import { SharedModule } from '@shared/shared.module';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import lodash from 'lodash';
 
 import { NumberInputWithButtonsComponent } from './number-input-with-buttons.component';
 

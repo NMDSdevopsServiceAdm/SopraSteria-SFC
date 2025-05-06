@@ -1,11 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
+import { StarterLeaverVacancy } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { JobService } from '@core/services/job.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
 
 @Component({
@@ -32,14 +32,14 @@ export class SelectJobRolesToAddComponent implements OnInit {
   public disabledJobIds: number[] = [];
   public jobGroupsToOpenAtStart: string[] = [];
 
-  protected prefillData: Array<Vacancy | Starter | Leaver> = [];
+  protected prefillData: Array<StarterLeaverVacancy> = [];
   protected selectedJobIds: number[] = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backlinkService: BackLinkService,
-    protected updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
+    protected vacanciesAndTurnoverService: VacanciesAndTurnoverService,
     protected route: ActivatedRoute,
   ) {}
 
@@ -72,7 +72,7 @@ export class SelectJobRolesToAddComponent implements OnInit {
   }
 
   private prefill(): void {
-    this.prefillData = this.updateWorkplaceAfterStaffChangesService[this.selectedFieldState] || [];
+    this.prefillData = this.vacanciesAndTurnoverService[this.selectedFieldState] || [];
 
     this.disabledJobIds = this.prefillData.map((jobRole) => jobRole.jobId) ?? [];
     this.jobGroupsToOpenAtStart = this.jobGroups
@@ -112,10 +112,10 @@ export class SelectJobRolesToAddComponent implements OnInit {
   private storeUpdatedJobRoles(): void {
     const updatedJobRoles = this.getUpdatedJobRoles();
 
-    this.updateWorkplaceAfterStaffChangesService[this.selectedFieldState] = updatedJobRoles;
+    this.vacanciesAndTurnoverService[this.selectedFieldState] = updatedJobRoles;
   }
 
-  private getUpdatedJobRoles(): Array<Vacancy | Starter | Leaver> {
+  private getUpdatedJobRoles(): Array<StarterLeaverVacancy> {
     const selectedJobIds = this.form.get('selectedJobRoles').value;
     const jobRolesToAdd = this.jobsAvailable
       .filter((job) => selectedJobIds.includes(job.id))

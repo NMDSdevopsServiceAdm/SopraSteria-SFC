@@ -6,6 +6,7 @@ import { URLStructure } from '@core/model/url.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -43,6 +44,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private establishmentService: EstablishmentService,
     private cqcStatusChangeService: CqcStatusChangeService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -100,6 +102,11 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   private getPermissions(): void {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+  }
+
+  public clearPreviouslySelectedJobRolesAndSetReturn(): void {
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
+    this.setReturn();
   }
 
   public setReturn(): void {

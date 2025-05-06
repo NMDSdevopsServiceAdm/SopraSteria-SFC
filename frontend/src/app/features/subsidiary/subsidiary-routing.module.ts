@@ -10,9 +10,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
-import {
-  GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
-} from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
+import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
@@ -24,15 +22,9 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
-import {
-  AcceptPreviousCareCertificateComponent,
-} from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
-import {
-  BenefitsStatutorySickPayComponent,
-} from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
-import {
-  ChangeExpiresSoonAlertsComponent,
-} from '@features/workplace/change-expires-soon-alerts/change-expires-soon-alerts.component';
+import { AcceptPreviousCareCertificateComponent } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
+import { BenefitsStatutorySickPayComponent } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
+import { ChangeExpiresSoonAlertsComponent } from '@features/workplace/change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from '@features/workplace/check-answers/check-answers.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
@@ -41,68 +33,49 @@ import { DoYouHaveLeaversComponent } from '@features/workplace/do-you-have-leave
 import { DoYouHaveStartersComponent } from '@features/workplace/do-you-have-starters/do-you-have-starters.component';
 import { DoYouHaveVacanciesComponent } from '@features/workplace/do-you-have-vacancies/do-you-have-vacancies.component';
 import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-workplace.component';
-import {
-  EmployedFromOutsideUkExistingWorkersComponent,
-} from '@features/workplace/employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
-import {
-  HealthAndCareVisaExistingWorkers,
-} from '@features/workplace/health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
+import { EmployedFromOutsideUkExistingWorkersComponent } from '@features/workplace/employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
+import { HealthAndCareVisaExistingWorkers } from '@features/workplace/health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 import { HowManyLeaversComponent } from '@features/workplace/how-many-leavers/how-many-leavers.component';
 import { HowManyStartersComponent } from '@features/workplace/how-many-starters/how-many-starters.component';
 import { HowManyVacanciesComponent } from '@features/workplace/how-many-vacancies/how-many-vacancies.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
 import { PensionsComponent } from '@features/workplace/pensions/pensions.component';
 import { RegulatedByCqcComponent } from '@features/workplace/regulated-by-cqc/regulated-by-cqc.component';
-import {
-  SelectLeaverJobRolesComponent,
-} from '@features/workplace/select-leaver-job-roles/select-leaver-job-roles.component';
-import {
-  SelectMainServiceCqcConfirmComponent,
-} from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import { SelectLeaverJobRolesComponent } from '@features/workplace/select-leaver-job-roles/select-leaver-job-roles.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
 import { SelectMainServiceComponent } from '@features/workplace/select-main-service/select-main-service.component';
-import {
-  SelectPrimaryUserDeleteComponent,
-} from '@features/workplace/select-primary-user-delete/select-primary-user-delete.component';
+import { SelectPrimaryUserDeleteComponent } from '@features/workplace/select-primary-user-delete/select-primary-user-delete.component';
 import { SelectPrimaryUserComponent } from '@features/workplace/select-primary-user/select-primary-user.component';
-import {
-  SelectStarterJobRolesComponent,
-} from '@features/workplace/select-starter-job-roles/select-starter-job-roles.component';
-import {
-  SelectVacancyJobRolesComponent,
-} from '@features/workplace/select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { SelectStarterJobRolesComponent } from '@features/workplace/select-starter-job-roles/select-starter-job-roles.component';
+import { SelectVacancyJobRolesComponent } from '@features/workplace/select-vacancy-job-roles/select-vacancy-job-roles.component';
 import { SelectWorkplaceComponent } from '@features/workplace/select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from '@features/workplace/service-users/service-users.component';
 import { ServicesCapacityComponent } from '@features/workplace/services-capacity/services-capacity.component';
-import {
-  StaffBenefitCashLoyaltyComponent,
-} from '@features/workplace/staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
-import {
-  StaffBenefitHolidayLeaveComponent,
-} from '@features/workplace/staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
-import {
-  StaffRecruitmentCaptureTrainingRequirementComponent,
-} from '@features/workplace/staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
+import { StaffBenefitCashLoyaltyComponent } from '@features/workplace/staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
+import { StaffBenefitHolidayLeaveComponent } from '@features/workplace/staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
+import { StaffRecruitmentCaptureTrainingRequirementComponent } from '@features/workplace/staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StartComponent } from '@features/workplace/start/start.component';
 import { TotalStaffQuestionComponent } from '@features/workplace/total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
-import {
-  UserAccountEditDetailsComponent,
-} from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
-import {
-  UserAccountEditPermissionsComponent,
-} from '@features/workplace/user-account-edit-permissions/user-account-edit-permissions.component';
+import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import { UserAccountEditPermissionsComponent } from '@features/workplace/user-account-edit-permissions/user-account-edit-permissions.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
+import {
+  JobRoleType,
+  SelectJobRolesToAddComponent,
+} from '@shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
+import { UpdateLeaversComponent } from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
+import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 
 import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
 import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
-import {
-  ViewSubsidiaryTrainingAndQualificationsComponent,
-} from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
+import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 
@@ -423,6 +396,26 @@ const routes: Routes = [
         },
       },
       {
+        path: 'update-vacancies',
+        component: UpdateVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update Vacancies',
+        },
+      },
+      {
+        path: 'update-vacancies-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Vacancies,
+          title: 'Select job roles to add',
+        },
+      },
+      {
         path: 'do-you-have-starters',
         component: DoYouHaveStartersComponent,
         canActivate: [CheckPermissionsGuard],
@@ -452,6 +445,26 @@ const routes: Routes = [
         },
       },
       {
+        path: 'update-starters',
+        component: UpdateStartersComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update Starters',
+        },
+      },
+      {
+        path: 'update-starters-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Starters,
+          title: 'Select job roles to add',
+        },
+      },
+      {
         path: 'do-you-have-leavers',
         component: DoYouHaveLeaversComponent,
         canActivate: [CheckPermissionsGuard],
@@ -478,6 +491,26 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'How many leavers',
+        },
+      },
+      {
+        path: 'update-leavers',
+        component: UpdateLeaversComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update Leavers',
+        },
+      },
+      {
+        path: 'update-leavers-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Leavers,
+          title: 'Select job roles to add',
         },
       },
       {

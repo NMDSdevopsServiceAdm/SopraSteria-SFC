@@ -6,10 +6,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import {
   DoYouWantToAddOrDeleteAnswer,
-  UpdateWorkplaceAfterStaffChangesService,
-} from '@core/services/update-workplace-after-staff-changes.service';
+  VacanciesAndTurnoverService,
+} from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
@@ -28,8 +28,8 @@ describe('DeleteAnotherStaffRecordComponent', () => {
           useClass: MockEstablishmentService,
         },
         {
-          provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({
             resetVisitedAndSubmittedPages: resetVisitedAndSubmittedPagesSpy,
             ...overrides.updateWorkplaceService,
           }),
@@ -43,11 +43,9 @@ describe('DeleteAnotherStaffRecordComponent', () => {
     const router = injector.inject(Router) as Router;
     const navigateSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    const updateWorkplaceAfterStaffChangesService = injector.inject(
-      UpdateWorkplaceAfterStaffChangesService,
-    ) as UpdateWorkplaceAfterStaffChangesService;
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService) as VacanciesAndTurnoverService;
     const doYouWantToAddOrDeleteAnswerSpy = spyOnProperty(
-      updateWorkplaceAfterStaffChangesService,
+      vacanciesAndTurnoverService,
       'doYouWantToAddOrDeleteAnswer',
       'set',
     );

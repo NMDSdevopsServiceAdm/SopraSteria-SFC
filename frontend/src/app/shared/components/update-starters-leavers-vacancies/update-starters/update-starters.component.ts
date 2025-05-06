@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
-import { WorkplaceUpdatePage } from '@core/services/update-workplace-after-staff-changes.service';
-import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import { WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
+import {
+  UpdateStartersLeaversVacanciesDirective,
+} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-update-starters',
-  templateUrl:
-    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
-  styleUrl:
-    '../../../../shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.scss',
+  templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
 })
 export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirective {
   public totalNumberDescription = 'Total number of starters';
@@ -20,6 +19,7 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
   public noOrDoNotKnowErrorMessage = 'Select no staff started or do not know';
   public numberRequiredErrorMessage = 'Enter the number of starters or remove';
   public validNumberErrorMessage = 'Number of starters must be between 1 and 999';
+  public addExplanationMessage = 'Only add the number of starters in permanent and temporary job roles.';
 
   protected slvField = 'starters';
   protected selectedField = 'selectedStarters';
