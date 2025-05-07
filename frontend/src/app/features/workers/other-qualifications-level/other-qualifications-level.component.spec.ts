@@ -101,7 +101,7 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it('should render the page with a save button when the return value is null', async () => {
+    it('should render the page with a Save and continue button when the return value is null', async () => {
       const { getByText } = await setup({ returnUrl: false });
 
       const button = getByText('Save and continue');
