@@ -83,10 +83,10 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it('should render the page with a save button when the return value is null', async () => {
+    it('should render the page with a Save and continue button when the return value is null', async () => {
       const { getByText } = await setup(false);
 
-      const button = getByText('Save');
+      const button = getByText('Save and continue');
       const viewRecordLink = getByText('View this staff record');
 
       expect(button).toBeTruthy();
@@ -128,7 +128,7 @@ describe('OtherQualificationsLevelComponent', () => {
       const select = getByLabelText('Qualification level', { exact: false });
       fireEvent.change(select, { target: { value: '1' } });
 
-      const saveButton = getByText('Save');
+      const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
       fixture.detectChanges();
 
@@ -239,7 +239,7 @@ describe('OtherQualificationsLevelComponent', () => {
       const select = getByLabelText('Qualification level', { exact: false });
       fireEvent.change(select, { target: { value: '1' } });
 
-      const saveButton = getByText('Save');
+      const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
 
       expect(alertSpy).toHaveBeenCalledWith({
