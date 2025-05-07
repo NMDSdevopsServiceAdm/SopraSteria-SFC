@@ -68,7 +68,7 @@ const buildWorkerRecord = build('WorkerRecord', {
   },
 });
 
-describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
+describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
   describe('validations', () => {
     describe('days sick', () => {
       it('should emit a warning when days sick not already changed today', async () => {
@@ -1458,6 +1458,7 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           overrides: {
             STATUS: 'NEW',
             SALARYINT: '2',
+            SALARY: '',
           },
         });
 
@@ -1468,8 +1469,8 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors[0]).to.include({
           lineNumber: 2,
-          errCode: WorkerCsvValidator.SALARY_ERROR,
-          errType: 'SALARYINT_ERROR',
+          errCode: WorkerCsvValidator.SALARY_INT_ERROR,
+          errType: 'SALARY_INT_ERROR',
           error: 'The code you have entered for SALARYINT is incorrect',
           source: worker.SALARYINT,
           column: 'SALARYINT',
@@ -1494,8 +1495,8 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors[0]).to.include({
           lineNumber: 2,
-          errCode: WorkerCsvValidator.SALARY_ERROR,
-          errType: 'SALARYINT_ERROR',
+          errCode: WorkerCsvValidator.SALARY_INT_ERROR,
+          errType: 'SALARY_INT_ERROR',
           error: 'Salary Int (SALARYINT) must be an integer',
           source: worker.SALARYINT,
           column: 'SALARYINT',
@@ -1646,7 +1647,7 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           lineNumber: 2,
           warnCode: WorkerCsvValidator.SALARY_WARNING,
           warnType: 'SALARY_WARNING',
-          warning: `The code you have entered for SALARY will be ignored as SALARYINT is 999`,
+          warning: `SALARY will be ignored as SALARYINT is 999`,
           source: `SALARYINT (${worker.SALARYINT}) - SALARY (${worker.SALARY})`,
           column: 'SALARY',
           name: 'MARMA',
@@ -1657,10 +1658,66 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator._salaryInt).to.equal("Don't know");
         expect(validator._salary).to.equal(null);
       });
+
+      it('should give an error if SalaryInt was "Hourly" and Salary column was filled', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '3',
+            SALARY: '30000',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const expectedError = {
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.SALARY_INT_NOT_MATCH_SALARY_ERROR,
+          errType: 'SALARY_INT_ERROR',
+          error: 'The code you have entered for SALARYINT does not match SALARY',
+          source: `SALARYINT (${worker.SALARYINT}) - SALARY (${worker.SALARY})`,
+          column: 'SALARYINT/SALARY',
+          name: 'MARMA',
+          worker: '3',
+        };
+
+        expect(validator._validationErrors).to.deep.equal([expectedError]);
+      });
+
+      it('should not add a duplicated error if already got SALARY_INT_ERROR and Salary column was filled', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '2',
+            SALARY: '30000',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const expectedError = {
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.SALARY_INT_ERROR,
+          errType: 'SALARY_INT_ERROR',
+          error: 'The code you have entered for SALARYINT is incorrect',
+          source: worker.SALARYINT,
+          column: 'SALARYINT',
+          name: 'MARMA',
+          worker: '3',
+        };
+
+        expect(validator._validationErrors).to.deep.equal([expectedError]);
+      });
     });
 
-    describe('_validateHourlyRate', () => {
-      describe('should set the hourly rate when SalaryInt was "3" and Hourly rate column was filled with decimal number', () => {
+    describe('_validateHourlyRate()', () => {
+      describe('should set the hourly rate when SalaryInt was "3" and Hourly rate column was given a decimal number', () => {
         const test_cases = ['15.53', '0.53', '3', '3.00'];
         const expected_results = [15.53, 0.53, 3, 3];
 
@@ -1706,10 +1763,10 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         const expectedError = {
           lineNumber: 2,
-          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
-          errType: 'HOURLY_RATE_ERROR',
+          errCode: WorkerCsvValidator.SALARY_INT_NOT_MATCH_HOURLY_RATE_ERROR,
+          errType: 'SALARY_INT_ERROR',
           error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
-          source: `SALARYINT(${worker.SALARYINT}) - HOURLYRATE (${worker.HOURLYRATE})`,
+          source: `SALARYINT (${worker.SALARYINT}) - HOURLYRATE (${worker.HOURLYRATE})`,
           column: 'SALARYINT/HOURLYRATE',
           name: 'MARMA',
           worker: '3',
@@ -1735,10 +1792,10 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         const expectedError = {
           lineNumber: 2,
-          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
-          errType: 'HOURLY_RATE_ERROR',
+          errCode: WorkerCsvValidator.SALARY_INT_NOT_MATCH_HOURLY_RATE_ERROR,
+          errType: 'SALARY_INT_ERROR',
           error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
-          source: `SALARYINT(${worker.SALARYINT}) - HOURLYRATE (${worker.HOURLYRATE})`,
+          source: `SALARYINT (${worker.SALARYINT}) - HOURLYRATE (${worker.HOURLYRATE})`,
           column: 'SALARYINT/HOURLYRATE',
           name: 'MARMA',
           worker: '3',
@@ -1747,7 +1804,40 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator._validationErrors).to.deep.equal([expectedError]);
       });
 
-      it(`should give an error if Hourly rate column was filled with invalid value`, async () => {
+      it('should not add a duplicated error if already got SALARY_INT_ERROR and Hourly rate column was filled', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            SALARYINT: '2',
+            SALARY: '',
+            HOURLYRATE: '15',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const expectedWarning = {
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.SALARY_INT_ERROR,
+          errType: 'SALARY_INT_ERROR',
+          error: 'The code you have entered for SALARYINT is incorrect',
+          source: worker.SALARYINT,
+          column: 'SALARYINT',
+          name: 'MARMA',
+          worker: '3',
+        };
+
+        expect(validator._validationErrors).to.deep.includes(expectedWarning);
+        expect(validator._validationErrors.length).to.equal(1);
+
+        expect(validator._salaryInt).to.equal(null);
+        expect(validator._hourlyRate).to.equal(null);
+      });
+
+      it('should give an error if Hourly rate column was filled with invalid value', async () => {
         const worker = buildWorkerCsv({
           overrides: {
             STATUS: 'NEW',
@@ -1772,7 +1862,6 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           name: 'MARMA',
           worker: '3',
         };
-        console.log(validator._validationErrors, '<--- validator._validationErrors');
 
         expect(validator._validationErrors).to.deep.equal([expectedWarning]);
         expect(validator._salaryInt).to.equal('Hourly');
@@ -1798,9 +1887,9 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           lineNumber: 2,
           warnCode: WorkerCsvValidator.HOURLY_RATE_WARNING,
           warnType: 'HOURLY_RATE_WARNING',
-          warning: `The code you have entered for HOURLYRATE will be ignored as SALARYINT is 999`,
+          warning: `HOURLYRATE will be ignored as SALARYINT is 999`,
           source: `SALARYINT (${worker.SALARYINT}) - HOURLYRATE (${worker.HOURLYRATE})`,
-          column: 'SALARYINT/HOURLYRATE',
+          column: 'HOURLYRATE',
           name: 'MARMA',
           worker: '3',
         };
@@ -2099,7 +2188,6 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         overrides: {
           STATUS: 'NEW',
           QUALACH01: 'qa;2020',
-          SALARYINT: 'z',
         },
       }),
       2,
@@ -2113,20 +2201,10 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
     const validationErrors = await validator._validationErrors;
     const uniqueValidationErrors = await validator.validationErrors;
 
-    expect(validationErrors.length).to.equal(4);
-    expect(uniqueValidationErrors.length).to.equal(2);
+    expect(validationErrors.length).to.equal(2);
+
+    expect(uniqueValidationErrors.length).to.equal(1);
     expect(uniqueValidationErrors).to.deep.equal([
-      {
-        origin: 'Workers',
-        worker: '3',
-        name: 'MARMA',
-        lineNumber: 2,
-        errCode: WorkerCsvValidator.SALARY_ERROR,
-        errType: 'SALARYINT_ERROR',
-        error: 'Salary Int (SALARYINT) must be an integer',
-        source: 'z',
-        column: 'SALARYINT',
-      },
       {
         origin: 'Workers',
         worker: '3',

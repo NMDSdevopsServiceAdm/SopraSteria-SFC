@@ -151,6 +151,12 @@ class WorkerCsvValidator {
   static get SALARY_INT_ERROR() {
     return 1250;
   }
+  static get SALARY_INT_NOT_MATCH_SALARY_ERROR() {
+    return 1251;
+  }
+  static get SALARY_INT_NOT_MATCH_HOURLY_RATE_ERROR() {
+    return 1252;
+  }
   static get SALARY_ERROR() {
     return 1260;
   }
@@ -571,6 +577,22 @@ class WorkerCsvValidator {
       warnCode: WorkerCsvValidator[warnType],
       warnType: warnType,
       warning,
+      source: this._currentLine[columnName],
+      column: columnName,
+    };
+  }
+
+  _generateError(error, columnName, errType = null) {
+    if (!errType) {
+      errType = `${columnName}_ERROR`;
+    }
+    return {
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+      lineNumber: this._lineNumber,
+      errCode: WorkerCsvValidator[errType],
+      errType: errType,
+      error,
       source: this._currentLine[columnName],
       column: columnName,
     };
@@ -1688,45 +1710,36 @@ class WorkerCsvValidator {
   }
 
   _validateSalaryInt() {
-    const mySalaryInt = parseInt(this._currentLine.SALARYINT, 10);
-    const fieldIsEmpty = !(this._currentLine.SALARYINT && this._currentLine.SALARYINT.length > 0);
-
-    if (fieldIsEmpty) {
+    const salaryIntIsFilled = this._currentLine.SALARYINT?.length > 0;
+    if (!salaryIntIsFilled) {
       return true;
     }
 
+    const mySalaryInt = parseInt(this._currentLine.SALARYINT, 10);
     if (isNaN(mySalaryInt)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: WorkerCsvValidator.SALARY_ERROR,
-        errType: 'SALARYINT_ERROR',
-        error: 'Salary Int (SALARYINT) must be an integer',
-        source: this._currentLine.SALARYINT,
-        column: 'SALARYINT',
-      });
+      this._validationErrors.push(
+        this._generateError('Salary Int (SALARYINT) must be an integer', 'SALARYINT', 'SALARY_INT_ERROR'),
+      );
       return false;
     }
 
-    const salaryIntChosen = SALARY_INT_OPTIONS.find((option) => option.bulkUploadValue === mySalaryInt);
+    const salaryIntOptionChosen = SALARY_INT_OPTIONS.find((option) => option.bulkUploadValue === mySalaryInt);
 
-    if (!salaryIntChosen) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: WorkerCsvValidator.SALARY_ERROR,
-        errType: 'SALARYINT_ERROR',
-        error: 'The code you have entered for SALARYINT is incorrect',
-        source: this._currentLine.SALARYINT,
-        column: 'SALARYINT',
-      });
+    if (!salaryIntOptionChosen) {
+      this._validationErrors.push(
+        this._generateError('The code you have entered for SALARYINT is incorrect', 'SALARYINT', 'SALARY_INT_ERROR'),
+      );
       return false;
     }
 
-    this._salaryInt = salaryIntChosen.databaseValue;
+    this._salaryInt = salaryIntOptionChosen.databaseValue;
     return true;
+  }
+
+  _alreadyHaveSalaryIntError() {
+    return this._validationErrors?.some(
+      (error) => error.errCode === WorkerCsvValidator.SALARY_INT_ERROR && error.lineNumber === this._lineNumber,
+    );
   }
 
   _validateSalary() {
@@ -1748,16 +1761,7 @@ class WorkerCsvValidator {
           this._salary = mySalary;
           return true;
         } else {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: WorkerCsvValidator.SALARY_ERROR,
-            errType: 'SALARY_ERROR',
-            error: `SALARY must be between £500 and £${MAX_VALUE}`,
-            source: this._currentLine.SALARY,
-            column: 'SALARY',
-          });
+          this._validationErrors.push(this._generateError(`SALARY must be between £500 and £${MAX_VALUE}`, 'SALARY'));
           return false;
         }
 
@@ -1768,24 +1772,28 @@ class WorkerCsvValidator {
           lineNumber: this._lineNumber,
           warnCode: WorkerCsvValidator.SALARY_WARNING,
           warnType: 'SALARY_WARNING',
-          warning: 'The code you have entered for SALARY will be ignored as SALARYINT is 999',
+          warning: 'SALARY will be ignored as SALARYINT is 999',
           source: `SALARYINT (${this._currentLine.SALARYINT}) - SALARY (${this._currentLine.SALARY})`,
           column: 'SALARY',
         });
         return false;
 
       default:
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.SALARY_ERROR,
-          errType: 'SALARY_ERROR',
-          error: 'The code you have entered for SALARYINT does not match SALARY',
-          source: `SALARYINT (${this._currentLine.SALARYINT}) - SALARY (${this._currentLine.SALARY})`,
-          column: 'SALARYINT',
-        });
-        return false;
+        if (this._alreadyHaveSalaryIntError()) {
+          return true;
+        } else {
+          this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
+            lineNumber: this._lineNumber,
+            errCode: WorkerCsvValidator.SALARY_INT_NOT_MATCH_SALARY_ERROR,
+            errType: 'SALARY_INT_ERROR',
+            error: 'The code you have entered for SALARYINT does not match SALARY',
+            source: `SALARYINT (${this._currentLine.SALARYINT}) - SALARY (${this._currentLine.SALARY})`,
+            column: 'SALARYINT/SALARY',
+          });
+          return false;
+        }
     }
   }
 
@@ -1807,16 +1815,13 @@ class WorkerCsvValidator {
           this._hourlyRate = myHourlyRate;
           return true;
         } else {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
-            errType: 'HOURLY_RATE_ERROR',
-            error: 'The code you have entered for HOURLYRATE is incorrect',
-            source: this._currentLine.HOURLYRATE,
-            column: 'HOURLYRATE',
-          });
+          this._validationErrors.push(
+            this._generateError(
+              'The code you have entered for HOURLYRATE is incorrect',
+              'HOURLYRATE',
+              'HOURLY_RATE_ERROR',
+            ),
+          );
           return false;
         }
 
@@ -1827,24 +1832,28 @@ class WorkerCsvValidator {
           lineNumber: this._lineNumber,
           warnCode: WorkerCsvValidator.HOURLY_RATE_WARNING,
           warnType: 'HOURLY_RATE_WARNING',
-          warning: 'The code you have entered for HOURLYRATE will be ignored as SALARYINT is 999',
+          warning: 'HOURLYRATE will be ignored as SALARYINT is 999',
           source: `SALARYINT (${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`,
-          column: 'SALARYINT/HOURLYRATE',
+          column: 'HOURLYRATE',
         });
         return false;
 
       default:
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
-          errType: 'HOURLY_RATE_ERROR',
-          error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
-          source: `SALARYINT(${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`,
-          column: 'SALARYINT/HOURLYRATE',
-        });
-        return false;
+        if (this._alreadyHaveSalaryIntError()) {
+          return true;
+        } else {
+          this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
+            lineNumber: this._lineNumber,
+            errCode: WorkerCsvValidator.SALARY_INT_NOT_MATCH_HOURLY_RATE_ERROR,
+            errType: 'SALARY_INT_ERROR',
+            error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
+            source: `SALARYINT (${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`,
+            column: 'SALARYINT/HOURLYRATE',
+          });
+          return false;
+        }
     }
   }
 
