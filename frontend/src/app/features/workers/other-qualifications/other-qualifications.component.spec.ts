@@ -70,10 +70,10 @@ describe('OtherQualificationsComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it('should render the page with a save button, view this staff record and Skip this question link when in flow', async () => {
+    it('should render the page with save and continue button, view this staff record and Skip this question link when in flow', async () => {
       const { getByText } = await setup({ insideFlow: true });
 
-      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
     });
@@ -91,7 +91,7 @@ describe('OtherQualificationsComponent', () => {
         worker: { otherQualification: 'Yes' },
       });
 
-      const button = getByText('Save');
+      const button = getByText('Save and continue');
 
       fireEvent.click(button);
 
@@ -143,7 +143,7 @@ describe('OtherQualificationsComponent', () => {
             fireEvent.click(button);
           }
 
-          fireEvent.click(getByText('Save'));
+          fireEvent.click(getByText('Save and continue'));
 
           expect(routerSpy).toHaveBeenCalledWith([
             '/workplace',
@@ -162,7 +162,7 @@ describe('OtherQualificationsComponent', () => {
             fireEvent.click(button);
           }
 
-          fireEvent.click(getByText('Save'));
+          fireEvent.click(getByText('Save and continue'));
 
           expect(alertSpy).toHaveBeenCalledWith({
             type: 'success',
