@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
-const { onHomePage } = require('../../../support/page_objects/onHomePage');
+const { onHomePage } = require('../../support/page_objects/onHomePage');
 
 describe('Parent training and quals page as edit user', () => {
   beforeEach(() => {

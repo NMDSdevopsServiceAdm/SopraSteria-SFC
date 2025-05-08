@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { onTrainingAndQualsPage } from '../../../support/page_objects/onTrainingAndQualsPage';
+import { onTrainingAndQualsPage } from '../../support/page_objects/onTrainingAndQualsPage';
 
 describe('Standalone training and qualifications page as edit user', () => {
   beforeEach(() => {

@@ -18,6 +18,7 @@ import './commands/loginCommands';
 import './commands/sharedCommands';
 import './commands/workerCommands';
 import './commands/workplaceCommands';
+import './commands/trainingAndQualsCommands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
