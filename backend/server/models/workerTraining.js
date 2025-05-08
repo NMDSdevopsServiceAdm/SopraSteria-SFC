@@ -113,8 +113,9 @@ module.exports = function (sequelize, DataTypes) {
     sortBy = '',
     searchTerm = '',
   ) {
-    const addSearchToCount = searchTerm ? `AND "NameOrIdValue" ILIKE '%${searchTerm}%'` : '';
-
+    const addSearchToCount = searchTerm
+      ? `WHERE w1."NameOrIdValue1" ILIKE '%${searchTerm}%' OR w2."NameOrIdValue2" ILIKE '%${searchTerm}%'`
+      : '';
     const category = await sequelize.models.workerTrainingCategories.findOne({
       where: {
         id: trainingCategoryId,
@@ -207,9 +208,9 @@ module.exports = function (sequelize, DataTypes) {
     const order = () => {
       let specificSort;
       const baseSort = '"NameOrIdValue" ASC';
-      switch(sortBy) {
+      switch (sortBy) {
         case 'staffNameAsc':
-          specificSort = ''
+          specificSort = '';
           break;
         case 'trainingExpired':
           specificSort = '"sortByExpired" DESC,';
@@ -220,19 +221,23 @@ module.exports = function (sequelize, DataTypes) {
         case 'trainingMissing':
           specificSort = '"sortByMissing" DESC,';
           break;
-        default: specificSort = '';
-      };
-      return `${specificSort} ${baseSort}`
-  }
+        default:
+          specificSort = '';
+      }
+      return `${specificSort} ${baseSort}`;
+    };
 
-    const trainingResponse = await sequelize.query(`
+    const trainingResponse = await sequelize.query(
+      `
       ${select}
       ${from}
       ${addSearchToCount}
       ORDER BY ${order()}
-      LIMIT ${pagination.limit} OFFSET ${pagination.offset}`, {type: QueryTypes.SELECT});
+      LIMIT ${pagination.limit} OFFSET ${pagination.offset}`,
+      { type: QueryTypes.SELECT },
+    );
 
-    const response = trainingResponse.map(training => ({
+    const response = trainingResponse.map((training) => ({
       id: training.id,
       uid: training.uid,
       completed: training.completed,
@@ -249,9 +254,9 @@ module.exports = function (sequelize, DataTypes) {
         NameOrIdValue: training.NameOrIdValue,
         mainJob: {
           title: training.jobTitle,
-          id: training.jobFK
-        }
-      }
+          id: training.jobFK,
+        },
+      },
     }));
 
     return { count: +count[0][0].count, rows: response, category };

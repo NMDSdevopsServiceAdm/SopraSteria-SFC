@@ -14,6 +14,7 @@ export class TablePaginationWrapperComponent implements OnInit {
   @Input() searchTerm: string;
   @Input() label = 'Search';
   @Input() accessibleLabel: string;
+  @Input() setQueryInParams: boolean = false;
   @Output() fetchData = new EventEmitter<{
     index: number;
     itemsPerPage: number;
@@ -61,7 +62,11 @@ export class TablePaginationWrapperComponent implements OnInit {
   public handleSearch(searchTerm: string): void {
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
-    this.addQueryParams();
+
+    if (this.setQueryInParams) {
+      this.addQueryParams();
+    }
+
     this.getData();
   }
 

@@ -27,7 +27,7 @@ import { WorkplaceInfoPanelComponent } from '../workplace-info-panel/workplace-i
 import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
 describe('ViewMyWorkplacesComponent', () => {
-  async function setup(hasChildWorkplaces = true, qsParamGetMock = sinon.fake()) {
+  async function setup(hasChildWorkplaces = true) {
     const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText, queryByTestId } =
       await render(ViewMyWorkplacesComponent, {
         imports: [SharedModule, RouterModule, HttpClientTestingModule],
@@ -65,9 +65,6 @@ describe('ViewMyWorkplacesComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               snapshot: {
-                queryParamMap: {
-                  get: qsParamGetMock,
-                },
                 data: {
                   childWorkplaces: hasChildWorkplaces
                     ? {
@@ -99,12 +96,10 @@ describe('ViewMyWorkplacesComponent', () => {
 
     const permissionsService = injector.inject(PermissionsService) as PermissionsService;
     const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
-    const router = injector.inject(Router);
 
     const getChildWorkplacesSpy = spyOn(establishmentService, 'getChildWorkplaces').and.callThrough();
 
     return {
-      router,
       component,
       fixture,
       permissionsService,
@@ -242,30 +237,6 @@ describe('ViewMyWorkplacesComponent', () => {
 
       expect(getByText('Your other workplaces (2)'));
       expect(component.workplaceCount).toEqual(1);
-    });
-
-    it('adds the query params to the url on search', async () => {
-      const { router, fixture, component, getByLabelText } = await setup();
-
-      const routerSpy = spyOn(router, 'navigate');
-      component.totalWorkplaceCount = 13;
-      fixture.autoDetectChanges();
-
-      userEvent.type(getByLabelText('Search child workplace records'), 'search term here{enter}');
-      expect(routerSpy).toHaveBeenCalledWith([], {
-        queryParams: { search: 'search term here' },
-        queryParamsHandling: 'merge',
-      });
-    });
-
-    it('sets the searchTerm if query params are found on render', async () => {
-      const qsParamGetMock = sinon.mock().returns('mysupersearch');
-      const { fixture, component, getByLabelText } = await setup(true, qsParamGetMock);
-
-      component.totalWorkplaceCount = 13;
-      fixture.autoDetectChanges();
-
-      expect((getByLabelText('Search child workplace records') as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
 

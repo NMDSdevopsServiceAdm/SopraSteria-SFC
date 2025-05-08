@@ -47,47 +47,44 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     const permissions = addPermissions ? ['canEditWorker'] : [];
     if (fixTrainingCount) workerObj = { workers: [workers[0]], workerCount: 1 };
 
-    const { fixture, getByText, getByTestId, queryByTestId, getByLabelText, queryByLabelText } = await render(
-      MissingMandatoryTrainingStatusComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-        providers: [
-          WindowRef,
-          BackLinkService,
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: TrainingService,
-            useClass: MockTrainingService,
-          },
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
-            deps: [HttpClient, Router, UserService],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                queryParamMap: {
-                  get: qsParamGetMock,
-                },
-                data: {
-                  training: workerObj,
-                  establishment: establishmentBuilder(),
-                },
-                params: {
-                  establishmentuid: '1234-5678',
-                },
+    const setupTools = await render(MissingMandatoryTrainingStatusComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        WindowRef,
+        BackLinkService,
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: TrainingService,
+          useClass: MockTrainingService,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: qsParamGetMock,
+              },
+              data: {
+                training: workerObj,
+                establishment: establishmentBuilder(),
+              },
+              params: {
+                establishmentuid: '1234-5678',
               },
             },
           },
-        ],
-      },
-    );
-    const component = fixture.componentInstance;
+        },
+      ],
+    });
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -99,13 +96,8 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     );
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getByTestId,
-      queryByTestId,
-      getByLabelText,
-      queryByLabelText,
       routerSpy,
       trainingService,
       trainingServiceSpy,

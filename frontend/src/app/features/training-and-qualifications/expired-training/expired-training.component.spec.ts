@@ -63,11 +63,7 @@ const workers = [
 ];
 
 describe('ExpiredTrainingComponent', () => {
-  async function setup(
-    addPermissions = true,
-    fixTrainingCount = false,
-    qsParamGetMock = sinon.fake(),
-  ) {
+  async function setup(addPermissions = true, fixTrainingCount = false, qsParamGetMock = sinon.fake()) {
     let workerObj = {
       workers,
       workerCount: 2,
