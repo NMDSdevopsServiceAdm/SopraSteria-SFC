@@ -136,6 +136,7 @@ import { CareWorkforcePathwayComponent } from './care-workforce-pathway/care-wor
     DeleteStaffRecordComponent,
     UpdateWorkplaceDetailsAfterStaffChangesComponent,
     UpdateTotalNumberOfStaffComponent,
+    CareWorkforcePathwayComponent,
   ],
   providers: [
     DialogService,
@@ -154,7 +155,6 @@ import { CareWorkforcePathwayComponent } from './care-workforce-pathway/care-wor
     QualificationCertificateService,
     VacanciesAndTurnoverService,
     WorkerReasonsForLeavingResolver,
-    CareWorkforcePathwayComponent,
   ],
 })
 export class WorkersModule {}
