@@ -1015,6 +1015,11 @@ class Worker extends EntityValidator {
             as: 'nurseSpecialisms',
             attributes: ['id', 'specialism'],
           },
+          {
+            model: models.careWorkforcePathwayRoleCategory,
+            as: 'careWorkforcePathwayRoleCategory',
+            attributes: ['id', 'title', 'description'],
+          },
         ],
       };
 
