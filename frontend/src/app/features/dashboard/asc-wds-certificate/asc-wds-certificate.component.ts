@@ -35,7 +35,7 @@ export class AscWdsCertificateComponent implements OnInit {
 
   private getYears = () => {
     const date = new Date();
-    const currentMonth = date.getMonth();
+    const currentMonth = date.getMonth() + 1; // getMonth() return January as 0
     const currentYear = date.getFullYear() - 2000;
 
     if (currentMonth >= 4) {

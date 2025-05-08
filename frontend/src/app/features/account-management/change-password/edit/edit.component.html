@@ -33,10 +33,10 @@
         <div [formGroupName]="'passwordGroup'">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getCreatePasswordInput.errors">
             <label class="govuk-label" for="createPasswordInput">New password</label>
-            <span id="createPasswordInput-hint" class="govuk-hint">
+            <div id="createPasswordInput-hint" class="govuk-hint">
               Must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special
               characters like !, £.
-            </span>
+            </div>
             <span
               *ngIf="submitted && getCreatePasswordInput.errors"
               id="passwordGroup-createPasswordInput-error"
