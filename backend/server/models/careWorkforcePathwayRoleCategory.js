@@ -26,6 +26,14 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"Description"',
       },
+      analysisFileCode: {
+        type: DataTypes.INTEGER,
+        field: '"AnalysisFileCode"',
+      },
+      bulkUploadCode: {
+        type: DataTypes.TEXT,
+        field: '"BulkUploadCode"',
+      },
     },
     {
       tableName: 'CareWorkforcePathwayRoleCategories',
