@@ -125,4 +125,19 @@ describe('careWorkforcePathwayRoleCategories Property', () => {
       expect(equal).to.deep.equal(false);
     });
   });
+
+  describe('toJSON()', () => {
+    it('should return correctly formatted JSON for care workforce pathway role category ', () => {
+      const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
+
+      const property = {
+        roleCategoryId: 2,
+        title: 'New to care2',
+        description: "Is in a care-providing role that's a start point for a career in social care2",
+      };
+      careWorkforcePathwayRoleCategoryProperty.property = property;
+      const json = careWorkforcePathwayRoleCategoryProperty.toJSON();
+      expect(json.careWorkforcePathwayRoleCategory).to.deep.equal(property);
+    });
+  });
 });
