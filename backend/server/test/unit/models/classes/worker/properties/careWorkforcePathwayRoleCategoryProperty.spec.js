@@ -1,6 +1,7 @@
 const expect = require('chai').expect;
 const careWorkforcePathwayRoleCategoryPropertyClass =
   require('../../../../../../models/classes/worker/properties/careWorkforcePathwayRoleCategoryProperty').CareWorkforcePathwayRoleCategoryProperty;
+  const models = require('../../../../models');
 
 describe('careWorkforcePathwayRoleCategories Property', () => {
   describe('restoreFromJSON', async () => {

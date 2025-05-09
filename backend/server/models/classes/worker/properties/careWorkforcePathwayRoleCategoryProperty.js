@@ -16,7 +16,7 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
 
   async restoreFromJson(document) {
     if (document.careWorkforcePathwayRoleCategory) {
-      const validatedData = await this._validateOrigin(document.careWorkforcePathwayRoleCategory);
+      const validatedData = await this.getRoleCategoryFromDatabase(document.careWorkforcePathwayRoleCategory);
 
       if (validatedData) {
         this.property = validatedData;
@@ -64,7 +64,7 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
     };
   }
 
-  async _validateOrigin(payloadData) {
+  async getRoleCategoryFromDatabase(payloadData) {
     let roleCategory = null;
     if (payloadData.roleCategoryId) {
       roleCategory = await models.careWorkforcePathwayRoleCategory.findOne({
@@ -83,7 +83,7 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
         description: roleCategory.description,
       };
     } else {
-      return false;
+      return null;
     }
   }
 };
