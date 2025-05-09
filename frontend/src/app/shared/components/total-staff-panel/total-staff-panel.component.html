@@ -1,20 +1,21 @@
 <dl class="govuk-list--tab">
   <div class="govuk-list--tab__column">
-    <dt data-testid="totalStaffNumber" *ngIf="totalStaff">
+    <dt data-testid="totalStaffNumber" *ngIf="totalStaff | hasValue">
       {{ totalStaff }}
     </dt>
     <dd data-testid="totalStaffText">
-      <span>{{ !totalStaff ? 'Total' : 'total' }} number of staff {{ !totalStaff ? 'is missing' : '' }}</span>
+      <span>{{ (totalStaff | hasValue) ? ' total number of staff' : 'Total number of staff is missing' }}</span>
     </dd>
     <dd data-testid="totalStaffLink">
       <a
         *ngIf="canEditEstablishment"
         [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']"
         class="govuk-!-font-size-19 govuk-!-font-weight-regular govuk-!-padding-right-9 govuk-!-margin-right-9"
-        [ngClass]="{ 'govuk-!-padding-right-9 govuk-!-margin-right-9': !totalStaff }"
+        [ngClass]="{ 'govuk-!-padding-right-9 govuk-!-margin-right-9': !(totalStaff | hasValue) }"
         (click)="setReturn()"
       >
-        {{ totalStaff ? 'Change' : 'Add' }} <span class="govuk-visually-hidden"> total number of staff</span>
+        {{ (totalStaff | hasValue) ? 'Change' : 'Add' }}
+        <span class="govuk-visually-hidden"> total number of staff</span>
       </a>
     </dd>
   </div>
@@ -32,7 +33,7 @@
     </dd>
   </div>
 
-  <ng-container *ngIf="totalStaff && totalStaff !== totalWorkers">
+  <ng-container *ngIf="(totalStaff | hasValue) && totalStaff !== totalWorkers">
     <div class="govuk-list--tab__column">
       <dt data-testid="changeNumber">
         <img
