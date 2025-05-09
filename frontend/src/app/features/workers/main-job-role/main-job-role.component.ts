@@ -125,7 +125,6 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     } else {
       this.next = this.getRoutePath('mandatory-details');
       this.workerService.setAddStaffRecordInProgress(true);
-      this.workerService.clearHasCompletedStaffRecordFlow();
     }
   }
 
