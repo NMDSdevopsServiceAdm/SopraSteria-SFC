@@ -111,7 +111,6 @@ describe('MainJobRoleComponent', () => {
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     const setAddStaffRecordInProgressSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
-    const clearHasCompletedStaffRecordFlowSpy = spyOn(workerService, 'clearHasCompletedStaffRecordFlow');
 
     if (addNewWorker) {
       spyOn(workerService, 'setState').and.callFake(() => {
@@ -136,7 +135,6 @@ describe('MainJobRoleComponent', () => {
       workerService,
       alertSpy,
       setAddStaffRecordInProgressSpy,
-      clearHasCompletedStaffRecordFlowSpy,
     };
   }
 
@@ -279,16 +277,6 @@ describe('MainJobRoleComponent', () => {
         userEvent.click(getByText('Save this staff record'));
 
         expect(setAddStaffRecordInProgressSpy).toHaveBeenCalledWith(true);
-      });
-
-      it('should call clearHasCompletedStaffRecordFlow when clicking save this staff record', async () => {
-        const { getByText, clearHasCompletedStaffRecordFlowSpy } = await setup(true, false, true);
-
-        userEvent.click(getByText('Care providing roles'));
-        userEvent.click(getByText('Care worker'));
-        userEvent.click(getByText('Save this staff record'));
-
-        expect(clearHasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
       });
 
       it('should return the user to the staff records tab when clicking cancel', async () => {
