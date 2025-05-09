@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { QualificationsByGroup, QualificationType } from '@core/model/qualification.model';
-import { CreateTrainingRecordResponse, MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
+import {
+  CreateTrainingRecordResponse,
+  MultipleTrainingResponse,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { NewWorkerMandatoryInfo, Reason, WorkerService } from '@core/services/worker.service';
@@ -412,6 +416,7 @@ export class MockWorkerService extends WorkerService {
   public _worker;
   public _alert;
   public _returnTo;
+  public _addStaffRecordInProgress: boolean;
 
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
@@ -438,6 +443,14 @@ export class MockWorkerService extends WorkerService {
 
   public set returnTo(returnUrl) {
     this._returnTo = returnUrl;
+  }
+
+  public set addStaffRecordInProgress(value: boolean) {
+    this._addStaffRecordInProgress = value;
+  }
+
+  public get addStaffRecordInProgress(): boolean {
+    return this._addStaffRecordInProgress;
   }
 
   public get returnTo(): URLStructure {

@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -38,7 +38,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    private router: Router,
     private workerService: WorkerService,
     protected backLinkService: BackLinkService,
     public breadcrumbService: BreadcrumbService,
@@ -46,7 +45,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.hasCompletedStaffRecordFlow = this.workerService.hasCompletedStaffRecordFlow;
+    this.hasCompletedStaffRecordFlow = this.workerService.addStaffRecordInProgress;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
 
@@ -58,10 +57,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
         if (!this.worker?.completed) {
-          this.workerService.hasCompletedStaffRecordFlow = true;
-          this.hasCompletedStaffRecordFlow = true;
           this.updateCompleted();
-          this.showContinueButtons();
         }
       }),
     );
@@ -83,7 +79,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   private showContinueButtons(): void {
     this.continueRoute = ['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record'];
     this.vacanciesAndTurnoverService.clearDoYouWantToAddOrDeleteAnswer();
-    this.trackNavigationToClearHasCompletedStaffRecordFlow();
   }
 
   public backLinkNavigation(): URLStructure {
@@ -117,18 +112,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
           console.log(error);
         },
       ),
-    );
-  }
-
-  private trackNavigationToClearHasCompletedStaffRecordFlow(): void {
-    this.subscriptions.add(
-      this.router.events.subscribe((event) => {
-        if (event instanceof NavigationStart) {
-          if (!event.url?.includes('staff-record-summary') && !event.url?.includes('add-another-staff-record')) {
-            this.workerService.clearHasCompletedStaffRecordFlow();
-          }
-        }
-      }),
     );
   }
 
