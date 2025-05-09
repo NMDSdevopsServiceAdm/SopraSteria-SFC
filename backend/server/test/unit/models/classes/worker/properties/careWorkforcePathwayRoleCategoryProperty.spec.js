@@ -27,11 +27,39 @@ describe('careWorkforcePathwayRoleCategories Property', () => {
       expect(careWorkforcePathwayRoleCategoryProperty.property).to.deep.equal(null);
     });
 
-    it('should return with correct value for care workforce pathway role categpry', async () => {
+    it('should return with correct value for care workforce pathway role category', async () => {
+      const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
+
+      const document = {
+        careWorkforcePathwayRoleCategory: { roleCategoryId: 1 },
+      };
+
+      const expectedReturnValue = {
+        roleCategoryId: 1,
+        title: 'New to care',
+        description: "Is in a care-providing role that's a start point for a career in social care",
+      };
+      await careWorkforcePathwayRoleCategoryProperty.restoreFromJson(document);
+      expect(careWorkforcePathwayRoleCategoryProperty.property).to.deep.equal(expectedReturnValue);
+    });
+  });
+
+  describe('restorePropertyFromSequelize()', async () => {
+    it("shouldn't return anything if undefined", async () => {
+        const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
+      const document = {};
+      await careWorkforcePathwayRoleCategoryProperty.restorePropertyFromSequelize(document);
+      expect(careWorkforcePathwayRoleCategoryProperty.property).to.deep.equal(null);
+    });
+
+
+    it('should return with correct value for care workforce pathway role category ', async () => {
+
         const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
 
         const document = {
-          careWorkforcePathwayRoleCategory: { roleCategoryId: 1 },
+          careWorkforcePathwayRoleCategory: { id: 1, title: 'New to care', description: "Is in a care-providing role that's a start point for a career in social care"},
+
         };
 
         const expectedReturnValue = {
@@ -39,10 +67,9 @@ describe('careWorkforcePathwayRoleCategories Property', () => {
           title: 'New to care',
           description: "Is in a care-providing role that's a start point for a career in social care",
         };
-        await careWorkforcePathwayRoleCategoryProperty.restoreFromJson(document);
-        expect(careWorkforcePathwayRoleCategoryProperty.property).to.deep.equal(expectedReturnValue);
-      });
+        const restoredProperty = await careWorkforcePathwayRoleCategoryProperty.restorePropertyFromSequelize(document);
+        expect(restoredProperty).to.deep.equal(expectedReturnValue);
+
+    });
   });
-
-
 });
