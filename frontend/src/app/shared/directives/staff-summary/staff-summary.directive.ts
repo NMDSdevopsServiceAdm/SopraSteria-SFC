@@ -46,7 +46,6 @@ export class StaffSummaryDirective implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.workerService.clearHasCompletedStaffRecordFlow();
     this.totalWorkerCount = this.workerCount;
     this.paginatedWorkers = this.workers;
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');

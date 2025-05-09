@@ -56,7 +56,6 @@ export class WorkerService {
   public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
   private _newWorkerMandatoryInfo: NewWorkerMandatoryInfo = null;
-  private _hasCompletedStaffRecordFlow: boolean = null;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
@@ -332,17 +331,5 @@ export class WorkerService {
 
   public clearNewWorkerMandatoryInfo(): void {
     this._newWorkerMandatoryInfo = null;
-  }
-
-  public set hasCompletedStaffRecordFlow(hasCompleted: boolean) {
-    this._hasCompletedStaffRecordFlow = hasCompleted;
-  }
-
-  public get hasCompletedStaffRecordFlow(): boolean {
-    return this._hasCompletedStaffRecordFlow;
-  }
-
-  public clearHasCompletedStaffRecordFlow(): void {
-    this._hasCompletedStaffRecordFlow = null;
   }
 }

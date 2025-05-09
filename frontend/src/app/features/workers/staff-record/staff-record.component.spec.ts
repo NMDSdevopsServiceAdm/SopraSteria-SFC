@@ -295,7 +295,6 @@ describe('StaffRecordComponent', () => {
 
         await setup({
           workerService: {
-            hasCompletedStaffRecordFlow: true,
             updateWorker: updateWorkerSpy,
             worker: { completed: true },
           },

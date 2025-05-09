@@ -49,7 +49,6 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
 
   onSubmit(event: Event): void {
     event.preventDefault();
-    this.workerService.clearHasCompletedStaffRecordFlow();
 
     const urlArr = this.router.url.split('/');
     const url = urlArr.slice(0, urlArr.length - 1).join('/');
