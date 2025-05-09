@@ -1,7 +1,9 @@
 const expect = require('chai').expect;
+const sinon = require('sinon');
+const models = require('../../../../../../models');
+
 const careWorkforcePathwayRoleCategoryPropertyClass =
   require('../../../../../../models/classes/worker/properties/careWorkforcePathwayRoleCategoryProperty').CareWorkforcePathwayRoleCategoryProperty;
-  const models = require('../../../../models');
 
 describe('careWorkforcePathwayRoleCategories Property', () => {
   describe('restoreFromJSON', async () => {
@@ -13,6 +15,13 @@ describe('careWorkforcePathwayRoleCategories Property', () => {
     });
 
     it('should return with correct value for care workforce pathway role category', async () => {
+      const mockResponseFromDatabase = {
+        id: 1,
+        title: 'New to care',
+        description: "Is in a care-providing role that's a start point for a career in social care",
+      };
+      sinon.stub(models.careWorkforcePathwayRoleCategory, 'findOne').resolves(mockResponseFromDatabase);
+
       const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
 
       const document = {
