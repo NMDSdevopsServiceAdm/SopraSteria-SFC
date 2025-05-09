@@ -10,6 +10,7 @@ import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnov
 import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
+import { TabsService } from '../../../core/services/tabs.service';
 
 @Component({
   selector: 'app-new-workplace-summary',
@@ -88,7 +89,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   public checkNumberOfStaffErrorsAndWarnings(): void {
-    this.numberOfStaffError = !this.workplace.numberOfStaff;
+    this.numberOfStaffError = this.workplace.numberOfStaff === null || this.workplace.numberOfStaff === undefined;
     const afterEightWeeksFromFirstLogin = new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
     this.numberOfStaffWarning = this.workplace.numberOfStaff !== this.workerCount && afterEightWeeksFromFirstLogin;
   }
