@@ -1,3 +1,5 @@
+// database models
+const models = require('../../../index');
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRoleCategoryProperty extends (
@@ -12,11 +14,12 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
     return new CareWorkforcePathwayRoleCategoryProperty();
   }
 
-  // concrete implementations
   async restoreFromJson(document) {
-    if (document.careWorkforcePathwayRoleCategory || document.careWorkforcePathwayRoleCategory === null) {
-      if (document.careWorkforcePathwayRoleCategory) {
-        this.property = document.careWorkforcePathwayRoleCategory;
+    if (document.careWorkforcePathwayRoleCategory) {
+      const validatedData = await this._validateOrigin(document.careWorkforcePathwayRoleCategory);
+
+      if (validatedData) {
+        this.property = validatedData;
       } else {
         this.property = null;
       }
@@ -59,5 +62,28 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
         ...this.changePropsToJSON(showPropertyHistoryOnly),
       },
     };
+  }
+
+  async _validateOrigin(payloadData) {
+    let roleCategory = null;
+    if (payloadData.roleCategoryId) {
+      roleCategory = await models.careWorkforcePathwayRoleCategory.findOne({
+        where: {
+          id: payloadData.roleCategoryId,
+        },
+        attributes: ['id', 'title', 'description'],
+      });
+    }
+
+    if (roleCategory && roleCategory.id) {
+      // found a roleCategory match
+      return {
+        roleCategoryId: roleCategory.id,
+        title: roleCategory.title,
+        description: roleCategory.description,
+      };
+    } else {
+      return false;
+    }
   }
 };
