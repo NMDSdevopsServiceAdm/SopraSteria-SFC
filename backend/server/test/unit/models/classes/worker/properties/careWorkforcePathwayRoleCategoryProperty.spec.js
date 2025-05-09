@@ -2,7 +2,6 @@ const expect = require('chai').expect;
 const careWorkforcePathwayRoleCategoryPropertyClass =
   require('../../../../../../models/classes/worker/properties/careWorkforcePathwayRoleCategoryProperty').CareWorkforcePathwayRoleCategoryProperty;
 
-
 describe('careWorkforcePathwayRoleCategories Property', () => {
   describe('restoreFromJSON', async () => {
     it("shouldn't return anything if undefined", async () => {
@@ -76,6 +75,54 @@ describe('careWorkforcePathwayRoleCategories Property', () => {
       careWorkforcePathwayRoleCategoryProperty.property = property;
       const saved = careWorkforcePathwayRoleCategoryProperty.savePropertyToSequelize();
       expect(saved.CareWorkforcePathwayRoleCategoryFK).to.equal(document.careWorkforcePathwayRoleCategory.id);
+    });
+  });
+
+  describe('isEqual()', () => {
+    it('should return true if the values are equal', () => {
+      const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
+
+      const document = {
+        careWorkforcePathwayRoleCategory: {
+          roleCategoryId: 1,
+          title: 'New to care',
+          description: "Is in a care-providing role that's a start point for a career in social care",
+        },
+      };
+      const property = {
+        roleCategoryId: 1,
+        title: 'New to care',
+        description: "Is in a care-providing role that's a start point for a career in social care",
+      };
+
+      const equal = careWorkforcePathwayRoleCategoryProperty.isEqual(
+        document.careWorkforcePathwayRoleCategory,
+        property,
+      );
+      expect(equal).to.deep.equal(true);
+    });
+
+    it('should return false if the values are not equal', () => {
+      const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
+
+      const document = {
+        careWorkforcePathwayRoleCategory: {
+          roleCategoryId: 1,
+          title: 'New to care',
+          description: "Is in a care-providing role that's a start point for a career in social care",
+        },
+      };
+      const property = {
+        roleCategoryId: 2,
+        title: 'New to care2',
+        description: "Is in a care-providing role that's a start point for a career in social care2",
+      };
+
+      const equal = careWorkforcePathwayRoleCategoryProperty.isEqual(
+        document.careWorkforcePathwayRoleCategory,
+        property,
+      );
+      expect(equal).to.deep.equal(false);
     });
   });
 });
