@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { AlertService } from '@core/services/alert.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
@@ -48,7 +47,6 @@ describe('OtherQualificationsLevelComponent', () => {
           provide: QualificationService,
           useClass: MockQualificationService,
         },
-        AlertService,
         WindowRef,
       ],
     });
@@ -57,15 +55,11 @@ describe('OtherQualificationsLevelComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    const alertService = injector.inject(AlertService) as AlertService;
-    const alertSpy = spyOn(alertService, 'addAlert').and.stub();
-
     return {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
       router,
       routerSpy,
-      alertSpy,
     };
   }
 
@@ -119,7 +113,7 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to staff-record-summary page when submitting from flow', async () => {
+    it('should navigate to care-workforce-pathway page when submitting from flow', async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -137,11 +131,11 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary',
+        'care-workforce-pathway',
       ]);
     });
 
-    it('should navigate to staff-record-summary page when skipping the question in the flow', async () => {
+    it('should navigate to care-workforce-pathway page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -155,7 +149,7 @@ describe('OtherQualificationsLevelComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'staff-record-summary',
+        'care-workforce-pathway',
       ]);
     });
 
@@ -229,48 +223,6 @@ describe('OtherQualificationsLevelComponent', () => {
       fireEvent.click(skipButton);
 
       expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
-    });
-  });
-
-  describe('Completing Add details to staff record flow', () => {
-    it('should add Staff record added alert when submitting from flow', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup(false);
-
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
-
-      const saveButton = getByText('Save');
-      fireEvent.click(saveButton);
-
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Staff record saved',
-      });
-    });
-
-    ['Skip this question', 'View this staff record'].forEach((link) => {
-      it(`should add Staff record added alert when '${link}' is clicked`, async () => {
-        const { getByText, alertSpy } = await setup(false);
-
-        fireEvent.click(getByText(link));
-
-        expect(alertSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Staff record saved',
-        });
-      });
-    });
-
-    it('should not add Staff record added alert when user submits but not in flow', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup();
-
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
-
-      const saveButton = getByText('Save and return');
-      fireEvent.click(saveButton);
-
-      expect(alertSpy).not.toHaveBeenCalled();
     });
   });
 });
