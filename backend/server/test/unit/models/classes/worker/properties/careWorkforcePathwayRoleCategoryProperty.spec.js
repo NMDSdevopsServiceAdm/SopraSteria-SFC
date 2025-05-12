@@ -14,7 +14,7 @@ describe('careWorkforcePathwayRoleCategories Property', () => {
       expect(careWorkforcePathwayRoleCategoryProperty.property).to.deep.equal(null);
     });
 
-    it('should return with correct value for care workforce pathway role category', async () => {
+    it('should set property with correct value for care workforce pathway role category', async () => {
       const mockResponseFromDatabase = {
         id: 1,
         title: 'New to care',
@@ -35,6 +35,18 @@ describe('careWorkforcePathwayRoleCategories Property', () => {
       };
       await careWorkforcePathwayRoleCategoryProperty.restoreFromJson(document);
       expect(careWorkforcePathwayRoleCategoryProperty.property).to.deep.equal(expectedReturnValue);
+    });
+
+    it('should set property to null if careWorkforcePathwayRoleCategory in document is null', async () => {
+      const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
+      careWorkforcePathwayRoleCategoryProperty.proerty = 'some-dummy-value';
+
+      const document = {
+        careWorkforcePathwayRoleCategory: null,
+      };
+
+      await careWorkforcePathwayRoleCategoryProperty.restoreFromJson(document);
+      expect(careWorkforcePathwayRoleCategoryProperty.property).to.deep.equal(null);
     });
   });
 
@@ -62,8 +74,16 @@ describe('careWorkforcePathwayRoleCategories Property', () => {
         title: 'New to care',
         description: "Is in a care-providing role that's a start point for a career in social care",
       };
-      const restoredProperty = await careWorkforcePathwayRoleCategoryProperty.restorePropertyFromSequelize(document);
+      const restoredProperty = careWorkforcePathwayRoleCategoryProperty.restorePropertyFromSequelize(document);
       expect(restoredProperty).to.deep.equal(expectedReturnValue);
+    });
+
+    it('should return null if careWorkforcePathwayRoleCategory from sequelize is null', async () => {
+      const careWorkforcePathwayRoleCategoryProperty = new careWorkforcePathwayRoleCategoryPropertyClass();
+      const document = { careWorkforcePathwayRoleCategory: null };
+
+      const restoredProperty = careWorkforcePathwayRoleCategoryProperty.restorePropertyFromSequelize(document);
+      expect(restoredProperty).to.deep.equal(null);
     });
   });
 
