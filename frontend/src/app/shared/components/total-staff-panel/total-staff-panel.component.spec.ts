@@ -7,6 +7,7 @@ import { within } from '@testing-library/angular';
 import { Establishment } from '../../../../mockdata/establishment';
 import { Permissions } from '../../../../mockdata/permissions';
 import { TotalStaffPanelComponent } from './total-staff-panel.component';
+import { SharedModule } from '@shared/shared.module';
 
 describe('TotalStaffPanelComponent', () => {
   let component: TotalStaffPanelComponent;
@@ -16,7 +17,7 @@ describe('TotalStaffPanelComponent', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule, HttpClientTestingModule],
+        imports: [RouterTestingModule, HttpClientTestingModule, SharedModule],
         declarations: [TotalStaffPanelComponent],
       }).compileComponents();
     }),
@@ -101,6 +102,28 @@ describe('TotalStaffPanelComponent', () => {
     expect(staffAddedText.textContent).toContain('staff records added');
     expect(changeNumber.length).toEqual(0);
     expect(changeText.length).toEqual(0);
+  });
+
+  it('should show total staff, change link, "x staff records added" and "x staff records to delete" if total staff is 0', () => {
+    component.totalStaff = 0;
+    component.totalWorkers = 3;
+    fixture.detectChanges();
+
+    const totalStaffNumber = within(document.body).queryByTestId('totalStaffNumber');
+    const totalStaffLink = within(document.body).queryByTestId('totalStaffLink');
+    const totalStaffText = within(document.body).queryByTestId('totalStaffText');
+    const staffAddedNumber = within(document.body).queryByTestId('staffAddedNumber');
+    const staffAddedText = within(document.body).queryByTestId('staffAddedText');
+    const changeNumber = within(document.body).queryByTestId('changeNumber');
+    const changeText = within(document.body).queryByTestId('changeText');
+
+    expect(totalStaffNumber.innerHTML).toContain('0');
+    expect(totalStaffLink.innerHTML).toContain('Change');
+    expect(totalStaffText.innerHTML).toContain('total number of staff');
+    expect(staffAddedNumber.innerHTML).toContain('3');
+    expect(staffAddedText.textContent).toContain('staff records added');
+    expect(changeNumber.innerHTML).toContain('3');
+    expect(changeText.textContent).toContain('staff records to delete');
   });
 
   it('should show total staff and staff added but not changes if total staff is undefined', () => {

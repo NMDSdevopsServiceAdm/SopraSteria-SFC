@@ -10,6 +10,8 @@ import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnov
 import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
+import { TabsService } from '../../../core/services/tabs.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-workplace-summary',
@@ -45,6 +47,9 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private cqcStatusChangeService: CqcStatusChangeService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
+    // TabsService and Router are needed here for navigateToTab() to work properly
+    private tabsService: TabsService,
+    private router: Router,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -88,7 +93,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   public checkNumberOfStaffErrorsAndWarnings(): void {
-    this.numberOfStaffError = !this.workplace.numberOfStaff;
+    this.numberOfStaffError = this.workplace.numberOfStaff === null || this.workplace.numberOfStaff === undefined;
     const afterEightWeeksFromFirstLogin = new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
     this.numberOfStaffWarning = this.workplace.numberOfStaff !== this.workerCount && afterEightWeeksFromFirstLogin;
   }

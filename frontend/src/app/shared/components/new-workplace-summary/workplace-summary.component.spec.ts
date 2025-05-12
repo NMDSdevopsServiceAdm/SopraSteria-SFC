@@ -224,6 +224,24 @@ describe('NewWorkplaceSummaryComponent', () => {
         );
       });
 
+      it('should not render the error message and conditional classes if the number of staff is 0', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = 0;
+        component.checkNumberOfStaffErrorsAndWarnings();
+
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+
+        expect(within(numberOfStaffRow).queryByText('You need to add your total number of staff')).toBeFalsy();
+        expect(numberOfStaffRow.getAttribute('class')).not.toContain('govuk-summary-list__error');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).not.toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
+
       it('should render correct warning message, with View staff records link and conditional classes if no of staff is more than no of staff records and more than 8 weeks since first login', async () => {
         const { component, fixture, getByTestId } = await setup(null, ['canEditEstablishment', 'canViewListOfWorkers']);
 
