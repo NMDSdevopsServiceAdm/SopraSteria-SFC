@@ -15,13 +15,16 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
   }
 
   async restoreFromJson(document) {
+    if (document.careWorkforcePathwayRoleCategory === null) {
+      this.property = null;
+      return;
+    }
+
     if (document.careWorkforcePathwayRoleCategory) {
       const validatedData = await this.getRoleCategoryFromDatabase(document.careWorkforcePathwayRoleCategory);
 
       if (validatedData) {
         this.property = validatedData;
-      } else {
-        this.property = null;
       }
     }
   }
@@ -33,6 +36,10 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
         title: document.careWorkforcePathwayRoleCategory.title,
         description: document.careWorkforcePathwayRoleCategory.description,
       };
+    }
+
+    if (document.careWorkforcePathwayRoleCategory === null) {
+      return null;
     }
   }
 
@@ -66,7 +73,7 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
 
   async getRoleCategoryFromDatabase(payloadData) {
     let roleCategory = null;
-    if (payloadData.roleCategoryId) {
+    if (payloadData?.roleCategoryId) {
       roleCategory = await models.careWorkforcePathwayRoleCategory.findOne({
         where: {
           id: payloadData.roleCategoryId,
@@ -82,8 +89,8 @@ exports.CareWorkforcePathwayRoleCategoryProperty = class CareWorkforcePathwayRol
         title: roleCategory.title,
         description: roleCategory.description,
       };
-    } else {
-      return null;
     }
+
+    return null;
   }
 };
