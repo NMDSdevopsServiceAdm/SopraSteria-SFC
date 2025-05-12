@@ -107,6 +107,7 @@ export interface Worker {
   longTermAbsence: string;
   healthAndCareVisa?: string;
   employedFromOutsideUk?: string;
+  careWorkforcePathwayRoleCategory?: number;
 }
 
 export interface WorkerPay {
