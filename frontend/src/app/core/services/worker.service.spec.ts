@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { WorkerService } from './worker.service';
 import { build, fake, oneOf } from '@jackfranklin/test-data-bot';
 
-fdescribe('WorkerService', () => {
+describe('WorkerService', () => {
   let service: WorkerService;
 
   const workerBuilder = build('Worker', {

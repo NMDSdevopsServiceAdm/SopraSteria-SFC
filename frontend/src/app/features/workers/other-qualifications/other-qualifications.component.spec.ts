@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsComponent } from './other-qualifications.component';
 
-fdescribe('OtherQualificationsComponent', () => {
+describe('OtherQualificationsComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   async function setup(overrides: any = {}) {
     const insideFlow = overrides.insideFlow ?? false;

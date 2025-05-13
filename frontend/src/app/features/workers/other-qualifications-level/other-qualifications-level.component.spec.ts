@@ -266,7 +266,7 @@ describe('OtherQualificationsLevelComponent', () => {
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: 'Staff record saved',
+        message: 'Staff record details saved',
       });
     });
 
@@ -278,7 +278,7 @@ describe('OtherQualificationsLevelComponent', () => {
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: 'Staff record saved',
+          message: 'Staff record details saved',
         });
       });
     });

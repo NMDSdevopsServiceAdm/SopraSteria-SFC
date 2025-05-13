@@ -88,7 +88,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
   addCompletedStaffFlowAlert(): void {
     this.alertService.addAlert({
       type: 'success',
-      message: 'Staff record saved',
+      message: 'Staff record details saved',
     });
   }
 }
