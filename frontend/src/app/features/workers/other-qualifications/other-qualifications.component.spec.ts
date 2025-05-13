@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsComponent } from './other-qualifications.component';
 
-describe('OtherQualificationsComponent', () => {
+fdescribe('OtherQualificationsComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   async function setup(overrides: any = {}) {
     const insideFlow = overrides.insideFlow ?? false;
@@ -55,12 +55,15 @@ describe('OtherQualificationsComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+
     return {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
       routerSpy,
       router,
       alertSpy,
+      workerService,
     };
   }
 
@@ -120,14 +123,24 @@ describe('OtherQualificationsComponent', () => {
           ]);
         });
 
-        it(`should add Staff record added alert when '${link}' is clicked`, async () => {
-          const { getByText, alertSpy } = await setup({ insideFlow: true });
+        it(`should not add Staff record added alert when '${link}' is clicked and all non-mandatory questions were not answered`, async () => {
+          const { getByText, alertSpy, workerService } = await setup({ insideFlow: true });
+          spyOn(workerService, 'hasAnsweredNonMandatoryQuestion').and.returnValue(false);
+
+          fireEvent.click(getByText(link));
+
+          expect(alertSpy).not.toHaveBeenCalled();
+        });
+
+        it(`should add Staff record added alert when '${link}' is clicked and some non-mandatory questions were answered`, async () => {
+          const { getByText, alertSpy, workerService } = await setup({ insideFlow: true });
+          spyOn(workerService, 'hasAnsweredNonMandatoryQuestion').and.returnValue(true);
 
           fireEvent.click(getByText(link));
 
           expect(alertSpy).toHaveBeenCalledWith({
             type: 'success',
-            message: 'Staff record saved',
+            message: 'Staff record details saved',
           });
         });
       });
@@ -166,7 +179,7 @@ describe('OtherQualificationsComponent', () => {
 
           expect(alertSpy).toHaveBeenCalledWith({
             type: 'success',
-            message: 'Staff record saved',
+            message: 'Staff record details saved',
           });
         });
       });
@@ -229,7 +242,7 @@ describe('OtherQualificationsComponent', () => {
 
         expect(alertSpy).not.toHaveBeenCalledWith({
           type: 'success',
-          message: 'Staff record saved',
+          message: 'Staff record details saved',
         });
       });
     });

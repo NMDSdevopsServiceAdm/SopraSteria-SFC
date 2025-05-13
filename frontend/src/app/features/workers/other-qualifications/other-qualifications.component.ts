@@ -76,8 +76,13 @@ export class OtherQualificationsComponent extends QuestionComponent {
     super.onSubmit();
     const { otherQualification } = this.form.value;
 
-    if ((!this.submitted || !otherQualification) && this.insideFlow) {
-      this.addCompletedStaffFlowAlert();
+    const answerNotSelected = !otherQualification;
+    const skippedThisQuestion = !this.submitted;
+
+    if ((skippedThisQuestion || answerNotSelected) && this.insideFlow) {
+      if (this.workerService.hasAnsweredNonMandatoryQuestion()) {
+        this.addCompletedStaffFlowAlert();
+      }
     }
   }
 
@@ -92,7 +97,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
   addCompletedStaffFlowAlert(): void {
     this.alertService.addAlert({
       type: 'success',
-      message: 'Staff record saved',
+      message: 'Staff record details saved',
     });
   }
 
