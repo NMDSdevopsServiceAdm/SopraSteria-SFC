@@ -107,7 +107,11 @@ export interface Worker {
   longTermAbsence: string;
   healthAndCareVisa?: string;
   employedFromOutsideUk?: string;
-  careWorkforcePathwayRoleCategory?: number;
+  careWorkforcePathwayRoleCategory?: {
+    roleCategoryId: number;
+    title: string;
+    description: string;
+  };
 }
 
 export interface WorkerPay {

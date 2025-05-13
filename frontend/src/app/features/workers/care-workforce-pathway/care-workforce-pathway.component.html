@@ -3,7 +3,7 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div
         class="govuk-form-group"
-        [class.govuk-form-group--error]="submitted && form.get('careWorkforcePathway').invalid"
+        [class.govuk-form-group--error]="submitted && form.get('careWorkforcePathwayRoleCategory').invalid"
       >
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -37,17 +37,17 @@
             data-module="govuk-radios"
             *ngFor="let careWorkforcePathwayCategory of careWorkforcePathwayCategories; let idx = index"
           >
-            <div class="govuk-radios__item">
+            <div class="govuk-radios__item" [ngClass]="{'govuk-!-margin-bottom-2' : !careWorkforcePathwayCategory.description}">
               <input
                 class="govuk-radios__input"
-                id="careWorkforcePathway-{{ idx }}"
-                [formControlName]="'careWorkforcePathway'"
-                name="careWorkforcePathway"
+                id="careWorkforcePathwayRoleCategory-{{ idx }}"
+                [formControlName]="'careWorkforcePathwayRoleCategory'"
+                name="careWorkforcePathwayRoleCategory"
                 type="radio"
                 [value]="careWorkforcePathwayCategory.id"
                 aria-describedby="careWorkforcePathwayCategory-description"
               />
-              <label class="govuk-label govuk-radios__label" for="careWorkforcePathway-{{ idx }}">
+              <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ idx }}">
                 {{ careWorkforcePathwayCategory.title }}
               </label>
               <div id="careWorkforcePathwayCategory-description" class="govuk-hint govuk-radios__hint">

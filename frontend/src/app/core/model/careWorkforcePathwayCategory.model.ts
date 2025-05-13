@@ -1,9 +1,9 @@
-export interface CareWorkforcePathwayCategory {
+export interface CareWorkforcePathwayRoleCategory {
   id: number;
   title: string;
   description: string;
 }
 
-export interface CareWorkforcePathwayResponse {
-  careWorkforcePathwayCategories: CareWorkforcePathwayCategory[];
+export interface CareWorkforcePathwayRoleCategoryResponse {
+  careWorkforcePathwayRoleCategories: CareWorkforcePathwayRoleCategory[];
 }
