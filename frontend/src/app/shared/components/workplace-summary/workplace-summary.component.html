@@ -128,7 +128,7 @@
         <dd class="govuk-summary-list__value">
           <p *ngIf="workplace.numberOfStaff > workerCount">You've more staff than staff records</p>
           <p *ngIf="workplace.numberOfStaff < workerCount">You've more staff records than staff</p>
-          <p *ngIf="workplace.numberOfStaff == null">The number of staff is missing</p>
+          <p *ngIf="workplace.numberOfStaff === null">The number of staff is missing</p>
         </dd>
         <dd class="govuk-summary-list__actions">
           <a *ngIf="workplace.numberOfStaff" href="#" (click)="selectStaffTab($event)">View staff records</a>
@@ -613,9 +613,9 @@
           <ng-template #careWorkersCashLoyaltyForFirstTwoYearsType>
             <ng-container
               *ngIf="
-                workplace.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
-                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know' ||
-                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Yes';
+                workplace.careWorkersCashLoyaltyForFirstTwoYears === 'No' ||
+                  workplace.careWorkersCashLoyaltyForFirstTwoYears === 'Don\'t know' ||
+                  workplace.careWorkersCashLoyaltyForFirstTwoYears === 'Yes';
                 then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
                 else careWorkersCashLoyaltyForFirstTwoYearsKnown
               "
