@@ -68,6 +68,11 @@ export const mockConfigCatClient = {
         return resolve(true);
       });
     }
+    if (flagName === 'cwpQuestionsFlag') {
+      return new Promise((resolve) => {
+        return resolve(true);
+      });
+    }
 
     return new Promise((resolve) => {
       return resolve(defaultSetting);

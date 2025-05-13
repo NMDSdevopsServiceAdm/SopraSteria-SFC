@@ -32,6 +32,12 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
         });
       }
 
+      if (flagName === 'cwpQuestionsFlag') {
+        return new Promise((resolve) => {
+          return resolve(true);
+        });
+      }
+
       return new Promise((resolve) => {
         return resolve(defaultSetting);
       });
