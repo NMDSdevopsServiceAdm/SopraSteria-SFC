@@ -8,19 +8,18 @@ import { WorkersModule } from '../workers.module';
 import { WindowRef } from '@core/services/window.ref';
 import { AlertService } from '@core/services/alert.service';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  MockWorkerServiceWithOverrides,
-  MockWorkerServiceWithUpdateWorker,
-  MockWorkerServiceWithoutReturnUrl,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { DetailsComponent } from '@shared/components/details/details.component';
 import { getTestBed } from '@angular/core/testing';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
-import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
+import {
+  MockCareWorkforcePathwayService,
+  careWorkforcePathwayRoleCategories,
+} from '@core/test-utils/MockCareWorkforcePathwayService';
 import { HttpClient } from '@angular/common/http';
 
-fdescribe('CareWorkforcePathwayComponent', () => {
-  const categorySelected = 'New to Care';
+describe('CareWorkforcePathwayComponent', () => {
+  const categorySelected = careWorkforcePathwayRoleCategories[0].title;
   async function setup(overrides: any = {}) {
     const setupTools = await render(CareWorkforcePathwayComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
@@ -48,7 +47,6 @@ fdescribe('CareWorkforcePathwayComponent', () => {
           provide: WorkerService,
           useFactory: MockWorkerServiceWithOverrides.factory(overrides),
           deps: [HttpClient],
-          // useClass: overrides.returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
         },
         {
           provide: CareWorkforcePathwayService,
@@ -92,7 +90,7 @@ fdescribe('CareWorkforcePathwayComponent', () => {
 
   describe('reveal', () => {
     it('should show', async () => {
-      const { getByText, getByTestId } = await setup();
+      const { getByTestId } = await setup();
 
       const reveal = getByTestId('reveal-whatsCareWorkforcePathway');
 
@@ -153,7 +151,7 @@ fdescribe('CareWorkforcePathwayComponent', () => {
   });
 
   it('should prefill a previously saved answer', async () => {
-    const overrides = { worker: { careWorkforcePathwayRoleCategory: 1 } };
+    const overrides = { worker: { careWorkforcePathwayRoleCategory: { roleCategoryId: 1 } } };
     const { component, getByLabelText } = await setup(overrides);
 
     component.ngOnInit();
@@ -161,7 +159,7 @@ fdescribe('CareWorkforcePathwayComponent', () => {
     const form = component.form;
     const radioButton = getByLabelText(categorySelected) as HTMLInputElement;
 
-    expect(form.value.careWorkforcePathway).toEqual(1);
+    expect(form.value.careWorkforcePathwayRoleCategory).toEqual(1);
     expect(radioButton.checked).toBeTruthy();
     expect(form.valid).toBeTruthy();
   });

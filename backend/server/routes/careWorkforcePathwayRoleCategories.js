@@ -1,14 +1,16 @@
 const express = require('express');
-const router = express.Router();
-const models = require('../models/index');
+const router = express.Router({ mergeParams: true });
+const models = require('../models');
 
 const getAllCareWorkforcePathwayRoleCategories = async (req, res) => {
   try {
-    let results = await models.careWorkforcePathwayRoleCategory.findAll({
+    const results = await models.careWorkforcePathwayRoleCategory.findAll({
       order: [['seq', 'ASC']],
     });
 
-    res.send({careWorkforcePathwayRoleCategories: careWorkforcePathwayRoleCategoryJSON(results)});
+    res.status(200);
+
+    return res.send({ careWorkforcePathwayRoleCategories: careWorkforcePathwayRoleCategoryJSON(results) });
   } catch (err) {
     console.error(err);
     return res.status(500).send();
