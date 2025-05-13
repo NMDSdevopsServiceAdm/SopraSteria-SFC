@@ -46,7 +46,7 @@ describe('Summary section', () => {
       componentProperties: {
         workplace: workplace,
         trainingCounts: trainingCounts,
-        navigateToTab: (event, selectedTab) => {
+        navigateToTab: (event, _selectedTab) => {
           event.preventDefault();
         },
         workerCount,
@@ -167,6 +167,15 @@ describe('Summary section', () => {
       const workplaceRow = getByTestId('workplace-row');
       expect(within(workplaceRow).getByText(`You've not added your total number of staff`)).toBeTruthy();
       expect(within(workplaceRow).getByTestId('red-flag')).toBeTruthy();
+    });
+
+    it('should not show the total staff error if numberOfStaff is 0', async () => {
+      const establishment = { ...Establishment, numberOfStaff: 0 };
+      const { getByTestId } = await setup(false, establishment);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).queryByText(`You've not added your total number of staff`)).toBeFalsy();
+      expect(within(workplaceRow).queryByTestId('red-flag')).toBeFalsy();
     });
 
     it('should show the staff total does not match staff records warning when they do not match and it is after eight weeks since first login', async () => {
@@ -347,7 +356,7 @@ describe('Summary section', () => {
 
       const date = [dayjs().subtract(1, 'year')];
 
-      const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
+      const { fixture, getByTestId } = await setup(false, establishment, 12, {}, date);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -421,7 +430,7 @@ describe('Summary section', () => {
       };
 
       const date = [dayjs().subtract(11, 'month')];
-      const { fixture, component, getByTestId } = await setup(false, establishment, 12, {}, date);
+      const { fixture, getByTestId } = await setup(false, establishment, 12, {}, date);
 
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
@@ -453,14 +462,7 @@ describe('Summary section', () => {
       };
 
       it('should show "Some records only have mandatory data added" message when staff records are not completed and worker added date is more than 1 month ago', async () => {
-        const { fixture, getByTestId } = await setup(
-          false,
-          Establishment,
-          12,
-          {},
-          [dayjs()],
-          workerCreatedDate('month'),
-        );
+        const { getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate('month'));
 
         const staffRecordsRow = getByTestId('staff-records-row');
         expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeTruthy();
