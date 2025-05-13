@@ -19,7 +19,7 @@ import {
 } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
-import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
+import { MandatoryInfoAndMetadataFields, Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -331,5 +331,17 @@ export class WorkerService {
 
   public clearNewWorkerMandatoryInfo(): void {
     this._newWorkerMandatoryInfo = null;
+  }
+
+  public hasAnsweredNonMandatoryQuestion(): boolean {
+    if (!this.worker) {
+      return false;
+    }
+
+    const nonMandatoryQuestions = Object.entries(this.worker).filter(
+      ([fieldName, _answer]) => !MandatoryInfoAndMetadataFields.includes(fieldName),
+    );
+
+    return nonMandatoryQuestions.some(([_fieldName, answer]) => answer !== null);
   }
 }
