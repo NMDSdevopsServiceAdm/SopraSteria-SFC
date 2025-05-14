@@ -88,5 +88,9 @@ export class OtherQualificationsComponent extends FinalQuestionComponent {
 
   onSuccess(): void {
     this.next = this.determineConditionalRouting();
+
+    if (!this.next.includes('staff-record-summary')) {
+      this.continueToNextQuestion = true;
+    }
   }
 }
