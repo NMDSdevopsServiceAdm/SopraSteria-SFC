@@ -17,6 +17,7 @@ import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathw
 export class CareWorkforcePathwayComponent extends QuestionComponent {
   public section = 'Training and qualifications';
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
+  public revealTitle = "What's the care workforce pathway?";
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -37,7 +38,6 @@ export class CareWorkforcePathwayComponent extends QuestionComponent {
   }
 
   init() {
-    // this.insideFlow = true;
     this.next = this.getRoutePath('staff-record-summary');
     this.getCareWorkforcePathwayRoleCategories();
 

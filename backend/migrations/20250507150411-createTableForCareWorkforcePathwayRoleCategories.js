@@ -70,7 +70,7 @@ const careWorkforcePathwayRoleCategories = [
     id: 102,
     seq: 1020,
     title: 'None of the above',
-    description: 'Select this for admin, ancillary and other roles not yet included in the care workforce',
+    description: 'Select this for admin, ancillary and other roles not yet included in the care workforce pathway',
     analysisFileCode: 8,
     bulkUploadCode: 8,
   },

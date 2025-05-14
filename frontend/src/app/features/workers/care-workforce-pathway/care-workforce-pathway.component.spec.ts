@@ -95,7 +95,7 @@ describe('CareWorkforcePathwayComponent', () => {
       const reveal = getByTestId('reveal-whatsCareWorkforcePathway');
 
       expect(reveal).toBeTruthy();
-      expect(within(reveal).getByText('What`s the care workforce pathway?')).toBeTruthy();
+      expect(within(reveal).getByText("What's the care workforce pathway?")).toBeTruthy();
     });
 
     it('should show the link for more information', async () => {
