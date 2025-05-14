@@ -1060,6 +1060,31 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"RegisteredNurseChangedBy"',
       },
+      CareWorkforcePathwayRoleCategoryFK: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategoryFK"',
+      },
+      CareWorkforcePathwayRoleCategorySavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategorySavedAt"',
+      },
+      CareWorkforcePathwayRoleCategoryChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategoryChangedAt"',
+      },
+      CareWorkforcePathwayRoleCategorySavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategorySavedBy"',
+      },
+      CareWorkforcePathwayRoleCategoryChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategoryChangedBy"',
+      },
       created: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -1188,6 +1213,11 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'RecruitedFromOtherFK',
       targetKey: 'id',
       as: 'recruitedFrom',
+    });
+    Worker.belongsTo(models.careWorkforcePathwayRoleCategory, {
+      foreignKey: 'CareWorkforcePathwayRoleCategoryFK',
+      targetKey: 'id',
+      as: 'careWorkforcePathwayRoleCategory',
     });
     Worker.belongsToMany(models.job, {
       through: 'workerJobs',

@@ -100,6 +100,7 @@ import {
 } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
 
 const routes: Routes = [
   {
@@ -461,6 +462,11 @@ const routes: Routes = [
             data: { title: 'Highest Level of Other Qualifications' },
           },
           {
+            path: 'care-workforce-pathway',
+            component: CareWorkforcePathwayRoleComponent,
+            data: { title: 'Care Workforce Pathway' },
+          },
+          {
             path: 'add-qualification',
             resolve: {
               availableQualifications: AvailableQualificationsResolver,
@@ -747,6 +753,11 @@ const routes: Routes = [
         path: 'other-qualifications-level',
         component: OtherQualificationsLevelComponent,
         data: { title: 'Highest Level of Other Qualifications' },
+      },
+      {
+        path: 'care-workforce-pathway',
+        component: CareWorkforcePathwayRoleComponent,
+        data: { title: 'Care Workforce Pathway' },
       },
       {
         path: 'add-qualification',

@@ -67,6 +67,7 @@ import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
+import { CareWorkforcePathwayRoleComponent } from '@features/workers/care-workforce-pathway/care-workforce-pathway.component';
 
 const routes: Routes = [
   {
@@ -282,6 +283,11 @@ const routes: Routes = [
                 component: OtherQualificationsLevelComponent,
                 data: { title: 'Highest Level of Other Qualifications' },
               },
+              {
+                path: 'care-workforce-pathway',
+                component: CareWorkforcePathwayRoleComponent,
+                data: { title: 'Care Workforce Pathway' },
+              },
             ],
           },
         ],
@@ -484,6 +490,11 @@ const routes: Routes = [
         path: 'other-qualifications-level',
         component: OtherQualificationsLevelComponent,
         data: { title: 'Highest Level of Other Qualifications' },
+      },
+      {
+        path: 'care-workforce-pathway',
+        component: CareWorkforcePathwayRoleComponent,
+        data: { title: 'Care Workforce Pathway' },
       },
     ],
   },

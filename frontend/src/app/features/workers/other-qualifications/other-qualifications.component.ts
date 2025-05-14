@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -28,7 +27,6 @@ export class OtherQualificationsComponent extends QuestionComponent {
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
-    protected alertService: AlertService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
@@ -41,7 +39,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
     if (this.worker.otherQualification) {
       this.prefill();
     }
-    this.next = this.getRoutePath('staff-record-summary');
+    this.next = this.getRoutePath('care-workforce-pathway');
   }
 
   private prefill(): void {
@@ -66,34 +64,10 @@ export class OtherQualificationsComponent extends QuestionComponent {
 
     if (otherQualification === 'Yes') {
       nextRoute.push('other-qualifications-level');
-    } else if (this.insideFlow) {
-      nextRoute.push('staff-record-summary');
+    } else if (otherQualification !== 'Yes' && this.insideFlow) {
+      nextRoute.push('care-workforce-pathway');
     }
     return nextRoute;
-  }
-
-  onSubmit(): void {
-    super.onSubmit();
-    const { otherQualification } = this.form.value;
-
-    if ((!this.submitted || !otherQualification) && this.insideFlow) {
-      this.addCompletedStaffFlowAlert();
-    }
-  }
-
-  addAlert(): void {
-    const { otherQualification } = this.form.value;
-
-    if (otherQualification !== 'Yes' && this.insideFlow) {
-      this.addCompletedStaffFlowAlert();
-    }
-  }
-
-  addCompletedStaffFlowAlert(): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message: 'Staff record saved',
-    });
   }
 
   onSuccess(): void {
