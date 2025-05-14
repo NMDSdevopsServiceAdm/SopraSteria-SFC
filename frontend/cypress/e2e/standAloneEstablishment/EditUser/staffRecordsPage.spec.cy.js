@@ -112,6 +112,88 @@ describe('Standalone staff records page as edit user', () => {
     });
   });
 
+  describe('Add new staff record workflow', () => {
+    const skipAllQuestions = () => {
+      cy.get('a').contains('Skip this question').click();
+      cy.location('pathname').then((pathname) => {
+        if (pathname.includes('staff-record-summary')) {
+          return;
+        }
+        skipAllQuestions();
+      });
+    };
+
+    const skipAllQuestionsBySaveButton = () => {
+      cy.get('button').contains('Save and continue').click();
+      cy.location('pathname').then((pathname) => {
+        if (pathname.includes('staff-record-summary')) {
+          return;
+        }
+        skipAllQuestionsBySaveButton();
+      });
+    };
+
+    it('should show a "Staff record details saved" alert when user completed the workflow and answered some questions', () => {
+      const name = 'Mr Cool';
+      const contractType = 'Permanent';
+      const mainJobRole = 'Care worker';
+
+      createStaffRecordWithMandatoryDetails(name, contractType, mainJobRole);
+
+      expectContentToBeDisplayedOnMandatoryDetailsPage(name, contractType, mainJobRole);
+
+      cy.get('button').contains('Add details to this record').click();
+
+      // answer the date of birth question
+      cy.getByLabel('Day').type('1');
+      cy.getByLabel('Month').type('1');
+      cy.getByLabel('Year').type('2000');
+      cy.get('button').contains('Save and continue').click();
+
+      // wait until saved and navigated to next question
+      cy.get('h1').should('contain', "What's their National Insurance number?");
+
+      skipAllQuestions();
+
+      cy.get('h1').should('contain.text', 'Staff record');
+      cy.contains('Staff record details saved').should('be.visible');
+    });
+
+    it('should not show a "Staff record details saved" alert when user completed the workflow and skipped all questions', () => {
+      const name = 'Mr Smith';
+      const contractType = 'Permanent';
+      const mainJobRole = 'Care worker';
+
+      createStaffRecordWithMandatoryDetails(name, contractType, mainJobRole);
+
+      expectContentToBeDisplayedOnMandatoryDetailsPage(name, contractType, mainJobRole);
+
+      cy.get('button').contains('Add details to this record').click();
+
+      skipAllQuestions();
+
+      cy.get('h1').should('contain.text', 'Staff record');
+      cy.contains('Staff record details saved').should('not.exist');
+    });
+
+    it('should not show a "Staff record details saved" alert when user completed the workflow and click Save for all question without answering', () => {
+      const name = 'Bob';
+      const contractType = 'Permanent';
+      const mainJobRole = 'Care worker';
+
+      createStaffRecordWithMandatoryDetails(name, contractType, mainJobRole);
+
+      expectContentToBeDisplayedOnMandatoryDetailsPage(name, contractType, mainJobRole);
+
+      cy.get('button').contains('Add details to this record').click();
+
+      skipAllQuestionsBySaveButton();
+
+      cy.get('h1').should('contain.text', 'Staff record');
+      cy.contains('Staff record details saved').should('not.exist');
+    });
+  });
+
   describe('Delete a staff record', () => {
     it('should delete a staff record successfully', () => {
       const workerName = 'Mr Warm';
