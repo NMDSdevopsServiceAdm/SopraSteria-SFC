@@ -60,6 +60,11 @@ describe('OtherQualificationsLevelComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
+    // hasAnsweredNonMandatoryQuestion should always be true,
+    // as this question only visited when OtherQualifications was answered with yes
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    spyOn(workerService, 'hasAnsweredNonMandatoryQuestion').and.returnValue(true);
+
     return {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
