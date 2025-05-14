@@ -10,6 +10,8 @@ import { QuestionComponent } from '../question/question.component';
 
 @Directive()
 export class FinalQuestionComponent extends QuestionComponent {
+  protected continueToNextQuestion: boolean = false;
+
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
@@ -25,35 +27,27 @@ export class FinalQuestionComponent extends QuestionComponent {
 
   onSubmit(): void {
     super.onSubmit();
-    this.addAlertIfStaffRecordChanged();
+    this.handleAddAlertWhenSkippedQuestion();
   }
 
-  protected addAlert(): void {
-    if (this.insideFlow) {
+  public addAlert(): void {
+    if (this.insideFlow && !this.continueToNextQuestion) {
       this.addCompletedStaffFlowAlert();
     }
   }
 
-  protected formValueIsEmpty(): boolean {
-    throw new Error('Should be implemented at child component');
-  }
-
-  private addAlertIfStaffRecordChanged() {
-    if (!this.insideFlow) {
+  private handleAddAlertWhenSkippedQuestion(): void {
+    if (!this.insideFlow || this.continueToNextQuestion) {
       return;
     }
 
-    const skippedThisQuestion = !this.submitted;
+    const skippedThisQuestion = !this.submitted || this.formValueIsEmpty();
 
-    const thisQuestionNotAnswered = skippedThisQuestion || this.formValueIsEmpty();
-    const allOtherQuestionsNotAnswered = !this.workerService.hasAnsweredNonMandatoryQuestion();
+    const hasSavedStaffRecordDetailsBefore = this.workerService.hasAnsweredNonMandatoryQuestion();
 
-    if (thisQuestionNotAnswered && allOtherQuestionsNotAnswered) {
-      return;
+    if (skippedThisQuestion && hasSavedStaffRecordDetailsBefore) {
+      this.addCompletedStaffFlowAlert();
     }
-
-    // at least one question was anwsered before
-    this.addCompletedStaffFlowAlert();
   }
 
   private addCompletedStaffFlowAlert(): void {
@@ -61,5 +55,9 @@ export class FinalQuestionComponent extends QuestionComponent {
       type: 'success',
       message: 'Staff record details saved',
     });
+  }
+
+  protected formValueIsEmpty(): boolean {
+    throw new Error('Should be implemented at child component');
   }
 }
