@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
@@ -43,7 +42,6 @@ describe('OtherQualificationsComponent', () => {
           useFactory: MockWorkerServiceWithOverrides.factory({ worker: workerOverrides }),
           deps: [HttpClient],
         },
-        AlertService,
         WindowRef,
       ],
     });
@@ -52,15 +50,11 @@ describe('OtherQualificationsComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    const alertService = injector.inject(AlertService) as AlertService;
-    const alertSpy = spyOn(alertService, 'addAlert').and.stub();
-
     return {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
       routerSpy,
       router,
-      alertSpy,
     };
   }
 
@@ -105,37 +99,38 @@ describe('OtherQualificationsComponent', () => {
     });
 
     describe('Add worker details flow', () => {
-      ['Skip this question', 'View this staff record'].forEach((link) => {
-        it(`should navigate to 'staff-record-summary' url when '${link}' is clicked`, async () => {
-          const { component, getByText, routerSpy } = await setup({ insideFlow: true });
+      it(`should navigate to 'care-workforce-pathway' url when 'Skip this question' is clicked`, async () => {
+        const { component, getByText, routerSpy } = await setup({ insideFlow: true });
 
-          fireEvent.click(getByText(link));
+        fireEvent.click(getByText('Skip this question'));
 
-          expect(routerSpy).toHaveBeenCalledWith([
-            '/workplace',
-            'mocked-uid',
-            'staff-record',
-            component.worker.uid,
-            'staff-record-summary',
-          ]);
-        });
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'staff-record',
+          component.worker.uid,
+          'care-workforce-pathway',
+        ]);
+      });
 
-        it(`should add Staff record added alert when '${link}' is clicked`, async () => {
-          const { getByText, alertSpy } = await setup({ insideFlow: true });
+      it(`should navigate to 'staff-record-summary' url when 'View this staff record' is clicked`, async () => {
+        const { component, getByText, routerSpy } = await setup({ insideFlow: true });
 
-          fireEvent.click(getByText(link));
+        fireEvent.click(getByText('View this staff record'));
 
-          expect(alertSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Staff record saved',
-          });
-        });
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'staff-record',
+          component.worker.uid,
+          'staff-record-summary',
+        ]);
       });
 
       ['No', 'I do not know', null].forEach((answer) => {
         const userClicksSaveWithoutSelecting = answer === null;
 
-        it(`should navigate to 'staff-record-summary' url when '${answer}' is selected`, async () => {
+        it(`should navigate to 'care-workforce-pathway' url when '${answer}' is selected`, async () => {
           const { component, getByText, routerSpy } = await setup({ insideFlow: true });
 
           if (!userClicksSaveWithoutSelecting) {
@@ -150,24 +145,8 @@ describe('OtherQualificationsComponent', () => {
             'mocked-uid',
             'staff-record',
             component.worker.uid,
-            'staff-record-summary',
+            'care-workforce-pathway',
           ]);
-        });
-
-        it(`should add Staff record added alert when '${answer}' is selected`, async () => {
-          const { getByText, alertSpy } = await setup({ insideFlow: true });
-
-          if (!userClicksSaveWithoutSelecting) {
-            const button = getByText(answer);
-            fireEvent.click(button);
-          }
-
-          fireEvent.click(getByText('Save'));
-
-          expect(alertSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Staff record saved',
-          });
         });
       });
     });
@@ -216,22 +195,6 @@ describe('OtherQualificationsComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
-    });
-
-    ['No', 'I do not know'].forEach((answer) => {
-      it(`should not add Staff record added alert when '${answer}' is selected but not in flow`, async () => {
-        const { getByText, alertSpy } = await setup({ insideFlow: false });
-
-        const button = getByText(answer);
-        fireEvent.click(button);
-
-        fireEvent.click(getByText('Save'));
-
-        expect(alertSpy).not.toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Staff record saved',
-        });
-      });
     });
 
     it('should navigate to other-qualifications-level page when pressing save and Yes is entered', async () => {
