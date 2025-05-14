@@ -100,7 +100,7 @@ import {
 } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { CareWorkforcePathwayComponent } from './care-workforce-pathway/care-workforce-pathway.component';
+import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
 
 const routes: Routes = [
   {
@@ -463,7 +463,7 @@ const routes: Routes = [
           },
           {
             path: 'care-workforce-pathway',
-            component: CareWorkforcePathwayComponent,
+            component: CareWorkforcePathwayRoleComponent,
             data: { title: 'Care Workforce Pathway' },
           },
           {
@@ -756,7 +756,7 @@ const routes: Routes = [
       },
       {
         path: 'care-workforce-pathway',
-        component: CareWorkforcePathwayComponent,
+        component: CareWorkforcePathwayRoleComponent,
         data: { title: 'Care Workforce Pathway' },
       },
       {

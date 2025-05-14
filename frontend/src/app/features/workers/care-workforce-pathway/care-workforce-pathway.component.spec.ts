@@ -1,5 +1,5 @@
 import { fireEvent, render, within } from '@testing-library/angular';
-import { CareWorkforcePathwayComponent } from './care-workforce-pathway.component';
+import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway.component';
 import { UntypedFormBuilder } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -18,10 +18,10 @@ import {
 } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { HttpClient } from '@angular/common/http';
 
-describe('CareWorkforcePathwayComponent', () => {
+describe('CareWorkforcePathwayRoleComponent', () => {
   const categorySelected = careWorkforcePathwayRoleCategories[0].title;
   async function setup(overrides: any = {}) {
-    const setupTools = await render(CareWorkforcePathwayComponent, {
+    const setupTools = await render(CareWorkforcePathwayRoleComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
       declarations: [DetailsComponent],
       providers: [

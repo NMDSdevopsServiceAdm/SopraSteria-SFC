@@ -75,7 +75,7 @@ import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workp
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { CareWorkforcePathwayComponent } from './care-workforce-pathway/care-workforce-pathway.component';
+import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -136,7 +136,7 @@ import { CareWorkforcePathwayComponent } from './care-workforce-pathway/care-wor
     DeleteStaffRecordComponent,
     UpdateWorkplaceDetailsAfterStaffChangesComponent,
     UpdateTotalNumberOfStaffComponent,
-    CareWorkforcePathwayComponent,
+    CareWorkforcePathwayRoleComponent,
   ],
   providers: [
     DialogService,

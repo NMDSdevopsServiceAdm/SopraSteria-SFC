@@ -67,7 +67,7 @@ import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
-import { CareWorkforcePathwayComponent } from '@features/workers/care-workforce-pathway/care-workforce-pathway.component';
+import { CareWorkforcePathwayRoleComponent } from '@features/workers/care-workforce-pathway/care-workforce-pathway.component';
 
 const routes: Routes = [
   {
@@ -285,7 +285,7 @@ const routes: Routes = [
               },
               {
                 path: 'care-workforce-pathway',
-                component: CareWorkforcePathwayComponent,
+                component: CareWorkforcePathwayRoleComponent,
                 data: { title: 'Care Workforce Pathway' },
               },
             ],
@@ -493,7 +493,7 @@ const routes: Routes = [
       },
       {
         path: 'care-workforce-pathway',
-        component: CareWorkforcePathwayComponent,
+        component: CareWorkforcePathwayRoleComponent,
         data: { title: 'Care Workforce Pathway' },
       },
     ],

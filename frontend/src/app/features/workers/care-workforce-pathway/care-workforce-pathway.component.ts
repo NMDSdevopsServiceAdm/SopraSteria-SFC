@@ -14,7 +14,7 @@ import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathw
   selector: 'app-care-workforce-pathway',
   templateUrl: './care-workforce-pathway.component.html',
 })
-export class CareWorkforcePathwayComponent extends QuestionComponent {
+export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   public section = 'Training and qualifications';
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
   public revealTitle = "What's the care workforce pathway?";
