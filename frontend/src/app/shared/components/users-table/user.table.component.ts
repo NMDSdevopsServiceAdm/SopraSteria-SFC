@@ -19,10 +19,7 @@ export class UserTableComponent {
   public getUserType(user: UserDetails): string {
     if (this.workplace) {
       const userType = this.userPermissionsTypes.find(
-        (type) =>
-          type.role === user.role &&
-          type.canManageWdfClaims === user.canManageWdfClaims &&
-          !!user.isPrimary === !!type.isPrimary,
+        (type) => type.role === user.role && !!user.isPrimary === !!type.isPrimary,
       );
 
       return userType?.userTableValue;

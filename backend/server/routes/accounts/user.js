@@ -458,7 +458,6 @@ const partAddUser = async (req, res) => {
 
     // force email to be lowercase
     req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
-    req.body.canManageWdfClaims = req.body.canManageWdfClaims || false;
 
     // only those properties defined in the POST body will be updated (peristed)
     const isValidUser = await thisUser.load(req.body);
