@@ -68,8 +68,6 @@ export class OtherQualificationsComponent extends QuestionComponent {
   }
 
   private determineConditionalRouting(): string[] {
-    console.log(this.cwpQuestionsFlag + ' hjhjhkjkj');
-
     const nextRoute = this.determineBaseRoute();
     const { otherQualification } = this.form.value;
 
