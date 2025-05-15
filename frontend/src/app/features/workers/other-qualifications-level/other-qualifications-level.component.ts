@@ -9,13 +9,13 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 
-import { QuestionComponent } from '../question/question.component';
+import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
   selector: 'app-other-qualifications-level',
   templateUrl: './other-qualifications-level.component.html',
 })
-export class OtherQualificationsLevelComponent extends QuestionComponent {
+export class OtherQualificationsLevelComponent extends FinalQuestionComponent {
   public qualifications: QualificationLevel[];
   public section = 'Training and qualifications';
 
@@ -28,9 +28,18 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     private qualificationService: QualificationService,
-    private alertService: AlertService,
+    protected alertService: AlertService,
   ) {
-    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
+    super(
+      formBuilder,
+      router,
+      route,
+      backLinkService,
+      errorSummaryService,
+      workerService,
+      establishmentService,
+      alertService,
+    );
 
     this.form = this.formBuilder.group({
       qualification: null,
@@ -71,24 +80,8 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     return props;
   }
 
-  onSubmit(): void {
-    super.onSubmit();
-
-    if (!this.submitted && this.insideFlow) {
-      this.addCompletedStaffFlowAlert();
-    }
-  }
-
-  addAlert(): void {
-    if (this.insideFlow) {
-      this.addCompletedStaffFlowAlert();
-    }
-  }
-
-  addCompletedStaffFlowAlert(): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message: 'Staff record saved',
-    });
+  protected formValueIsEmpty(): boolean {
+    const { qualification } = this.form.value;
+    return qualification === null;
   }
 }
