@@ -924,7 +924,11 @@ describe('Summary section', () => {
 
   describe('your other workplaces summary section', () => {
     it('should show the row', async () => {
-      const overrides = { isParent: true };
+      const establishment = {
+        ...Establishment,
+        isParent: true,
+      };
+      const overrides = { establishment };
       const { getByTestId } = await setup(overrides);
 
       const workplacesRow = getByTestId('workplaces-row');
@@ -932,7 +936,11 @@ describe('Summary section', () => {
     });
 
     it('should show you other workplaces link', async () => {
-      const overrides = { isParent: true };
+      const establishment = {
+        ...Establishment,
+        isParent: true,
+      };
+      const overrides = { establishment };
       const { getByText } = await setup(overrides);
 
       const yourOtherWorkplacesText = getByText('Your other workplaces');
@@ -942,7 +950,11 @@ describe('Summary section', () => {
     });
 
     it('should show message if there are no workplaces added', async () => {
-      const overrides = { isParent: true };
+      const establishment = {
+        ...Establishment,
+        isParent: true,
+      };
+      const overrides = { establishment };
       const { getByText, queryByTestId } = await setup(overrides);
 
       const yourOtherWorkplacesSummaryText = getByText("You've not added any other workplaces yet");
@@ -953,7 +965,13 @@ describe('Summary section', () => {
     });
 
     it('should show message if showMissingCqcMessage is true and there are workplaces', async () => {
+      const establishment = {
+        ...Establishment,
+        isParent: true,
+      };
+
       const overrides = {
+        establishment,
         workplacesCount: 1,
         showMissingCqcMessage: true,
         isParent: true,
@@ -973,9 +991,16 @@ describe('Summary section', () => {
     });
 
     it('should show the no workplace message when showMissingCqcMessage is false and there are workplaces', async () => {
+      const establishment = {
+        ...Establishment,
+        isParent: true,
+      };
+
       const overrides = {
+        establishment,
         workplacesCount: 1,
         isParent: true,
+        showMissingCqcMessage: false,
       };
       const { getByText, queryByTestId } = await setup(overrides);
 
