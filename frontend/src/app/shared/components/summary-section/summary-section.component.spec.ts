@@ -55,6 +55,8 @@ describe('Summary section', () => {
         workplacesCount: overrides.workplacesCount ?? 0,
         isParentSubsidiaryView: overrides.isParentSubsidiaryView ?? false,
         noOfWorkersWhoRequireInternationalRecruitment: overrides.noOfWorkersWhoRequireInternationalRecruitment ?? 0,
+        noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered:
+          overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
       },
     });
 
@@ -402,6 +404,32 @@ describe('Summary section', () => {
       fireEvent.click(staffRecordMessage);
 
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'staff-records']);
+    });
+
+    describe('care workforce pathway link', () => {
+      it('should show if there are staff without an answer', async () => {
+        const overrides = {
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+        };
+        const { getByText, routerSpy } = await setup(overrides);
+
+        const workersCareWorkforcePathwayLink = getByText('Where are your staff on the care workforce pathway?');
+        fireEvent.click(workersCareWorkforcePathwayLink);
+
+        expect(workersCareWorkforcePathwayLink);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', Establishment.uid, 'care-workforce-pathway-workers']);
+      });
+
+      it('should show if there are staff without an answer', async () => {
+        const overrides = {
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
+        };
+        const { queryByText } = await setup(overrides);
+
+        const workersCareWorkforcePathwayLink = queryByText('Where are your staff on the care workforce pathway?');
+
+        expect(workersCareWorkforcePathwayLink);
+      });
     });
 
     it('should show staff record does not match message when the number of staff is more than the staff record', async () => {
