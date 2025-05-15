@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { Observable, of } from 'rxjs';
+import lodash from 'lodash';
 
 export const careWorkforcePathwayRoleCategories = [
   {
@@ -19,7 +20,22 @@ export const careWorkforcePathwayRoleCategories = [
     title: 'I do not know',
     description: null,
   },
+  {
+    id: 102,
+    title: 'None of the above',
+    description: 'Select this for admin, ancillary and other roles not yet included in the care workforce pathway',
+  },
 ];
+
+export const MockCWPRoleCategories = lodash.mapValues(
+  {
+    NewToCare: careWorkforcePathwayRoleCategories[0],
+    CareOrSupportWorker: careWorkforcePathwayRoleCategories[1],
+    IDoNotKnow: careWorkforcePathwayRoleCategories[2],
+    NoneOfTheAbove: careWorkforcePathwayRoleCategories[3],
+  },
+  (obj) => ({ ...obj, roleCategoryId: obj.id }),
+);
 
 @Injectable()
 export class MockCareWorkforcePathwayService extends CareWorkforcePathwayService {
