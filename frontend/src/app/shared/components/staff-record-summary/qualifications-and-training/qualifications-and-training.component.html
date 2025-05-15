@@ -218,7 +218,7 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Care workforce pathway role category</dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.careWorkforcePathwayRoleCategory?.title || '-' | closedEndedAnswer }}
+      {{ worker.careWorkforcePathwayRoleCategory | CWPRoleCategoryTitle }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change

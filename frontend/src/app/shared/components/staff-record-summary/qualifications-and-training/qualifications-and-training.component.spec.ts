@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
+// import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -14,11 +14,17 @@ import { render, within } from '@testing-library/angular';
 
 import { QualificationsAndTrainingComponent } from './qualifications-and-training.component';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
+import { MockCWPRoleCategories } from '@core/test-utils/MockCareWorkforcePathwayService';
 
-fdescribe('QualificationsAndTrainingComponent', () => {
-  async function setup(isWdf = false, canEditWorker = true) {
+describe('QualificationsAndTrainingComponent', () => {
+  async function setup(overrides: any = {}) {
+    const configs = { isWdf: false, canEditWorker: true, ...overrides };
+
+    const { isWdf, canEditWorker } = configs;
+    const mockWorker = { ...workerWithWdf(), ...(overrides.workerOverrides ?? {}) };
+
     const { fixture, getByText } = await render(QualificationsAndTrainingComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
       declarations: [SummaryRecordChangeComponent],
       providers: [
         InternationalRecruitmentService,
@@ -27,11 +33,12 @@ fdescribe('QualificationsAndTrainingComponent', () => {
           useFactory: MockPermissionsService.factory(canEditWorker ? ['canEditWorker'] : []),
           deps: [HttpClient],
         },
+        provideRouter([]),
       ],
       componentProperties: {
         canEditWorker: canEditWorker,
         workplace: establishmentBuilder() as Establishment,
-        worker: workerWithWdf() as Worker,
+        worker: mockWorker as Worker,
         wdfView: isWdf,
       },
     });
@@ -114,7 +121,7 @@ fdescribe('QualificationsAndTrainingComponent', () => {
     });
 
     it('should not render Add or Change link when canEditWorker is false', async () => {
-      const { fixture, component, getByText } = await setup(false, false);
+      const { fixture, component, getByText } = await setup({ isWdf: false, canEditWorker: false });
 
       component.worker.level2CareCertificate.value = 'Yes, started';
       fixture.detectChanges();
@@ -129,7 +136,7 @@ fdescribe('QualificationsAndTrainingComponent', () => {
 
     describe('funding version', () => {
       it('should render Add link to the funding question page in funding version of summary page when level 2 care certificate is not answered', async () => {
-        const { fixture, component, getByText } = await setup(true);
+        const { fixture, component, getByText } = await setup({ isWdf: true });
 
         component.worker.level2CareCertificate = null;
         fixture.detectChanges();
@@ -143,7 +150,7 @@ fdescribe('QualificationsAndTrainingComponent', () => {
       });
 
       it('should render Change link to the funding question page in funding version of summary page when level 2 care certificate is answered', async () => {
-        const { fixture, component, getByText } = await setup(true);
+        const { fixture, component, getByText } = await setup({ isWdf: true });
 
         component.worker.level2CareCertificate.value = 'Yes, started';
         fixture.detectChanges();
@@ -159,14 +166,14 @@ fdescribe('QualificationsAndTrainingComponent', () => {
   });
 
   describe('Care workforce pathway role category', () => {
-    it('should render Add link when the question is not answered', async () => {
-      const { fixture, component, getByText } = await setup();
-
-      component.worker.careWorkforcePathwayRoleCategory = null;
-      fixture.detectChanges();
+    it('should render Add link and a dash when the question is not answered', async () => {
+      const workerOverrides = { careWorkforcePathwayRoleCategory: null };
+      const { component, getByText } = await setup({ workerOverrides });
 
       const section = getByText('Care workforce pathway role category').parentElement;
       const addLink = within(section).getByText('Add');
+
+      expect(within(section).getByText('-')).toBeTruthy();
 
       expect(addLink.getAttribute('href')).toBe(
         `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
@@ -174,19 +181,41 @@ fdescribe('QualificationsAndTrainingComponent', () => {
     });
 
     it('should render Change link when the question is answered', async () => {
-      const { fixture, component, getByText } = await setup();
-
-      component.worker.careWorkforcePathwayRoleCategory = {
-        roleCategoryId: 1,
-        title: 'New to care',
-        description: "Is in a care-providing role that's a start point for a career in social care",
-      };
-      fixture.detectChanges();
+      const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.NewToCare };
+      const { component, getByText } = await setup({ workerOverrides });
 
       const section = getByText('Care workforce pathway role category').parentElement;
       const changeLink = within(section).getByText('Change');
 
       expect(within(section).getByText('New to care')).toBeTruthy();
+
+      expect(changeLink.getAttribute('href')).toBe(
+        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
+      );
+    });
+
+    it('should render Change link and "Not known" when the answer is "I do not know"', async () => {
+      const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.IDoNotKnow };
+      const { component, getByText } = await setup({ workerOverrides });
+
+      const section = getByText('Care workforce pathway role category').parentElement;
+      const changeLink = within(section).getByText('Change');
+
+      expect(within(section).getByText('Not known')).toBeTruthy();
+
+      expect(changeLink.getAttribute('href')).toBe(
+        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
+      );
+    });
+
+    it('should render Change link and "Role not included yet" when the answer is "None of the above"', async () => {
+      const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.NoneOfTheAbove };
+      const { component, getByText } = await setup({ workerOverrides });
+
+      const section = getByText('Care workforce pathway role category').parentElement;
+      const changeLink = within(section).getByText('Change');
+
+      expect(within(section).getByText('Role not included yet')).toBeTruthy();
 
       expect(changeLink.getAttribute('href')).toBe(
         `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
