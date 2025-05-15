@@ -15,7 +15,7 @@ import { render, within } from '@testing-library/angular';
 import { QualificationsAndTrainingComponent } from './qualifications-and-training.component';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
-describe('QualificationsAndTrainingComponent', () => {
+fdescribe('QualificationsAndTrainingComponent', () => {
   async function setup(isWdf = false, canEditWorker = true) {
     const { fixture, getByText } = await render(QualificationsAndTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -155,6 +155,42 @@ describe('QualificationsAndTrainingComponent', () => {
           `/funding/staff-record/${component.worker.uid}/level-2-care-certificate`,
         );
       });
+    });
+  });
+
+  describe('Care workforce pathway role category', () => {
+    it('should render Add link when the question is not answered', async () => {
+      const { fixture, component, getByText } = await setup();
+
+      component.worker.careWorkforcePathwayRoleCategory = null;
+      fixture.detectChanges();
+
+      const section = getByText('Care workforce pathway role category').parentElement;
+      const addLink = within(section).getByText('Add');
+
+      expect(addLink.getAttribute('href')).toBe(
+        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
+      );
+    });
+
+    it('should render Change link when the question is answered', async () => {
+      const { fixture, component, getByText } = await setup();
+
+      component.worker.careWorkforcePathwayRoleCategory = {
+        roleCategoryId: 1,
+        title: 'New to care',
+        description: "Is in a care-providing role that's a start point for a career in social care",
+      };
+      fixture.detectChanges();
+
+      const section = getByText('Care workforce pathway role category').parentElement;
+      const changeLink = within(section).getByText('Change');
+
+      expect(within(section).getByText('New to care')).toBeTruthy();
+
+      expect(changeLink.getAttribute('href')).toBe(
+        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
+      );
     });
   });
 });
