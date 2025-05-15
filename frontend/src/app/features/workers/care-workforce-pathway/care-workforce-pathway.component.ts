@@ -9,6 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
 import { AlertService } from '@core/services/alert.service';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-care-workforce-pathway',
@@ -18,6 +19,7 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   public section = 'Training and qualifications';
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
   public revealTitle = "What's the care workforce pathway?";
+  public cwpQuestionsFlag: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -29,6 +31,7 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
     protected establishmentService: EstablishmentService,
     private alertService: AlertService,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
+    private featureFlagService: FeatureFlagsService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
@@ -37,7 +40,10 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
     });
   }
 
-  init() {
+  async init() {
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
+
     this.next = this.getRoutePath('staff-record-summary');
     this.getCareWorkforcePathwayRoleCategories();
 
