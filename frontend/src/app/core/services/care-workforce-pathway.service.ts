@@ -21,4 +21,12 @@ export class CareWorkforcePathwayService {
       )
       .pipe(map((res) => res.careWorkforcePathwayRoleCategories));
   }
+
+  getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId): Observable<any> {
+    return this.http
+      .get<any>(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,
+      )
+      .pipe(map((res) => res));
+  }
 }

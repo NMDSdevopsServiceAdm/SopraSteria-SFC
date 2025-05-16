@@ -24,6 +24,7 @@ import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 
 @NgModule({
   imports: [
@@ -56,6 +57,7 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
+    GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
   ],
 })
 export class SubsidiaryModule {}
