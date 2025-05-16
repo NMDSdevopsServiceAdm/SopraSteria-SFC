@@ -41,15 +41,15 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   }
 
   async init() {
-    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
-    this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
-
-    this.next = this.getRoutePath('staff-record-summary');
     this.getCareWorkforcePathwayRoleCategories();
 
     if (this.worker.careWorkforcePathwayRoleCategory) {
       this.prefill();
     }
+
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
+    this.next = this.getRoutePath('staff-record-summary');
   }
 
   prefill() {
