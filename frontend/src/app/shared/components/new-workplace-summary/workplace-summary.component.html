@@ -32,7 +32,9 @@
                       <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy | formatSLV }}</li>
                     </ul>
                   </ng-container>
-                  <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
+                  <ng-container *ngIf="!isArray(workplace.vacancies)"
+                    >{{ workplace.vacancies | closedEndedAnswer }}
+                  </ng-container>
                 </ng-template>
               </app-summary-record-value>
             </dd>
@@ -56,7 +58,7 @@
       </div>
       <dl class="govuk-summary-list govuk-summary-list--medium">
         <div class="govuk-summary-list__row" data-testid="starters">
-          <dt class="govuk-summary-list__key">New starters in the last 12 months</dt>
+          <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
           <dd class="govuk-summary-list__value">
             <app-summary-record-value>
               <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
@@ -67,7 +69,7 @@
                   </ul>
                 </ng-container>
                 <ng-container *ngIf="!isArray(workplace.starters)">
-                  {{ workplace.starters }}
+                  {{ workplace.starters | closedEndedAnswer }}
                 </ng-container>
               </ng-template>
             </app-summary-record-value>
@@ -83,7 +85,7 @@
         </div>
 
         <div class="govuk-summary-list__row" data-testid="leavers">
-          <dt class="govuk-summary-list__key">Staff leavers in the last 12 months</dt>
+          <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
           <dd class="govuk-summary-list__value">
             <app-summary-record-value>
               <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
@@ -94,7 +96,7 @@
                   </ul>
                 </ng-container>
                 <ng-container *ngIf="!isArray(workplace.leavers)">
-                  {{ workplace.leavers }}
+                  {{ workplace.leavers | closedEndedAnswer }}
                 </ng-container>
               </ng-template>
             </app-summary-record-value>
