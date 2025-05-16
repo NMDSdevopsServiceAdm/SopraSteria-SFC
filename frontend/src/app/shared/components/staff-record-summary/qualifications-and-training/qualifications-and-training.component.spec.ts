@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { provideRouter, RouterModule } from '@angular/router';
-// import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -20,10 +19,10 @@ describe('QualificationsAndTrainingComponent', () => {
   async function setup(overrides: any = {}) {
     const configs = { isWdf: false, canEditWorker: true, ...overrides };
 
-    const { isWdf, canEditWorker } = configs;
+    const { isWdf, canEditWorker, cwpQuestionsFlag } = configs;
     const mockWorker = { ...workerWithWdf(), ...(overrides.workerOverrides ?? {}) };
 
-    const { fixture, getByText } = await render(QualificationsAndTrainingComponent, {
+    const setupTools = await render(QualificationsAndTrainingComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule],
       declarations: [SummaryRecordChangeComponent],
       providers: [
@@ -33,7 +32,12 @@ describe('QualificationsAndTrainingComponent', () => {
           useFactory: MockPermissionsService.factory(canEditWorker ? ['canEditWorker'] : []),
           deps: [HttpClient],
         },
-        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { data: { featureFlags: { cwpQuestions: cwpQuestionsFlag } } },
+          },
+        },
       ],
       componentProperties: {
         canEditWorker: canEditWorker,
@@ -43,12 +47,13 @@ describe('QualificationsAndTrainingComponent', () => {
       },
     });
 
+    const fixture = setupTools.fixture;
     const component = fixture.componentInstance;
 
     return {
+      ...setupTools,
       component,
       fixture,
-      getByText,
     };
   }
 
@@ -166,60 +171,75 @@ describe('QualificationsAndTrainingComponent', () => {
   });
 
   describe('Care workforce pathway role category', () => {
-    it('should render Add link and a dash when the question is not answered', async () => {
-      const workerOverrides = { careWorkforcePathwayRoleCategory: null };
-      const { component, getByText } = await setup({ workerOverrides });
+    describe('when cwpQuestionsFlag is true (feature is turned off)', () => {
+      const cwpQuestionsFlag = true;
 
-      const section = getByText('Care workforce pathway role category').parentElement;
-      const addLink = within(section).getByText('Add');
+      it('should not show a row of Care workforce pathway role category', async () => {
+        const workerOverrides = { careWorkforcePathwayRoleCategory: null };
+        const { queryByText } = await setup({ workerOverrides, cwpQuestionsFlag });
 
-      expect(within(section).getByText('-')).toBeTruthy();
-
-      expect(addLink.getAttribute('href')).toBe(
-        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
-      );
+        expect(queryByText('Care workforce pathway role category')).toBeFalsy();
+      });
     });
 
-    it('should render Change link when the question is answered', async () => {
-      const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.NewToCare };
-      const { component, getByText } = await setup({ workerOverrides });
+    describe('when cwpQuestionsFlag is false (feature is turned on)', () => {
+      const cwpQuestionsFlag = false;
 
-      const section = getByText('Care workforce pathway role category').parentElement;
-      const changeLink = within(section).getByText('Change');
+      it('should render Add link and a dash when the question is not answered', async () => {
+        const workerOverrides = { careWorkforcePathwayRoleCategory: null };
+        const { component, getByText } = await setup({ workerOverrides, cwpQuestionsFlag });
 
-      expect(within(section).getByText('New to care')).toBeTruthy();
+        const section = getByText('Care workforce pathway role category').parentElement;
+        const addLink = within(section).getByText('Add');
 
-      expect(changeLink.getAttribute('href')).toBe(
-        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
-      );
-    });
+        expect(within(section).getByText('-')).toBeTruthy();
 
-    it('should render Change link and "Not known" when the answer is "I do not know"', async () => {
-      const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.IDoNotKnow };
-      const { component, getByText } = await setup({ workerOverrides });
+        expect(addLink.getAttribute('href')).toBe(
+          `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
+        );
+      });
 
-      const section = getByText('Care workforce pathway role category').parentElement;
-      const changeLink = within(section).getByText('Change');
+      it('should render Change link when the question is answered', async () => {
+        const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.NewToCare };
+        const { component, getByText } = await setup({ workerOverrides, cwpQuestionsFlag });
 
-      expect(within(section).getByText('Not known')).toBeTruthy();
+        const section = getByText('Care workforce pathway role category').parentElement;
+        const changeLink = within(section).getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe(
-        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
-      );
-    });
+        expect(within(section).getByText('New to care')).toBeTruthy();
 
-    it('should render Change link and "Role not included" when the answer is "None of the above"', async () => {
-      const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.NoneOfTheAbove };
-      const { component, getByText } = await setup({ workerOverrides });
+        expect(changeLink.getAttribute('href')).toBe(
+          `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
+        );
+      });
 
-      const section = getByText('Care workforce pathway role category').parentElement;
-      const changeLink = within(section).getByText('Change');
+      it('should render Change link and "Not known" when the answer is "I do not know"', async () => {
+        const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.IDoNotKnow };
+        const { component, getByText } = await setup({ workerOverrides, cwpQuestionsFlag });
 
-      expect(within(section).getByText('Role not included')).toBeTruthy();
+        const section = getByText('Care workforce pathway role category').parentElement;
+        const changeLink = within(section).getByText('Change');
 
-      expect(changeLink.getAttribute('href')).toBe(
-        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
-      );
+        expect(within(section).getByText('Not known')).toBeTruthy();
+
+        expect(changeLink.getAttribute('href')).toBe(
+          `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
+        );
+      });
+
+      it('should render Change link and "Role not included" when the answer is "None of the above"', async () => {
+        const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.NoneOfTheAbove };
+        const { component, getByText } = await setup({ workerOverrides, cwpQuestionsFlag });
+
+        const section = getByText('Care workforce pathway role category').parentElement;
+        const changeLink = within(section).getByText('Change');
+
+        expect(within(section).getByText('Role not included')).toBeTruthy();
+
+        expect(changeLink.getAttribute('href')).toBe(
+          `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,
+        );
+      });
     });
   });
 });
