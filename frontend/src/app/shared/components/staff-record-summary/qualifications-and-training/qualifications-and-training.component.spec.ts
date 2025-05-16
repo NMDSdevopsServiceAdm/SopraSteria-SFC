@@ -208,14 +208,14 @@ describe('QualificationsAndTrainingComponent', () => {
       );
     });
 
-    it('should render Change link and "Role not included yet" when the answer is "None of the above"', async () => {
+    it('should render Change link and "Role not included" when the answer is "None of the above"', async () => {
       const workerOverrides = { careWorkforcePathwayRoleCategory: MockCWPRoleCategories.NoneOfTheAbove };
       const { component, getByText } = await setup({ workerOverrides });
 
       const section = getByText('Care workforce pathway role category').parentElement;
       const changeLink = within(section).getByText('Change');
 
-      expect(within(section).getByText('Role not included yet')).toBeTruthy();
+      expect(within(section).getByText('Role not included')).toBeTruthy();
 
       expect(changeLink.getAttribute('href')).toBe(
         `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/care-workforce-pathway`,

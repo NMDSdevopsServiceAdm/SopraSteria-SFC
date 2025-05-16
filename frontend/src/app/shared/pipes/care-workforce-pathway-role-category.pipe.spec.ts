@@ -14,14 +14,14 @@ describe('CareWorkforcePathwayRoleCategoryPipe', () => {
     expect(pipe.transform(roleCategory)).toEqual(expectedValue);
   });
 
-  it('should convert "None of the above" to "Role not included yet"', () => {
+  it('should convert "None of the above" to "Role not included"', () => {
     const pipe = new CareWorkforcePathwayRoleCategoryPipe();
     const roleCategory = {
       id: 102,
       title: 'None of the above',
       description: '',
     };
-    const expectedValue = 'Role not included yet';
+    const expectedValue = 'Role not included';
 
     expect(pipe.transform(roleCategory)).toEqual(expectedValue);
   });
