@@ -9,6 +9,8 @@ import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
+import { AlertService } from '@core/services/alert.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-other-qualifications-level',
@@ -17,7 +19,7 @@ import { QuestionComponent } from '../question/question.component';
 export class OtherQualificationsLevelComponent extends QuestionComponent {
   public qualifications: QualificationLevel[];
   public section = 'Training and qualifications';
-
+  public cwpQuestionsFlag: boolean;
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
@@ -27,6 +29,8 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     private qualificationService: QualificationService,
+    protected alertService: AlertService,
+    private featureFlagService: FeatureFlagsService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
@@ -35,14 +39,19 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     });
   }
 
-  init(): void {
+  async init() {
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
+
     this.getAndSetQualifications();
 
     if (this.worker.highestQualification) {
       this.prefill();
     }
 
-    this.next = this.getRoutePath('care-workforce-pathway');
+    this.cwpQuestionsFlag
+      ? (this.next = this.getRoutePath('staff-record-summary'))
+      : (this.next = this.getRoutePath('care-workforce-pathway'));
   }
 
   private prefill(): void {
@@ -71,5 +80,21 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
 
   onSubmit(): void {
     super.onSubmit();
+    if (!this.submitted && this.insideFlow && this.cwpQuestionsFlag == true) {
+      this.addCompletedStaffFlowAlert();
+    }
+  }
+
+  addAlert(): void {
+    if (this.insideFlow && this.cwpQuestionsFlag == true) {
+      this.addCompletedStaffFlowAlert();
+    }
+  }
+
+  addCompletedStaffFlowAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: 'Staff record saved',
+    });
   }
 }
