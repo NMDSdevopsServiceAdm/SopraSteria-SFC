@@ -7,9 +7,16 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
   templateUrl: './qualifications-and-training.component.html',
 })
 export class QualificationsAndTrainingComponent extends StaffRecordSummaryComponent {
+  public cwpQuestionsFlag: boolean;
+
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() public canEditWorker: boolean;
+
+  protected init(): void {
+    const snapshotData = this.route.snapshot.data;
+    this.cwpQuestionsFlag = snapshotData?.featureFlags?.cwpQuestions ?? false;
+  }
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
