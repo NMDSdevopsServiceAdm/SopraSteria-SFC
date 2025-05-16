@@ -84,7 +84,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('component should not render when deature flag is on', async () => {
+  it('component should not render when feature flag is on', async () => {
     const overrides = { cwpQuestionsFlag: true };
     const { fixture, queryByTestId } = await setup(overrides);
 
