@@ -11,7 +11,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from './no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { of } from 'rxjs';
 
-fdescribe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () => {
+describe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () => {
   const establishmentIdInService = '129';
 
   const setup = (overrides: any = {}) => {

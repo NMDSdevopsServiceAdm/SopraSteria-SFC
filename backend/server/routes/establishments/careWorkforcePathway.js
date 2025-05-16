@@ -17,11 +17,11 @@ const getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) 
   }
 };
 
-router.route('/')
+router.route('/');
 router
   .route('/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer')
   .get(hasPermission('canViewWorker'), getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer);
 
-  module.exports = router;
+module.exports = router;
 module.exports.getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer =
   getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer;

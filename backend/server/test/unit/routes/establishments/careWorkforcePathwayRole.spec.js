@@ -6,7 +6,7 @@ const {
   getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer,
 } = require('../../../../routes/establishments/careWorkforcePathway');
 
-describe.only('careWorkforcePathwayRole', () => {
+describe('careWorkforcePathwayRole', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -53,7 +53,7 @@ describe.only('careWorkforcePathwayRole', () => {
     const response = res._getData();
 
     expect(res.statusCode).to.deep.equal(200);
-    expect(response).to.deep.equal({noOfWorkersWhoRequireAnswers: workersFromDB.length});
+    expect(response).to.deep.equal({ noOfWorkersWhoRequireAnswers: workersFromDB.length });
   });
 
   it('should return 0 when there are no workers with care workforce pathway category unanswered', async () => {
@@ -66,7 +66,7 @@ describe.only('careWorkforcePathwayRole', () => {
     const response = res._getData();
 
     expect(res.statusCode).to.deep.equal(200);
-    expect(response).to.deep.equal({noOfWorkersWhoRequireAnswers: 0});
+    expect(response).to.deep.equal({ noOfWorkersWhoRequireAnswers: 0 });
   });
 
   it('should return an error', async () => {
