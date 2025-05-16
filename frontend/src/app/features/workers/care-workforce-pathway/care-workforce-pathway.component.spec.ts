@@ -84,6 +84,14 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('component should not render when deature flag is on', async () => {
+    const overrides = { cwpQuestionsFlag: true };
+    const { fixture, queryByTestId } = await setup(overrides);
+
+    fixture.detectChanges();
+    expect(queryByTestId('cwp-flag')).toBeFalsy();
+  });
+
   it('should show the heading and caption', async () => {
     const overrides = { cwpQuestionsFlag: false };
     const { getByText, getByTestId, component } = await setup(overrides);
