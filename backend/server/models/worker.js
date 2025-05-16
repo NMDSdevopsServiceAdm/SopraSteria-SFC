@@ -1450,5 +1450,17 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Worker.getAllWorkersWithoutCareWorkforceCategory = async function (establishmentId) {
+    return await this.findAll({
+      attributes: ['id', 'uid', 'NameOrIdValue', 'CareWorkforcePathwayRoleCategoryFK'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CareWorkforcePathwayRoleCategoryFK: null,
+      },
+      order: [['NameOrIdValue', 'ASC']],
+    });
+  };
+
   return Worker;
 };
