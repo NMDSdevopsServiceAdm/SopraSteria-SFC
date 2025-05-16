@@ -15,7 +15,7 @@ export class CareWorkforcePathwayRoleCategoryPipe implements PipeTransform {
         return 'Not known';
 
       case 'None of the above':
-        return 'Role not included yet';
+        return 'Role not included';
 
       default:
         return value.title;
