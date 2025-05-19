@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
@@ -26,6 +26,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
   @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  public cwpQuestionsFlag: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -53,9 +54,13 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     private tabsService: TabsService,
     private establishmentService: EstablishmentService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
+    console.log(this.cwpQuestionsFlag);
+    this.cwpQuestionsFlag = this.route.snapshot.data?.featureFlags?.cwpQuestions ?? false;
+    console.log(this.cwpQuestionsFlag);
     this.getWorkplaceSummaryMessage();
     this.getStaffCreatedDate();
     this.getStaffSummaryMessage();
@@ -114,7 +119,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
-    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0) {
+    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && !this.cwpQuestionsFlag) {
       this.sections[1].message = 'Where are your staff on the care workforce pathway?';
       this.sections[1].route = ['/workplace', this.workplace.uid, 'care-workforce-pathway-workers'];
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {

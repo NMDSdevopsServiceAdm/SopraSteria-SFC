@@ -34,7 +34,7 @@ describe('Summary section', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: {},
+              data: { featureFlags: { cwpQuestions: overrides.cwpQuestionsFlag } },
             },
           },
         },
@@ -407,28 +407,45 @@ describe('Summary section', () => {
     });
 
     describe('care workforce pathway link', () => {
-      it('should show if there are staff without an answer', async () => {
-        const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
-        };
-        const { getByText, routerSpy } = await setup(overrides);
+      describe('with cwpQuestionsFlag true', () => {
+        it('should not show if even there are staff without an answer', async () => {
+          const overrides = {
+            noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+            cwpQuestionsFlag: true,
+          };
+          const { queryByText } = await setup(overrides);
 
-        const workersCareWorkforcePathwayLink = getByText('Where are your staff on the care workforce pathway?');
-        fireEvent.click(workersCareWorkforcePathwayLink);
+          const workersCareWorkforcePathwayLink = queryByText('Where are your staff on the care workforce pathway?');
 
-        expect(workersCareWorkforcePathwayLink);
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', Establishment.uid, 'care-workforce-pathway-workers']);
+          expect(workersCareWorkforcePathwayLink).toBeFalsy();
+        });
       });
+      describe('with cwpQuestionsFlag false', () => {
+        it('should show if there are staff without an answer', async () => {
+          const overrides = {
+            noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+            cwpQuestionsFlag: false,
+          };
+          const { getByText, routerSpy } = await setup(overrides);
 
-      it('should show if there are staff without an answer', async () => {
-        const overrides = {
-          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
-        };
-        const { queryByText } = await setup(overrides);
+          const workersCareWorkforcePathwayLink = getByText('Where are your staff on the care workforce pathway?');
+          fireEvent.click(workersCareWorkforcePathwayLink);
 
-        const workersCareWorkforcePathwayLink = queryByText('Where are your staff on the care workforce pathway?');
+          expect(workersCareWorkforcePathwayLink).toBeTruthy();
+          expect(routerSpy).toHaveBeenCalledWith(['/workplace', Establishment.uid, 'care-workforce-pathway-workers']);
+        });
 
-        expect(workersCareWorkforcePathwayLink);
+        it('should not show if there are no staff without an answer', async () => {
+          const overrides = {
+            noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
+            cwpQuestionsFlag: false,
+          };
+          const { queryByText } = await setup(overrides);
+
+          const workersCareWorkforcePathwayLink = queryByText('Where are your staff on the care workforce pathway?');
+
+          expect(workersCareWorkforcePathwayLink).toBeFalsy();
+        });
       });
     });
 
