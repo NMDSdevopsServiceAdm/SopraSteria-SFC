@@ -2,38 +2,42 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group">
-        <h1 class="govuk-label-wrapper">
-          <label class="govuk-label govuk-label--l govuk-!-margin-bottom-8" for="qualification">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-            What's the highest level of their other qualifications?
-          </label>
-        </h1>
-        <app-details [title]="'Help with qualification levels'">
-          <p>
-            <a
-              target="_blank"
-              href="https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels"
-            >
-              Find out more about qualification levels<span class="govuk-visually-hidden"
-                >, (opens in a new window)</span
+            <h1 class="govuk-fieldset__heading">What's the highest level of their other qualifications?</h1>
+          </legend>
+          <app-details [title]="'Get help with qualification levels'">
+            <p>
+              <a
+                target="_blank"
+                href="https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels"
               >
-            </a>
-            on the GOV.UK website.
-          </p>
-        </app-details>
-        <label class="govuk-label" for="qualification"> Qualification level </label>
+                Find out more about qualification levels<span class="govuk-visually-hidden"
+                  >, (opens in a new window)</span
+                >
+              </a>
+              on the GOV.UK website.
+            </p>
+          </app-details>
+          <h3 class="govuk-heading-s">Qualification level</h3>
 
-        <select
-          class="govuk-select govuk-!-width-one-half"
-          [formControlName]="'qualification'"
-          id="qualification"
-          name="qualification"
-        >
-          <option [ngValue]="null">Select</option>
-          <option *ngFor="let qualification of qualifications" [value]="qualification.id">
-            {{ qualification.level }}
-          </option>
-        </select>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div *ngFor="let qualification of qualifications; let i = index" class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="qualification-{{ i }}"
+                [formControlName]="'qualification'"
+                name="qualification"
+                type="radio"
+                [value]="qualification.id"
+              />
+              <label class="govuk-label govuk-radios__label" for="qualification-{{ i }}">
+                {{ qualification.level | dontKnow }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
       </div>
     </div>
     <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
@@ -47,5 +51,5 @@
     </div>
   </div>
 
-  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)" callToAction="Save"></app-submit-button>
+  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)" ></app-submit-button>
 </form>
