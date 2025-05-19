@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
@@ -26,7 +26,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
   @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
-  public cwpQuestionsFlag: boolean;
+  @Input() cwpQuestionsFlag: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -54,13 +54,9 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     private tabsService: TabsService,
     private establishmentService: EstablishmentService,
     private router: Router,
-    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    console.log(this.cwpQuestionsFlag);
-    this.cwpQuestionsFlag = this.route.snapshot.data?.featureFlags?.cwpQuestions ?? false;
-    console.log(this.cwpQuestionsFlag);
     this.getWorkplaceSummaryMessage();
     this.getStaffCreatedDate();
     this.getStaffSummaryMessage();

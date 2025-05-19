@@ -34,7 +34,7 @@ describe('Summary section', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { featureFlags: { cwpQuestions: overrides.cwpQuestionsFlag } },
+              data: {},
             },
           },
         },
@@ -57,6 +57,7 @@ describe('Summary section', () => {
         noOfWorkersWhoRequireInternationalRecruitment: overrides.noOfWorkersWhoRequireInternationalRecruitment ?? 0,
         noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered:
           overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
+        cwpQuestionsFlag: overrides.cwpQuestionsFlag ?? false,
       },
     });
 
