@@ -7,7 +7,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 import { FeatureFlagsResolver } from './feature-flags.resolver';
 
-fdescribe('FeatureFlagsResolver', () => {
+describe('FeatureFlagsResolver', () => {
   async function setup(overrides: any = {}) {
     const cwpQuestionsFlag: boolean = overrides.cwpQuestionsFlag ?? false;
     const mockFeatureFlag: boolean = overrides.mockFeatureFlag ?? false;

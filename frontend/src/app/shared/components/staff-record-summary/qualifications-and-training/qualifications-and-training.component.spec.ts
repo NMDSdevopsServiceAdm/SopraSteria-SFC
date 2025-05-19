@@ -35,7 +35,7 @@ describe('QualificationsAndTrainingComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { data: { featureFlags: { cwpQuestions: cwpQuestionsFlag } } },
+            snapshot: { data: { featureFlags: { cwpQuestions: cwpQuestionsFlag } }, params: {} },
           },
         },
       ],
