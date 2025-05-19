@@ -1,16 +1,50 @@
-<h1>Where are your staff on the care workforce pathway?</h1>
-<app-details [title]="'What\'s the care workforce pathway (CWP)?'" data-testid="reveal-whatsCareWorkforcePathway">
-  <p>
-    The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in adult social
-    care. It provides a clear career structure for your staff.
-  </p>
-  <p>You'll use the pathway to set out how staff can gain skills, learn and develop, and progress in their careers.</p>
-  <p>
-    <a
-      href="https://www.gov.uk/government/publications/care-workforce-pathway-for-adult-social-care/care-workforce-pathway-for-adult-social-care-overview"
-      class="govuk-link"
-      target="_blank"
-      >Read more about the care workforce pathway<span class="govuk-visually-hidden"> (opens in a new window)</span></a
-    >
-  </p>
-</app-details>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <span class="govuk-caption-l" data-testid="section-heading">Training and qualifications</span>
+      <h1 class="govuk-fieldset__heading">Where are your staff on the care workforce pathway?</h1>
+    </legend>
+
+    <app-details [title]="'What\'s the care workforce pathway (CWP)?'" data-testid="reveal-whatsCareWorkforcePathway">
+      <p>
+        The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in adult
+        social care. It provides a clear career structure for your staff.
+      </p>
+      <p>
+        You'll use the pathway to set out how staff can gain skills, learn and develop, and progress in their careers.
+      </p>
+      <p>
+        <a
+          href="https://www.gov.uk/government/publications/care-workforce-pathway-for-adult-social-care/care-workforce-pathway-for-adult-social-care-overview"
+          class="govuk-link"
+          target="_blank"
+          >Read more about the care workforce pathway<span class="govuk-visually-hidden">
+            (opens in a new window)</span
+          ></a
+        >
+      </p>
+    </app-details>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header" width="30%">Name or ID number</th>
+          <th scope="col" class="govuk-table__header">Job role</th>
+          <th scope="col" class="govuk-table__header" width="25%">CWP role category</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row" *ngFor="let worker of workersToShow">
+          <td class="govuk-table__cell">
+            <a [routerLink]="['../', worker.uid, 'staff-record-summary']">{{ worker.nameOrId }}</a>
+          </td>
+          <td class="govuk-table__cell">{{ worker.mainJob.jobRoleName }}</td>
+          <td class="govuk-table__cell">Choose a category</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

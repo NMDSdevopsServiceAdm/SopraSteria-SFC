@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
@@ -17,6 +17,7 @@ fdescribe('CareWorkforcePathwaySummaryComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        provideRouter([]),
       ],
     });
 
