@@ -95,7 +95,7 @@ const routes: Routes = [
                 path: '',
                 component: WdfStaffRecordComponent,
                 data: { title: 'Funding Staff Record' },
-                resolve: { featureFlags: FeatureFlagsResolver },
+                resolve: { report: FundingReportResolver, featureFlags: FeatureFlagsResolver },
               },
               {
                 path: 'staff-details',
