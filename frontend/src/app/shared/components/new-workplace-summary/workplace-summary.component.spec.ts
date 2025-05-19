@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionType } from '@core/model/permissions.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
@@ -31,7 +30,7 @@ describe('NewWorkplaceSummaryComponent', () => {
     hasQuestions = true,
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: PermissionsService,
@@ -50,6 +49,7 @@ describe('NewWorkplaceSummaryComponent', () => {
           provide: VacanciesAndTurnoverService,
           useClass: MockVacanciesAndTurnoverService,
         },
+        provideRouter([]),
       ],
       componentProperties: {
         workplace: establishmentWithShareWith(shareWith) as Establishment,
@@ -174,6 +174,22 @@ describe('NewWorkplaceSummaryComponent', () => {
         );
       });
 
+      it('should render 0 and an Change link if the number of staff is 0', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = 0;
+
+        fixture.detectChanges();
+
+        const numberOfStaffRow = within(document.body).queryByTestId('numberOfStaff');
+        const link = within(numberOfStaffRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/total-staff`);
+        expect(within(numberOfStaffRow).queryByText('0')).toBeTruthy();
+      });
+
       it('should render a dash and an Add link if there is not a value for number of staff', async () => {
         const { component, fixture } = await setup();
 
@@ -204,6 +220,24 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(numberOfStaffRow).getByText('You need to add your total number of staff')).toBeTruthy();
         expect(numberOfStaffRow.getAttribute('class')).toContain('govuk-summary-list__error');
         expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).toContain(
+          'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
+        );
+      });
+
+      it('should not render the error message and conditional classes if the number of staff is 0', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.canEditEstablishment = true;
+        component.workplace.numberOfStaff = 0;
+        component.checkNumberOfStaffErrorsAndWarnings();
+
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+
+        expect(within(numberOfStaffRow).queryByText('You need to add your total number of staff')).toBeFalsy();
+        expect(numberOfStaffRow.getAttribute('class')).not.toContain('govuk-summary-list__error');
+        expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).not.toContain(
           'govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding',
         );
       });

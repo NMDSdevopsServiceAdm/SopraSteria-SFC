@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsWorker } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -37,7 +37,6 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     private permissionsService: PermissionsService,
     private router: Router,
     private workerService: WorkerService,
-    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -45,22 +44,12 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsWorker;
     this.paginatedWorkers = this.workers;
     this.totalWorkerCount = this.workerCount;
-    this.setSearchIfPrevious();
     this.getPageOfWorkers({
       index: 0,
       itemsPerPage: 15,
       searchTerm: this.searchTerm,
       sortByValue: this.sortByValue,
     });
-  }
-
-  private setSearchIfPrevious(): void {
-    const search = this.route.snapshot.queryParamMap.get('search');
-    const tab = this.route.snapshot.queryParamMap.get('tab');
-
-    if (search && tab === 'training') {
-      this.searchTerm = search;
-    }
   }
 
   public getPageOfWorkers(properties: {

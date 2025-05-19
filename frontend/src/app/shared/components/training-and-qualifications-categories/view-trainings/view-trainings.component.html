@@ -17,6 +17,7 @@
   [sortOptions]="sortTrainingAndQualOptions"
   accessibleLabel="staff training records"
   (fetchData)="getWorkersByTrainingCategory($event)"
+  [setQueryInParams]="true"
 >
   <table class="govuk-table" data-testid="userTable" *ngIf="trainingCount; else noTrainingFoundInSearch">
     <thead class="govuk-table__head" data-testid="userTable-Heading">

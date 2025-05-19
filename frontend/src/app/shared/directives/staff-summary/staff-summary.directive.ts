@@ -52,7 +52,6 @@ export class StaffSummaryDirective implements OnInit {
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
-    this.setSearchIfPrevious();
     this.init();
   }
 
@@ -63,15 +62,6 @@ export class StaffSummaryDirective implements OnInit {
     const isToday: boolean = dayjs().isSame(lastUpdated, 'day');
 
     return isToday ? 'Today' : lastUpdated.format('D MMM YYYY');
-  }
-
-  protected setSearchIfPrevious(): void {
-    const search = this.route.snapshot.queryParamMap?.get('search');
-    const tab = this.route.snapshot.queryParamMap?.get('tab');
-
-    if (search && tab === 'staff') {
-      this.searchTerm = search;
-    }
   }
 
   protected getPageOfWorkers(properties: {

@@ -927,6 +927,36 @@ class Establishment extends EntityValidator {
             `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`,
           );
         });
+
+        if (this._status === 'NEW') {
+          const wdfEligibility = await this.isWdfEligible(WdfCalculator.effectiveDate);
+
+          if (wdfEligibility.currentEligibility) {
+            const updatedTimestamp = new Date();
+
+            await models.establishment.update(
+              {
+                lastWdfEligibility: updatedTimestamp,
+                establishmentWdfEligibility: updatedTimestamp,
+              },
+              {
+                where: {
+                  id: this._id,
+                },
+                transaction: externalTransaction,
+              },
+            );
+
+            await models.establishmentAudit.create(
+              {
+                establishmentFk: this._id,
+                username: savedBy.toLowerCase(),
+                type: 'wdfEligible',
+              },
+              { transaction: externalTransaction },
+            );
+          }
+        }
       } catch (err) {
         // need to handle duplicate Establishment
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
