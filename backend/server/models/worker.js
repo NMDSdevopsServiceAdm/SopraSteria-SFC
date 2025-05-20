@@ -1451,8 +1451,8 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Worker.getAllWorkersWithoutCareWorkforceCategory = async function (establishmentId) {
-    return await this.findAll({
-      attributes: ['id', 'uid', ['NameOrIdValue', 'nameOrId']],
+    const workersFound = await this.findAll({
+      attributes: ['id', 'uid', 'NameOrIdValue'],
       where: {
         establishmentFk: establishmentId,
         archived: false,
@@ -1466,8 +1466,14 @@ module.exports = function (sequelize, DataTypes) {
         },
       ],
       order: [['NameOrIdValue', 'ASC']],
-      raw: true,
     });
+
+    const data = workersFound.map((worker) => {
+      const { id, uid, mainJob, NameOrIdValue: nameOrId } = worker;
+      return { id, uid, mainJob, nameOrId };
+    });
+
+    return data;
   };
 
   return Worker;

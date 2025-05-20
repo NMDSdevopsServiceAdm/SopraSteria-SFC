@@ -21,14 +21,9 @@ const getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   try {
-    const workersFound = await models.worker.getAllWorkersWithoutCareWorkforceCategory(establishmentId);
+    const workers = await models.worker.getAllWorkersWithoutCareWorkforceCategory(establishmentId);
 
-    const workerData = workersFound.map((worker) => {
-      const { uid, mainJob, nameOrId } = worker;
-      return { uid, mainJob, nameOrId };
-    });
-
-    const responseBody = { workers: workerData, workerCount: workersFound.length };
+    const responseBody = { workers: workers, workerCount: workers.length };
     return res.status(200).send(responseBody);
   } catch (err) {
     console.error('GET /workersWhoRequireCareWorkforcePathwayRoleAnswer - failed', err);

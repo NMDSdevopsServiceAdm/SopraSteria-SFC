@@ -6,35 +6,31 @@ const {
   getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer,
   getWorkersWhoRequireCareWorkforcePathwayRoleAnswer,
 } = require('../../../../routes/establishments/careWorkforcePathway');
-const { workerBuilder } = require('../../../factories/models');
 
 describe('careWorkforcePathwayRole', () => {
   afterEach(() => {
     sinon.restore();
   });
 
-  describe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer', () => {
-    const workersFromDB = [
-      {
-        id: 0,
-        uid: 'tsw-0',
-        NameOrIdValue: 'Test Worker 0',
-        CareWorkforcePathwayRoleCategoryFK: null,
-      },
-      {
-        id: 1,
-        uid: 'tsw-1',
-        NameOrIdValue: 'Test Worker 1',
-        CareWorkforcePathwayRoleCategoryFK: null,
-      },
-      {
-        id: 2,
-        uid: 'tsw-2',
-        NameOrIdValue: 'Test Worker 2',
-        CareWorkforcePathwayRoleCategoryFK: null,
-      },
-    ];
+  const workersFromDB = [
+    {
+      uid: 'tsw-0',
+      nameOrId: 'Test Worker 0',
+      mainJob: { title: 'Care worker' },
+    },
+    {
+      uid: 'tsw-1',
+      nameOrId: 'Test Worker 1',
+      mainJob: { title: 'Registered manager' },
+    },
+    {
+      uid: 'tsw-2',
+      nameOrId: 'Test Worker 2',
+      mainJob: { title: 'Support worker' },
+    },
+  ];
 
+  describe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer', () => {
     const establishmentId = 'some-uuid';
 
     const request = {
@@ -87,8 +83,6 @@ describe('careWorkforcePathwayRole', () => {
     afterEach(() => {
       sinon.restore();
     });
-
-    const workersFromDB = [workerBuilder(), workerBuilder(), workerBuilder()];
 
     const establishmentId = 'mock-workplace-uuid';
 
