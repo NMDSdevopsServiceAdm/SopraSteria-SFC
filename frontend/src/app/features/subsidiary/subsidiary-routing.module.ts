@@ -79,6 +79,7 @@ import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -130,6 +131,7 @@ const routes: Routes = [
       noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
       noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer:
         GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+      featureFlags: FeatureFlagsResolver,
     },
     children: [
       {

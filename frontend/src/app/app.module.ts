@@ -136,6 +136,7 @@ import {
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 
 @NgModule({
   declarations: [
@@ -257,6 +258,7 @@ import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '
     FundingReportResolver,
     HelpPageResolver,
     GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+    FeatureFlagsResolver,
   ],
   bootstrap: [AppComponent],
 })

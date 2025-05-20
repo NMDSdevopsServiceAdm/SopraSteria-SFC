@@ -17,6 +17,7 @@ import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
@@ -198,6 +199,7 @@ const routes: Routes = [
             GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
           noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer:
             GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+          featureFlags: FeatureFlagsResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },
