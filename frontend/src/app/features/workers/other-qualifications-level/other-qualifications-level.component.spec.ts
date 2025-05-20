@@ -21,7 +21,7 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level.
 import { AlertService } from '@core/services/alert.service';
 import { HttpClient } from '@angular/common/http';
 
-fdescribe('OtherQualificationsLevelComponent', () => {
+describe('OtherQualificationsLevelComponent', () => {
   async function setup(overrides: any = {}) {
     const cwpQuestionsFlag = overrides.cwpQuestionsFlag ?? false;
     const setupTools = await render(OtherQualificationsLevelComponent, {
