@@ -7,11 +7,11 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
-  selector: 'app-care-workforce-pathway-summary',
-  templateUrl: './care-workforce-pathway-summary.component.html',
-  styleUrl: './care-workforce-pathway-summary.component.scss',
+  selector: 'app-care-workforce-pathway-workers-summary',
+  templateUrl: './care-workforce-pathway-workers-summary.component.html',
+  styleUrl: './care-workforce-pathway-workers-summary.component.scss',
 })
-export class CareWorkforcePathwaySummaryComponent implements OnInit {
+export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit {
   private workplaceUid: string;
   public workersToShow: Array<{ uid: string; nameOrId: string; mainJob: JobRole }> = [];
 

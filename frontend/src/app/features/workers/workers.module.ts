@@ -76,7 +76,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
-import { CareWorkforcePathwaySummaryComponent } from './care-workforce-pathway-summary/care-workforce-pathway-summary.component';
+import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary/care-workforce-pathway-workers-summary.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -138,7 +138,7 @@ import { CareWorkforcePathwaySummaryComponent } from './care-workforce-pathway-s
     UpdateWorkplaceDetailsAfterStaffChangesComponent,
     UpdateTotalNumberOfStaffComponent,
     CareWorkforcePathwayRoleComponent,
-    CareWorkforcePathwaySummaryComponent,
+    CareWorkforcePathwayWorkersSummaryComponent,
   ],
   providers: [
     DialogService,
@@ -157,7 +157,7 @@ import { CareWorkforcePathwaySummaryComponent } from './care-workforce-pathway-s
     QualificationCertificateService,
     VacanciesAndTurnoverService,
     WorkerReasonsForLeavingResolver,
-    CareWorkforcePathwaySummaryComponent,
+    CareWorkforcePathwayWorkersSummaryComponent,
   ],
 })
 export class WorkersModule {}

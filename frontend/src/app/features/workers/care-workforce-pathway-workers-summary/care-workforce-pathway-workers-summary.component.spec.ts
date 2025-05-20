@@ -14,16 +14,16 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { CareWorkforcePathwaySummaryComponent } from './care-workforce-pathway-summary.component';
+import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary.component';
 
-fdescribe('CareWorkforcePathwaySummaryComponent', () => {
+fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
   const setup = async (overrides: any = {}) => {
     const workersToShow = overrides.workers ?? mockWorkers;
     const getWorkersSpy = jasmine.createSpy().and.returnValue(of({ workers: workersToShow }));
 
-    const setuptools = await render(CareWorkforcePathwaySummaryComponent, {
+    const setuptools = await render(CareWorkforcePathwayWorkersSummaryComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule],
       providers: [
         {
