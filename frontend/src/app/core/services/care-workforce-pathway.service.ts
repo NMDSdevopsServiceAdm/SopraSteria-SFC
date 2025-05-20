@@ -5,7 +5,7 @@ import {
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { JobRole } from '@core/model/job.model';
 
@@ -31,20 +31,14 @@ export class CareWorkforcePathwayService {
       .pipe(map((res) => res));
   }
 
-  getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId: string): Observable<CWPWorkersResponse> {
-    const mockResponse = {
-      workers: [
-        {
-          uid: 'mock-worker-uid',
-          nameOrId: 'Anna Smith',
-          mainJob: { jobRoleName: 'Care worker', jobId: 1 },
-        },
-      ],
-    };
-    return of(mockResponse);
+  getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId: string): Observable<CWPGetAllWorkersResponse> {
+    return this.http.get<CWPGetAllWorkersResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoRequireCareWorkforcePathwayRoleAnswer`,
+    );
   }
 }
 
-export type CWPWorkersResponse = {
-  workers: Array<{ uid: string; nameOrId: string; mainJob: JobRole }>;
+export type CWPGetAllWorkersResponse = {
+  workers: { uid: string; nameOrId: string; mainJob: JobRole }[];
+  workerCount: number;
 };

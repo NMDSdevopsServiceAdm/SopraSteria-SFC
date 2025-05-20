@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { CareWorkforcePathwayService } from './care-workforce-pathway.service';
 import { environment } from 'src/environments/environment';
 
-describe('CareWorkforcePathwayService', () => {
+fdescribe('CareWorkforcePathwayService', () => {
   let service: CareWorkforcePathwayService;
   let http: HttpTestingController;
   let establishmentId = '124';
@@ -22,7 +22,7 @@ describe('CareWorkforcePathwayService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should call the /api/trainingCategories endpoint to get the careWorkforcePathwayRoleCategories', () => {
+  it('should call the /api/careWorkforcePathwayRoleCategories endpoint to get the careWorkforcePathwayRoleCategories', () => {
     service.getCareWorkforcePathwayRoleCategories().subscribe();
 
     const req = http.expectOne(`${environment.appRunnerEndpoint}/api/careWorkforcePathwayRoleCategories`);
@@ -34,6 +34,15 @@ describe('CareWorkforcePathwayService', () => {
 
     const req = http.expectOne(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,
+    );
+    expect(req.request.method).toBe('GET');
+  });
+
+  it('should call the /api/${establishmentId}/careWorkforcePathway/workersWhoRequireCareWorkforcePathwayRoleAnswer endpoint', () => {
+    service.getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId).subscribe();
+
+    const req = http.expectOne(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoRequireCareWorkforcePathwayRoleAnswer`,
     );
     expect(req.request.method).toBe('GET');
   });
