@@ -28,7 +28,7 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <table class="govuk-table">
+    <table class="govuk-table govuk-!-margin-bottom-8">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header" width="30%">Name or ID number</th>
@@ -45,12 +45,12 @@
           <td class="govuk-table__cell">
             <a [routerLink]="['../', worker.uid, 'staff-record-summary']">{{ worker.nameOrId }}</a>
           </td>
-          <td class="govuk-table__cell">{{ worker.mainJob.jobRoleName }}</td>
+          <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
           <td class="govuk-table__cell">
             <a
               [routerLink]="['../', worker.uid, 'staff-record-summary', 'care-workforce-pathway']"
               (click)="setReturnToThisPage()"
-              >Choose a category</a
+              >Choose a category <span class="govuk-visually-hidden">for {{ worker.nameOrId }}</span></a
             >
           </td>
         </tr>
