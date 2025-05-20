@@ -117,7 +117,12 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[1].message = 'You can start to add your staff records now';
     } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && !this.cwpQuestionsFlag) {
       this.sections[1].message = 'Where are your staff on the care workforce pathway?';
-      this.sections[1].route = ['/workplace', this.workplace.uid, 'care-workforce-pathway-workers'];
+      this.sections[1].route = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        'care-workforce-pathway-workers-summary',
+      ];
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
     } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {

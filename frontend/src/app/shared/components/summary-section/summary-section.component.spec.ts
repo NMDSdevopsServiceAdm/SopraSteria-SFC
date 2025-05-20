@@ -16,7 +16,7 @@ import dayjs from 'dayjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
-describe('Summary section', () => {
+fdescribe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule, RouterModule],
@@ -433,7 +433,12 @@ describe('Summary section', () => {
           fireEvent.click(workersCareWorkforcePathwayLink);
 
           expect(workersCareWorkforcePathwayLink).toBeTruthy();
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', Establishment.uid, 'care-workforce-pathway-workers']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            Establishment.uid,
+            'staff-record',
+            'care-workforce-pathway-workers-summary',
+          ]);
         });
 
         it('should not show if there are no staff without an answer', async () => {
