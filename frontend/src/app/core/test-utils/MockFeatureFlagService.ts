@@ -32,12 +32,28 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
         });
       }
 
+      if (flagName === 'cwpQuestionsFlag') {
+        return new Promise((resolve) => {
+          return resolve(true);
+        });
+      }
+
       return new Promise((resolve) => {
         return resolve(defaultSetting);
       });
     };
   }
-
+  public static factory(override: Record<string, boolean>) {
+    return () => {
+      const service = new MockFeatureFlagsService();
+      if (override) {
+        service.configCatClient.getValueAsync = async (flagName, defaultSetting) => {
+          return override?.[flagName] ?? defaultSetting;
+        };
+      }
+      return service;
+    };
+  }
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public async start(): Promise<void> {}
 }

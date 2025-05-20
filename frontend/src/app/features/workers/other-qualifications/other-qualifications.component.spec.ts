@@ -10,12 +10,16 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsComponent } from './other-qualifications.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { AlertService } from '@core/services/alert.service';
 
 describe('OtherQualificationsComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   async function setup(overrides: any = {}) {
     const insideFlow = overrides.insideFlow ?? false;
     const workerOverrides = overrides.worker ?? { otherQualification: null };
+    const cwpQuestionsFlag = overrides.cwpQuestionsFlag ?? false;
 
     const setupTools = await render(OtherQualificationsComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
@@ -42,13 +46,17 @@ describe('OtherQualificationsComponent', () => {
           useFactory: MockWorkerServiceWithOverrides.factory({ worker: workerOverrides }),
           deps: [HttpClient],
         },
+        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestionsFlag }) },
         WindowRef,
+        AlertService,
       ],
     });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
     return {
       ...setupTools,
@@ -100,7 +108,9 @@ describe('OtherQualificationsComponent', () => {
 
     describe('Add worker details flow', () => {
       it(`should navigate to 'care-workforce-pathway' url when 'Skip this question' is clicked`, async () => {
-        const { component, getByText, routerSpy } = await setup({ insideFlow: true });
+        const overrides = { cwpQuestionsFlag: false, insideFlow: true };
+
+        const { component, getByText, routerSpy } = await setup(overrides);
 
         fireEvent.click(getByText('Skip this question'));
 
@@ -152,7 +162,7 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and not know is entered', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup({ insideFlow: false });
+      const { component, fixture, routerSpy, getByText } = await setup({ cwpQuestionsFlag: true, insideFlow: false });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -175,7 +185,7 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and No is entered', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup({ insideFlow: false });
+      const { component, fixture, routerSpy, getByText } = await setup({ cwpQuestionsFlag: true, insideFlow: false });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -222,7 +232,7 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const { component, routerSpy, getByText } = await setup({ insideFlow: false });
+      const { component, routerSpy, getByText } = await setup({ cwpQuestionsFlag: true, insideFlow: false });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -240,7 +250,10 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing save and not know is entered in funding version of page', async () => {
-      const { component, fixture, routerSpy, getByText, router } = await setup({ insideFlow: false });
+      const { component, fixture, routerSpy, getByText, router } = await setup({
+        cwpQuestionsFlag: true,
+        insideFlow: false,
+      });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
@@ -259,7 +272,10 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing save and No is entered in funding version of page', async () => {
-      const { component, fixture, routerSpy, getByText, router } = await setup({ insideFlow: false });
+      const { component, fixture, routerSpy, getByText, router } = await setup({
+        cwpQuestionsFlag: true,
+        insideFlow: false,
+      });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
@@ -297,7 +313,10 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
-      const { component, routerSpy, getByText, fixture, router } = await setup({ insideFlow: false });
+      const { component, routerSpy, getByText, fixture, router } = await setup({
+        cwpQuestionsFlag: true,
+        insideFlow: false,
+      });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
