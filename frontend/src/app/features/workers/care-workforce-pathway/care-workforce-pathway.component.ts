@@ -41,6 +41,10 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   }
 
   async init() {
+    if (this.return?.url) {
+      this.returnUrl = this.return.url;
+    }
+
     this.getCareWorkforcePathwayRoleCategories();
 
     if (this.worker.careWorkforcePathwayRoleCategory) {
