@@ -17,10 +17,15 @@ import {
   careWorkforcePathwayRoleCategories,
 } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { HttpClient } from '@angular/common/http';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('CareWorkforcePathwayRoleComponent', () => {
   const categorySelected = careWorkforcePathwayRoleCategories[0].title;
+
   async function setup(overrides: any = {}) {
+    const insideFlow = overrides.insideFlow ?? false;
+    const cwpQuestionsFlag = overrides.cwpQuestionsFlag ?? false;
     const setupTools = await render(CareWorkforcePathwayRoleComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
       declarations: [DetailsComponent],
@@ -52,6 +57,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
           provide: CareWorkforcePathwayService,
           useClass: MockCareWorkforcePathwayService,
         },
+        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestionsFlag }) },
         AlertService,
         WindowRef,
       ],
@@ -78,9 +84,18 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the heading and caption', async () => {
-    const { getByText, getByTestId } = await setup();
+  it('component should not render when feature flag is on', async () => {
+    const overrides = { cwpQuestionsFlag: true };
+    const { fixture, queryByTestId } = await setup(overrides);
 
+    fixture.detectChanges();
+    expect(queryByTestId('cwp-flag')).toBeFalsy();
+  });
+
+  it('should show the heading and caption', async () => {
+    const overrides = { cwpQuestionsFlag: false };
+    const { getByText, getByTestId, component } = await setup(overrides);
+    component.cwpQuestionsFlag = false;
     const sectionHeading = getByTestId('section-heading');
 
     expect(sectionHeading).toBeTruthy();
@@ -90,8 +105,9 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
   describe('reveal', () => {
     it('should show', async () => {
-      const { getByTestId } = await setup();
-
+      const overrides = { cwpQuestionsFlag: false };
+      const { getByTestId, component } = await setup(overrides);
+      component.cwpQuestionsFlag = false;
       const reveal = getByTestId('reveal-whatsCareWorkforcePathway');
 
       expect(reveal).toBeTruthy();
@@ -99,8 +115,9 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     });
 
     it('should show the link for more information', async () => {
-      const { getByText, getByTestId } = await setup();
-
+      const overrides = { cwpQuestionsFlag: false };
+      const { getByText, getByTestId, component } = await setup(overrides);
+      component.cwpQuestionsFlag = false;
       const reveal = getByTestId('reveal-whatsCareWorkforcePathway');
 
       expect(reveal).toBeTruthy();
@@ -114,20 +131,21 @@ describe('CareWorkforcePathwayRoleComponent', () => {
   });
 
   it('should show the sub text for radios', async () => {
-    const { getByText } = await setup();
+    const { getByText, component } = await setup();
 
     expect(getByText('Care workforce pathway role categories')).toBeTruthy();
   });
 
   describe('progress bar', () => {
     it('should render the workplace progress bar', async () => {
-      const { getByTestId } = await setup({ insideFlow: true });
+      const overrides = { insideFlow: true };
+      const { getByTestId, component } = await setup(overrides);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
 
     it('should not render the progress bars when accessed from outside the flow', async () => {
-      const { queryByTestId } = await setup({ insideFlow: false });
+      const { queryByTestId, component } = await setup();
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
@@ -135,7 +153,8 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button, skip this question and 'View this staff record' link, if a return url is not provided`, async () => {
-      const { getByText } = await setup({ insideFlow: true });
+      const overrides = { insideFlow: true };
+      const { getByText, component } = await setup(overrides);
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
@@ -143,7 +162,8 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup({ insideFlow: false });
+      const overrides = { insideFlow: false };
+      const { getByText, component } = await setup(overrides);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -152,11 +172,13 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
   it('should prefill a previously saved answer', async () => {
     const overrides = { worker: { careWorkforcePathwayRoleCategory: { roleCategoryId: 1 } } };
+
     const { component, getByLabelText } = await setup(overrides);
 
     component.ngOnInit();
 
     const form = component.form;
+
     const radioButton = getByLabelText(categorySelected) as HTMLInputElement;
 
     expect(form.value.careWorkforcePathwayRoleCategory).toEqual(1);
@@ -167,7 +189,11 @@ describe('CareWorkforcePathwayRoleComponent', () => {
   describe('routing', () => {
     ['Save and continue', 'Skip this question', 'View this staff record'].forEach((link) => {
       it(`should navigate to staff-summary page when '${link}' is clicked`, async () => {
-        const { component, getByText, routerSpy } = await setup({ insideFlow: true });
+        const overrides = {
+          insideFlow: true,
+        };
+
+        const { component, getByText, routerSpy } = await setup(overrides);
 
         const workerId = component.worker.uid;
         const workplaceId = component.workplace.uid;
@@ -186,8 +212,10 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
     ['Save and return', 'Cancel'].forEach((link) => {
       it(`should navigate to staff-summary page when '${link}' is clicked`, async () => {
-        const { component, getByText, routerSpy } = await setup({ insideFlow: false });
-
+        const overrides = {
+          insideFlow: false,
+        };
+        const { component, getByText, routerSpy } = await setup(overrides);
         const workerId = component.worker.uid;
         const workplaceId = component.workplace.uid;
 
@@ -206,7 +234,8 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
   describe('Completing Add details to staff record flow', () => {
     it('should add Staff record added alert when submitting from flow', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup({ insideFlow: true });
+      const overrides = { insideFlow: true };
+      const { getByText, getByLabelText, alertSpy, component } = await setup(overrides);
 
       const select = getByLabelText(categorySelected, { exact: false });
       fireEvent.change(select, { target: { value: '1' } });
@@ -222,7 +251,8 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
     ['Skip this question', 'View this staff record'].forEach((link) => {
       it(`should add Staff record added alert when '${link}' is clicked`, async () => {
-        const { getByText, alertSpy } = await setup({ insideFlow: true });
+        const overrides = { insideFlow: true };
+        const { getByText, alertSpy, component } = await setup(overrides);
 
         fireEvent.click(getByText(link));
 
@@ -234,7 +264,8 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     });
 
     it('should not add Staff record added alert when user submits but not in flow', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup({ insideFlow: false });
+      const overrides = { cwpQuestionsFlag: false, insideFlow: false };
+      const { getByText, getByLabelText, alertSpy, component } = await setup(overrides);
 
       const select = getByLabelText(categorySelected, { exact: false });
       fireEvent.change(select, { target: { value: '1' } });
