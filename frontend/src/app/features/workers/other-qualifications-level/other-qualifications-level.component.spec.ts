@@ -21,7 +21,7 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level.
 import { AlertService } from '@core/services/alert.service';
 import { HttpClient } from '@angular/common/http';
 
-describe('OtherQualificationsLevelComponent', () => {
+fdescribe('OtherQualificationsLevelComponent', () => {
   async function setup(overrides: any = {}) {
     const cwpQuestionsFlag = overrides.cwpQuestionsFlag ?? false;
     const setupTools = await render(OtherQualificationsLevelComponent, {
@@ -172,8 +172,50 @@ describe('OtherQualificationsLevelComponent', () => {
       ]);
     });
 
+    it('should navigate to staff-record-summary page when submitting from flow and the feature flsg is on', async () => {
+      const overrides = { cwpQuestionsFlag: true, returnUrl: false };
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(overrides);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const select = getByLabelText('Qualification level', { exact: false });
+      fireEvent.change(select, { target: { value: '1' } });
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to staff-record-summary page when skipping the question in the flow and the feature flag is on', async () => {
+      const overrides = { cwpQuestionsFlag: true, returnUrl: false };
+      const { component, routerSpy, getByText } = await setup(overrides);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Skip this question');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
-      const overrides = { cwpQuestionsFlag: false, returnUrl: true };
+      const overrides = { returnUrl: true };
       const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(overrides);
 
       const workerId = component.worker.uid;
@@ -196,7 +238,7 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const overrides = { cwpQuestionsFlag: false, returnUrl: true };
+      const overrides = { returnUrl: true };
       const { component, routerSpy, getByText } = await setup(overrides);
 
       const workerId = component.worker.uid;

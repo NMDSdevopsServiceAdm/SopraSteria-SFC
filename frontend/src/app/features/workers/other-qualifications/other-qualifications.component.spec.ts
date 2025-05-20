@@ -162,7 +162,7 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and not know is entered', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup({ insideFlow: false });
+      const { component, fixture, routerSpy, getByText } = await setup({ cwpQuestionsFlag: true, insideFlow: false });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -185,7 +185,7 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and No is entered', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup({ insideFlow: false });
+      const { component, fixture, routerSpy, getByText } = await setup({ cwpQuestionsFlag: true, insideFlow: false });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -232,7 +232,7 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const { component, routerSpy, getByText } = await setup({ insideFlow: false });
+      const { component, routerSpy, getByText } = await setup({ cwpQuestionsFlag: true, insideFlow: false });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -250,7 +250,10 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing save and not know is entered in funding version of page', async () => {
-      const { component, fixture, routerSpy, getByText, router } = await setup({ insideFlow: false });
+      const { component, fixture, routerSpy, getByText, router } = await setup({
+        cwpQuestionsFlag: true,
+        insideFlow: false,
+      });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
@@ -269,7 +272,10 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing save and No is entered in funding version of page', async () => {
-      const { component, fixture, routerSpy, getByText, router } = await setup({ insideFlow: false });
+      const { component, fixture, routerSpy, getByText, router } = await setup({
+        cwpQuestionsFlag: true,
+        insideFlow: false,
+      });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
@@ -307,7 +313,10 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
-      const { component, routerSpy, getByText, fixture, router } = await setup({ insideFlow: false });
+      const { component, routerSpy, getByText, fixture, router } = await setup({
+        cwpQuestionsFlag: true,
+        insideFlow: false,
+      });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
