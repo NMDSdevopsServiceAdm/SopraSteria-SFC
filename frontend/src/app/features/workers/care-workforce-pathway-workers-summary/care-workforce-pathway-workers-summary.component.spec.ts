@@ -134,6 +134,6 @@ fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
 
     userEvent.click(returnToHomeButton);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
   });
 });

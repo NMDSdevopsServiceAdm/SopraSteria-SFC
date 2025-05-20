@@ -46,6 +46,6 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit {
   }
 
   public returnToHome() {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/dashboard'], { fragment: 'home' });
   }
 }
