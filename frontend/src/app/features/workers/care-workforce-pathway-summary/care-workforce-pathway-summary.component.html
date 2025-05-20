@@ -37,14 +37,26 @@
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        <tr class="govuk-table__row" *ngFor="let worker of workersToShow">
+        <tr
+          class="govuk-table__row"
+          *ngFor="let worker of workersToShow; index as index"
+          [attr.data-testid]="'worker-row-' + index"
+        >
           <td class="govuk-table__cell">
             <a [routerLink]="['../', worker.uid, 'staff-record-summary']">{{ worker.nameOrId }}</a>
           </td>
           <td class="govuk-table__cell">{{ worker.mainJob.jobRoleName }}</td>
-          <td class="govuk-table__cell">Choose a category</td>
+          <td class="govuk-table__cell">
+            <a
+              [routerLink]="['../', worker.uid, 'staff-record-summary', 'care-workforce-pathway']"
+              (click)="setReturnToThisPage()"
+              >Choose a category</a
+            >
+          </td>
         </tr>
       </tbody>
     </table>
+
+    <button class="govuk-button" type="button" (click)="returnToHome()">Return to home</button>
   </div>
 </div>

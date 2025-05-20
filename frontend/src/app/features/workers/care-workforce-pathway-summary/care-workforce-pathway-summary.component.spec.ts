@@ -1,21 +1,40 @@
+import { of } from 'rxjs';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule } from '@angular/router';
+import { Worker } from '@core/model/worker.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkerService } from '@core/services/worker.service';
+import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { CareWorkforcePathwaySummaryComponent } from './care-workforce-pathway-summary.component';
 
 fdescribe('CareWorkforcePathwaySummaryComponent', () => {
+  const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+
   const setup = async (overrides: any = {}) => {
+    const workersToShow = overrides.workers ?? mockWorkers;
+    const getWorkersSpy = jasmine.createSpy().and.returnValue(of({ workers: workersToShow }));
+
     const setuptools = await render(CareWorkforcePathwaySummaryComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule],
       providers: [
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: CareWorkforcePathwayService,
+          useFactory: MockCareWorkforcePathwayService.factory({
+            getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer: getWorkersSpy,
+          }),
         },
         provideRouter([]),
       ],
@@ -26,14 +45,19 @@ fdescribe('CareWorkforcePathwaySummaryComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const workerService = injector.inject(WorkerService) as WorkerService;
+
     const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
     return {
       ...setuptools,
       component,
       fixture,
       establishmentService,
+      workerService,
       router,
+      routerSpy,
     };
   };
 
@@ -65,5 +89,51 @@ fdescribe('CareWorkforcePathwaySummaryComponent', () => {
     revealText.forEach((paragraph) => {
       expect(revealElement.textContent).toContain(paragraph);
     });
+  });
+
+  describe('workers table', () => {
+    it('should display a row for each worker whose CWP role category was empty', async () => {
+      const { fixture, getByTestId } = await setup();
+      fixture.detectChanges();
+
+      mockWorkers.forEach((worker, index) => {
+        const workerRow = getByTestId(`worker-row-${index}`);
+        const workerNameLink = within(workerRow).getByText(worker.nameOrId, { selector: 'a' }) as HTMLLinkElement;
+        expect(workerNameLink).toBeTruthy();
+        expect(workerNameLink.href).toContain(`${worker.uid}/staff-record-summary`);
+
+        const chooseACategoryLink = within(workerRow).getByText('Choose a category', {
+          selector: 'a',
+        }) as HTMLLinkElement;
+        expect(chooseACategoryLink).toBeTruthy();
+        expect(chooseACategoryLink.href).toContain(`${worker.uid}/staff-record-summary/care-workforce-pathway`);
+      });
+    });
+
+    it('should set return to this page when Choose a category link is clicked', async () => {
+      const { router, fixture, getAllByText, workerService } = await setup();
+      const setReturnToSpy = spyOn(workerService, 'setReturnTo').and.callThrough();
+      fixture.detectChanges();
+
+      const chooseACategoryLink = getAllByText('Choose a category', {
+        selector: 'a',
+      })[0] as HTMLLinkElement;
+
+      userEvent.click(chooseACategoryLink);
+      const urlOfThisPage = router.url;
+
+      expect(setReturnToSpy).toHaveBeenCalledWith({ url: [urlOfThisPage] });
+    });
+  });
+
+  it('should show a return to home button', async () => {
+    const { getByRole, routerSpy } = await setup();
+
+    const returnToHomeButton = getByRole('button', { name: 'Return to home' });
+    expect(returnToHomeButton).toBeTruthy();
+
+    userEvent.click(returnToHomeButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
   });
 });

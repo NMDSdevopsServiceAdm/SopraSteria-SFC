@@ -1,19 +1,19 @@
-import { Component } from '@angular/core';
-import { CareWorkforcePathwayService } from '../../../core/services/care-workforce-pathway.service';
-import { BackLinkService } from '../../../core/services/backLink.service';
-import { WorkerService } from '@core/services/worker.service';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { JobRole } from '@core/model/job.model';
+import { BackLinkService } from '@core/services/backLink.service';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-care-workforce-pathway-summary',
   templateUrl: './care-workforce-pathway-summary.component.html',
   styleUrl: './care-workforce-pathway-summary.component.scss',
 })
-export class CareWorkforcePathwaySummaryComponent {
+export class CareWorkforcePathwaySummaryComponent implements OnInit {
   private workplaceUid: string;
-  public workersToShow: Array<{ uid: string; nameOrId: string; mainJob: JobRole }>;
+  public workersToShow: Array<{ uid: string; nameOrId: string; mainJob: JobRole }> = [];
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -31,6 +31,21 @@ export class CareWorkforcePathwaySummaryComponent {
   }
 
   private getWorkers() {
-    this.workersToShow = [];
+    this.careWorkforcePathwayService
+      .getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(this.workplaceUid)
+      .subscribe((response) => {
+        if (response.workers?.length) {
+          this.workersToShow = response.workers;
+        }
+      });
+  }
+
+  public setReturnToThisPage() {
+    const urlOfThisPage = this.router.url;
+    this.workerService.setReturnTo({ url: [urlOfThisPage] });
+  }
+
+  public returnToHome() {
+    this.router.navigate(['/dashboard']);
   }
 }
