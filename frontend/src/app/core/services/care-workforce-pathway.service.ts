@@ -5,8 +5,9 @@ import {
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { JobRole } from '@core/model/job.model';
 
 @Injectable({
   providedIn: 'root',
@@ -29,4 +30,21 @@ export class CareWorkforcePathwayService {
       )
       .pipe(map((res) => res));
   }
+
+  getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId: string): Observable<CWPWorkersResponse> {
+    const mockResponse = {
+      workers: [
+        {
+          uid: 'mock-worker-uid',
+          nameOrId: 'Anna Smith',
+          mainJob: { jobRoleName: 'Care worker', jobId: 1 },
+        },
+      ],
+    };
+    return of(mockResponse);
+  }
 }
+
+export type CWPWorkersResponse = {
+  workers: Array<{ uid: string; nameOrId: string; mainJob: JobRole }>;
+};
