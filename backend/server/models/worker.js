@@ -1452,13 +1452,21 @@ module.exports = function (sequelize, DataTypes) {
 
   Worker.getAllWorkersWithoutCareWorkforceCategory = async function (establishmentId) {
     return await this.findAll({
-      attributes: ['id', 'uid', 'NameOrIdValue', 'CareWorkforcePathwayRoleCategoryFK'],
+      attributes: ['id', 'uid', ['NameOrIdValue', 'nameOrId']],
       where: {
         establishmentFk: establishmentId,
         archived: false,
         CareWorkforcePathwayRoleCategoryFK: null,
       },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+        },
+      ],
       order: [['NameOrIdValue', 'ASC']],
+      raw: true,
     });
   };
 
