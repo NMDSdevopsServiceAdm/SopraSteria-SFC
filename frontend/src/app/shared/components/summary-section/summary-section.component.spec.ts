@@ -66,6 +66,7 @@ fdescribe('Summary section', () => {
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const tabsService = injector.inject(TabsService) as TabsService;
 
     return {
       component,
@@ -75,6 +76,7 @@ fdescribe('Summary section', () => {
       getByTestId,
       queryByTestId,
       routerSpy,
+      tabsService,
     };
   };
 
@@ -427,18 +429,21 @@ fdescribe('Summary section', () => {
             noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
             cwpQuestionsFlag: false,
           };
-          const { getByText, routerSpy } = await setup(overrides);
+          const { fixture, getByText, routerSpy, tabsService } = await setup(overrides);
+          const selectedTabSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
 
           const workersCareWorkforcePathwayLink = getByText('Where are your staff on the care workforce pathway?');
           fireEvent.click(workersCareWorkforcePathwayLink);
+          await fixture.whenStable();
 
           expect(workersCareWorkforcePathwayLink).toBeTruthy();
-          expect(routerSpy).toHaveBeenCalledWith([
+          expect(routerSpy).toHaveBeenCalledOnceWith([
             '/workplace',
             Establishment.uid,
             'staff-record',
             'care-workforce-pathway-workers-summary',
           ]);
+          expect(selectedTabSpy).not.toHaveBeenCalled();
         });
 
         it('should not show if there are no staff without an answer', async () => {

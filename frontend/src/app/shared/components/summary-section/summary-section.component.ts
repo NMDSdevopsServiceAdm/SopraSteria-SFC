@@ -73,7 +73,9 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       await this.navigateInSubView(fragment, route);
     } else if (route) {
       await this.router.navigate(route);
-      this.tabsService.selectedTab = fragment;
+      if (fragment) {
+        this.tabsService.selectedTab = fragment;
+      }
     } else {
       this.tabsService.selectedTab = fragment;
     }
@@ -117,6 +119,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[1].message = 'You can start to add your staff records now';
     } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && !this.cwpQuestionsFlag) {
       this.sections[1].message = 'Where are your staff on the care workforce pathway?';
+      this.sections[1].fragment = null;
       this.sections[1].route = [
         '/workplace',
         this.workplace.uid,
