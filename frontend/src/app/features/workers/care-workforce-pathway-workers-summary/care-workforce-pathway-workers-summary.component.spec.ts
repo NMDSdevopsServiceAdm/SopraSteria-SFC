@@ -15,13 +15,16 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary.component';
+import { MockRouter } from '@core/test-utils/MockRouter';
 
 fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
   const setup = async (overrides: any = {}) => {
-    const workersToShow = overrides.workers ?? mockWorkers;
+    const workersToShow = overrides.workersToShow ?? mockWorkers;
     const getWorkersSpy = jasmine.createSpy().and.returnValue(of({ workers: workersToShow }));
+
+    const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
 
     const setuptools = await render(CareWorkforcePathwayWorkersSummaryComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule],
@@ -36,6 +39,10 @@ fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
             getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer: getWorkersSpy,
           }),
         },
+        {
+          provide: Router,
+          useFactory: MockRouter.factory({ navigate: routerSpy }),
+        },
         provideRouter([]),
       ],
     });
@@ -46,9 +53,7 @@ fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const workerService = injector.inject(WorkerService) as WorkerService;
-
     const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
     return {
       ...setuptools,
@@ -133,6 +138,14 @@ fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     expect(returnToHomeButton).toBeTruthy();
 
     userEvent.click(returnToHomeButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+  });
+
+  it('should redirect to home page if all workers have been answered', async () => {
+    const { fixture, routerSpy } = await setup({ workersToShow: [] });
+
+    await fixture.whenStable();
 
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
   });

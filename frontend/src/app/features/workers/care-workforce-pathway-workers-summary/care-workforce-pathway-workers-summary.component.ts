@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { JobRole } from '@core/model/job.model';
 import { BackLinkService } from '@core/services/backLink.service';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
+import { CareWorkforcePathwayService, CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -34,12 +34,16 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
     this.subscriptions.add(
       this.careWorkforcePathwayService
         .getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(workplaceUid)
-        .subscribe((response) => {
-          if (response?.workers?.length) {
-            this.workersToShow = response.workers;
-          }
-        }),
+        .subscribe((response) => this.handleGetWorkersResponse(response)),
     );
+  }
+
+  private handleGetWorkersResponse(response: CWPGetAllWorkersResponse): void {
+    if (response?.workers?.length) {
+      this.workersToShow = response.workers;
+    } else {
+      this.returnToHome();
+    }
   }
 
   public setReturnToThisPage(): void {
