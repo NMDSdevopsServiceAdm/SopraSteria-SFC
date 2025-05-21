@@ -109,13 +109,22 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   addAlert(): void {
     if (this.insideFlow) {
       this.addCompletedStaffFlowAlert();
+    } else if (this.cameFromCWPSummaryPage) {
+      this.addRoleCategorySavedAlert();
     }
   }
 
-  addCompletedStaffFlowAlert(): void {
+  private addCompletedStaffFlowAlert(): void {
     this.alertService.addAlert({
       type: 'success',
       message: 'Staff record saved',
+    });
+  }
+
+  private addRoleCategorySavedAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: 'Role category saved',
     });
   }
 }
