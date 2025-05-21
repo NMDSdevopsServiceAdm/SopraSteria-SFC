@@ -337,13 +337,6 @@ class BUDI {
   }
 
   static careWorkforcePathwayRoleCategory(direction, code) {
-    // let ALL_CAREWORKFORCEPATHWAYCATEGORIES = this.getCareWorkforcePathwayCategoryMappings();
-    console.log('***mapping***');
-    console.log(ALL_CAREWORKFORCEPATHWAYCATEGORIES);
-    console.log('***direction***');
-    console.log(direction);
-    console.log('***code***');
-    console.log(code);
     if (direction === BUDI.FROM_ASC) {
       const found = ALL_CAREWORKFORCEPATHWAYCATEGORIES.find((thisCWPCategory) => thisCWPCategory.ASC === code);
       return found ? found.BUDI : null;
