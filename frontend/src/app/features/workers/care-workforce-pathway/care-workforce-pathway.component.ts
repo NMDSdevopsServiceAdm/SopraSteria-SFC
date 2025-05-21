@@ -127,4 +127,31 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
       message: 'Role category saved',
     });
   }
+
+  protected navigate(): Promise<boolean> {
+    const { action } = this.submitAction;
+    if (!action) {
+      return;
+    }
+
+    switch (action) {
+      case 'continue':
+        return this.router.navigate(this.next);
+
+      case 'summary':
+        return this.router.navigate(this.getRoutePath(''));
+
+      case 'exit':
+        return this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+
+      case 'return':
+        return this.router.navigate(this.returnUrl);
+    }
+  }
+
+  _onSuccess(data: any) {
+    this.workerService.setState({ ...this.worker, ...data });
+    this.onSuccess();
+    this.navigate().then(() => this.addAlert());
+  }
 }

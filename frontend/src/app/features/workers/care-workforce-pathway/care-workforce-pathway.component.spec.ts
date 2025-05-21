@@ -239,13 +239,15 @@ fdescribe('CareWorkforcePathwayRoleComponent', () => {
   describe('Completing Add details to staff record flow', () => {
     it('should add Staff record added alert when submitting from flow', async () => {
       const overrides = { insideFlow: true };
-      const { getByText, getByLabelText, alertSpy } = await setup(overrides);
+      const { fixture, getByText, getByLabelText, alertSpy } = await setup(overrides);
 
       const select = getByLabelText(categorySelected, { exact: false });
       fireEvent.change(select, { target: { value: '1' } });
 
       const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
+
+      await fixture.whenStable();
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
