@@ -66,6 +66,11 @@ describe('OtherQualificationsLevelComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
+    // hasAnsweredNonMandatoryQuestion should always be true,
+    // as this question only visited when OtherQualifications was answered with yes
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    spyOn(workerService, 'hasAnsweredNonMandatoryQuestion').and.returnValue(true);
+
     return {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
@@ -101,7 +106,7 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it('should render the page with a save button when the return value is null', async () => {
+    it('should render the page with a Save and continue button when the return value is null', async () => {
       const { getByText } = await setup({ returnUrl: false });
 
       const button = getByText('Save and continue');
@@ -266,7 +271,7 @@ describe('OtherQualificationsLevelComponent', () => {
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: 'Staff record saved',
+        message: 'Staff record details saved',
       });
     });
 
@@ -278,7 +283,7 @@ describe('OtherQualificationsLevelComponent', () => {
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: 'Staff record saved',
+          message: 'Staff record details saved',
         });
       });
     });
