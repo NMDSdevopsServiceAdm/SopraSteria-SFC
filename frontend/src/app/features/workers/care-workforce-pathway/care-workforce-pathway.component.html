@@ -31,6 +31,12 @@
               >
             </p>
           </app-details>
+
+          <div class="govuk-!-margin-bottom-6" *ngIf="cameFromCWPSummaryPage">
+            <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
+            <p class="govuk-body">{{ worker.nameOrId }}</p>
+          </div>
+
           <h2 class="govuk-heading-s">Care workforce pathway role categories</h2>
           <div
             class="govuk-radios"

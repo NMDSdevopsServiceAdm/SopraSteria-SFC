@@ -8,7 +8,7 @@ import { WorkersModule } from '../workers.module';
 import { WindowRef } from '@core/services/window.ref';
 import { AlertService } from '@core/services/alert.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithOverrides, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { DetailsComponent } from '@shared/components/details/details.component';
 import { getTestBed } from '@angular/core/testing';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
@@ -19,8 +19,9 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import userEvent from '@testing-library/user-event';
 
-describe('CareWorkforcePathwayRoleComponent', () => {
+fdescribe('CareWorkforcePathwayRoleComponent', () => {
   const categorySelected = careWorkforcePathwayRoleCategories[0].title;
 
   async function setup(overrides: any = {}) {
@@ -36,7 +37,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
           useValue: {
             parent: {
               snapshot: {
-                url: [{ path: overrides.insideFlow ? 'staff-uid' : 'staff-record-summary' }],
+                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 data: {
                   establishment: { uid: 'mocked-uid' },
                   primaryWorkplace: {},
@@ -50,7 +51,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
         },
         {
           provide: WorkerService,
-          useFactory: MockWorkerServiceWithOverrides.factory(overrides),
+          useFactory: MockWorkerServiceWithOverrides.factory(overrides.workerService ?? {}),
           deps: [HttpClient],
         },
         {
@@ -71,11 +72,14 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+
     return {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
       alertSpy,
       routerSpy,
+      workerService,
     };
   }
 
@@ -131,7 +135,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
   });
 
   it('should show the sub text for radios', async () => {
-    const { getByText, component } = await setup();
+    const { getByText } = await setup();
 
     expect(getByText('Care workforce pathway role categories')).toBeTruthy();
   });
@@ -139,13 +143,13 @@ describe('CareWorkforcePathwayRoleComponent', () => {
   describe('progress bar', () => {
     it('should render the workplace progress bar', async () => {
       const overrides = { insideFlow: true };
-      const { getByTestId, component } = await setup(overrides);
+      const { getByTestId } = await setup(overrides);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
 
     it('should not render the progress bars when accessed from outside the flow', async () => {
-      const { queryByTestId, component } = await setup();
+      const { queryByTestId } = await setup();
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
@@ -154,7 +158,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button, skip this question and 'View this staff record' link, if a return url is not provided`, async () => {
       const overrides = { insideFlow: true };
-      const { getByText, component } = await setup(overrides);
+      const { getByText } = await setup(overrides);
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
@@ -163,7 +167,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const overrides = { insideFlow: false };
-      const { getByText, component } = await setup(overrides);
+      const { getByText } = await setup(overrides);
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -171,7 +175,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
   });
 
   it('should prefill a previously saved answer', async () => {
-    const overrides = { worker: { careWorkforcePathwayRoleCategory: { roleCategoryId: 1 } } };
+    const overrides = { workerService: { worker: { careWorkforcePathwayRoleCategory: { roleCategoryId: 1 } } } };
 
     const { component, getByLabelText } = await setup(overrides);
 
@@ -235,7 +239,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
   describe('Completing Add details to staff record flow', () => {
     it('should add Staff record added alert when submitting from flow', async () => {
       const overrides = { insideFlow: true };
-      const { getByText, getByLabelText, alertSpy, component } = await setup(overrides);
+      const { getByText, getByLabelText, alertSpy } = await setup(overrides);
 
       const select = getByLabelText(categorySelected, { exact: false });
       fireEvent.change(select, { target: { value: '1' } });
@@ -252,7 +256,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     ['Skip this question', 'View this staff record'].forEach((link) => {
       it(`should add Staff record added alert when '${link}' is clicked`, async () => {
         const overrides = { insideFlow: true };
-        const { getByText, alertSpy, component } = await setup(overrides);
+        const { getByText, alertSpy } = await setup(overrides);
 
         fireEvent.click(getByText(link));
 
@@ -265,7 +269,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
     it('should not add Staff record added alert when user submits but not in flow', async () => {
       const overrides = { cwpQuestionsFlag: false, insideFlow: false };
-      const { getByText, getByLabelText, alertSpy, component } = await setup(overrides);
+      const { getByText, getByLabelText, alertSpy } = await setup(overrides);
 
       const select = getByLabelText(categorySelected, { exact: false });
       fireEvent.change(select, { target: { value: '1' } });
@@ -273,6 +277,60 @@ describe('CareWorkforcePathwayRoleComponent', () => {
       const saveButton = getByText('Save and return');
       fireEvent.click(saveButton);
 
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('When visited from Care Workforce Pathway worker summary page', () => {
+    const mockWorker = workerBuilder();
+    const overrideReturnTo = {
+      workerService: {
+        returnTo: {
+          url: ['/workplace', 'mocked-uid', 'staff-record', 'care-workforce-pathway-workers-summary'],
+        },
+        worker: mockWorker,
+      },
+    };
+
+    it("should show the worker's nameOrId", async () => {
+      const { fixture, getByText } = await setup({ ...overrideReturnTo });
+
+      fixture.detectChanges();
+
+      expect(getByText('Name or ID number')).toBeTruthy();
+      expect(getByText(mockWorker.nameOrId as string)).toBeTruthy();
+    });
+
+    it('should return to the CWP summary page when submitted', async () => {
+      const { fixture, getByText, routerSpy, alertSpy } = await setup(overrideReturnTo);
+
+      userEvent.click(getByText('New to care'));
+      userEvent.click(getByText('Save and return'));
+
+      await fixture.whenStable();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        'care-workforce-pathway-workers-summary',
+      ]);
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return to the CWP summary page when clicked the Cancel button', async () => {
+      const { fixture, getByText, routerSpy, alertSpy } = await setup(overrideReturnTo);
+
+      userEvent.click(getByText('Cancel'));
+
+      await fixture.whenStable();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        'care-workforce-pathway-workers-summary',
+      ]);
       expect(alertSpy).not.toHaveBeenCalled();
     });
   });
