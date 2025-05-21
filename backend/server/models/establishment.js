@@ -1487,6 +1487,7 @@ module.exports = function (sequelize, DataTypes) {
             'OtherQualificationsValue',
             'Level2CareCertificateValue',
             'Level2CareCertificateYear',
+            'CareWorkforcePathwayRoleCategoryFK',
           ],
           as: 'workers',
           where: {
@@ -1532,6 +1533,10 @@ module.exports = function (sequelize, DataTypes) {
                 model: sequelize.models.workerAvailableQualifications,
                 as: 'qualification',
               },
+            },
+            {
+              model: sequelize.models.careWorkforcePathwayRoleCategory,
+              as: 'careWorkforcePathwayRoleCategory',
             },
           ],
         },

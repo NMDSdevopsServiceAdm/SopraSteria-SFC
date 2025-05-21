@@ -11,6 +11,7 @@ const { mappings } = require('../../../../reference/BUDIMappings');
 let ALL_CSSRS = null;
 let ALL_CAPACITIES = null;
 let ALL_UTILISATIONS = null;
+let ALL_CAREWORKFORCEPATHWAYCATEGORIES = null;
 
 class BUDI {
   static async initialize() {
@@ -52,7 +53,35 @@ class BUDI {
           };
         });
     }
+
+    const careWorkforcePathwayCategoryFetch = await dbmodels.careWorkforcePathwayRoleCategory.findAll({
+      order: [['id', 'ASC']],
+    });
+
+    if (Array.isArray(careWorkforcePathwayCategoryFetch)) {
+      ALL_CAREWORKFORCEPATHWAYCATEGORIES = careWorkforcePathwayCategoryFetch.map((thisCareWorkforcePathwayCategory) => {
+        return {
+          ASC: thisCareWorkforcePathwayCategory.id,
+          BUDI: thisCareWorkforcePathwayCategory.bulkUploadCode,
+        };
+      });
+    }
   }
+
+  // static async getCareWorkforcePathwayCategoryMappings() {
+  //   const careWorkforcePathwayCategoryFetch = await dbmodels.careWorkforcePathwayRoleCategory.findAll({
+  //     order: [['id', 'ASC']],
+  //   });
+
+  //   if (Array.isArray(careWorkforcePathwayCategoryFetch)) {
+  //     ALL_CAREWORKFORCEPATHWAYCATEGORIES = careWorkforcePathwayCategoryFetch.map((thisCareWorkforcePathwayCategory) => {
+  //       return {
+  //         ASC: thisCareWorkforcePathwayCategory.id,
+  //         BUDI: thisCareWorkforcePathwayCategory.bulkUploadCode,
+  //       };
+  //     });
+  //   }
+  // }
 
   static get TO_ASC() {
     return 'BUDI';
@@ -304,6 +333,24 @@ class BUDI {
       }
     }
 
+    return null;
+  }
+
+  static careWorkforcePathwayRoleCategory(direction, code) {
+    // let ALL_CAREWORKFORCEPATHWAYCATEGORIES = this.getCareWorkforcePathwayCategoryMappings();
+    console.log('***mapping***');
+    console.log(ALL_CAREWORKFORCEPATHWAYCATEGORIES);
+    console.log('***direction***');
+    console.log(direction);
+    console.log('***code***');
+    console.log(code);
+    if (direction === BUDI.FROM_ASC) {
+      const found = ALL_CAREWORKFORCEPATHWAYCATEGORIES.find((thisCWPCategory) => thisCWPCategory.ASC === code);
+      return found ? found.BUDI : null;
+    } else if (direction === BUDI.TO_ASC) {
+      const found = ALL_CAREWORKFORCEPATHWAYCATEGORIES.find((thisCWPCategory) => thisCWPCategory.ASC === code);
+      return found ? found.ASC : null;
+    }
     return null;
   }
 }
