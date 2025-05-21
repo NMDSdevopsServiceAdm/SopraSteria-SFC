@@ -301,7 +301,7 @@ fdescribe('CareWorkforcePathwayRoleComponent', () => {
       expect(getByText(mockWorker.nameOrId as string)).toBeTruthy();
     });
 
-    it('should return to the CWP summary page when submitted', async () => {
+    it('should return to the CWP summary page and add an alert when submitted', async () => {
       const { fixture, getByText, routerSpy, alertSpy } = await setup(overrideReturnTo);
 
       userEvent.click(getByText('New to care'));
@@ -315,7 +315,7 @@ fdescribe('CareWorkforcePathwayRoleComponent', () => {
         'staff-record',
         'care-workforce-pathway-workers-summary',
       ]);
-      expect(alertSpy).not.toHaveBeenCalled();
+      expect(alertSpy).toHaveBeenCalledWith({ type: 'success', message: 'Role category saved' });
     });
 
     it('should return to the CWP summary page when clicked the Cancel button', async () => {
