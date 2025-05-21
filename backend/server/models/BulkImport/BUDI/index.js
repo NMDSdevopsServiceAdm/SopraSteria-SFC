@@ -68,21 +68,6 @@ class BUDI {
     }
   }
 
-  // static async getCareWorkforcePathwayCategoryMappings() {
-  //   const careWorkforcePathwayCategoryFetch = await dbmodels.careWorkforcePathwayRoleCategory.findAll({
-  //     order: [['id', 'ASC']],
-  //   });
-
-  //   if (Array.isArray(careWorkforcePathwayCategoryFetch)) {
-  //     ALL_CAREWORKFORCEPATHWAYCATEGORIES = careWorkforcePathwayCategoryFetch.map((thisCareWorkforcePathwayCategory) => {
-  //       return {
-  //         ASC: thisCareWorkforcePathwayCategory.id,
-  //         BUDI: thisCareWorkforcePathwayCategory.bulkUploadCode,
-  //       };
-  //     });
-  //   }
-  // }
-
   static get TO_ASC() {
     return 'BUDI';
   }
