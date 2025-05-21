@@ -20,6 +20,7 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
   public revealTitle = "What's the care workforce pathway?";
   public cwpQuestionsFlag: boolean;
+  public cameFromCWPSummaryPage: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -41,10 +42,6 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   }
 
   async init() {
-    if (this.return?.url) {
-      this.returnUrl = this.return.url;
-    }
-
     this.getCareWorkforcePathwayRoleCategories();
 
     if (this.worker.careWorkforcePathwayRoleCategory) {
@@ -54,6 +51,8 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
     this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
     this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
     this.next = this.getRoutePath('staff-record-summary');
+
+    this.setupPageWhenCameFromCWPSummaryPage();
   }
 
   prefill() {
@@ -75,6 +74,18 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
         },
       ),
     );
+  }
+
+  private setupPageWhenCameFromCWPSummaryPage(): void {
+    this.cameFromCWPSummaryPage = Boolean(
+      this.return?.url?.some((urlPart) => urlPart?.includes('care-workforce-pathway-workers-summary')),
+    );
+
+    if (!this.cameFromCWPSummaryPage) {
+      return;
+    }
+
+    this.returnUrl = this.return.url;
   }
 
   generateUpdateProps() {
