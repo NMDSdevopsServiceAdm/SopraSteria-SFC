@@ -1,4 +1,5 @@
 /* jshint indent: 2 */
+const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
   const Location = sequelize.define(
@@ -62,6 +63,15 @@ module.exports = function (sequelize, DataTypes) {
       },
     });
   };
+
+  Location.findMultipleByLocationID = async function (locationIDs) {
+    return await this.findAll({
+      attributes: ['locationid'],
+      where: {
+        locationid: { [Op.in]: locationIDs }
+      }
+    })
+  }
 
   Location.findByPostcode = async function (postcode) {
     return await this.findAll({
