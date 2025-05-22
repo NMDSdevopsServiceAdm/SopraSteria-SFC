@@ -21,7 +21,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('CareWorkforcePathwayRoleComponent', () => {
+describe('CareWorkforcePathwayRoleComponent', () => {
   const categorySelected = careWorkforcePathwayRoleCategories[0].title;
 
   async function setup(overrides: any = {}) {

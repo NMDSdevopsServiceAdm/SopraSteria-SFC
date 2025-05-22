@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary.component';
 import { MockRouter } from '@core/test-utils/MockRouter';
 
-fdescribe('CareWorkforcePathwayWorkersSummaryComponent', () => {
+describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
   const setup = async (overrides: any = {}) => {

@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { CareWorkforcePathwayService } from './care-workforce-pathway.service';
 import { environment } from 'src/environments/environment';
 
-fdescribe('CareWorkforcePathwayService', () => {
+describe('CareWorkforcePathwayService', () => {
   let service: CareWorkforcePathwayService;
   let http: HttpTestingController;
   let establishmentId = '124';

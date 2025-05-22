@@ -16,7 +16,7 @@ import dayjs from 'dayjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
-fdescribe('Summary section', () => {
+describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule, RouterModule],
