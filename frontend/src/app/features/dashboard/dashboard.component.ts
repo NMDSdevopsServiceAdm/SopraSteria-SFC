@@ -35,7 +35,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
   private showBanner = false;
-  public wdfNewDesignFlag: boolean;
   public tAndQsLastUpdated: string;
   public newDataAreaFlag: boolean;
   public canSeeNewDataArea: boolean;
@@ -74,7 +73,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     this.showBanner && this.showStaffRecordBanner();
-    this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
     this.workerService.setState(null);
   }
 

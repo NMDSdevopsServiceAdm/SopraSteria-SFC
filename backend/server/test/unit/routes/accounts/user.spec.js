@@ -163,7 +163,6 @@ describe('user.js', () => {
         email: 'admin@email.com',
         phone: '01234567890',
         role: 'Admin',
-        canManagedWdfClaims: false,
       };
 
       beforeEach(() => {
@@ -324,7 +323,6 @@ describe('user.js', () => {
         email: 'admin@email.com',
         phone: '01234567890',
         role: 'Admin',
-        canManagedWdfClaims: false,
       };
 
       beforeEach(() => {

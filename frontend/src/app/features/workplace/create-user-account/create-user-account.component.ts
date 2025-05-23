@@ -26,7 +26,6 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save user';
   public establishmentUid: string;
   public workplace: Establishment;
-  public wdfUserFlag: boolean;
   public permissionsTypeRadios: UserPermissionsType[];
 
   constructor(
@@ -45,10 +44,8 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   protected init(): void {
-    this.featureFlagsService.configCatClient.getValueAsync('wdfUser', false).then((value) => {
-      this.wdfUserFlag = value;
-      this.setPermissionsTypeRadios();
-    });
+    this.setPermissionsTypeRadios();
+
     this.subscriptions.add(
       this.userService.returnUrl.pipe(take(1)).subscribe((returnUrl) => {
         this.return = returnUrl;
@@ -112,24 +109,10 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   private convertPermissions(formValue): CreateAccountRequest {
-    if (!this.wdfUserFlag) {
-      formValue.role = formValue.permissionsType;
-      delete formValue.permissionsType;
-
-      return formValue;
-    }
-
-    const radio = this.permissionsTypeRadios.find(
-      (radio) => radio.permissionsQuestionValue === formValue.permissionsType,
-    );
-
+    formValue.role = formValue.permissionsType;
     delete formValue.permissionsType;
 
-    return {
-      ...formValue,
-      role: radio.role,
-      canManageWdfClaims: radio.canManageWdfClaims,
-    };
+    return formValue;
   }
 
   protected navigateToNextRoute(data): void {
@@ -141,15 +124,13 @@ export class CreateUserAccountComponent extends AccountDetailsDirective {
   }
 
   private setPermissionsTypeRadios(): void {
-    this.permissionsTypeRadios = this.wdfUserFlag
-      ? getUserPermissionsTypes(false)
-      : [
-          {
-            permissionsQuestionValue: Roles.Edit,
-          },
-          {
-            permissionsQuestionValue: Roles.Read,
-          },
-        ];
+    this.permissionsTypeRadios = [
+      {
+        permissionsQuestionValue: Roles.Edit,
+      },
+      {
+        permissionsQuestionValue: Roles.Read,
+      },
+    ];
   }
 }
