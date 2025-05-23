@@ -36,6 +36,7 @@ const workerHeaders = [
   'AMHP',
   'SCQUAL',
   'NONSCQUAL',
+  'CWPCATEGORY',
   'QUALACH01',
   'QUALACH01NOTES',
   'QUALACH02',
