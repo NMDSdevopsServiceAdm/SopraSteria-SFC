@@ -16,6 +16,8 @@ describe('Standalone staff records page as edit user', () => {
   });
 
   beforeEach(() => {
+    cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: 'Cypress test worker' });
+
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     onHomePage.clickTab('Staff records');
   });
@@ -26,6 +28,8 @@ describe('Standalone staff records page as edit user', () => {
   });
 
   it('should show the staff records page', () => {
+    cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: 'Mr Cool' });
+
     cy.get('[data-cy="dashboard-header"]').should('contain', StandAloneEstablishment.name);
     cy.get('[data-cy="dashboard-header"]').find('[data-testid="lastUpdatedDate"]').should('exist');
     cy.get('[data-cy="dashboard-header"]').should('contain', 'Add a staff record');
