@@ -27,6 +27,13 @@ import { UserAccountSavedComponent } from '@features/workplace/user-account-save
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
+import {
+  JobRoleType,
+  SelectJobRolesToAddComponent,
+} from '@shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
+import { UpdateLeaversComponent } from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
+import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
@@ -284,6 +291,26 @@ const routes: Routes = [
         },
       },
       {
+        path: 'update-vacancies',
+        component: UpdateVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update Vacancies',
+        },
+      },
+      {
+        path: 'update-vacancies-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Vacancies,
+          title: 'Select job roles to add',
+        },
+      },
+      {
         path: 'do-you-have-starters',
         component: DoYouHaveStartersComponent,
         canActivate: [CheckPermissionsGuard],
@@ -313,6 +340,26 @@ const routes: Routes = [
         },
       },
       {
+        path: 'update-starters',
+        component: UpdateStartersComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update Starters',
+        },
+      },
+      {
+        path: 'update-starters-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Starters,
+          title: 'Select job roles to add',
+        },
+      },
+      {
         path: 'do-you-have-leavers',
         component: DoYouHaveLeaversComponent,
         canActivate: [CheckPermissionsGuard],
@@ -339,6 +386,26 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'How many leavers',
+        },
+      },
+      {
+        path: 'update-leavers',
+        component: UpdateLeaversComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update Leavers',
+        },
+      },
+      {
+        path: 'update-leavers-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Leavers,
+          title: 'Select job roles to add',
         },
       },
       {

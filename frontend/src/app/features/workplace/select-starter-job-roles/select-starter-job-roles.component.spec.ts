@@ -3,10 +3,12 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Starter } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockJobRoles } from '@core/test-utils/MockJobService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -14,42 +16,16 @@ import userEvent from '@testing-library/user-event';
 import { SelectStarterJobRolesComponent } from './select-starter-job-roles.component';
 
 describe('SelectStarterJobRolesComponent', () => {
-  const mockAvailableJobs = [
-    {
-      id: 4,
-      title: 'Allied health professional (not occupational therapist)',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 10,
-      title: 'Care worker',
-      jobRoleGroup: 'Care providing roles',
-    },
-    {
-      id: 23,
-      title: 'Registered nurse',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 27,
-      title: 'Social worker',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 20,
-      title: 'Other (directly involved in providing care)',
-      jobRoleGroup: 'Care providing roles',
-    },
-  ];
+  const mockAvailableJobs = MockJobRoles;
+
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
     const startersFromDatabase = override.startersFromDatabase ?? null;
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
-    const localStorageData = override.localStorageData ?? null;
-    const setLocalStorageSpy = spyOn(localStorage, 'setItem');
-    const getLocalStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
+    const selectedStarters = override.selectedStarters ?? null;
+
     const renderResults = await render(SelectStarterJobRolesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -70,20 +46,36 @@ describe('SelectStarterJobRolesComponent', () => {
             },
           },
         },
+        {
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({ selectedStarters }),
+        },
       ],
     });
     const component = renderResults.fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService);
+
+    const setSelectedStartersSpy = spyOnProperty(vacanciesAndTurnoverService, 'selectedStarters', 'set');
+    const getSelectedStartersSpy = spyOnProperty(
+      vacanciesAndTurnoverService,
+      'selectedStarters',
+      'get',
+    ).and.returnValue(selectedStarters);
+
     return {
       component,
       routerSpy,
-      setLocalStorageSpy,
-      getLocalStorageSpy,
+      setSelectedStartersSpy,
+      getSelectedStartersSpy,
+      vacanciesAndTurnoverService,
       ...renderResults,
     };
   };
+
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -94,8 +86,15 @@ describe('SelectStarterJobRolesComponent', () => {
       const { getByRole } = await setup();
       const heading = getByRole('heading', { level: 1 });
       const sectionHeading = heading.previousSibling;
-      expect(heading.textContent).toEqual('Select job roles for all your new starters');
+      expect(heading.textContent).toEqual('Select job roles for the starters you want to add');
       expect(sectionHeading.textContent).toEqual('Vacancies and turnover');
+    });
+
+    it('should display the hint text', async () => {
+      const { getByText } = await setup();
+
+      const hintText = 'You can review the number of starters for each role after you click Save and continue.';
+      expect(getByText(hintText)).toBeTruthy();
     });
 
     describe('accordion', () => {
@@ -175,7 +174,7 @@ describe('SelectStarterJobRolesComponent', () => {
       ];
 
       it('should tick the checkboxes according to previously saved starters for the workplace', async () => {
-        const { getAllByRole } = await setup({ startersFromDatabase: mockStarters });
+        const { getAllByRole } = await setup({ selectedStarters: mockStarters });
         const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(2);
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
@@ -189,73 +188,64 @@ describe('SelectStarterJobRolesComponent', () => {
             total: 2,
           },
         ];
-        const { getByLabelText } = await setup({ startersFromDatabase: careWorkerOnly });
+        const { getByLabelText } = await setup({ selectedStarters: careWorkerOnly });
         const careProvidingRolesAccordion = getByLabelText('Care providing roles');
         const professionalRolesAccordion = getByLabelText('Professional and related roles');
         expect(within(careProvidingRolesAccordion).getByText('Hide')).toBeTruthy(); // is expanded
         expect(within(professionalRolesAccordion).getByText('Show')).toBeTruthy(); // not expanded
       });
 
-      it('should prefill from the data in localStorage if editing the same workplace', async () => {
-        const mockLocalStorageData = { establishmentUid: 'mocked-uid', starters: mockStarters };
-        const { getAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
-        const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
+      it('should prefill from the starters data from database if selectedStarters is null', async () => {
+        const { queryAllByRole } = await setup({ selectedStarters: null, startersFromDatabase: mockStarters });
+
+        const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(2);
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
       });
 
-      it('should not prefill from the data in localStorage if editing a different workplace', async () => {
-        const mockLocalStorageData = { establishmentUid: 'other-workplace-uid', starters: mockStarters };
-        const { queryAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
-        const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
-        expect(tickedCheckboxes.length).toEqual(0);
-      });
-
-      it('should clear data in local storage when user clicks "Cancel" button', async () => {
-        const { getByText } = await setup({ returnToUrl: true });
+      it('should clear data in local storage and service when user clicks "Cancel" button', async () => {
+        const { getByText, vacanciesAndTurnoverService } = await setup({ returnToUrl: true });
 
         const localStorageRemoveItemSpy = spyOn(localStorage, 'removeItem');
+        const clearAllJobRoleSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
         const cancelButton = getByText('Cancel');
 
         userEvent.click(cancelButton);
 
-        expect(localStorageRemoveItemSpy).toHaveBeenCalledTimes(2);
-        expect(localStorageRemoveItemSpy.calls.all()[0].args).toEqual(['hasStarters']);
-        expect(localStorageRemoveItemSpy.calls.all()[1].args).toEqual(['startersJobRoles']);
+        expect(localStorageRemoveItemSpy).toHaveBeenCalledWith('hasStarters');
+
+        expect(clearAllJobRoleSpy).toHaveBeenCalled();
       });
     });
   });
   describe('form submit and validation', () => {
     describe('on Success', () => {
-      it('should store the user input data in localStorage', async () => {
-        const { component, getByText, getByRole, setLocalStorageSpy } = await setup();
+      it('should store the user input data in vacanciesAndTurnover service', async () => {
+        const { getByText, setSelectedStartersSpy } = await setup();
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Care worker'));
         userEvent.click(getByText('Registered nurse'));
         userEvent.click(getByText('Other (directly involved in providing care)'));
 
         userEvent.click(getByText('Save and continue'));
-        const expectedData = {
-          establishmentUid: component.establishment.uid,
-          starters: [
-            {
-              jobId: 10,
-              title: 'Care worker',
-              total: null,
-            },
-            {
-              jobId: 23,
-              title: 'Registered nurse',
-              total: null,
-            },
-            {
-              jobId: 20,
-              title: 'Other (directly involved in providing care)',
-              total: null,
-            },
-          ],
-        };
-        expect(setLocalStorageSpy).toHaveBeenCalledWith('startersJobRoles', JSON.stringify(expectedData));
+        const expectedData = [
+          {
+            jobId: 10,
+            title: 'Care worker',
+            total: null,
+          },
+          {
+            jobId: 23,
+            title: 'Registered nurse',
+            total: null,
+          },
+          {
+            jobId: 20,
+            title: 'Other (directly involved in providing care)',
+            total: null,
+          },
+        ];
+        expect(setSelectedStartersSpy).toHaveBeenCalledWith(expectedData);
       });
 
       it('should keep the starters numbers that was loaded from database', async () => {
@@ -271,29 +261,26 @@ describe('SelectStarterJobRolesComponent', () => {
             total: 2,
           },
         ];
-        const { component, getByText, setLocalStorageSpy } = await setup({
+        const { getByText, setSelectedStartersSpy } = await setup({
           startersFromDatabase: mockStartersFromDatabase,
         });
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Registered nurse')); // untick this job
         userEvent.click(getByText('Social worker')); // add this job
         userEvent.click(getByText('Save and continue'));
-        const expectedData = {
-          establishmentUid: component.establishment.uid,
-          starters: [
-            {
-              jobId: 10,
-              title: 'Care worker',
-              total: 3, // should keep this number for next page
-            },
-            {
-              jobId: 27,
-              title: 'Social worker',
-              total: null,
-            },
-          ],
-        };
-        expect(setLocalStorageSpy).toHaveBeenCalledWith('startersJobRoles', JSON.stringify(expectedData));
+        const expectedData = [
+          {
+            jobId: 10,
+            title: 'Care worker',
+            total: 3, // should keep this number for next page
+          },
+          {
+            jobId: 27,
+            title: 'Social worker',
+            total: null,
+          },
+        ];
+        expect(setSelectedStartersSpy).toHaveBeenCalledWith(expectedData);
       });
 
       it('should navigate to the starters number input page after submit', async () => {
@@ -307,11 +294,11 @@ describe('SelectStarterJobRolesComponent', () => {
 
     describe('errors', () => {
       it('should display an error message on submit if no job roles are selected', async () => {
-        const { fixture, getByRole, getByText, getByTestId, setLocalStorageSpy } = await setup();
+        const { fixture, getByRole, getByText, getByTestId, setSelectedStartersSpy } = await setup();
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
 
-        const expectedErrorMessage = 'Select job roles for all your new starters';
+        const expectedErrorMessage = 'Select job roles for the starters you want to add';
 
         const accordion = getByTestId('selectJobRolesAccordion');
         expect(within(accordion).getByText(expectedErrorMessage)).toBeTruthy();
@@ -319,7 +306,7 @@ describe('SelectStarterJobRolesComponent', () => {
 
         const errorSummaryBox = getByText('There is a problem').parentElement;
         expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
-        expect(setLocalStorageSpy).not.toHaveBeenCalled();
+        expect(setSelectedStartersSpy).not.toHaveBeenCalled();
       });
 
       it('should expand the whole accordion on error', async () => {
@@ -335,7 +322,7 @@ describe('SelectStarterJobRolesComponent', () => {
         fixture.detectChanges();
 
         const errorSummaryBoxHeading = 'There is a problem';
-        const expectedErrorMessage = 'Select job roles for all your new starters';
+        const expectedErrorMessage = 'Select job roles for the starters you want to add';
 
         const errorSummaryBox = getByText(errorSummaryBoxHeading).parentElement;
 
@@ -373,13 +360,6 @@ describe('SelectStarterJobRolesComponent', () => {
 
     it('should set the backlink to "do you have starter" page', async () => {
       const { component } = await setup();
-      expect(component.back).toEqual({
-        url: ['/workplace', component.establishment.uid, 'do-you-have-starters'],
-      });
-    });
-
-    it('should set the backlink to "do you have starter" when not in the flow', async () => {
-      const { component } = await setup({ returnToUrl: true });
       expect(component.back).toEqual({
         url: ['/workplace', component.establishment.uid, 'do-you-have-starters'],
       });

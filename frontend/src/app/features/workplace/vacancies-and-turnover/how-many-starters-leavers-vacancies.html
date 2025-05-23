@@ -14,7 +14,7 @@
         <div class="govuk-form-group govuk-!-margin-bottom-2">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-            <h1 class="govuk-fieldset__heading">{{ heading }}</h1>
+            <h1 class="govuk-fieldset__heading govuk-!-margin-right-0">{{ heading }}</h1>
           </legend>
 
           <p>{{ instruction }}</p>
@@ -22,68 +22,19 @@
           <app-details title="Why we ask for this information">
             <p>{{ revealTextContent }}</p>
           </app-details>
-          <div class="asc-job-role-numbers-table asc-font-19" data-testid="number-inputs-table">
-            <div class="asc-job-role-numbers-table__row">
-              <span class="asc-job-role-numbers-table__cell govuk-util__bold">Job role</span>
-              <span class="asc-job-role-numbers-table__cell--number-input-header govuk-util__bold"
-                >Number of {{ jobRoleType }}</span
-              >
-            </div>
-            <ng-container formArrayName="jobRoleNumbers">
-              <ng-container *ngFor="let numberInput of jobRoleNumbers.controls; index as i">
-                <div class="asc-job-role-numbers-table__row">
-                  <span
-                    class="asc-job-role-numbers-table__error_message govuk-form-group--error"
-                    *ngIf="submitted && numberInput.invalid"
-                  >
-                    <p id="jobRoleNumbers-{{ i }}-error" class="govuk-error-message">
-                      <span class="govuk-visually-hidden">Error:</span>
-                      {{ getInlineErrorMessage('jobRoleNumbers.' + i) }}
-                    </p></span
-                  >
-                  <span class="asc-job-role-numbers-table__cell--align-center">
-                    <span class="govuk-util__block" [class.govuk-form-group--error]="submitted && numberInput.errors">
-                      <label for="jobRole-{{ i }}" class="govuk-label">
-                        <span class="govuk-visually-hidden">Number of {{ jobRoleType }} for</span>
-                        <ng-container *ngIf="selectedJobRoles[i].other?.length; else jobRoleTitleOnly">
-                          {{selectedJobRoles[i].title + ': ' + selectedJobRoles[i].other}}
-                        </ng-container>
-                        <ng-template #jobRoleTitleOnly> {{selectedJobRoles[i].title}} </ng-template>
-                      </label>
-                    </span>
-                  </span>
-                  <span class="asc-job-role-numbers-table__cell--number-input-column">
-                    <input
-                      #numberInputRef
-                      name="total"
-                      type="number"
-                      class="govuk-input"
-                      [class.govuk-input--error]="submitted && numberInput.invalid"
-                      id="jobRole-{{ i }}"
-                      [formControlName]="i"
-                      [value]="numberInput.value"
-                      (change)="updateTotalNumber()"
-                    />
-                  </span>
-                </div>
-              </ng-container>
-              <div class="asc-job-role-numbers-table__row--no-border">
-                <span class="asc-job-role-numbers-table__cell"></span>
-                <span
-                  class="asc-job-role-numbers-table__cell--number-input-column asc-job-role-numbers-table__cell--border-bottom govuk-util__bold"
-                  >Total</span
-                >
-              </div>
-              <div class="asc-job-role-numbers-table__row--no-border">
-                <span class="asc-job-role-numbers-table__cell"></span>
-                <span
-                  class="asc-job-role-numbers-table__cell--number-input-column asc-job-role-numbers-table__cell--border-bottom govuk-util__bold"
-                  data-testid="total-number"
-                  >{{ totalNumber }}</span
-                >
-              </div>
-            </ng-container>
-          </div>
+
+          <app-job-role-numbers-table
+            #jobRoleNumbersTable
+            [tableTitle]="jobRolesTableTitle"
+            [totalNumberDescription]="totalNumberDescription"
+            [jobRoleNumbers]="jobRoleNumbers"
+            [selectedJobRoles]="selectedJobRoles"
+            [submitted]="submitted"
+            [jobRoleErrorMessages]="jobRoleErrorMessages"
+            [allowRemoveJobRole]="false"
+            (addJobRole)="handleAddJobRole()"
+          >
+          </app-job-role-numbers-table>
         </div>
       </fieldset>
 

@@ -1,5 +1,6 @@
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FILE_UPLOAD_TYPES } from '@core/constants/constants';
+import { jobOptionsEnum } from '@core/model/establishment.model';
 
 export class CustomValidators extends Validators {
   static maxWords(limit: number): ValidatorFn {
@@ -131,7 +132,7 @@ export class CustomValidators extends Validators {
   }
 
   static validateUploadCertificates(files: File[]): string[] | null {
-    let errors = [];
+    const errors = [];
     const maxFileSize = 5 * 1024 * 1024;
 
     if (files.some((file) => !file.name.toLowerCase().endsWith('.pdf'))) {
@@ -154,6 +155,42 @@ export class CustomValidators extends Validators {
       }
     };
 
+    return validatorFunction;
+  }
+
+  static crossCheckJobRoleOptions(): ValidatorFn {
+    const validatorFunction = (rootFormControl: AbstractControl) => {
+      const jobRoleNumbers: AbstractControl<Array<number | string>> = rootFormControl.get('jobRoleNumbers');
+      const noOrDoNotKnow: AbstractControl<jobOptionsEnum> = rootFormControl.get('noOrDoNotKnow');
+
+      jobRoleNumbers.setErrors(null);
+      noOrDoNotKnow.setErrors(null);
+
+      const userSelectedNoOrDoNotKnow = [jobOptionsEnum.DONT_KNOW, jobOptionsEnum.NONE].includes(noOrDoNotKnow.value);
+      if (userSelectedNoOrDoNotKnow) {
+        return null;
+      }
+
+      const noJobRolesAdded = !jobRoleNumbers.value || jobRoleNumbers.value?.length === 0;
+
+      if (noJobRolesAdded) {
+        jobRoleNumbers.setErrors({ required: true });
+        noOrDoNotKnow.setErrors({ required: true });
+        return null;
+      }
+
+      const jobRoleNumberIsInvalid = (jobRoleNumber: number | string) => {
+        const parsedNumber = Number(jobRoleNumber);
+        return !Number.isInteger(parsedNumber) || parsedNumber <= 0;
+      };
+
+      const allJobRoleNumbersAreInvalid = jobRoleNumbers.value.every(jobRoleNumberIsInvalid);
+
+      if (allJobRoleNumbersAreInvalid) {
+        noOrDoNotKnow.setErrors({ required: true });
+        return null;
+      }
+    };
     return validatorFunction;
   }
 }

@@ -6,10 +6,10 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { JobService } from '@core/services/job.service';
 import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
-import { JobService } from '@core/services/job.service';
 
 @Component({
   selector: 'app-main-job-role.component',
@@ -72,7 +72,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   }
 
   private prefillForm(): void {
-    let savedMainJob = this.worker.mainJob;
+    const savedMainJob = this.worker.mainJob;
     if (savedMainJob) {
       this.form.setValue({ mainJob: savedMainJob.jobId });
       this.preFilledId = savedMainJob.jobId;
@@ -124,8 +124,8 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
       this.next = this.determineConditionalRouting();
     } else {
       this.next = this.getRoutePath('mandatory-details');
+      this.workerService.setAddStaffRecordInProgress(true);
     }
-    !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
   }
 
   protected addAlert(): void {

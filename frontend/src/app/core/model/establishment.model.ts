@@ -68,6 +68,8 @@ export interface Leaver {
   other?: string;
 }
 
+export type StarterLeaverVacancy = Starter | Leaver | Vacancy;
+
 export interface Category {
   trainingId: number;
   title: string;

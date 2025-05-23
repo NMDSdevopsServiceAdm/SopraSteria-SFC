@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 /* eslint-disable no-undef */
 Cypress.Commands.add('openLoginPage', () => {
   cy.visit('/');
@@ -21,14 +19,6 @@ Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.get('[data-cy="password"]').type(password);
   cy.get('[data-testid="signinButton"]').click();
   cy.wait('@login');
-});
-
-Cypress.Commands.add('getByLabel', (label) => {
-  cy.contains('label', label)
-    .invoke('attr', 'for')
-    .then((id) => {
-      cy.get('#' + id);
-    });
 });
 
 Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
@@ -76,44 +66,4 @@ Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
   cy.task('multipleDbQueries', dbQueries);
 });
 
-Cypress.Commands.add('getNewUserUuidToken', () => {
-  const queryString =
-    'SELECT "AddUuid" FROM cqc."AddUserTracking" WHERE "Completed" IS NULL ORDER BY "Created" DESC LIMIT 1;';
 
-  return cy.task('dbQuery', { queryString }).its('rows.0.AddUuid');
-});
-
-Cypress.Commands.add('insertTestWorker', (args) => {
-  const {
-    establishmentID = '180',
-    workerName = 'Cypress test worker',
-    contractType = 'Permanent',
-    mainJobFKValue = '10',
-    completed = true,
-  } = args;
-  const queryString = `INSERT INTO cqc."Worker"
-    ("WorkerUID", "EstablishmentFK", "NameOrIdValue", "ContractValue", "MainJobFKValue", "CompletedValue", "updatedby")
-    VALUES ($1, $2, $3, $4, $5, $6, 'admin1')`;
-  const parameters = [uuidv4(), establishmentID, workerName, contractType, mainJobFKValue, completed];
-
-  cy.task('dbQuery', { queryString, parameters });
-});
-
-Cypress.Commands.add('deleteTestWorkerFromDb', (workerName) => {
-  const queryStrings = [
-    `DELETE FROM cqc."WorkerAudit"
-      USING cqc."Worker"
-        WHERE "Worker"."NameOrIdValue" = $1
-        AND "WorkerAudit"."WorkerFK" = "Worker"."ID"
-        AND "When" >= CURRENT_DATE;`,
-    `DELETE FROM cqc."Worker"
-        WHERE "NameOrIdValue" = $1
-        AND "created" >= CURRENT_DATE;`,
-  ];
-
-  const parameters = [workerName];
-
-  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
-
-  cy.task('multipleDbQueries', dbQueries);
-});

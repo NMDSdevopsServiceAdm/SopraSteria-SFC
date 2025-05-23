@@ -89,7 +89,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[0].message = 'Add more details to your workplace';
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
-    } else if (!numberOfStaff) {
+    } else if (numberOfStaff === undefined || numberOfStaff === null) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.sections[0].redFlag = true;
     } else if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {

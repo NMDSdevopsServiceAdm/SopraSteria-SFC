@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
+import { Contracts } from '@core/model/contracts.enum';
 import { LocalIdentifiersRequest, LocalIdentifiersResponse } from '@core/model/establishment.model';
 import {
   AvailableQualificationsResponse,
@@ -18,11 +19,10 @@ import {
 } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
-import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
+import { MandatoryInfoAndMetadataFields, Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { Contracts } from '@core/model/contracts.enum';
 
 export interface Reason {
   id: number;
@@ -331,5 +331,17 @@ export class WorkerService {
 
   public clearNewWorkerMandatoryInfo(): void {
     this._newWorkerMandatoryInfo = null;
+  }
+
+  public hasAnsweredNonMandatoryQuestion(): boolean {
+    if (!this.worker) {
+      return false;
+    }
+
+    const nonMandatoryQuestions = Object.entries(this.worker).filter(
+      ([fieldName, _answer]) => !MandatoryInfoAndMetadataFields.includes(fieldName),
+    );
+
+    return nonMandatoryQuestions.some(([_fieldName, answer]) => answer !== null);
   }
 }

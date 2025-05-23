@@ -1,0 +1,106 @@
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+  [addIndexKeyToFormArrayErrors]="true"
+  querySelectorForOnClickFocus="input,button,select,textarea"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+      <fieldset class="govuk-fieldset">
+        <h1 class="govuk-heading-l">{{ heading }}</h1>
+
+        <div
+          *ngIf="addExplanationMessage && !questionPreviouslyAnswered"
+          class="govuk-!-margin-top-8 govuk-!-margin-bottom-6"
+        >
+          <p>{{ addExplanationMessage }}</p>
+        </div>
+
+        <app-details title="Why we ask for this information">
+          <p class="govuk-body-m">
+            {{ revealText }}
+          </p>
+        </app-details>
+
+        <div
+          *ngIf="questionPreviouslyAnswered"
+          class="govuk-warning-text govuk-!-margin-bottom-3"
+          data-testid="warning-text"
+        >
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <span class="govuk-warning-text__text">
+            <span class="govuk-visually-hidden">Warning</span>
+            <p class="govuk-body-m" [innerHTML]="reminderText"></p>
+          </span>
+        </div>
+
+        <div>
+          <app-job-role-numbers-table
+            #jobRoleNumbersTable
+            [tableTitle]="tableTitle"
+            [totalNumberDescription]="totalNumberDescription"
+            [addJobRoleButtonText]="addJobRoleButtonText"
+            [jobRoleNumbers]="jobRoleNumbers"
+            [selectedJobRoles]="selectedJobRoles"
+            [submitted]="submitted"
+            [messageWhenNoJobRoleSelected]="currentMessageWhenNoJobRoleSelected"
+            [jobRoleErrorMessages]="jobRoleErrorMessages"
+            (removeJobRole)="handleRemoveJobRole($event)"
+            (addJobRole)="handleAddJobRole()"
+          >
+          </app-job-role-numbers-table>
+
+          <div
+            class="govuk-form-group govuk-!-margin-top-6"
+            [class.govuk-form-group--error]="submitted && form.get('noOrDoNotKnow').errors"
+          >
+            <p
+              *ngIf="submitted && form.get('noOrDoNotKnow').errors"
+              id="noOrDoNotKnow-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFirstErrorMessage('noOrDoNotKnow') }}
+            </p>
+
+            <div class="govuk-radios">
+              <div class="govuk-radios__item" *ngFor="let option of radioButtonOptions; let index = index">
+                <input
+                  class="govuk-radios__input"
+                  id="noOrDoNotKnow-{{ index }}"
+                  name="noOrDoNotKnow"
+                  type="radio"
+                  [value]="option.value"
+                  (change)="handleClickedNoOrDoNotKnow(option.value)"
+                  [formControlName]="'noOrDoNotKnow'"
+                />
+                <label class="govuk-label govuk-radios__label" for="noOrDoNotKnow-{{ index }}">
+                  {{ option.label }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="govuk-button-group govuk-!-margin-top-12">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Save and return</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          (click)="onCancel($event)"
+          href="#"
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -7,14 +7,15 @@ import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/d
     '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
 })
 export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacanciesDirective {
-  public heading = 'Have you had any staff leave in the last 12 months?';
-  public hintText = 'We only want to know about leavers who have left permanent and temporary job roles.';
+  public todayOneYearAgo = this.getDateForOneYearAgo();
+  public heading = `Have you had any leavers SINCE ${this.todayOneYearAgo}?`;
+  public hintText = 'We only want to know about leavers who were in permanent and temporary job roles.';
   public revealText =
     'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
   public hasStartersLeaversVacanciesField = 'hasLeavers';
   public numbersField = 'leaversJobRoles';
   public valueToUpdate = 'leavers';
-  public requiredWarningMessage = "Select yes if you've had any staff leave in the last 12 months";
+  public requiredWarningMessage = `Select yes if you've had leavers since ${this.todayOneYearAgo}`;
 
   protected setupRoutes(): void {
     this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'staff-recruitment-capture-training-requirement'];

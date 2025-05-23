@@ -6,8 +6,7 @@ export class WorkplacePage {
     cy.get('[data-testid="workplace-section"]').should('exist');
     cy.get('[data-testid="services-section"]').should('exist');
     cy.get('[data-testid="vacancies-and-turnover-section"]').should('exist');
-    cy.get('[data-testid="recruitment-section"]').should('exist');
-    cy.get('[data-testid="staff-benefits-section"]').should('exist');
+    cy.get('[data-testid="recruitment-and-benefits-section"]').should('exist');
     cy.get('[data-testid="permissions-section"]').should('exist');
   }
 

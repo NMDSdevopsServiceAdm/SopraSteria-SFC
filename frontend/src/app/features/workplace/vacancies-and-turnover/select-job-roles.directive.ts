@@ -1,12 +1,13 @@
 import { Directive, ViewChild } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
+import { Leaver, Starter, StarterLeaverVacancy, Vacancy } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '@features/workplace/question/question.component';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
@@ -20,6 +21,7 @@ export class SelectJobRolesDirective extends Question {
   public errorMessageOnEmptyInput: string;
   public jobGroupsToOpenAtStart: string[] = [];
   public jobGroups: JobGroup[] = [];
+  public hintText: string;
 
   protected field: string;
   protected numbersField: string;
@@ -35,6 +37,7 @@ export class SelectJobRolesDirective extends Question {
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     private route: ActivatedRoute,
+    protected vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -85,11 +88,11 @@ export class SelectJobRolesDirective extends Question {
   }
 
   protected getPrefillData(): void {
-    const previousData = this.loadFromLocal();
-    if (previousData?.establishmentUid === this.establishment.uid && Array.isArray(previousData?.[this.field])) {
-      this.prefillData = previousData[this.field];
+    const previousData = this.getSelectedJobRoleFromService();
+    if (Array.isArray(previousData)) {
+      this.prefillData = previousData;
     } else if (Array.isArray(this.establishment[this.field])) {
-      this.prefillData = this.establishment[this.field] as Array<Vacancy | Starter | Leaver>;
+      this.prefillData = this.establishment[this.field] as Array<StarterLeaverVacancy>;
     }
   }
 
@@ -119,19 +122,11 @@ export class SelectJobRolesDirective extends Question {
 
   protected clearLocalStorageData(): void {
     localStorage.removeItem(this.hasStartersLeaversVacanciesField);
-    localStorage.removeItem(this.numbersField);
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
   }
 
-  protected saveToLocal(dataToStore) {
-    localStorage.setItem(this.numbersField, JSON.stringify(dataToStore));
-  }
-
-  protected loadFromLocal() {
-    try {
-      return JSON.parse(localStorage.getItem(this.numbersField));
-    } catch (err) {
-      return null;
-    }
+  protected getSelectedJobRoleFromService(): StarterLeaverVacancy[] {
+    throw new Error('To be implemented at component');
   }
 
   protected setupFormErrorsMap(): void {
@@ -155,16 +150,15 @@ export class SelectJobRolesDirective extends Question {
 
   protected onSuccess(): void {
     const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
-    const otherCareProvidingRoleName: string = this.form.get('otherCareProvidingRoleName').value;
-    const fieldFromDatabase = Array.isArray(this.establishment[this.field]) ? this.establishment[this.field] : [];
 
-    const updatedField: Vacancy | Starter | Leaver[] = selectedJobIds.map((jobId) => {
+    const updatedJobRoles: StarterLeaverVacancy[] = selectedJobIds.map((jobId) => {
       const job = this.jobsAvailable.find((job) => job.id === jobId);
-      const fieldCount = fieldFromDatabase.find((field) => field.jobId === jobId)?.total ?? null;
+      const fieldCount = this.prefillData?.find((field) => field.jobId === jobId)?.total ?? null;
 
       return { jobId, title: job.title, total: fieldCount };
     });
-    const dataToStore = { establishmentUid: this.establishment.uid, [this.field]: updatedField };
-    this.saveToLocal(dataToStore);
+    this.saveToService(updatedJobRoles);
   }
+
+  protected saveToService(_updatedJobRoles: StarterLeaverVacancy[]): void {}
 }

@@ -17,6 +17,8 @@
           </legend>
         </div>
 
+        <p style="width: 85%;" *ngIf="hintText">{{ hintText }}</p>
+
         <div [class.govuk-form-group--error]="submitted && form.invalid">
           <app-accordion-group #accordion data-testid="selectJobRolesAccordion" contentName="job roles">
             <p *ngIf="submitted && form.invalid" id="selectedJobRoles-error" class="govuk-error-message">

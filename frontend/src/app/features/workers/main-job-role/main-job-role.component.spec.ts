@@ -33,76 +33,73 @@ describe('MainJobRoleComponent', () => {
     } else {
       path = 'staff-record-summary';
     }
-    const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByTestId } = await render(
-      MainJobRoleComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        declarations: [ProgressBarComponent],
-        schemas: [NO_ERRORS_SCHEMA],
-        providers: [
-          UntypedFormBuilder,
-          AlertService,
-          WindowRef,
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(),
-            deps: [HttpClient, Router, UserService],
-          },
-          {
-            provide: UserService,
-            useFactory: MockUserService.factory(0, Roles.Admin),
-            deps: [HttpClient],
-          },
-          {
-            provide: WorkerService,
-            useClass: MockWorkerServiceWithUpdateWorker,
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              parent: {
-                snapshot: {
-                  url: [{ path }],
-                  data: {
-                    establishment: { uid: 'mocked-uid' },
-                    primaryWorkplace: {},
-                  },
-                },
-              },
+    const setupTools = await render(MainJobRoleComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      declarations: [ProgressBarComponent],
+      schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        UntypedFormBuilder,
+        AlertService,
+        WindowRef,
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(0, Roles.Admin),
+          deps: [HttpClient],
+        },
+        {
+          provide: WorkerService,
+          useClass: MockWorkerServiceWithUpdateWorker,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
               snapshot: {
-                params: {},
+                url: [{ path }],
                 data: {
-                  jobs: [
-                    {
-                      id: 4,
-                      jobRoleGroup: 'Professional and related roles',
-                      title: 'Allied health professional (not occupational therapist)',
-                    },
-                    {
-                      id: 10,
-                      jobRoleGroup: 'Care providing roles',
-                      title: 'Care worker',
-                    },
-                    {
-                      id: 23,
-                      title: 'Registered nurse',
-                      jobRoleGroup: 'Professional and related roles',
-                    },
-                    {
-                      id: 27,
-                      title: 'Social worker',
-                      jobRoleGroup: 'Professional and related roles',
-                    },
-                  ],
+                  establishment: { uid: 'mocked-uid' },
+                  primaryWorkplace: {},
                 },
               },
             },
+            snapshot: {
+              params: {},
+              data: {
+                jobs: [
+                  {
+                    id: 4,
+                    jobRoleGroup: 'Professional and related roles',
+                    title: 'Allied health professional (not occupational therapist)',
+                  },
+                  {
+                    id: 10,
+                    jobRoleGroup: 'Care providing roles',
+                    title: 'Care worker',
+                  },
+                  {
+                    id: 23,
+                    title: 'Registered nurse',
+                    jobRoleGroup: 'Professional and related roles',
+                  },
+                  {
+                    id: 27,
+                    title: 'Social worker',
+                    jobRoleGroup: 'Professional and related roles',
+                  },
+                ],
+              },
+            },
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService) as WorkerService;
@@ -112,6 +109,7 @@ describe('MainJobRoleComponent', () => {
     const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     const setAddStaffRecordInProgressSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
     if (addNewWorker) {
@@ -124,22 +122,17 @@ describe('MainJobRoleComponent', () => {
       });
       component.worker = null;
       component.init();
-      fixture.detectChanges();
+      setupTools.fixture.detectChanges();
     }
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByTestId,
-      getByText,
-      getAllByText,
-      getByLabelText,
       router,
       routerSpy,
       updateWorkerSpy,
       submitSpy,
       workerService,
-      queryByTestId,
       alertSpy,
       setAddStaffRecordInProgressSpy,
     };
@@ -277,9 +270,7 @@ describe('MainJobRoleComponent', () => {
       });
 
       it('should call setAddStaffRecordInProgress when clicking save this staff record', async () => {
-        const { getByText, workerService, setAddStaffRecordInProgressSpy } = await setup(true, false, true);
-
-        spyOn(workerService, 'createWorker').and.callThrough();
+        const { getByText, setAddStaffRecordInProgressSpy } = await setup(true, false, true);
 
         userEvent.click(getByText('Care providing roles'));
         userEvent.click(getByText('Care worker'));
@@ -396,7 +387,7 @@ describe('MainJobRoleComponent', () => {
     });
 
     it(`should navigate to the mental-health-professional page if the main job role is Social worker and outside of the flow`, async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
+      const { component, fixture, routerSpy, getByText, workerService } = await setup(false, false);
 
       spyOn(workerService, 'hasJobRole').and.returnValue(true);
       userEvent.click(getByText('Professional and related roles'));

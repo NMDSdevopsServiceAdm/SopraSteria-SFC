@@ -1,0 +1,55 @@
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <h1 class="govuk-heading-l">Update the total number of staff for your workplace</h1>
+
+        <p class="govuk-body-m">
+          The number should include all staff (care-providing and non care-providing, those on permanent or temporary
+          contracts, pool, bank and agency workers).
+        </p>
+        <app-details title="Why we ask for this information">
+          <p>
+            We need to know the total number of staff employed in workplaces so that we can calculate how many people
+            work in the sector. We also use it to work out turnover and vacancy rates, staff to service ratios and to
+            see if the sector is growing.
+          </p>
+        </app-details>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('totalStaff').invalid">
+          <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
+          </span>
+          <label class="govuk-label" for="total-number-of-staff"> Number of staff </label>
+          <app-number-input-with-buttons
+            [min]="min"
+            [max]="max"
+            inputId="total-number-of-staff"
+            formControlName="totalStaff"
+            [hasError]="submitted && form.get('totalStaff').invalid"
+          ></app-number-input-with-buttons>
+        </div>
+      </fieldset>
+      <div class="govuk-button-group govuk-!-margin-top-12">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Save and return</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          (click)="onCancel($event)"
+          href="#"
+        >
+          Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</form>

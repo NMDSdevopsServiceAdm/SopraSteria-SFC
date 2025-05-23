@@ -6,6 +6,7 @@ import { Eligibility } from '@core/model/wdf.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -82,6 +83,7 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private cqcStatusChangeService: CqcStatusChangeService,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -201,6 +203,11 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
 
   public setReturn(): void {
     this.establishmentService.setReturnTo(this.return);
+  }
+
+  public clearPreviouslySelectedJobRolesAndSetReturn(): void {
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
+    this.setReturn();
   }
 
   public isNumber(value: unknown): boolean {

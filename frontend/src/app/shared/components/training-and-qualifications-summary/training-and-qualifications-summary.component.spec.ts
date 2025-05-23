@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker, WorkersResponse } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -48,26 +47,16 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
     can: sinon.stub<['uid', 'canViewUser'], boolean>().returns(true),
   });
 
-  async function setup(qsParamGetMock = sinon.fake(), totalRecords = 5) {
+  async function setup(totalRecords = 5) {
     const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText, getByTestId, queryByTestId } =
       await render(TrainingAndQualificationsSummaryComponent, {
-        imports: [HttpClientTestingModule, RouterTestingModule],
+        imports: [HttpClientTestingModule],
         declarations: [TablePaginationWrapperComponent, PaginationComponent, SearchInputComponent],
         providers: [
           { provide: PermissionsService, useValue: mockPermissionsService },
           {
             provide: WorkerService,
             useClass: MockWorkerService,
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                queryParamMap: {
-                  get: qsParamGetMock,
-                },
-              },
-            },
           },
         ],
         componentProperties: {
@@ -109,7 +98,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   });
 
   it('should show the no records text, when there are no t and q records for an establishment', async () => {
-    const { getByTestId } = await setup(sinon.fake(), 0);
+    const { getByTestId } = await setup(0);
 
     expect(getByTestId('noRecords')).toBeTruthy();
   });
@@ -286,22 +275,6 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
 
       expect(getByText('There are no matching results')).toBeTruthy();
       expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
-    });
-  });
-
-  describe('Query search params update correctly', () => {
-    it('sets the searchTerm for staff record input if query params are found on render', async () => {
-      const qsParamGetMock = sinon.stub();
-      qsParamGetMock.onCall(0).returns('mysupersearch');
-      qsParamGetMock.onCall(1).returns('training');
-
-      const { component, fixture, getByLabelText } = await setup(qsParamGetMock);
-
-      component.totalWorkerCount = 16;
-      fixture.detectChanges();
-      expect((getByLabelText('Search by name or ID number staff training records') as HTMLInputElement).value).toBe(
-        'mysupersearch',
-      );
     });
   });
 });

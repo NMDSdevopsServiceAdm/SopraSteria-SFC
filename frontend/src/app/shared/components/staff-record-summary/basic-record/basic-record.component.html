@@ -1,4 +1,14 @@
-<h2 class="govuk-heading-m">{{ basicTitle }}</h2>
+<div class="govuk-grid-row govuk__flex govuk__align-items-flex-end govuk-!-margin-bottom-0">
+  <div class="govuk-grid-column-two-thirds">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">{{ basicTitle }}</h2>
+  </div>
+  <div class="govuk-grid-column-one-third govuk-util__align-right">
+    <a *ngIf="continueRoute" type="button" class="govuk-button govuk-!-margin-bottom-6" [routerLink]="continueRoute"
+      >Continue</a
+    >
+  </div>
+</div>
+
 <dl
   class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top govuk-summary-list--wide-key govuk-!-margin-bottom-0"
   data-testid="name-and-contract-section"

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Leaver, UpdateJobsRequest } from '@core/model/establishment.model';
 
 import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turnover/how-many-starters-leavers-vacancies.directive';
+import { DateUtil } from '@core/utils/date-util';
 
 @Component({
   selector: 'app-how-many-leavers',
@@ -9,27 +10,41 @@ import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turno
   styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
 })
 export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDirective {
-  public heading = 'How many leavers have you had for each job role in the last 12 months?';
-  public instruction = 'Only add the number of leavers who have left permanent and temporary job roles.';
+  public heading = `How many leavers have you had SINCE ${DateUtil.getDateForOneYearAgo()}?`;
+  public instruction = 'Only add the number of leavers who left permanent and temporary job roles.';
   public revealTextContent =
     'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
   public jobRoleType = 'leavers';
   public fieldName = 'leavers';
   public fieldJobRoles = 'leaversJobRoles';
+  public jobRolesTableTitle = 'Leavers in the last 12 months';
+  public totalNumberDescription = 'Total number of leavers';
 
   protected selectedJobRoles: Array<Leaver> = [];
 
   protected clearLocalStorageData(): void {
     localStorage.removeItem('hasLeavers');
-    localStorage.removeItem('leaversJobRoles');
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
+  }
+
+  protected getSelectedJobRoleFromService(): Leaver[] {
+    return this.vacanciesAndTurnoverService.selectedLeavers;
+  }
+
+  protected saveSelectedJobRolesToService(): void {
+    this.vacanciesAndTurnoverService.selectedLeavers = this.jobRoleNumbersTable.currentValues;
   }
 
   protected returnToFirstPage(): void {
-    this.router.navigate(['/workplace', `${this.establishment.uid}`, 'do-you-have-leavers']);
+    this.router.navigate(['/workplace', this.establishment.uid, 'do-you-have-leavers']);
+  }
+
+  protected returnToJobRoleSelectionPage(): void {
+    this.router.navigate(['/workplace', this.establishment.uid, 'select-leaver-job-roles']);
   }
 
   protected setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'select-leaver-job-roles'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'select-leaver-job-roles'];
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -38,9 +53,6 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
         jobId: Number(job.jobId),
         total: parseInt(this.jobRoleNumbers.value[index]),
       };
-      if (job.other) {
-        fieldsToUpdate.other = job.other;
-      }
       return fieldsToUpdate;
     });
 

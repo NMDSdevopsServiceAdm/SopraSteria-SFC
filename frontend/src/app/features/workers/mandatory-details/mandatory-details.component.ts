@@ -40,12 +40,6 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
         this.worker = worker;
       }),
     );
-
-    this.setBackLink();
-  }
-
-  public setBackLink(): void {
-    this.backLinkService.showBackLink();
   }
 
   navigateToDashboard(event: Event): void {
@@ -55,6 +49,7 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
 
   onSubmit(event: Event): void {
     event.preventDefault();
+
     const urlArr = this.router.url.split('/');
     const url = urlArr.slice(0, urlArr.length - 1).join('/');
     this.router.navigate([url, 'date-of-birth']);

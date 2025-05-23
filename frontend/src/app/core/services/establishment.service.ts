@@ -15,8 +15,8 @@ import {
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
@@ -304,11 +304,15 @@ export class EstablishmentService {
     );
   }
 
-  updateJobs(establishmentId, data: UpdateJobsRequest): Observable<Establishment> {
-    return this.http.post<Establishment>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`,
-      data,
-    );
+  updateJobs(establishmentId: string, data: UpdateJobsRequest): Observable<Partial<Establishment>> {
+    return this.http
+      .post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data)
+      .pipe(
+        mergeMap((response) => {
+          this.setState({ ...this.establishment, ...response });
+          return of(response);
+        }),
+      );
   }
 
   updateWorkers(establishmentId, data) {

@@ -16,6 +16,7 @@ import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { DialogService } from '@core/services/dialog.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { DownloadPdfTrainingAndQualificationComponent } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
 import { HealthAndCareVisaComponent } from '@features/workers/health-and-care-visa/health-and-care-visa.component';
 import { SharedModule } from '@shared/shared.module';
@@ -27,6 +28,7 @@ import { NewQualificationsComponent } from '../training-and-qualifications/new-t
 import { NewTrainingAndQualificationsRecordSummaryComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
 import { NewTrainingAndQualificationsRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { NewTrainingComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training/new-training.component';
+import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
@@ -37,6 +39,7 @@ import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contr
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
+import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
 import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
 import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 import { DeleteTrainingDialogComponent } from './delete-training-dialog/delete-training-dialog.component';
@@ -67,6 +70,8 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
+import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
+import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
@@ -76,6 +81,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
   declarations: [
     AddEditQualificationComponent,
     AddEditTrainingComponent,
+    AddAnotherStaffRecordComponent,
     AdultSocialCareStartedComponent,
     ApprenticeshipTrainingComponent,
     AverageWeeklyHoursComponent,
@@ -86,6 +92,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     CountryOfBirthComponent,
     DateOfBirthComponent,
     DaysOfSicknessComponent,
+    DeleteAnotherStaffRecordComponent,
     DeleteQualificationDialogComponent,
     DeleteTrainingDialogComponent,
     DeleteRecordComponent,
@@ -126,6 +133,8 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     Level2AdultSocialCareCertificateComponent,
     MainJobRoleComponent,
     DeleteStaffRecordComponent,
+    UpdateWorkplaceDetailsAfterStaffChangesComponent,
+    UpdateTotalNumberOfStaffComponent,
   ],
   providers: [
     DialogService,
@@ -142,6 +151,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     AvailableQualificationsResolver,
     TrainingCertificateService,
     QualificationCertificateService,
+    VacanciesAndTurnoverService,
     WorkerReasonsForLeavingResolver,
   ],
 })
