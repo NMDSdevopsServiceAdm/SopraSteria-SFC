@@ -90,23 +90,22 @@ describe('careWorkforcePathwayRole', () => {
       method: 'GET',
       url: `/api/establishment/${establishmentId}/workersWhoRequireCareWorkforcePathwayRoleAnswer`,
       params: {
-        establishmentId,
+        id: establishmentId,
       },
+      establishmentId,
     };
 
     it('should respond with 200 and a list of workers who have their care workforce pathway role category unanswered', async () => {
-      sinon.stub(models.worker, 'getAllWorkersWithoutCareWorkforceCategory').returns(workersFromDB);
+      sinon
+        .stub(models.worker, 'getAndCountAllWorkersWithoutCareWorkforceCategory')
+        .returns({ workers: workersFromDB, count: workersFromDB.length });
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
       await getWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
 
       const expectedResponseBody = {
-        workers: workersFromDB.map((worker) => ({
-          uid: worker.uid,
-          nameOrId: worker.nameOrId,
-          mainJob: worker.mainJob,
-        })),
+        workers: workersFromDB,
         workerCount: workersFromDB.length,
       };
 
@@ -116,7 +115,7 @@ describe('careWorkforcePathwayRole', () => {
     });
 
     it('should respond with 200 and an empty array and workerCount = 0 if no worker has got the question unanswered', async () => {
-      sinon.stub(models.worker, 'getAllWorkersWithoutCareWorkforceCategory').returns([]);
+      sinon.stub(models.worker, 'getAndCountAllWorkersWithoutCareWorkforceCategory').returns({ workers: [], count: 0 });
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -133,7 +132,7 @@ describe('careWorkforcePathwayRole', () => {
     });
 
     it('should respond with 500 error if something went wrong during database query', async () => {
-      sinon.stub(models.worker, 'getAllWorkersWithoutCareWorkforceCategory').throws();
+      sinon.stub(models.worker, 'getAndCountAllWorkersWithoutCareWorkforceCategory').throws();
       sinon.stub(console, 'error'); // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
@@ -141,6 +140,75 @@ describe('careWorkforcePathwayRole', () => {
       await getWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
+    });
+
+    describe('pagination', () => {
+      const mockWorkers = Array(100)
+        .fill(null)
+        .map((_, index) => ({
+          uid: `worker-uid-${index + 1}`,
+          nameOrId: `worker ${index + 1}`,
+          mainJob: { title: 'Care worker' },
+        }));
+
+      const createRequestWithQuery = ({ pageIndex, itemsPerPage }) => {
+        const request = {
+          method: 'GET',
+          url: `/api/establishment/${establishmentId}/workersWhoRequireCareWorkforcePathwayRoleAnswer`,
+          params: {
+            id: establishmentId,
+          },
+          query: {},
+          establishmentId,
+        };
+
+        if (pageIndex) {
+          request.query.pageIndex = pageIndex;
+        }
+        if (itemsPerPage) {
+          request.query.itemsPerPage = itemsPerPage;
+        }
+
+        return httpMocks.createRequest(request);
+      };
+
+      beforeEach(() => {
+        const mockDbOperation = ({ itemsPerPage, pageIndex }) => {
+          return {
+            count: mockWorkers.length,
+            workers: mockWorkers.slice(pageIndex * itemsPerPage, pageIndex * itemsPerPage + itemsPerPage),
+          };
+        };
+        sinon.stub(models.worker, 'getAndCountAllWorkersWithoutCareWorkforceCategory').callsFake(mockDbOperation);
+      });
+
+      it('should call database with the itemsPerPage and pageIndex in request query', async () => {
+        const req = createRequestWithQuery({ itemsPerPage: 10, pageIndex: 3 });
+        const res = httpMocks.createResponse();
+        await getWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
+
+        expect(res.statusCode).to.deep.equal(200);
+
+        expect(models.worker.getAndCountAllWorkersWithoutCareWorkforceCategory).to.have.been.calledWith({
+          establishmentId: 'mock-workplace-uuid',
+          itemsPerPage: 10,
+          pageIndex: 3,
+        });
+      });
+
+      it('should call database with the itemsPerPage = 15 and pageIndex = 0 if not given', async () => {
+        const req = createRequestWithQuery({});
+        const res = httpMocks.createResponse();
+        await getWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
+
+        expect(res.statusCode).to.deep.equal(200);
+
+        expect(models.worker.getAndCountAllWorkersWithoutCareWorkforceCategory).to.have.been.calledWith({
+          establishmentId: 'mock-workplace-uuid',
+          itemsPerPage: 15,
+          pageIndex: 0,
+        });
+      });
     });
   });
 });

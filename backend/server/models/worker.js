@@ -1451,8 +1451,24 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Worker.getAllWorkersWithoutCareWorkforceCategory = async function (establishmentId) {
-    const workersFound = await this.findAll({
-      attributes: ['id', 'uid', 'NameOrIdValue'],
+    return await this.findAll({
+      attributes: ['id', 'uid', 'NameOrIdValue', 'CareWorkforcePathwayRoleCategoryFK'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CareWorkforcePathwayRoleCategoryFK: null,
+      },
+      order: [['NameOrIdValue', 'ASC']],
+    });
+  };
+
+  Worker.getAndCountAllWorkersWithoutCareWorkforceCategory = async function ({
+    establishmentId,
+    itemsPerPage,
+    pageIndex,
+  }) {
+    const { count, rows } = await this.findAndCountAll({
+      attributes: ['uid', 'NameOrIdValue'],
       where: {
         establishmentFk: establishmentId,
         archived: false,
@@ -1466,14 +1482,16 @@ module.exports = function (sequelize, DataTypes) {
         },
       ],
       order: [['NameOrIdValue', 'ASC']],
+      offset: itemsPerPage * pageIndex,
+      limit: itemsPerPage,
     });
 
-    const data = workersFound.map((worker) => {
-      const { id, uid, mainJob, NameOrIdValue: nameOrId } = worker;
-      return { id, uid, mainJob, nameOrId };
+    const workers = rows.map((worker) => {
+      const { uid, mainJob, NameOrIdValue: nameOrId } = worker;
+      return { uid, mainJob, nameOrId };
     });
 
-    return data;
+    return { count, workers };
   };
 
   return Worker;

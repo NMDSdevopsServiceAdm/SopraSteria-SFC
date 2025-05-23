@@ -17,13 +17,27 @@ const getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) 
   }
 };
 
+const parseIntWithDefault = (stringValue, defaultValue) => {
+  const parsedValue = parseInt(stringValue);
+  if (isNaN(parsedValue)) {
+    return defaultValue;
+  }
+  return parsedValue;
+};
+
 const getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
+  const itemsPerPage = parseIntWithDefault(req.query?.itemsPerPage, 15);
+  const pageIndex = parseIntWithDefault(req.query?.pageIndex, 0);
 
   try {
-    const workers = await models.worker.getAllWorkersWithoutCareWorkforceCategory(establishmentId);
+    const { count, workers } = await models.worker.getAndCountAllWorkersWithoutCareWorkforceCategory({
+      establishmentId,
+      itemsPerPage,
+      pageIndex,
+    });
 
-    const responseBody = { workers: workers, workerCount: workers.length };
+    const responseBody = { workers, workerCount: count };
     return res.status(200).send(responseBody);
   } catch (err) {
     console.error('GET /workersWhoRequireCareWorkforcePathwayRoleAnswer - failed', err);
