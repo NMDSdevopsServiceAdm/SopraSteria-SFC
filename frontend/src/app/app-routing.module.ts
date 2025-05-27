@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
@@ -15,29 +17,43 @@ import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatus
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
-import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
+import {
+  GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
+} from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
-import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
-import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
-import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
-import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
-import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
-import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
-import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
+import {
+  ForgotYourPasswordComponent,
+} from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
+import {
+  ForgotYourUsernameOrPasswordComponent,
+} from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import {
+  ForgotYourUsernameComponent,
+} from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
+import {
+  SecurityQuestionAnswerNotMatchComponent,
+} from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
+import {
+  UserAccountNotFoundComponent,
+} from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
 import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 import { LoginComponent } from '@features/login/login.component';
-import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
+import {
+  VacanciesAndTurnoverLoginMessage,
+} from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import {
+  MigratedUserTermsConditionsComponent,
+} from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
@@ -155,6 +171,10 @@ const routes: Routes = [
         data: { title: 'Update your vacancies and turnover data' },
       },
       {
+        path: 'help',
+        loadChildren: () => import('@features/help/help.module').then((m) => m.HelpModule),
+      },
+      {
         path: 'workplace',
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
@@ -195,14 +215,6 @@ const routes: Routes = [
         data: { title: 'Dashboard', workerPagination: true },
       },
       {
-        path: 'first-login-wizard',
-        component: FirstLoginPageComponent,
-        resolve: {
-          wizard: WizardResolver,
-        },
-        data: { title: 'First Login Wizard' },
-      },
-      {
         path: 'asc-wds-certificate',
         component: AscWdsCertificateComponent,
         data: { title: 'Certificate' },
@@ -232,14 +244,9 @@ const routes: Routes = [
         component: AdminComponent,
       },
       {
-        path: 'wdf',
-        loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
-        data: { title: 'Workforce Development Fund Data' },
-      },
-      {
-        path: 'wdf-claims',
-        loadChildren: () => import('@features/wdf/wdf-claims/wdf-claims.module').then((m) => m.WdfClaimsModule),
-        data: { title: 'Workforce Development Fund Claims' },
+        path: 'funding',
+        loadChildren: () => import('@features/funding/funding.module').then((m) => m.FundingModule),
+        data: { title: 'Funding' },
       },
       {
         path: 'notifications',

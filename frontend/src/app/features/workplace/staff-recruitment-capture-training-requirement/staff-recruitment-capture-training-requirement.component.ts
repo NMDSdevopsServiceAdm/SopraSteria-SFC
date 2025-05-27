@@ -5,6 +5,7 @@ import { staffRecruitmentOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { Question } from '../question/question.component';
 
@@ -32,8 +33,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     },
   ];
 
-  public inStaffRecruitmentFlow: boolean;
-  public section: string;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -48,14 +48,12 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   protected init(): void {
     this.setupForm();
     this.setPreviousRoute();
-    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
-    this.section = this.inStaffRecruitmentFlow ? 'Training' : 'Recruitment';
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'number-of-interviews'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'how-many-leavers'];
   }
 
   private setupForm(): void {

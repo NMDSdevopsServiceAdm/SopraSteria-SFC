@@ -8,18 +8,22 @@ export class ProgressBarUtil {
   };
 
   public static workplaceFlowProgressBarSections = (): string[] => {
-    return ['Services', 'Vacancies and turnover', 'Recruitment', 'Staff benefits', 'Permissions'];
-  };
-
-  public static recruitmentMiniFlowProgressBarSections = (): string[] => {
-    return ['Advertising spend', 'People interviewed', 'Training', 'Care Certificates'];
-  };
-
-  public static staffBenefitsMiniFlowProgressBarSections = (): string[] => {
-    return ['Loyalty bonus', 'Statutory Sick Pay', 'Pensions', 'Holiday leave'];
+    return [
+      WorkplaceFlowSections.SERVICES,
+      WorkplaceFlowSections.VACANCIES_AND_TURNOVER,
+      WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS,
+      WorkplaceFlowSections.PERMISSIONS,
+    ];
   };
 
   public static staffRecordProgressBarSections = (): string[] => {
     return ['Mandatory information', 'Personal details', 'Employment details', 'Training and qualifications'];
   };
+}
+
+export enum WorkplaceFlowSections {
+  SERVICES = 'Services',
+  VACANCIES_AND_TURNOVER = 'Vacancies and turnover',
+  RECRUITMENT_AND_BENEFITS = 'Recruitment and benefits',
+  PERMISSIONS = 'Permissions',
 }

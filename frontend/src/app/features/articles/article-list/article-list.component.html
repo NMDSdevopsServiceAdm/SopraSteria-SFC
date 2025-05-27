@@ -1,6 +1,6 @@
 <ng-container *ngIf="articleList?.length > 0">
   <h3 class="govuk-heading-s govuk-!-margin-top-1">ASC-WDS news</h3>
-  <hr class="govuk-section-break--m govuk-section-break--visible" />
+  <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-3" />
   <ul class="govuk-list govuk-!-margin-bottom-6">
     <li
       class="govuk-!-margin-bottom-3"
@@ -12,13 +12,14 @@
           <a [routerLink]="['/articles', article.slug]">{{ article.title }}</a>
         </div>
 
-        <div class="govuk-grid-column-one-quarter-from-desktop govuk-!-padding-top-1" style="width: 15%">
+        <div class="govuk-grid-column-one-quarter-from-desktop" style="width: 15%">
           <img src="/assets/images/small_blue_arrow.svg" alt="" />
         </div>
       </div>
 
       <div class="govuk-grid-column-full"></div>
-      <hr class="govuk-section-break--m govuk-section-break--visible" />
+
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3" />
     </li>
   </ul>
 </ng-container>

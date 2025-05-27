@@ -458,7 +458,6 @@ const partAddUser = async (req, res) => {
 
     // force email to be lowercase
     req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
-    req.body.canManageWdfClaims = req.body.canManageWdfClaims || false;
 
     // only those properties defined in the POST body will be updated (peristed)
     const isValidUser = await thisUser.load(req.body);
@@ -690,6 +689,11 @@ const addUser = async (req, res) => {
       ],
     });
 
+    if (trackingResponse?.completed) {
+      console.error('POST /api/user/add error - user with the given uuid token has already completed registration');
+      return res.status(401).send({ message: 'Activation link expired' });
+    }
+
     if (trackingResponse && trackingResponse.uuid && trackingResponse.user.uid) {
       // use the User properties to load (includes validation)
       const thisUser = new User.User(trackingResponse.user.establishmentId, addUserUUID);
@@ -706,12 +710,8 @@ const addUser = async (req, res) => {
         };
 
         // force the username and email to be lowercase
-        newUserProperties.username = newUserProperties.username
-          ? newUserProperties.username.toLowerCase()
-          : newUserProperties.username;
-        newUserProperties.email = newUserProperties.email
-          ? newUserProperties.email.toLowerCase()
-          : newUserProperties.email;
+        newUserProperties.username = newUserProperties.username?.toLowerCase();
+        newUserProperties.email = newUserProperties.email?.toLowerCase();
 
         const isValidUser = await thisUser.load(newUserProperties);
         // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!
@@ -730,18 +730,18 @@ const addUser = async (req, res) => {
       }
     } else {
       // not found the given add user tracking reference
-      console.error('api/user/add error - failed to match add user tracking and user record');
+      console.error('POST /api/user/add error - failed to match add user tracking and user record');
       return res.status(404).send();
     }
   } catch (err) {
     if (err instanceof User.UserExceptions.UserJsonException) {
-      console.error('/add/establishment/:id POST: ', err.message);
+      console.error('POST /api/user/add error: ', err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof User.UserExceptions.UserSaveException && err.message === 'Duplicate Username') {
-      console.error('/add/establishment/:id POST: ', err.message);
+      console.error('POST /api/user/add error: ', err.message);
       return res.status(400).send(err.message);
     } else if (err instanceof User.UserExceptions.UserSaveException) {
-      console.error('/add/establishment/:id POST: ', err.message);
+      console.error('POST /api/user/add error: ', err.message);
       return res.status(500).send(err.safe);
     }
 
@@ -970,9 +970,10 @@ router.use('/swap/establishment/:id', authLimiter);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
 
 module.exports = router;
+
 module.exports.meetsMaxUserLimit = meetsMaxUserLimit;
 module.exports.partAddUser = partAddUser;
-
 module.exports.listAdminUsers = listAdminUsers;
 module.exports.updateUser = updateUser;
 module.exports.updateLastViewedVacanciesAndTurnoverMessage = updateLastViewedVacanciesAndTurnoverMessage;
+module.exports.addUser = addUser;

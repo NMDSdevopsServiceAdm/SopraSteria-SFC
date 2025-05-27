@@ -8,6 +8,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { Reason, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
@@ -31,6 +32,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
   public otherReasonDetailMaxLength = 500;
   public confirmationMissingErrorMessage =
     'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
+  public totalNumberOfStaffBeforeDelete: number;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -43,12 +45,14 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
     private formBuilder: UntypedFormBuilder,
     private backLinkService: BackLinkService,
     private route: ActivatedRoute,
+    private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
   ) {}
 
   ngOnInit(): void {
     this.worker = this.workerService.worker;
     this.workplace = this.establishmentService.establishment;
     this.reasons = this.route.snapshot.data?.reasonsForLeaving;
+    this.totalNumberOfStaffBeforeDelete = this.route.snapshot.data?.totalNumberOfStaff;
 
     this.setupForm();
     this.setupFormErrorsMap();
@@ -138,16 +142,19 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
   }
 
   private onSuccess(): void {
-    this.router
-      .navigate(['/dashboard'], {
-        fragment: 'staff-records',
-      })
-      .then(() =>
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Staff record deleted (${this.worker.nameOrId})`,
-        }),
-      );
+    this.vacanciesAndTurnoverService.clearDoYouWantToAddOrDeleteAnswer();
+
+    const nextPage =
+      this.totalNumberOfStaffBeforeDelete > 1
+        ? 'delete-another-staff-record'
+        : 'update-workplace-details-after-deleting-staff';
+
+    this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', nextPage]).then(() =>
+      this.alertService.addAlert({
+        type: 'success',
+        message: `Staff record deleted (${this.worker.nameOrId})`,
+      }),
+    );
   }
 
   ngOnDestroy(): void {

@@ -7,6 +7,7 @@ import { CannotCreateAccountComponent } from '@core/components/error/cannot-crea
 import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { QuestionsAndAnswersResolver } from '@core/resolvers/help/questions-and-answers/questions-and-answers.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
@@ -43,6 +44,7 @@ import { ValidationErrorMessageComponent } from './components/drag-and-drop/vali
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
 import { FundingRequirementsStateComponent } from './components/funding-requirements-state/funding-requirements-state.component';
+import { HelpContentComponent } from './components/help-content/help-content.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
 import { LinkToParentCancelDialogComponent } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
@@ -53,9 +55,9 @@ import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-w
 import { NavigateToWorkplaceDropdownComponent } from './components/navigate-to-workplace-dropdown/navigate-to-workplace-dropdown.component';
 import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
 import { NewTabsComponent } from './components/new-tabs/new-tabs.component';
-import { WDFTabComponent } from './components/new-wdf-tabs/new-wdf-tab.component';
 import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-summary/wdf-workplace-summary.component';
 import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/workplace-summary.component';
+import { NumberInputWithButtonsComponent } from './components/number-input-with-buttons/number-input-with-buttons.component';
 import { OtherLinksComponent } from './components/other-links/other-links.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
@@ -101,14 +103,16 @@ import { TrainingAndQualificationsTabComponent } from './components/training-and
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { TrainingSelectViewPanelComponent } from './components/training-select-view-panel/training-select-view-panel.component';
+import { SelectJobRolesToAddComponent } from './components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
+import { UpdateLeaversComponent } from './components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import { UpdateStartersComponent } from './components/update-starters-leavers-vacancies/update-starters/update-starters.component';
+import { UpdateVacanciesComponent } from './components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { UserTableComponent } from './components/users-table/user.table.component';
-import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
 import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
-import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
@@ -134,6 +138,8 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { JobRoleNumbersTableComponent } from './components/job-role-numbers-table/job-role-numbers-table.component';
+import { HasValuePipe } from './pipes/has-value.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -185,7 +191,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TrainingLinkPanelComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
-    WdfConfirmationPanelComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
@@ -224,7 +229,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
-    WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
@@ -246,7 +250,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewWorkplaceSummaryComponent,
     NewArticleListComponent,
     LinkWithArrowComponent,
-    WDFTabComponent,
     WDFWorkplaceSummaryComponent,
     NewDashboardHeaderComponent,
     ServiceNamePipe,
@@ -269,6 +272,15 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectViewPanelComponent,
     WorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
+    HelpContentComponent,
+    NumberInputWithButtonsComponent,
+    UpdateVacanciesComponent,
+    UpdateStartersComponent,
+    UpdateLeaversComponent,
+    SelectJobRolesToAddComponent,
+    NumberInputWithButtonsComponent,
+    JobRoleNumbersTableComponent,
+    HasValuePipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -314,7 +326,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TabsComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
-    WdfConfirmationPanelComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
@@ -354,7 +365,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
-    WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
@@ -377,7 +387,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewWorkplaceSummaryComponent,
     NewArticleListComponent,
     LinkWithArrowComponent,
-    WDFTabComponent,
     WDFWorkplaceSummaryComponent,
     NewDashboardHeaderComponent,
     ServiceNamePipe,
@@ -399,7 +408,12 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectViewPanelComponent,
     WorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
+    HelpContentComponent,
+    FormatStartersLeaversVacanciesPipe,
+    NumberInputWithButtonsComponent,
+    JobRoleNumbersTableComponent,
+    HasValuePipe,
   ],
-  providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
+  providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver, QuestionsAndAnswersResolver],
 })
 export class SharedModule {}

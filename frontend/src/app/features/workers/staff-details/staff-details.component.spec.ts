@@ -215,10 +215,10 @@ describe('StaffDetailsComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should call submit data and navigate to the wdf staff record summary page when 'Save and return' is clicked in WDF version of the page`, async () => {
+    it(`should call submit data and navigate to the funding staff record summary page when 'Save and return' is clicked in funding version of the page`, async () => {
       const { component, router, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } =
         await setup(false, false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -237,7 +237,7 @@ describe('StaffDetailsComponent', () => {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
       });
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', fixture.componentInstance.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', fixture.componentInstance.worker.uid]);
     });
 
     it(`should call submit data and navigate to the the staff record summary page when 'Save and return' is clicked outside of mandatory details flow`, async () => {
@@ -311,12 +311,12 @@ describe('StaffDetailsComponent', () => {
       expect(alertSpy).not.toHaveBeenCalled();
     });
 
-    it('should not show a banner when updating a staff record in WDF version of the page', async () => {
+    it('should not show a banner when updating a staff record in funding version of the page', async () => {
       const { component, router, fixture, getByText, getByLabelText, workerService, alertSpy } = await setup(
         false,
         false,
       );
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -361,18 +361,18 @@ describe('StaffDetailsComponent', () => {
       expect(updateWorkerSpy).not.toHaveBeenCalled();
     });
 
-    it('should return the user to the wdf record summary page when clicking cancel when in WDF version of the page', async () => {
+    it('should return the user to the funding record summary page when clicking cancel when in funding version of the page', async () => {
       const { component, router, fixture, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
         false,
         false,
       );
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
       userEvent.click(getByText('Cancel'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', component.worker.uid]);
       expect(updateWorkerSpy).not.toHaveBeenCalled();
     });
 

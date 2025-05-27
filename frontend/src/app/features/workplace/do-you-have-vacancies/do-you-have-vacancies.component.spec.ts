@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -16,7 +15,7 @@ import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 describe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(DoYouHaveVacanciesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
         UntypedFormBuilder,
@@ -28,6 +27,15 @@ describe('DoYouHaveVacanciesComponent', () => {
             overrides?.workplace,
           ),
           deps: [HttpClient],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {},
+              data: {},
+            },
+          },
         },
       ],
     });
@@ -115,7 +123,6 @@ describe('DoYouHaveVacanciesComponent', () => {
 
     vacancyAnswers.forEach((option: any) => {
       it(`should preselect answer (${option.selectedRadio}) if workplace has value saved`, async () => {
-        console.log('option.vacanciesInDb: ', option.vacanciesInDb);
         const overrides = {
           workplace: { vacancies: option.vacanciesInDb },
         };
@@ -389,7 +396,7 @@ describe('DoYouHaveVacanciesComponent', () => {
       fireEvent.click(continueButton);
       fixture.detectChanges();
 
-      expect(getAllByText("Select yes if you've any current staff vacancies").length).toBe(2);
+      expect(getAllByText("Select yes if you've got current staff vacancies").length).toBe(2);
     });
   });
 

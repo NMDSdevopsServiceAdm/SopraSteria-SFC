@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Installing lambda package...
+      - cd lambdas/bulkUpload
+      - npm ci
+  build:
+    commands:
+      - echo "Assuming IAM Role for deployment..."
+      - export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" $(aws sts assume-role --role-arn arn:aws:iam::114055388985:role/CodebuildCrossAccountAccessServiceRole --role-session-name MySessionName --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" --output text))
+      - export $(printf "LAMBDA_ROLE_ARN=%s" $(aws iam get-role --role-name lambda-execution-role --query "Role.Arn"  --output text))
+      - export BULK_UPLOAD_LAMBDA_REGION="eu-west-1"
+      - echo "Deploying with Serverless..."
+      - npx serverless deploy function --function validateWorker --stage preprod
+      - npx serverless deploy function --function validateTraining --stage preprod

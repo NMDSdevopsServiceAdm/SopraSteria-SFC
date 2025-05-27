@@ -7,6 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ServiceUsersService } from '@core/services/service-users.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '@features/workplace/question/question.component';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
@@ -20,7 +21,7 @@ export class ServiceUsersComponent extends Question {
   public allUserServices: ServiceForUser[] = [];
   public renderForm = false;
   private otherMaxLength = 120;
-  public section = 'Services';
+  public section = WorkplaceFlowSections.SERVICES;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

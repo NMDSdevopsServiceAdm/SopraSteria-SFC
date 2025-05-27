@@ -149,3 +149,15 @@
 .asc__negative-margin-right-4 {
   margin-right: -1 * govuk-spacing(4);
 }
+
+.asc__vertical-line {
+  border-left: 1px solid govuk-colour('light-grey');
+}
+
+.asc__hr_under_heading {
+  margin-top: -15px;
+  color: govuk-colour('light-grey');
+  background-color: govuk-colour('light-grey');
+  border: none;
+  height: 2px;
+}

@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 @Component({
   selector: 'app-wdf-staff-mismatch-message',
@@ -19,11 +20,17 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
   public staffRecordsDifference: number;
   public staffRecordsUrl: URLStructure;
   public primaryWorkplaceUid: string;
+  public canEditEstablishment: boolean;
 
-  constructor(private route: ActivatedRoute, private establishmentService: EstablishmentService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
+  ) {}
 
   ngOnInit() {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
+    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.setStaffRecordsUrl();
     this.setMessage();
     this.setIcon();

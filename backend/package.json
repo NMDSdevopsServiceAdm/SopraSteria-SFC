@@ -31,12 +31,14 @@
     "server:cover:integration": "nyc --reporter=html mocha server/test/integration/**/*.spec.js",
     "db:migration:generate": "sequelize migration:generate",
     "db:migrate": "sequelize db:migrate",
+    "db:migrate:status": "sequelize db:migrate:status",
     "db:migrate:undo": "sequelize db:migrate:undo",
     "db:migrate:pipeline": "node ./bin/run-db-migrations.js",
     "test:server": "npm run server"
   },
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-lambda": "^3.750.0",
     "@aws-sdk/client-s3": "^3.650.0",
     "@aws-sdk/credential-providers": "^3.664.0",
     "@aws-sdk/s3-request-presigner": "^3.650.0",

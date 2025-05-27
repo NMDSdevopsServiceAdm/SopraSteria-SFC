@@ -16,6 +16,7 @@
   label="Search by name or ID number"
   [accessibleLabel]="'missing mandatory training'"
   (fetchData)="getMissingMandatoryTraining($event)"
+  [setQueryInParams]="true"
 >
   <table class="govuk-table" data-testid="table" *ngIf="workerCount; else noTrainingFoundInSearch">
     <thead class="govuk-table__head">

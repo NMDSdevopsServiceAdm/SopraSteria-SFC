@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo Installing dependencies...
+      - cd backend && npm ci
+
+  build:
+    commands:
+      - export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" $(aws sts assume-role --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/CodebuildCrossAccountAccessServiceRole --role-session-name MySessionName --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" --output text))
+      - export DB_HOST=$(aws ssm get-parameter --name $DB_HOST_PATH --with-decryption --query Parameter.Value --output text)
+      - export DB_USER=$(aws ssm get-parameter --name $DB_USER_PATH --with-decryption --query Parameter.Value --output text)
+      - export DB_PASS=$(aws ssm get-parameter --name $DB_PASS_PATH --with-decryption --query Parameter.Value --output text)
+      - export DB_NAME=$(aws ssm get-parameter --name $DB_NAME_PATH --with-decryption --query Parameter.Value --output text)
+      - export NODE_ENV=$(aws ssm get-parameter --name $NODE_ENV_PATH --with-decryption --query Parameter.Value --output text)
+      - "echo Reverting migration of file name: $MIGRATION_FILE_NAME"
+      - npm run db:migrate:undo -- --name $MIGRATION_FILE_NAME

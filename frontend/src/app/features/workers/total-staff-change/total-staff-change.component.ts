@@ -24,7 +24,6 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
   public return: URLStructure;
   public returnCopy: boolean;
   public formErrorsMap: Array<ErrorDetails>;
-  private totalStaffConstraints = { min: 0, max: 999 };
   private subscriptions: Subscription = new Subscription();
 
   constructor(

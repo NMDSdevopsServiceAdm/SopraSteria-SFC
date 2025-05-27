@@ -90,15 +90,12 @@ class Establishment extends EntityValidator {
     this._showSharingPermissionsBanner = null;
     this._expiresSoonAlertDate = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
-    this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
-    this._peopleInterviewedInTheLastFourWeeks = null;
     this._showAddWorkplaceDetailsBanner = true;
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._pensionContribution = null;
     this._sickPay = null;
-    this._recruitmentJourneyExistingUserBanner = false;
     this._isParentApprovedBannerViewed = null;
     this._primaryAuthorityCssr = null;
 
@@ -361,16 +358,8 @@ class Establishment extends EntityValidator {
     return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
   }
 
-  get moneySpentOnAdvertisingInTheLastFourWeeks() {
-    return this._moneySpentOnAdvertisingInTheLastFourWeeks;
-  }
-
   get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
     return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
-  }
-
-  get peopleInterviewedInTheLastFourWeeks() {
-    return this._peopleInterviewedInTheLastFourWeeks;
   }
 
   get showAddWorkplaceDetailsBanner() {
@@ -391,10 +380,6 @@ class Establishment extends EntityValidator {
 
   get sickPay() {
     return this._sickPay;
-  }
-
-  get recruitmentJourneyExistingUserBanner() {
-    return this._recruitmentJourneyExistingUserBanner;
   }
 
   get isParentApprovedBannerViewed() {
@@ -580,14 +565,6 @@ class Establishment extends EntityValidator {
           this._expiresSoonAlertDate = document.expiresSoonAlertDate;
         }
 
-        if ('moneySpentOnAdvertisingInTheLastFourWeeks' in document) {
-          this._moneySpentOnAdvertisingInTheLastFourWeeks = document.moneySpentOnAdvertisingInTheLastFourWeeks;
-        }
-
-        if ('peopleInterviewedInTheLastFourWeeks' in document) {
-          this._peopleInterviewedInTheLastFourWeeks = document.peopleInterviewedInTheLastFourWeeks;
-        }
-
         if ('doNewStartersRepeatMandatoryTrainingFromPreviousEmployment' in document) {
           this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
             document.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
@@ -616,10 +593,6 @@ class Establishment extends EntityValidator {
 
         if ('sickPay' in document) {
           this._sickPay = document.sickPay;
-        }
-
-        if ('recruitmentJourneyExistingUserBanner' in document) {
-          this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
         }
 
         if ('isParentApprovedBannerViewed' in document) {
@@ -841,18 +814,15 @@ class Establishment extends EntityValidator {
           attributes: ['id', 'created', 'updated'],
           ustatus: this._ustatus,
           expiresSoonAlertDate: '90',
-          moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
-          peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
           doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
             this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
           wouldYouAcceptCareCertificatesFromPreviousEmployment:
             this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
-          showAddWorkplaceDetailsBanner: this._showAddWorkplaceDetailsBanner,
+          showAddWorkplaceDetailsBanner: bulkUploaded ? false : this._showAddWorkplaceDetailsBanner,
           careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
           sickPay: this._sickPay,
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
-          recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
           isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
         };
@@ -957,6 +927,36 @@ class Establishment extends EntityValidator {
             `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`,
           );
         });
+
+        if (this._status === 'NEW') {
+          const wdfEligibility = await this.isWdfEligible(WdfCalculator.effectiveDate);
+
+          if (wdfEligibility.currentEligibility) {
+            const updatedTimestamp = new Date();
+
+            await models.establishment.update(
+              {
+                lastWdfEligibility: updatedTimestamp,
+                establishmentWdfEligibility: updatedTimestamp,
+              },
+              {
+                where: {
+                  id: this._id,
+                },
+                transaction: externalTransaction,
+              },
+            );
+
+            await models.establishmentAudit.create(
+              {
+                establishmentFk: this._id,
+                username: savedBy.toLowerCase(),
+                type: 'wdfEligible',
+              },
+              { transaction: externalTransaction },
+            );
+          }
+        }
       } catch (err) {
         // need to handle duplicate Establishment
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
@@ -1044,8 +1044,6 @@ class Establishment extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
             showSharingPermissionsBanner: bulkUploaded ? false : this._showSharingPermissionsBanner,
-            moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
-            peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
             doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
               this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
             wouldYouAcceptCareCertificatesFromPreviousEmployment:
@@ -1055,7 +1053,6 @@ class Establishment extends EntityValidator {
             sickPay: this._sickPay,
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
-            recruitmentJourneyExistingUserBanner: bulkUploaded ? true : this._recruitmentJourneyExistingUserBanner,
             isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
             primaryAuthorityCssr: this._primaryAuthorityCssr,
           };
@@ -1361,13 +1358,10 @@ class Establishment extends EntityValidator {
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
-        this._recruitmentJourneyExistingUserBanner = fetchResults.recruitmentJourneyExistingUserBanner;
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
         this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
           fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-        this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
         this._sickPay = fetchResults.sickPay;
@@ -1804,11 +1798,8 @@ class Establishment extends EntityValidator {
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
         myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
-        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
         myDefaultJSON.wouldYouAcceptCareCertificatesFromPreviousEmployment =
           this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-        myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.sickPay = this.sickPay;

@@ -30,13 +30,14 @@ notify:
 
 bulkupload:
   region: eu-west-2
+  lambdaRegion: eu-west-1
   bucketname: sfc-bulkupload-staging
   validation:
     timeout: 300
   completion:
     timeout: 120
   lambda:
-    stage: sfcstaging
+    stage: staging
 
 certificate:
   region: eu-west-2

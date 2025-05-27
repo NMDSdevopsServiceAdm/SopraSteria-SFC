@@ -1,35 +1,40 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
-import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('StaffRecordComponent', () => {
-  async function setup(isParent = true, ownWorkplace = true) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function setup(overrides: any = {}) {
+    const isParent = overrides.isParent ?? true;
+    const permissions = overrides.permissions ?? ['canEditWorker', 'canDeleteWorker'];
+    const clearDoYouWantToAddOrDeleteAnswerSpy = jasmine.createSpy('clearDoYouWantToAddOrDeleteAnswer');
+
     const workplace = establishmentBuilder() as Establishment;
     const setupTools = await render(StaffRecordComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
       providers: [
         AlertService,
         WindowRef,
@@ -43,7 +48,7 @@ describe('StaffRecordComponent', () => {
                 data: {
                   establishment: workplace,
                 },
-                url: [{ path: ownWorkplace ? 'staff-record-summary' : '' }],
+                url: [{ path: 'staff-record-summary' }],
               },
             },
             snapshot: {},
@@ -51,26 +56,30 @@ describe('StaffRecordComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: MockWorkerServiceWithUpdateWorker,
+          useFactory: MockWorkerServiceWithOverrides.factory(overrides.workerService),
         },
         {
           provide: EstablishmentService,
           useValue: {
             establishmentId: 'mock-uid',
-            isOwnWorkplace: () => ownWorkplace,
             primaryWorkplace: {
               isParent,
             },
           },
         },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        { provide: PermissionsService, useClass: MockPermissionsService },
+        { provide: PermissionsService, useFactory: MockPermissionsService.factory(permissions) },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({
+            clearDoYouWantToAddOrDeleteAnswer: clearDoYouWantToAddOrDeleteAnswerSpy,
+          }),
+        },
       ],
     });
 
-    const fixture = setupTools.fixture;
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -87,19 +96,16 @@ describe('StaffRecordComponent', () => {
     const alert = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
 
-    const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService) as ParentSubsidiaryViewService;
-
     return {
+      ...setupTools,
       component,
-      fixture,
       routerSpy,
       workerService,
       workerSpy,
       workplaceUid,
       workerUid,
       alertSpy,
-      parentSubsidiaryViewService,
-      ...setupTools,
+      clearDoYouWantToAddOrDeleteAnswerSpy,
     };
   }
 
@@ -114,66 +120,28 @@ describe('StaffRecordComponent', () => {
     expect(getAllByText(component.worker.nameOrId).length).toBe(2);
   });
 
-  it('should render the Complete record button and correct text when worker.completed is false and canEditWorker is true', async () => {
-    const { component, fixture, getByText, queryByText } = await setup();
-    component.canEditWorker = true;
-    component.worker.completed = false;
-    fixture.detectChanges();
-    const button = getByText('Confirm record details');
-    const text = getByText(`Check these details before you confirm them.`);
-    const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
-    const deleteRecordLink = queryByText('Delete staff record');
+  [true, false].forEach((completedValue) => {
+    it(`should render the delete record link, add training link and flag long term absence link, when worker.completed is ${completedValue}`, async () => {
+      const { queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid } = await setup({
+        workerService: { worker: { completed: completedValue, longTermAbsence: null } },
+      });
 
-    expect(button).toBeTruthy();
-    expect(text).toBeTruthy();
-    expect(flagLongTermAbsenceLink).toBeFalsy();
-    expect(deleteRecordLink).toBeFalsy();
+      const button = queryByText('Confirm record details');
+      const flagLongTermAbsenceLink = getByText('Flag long-term absence');
+      const deleteRecordLink = getByRole('button', { name: 'Delete staff record' });
+      const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
+
+      expect(button).toBeFalsy();
+      expect(flagLongTermAbsenceLink).toBeTruthy();
+      expect(deleteRecordLink).toBeTruthy();
+      expect(deleteRecordLink.getAttribute('href')).toEqual(
+        `/workplace/${workplaceUid}/staff-record/${workerUid}/delete-staff-record`,
+      );
+      expect(trainingAndQualsLink).toBeTruthy();
+    });
   });
 
-  it('should not render the Complete record button when worker.completed is false and canEditWorker is false', async () => {
-    const { component, fixture, queryByText } = await setup();
-
-    component.worker.completed = false;
-    fixture.detectChanges();
-    const button = queryByText('Confirm record details');
-    const text = queryByText(`Check these details before you confirm them.`);
-    const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
-    const deleteRecordLink = queryByText('Delete staff record');
-
-    expect(button).toBeFalsy();
-    expect(text).toBeFalsy();
-    expect(flagLongTermAbsenceLink).toBeFalsy();
-    expect(deleteRecordLink).toBeFalsy();
-  });
-
-  it('should render the delete record link, add training link and flag long term absence link, and not correct text when worker.completed is true', async () => {
-    const { component, fixture, queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid } =
-      await setup();
-
-    component.canEditWorker = true;
-    component.canDeleteWorker = true;
-    component.worker.longTermAbsence = null;
-    component.worker.completed = true;
-
-    fixture.detectChanges();
-
-    const button = queryByText('Confirm record details');
-    const text = queryByText(`Check the record details you've added are correct.`);
-    const flagLongTermAbsenceLink = getByText('Flag long-term absence');
-    const deleteRecordLink = getByRole('button', { name: 'Delete staff record' });
-    const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
-
-    expect(button).toBeFalsy();
-    expect(text).toBeFalsy();
-    expect(flagLongTermAbsenceLink).toBeTruthy();
-    expect(deleteRecordLink).toBeTruthy();
-    expect(deleteRecordLink.getAttribute('href')).toEqual(
-      `/workplace/${workplaceUid}/staff-record/${workerUid}/delete-staff-record`,
-    );
-    expect(trainingAndQualsLink).toBeTruthy();
-  });
-
-  it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
+  it('should set returnTo$ in the worker service to the staff record page on init', async () => {
     const { component, workerSpy, workplaceUid, workerUid } = await setup();
 
     component.setReturnTo();
@@ -185,14 +153,8 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the training and qualifications link with the correct href', async () => {
-    const { getByTestId, component, fixture } = await setup();
+    const { getByTestId, workplaceUid, workerUid } = await setup();
 
-    component.canEditWorker = true;
-    component.worker.completed = true;
-    fixture.detectChanges();
-
-    const workplaceUid = component.workplace.uid;
-    const workerUid = component.worker.uid;
     const link = getByTestId('training-and-qualifications-link');
     expect(link.getAttribute('href')).toEqual(
       `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/training`,
@@ -201,22 +163,18 @@ describe('StaffRecordComponent', () => {
 
   describe('Long-Term Absence', () => {
     it('should display the Long-Term Absence if the worker is currently flagged as long term absent', async () => {
-      const { component, fixture, getByText, queryByText } = await setup();
-
-      component.worker.completed = true;
-      component.worker.longTermAbsence = 'Illness';
-      fixture.detectChanges();
+      const { getByText, queryByText } = await setup({
+        workerService: { worker: { completed: true, longTermAbsence: 'Illness' } },
+      });
 
       expect(getByText('Long-term absent')).toBeTruthy();
       expect(queryByText('Flag long-term absence')).toBeFalsy();
     });
 
     it('should navigate to `long-term-absence` when pressing the "view" button', async () => {
-      const { component, fixture, getByTestId, workplaceUid, workerUid } = await setup();
-
-      component.worker.completed = true;
-      component.worker.longTermAbsence = 'Illness';
-      fixture.detectChanges();
+      const { getByTestId, workplaceUid, workerUid } = await setup({
+        workerService: { worker: { completed: true, longTermAbsence: 'Illness' } },
+      });
 
       const longTermAbsenceLink = getByTestId('longTermAbsence');
       expect(longTermAbsenceLink.getAttribute('href')).toBe(
@@ -227,23 +185,15 @@ describe('StaffRecordComponent', () => {
 
   describe('Flag long-term absence', () => {
     it('should display the "Flag long-term absence" link if the worker is not currently flagged as long term absent', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.worker.longTermAbsence = null;
-      component.canEditWorker = true;
-      component.worker.completed = true;
-      fixture.detectChanges();
+      const { getByText } = await setup({ workerService: { worker: { completed: true, longTermAbsence: null } } });
 
       expect(getByText('Flag long-term absence')).toBeTruthy();
     });
 
     it('should navigate to `./long-term-absence` when pressing the "Flag long-term absence" button', async () => {
-      const { component, fixture, getByTestId, workplaceUid, workerUid } = await setup();
-
-      component.worker.longTermAbsence = null;
-      component.canEditWorker = true;
-      component.worker.completed = true;
-      fixture.detectChanges();
+      const { getByTestId, workplaceUid, workerUid } = await setup({
+        workerService: { worker: { completed: true, longTermAbsence: null } },
+      });
 
       const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
       expect(flagLongTermAbsenceLink.getAttribute('href')).toBe(
@@ -252,120 +202,126 @@ describe('StaffRecordComponent', () => {
     });
   });
 
-  describe('saveAndComplete', () => {
-    it('should call updateWorker on the worker service when button is clicked', async () => {
-      const { component, fixture, workerService, getByText } = await setup();
+  describe('Add details to worker flow', () => {
+    describe('Continue buttons', () => {
+      it('should render a Continue button at top and bottom of page when addStaffRecordInProgress is true', async () => {
+        const { getAllByText } = await setup({
+          workerService: { worker: { completed: true }, addStaffRecordInProgress: true },
+        });
 
-      component.canEditWorker = true;
-      component.worker.completed = false;
-      fixture.detectChanges();
+        const continueButtons = getAllByText('Continue');
 
-      const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
-      const workplaceUid = component.workplace.uid;
-      const workerUid = component.worker.uid;
+        expect(continueButtons.length).toEqual(2);
+      });
 
-      const button = getByText('Confirm record details');
-      fireEvent.click(button);
+      it('should not render the Continue record button when completed is true and addStaffRecordInProgress is false', async () => {
+        const { queryByText } = await setup({
+          workerService: { worker: { completed: true }, addStaffRecordInProgress: false },
+        });
 
-      expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
-    });
+        const button = queryByText('Continue');
 
-    it('should redirect back to the dashboard when worker is confirmed if workplace and establishment are the same', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup();
+        expect(button).toBeFalsy();
+      });
 
-      component.canEditWorker = true;
-      component.workplace.uid = 'mock-uid';
-      component.worker.completed = false;
-      fixture.detectChanges();
+      it('should not render the Continue record button when completed is false and addStaffRecordInProgress is false', async () => {
+        const { queryByText } = await setup({
+          workerService: { worker: { completed: false }, addStaffRecordInProgress: false },
+        });
 
-      const button = getByText('Confirm record details');
-      fireEvent.click(button);
+        const button = queryByText('Continue');
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
-        fragment: 'staff-records',
-        state: { showBanner: true },
+        expect(button).toBeFalsy();
+      });
+
+      [
+        { index: 0, position: 'top' },
+        { index: 1, position: 'bottom' },
+      ].forEach((scenario) => {
+        it(`should have "Add another staff record" href on Continue button at ${scenario.position} of page`, async () => {
+          const { getAllByText, workplaceUid } = await setup({
+            workerService: { worker: { completed: false }, addStaffRecordInProgress: true },
+          });
+
+          const continueButtons = getAllByText('Continue');
+          fireEvent.click(continueButtons[scenario.index]);
+
+          expect(continueButtons[scenario.index].getAttribute('href')).toEqual(
+            `/workplace/${workplaceUid}/staff-record/add-another-staff-record`,
+          );
+        });
+      });
+
+      it('should clear doYouWantToAddOrDeleteAnswer when continue buttons show to ensure no side effects from previous visits', async () => {
+        const { clearDoYouWantToAddOrDeleteAnswerSpy } = await setup({
+          workerService: { addStaffRecordInProgress: true },
+        });
+
+        expect(clearDoYouWantToAddOrDeleteAnswerSpy).toHaveBeenCalled();
       });
     });
 
-    it('should display a confirmation alert when the confirm record details button has been clicked', async () => {
-      const { getByText, alertSpy, fixture, component } = await setup();
+    describe('Updating completed', () => {
+      it('should call updateWorker on load of page when completed is false for worker and has come from add staff record flow', async () => {
+        const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
 
-      component.canEditWorker = true;
-      component.workplace.uid = 'mock-uid';
-      component.worker.completed = false;
-      fixture.detectChanges();
-
-      const button = getByText('Confirm record details');
-      fireEvent.click(button);
-
-      fixture.whenStable().then(() => {
-        expect(alertSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Staff record saved',
+        const { workplaceUid, workerUid } = await setup({
+          workerService: {
+            addStaffRecordInProgress: true,
+            updateWorker: updateWorkerSpy,
+            worker: { completed: false },
+          },
         });
+
+        expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
+      });
+
+      it("should call updateWorker on load of page when completed is false for worker and hasn't come from add staff record flow", async () => {
+        const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
+
+        const { workplaceUid, workerUid } = await setup({
+          workerService: {
+            addStaffRecordInProgress: false,
+            updateWorker: updateWorkerSpy,
+            worker: { completed: false },
+          },
+        });
+
+        expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
+      });
+
+      it('should not call updateWorker when completed is true for worker', async () => {
+        const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
+
+        await setup({
+          workerService: {
+            updateWorker: updateWorkerSpy,
+            worker: { completed: true },
+          },
+        });
+
+        expect(updateWorkerSpy).not.toHaveBeenCalled();
       });
     });
   });
 
   describe('transfer staff record link', () => {
     it('should show the link when the primary workplace is a parent and has canEdit permissions', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.worker.completed = true;
-      component.canEditWorker = true;
-      fixture.detectChanges();
+      const { getByText } = await setup({ isParent: true });
 
       expect(getByText('Transfer staff record')).toBeTruthy();
     });
 
     it('should not show the link when there are no canEditWorker permissions', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.worker.completed = true;
-      component.canEditWorker = false;
-      fixture.detectChanges();
+      const { queryByText } = await setup({ permissions: [] });
 
       expect(queryByText('Transfer staff record')).toBeFalsy();
     });
 
     it('should not show the link when the workplace is not a parent', async () => {
-      const { component, fixture, queryByText } = await setup(false);
-
-      component.worker.completed = true;
-      component.canEditWorker = true;
-      fixture.detectChanges();
+      const { queryByText } = await setup({ isParent: false });
 
       expect(queryByText('Transfer staff record')).toBeFalsy();
-    });
-
-    it('should not show the link if the worker details have not been completed', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.worker.completed = false;
-      component.canEditWorker = true;
-      fixture.detectChanges();
-
-      expect(queryByText('Transfer staff record')).toBeFalsy();
-    });
-  });
-
-  describe('Breadcrumbs', async () => {
-    it('getBreadcrumbsJourney should return my workplace journey when viewing sub as parent', async () => {
-      const { component, parentSubsidiaryViewService } = await setup(false, false);
-      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
-      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MY_WORKPLACE);
-    });
-
-    it('getBreadcrumbsJourney should return main workplace journey when is own workplace', async () => {
-      const { component } = await setup();
-
-      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MY_WORKPLACE);
-    });
-
-    it('getBreadcrumbsJourney should return all workplaces journey when is not own workplace and not in parent sub view', async () => {
-      const { component } = await setup(false, false);
-
-      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
     });
   });
 });

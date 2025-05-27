@@ -10,17 +10,6 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
   constructor() {
     super();
     this.configCatClient.getValueAsync = (flagName, defaultSetting) => {
-      if (flagName === 'wdfUser') {
-        return new Promise((resolve) => {
-          return resolve(true);
-        });
-      }
-
-      if (flagName === 'wdfNewDesign') {
-        return new Promise((resolve) => {
-          return resolve(true);
-        });
-      }
       if (flagName === 'homePageNewDesign') {
         return new Promise((resolve) => {
           return resolve(true);

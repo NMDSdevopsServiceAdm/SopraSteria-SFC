@@ -1,0 +1,14 @@
+@import 'govuk-frontend/govuk/base';
+
+.input--search .tray-list {
+  position: absolute;
+  top: 100%;
+}
+
+button > img {
+  filter: brightness(0) invert(1);
+}
+
+.input--search .govuk-input:focus {
+  z-index: 1;
+}

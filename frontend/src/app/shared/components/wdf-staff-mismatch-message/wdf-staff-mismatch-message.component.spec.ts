@@ -9,9 +9,14 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WdfStaffMismatchMessageComponent } from './wdf-staff-mismatch-message.component';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { PermissionType } from '@core/model/permissions.model';
 
 describe('WdfStaffMismatchMessageComponent', () => {
   const setup = async (overrides: any = {}) => {
+    const userPermissions: PermissionType[] = overrides.isReadOnlyUser ? [] : ['canEditEstablishment'];
+
     const setupTools = await render(WdfStaffMismatchMessageComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
       providers: [
@@ -25,6 +30,10 @@ describe('WdfStaffMismatchMessageComponent', () => {
               },
             },
           },
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(userPermissions),
         },
       ],
       componentProperties: {
@@ -134,6 +143,13 @@ describe('WdfStaffMismatchMessageComponent', () => {
 
       const viewStaffRecordsLink = getByText('view staff records');
       expect((viewStaffRecordsLink as HTMLAnchorElement).href).toContain(`dashboard#staff-records`);
+    });
+
+    it('should not show "view staff records" as a link when user is read-only', async () => {
+      const { getByText } = await setup({ isReadOnlyUser: true });
+
+      const viewStaffRecords = getByText(/view staff records/);
+      expect(viewStaffRecords.getAttribute('href')).toEqual(null);
     });
   });
 });

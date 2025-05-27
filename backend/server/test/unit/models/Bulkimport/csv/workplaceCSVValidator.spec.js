@@ -12,6 +12,7 @@ const mappings = require('../../../../../models/BulkImport/BUDI').mappings;
 const models = require('../../../../../models');
 const sandbox = require('sinon').createSandbox();
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
+const pCodeCheck = require('../../../../../utils/postcodeSanitizer');
 
 const validateAPIObject = (establishmentRow) => {
   return {
@@ -39,8 +40,6 @@ const validateAPIObject = (establishmentRow) => {
     shareWith: { cqc: true, localAuthorities: true },
     capacities: [0, 0, 0, 0],
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 1,
-    moneySpentOnAdvertisingInTheLastFourWeeks: '101.30',
-    peopleInterviewedInTheLastFourWeeks: '9',
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 2,
     careWorkersCashLoyaltyForFirstTwoYears: '200',
     sickPay: 0,
@@ -78,7 +77,10 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 };
 
 describe('Bulk Upload - Establishment CSV', () => {
+  let establishmentRow;
+
   beforeEach(() => {
+    establishmentRow = buildEstablishmentCSV();
     sandbox.stub(BUDI, 'initialize');
     sandbox.stub(WorkplaceCSVValidator.prototype, '_validateNoChange').callsFake(() => {
       return true;
@@ -94,14 +96,12 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('toAPI', () => {
     it('should return a correct API format ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
       const apiObject = establishment.toAPI();
       expect(apiObject).to.deep.equal(validateAPIObject(establishmentRow));
     });
     it('should return a correct all services if ; added on the end ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '1';
       establishmentRow.ALLSERVICES = '0;1';
       establishmentRow.SERVICEDESC = '10;';
@@ -118,7 +118,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services if ; is in front ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '1';
       establishmentRow.ALLSERVICES = '0;1';
       establishmentRow.SERVICEDESC = ';10';
@@ -135,7 +134,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services without the need of ; on util/cap/servicedesc ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '1';
       establishmentRow.ALLSERVICES = '0;1';
       establishmentRow.SERVICEDESC = '10';
@@ -152,7 +150,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services when its NO', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;0';
       establishmentRow.SERVICEDESC = '';
@@ -168,7 +165,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services when its YES ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;6';
       establishmentRow.SERVICEDESC = ';';
@@ -185,7 +181,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services when its YES and there are two ALLSERVICES ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;10';
       establishmentRow.SERVICEDESC = ';';
@@ -203,7 +198,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return a correct all services when its null ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8';
       establishmentRow.SERVICEDESC = '';
@@ -220,7 +214,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services when util contains ; ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;0';
       establishmentRow.SERVICEDESC = ';';
@@ -236,7 +229,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services ALLSERVICES doesnt contain ; ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8';
       establishmentRow.SERVICEDESC = ';';
@@ -253,7 +245,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('CQC Regulated', () => {
       it('should return isCQCRegulated as false when set to 0 in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REGTYPE = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -264,7 +255,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should set isCQCRegulated as false when column empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REGTYPE = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -275,7 +265,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should set isCQCRegulated as true when set to 2 in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REGTYPE = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -288,7 +277,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('Address fields', () => {
       it('should return address fields in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADDRESS1 = 'First Address';
         establishmentRow.ADDRESS2 = 'Second Address';
         establishmentRow.ADDRESS3 = 'Third Address';
@@ -303,8 +291,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return town and postcode fields from CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-
         establishmentRow.POSTTOWN = 'Wonderland';
         establishmentRow.POSTCODE = 'CT11AB';
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -320,7 +306,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('shareWith', () => {
       it('should return cqc and localAuthorities as true when set as 1 in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMCQC = '1';
         establishmentRow.PERMLA = '1';
 
@@ -333,7 +318,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return cqc and localAuthorities as false when set as 0 in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMCQC = '0';
         establishmentRow.PERMLA = '0';
 
@@ -346,7 +330,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return cqc and localAuthorities as null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMCQC = '';
         establishmentRow.PERMLA = '';
 
@@ -359,101 +342,8 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe('advertising', () => {
-      it('should return the value when a number in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = '120.29';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
-        const apiObject = establishment.toAPI();
-
-        expect(apiObject.moneySpentOnAdvertisingInTheLastFourWeeks).to.equal('120.29');
-      });
-
-      it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = 'unknown';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
-        const apiObject = establishment.toAPI();
-
-        expect(apiObject.moneySpentOnAdvertisingInTheLastFourWeeks).to.equal("Don't know");
-      });
-
-      it("should return 'None' when 0 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = '0';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
-        const apiObject = establishment.toAPI();
-
-        expect(apiObject.moneySpentOnAdvertisingInTheLastFourWeeks).to.equal('None');
-      });
-
-      it('should return null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = '';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
-        const apiObject = establishment.toAPI();
-
-        expect(apiObject.moneySpentOnAdvertisingInTheLastFourWeeks).to.equal(null);
-      });
-    });
-
-    describe('interviews', () => {
-      it('should return the value when a number in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = '120';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
-        const apiObject = establishment.toAPI();
-
-        expect(apiObject.peopleInterviewedInTheLastFourWeeks).to.equal('120');
-      });
-
-      it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = 'unknown';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
-        const apiObject = establishment.toAPI();
-
-        expect(apiObject.peopleInterviewedInTheLastFourWeeks).to.equal("Don't know");
-      });
-
-      it("should return 'None' when 0 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = '0';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
-        const apiObject = establishment.toAPI();
-
-        expect(apiObject.peopleInterviewedInTheLastFourWeeks).to.equal('None');
-      });
-
-      it('should return null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = '';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
-        const apiObject = establishment.toAPI();
-
-        expect(apiObject.peopleInterviewedInTheLastFourWeeks).to.equal(null);
-      });
-    });
-
     describe('repeatTraining', () => {
       it("should return 'Yes, always' when 1 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -464,7 +354,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'Yes, very often' when 2 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -475,7 +364,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'Yes, but not very often' when 3 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '3';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -488,7 +376,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'No, never' when 4 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '4';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -499,7 +386,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -512,7 +398,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('acceptCareCert', () => {
       it("should return 'Yes, always' when 1 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -523,7 +408,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'Yes, very often' when 2 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -534,7 +418,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'Yes, but not very often' when 3 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '3';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -545,7 +428,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'No, never' when 4 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '4';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -556,7 +438,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -570,7 +451,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('benefit', () => {
     it('should return the value when a number in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '200';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -581,7 +461,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'Yes' when 1; in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '1;';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -592,7 +471,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'Yes' when 1 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '1';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -603,7 +481,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = 'unknown';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -614,7 +491,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'No' when 0 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '0';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -625,7 +501,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return null when empty in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -638,7 +513,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('sickPay', () => {
     it("should return 'Yes' when 1 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.SICKPAY = '1';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -649,7 +523,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.SICKPAY = 'unknown';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -660,7 +533,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'No' when 0 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.SICKPAY = '0';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -671,7 +543,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return null when empty in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.SICKPAY = '';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -684,7 +555,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('Pension contribution', () => {
     it("should return 'Yes' when 1 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.PENSION = '1';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -695,7 +565,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.PENSION = 'unknown';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -706,7 +575,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'No' when 0 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.PENSION = '0';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -717,7 +585,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return null when empty in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.PENSION = '';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -730,7 +597,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('Holiday Leave', () => {
     it('should return the value when a number in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.HOLIDAY = '35';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -741,7 +607,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return empty when empty in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.HOLIDAY = '';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -754,7 +619,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('toJSON', () => {
     it('should return a correct JSON ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       const JSONObject = establishment.toJSON();
       expect(JSONObject).to.deep.equal({
@@ -791,13 +655,244 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('Validations', () => {
     it('should return no errors when given valid CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       expect(establishment.validationErrors).to.deep.equal([]);
     });
 
+    describe('address', () => {
+      const MAX_LENGTH = 40;
+      const overFortyCharactersText = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry';
+
+      it('should return an error if ADDRESS1 is blank', async () => {
+        establishmentRow.ADDRESS1 = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1040,
+            errType: 'ADDRESS_ERROR',
+            error: 'ADDRESS1 is blank',
+            column: 'ADDRESS1',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should return an error if ADDRESS1 has more than the max length of characters', async () => {
+        establishmentRow.ADDRESS1 = overFortyCharactersText;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1040,
+            errType: 'ADDRESS_ERROR',
+            error: `ADDRESS1 is longer than ${MAX_LENGTH} characters`,
+            column: 'ADDRESS1',
+            name: establishmentRow.LOCALESTID,
+            source: overFortyCharactersText,
+          },
+        ]);
+      });
+
+      it('should return an error if ADDRESS2 has more than the max length of characters', async () => {
+        establishmentRow.ADDRESS2 = overFortyCharactersText;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1045,
+            errType: 'ADDRESS_ERROR',
+            error: `ADDRESS2 is longer than ${MAX_LENGTH} characters`,
+            column: 'ADDRESS2',
+            name: establishmentRow.LOCALESTID,
+            source: overFortyCharactersText,
+          },
+        ]);
+      });
+
+      it('should return an error if ADDRESS3 has more than the max length of characters', async () => {
+        establishmentRow.ADDRESS3 = overFortyCharactersText;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1050,
+            errType: 'ADDRESS_ERROR',
+            error: `ADDRESS3 is longer than ${MAX_LENGTH} characters`,
+            column: 'ADDRESS3',
+            name: establishmentRow.LOCALESTID,
+            source: overFortyCharactersText,
+          },
+        ]);
+      });
+
+      it('should return an error if POSTTOWN has more than the max length of characters', async () => {
+        establishmentRow.POSTTOWN = overFortyCharactersText;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1055,
+            errType: 'ADDRESS_ERROR',
+            error: `POSTTOWN is longer than ${MAX_LENGTH} characters`,
+            column: 'POSTTOWN',
+            name: establishmentRow.LOCALESTID,
+            source: overFortyCharactersText,
+          },
+        ]);
+      });
+
+      it('should return an error if POSTCODE is blank', async () => {
+        establishmentRow.POSTCODE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1060,
+            errType: 'ADDRESS_ERROR',
+            error: 'POSTCODE has not been supplied',
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: '',
+          },
+        ]);
+      });
+
+      it('should return an error if POSTCODE has more than the max length of characters', async () => {
+        const POSTCODE_MAX_LENGTH = 10;
+        const postcodeString = 'Lorem Ipsum';
+        establishmentRow.POSTCODE = postcodeString;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1060,
+            errType: 'ADDRESS_ERROR',
+            error: `POSTCODE is longer than ${POSTCODE_MAX_LENGTH} characters`,
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: postcodeString,
+          },
+        ]);
+      });
+
+      it('should return an error if sanitisePostcode returns null', async () => {
+        const postcodeString = 'Lorem Ip';
+        establishmentRow.POSTCODE = postcodeString;
+
+        sandbox.stub(pCodeCheck, 'sanitisePostcode').returns(null);
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1060,
+            errType: 'ADDRESS_ERROR',
+            error: 'POSTCODE is incorrectly formatted',
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: postcodeString,
+          },
+        ]);
+      });
+
+      it('should return an error if status is NEW and POSTCODE does not exist', async () => {
+        const postcodeString = 'Z81 2RD';
+
+        const establishmentRow = buildEstablishmentCSV({
+          overrides: {
+            POSTCODE: postcodeString,
+            STATUS: 'NEW',
+          },
+        });
+
+        sandbox.restore();
+        sandbox.stub(models.pcodedata, 'findAll').returns([]);
+        sandbox.stub(models.establishment, 'findAll').returns([]);
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1060,
+            errType: 'ADDRESS_ERROR',
+            error: 'The POSTCODE for this workplace cannot be found in our database and must be registered manually.',
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: postcodeString,
+          },
+        ]);
+      });
+
+      it('should return an error if status is UPDATE and POSTCODE does not exist', async () => {
+        const postcodeString = 'Z81 2RD';
+
+        const establishmentRow = buildEstablishmentCSV({
+          overrides: {
+            id: 1,
+            POSTCODE: postcodeString,
+            STATUS: 'UPDATE',
+            LOCALESTID: 'main',
+          },
+        });
+
+        sandbox.restore();
+        sandbox.stub(models.pcodedata, 'findAll').returns([]);
+        sandbox.stub(models.establishment, 'findAll').returns([]);
+
+        const establishment = await generateEstablishmentFromCsv(
+          establishmentRow,
+          (lineNumber = 1),
+          (allCurrentEstablishments = [
+            {
+              id: 1,
+              uid: '123-414',
+              key: 'main',
+            },
+          ]),
+        );
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 1060,
+            warnType: 'ADDRESS_ERROR',
+            warning: 'The POSTCODE cannot be found in our database and will be ignored.',
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: postcodeString,
+          },
+        ]);
+      });
+    });
+
     it('should validate ALLSERVICES if MAINSERVICE is not included ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '12;13';
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -817,7 +912,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should throw an error if ALLSERVICES has a 0 and an other service', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;0;13';
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -837,7 +931,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should validate Starters, Leavers, Vacancies if All Job Roles is blank but S/L/V is not blank', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.ALLJOBROLES = '';
       establishmentRow.STARTERS = '1';
       establishmentRow.LEAVERS = '2';
@@ -860,7 +953,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should skip validating Starters, Leavers, Vacancies if All Job Roles and S/L/V is blank', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.ALLJOBROLES = '';
       establishmentRow.STARTERS = '';
       establishmentRow.LEAVERS = '';
@@ -870,221 +962,8 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(establishment.validationErrors).to.deep.equal([]);
     });
 
-    describe('advertising', () => {
-      it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = '';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it('should validate and pass if a postive whole number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = '11';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it('should validate and pass if a postive number (2 dp) is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = '11.39';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = '0';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = 'unknown';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = 'UNKNOWN';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it('should validate and return a warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = 'asdf';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([
-          {
-            origin: 'Establishments',
-            lineNumber: establishment.lineNumber,
-            warnCode: 2400,
-            warnType: 'ADVERTISING_WARNING',
-            warning:
-              "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
-            source: 'asdf',
-            column: 'ADVERTISING',
-            name: establishmentRow.LOCALESTID,
-          },
-        ]);
-      });
-
-      it('should validate and return a warning if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = '-1';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([
-          {
-            origin: 'Establishments',
-            lineNumber: establishment.lineNumber,
-            warnCode: 2400,
-            warnType: 'ADVERTISING_WARNING',
-            warning:
-              "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
-            source: '-1',
-            column: 'ADVERTISING',
-            name: establishmentRow.LOCALESTID,
-          },
-        ]);
-      });
-
-      it('should validate and return a warning if a decimal number with more than 2 dp is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.ADVERTISING = '134.3457890';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([
-          {
-            origin: 'Establishments',
-            lineNumber: establishment.lineNumber,
-            warnCode: 2400,
-            warnType: 'ADVERTISING_WARNING',
-            warning:
-              "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
-            source: '134.3457890',
-            column: 'ADVERTISING',
-            name: establishmentRow.LOCALESTID,
-          },
-        ]);
-      });
-    });
-
-    describe('interviews', () => {
-      it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = '';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it('should validate and pass if a postive whole number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = '11';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = '0';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = 'unknown';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = 'UNKNOWN';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([]);
-      });
-
-      it('should validate and return a warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = 'asdf';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([
-          {
-            origin: 'Establishments',
-            lineNumber: establishment.lineNumber,
-            warnCode: 2410,
-            warnType: 'INTERVIEWS_WARNING',
-            warning:
-              "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
-            source: 'asdf',
-            column: 'INTERVIEWS',
-            name: establishmentRow.LOCALESTID,
-          },
-        ]);
-      });
-
-      it('should validate and return a warning if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = '-1';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([
-          {
-            origin: 'Establishments',
-            lineNumber: establishment.lineNumber,
-            warnCode: 2410,
-            warnType: 'INTERVIEWS_WARNING',
-            warning:
-              "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
-            source: '-1',
-            column: 'INTERVIEWS',
-            name: establishmentRow.LOCALESTID,
-          },
-        ]);
-      });
-
-      it('should validate and return a warning if a decimal number input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-        establishmentRow.INTERVIEWS = '134.3';
-
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        expect(establishment.validationErrors).to.deep.equal([
-          {
-            origin: 'Establishments',
-            lineNumber: establishment.lineNumber,
-            warnCode: 2410,
-            warnType: 'INTERVIEWS_WARNING',
-            warning:
-              "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
-            source: '134.3',
-            column: 'INTERVIEWS',
-            name: establishmentRow.LOCALESTID,
-          },
-        ]);
-      });
-    });
-
     describe('repeatTraining', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1092,7 +971,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1100,7 +978,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 2 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1108,7 +985,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 3 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '3';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1116,7 +992,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 4 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '4';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1124,7 +999,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if a number outside of the allowed values is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '5';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1143,7 +1017,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1164,7 +1037,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('acceptCareCertificate', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1172,7 +1044,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1180,7 +1051,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 2 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1188,7 +1058,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 3 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '3';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1196,7 +1065,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 4 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '4';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1204,7 +1072,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if a number outside of the allowed values is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '5';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1223,7 +1090,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1244,7 +1110,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('benefit', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1252,7 +1117,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if a postive whole number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '200';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1260,7 +1124,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if a postive number (2 dp) is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '200.39';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1268,7 +1131,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1276,14 +1138,12 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
         expect(establishment.validationErrors).to.deep.equal([]);
       });
       it('should validate and pass if 1; is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '1;';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1291,7 +1151,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1299,7 +1158,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = 'UNKNOWN';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1307,7 +1165,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1326,7 +1183,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1345,7 +1201,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '134.3457890';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1366,7 +1221,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('sickPay', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1374,7 +1228,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1382,7 +1235,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1390,7 +1242,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1398,7 +1249,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = 'UNKNOWN';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1406,7 +1256,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1425,7 +1274,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1444,7 +1292,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a decimal number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '134.3457890';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1465,7 +1312,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('pension', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1473,7 +1319,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1481,7 +1326,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1489,7 +1333,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1497,7 +1340,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = 'UNKNOWN';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1505,7 +1347,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1524,7 +1365,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1543,7 +1383,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a decimal number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = '134.3457890';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1564,7 +1403,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('holiday', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1572,7 +1410,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if a postive whole number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = '200';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1580,7 +1417,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1599,7 +1435,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1618,7 +1453,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a decimal number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = '134.3457890';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1639,7 +1473,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('shareWith', () => {
       it('should produce error if PERMCQC is a number which is not 0 or 1', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMCQC = '3';
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
@@ -1658,7 +1491,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should produce error if PERMLA contains text', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMLA = 'a';
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
@@ -1677,7 +1509,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should not produce error if PERMLA or PERMCQC is an empty string', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMLA = '';
         establishmentRow.PERMCQC = '';
 
@@ -2020,7 +1851,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
     it('should show a warning when number of leavers !== REASONNOS', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.ALLJOBROLES = '22';
       establishmentRow.LEAVERS = '2';
       establishmentRow.STARTERS = '0';
@@ -2365,182 +2195,147 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
   });
 
-  it('should leave the ADVERTISING and INTERVIEW columns blank if there values are null', async () => {
-    const establishment = apiEstablishmentBuilder();
+  describe('REPEATTRAINNG and ACCEPTCARECERT', () => {
+    const repeatTrainingIndex = 29;
+    const acceptCareCertIndex = 30;
 
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
+    it('should leave the REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are null', async () => {
+      const establishment = apiEstablishmentBuilder();
 
-    expect(csvAsArray[29]).to.equal('');
-    expect(csvAsArray[30]).to.equal('');
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[repeatTrainingIndex]).to.equal('');
+      expect(csvAsArray[acceptCareCertIndex]).to.equal('');
+    });
+
+    it("should include '1' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, always'", async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, always';
+      establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, always';
+
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[repeatTrainingIndex]).to.include(1);
+      expect(csvAsArray[acceptCareCertIndex]).to.include(1);
+    });
+
+    it("should include '2' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, very often'", async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, very often';
+      establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, very often';
+
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[repeatTrainingIndex]).to.include(2);
+      expect(csvAsArray[acceptCareCertIndex]).to.include(2);
+    });
+
+    it("should include '3' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, but not very often'", async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, but not very often';
+      establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, but not very often';
+
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[repeatTrainingIndex]).to.include(3);
+      expect(csvAsArray[acceptCareCertIndex]).to.include(3);
+    });
+
+    it("should include '4' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'No, never'", async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'No, never';
+      establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'No, never';
+
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
+
+      expect(csvAsArray[repeatTrainingIndex]).to.include(4);
+      expect(csvAsArray[acceptCareCertIndex]).to.include(4);
+    });
   });
 
-  it("should include 0 in the ADVERTISING and INTERVIEW columns if there values are 'None'", async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = 'None';
-    establishment.peopleInterviewedInTheLastFourWeeks = 'None';
+  describe('BENEFITS, SICKPAY, PENSION and HOLIDAY', () => {
+    const benefitsIndex = 31;
+    const sickPayIndex = 32;
+    const pensionIndex = 33;
+    const holidayIndex = 34;
 
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
+    it('should leave the BENEFITS, SICKPAY and  PENSION columns blank if there values are null', async () => {
+      const establishment = apiEstablishmentBuilder();
 
-    expect(csvAsArray[29]).to.include(0);
-    expect(csvAsArray[30]).to.include(0);
-  });
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
 
-  it("should include 'unknown' in the ADVERTISING and INTERVIEW columns if there values are \"Don't know\"", async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = "Don't know";
-    establishment.peopleInterviewedInTheLastFourWeeks = "Don't know";
+      expect(csvAsArray[benefitsIndex]).to.equal('');
+      expect(csvAsArray[sickPayIndex]).to.equal('');
+      expect(csvAsArray[pensionIndex]).to.equal('');
+    });
 
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
+    it("should include 0 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'No'", async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.careWorkersCashLoyaltyForFirstTwoYears = 'No';
+      establishment.sickPay = 'No';
+      establishment.pensionContribution = 'No';
 
-    expect(csvAsArray[29]).to.include('unknown');
-    expect(csvAsArray[30]).to.include('unknown');
-  });
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
 
-  it('should include a value in the ADVERTISING and INTERVIEW columns if they have values', async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.moneySpentOnAdvertisingInTheLastFourWeeks = '125.34';
-    establishment.peopleInterviewedInTheLastFourWeeks = '54';
+      expect(csvAsArray[benefitsIndex]).to.include(0);
+      expect(csvAsArray[sickPayIndex]).to.include(0);
+      expect(csvAsArray[pensionIndex]).to.include(0);
+    });
 
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
+    it("should include 'unknown' in the BENEFITS ,SICKPAY and PENSION columns if there values are \"Don't know\"", async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+      establishment.sickPay = "Don't know";
+      establishment.pensionContribution = "Don't know";
 
-    expect(csvAsArray[29]).to.include('125.34');
-    expect(csvAsArray[30]).to.include('54');
-  });
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
 
-  it('should leave the REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are null', async () => {
-    const establishment = apiEstablishmentBuilder();
+      expect(csvAsArray[benefitsIndex]).to.include('unknown');
+      expect(csvAsArray[sickPayIndex]).to.include('unknown');
+      expect(csvAsArray[pensionIndex]).to.include('unknown');
+    });
 
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
+    it("should include 1 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'Yes'", async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+      establishment.sickPay = 'Yes';
+      establishment.pensionContribution = 'Yes';
 
-    expect(csvAsArray[31]).to.equal('');
-    expect(csvAsArray[32]).to.equal('');
-  });
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
 
-  it("should include '1' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, always'", async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, always';
-    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, always';
+      expect(csvAsArray[benefitsIndex]).to.include('1;');
+      expect(csvAsArray[sickPayIndex]).to.include('1');
+      expect(csvAsArray[pensionIndex]).to.include('1');
+    });
 
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
+    it('should include a value in the columns BENEFITS and  HOLIDAY if it they have  values', async () => {
+      const establishment = apiEstablishmentBuilder();
+      establishment.careWorkersCashLoyaltyForFirstTwoYears = '200';
+      establishment.careWorkersLeaveDaysPerYear = '35';
 
-    expect(csvAsArray[31]).to.include(1);
-    expect(csvAsArray[32]).to.include(1);
-  });
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
 
-  it("should include '2' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, very often'", async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, very often';
-    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, very often';
+      expect(csvAsArray[benefitsIndex]).to.include('200');
+      expect(csvAsArray[holidayIndex]).to.include('35');
+    });
 
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
+    it('should leave the  HOLIDAY column blank if its value  is null', async () => {
+      const establishment = apiEstablishmentBuilder();
 
-    expect(csvAsArray[31]).to.include(2);
-    expect(csvAsArray[32]).to.include(2);
-  });
+      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csvAsArray = csv.split(',');
 
-  it("should include '3' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, but not very often'", async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, but not very often';
-    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, but not very often';
-
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
-
-    expect(csvAsArray[31]).to.include(3);
-    expect(csvAsArray[32]).to.include(3);
-  });
-
-  it("should include '4' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'No, never'", async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'No, never';
-    establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'No, never';
-
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
-
-    expect(csvAsArray[31]).to.include(4);
-    expect(csvAsArray[32]).to.include(4);
-  });
-
-  it('should leave the BENEFITS, SICKPAY and  PENSION columns blank if there values are null', async () => {
-    const establishment = apiEstablishmentBuilder();
-
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
-
-    expect(csvAsArray[33]).to.equal('');
-    expect(csvAsArray[34]).to.equal('');
-    expect(csvAsArray[35]).to.equal('');
-  });
-
-  it("should include 0 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'No'", async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.careWorkersCashLoyaltyForFirstTwoYears = 'No';
-    establishment.sickPay = 'No';
-    establishment.pensionContribution = 'No';
-
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
-
-    expect(csvAsArray[33]).to.include(0);
-    expect(csvAsArray[34]).to.include(0);
-    expect(csvAsArray[35]).to.include(0);
-  });
-
-  it("should include 'unknown' in the BENEFITS ,SICKPAY and PENSION columns if there values are \"Don't know\"", async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
-    establishment.sickPay = "Don't know";
-    establishment.pensionContribution = "Don't know";
-
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
-
-    expect(csvAsArray[33]).to.include('unknown');
-    expect(csvAsArray[34]).to.include('unknown');
-    expect(csvAsArray[35]).to.include('unknown');
-  });
-
-  it("should include 1 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'Yes'", async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-    establishment.sickPay = 'Yes';
-    establishment.pensionContribution = 'Yes';
-
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
-
-    expect(csvAsArray[33]).to.include('1');
-    expect(csvAsArray[33]).to.include('1;');
-    expect(csvAsArray[34]).to.include('1');
-    expect(csvAsArray[35]).to.include('1');
-  });
-
-  it('should include a value in the  columns BENEFITS and  HOLIDAY if it they have  values', async () => {
-    const establishment = apiEstablishmentBuilder();
-    establishment.careWorkersCashLoyaltyForFirstTwoYears = '200';
-    establishment.careWorkersLeaveDaysPerYear = '35';
-
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
-
-    expect(csvAsArray[33]).to.include('200');
-    expect(csvAsArray[36]).to.include('35');
-  });
-
-  it('should leave the  HOLIDAY column blank if its value  is null', async () => {
-    const establishment = apiEstablishmentBuilder();
-
-    const csv = WorkplaceCSVValidator.toCSV(establishment);
-    const csvAsArray = csv.split(',');
-
-    expect(csvAsArray[36]).to.equal('');
+      expect(csvAsArray[holidayIndex]).to.equal('');
+    });
   });
 });

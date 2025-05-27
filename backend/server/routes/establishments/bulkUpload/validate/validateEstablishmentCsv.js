@@ -57,7 +57,18 @@ const validateEstablishmentCsv = async (
   }
   // collate all bulk upload validation errors/warnings
   if (lineValidator.validationErrors.length > 0) {
-    lineValidator.validationErrors.forEach((thisError) => csvEstablishmentSchemaErrors.push(thisError));
+    let codes = [];
+    lineValidator.validationErrors.forEach((thisError) => {
+      if (thisError.warnCode && !codes.includes(thisError.warnCode)) {
+        codes.push(thisError.warnCode);
+        csvEstablishmentSchemaErrors.push(thisError);
+      }
+
+      if (thisError.errCode && !codes.includes(thisError.errCode)) {
+        codes.push(thisError.errCode);
+        csvEstablishmentSchemaErrors.push(thisError);
+      }
+    });
   }
   if (!lineValidator._ignore) {
     myEstablishments.push(lineValidator);

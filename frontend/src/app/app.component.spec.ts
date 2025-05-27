@@ -18,13 +18,12 @@ import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { render } from '@testing-library/angular';
-import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-  async function setup(navigationUrl = '/') {
+  async function setup(overrides: any = {}) {
     const { fixture, getByText, queryByTestId } = await render(AppComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
@@ -42,7 +41,7 @@ describe('AppComponent', () => {
         },
         {
           provide: AuthService,
-          useClass: MockAuthService,
+          useFactory: MockAuthService.factory(overrides.loggedIn ?? true),
         },
         {
           provide: TabsService,
@@ -51,14 +50,6 @@ describe('AppComponent', () => {
         {
           provide: ParentSubsidiaryViewService,
           useClass: MockParentSubsidiaryViewService,
-        },
-        {
-          provide: Angulartics2GoogleTagManager,
-          useValue: {
-            startTracking() {
-              return null;
-            },
-          },
         },
         IdleService,
         Title,
@@ -69,6 +60,7 @@ describe('AppComponent', () => {
     });
 
     const injector = getTestBed();
+    const navigationUrl = overrides.navigationUrl ?? '/';
     const event = new NavigationEnd(42, navigationUrl, navigationUrl);
     (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
     const component = fixture.componentInstance;
@@ -85,25 +77,40 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render subsidiary-account view when subsidiary page is navigated to', async () => {
-    const { fixture, queryByTestId } = await setup('/subsidiary/subUid/home');
-    fixture.detectChanges();
+  describe('Help and tips button', () => {
+    it('should render help and tips button', async () => {
+      const { fixture, queryByTestId } = await setup();
+      fixture.detectChanges();
 
-    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
-    const standAloneAccountRendered = queryByTestId('stand-alone-account');
+      expect(queryByTestId('help-and-tips-button')).toBeTruthy();
+    });
 
-    expect(subsidiaryAccountRendered).toBeTruthy();
-    expect(standAloneAccountRendered).toBeFalsy();
-  });
+    it('should not render help and tips button when logged out', async () => {
+      const { fixture, queryByTestId } = await setup({ loggedIn: false });
+      fixture.detectChanges();
 
-  it('should render standalone view when subsidiary not in url', async () => {
-    const { fixture, queryByTestId } = await setup('/');
-    fixture.detectChanges();
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
 
-    const standAloneAccountRendered = queryByTestId('stand-alone-account');
-    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
+    it("should not render help and tips button on route '/help'", async () => {
+      const { fixture, queryByTestId } = await setup({ navigationUrl: '/help' });
+      fixture.detectChanges();
 
-    expect(standAloneAccountRendered).toBeTruthy();
-    expect(subsidiaryAccountRendered).toBeFalsy();
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
+
+    it('should not render help and tips button when in help section in subsidiary view', async () => {
+      const { fixture, queryByTestId } = await setup({ navigationUrl: '/subsidiary/help/get-started' });
+      fixture.detectChanges();
+
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
+
+    it("should not render help and tips button on route '/sfcadmin'", async () => {
+      const { fixture, queryByTestId } = await setup({ navigationUrl: '/sfcadmin' });
+      fixture.detectChanges();
+
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
   });
 });

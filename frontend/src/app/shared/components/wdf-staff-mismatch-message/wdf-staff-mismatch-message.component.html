@@ -6,8 +6,10 @@
     </span>
     <span *ngIf="workplace.numberOfStaff !== 0" class="govuk__nowrap">
       Either change the total or
-      <a [routerLink]="staffRecordsUrl.url" [fragment]="staffRecordsUrl.fragment">view staff records</a> to
-      {{ addOrDeleteRecordsMessage }}.
+      <ng-container *ngIf="canEditEstablishment; else viewStaffRecordsPlainText">
+        <a [routerLink]="staffRecordsUrl.url" [fragment]="staffRecordsUrl.fragment">view staff records</a>
+      </ng-container>
+      to {{ addOrDeleteRecordsMessage }}.
     </span>
   </dd>
   <dd class="govuk-summary-list__value govuk-summary-list__message"></dd>
@@ -17,3 +19,5 @@
   <dd></dd>
   <dd></dd>
 </div>
+
+<ng-template #viewStaffRecordsPlainText>view staff records</ng-template>

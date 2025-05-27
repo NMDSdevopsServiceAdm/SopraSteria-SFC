@@ -33,8 +33,6 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected initiated = false;
   public submitAction: { action: string; save: boolean } = null;
   public workplaceFlowSections: string[] = ProgressBarUtil.workplaceFlowProgressBarSections();
-  public recruitmentSections: string[] = ProgressBarUtil.recruitmentMiniFlowProgressBarSections();
-  public staffBenefitsSections: string[] = ProgressBarUtil.staffBenefitsMiniFlowProgressBarSections();
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

@@ -10,7 +10,6 @@ import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { TabsService } from '@core/services/tabs.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
 
 @Component({
@@ -28,6 +27,7 @@ export class AppComponent implements OnInit {
   public parentAccount: boolean;
   public subsAccount: boolean;
   public viewingSubsidiaryWorkplace: boolean;
+  public showHelpButton: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -37,7 +37,6 @@ export class AppComponent implements OnInit {
     private nestedRoutesService: NestedRoutesService,
     private authService: AuthService,
     private idleService: IdleService,
-    private angulartics2GoogleTagManager: Angulartics2GoogleTagManager,
     private featureFlagsService: FeatureFlagsService,
     private establishmentService: EstablishmentService,
     private tabsService: TabsService,
@@ -56,15 +55,13 @@ export class AppComponent implements OnInit {
         this.title.setTitle(titles.join(' - '));
       }
     });
-
-    this.angulartics2GoogleTagManager.startTracking();
   }
 
   async ngOnInit(): Promise<void> {
     await this.featureFlagsService.start();
 
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
-      this.isAdminSection = nav.url.includes('sfcadmin');
+      this.isAdminSection = this.isInAdminSection(nav.url);
       this.dashboardView =
         nav.url.includes('dashboard') ||
         nav.url === '/' ||
@@ -81,6 +78,8 @@ export class AppComponent implements OnInit {
         (document.activeElement as HTMLElement).blur();
       }
       this.top.nativeElement.focus();
+
+      this.renderHelpButton(nav.url);
     });
 
     this.authService.isAutheticated$.subscribe((authenticated) => {
@@ -117,5 +116,22 @@ export class AppComponent implements OnInit {
   public skip(event: Event) {
     event.preventDefault();
     this.content.nativeElement.focus();
+  }
+
+  private renderHelpButton(url: string): void {
+    if (!this.authService.isAuthenticated() || this.isInAdminSection(url) || this.isInHelpSection(url)) {
+      this.showHelpButton = false;
+    } else {
+      this.showHelpButton = true;
+    }
+  }
+
+  private isInHelpSection(url: string): boolean {
+    const urlSegments = url.split('/');
+    return urlSegments?.[1] === 'help' || (urlSegments?.[1] === 'subsidiary' && urlSegments?.[2] === 'help');
+  }
+
+  private isInAdminSection(url: string): boolean {
+    return url.includes('sfcadmin');
   }
 }

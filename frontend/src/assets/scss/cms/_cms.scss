@@ -23,3 +23,15 @@
     }
   }
 }
+
+.asc-cms-downloads-content {
+  @extend .asc-cms-content;
+  a {
+    display: flex;
+
+    img {
+      padding-right: 5px;
+    }
+  }
+
+}

@@ -57,7 +57,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
 
-    this.wdfEditPageFlag = this.router.url.includes('wdf');
+    this.wdfEditPageFlag = this.router.url.includes('funding');
     this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary' && !this.wdfEditPageFlag;
     this.subscriptions.add(
       this.workerService.worker$.subscribe((worker) => {
@@ -81,8 +81,8 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         this.returnUrl = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
       } else {
         this.returnUrl = this.route.snapshot.params.establishmentuid
-          ? ['/wdf', 'workplaces', this.workplace.uid, 'staff-record', this.worker.uid]
-          : ['/wdf', 'staff-record', this.worker.uid];
+          ? ['/funding', 'workplaces', this.workplace.uid, 'staff-record', this.worker.uid]
+          : ['/funding', 'staff-record', this.worker.uid];
       }
     }
     this.setupFormErrorsMap();
@@ -155,8 +155,8 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   public determineBaseRoute(): string[] {
     if (this.wdfEditPageFlag) {
       return this.route.snapshot.params.establishmentuid
-        ? ['/wdf', 'workplaces', this.workplace.uid, 'staff-record', this.worker.uid]
-        : ['/wdf', 'staff-record', this.worker.uid];
+        ? ['/funding', 'workplaces', this.workplace.uid, 'staff-record', this.worker.uid]
+        : ['/funding', 'staff-record', this.worker.uid];
     }
     if (!this.insideFlow) {
       return this.getRoutePath('');

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -7,7 +7,7 @@ import { map, tap } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
-export class ParentGuard implements CanActivate {
+export class ParentGuard  {
   constructor(private establishmentService: EstablishmentService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {

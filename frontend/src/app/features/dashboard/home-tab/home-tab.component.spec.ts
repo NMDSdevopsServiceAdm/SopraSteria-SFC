@@ -18,9 +18,7 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import {
-  StaffMismatchBannerComponent,
-} from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -240,51 +238,6 @@ describe('HomeTabComponent', () => {
     component.fixture.detectChanges();
 
     expect(component.queryAllByText('Local authority progress').length).toBe(1);
-  });
-
-  describe('Staff recruitment banner', async () => {
-    it('displays staff-recruitment-start link  when has employer type and banner value is false', async () => {
-      const { component } = await setup();
-
-      component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
-      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
-      component.fixture.detectChanges();
-      const recruitmentHeader = component.getByText(`We've added some questions to ASC-WDS`);
-
-      expect(recruitmentHeader).toBeTruthy();
-    });
-
-    it('shouldnt displays staff-recruitment-start banner  when  employer type is null and banner value is true', async () => {
-      const { component } = await setup();
-
-      component.fixture.componentInstance.workplace.employerType = null;
-      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = true;
-      component.fixture.detectChanges();
-      const recruitmentHeader = component.queryByText(`We've added some questions to ASC-WDS`);
-
-      expect(recruitmentHeader).toBeFalsy();
-    });
-
-    it('should call updateSingleEstablishmentField in the establishment service with the updated recruitmentJourneyExistingUserBanner set to true', async () => {
-      const { component } = await setup();
-
-      const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
-      const recuritmentBannerSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
-
-      component.fixture.componentInstance.workplace.employerType = { value: 'Private Sector', other: null };
-      component.fixture.componentInstance.recruitmentJourneyExistingUserBanner = false;
-      component.fixture.componentInstance.canEditEstablishment = true;
-
-      component.fixture.detectChanges();
-      const recuritmentLink = component.getByText('Answer our staff recruitment and retention questions');
-      fireEvent.click(recuritmentLink);
-
-      const establishmentId = component.fixture.componentInstance.workplace.uid;
-      expect(recuritmentBannerSpy).toHaveBeenCalledWith(establishmentId, {
-        property: 'recruitmentJourneyExistingUserBanner',
-        value: true,
-      });
-    });
   });
 
   describe('View the ASC-WDS Benefits Bundle', async () => {
@@ -566,13 +519,6 @@ describe('HomeTabComponent', () => {
       });
       expect(becomeAParentLink).toBeTruthy();
       expect(linkToParentLink).toBeTruthy();
-    });
-
-    it('should link to the first login wizard page when clicking "Help to get you started"', async () => {
-      const { component } = await setup();
-
-      const firstLoginWizardLink = component.getByText('Help to get you started');
-      expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
     });
   });
 });

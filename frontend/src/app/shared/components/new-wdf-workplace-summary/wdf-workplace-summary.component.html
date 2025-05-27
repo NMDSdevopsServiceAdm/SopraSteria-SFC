@@ -196,7 +196,7 @@
       <dt class="govuk-summary-list__key">Other services</dt>
       <dd class="govuk-summary-list__value">
         <ng-container [ngSwitch]="workplace.otherServices.value">
-          <span *ngSwitchCase="undefined"> - </span>
+          <span *ngSwitchCase="null"> - </span>
           <span *ngSwitchCase="'No'"> None </span>
           <div *ngSwitchCase="'Yes'">
             <ul class="govuk-list govuk-!-margin-bottom-0">
@@ -328,24 +328,26 @@
               <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy | formatSLV }}</li>
             </ul>
           </ng-container>
-          <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
+          <ng-container *ngIf="!isArray(workplace.vacancies)"
+            >{{ workplace.vacancies | closedEndedAnswer }}
+          </ng-container>
         </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' staff vacancies'"
-          [link]="['/workplace', workplace.uid, 'do-you-have-vacancies']"
+          [link]="['/workplace', workplace.uid, 'update-vacancies']"
           [hasData]="workplace.vacancies?.length"
-          (setReturnClicked)="this.setReturn()"
+          (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
         ></app-summary-record-change>
       </dd>
     </div>
     <app-wdf-field-confirmation
       *ngIf="showWdfConfirmations.vacancies"
       [staffRecordView]="true"
-      [changeLink]="getRoutePath('vacancies', wdfView)"
+      [changeLink]="getRoutePath('update-vacancies', wdfView)"
       (fieldConfirmation)="this.confirmField('vacancies')"
-      (setReturnClicked)="this.setReturn()"
+      (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
@@ -362,7 +364,7 @@
       }"
       data-testid="starters"
     >
-      <dt class="govuk-summary-list__key">New starters in the last 12 months</dt>
+      <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
       <dd class="govuk-summary-list__value">
         <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
         <ng-template #starters>
@@ -372,25 +374,25 @@
             </ul>
           </ng-container>
           <ng-container *ngIf="!isArray(workplace.starters)">
-            {{ workplace.starters }}
+            {{ workplace.starters | closedEndedAnswer }}
           </ng-container>
         </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' new starters'"
-          [link]="['/workplace', workplace.uid, 'do-you-have-starters']"
+          [link]="['/workplace', workplace.uid, 'update-starters']"
           [hasData]="workplace.starters?.length"
-          (setReturnClicked)="this.setReturn()"
+          (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
         ></app-summary-record-change>
       </dd>
     </div>
     <app-wdf-field-confirmation
       *ngIf="showWdfConfirmations.starters"
-      [changeLink]="getRoutePath('starters', wdfView)"
+      [changeLink]="getRoutePath('update-starters', wdfView)"
       [staffRecordView]="true"
       (fieldConfirmation)="this.confirmField('starters')"
-      (setReturnClicked)="this.setReturn()"
+      (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
@@ -407,7 +409,7 @@
           showWdfConfirmations.leavers || workplace.wdf?.leavers?.isEligible === Eligibility.NO
       }"
     >
-      <dt class="govuk-summary-list__key">Staff leavers in the last 12 months</dt>
+      <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
       <dd class="govuk-summary-list__value">
         <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
         <ng-template #leavers>
@@ -417,25 +419,25 @@
             </ul>
           </ng-container>
           <ng-container *ngIf="!isArray(workplace.leavers)">
-            {{ workplace.leavers }}
+            {{ workplace.leavers | closedEndedAnswer }}
           </ng-container>
         </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' leavers'"
-          [link]="['/workplace', workplace.uid, 'do-you-have-leavers']"
+          [link]="['/workplace', workplace.uid, 'update-leavers']"
           [hasData]="workplace.leavers?.length"
-          (setReturnClicked)="this.setReturn()"
+          (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
         ></app-summary-record-change>
       </dd>
     </div>
     <app-wdf-field-confirmation
       *ngIf="showWdfConfirmations.leavers"
       [staffRecordView]="true"
-      [changeLink]="getRoutePath('leavers', wdfView)"
+      [changeLink]="getRoutePath('update-leavers', wdfView)"
       (fieldConfirmation)="this.confirmField('leavers')"
-      (setReturnClicked)="this.setReturn()"
+      (setReturnClicked)="this.clearPreviouslySelectedJobRolesAndSetReturn()"
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
@@ -446,72 +448,14 @@
   </ng-container>
 
   <ng-container>
-    <div class="govuk-summary-list__row" data-testid="recruitment-section">
+    <div class="govuk-summary-list__row" data-testid="recruitment-and-benefits-section">
       <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Recruitment</h2>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5 govuk__nowrap">
+          Recruitment and benefits
+        </h2>
       </dt>
       <dd class="govuk-summary-list__value"></dd>
       <dd class="govuk-summary-list__actions"></dd>
-    </div>
-    <div class="govuk-summary-list__row" data-testid="advertising-spend">
-      <dt class="govuk-summary-list__key">Advertising spend</dt>
-      <dd class="govuk-summary-list__value">
-        <ng-container
-          *ngIf="
-            !workplace.moneySpentOnAdvertisingInTheLastFourWeeks;
-            else moneySpentOnAdvertisingInTheLastFourWeeksType
-          "
-        >
-          -
-        </ng-container>
-        <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksType>
-          <ng-container
-            *ngIf="
-              workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'None' ||
-                workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'Don\'t know';
-              then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
-              else moneySpentOnAdvertisingInTheLastFourWeeksKnown
-            "
-          >
-          </ng-container>
-          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
-            {{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
-          </ng-template>
-          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
-            £{{ this.formatMonetaryValue(workplace.moneySpentOnAdvertisingInTheLastFourWeeks) }}
-          </ng-template>
-        </ng-template>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' advertising spend'"
-          [link]="['/workplace', workplace.uid, 'recruitment-advertising-cost']"
-          [hasData]="workplace.moneySpentOnAdvertisingInTheLastFourWeeks"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-
-    <div class="govuk-summary-list__row" data-testid="people-interviewed">
-      <dt class="govuk-summary-list__key">People interviewed</dt>
-      <dd class="govuk-summary-list__value">
-        <ng-container
-          *ngIf="!workplace.peopleInterviewedInTheLastFourWeeks; else peopleInterviewedInTheLastFourWeeksType"
-        >
-          -
-        </ng-container>
-        <ng-template #peopleInterviewedInTheLastFourWeeksType>
-          {{ workplace.peopleInterviewedInTheLastFourWeeks }}
-        </ng-template>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' people interviewed'"
-          [link]="['/workplace', workplace.uid, 'number-of-interviews']"
-          [hasData]="workplace.peopleInterviewedInTheLastFourWeeks"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
     </div>
 
     <div class="govuk-summary-list__row" data-testid="repeat-training">
@@ -563,16 +507,7 @@
         ></app-summary-record-change>
       </dd>
     </div>
-  </ng-container>
 
-  <ng-container>
-    <div class="govuk-summary-list__row" data-testid="staff-benefits-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Staff benefits</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div>
     <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
       <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
       <dd class="govuk-summary-list__value">
@@ -584,9 +519,9 @@
         <ng-template #careWorkersCashLoyaltyForFirstTwoYearsType>
           <ng-container
             *ngIf="
-              workplace.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
-                workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know' ||
-                workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Yes';
+              workplace.careWorkersCashLoyaltyForFirstTwoYears === 'No' ||
+                workplace.careWorkersCashLoyaltyForFirstTwoYears === 'Don\'t know' ||
+                workplace.careWorkersCashLoyaltyForFirstTwoYears === 'Yes';
               then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
               else careWorkersCashLoyaltyForFirstTwoYearsKnown
             "

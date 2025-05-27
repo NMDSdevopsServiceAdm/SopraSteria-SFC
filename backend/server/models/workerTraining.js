@@ -1,7 +1,6 @@
 /* jshint indent: 2 */
-
 const moment = require('moment');
-const { Op } = require('sequelize');
+const { QueryTypes } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
   const WorkerTraining = sequelize.define(
@@ -113,21 +112,10 @@ module.exports = function (sequelize, DataTypes) {
     pageIndex = 0,
     sortBy = '',
     searchTerm = '',
-    isMandatory,
-    jobIds,
   ) {
-    const addSearchToCount = searchTerm ? `AND "worker"."NameOrIdValue" ILIKE '%${searchTerm}%'` : '';
-    const joinTypeOnCount = isMandatory ? 'RIGHT OUTER JOIN' : 'INNER JOIN';
-    const jobIdsWithMandatoryTraining = isMandatory ? `AND "worker->mainJob"."JobID" IN (${jobIds})` : '';
-
-    const count = await sequelize.query(`
-        SELECT count("worker"."ID") AS "count"
-          FROM "cqc"."WorkerTraining" AS "workerTraining"
-          ${joinTypeOnCount} "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}'
-          LEFT OUTER JOIN "cqc"."Job" AS "worker->mainJob" ON "worker"."MainJobFKValue" = "worker->mainJob"."JobID"
-          WHERE "worker"."EstablishmentFK" = '${establishmentId}' AND "worker"."Archived" = false ${addSearchToCount} ${jobIdsWithMandatoryTraining};
-    `);
-
+    const addSearchToCount = searchTerm
+      ? `WHERE w1."NameOrIdValue1" ILIKE '%${searchTerm}%' OR w2."NameOrIdValue2" ILIKE '%${searchTerm}%'`
+      : '';
     const category = await sequelize.models.workerTrainingCategories.findOne({
       where: {
         id: trainingCategoryId,
@@ -146,106 +134,130 @@ module.exports = function (sequelize, DataTypes) {
       offset,
     };
 
-    const trainingAttributes = [
-      'id',
-      'uid',
-      'completed',
-      'expires',
-      'title',
-      'categoryFk',
-      [
-        sequelize.literal(
-          `CASE
+    const status = `CASE
             WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 'Expires soon'
             WHEN "Expires" < '${currentDate}' THEN 'Expired'
             WHEN "CategoryFK" IS NULL THEN 'Missing'
             ELSE 'OK'
-          END`,
-        ),
-        'status',
-      ],
-      [
-        sequelize.literal(
-          `CASE
+          END AS "status"`;
+
+    const sortByExpiresSoon = `CASE
             WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 3
             WHEN "Expires" < '${currentDate}' THEN 2
             WHEN "CategoryFK" IS NULL THEN 1
             ELSE 0
-          END`,
-        ),
-        'sortByExpiresSoon',
-      ],
-      [
-        sequelize.literal(
-          `CASE
+          END AS "sortByExpiresSoon"`;
+
+    const sortByExpired = `CASE
             WHEN "Expires" < '${currentDate}' THEN 3
             WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 2
             WHEN "CategoryFK" IS NULL THEN 1
             ELSE 0
-          END`,
-        ),
-        'sortByExpired',
-      ],
-      [
-        sequelize.literal(
-          `CASE
+          END AS "sortByExpired"`;
+
+    const sortByMissing = `CASE
             WHEN "CategoryFK" IS NULL THEN 3
             WHEN "Expires" < '${currentDate}' THEN 2
             WHEN "Expires" BETWEEN '${currentDate}' AND '${expiresSoon}' THEN 1
             ELSE 0
-          END`,
-        ),
-        'sortByMissing',
-      ],
-    ];
+          END AS "sortByMissing"`;
 
-    const order = {
-      staffNameAsc: [['worker', 'NameOrIdValue', 'ASC']],
-      trainingExpired: [
-        [sequelize.literal('"sortByExpired"'), 'DESC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-      trainingExpiringSoon: [
-        [sequelize.literal('"sortByExpiresSoon"'), 'DESC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-      trainingMissing: [
-        [sequelize.literal('"sortByMissing"'), 'DESC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-    }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
+    const select = `
+          SELECT
+          w2."WorkerTrainingId" AS id,
+          w2."WorkerTrainingUid" AS uid,
+          w2."Completed" AS "completed",
+          w2."Expires" AS "expires",
+          w2."Title" AS "title",
+          w2."CategoryFK",
+          COALESCE(w1."WorkerId1", w2."WorkerId2") AS "workerId",
+          COALESCE(w1."WorkerUID1", w2."WorkerUID2") AS "workerUid",
+          COALESCE(w1."NameOrIdValue1", w2."NameOrIdValue2") AS "NameOrIdValue",
+          COALESCE(w1."JobName1", w2."JobName2") AS "jobTitle",
+          COALESCE(w1."JobID1", w2."JobID2") AS "jobFK",
+          ${status},
+          ${sortByExpiresSoon},
+          ${sortByExpired},
+          ${sortByMissing}`;
 
-    const response = await this.findAll({
-      attributes: trainingAttributes,
-      where: {
-        '$worker.EstablishmentFK$': establishmentId,
-        '$worker.Archived$': false,
-        ...(searchTerm ? { '$worker.NameOrIdValue$': { [Op.iLike]: `%${searchTerm}%` } } : {}),
-        ...(jobIds && { '$worker.mainJob.JobID$': { [Op.in]: jobIds } }),
-      },
-      include: [
-        {
-          model: sequelize.models.worker,
-          as: 'worker',
-          attributes: ['id', 'uid', 'NameOrIdValue'],
-          on: {
-            col1: sequelize.where(sequelize.col('workerTraining.WorkerFK'), '=', sequelize.col('worker.ID')),
-            col2: sequelize.where(sequelize.col('workerTraining.CategoryFK'), '=', trainingCategoryId),
-          },
-          right: isMandatory,
-          include: [
-            {
-              model: sequelize.models.job,
-              as: 'mainJob',
-              attributes: ['title', 'id'],
-            },
-          ],
+    const from = `FROM (
+            SELECT w."ID" AS "WorkerId1", w."WorkerUID" AS "WorkerUID1", w."NameOrIdValue" AS "NameOrIdValue1", j."JobName" AS "JobName1", j."JobID" AS "JobID1", mt."ID" AS "MandatoryTrainingId", w."EstablishmentFK" AS "EstablishmentFK1", mt."TrainingCategoryFK", mt."JobFK"
+            FROM cqc."MandatoryTraining" mt
+            RIGHT OUTER JOIN cqc."Worker" w ON mt."EstablishmentFK" = w."EstablishmentFK" AND mt."JobFK" = w."MainJobFKValue"
+            LEFT OUTER JOIN cqc."Job" j ON w."MainJobFKValue" = j."JobID"
+            WHERE w."EstablishmentFK" = ${establishmentId} AND "TrainingCategoryFK" = ${trainingCategoryId}
+            AND w."Archived" = false
+            ) w1
+          FULL OUTER JOIN (
+            SELECT w."ID" AS "WorkerId2", wt."ID" AS "WorkerTrainingId", wt."UID" AS "WorkerTrainingUid", w."WorkerUID" AS "WorkerUID2", w."NameOrIdValue" AS "NameOrIdValue2", j."JobName" AS "JobName2", j."JobID" AS "JobID2" , wt."Title", wt."Completed", wt."Expires", wt."CategoryFK", w."EstablishmentFK" AS "EstablishmentFK2"
+            FROM cqc."WorkerTraining" wt
+            RIGHT OUTER JOIN cqc."Worker" w ON wt."WorkerFK" = w."ID"
+            LEFT OUTER JOIN cqc."Job" j ON w."MainJobFKValue" = j."JobID"
+            WHERE w."EstablishmentFK" = ${establishmentId} AND wt."CategoryFK" = ${trainingCategoryId}
+            AND w."Archived" = false
+            ) w2
+          ON w1."WorkerUID1" = w2."WorkerUID2"`;
+
+    // Get count of training by category
+    const count = await sequelize.query(`
+      SELECT count(COALESCE(w1."WorkerUID1", w2."WorkerUID2")) AS "count"
+      ${from}
+      ${addSearchToCount}
+    `);
+
+    const order = () => {
+      let specificSort;
+      const baseSort = '"NameOrIdValue" ASC';
+      switch (sortBy) {
+        case 'staffNameAsc':
+          specificSort = '';
+          break;
+        case 'trainingExpired':
+          specificSort = '"sortByExpired" DESC,';
+          break;
+        case 'trainingExpiringSoon':
+          specificSort = '"sortByExpiresSoon" DESC,';
+          break;
+        case 'trainingMissing':
+          specificSort = '"sortByMissing" DESC,';
+          break;
+        default:
+          specificSort = '';
+      }
+      return `${specificSort} ${baseSort}`;
+    };
+
+    const trainingResponse = await sequelize.query(
+      `
+      ${select}
+      ${from}
+      ${addSearchToCount}
+      ORDER BY ${order()}
+      LIMIT ${pagination.limit} OFFSET ${pagination.offset}`,
+      { type: QueryTypes.SELECT },
+    );
+
+    const response = trainingResponse.map((training) => ({
+      id: training.id,
+      uid: training.uid,
+      completed: training.completed,
+      expires: training.expires,
+      title: training.title,
+      categoryFK: training.categoryFK,
+      status: training.status,
+      sortByExpiresSoon: training.sortByExpiresSoon,
+      sortByExpired: training.sortByExpired,
+      sortByMissing: training.sortByMissing,
+      worker: {
+        id: training.workerId,
+        uid: training.workerUid,
+        NameOrIdValue: training.NameOrIdValue,
+        mainJob: {
+          title: training.jobTitle,
+          id: training.jobFK,
         },
-      ],
-
-      order,
-      ...(limit ? pagination : {}),
-    });
+      },
+    }));
 
     return { count: +count[0][0].count, rows: response, category };
   };

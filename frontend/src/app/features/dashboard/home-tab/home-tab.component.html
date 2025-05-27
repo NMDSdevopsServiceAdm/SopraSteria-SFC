@@ -1,22 +1,5 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
-    <ng-container *ngIf="workplace && !recruitmentJourneyExistingUserBanner && !addWorkplaceDetailsBanner">
-      <app-inset-text *ngIf="workplace.employerType" [color]="'todo'" class="govuk-!-margin-bottom-2">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-            <h2 class="govuk-heading-s">We've added some questions to ASC-WDS</h2>
-            <p>
-              Skills for Care are working with the Department of Health and Social Care to help them better understand
-              how difficult it is to recruit and keep people working in the adult social care sector
-            </p>
-            <a href="#" (click)="canEditEstablishment && setRecuritmentBannerToTrue($event)">
-              Answer our staff recruitment and retention questions
-            </a>
-          </div>
-        </div>
-      </app-inset-text>
-    </ng-container>
-
     <ng-container *ngIf="workplace && canEditEstablishment">
       <app-inset-text *ngIf="addWorkplaceDetailsBanner" [color]="'todo'">
         <div class="govuk-grid-row">
@@ -53,11 +36,11 @@
         </h3>
         <p>Access all your special offers and discounts across Skills for Care's product range.</p>
       </div>
-      <div *ngIf="canViewReports && !wdfNewDesignFlag">
+      <div *ngIf="canViewReports">
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
-          <a [routerLink]="['/wdf']"> Check your WDF data </a>
+          <a [routerLink]="['/funding']"> Check your data </a>
         </h3>
-        <p class="govuk-!-margin-top-4">Check if your data meets Workforce Development Fund (WDF) requirements.</p>
+        <p class="govuk-!-margin-top-4">Check if your data meets funding requirements.</p>
       </div>
       <div *ngIf="canBulkUpload">
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
@@ -75,10 +58,7 @@
     <h3 class="govuk-heading-s govuk-!-margin-top-1">Other links</h3>
     <ul class="govuk-list govuk-!-margin-bottom-6">
       <li class="govuk-!-margin-bottom-3">
-        <a [routerLink]="['/asc-wds-certificate']"
-          ><p class="govuk-tag govuk-tag--blue govuk-!-margin-right-8 asc-tag" style="float: right">NEW</p>
-          Get your ASC-WDS certificate</a
-        >
+        <a [routerLink]="['/asc-wds-certificate']">Get your ASC-WDS certificate</a>
       </li>
       <li class="govuk-!-margin-bottom-3">
         <a [routerLink]="['/about-ascwds']">About ASC-WDS</a>
@@ -118,9 +98,6 @@
         <ng-template #requestBecomeAParent>
           <a (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
         </ng-template>
-      </li>
-      <li class="govuk-!-margin-bottom-3">
-        <a [routerLink]="['/first-login-wizard']">Help to get you started</a>
       </li>
     </ul>
     <div *ngIf="canRunLocalAuthorityReport && workplace" data-cy="download-report">

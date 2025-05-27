@@ -1,0 +1,36 @@
+@import 'govuk-frontend/govuk/base';
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+
+  li {
+    margin: 0;
+    flex: 1;
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      padding: 0.5rem 1rem;
+      width: 100%;
+      box-sizing: border-box;
+
+      &:hover {
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      &.active {
+        background-color: govuk-colour('light-grey');
+        font-weight: bold;
+      }
+
+      &:focus {
+        @include govuk-focused-text;
+      }
+    }
+  }
+}

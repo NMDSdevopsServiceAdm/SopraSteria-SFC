@@ -21,7 +21,7 @@
           <app-card [image]="'/assets/images/wdf.svg'">
             <a
               class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-              routerLink="/wdf"
+              routerLink="/funding"
               href="#"
               >Does your data meet funding requirements?</a
             >
@@ -56,10 +56,7 @@
         <h3 class="govuk-heading-s">Other links</h3>
         <ul class="govuk-list govuk-!-margin-bottom-6">
           <app-link-with-arrow>
-            <a class="govuk-link" [routerLink]="['/asc-wds-certificate']"
-              ><p class="govuk-tag govuk-tag--blue govuk-!-margin-right-6 asc-tag" style="float: right">NEW</p>
-              Get your ASC-WDS certificate</a
-            >
+            <a class="govuk-link" [routerLink]="['/asc-wds-certificate']">Get your ASC-WDS certificate</a>
           </app-link-with-arrow>
 
           <app-link-with-arrow *ngIf="canBulkUpload">
@@ -150,10 +147,6 @@
             <ng-template #removeLinkToParent>
               <a [routerLink]="['/remove-link-to-parent']">Remove the link to your parent workplace</a>
             </ng-template>
-          </app-link-with-arrow>
-
-          <app-link-with-arrow>
-            <a class="govuk-link" [routerLink]="['/first-login-wizard']">Help to get you started</a>
           </app-link-with-arrow>
         </ul>
       </div>

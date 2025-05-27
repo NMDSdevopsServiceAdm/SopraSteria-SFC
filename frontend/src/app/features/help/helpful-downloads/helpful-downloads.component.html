@@ -1,0 +1,14 @@
+<div class="govuk-grid-row asc__vertical-line govuk-!-margin-top-8">
+  <div class="govuk-!-margin-left-9 govuk-!-margin-right-2 govuk-!-margin-top-0">
+    <ng-container *ngIf="helpfulDownloadsPage?.title && helpfulDownloadsPage?.content">
+      <h1 class="govuk-heading-m govuk-!-font-size-27" data-testid="content-title">
+        {{ helpfulDownloadsPage?.title }}
+      </h1>
+      <div
+        class="asc-cms-downloads-content"
+        [innerHTML]="helpfulDownloadsPage?.content"
+        data-testid="helpful-downloads-content"
+      ></div>
+    </ng-container>
+  </div>
+</div>

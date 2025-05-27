@@ -24,6 +24,7 @@ import {
 } from '@core/breadcrumb/journey.benchmark_subsidiaries';
 import { benefitsBundleJourney } from '@core/breadcrumb/journey.benefits-bundle';
 import { bulkUploadHelpJourney, bulkUploadJourney } from '@core/breadcrumb/journey.bulk-upload';
+import { helpJourney } from '@core/breadcrumb/journey.help';
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
@@ -334,6 +335,11 @@ export class BreadcrumbService {
 
       case JourneyType.DELETE_WORKPLACE: {
         routes = deleteWorkplaceJourney;
+        break;
+      }
+
+      case JourneyType.HELP: {
+        routes = helpJourney;
         break;
       }
 

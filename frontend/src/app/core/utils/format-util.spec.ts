@@ -11,6 +11,15 @@ describe('FormatUtil', () => {
     });
   });
 
+  describe('formatDateToLocaleDateString', () => {
+    it('should return the given date', async () => {
+      const date = new Date('2025-03-31');
+      const formattedDate = FormatUtil.formatDateToLocaleDateString(date);
+
+      expect(formattedDate).toEqual('31 March 2025');
+    });
+  });
+
   describe('formatSingleDigit', () => {
     it('should a string of number', async () => {
       const formatSingleDigit = FormatUtil.formatSingleDigit(10);
@@ -57,6 +66,33 @@ describe('FormatUtil', () => {
       expect(FormatUtil.formatPercent(0.04)).toEqual('4%');
       expect(FormatUtil.formatPercent(0.597609562)).toEqual('60%');
       expect(FormatUtil.formatPercent(0.5)).toEqual('50%');
+    });
+  });
+
+  describe('formatToLowercaseExcludingAcronyms', () => {
+    it('should put text with no acronyms to lower case', () => {
+      const testCases: { input: string; expected: string }[] = [
+        { input: 'Software engineer', expected: 'software engineer' },
+        { input: 'Support Worker', expected: 'support worker' },
+        { input: 'People and HR manager', expected: 'people and HR manager' },
+      ];
+
+      testCases.forEach(({ input, expected }) => {
+        expect(FormatUtil.formatToLowercaseExcludingAcronyms(input)).toEqual(expected);
+      });
+    });
+
+    it('should not put acronyms to lower case', () => {
+      const testCases: { input: string; expected: string }[] = [
+        { input: 'IT manager', expected: 'IT manager' },
+        { input: 'Manager of IT', expected: 'manager of IT' },
+        { input: 'People and HR manager', expected: 'people and HR manager' },
+        { input: 'ABC Acronym', expected: 'ABC acronym' },
+      ];
+
+      testCases.forEach(({ input, expected }) => {
+        expect(FormatUtil.formatToLowercaseExcludingAcronyms(input)).toEqual(expected);
+      });
     });
   });
 });

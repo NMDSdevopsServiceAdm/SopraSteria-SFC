@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -61,8 +61,10 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
     const heading = 'How many days leave do your full-time care workers get each year?';
     const helpText =
       'Include bank holidays in the total. For example, 20 days annual leave plus 8 bank holidays would be 28 days in total.';
+    const sectionCaption = 'Recruitment and benefits';
 
     expect(getByText(heading)).toBeTruthy;
+    expect(getByText(sectionCaption)).toBeTruthy;
     expect(getByText(helpText)).toBeTruthy;
   });
 
@@ -130,19 +132,8 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('should navigate to the confirm staff recruitment page when submitting from the flow and in staff recruitment flow', async () => {
-      const { component, fixture, getByText, routerSpy } = await setup(false);
-
-      component.inStaffRecruitmentFlow = true;
-      const button = getByText('Save and continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'confirm-staff-recruitment-and-benefits']);
-    });
-
-    it('should navigate to the sharing page when submitting from the workplace flow and not in staff recruitment flow', async () => {
-      const { component, fixture, getByText, routerSpy } = await setup(false);
+    it('should navigate to the sharing page when submitting from the workplace flow', async () => {
+      const { fixture, getByText, routerSpy } = await setup(false);
 
       const button = getByText('Save and continue');
       fireEvent.click(button);
@@ -196,33 +187,13 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
   describe('progress bar', () => {
     it('should render the section, the question but not the progress bar when not in the flow', async () => {
       const { getByTestId, queryByTestId, fixture, component } = await setup();
-      component.inStaffRecruitmentFlow = false;
-      fixture.detectChanges();
 
       expect(getByTestId('section-heading')).toBeTruthy();
       expect(queryByTestId('progress-bar')).toBeFalsy();
-      expect(queryByTestId('progress-bar-2')).toBeFalsy();
-      expect(queryByTestId('progress-bar-3')).toBeFalsy();
-    });
-
-    it('should render the progress bar when in the flow', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.return = null;
-      component.inStaffRecruitmentFlow = true;
-
-      fixture.detectChanges();
-
-      expect(getByTestId('progress-bar-2')).toBeTruthy();
-      expect(getByTestId('progress-bar-3')).toBeTruthy();
     });
 
     it('should render the workplace progress bar when in the workplace flow', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.return = null;
-      component.inStaffRecruitmentFlow = false;
-      fixture.detectChanges();
+      const { getByTestId } = await setup(null);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });

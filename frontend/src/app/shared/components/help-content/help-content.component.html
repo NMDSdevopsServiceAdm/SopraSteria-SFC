@@ -1,0 +1,8 @@
+<div class="asc__vertical-line vertical_line govuk-!-margin-top-8">
+  <div class="govuk-!-margin-left-9 govuk-!-margin-right-2 govuk-!-margin-top-0">
+    <ng-container *ngIf="helpPage?.title && helpPage?.content">
+      <h1 class="govuk-heading-m govuk-!-font-size-27" data-testid="content-title">{{ helpPage?.title }}</h1>
+      <div class="asc-cms-content" [innerHTML]="helpPage?.content" data-testid="content"></div>
+    </ng-container>
+  </div>
+</div>

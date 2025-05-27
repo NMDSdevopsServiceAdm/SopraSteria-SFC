@@ -1,0 +1,101 @@
+@import 'govuk-frontend/govuk/base';
+
+.add-job-roles-button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5em;
+
+  button {
+    align-self: flex-end;
+    margin: 0;
+    color: $govuk-brand-colour;
+  }
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.asc-no-job-roles-msg {
+  line-height: 40px;
+  margin-bottom: 0;
+
+  div:has(> &) {
+    border-top: 1px solid $govuk-border-colour;
+    border-bottom: 1px solid $govuk-border-colour;
+    padding: 0.5rem 0;
+  }
+}
+
+.asc-right-shift-border-on-error {
+  border-bottom: 1px solid $govuk-border-colour;
+  box-sizing: border-box;
+
+  :first-child > & {
+    border-top: 1px solid $govuk-border-colour !important;
+  }
+
+  :last-child > & {
+    border-bottom: 1px solid $govuk-border-colour !important;
+  }
+
+  :not(.govuk-form-group--error):has(+ .govuk-form-group--error) > & {
+    border-bottom: 0;
+  }
+
+  :not(.govuk-form-group--error) + .govuk-form-group--error > & {
+    border-top: 1px solid $govuk-border-colour;
+  }
+}
+
+.asc-grid-row {
+  display: grid;
+  grid-template-columns: 1fr 125px calc(290px - 125px - 1.5em);
+
+  align-items: baseline;
+  justify-items: start;
+
+  column-gap: 1.5em;
+  padding: 0.5em 0;
+
+  .govuk-error-message {
+    grid-column: 1 / span 3;
+  }
+}
+
+.govuk-form-group:after {
+  // remove the default "clearfix" which adds unwanted spacing
+  display: none;
+}
+
+.asc-total-number-tile {
+  background-color: govuk-colour('light-grey');
+  height: 110px;
+  width: 290px;
+  margin: 1em 0 1em auto;
+
+  div:has(> &) {
+    border-bottom: 1px solid $govuk-border-colour;
+  }
+
+  &--wrapper {
+    padding: 1em;
+  }
+
+  &--total-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: govuk-colour('turquoise');
+    line-height: 1.1;
+
+    margin-bottom: 0;
+  }
+
+  &--description {
+    font-size: 19px;
+    font-weight: bold;
+
+    margin-bottom: 0;
+  }
+}

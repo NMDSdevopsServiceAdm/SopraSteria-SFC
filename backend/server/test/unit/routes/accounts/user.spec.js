@@ -4,6 +4,7 @@ const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
 const {
+  addUser,
   meetsMaxUserLimit,
   partAddUser,
   listAdminUsers,
@@ -162,7 +163,6 @@ describe('user.js', () => {
         email: 'admin@email.com',
         phone: '01234567890',
         role: 'Admin',
-        canManagedWdfClaims: false,
       };
 
       beforeEach(() => {
@@ -323,7 +323,6 @@ describe('user.js', () => {
         email: 'admin@email.com',
         phone: '01234567890',
         role: 'Admin',
-        canManagedWdfClaims: false,
       };
 
       beforeEach(() => {
@@ -390,6 +389,63 @@ describe('user.js', () => {
 
       expect(res.statusCode).to.equal(500);
       expect(res._getData()).to.deep.equal('Failed to update last viewed date');
+    });
+  });
+
+  describe('POST /api/user/add', () => {
+    let stubUserSave;
+    let stubAddUserTrackingFindOne;
+    const requestBody = {
+      email: 'test@example.com',
+      fullname: 'new user',
+      jobTitle: 'test user',
+      password: 'Some very secure password e.g. Password!1',
+      phone: '0123456789',
+      securityQuestion: 'what is the colour of a blue orange?',
+      securityQuestionAnswer: 'blue',
+      username: 'test-user',
+      addUserUUID: '09009bc3-409b-49ff-aa67-9c9c64339cbf',
+    };
+    const addUserTrackingRecord = {
+      uuid: '09009bc3-409b-49ff-aa67-9c9c64339cbf',
+      user: {
+        id: 'userId',
+        uid: 'some-uuid',
+        UserRoleValue: 'Read',
+        establishmentId: 'mock-establishment-id',
+      },
+      completed: null,
+    };
+
+    beforeEach(() => {
+      req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/users/add',
+        body: requestBody,
+      });
+      res = httpMocks.createResponse();
+
+      stubAddUserTrackingFindOne = sinon.stub(models.addUserTracking, 'findOne').resolves(addUserTrackingRecord);
+      sinon.stub(User.prototype, 'restore').resolves(true);
+      sinon.stub(User.prototype, 'load').resolves(true);
+      sinon.stub(User.prototype, 'hasDefaultNewUserProperties').value(true);
+      stubUserSave = sinon.stub(User.prototype, 'save');
+      sinon.stub(User.prototype, 'toJSON');
+    });
+
+    it('should respond with 200 and save a new user to database', async () => {
+      await addUser(req, res);
+      expect(res.statusCode).to.equal(200);
+      expect(stubUserSave).to.have.been.calledOnce;
+    });
+
+    it('should respond with 401 error and not save the user if the addUserTracking uuid token is already used', async () => {
+      stubAddUserTrackingFindOne.resolves({ ...addUserTrackingRecord, completed: '2025-01-01 12:00:00:000' });
+
+      await addUser(req, res);
+      expect(res.statusCode).to.equal(401);
+      expect(res._getData()).to.deep.equal({ message: 'Activation link expired' });
+      expect(stubUserSave).not.to.be.called;
     });
   });
 });

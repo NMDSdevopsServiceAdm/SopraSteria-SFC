@@ -10,7 +10,6 @@ enum Path {
   CONTACT_US_OR_LEAVE_FEEDBACK = '/contact-us-or-leave-feedback',
   THANK_YOU = '/thank-you',
   CERTIFICATES = '/asc-wds-certificate',
-  FIRST_LOGIN_WIZARD = '/first-login-wizard'
 }
 
 export const publicJourney: JourneyRoute = {
@@ -18,10 +17,6 @@ export const publicJourney: JourneyRoute = {
     {
       title: 'Get your ASC-WDS certificate',
       path: Path.CERTIFICATES,
-    },
-    {
-      title: 'Help to get you started',
-      path: Path.FIRST_LOGIN_WIZARD,
     },
     {
       title: 'Cookie policy',

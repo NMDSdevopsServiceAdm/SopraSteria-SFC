@@ -1,6 +1,6 @@
 const BUDI = require('../classes/BUDI').BUDI;
 const moment = require('moment');
-const get = require('lodash/get');
+const { SALARY_INT_OPTIONS, SALARY_INT_STRINGS } = require('./constants');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
@@ -116,7 +116,7 @@ class WorkerCsvValidator {
     return 1120;
   }
   static get COUNTRY_OF_BIRTH_ERROR() {
-    return 1230;
+    return 1130;
   }
   static get YEAR_OF_ENTRY_ERROR() {
     return 1140;
@@ -150,6 +150,12 @@ class WorkerCsvValidator {
   }
   static get SALARY_INT_ERROR() {
     return 1250;
+  }
+  static get SALARY_INT_NOT_MATCH_SALARY_ERROR() {
+    return 1251;
+  }
+  static get SALARY_INT_NOT_MATCH_HOURLY_RATE_ERROR() {
+    return 1252;
   }
   static get SALARY_ERROR() {
     return 1260;
@@ -316,20 +322,29 @@ class WorkerCsvValidator {
     return 3380;
   }
 
-  static get QUAL_ACH01_ERROR() {
+  static get QUAL_ACH01_CODE_ERROR() {
     return 5010;
+  }
+  static get QUAL_ACH01_YEAR_ERROR() {
+    return 5015;
   }
   static get QUAL_ACH01_NOTES_ERROR() {
     return 5020;
   }
-  static get QUAL_ACH02_ERROR() {
+  static get QUAL_ACH02_CODE_ERROR() {
     return 5030;
+  }
+  static get QUAL_ACH02_YEAR_ERROR() {
+    return 5035;
   }
   static get QUAL_ACH02_NOTES_ERROR() {
     return 5040;
   }
-  static get QUAL_ACH03_ERROR() {
+  static get QUAL_ACH03_CODE_ERROR() {
     return 5050;
+  }
+  static get QUAL_ACH03_YEAR_ERROR() {
+    return 5055;
   }
   static get QUAL_ACH03_NOTES_ERROR() {
     return 5060;
@@ -562,6 +577,22 @@ class WorkerCsvValidator {
       warnCode: WorkerCsvValidator[warnType],
       warnType: warnType,
       warning,
+      source: this._currentLine[columnName],
+      column: columnName,
+    };
+  }
+
+  _generateError(error, columnName, errType = null) {
+    if (!errType) {
+      errType = `${columnName}_ERROR`;
+    }
+    return {
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+      lineNumber: this._lineNumber,
+      errCode: WorkerCsvValidator[errType],
+      errType: errType,
+      error,
       source: this._currentLine[columnName],
       column: columnName,
     };
@@ -1662,8 +1693,8 @@ class WorkerCsvValidator {
 
     if (
       this._currentWorker &&
-      moment(get(this._currentWorker, 'daysSick.lastSaved')).isBefore(Date.now(), 'day') &&
-      get(this._currentWorker, 'daysSick.currentValue.days') === parseInt(this._currentLine.DAYSSICK)
+      moment(this._currentWorker?.daysSick?.lastSaved).isBefore(Date.now(), 'day') &&
+      this._currentWorker?.daysSick?.currentValue?.days === parseInt(this._currentLine.DAYSSICK)
     ) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -1679,133 +1710,150 @@ class WorkerCsvValidator {
   }
 
   _validateSalaryInt() {
-    const salaryIntValues = [1, 3];
-    const mySalaryInt = parseInt(this._currentLine.SALARYINT, 10);
-
-    // optional
-    if (this._currentLine.SALARYINT && this._currentLine.SALARYINT.length > 0) {
-      if (isNaN(mySalaryInt)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.SALARY_ERROR,
-          errType: 'SALARYINT_ERROR',
-          error: 'Salary Int (SALARYINT) must be an integer',
-          source: this._currentLine.SALARYINT,
-          column: 'SALARYINT',
-        });
-        return false;
-      } else if (!salaryIntValues.includes(parseInt(mySalaryInt, 10))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.SALARY_ERROR,
-          errType: 'SALARYINT_ERROR',
-          error: 'The code you have entered for SALARYINT is incorrect',
-          source: this._currentLine.SALARYINT,
-          column: 'SALARYINT',
-        });
-        return false;
-      } else {
-        switch (mySalaryInt) {
-          case 1:
-            this._salaryInt = 'Annually';
-            break;
-          case 3:
-            this._salaryInt = 'Hourly';
-            break;
-          default:
-            // not doing anything with unpaid
-            this._salaryInt = null;
-        }
-
-        return true;
-      }
-    } else {
+    const salaryIntIsFilled = this._currentLine.SALARYINT?.length > 0;
+    if (!salaryIntIsFilled) {
       return true;
     }
+
+    const mySalaryInt = parseInt(this._currentLine.SALARYINT, 10);
+    if (isNaN(mySalaryInt)) {
+      this._validationErrors.push(
+        this._generateError('Salary Int (SALARYINT) must be an integer', 'SALARYINT', 'SALARY_INT_ERROR'),
+      );
+      return false;
+    }
+
+    const salaryIntOptionChosen = SALARY_INT_OPTIONS.find((option) => option.bulkUploadValue === mySalaryInt);
+
+    if (!salaryIntOptionChosen) {
+      this._validationErrors.push(
+        this._generateError('The code you have entered for SALARYINT is incorrect', 'SALARYINT', 'SALARY_INT_ERROR'),
+      );
+      return false;
+    }
+
+    this._salaryInt = salaryIntOptionChosen.databaseValue;
+    return true;
+  }
+
+  _alreadyHaveSalaryIntError() {
+    return this._validationErrors?.some(
+      (error) => error.errCode === WorkerCsvValidator.SALARY_INT_ERROR && error.lineNumber === this._lineNumber,
+    );
   }
 
   _validateSalary() {
+    const salaryIsFilled = this._currentLine.SALARY?.length > 0;
+
+    if (!salaryIsFilled) {
+      return true;
+    }
+
     const mySalary = parseInt(this._currentLine.SALARY, 10);
     const mainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
     const MAX_VALUE = mainJobRole === 1 ? 250000 : 200000;
 
-    // optional
-    if (this._currentLine.SALARY.length > 0) {
-      // can only give (annual) salary if salary interval (SALARYINT) is annual
-      if (this._salaryInt === null || this._salaryInt !== 'Annually') {
+    const salaryValueIsValid = !isNaN(mySalary) && mySalary >= 500 && mySalary <= MAX_VALUE;
+
+    switch (this._salaryInt) {
+      case SALARY_INT_STRINGS.Annually:
+        if (salaryIsFilled && salaryValueIsValid) {
+          this._salary = mySalary;
+          return true;
+        } else {
+          this._validationErrors.push(this._generateError(`SALARY must be between £500 and £${MAX_VALUE}`, 'SALARY'));
+          return false;
+        }
+
+      case SALARY_INT_STRINGS.DontKnow:
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.SALARY_ERROR,
-          errType: 'SALARY_ERROR',
-          error: 'The code you have entered for SALARYINT does not match SALARY',
+          warnCode: WorkerCsvValidator.SALARY_WARNING,
+          warnType: 'SALARY_WARNING',
+          warning: 'SALARY will be ignored as SALARYINT is 999',
           source: `SALARYINT (${this._currentLine.SALARYINT}) - SALARY (${this._currentLine.SALARY})`,
-          column: 'SALARYINT',
-        });
-        return false;
-      } else if (isNaN(mySalary) || mySalary < 500 || mySalary > MAX_VALUE) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.SALARY_ERROR,
-          errType: 'SALARY_ERROR',
-          error: `SALARY must be between £500 and £${MAX_VALUE}`,
-          source: this._currentLine.SALARY,
           column: 'SALARY',
         });
         return false;
-      } else {
-        this._salary = mySalary;
-        return true;
-      }
-    } else {
-      return true;
+
+      default:
+        if (this._alreadyHaveSalaryIntError()) {
+          return true;
+        } else {
+          this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
+            lineNumber: this._lineNumber,
+            errCode: WorkerCsvValidator.SALARY_INT_NOT_MATCH_SALARY_ERROR,
+            errType: 'SALARY_INT_ERROR',
+            error: 'The code you have entered for SALARYINT does not match SALARY',
+            source: `SALARYINT (${this._currentLine.SALARYINT}) - SALARY (${this._currentLine.SALARY})`,
+            column: 'SALARYINT/SALARY',
+          });
+          return false;
+        }
     }
   }
 
   _validateHourlyRate() {
+    const hourlyRateIsFilled = this._currentLine.HOURLYRATE?.length > 0;
+
+    if (!hourlyRateIsFilled) {
+      return true;
+    }
+
     const myHourlyRate = parseFloat(this._currentLine.HOURLYRATE);
     const digitRegex = /^\d+(\.\d{1,2})?$/; // e.g. 15.53 or 0.53 or 1.53 or 100.53
 
-    // optional
-    if (this._currentLine.HOURLYRATE && this._currentLine.HOURLYRATE.length > 0) {
-      // can only give (annual) salary if salary interval (SALARYINT) is hourly
-      if (this._salaryInt === null || this._salaryInt !== 'Hourly') {
+    const hourlyRateValueIsValid = !isNaN(myHourlyRate) && digitRegex.test(this._currentLine.HOURLYRATE);
+
+    switch (this._salaryInt) {
+      case SALARY_INT_STRINGS.Hourly:
+        if (hourlyRateValueIsValid) {
+          this._hourlyRate = myHourlyRate;
+          return true;
+        } else {
+          this._validationErrors.push(
+            this._generateError(
+              'The code you have entered for HOURLYRATE is incorrect',
+              'HOURLYRATE',
+              'HOURLY_RATE_ERROR',
+            ),
+          );
+          return false;
+        }
+
+      case SALARY_INT_STRINGS.DontKnow:
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
-          errType: 'HOURLY_RATE_ERROR',
-          error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
-          source: `SALARYINT(${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`,
-          column: 'SALARYINT/HOURLYRATE',
-        });
-        return false;
-      } else if (isNaN(myHourlyRate) || !digitRegex.test(this._currentLine.HOURLYRATE)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: WorkerCsvValidator.HOURLY_RATE_ERROR,
-          errType: 'HOURLY_RATE_ERROR',
-          error: 'The code you have entered for HOURLYRATE is incorrect and will be ignored',
-          source: this._currentLine.HOURLYRATE,
+          warnCode: WorkerCsvValidator.HOURLY_RATE_WARNING,
+          warnType: 'HOURLY_RATE_WARNING',
+          warning: 'HOURLYRATE will be ignored as SALARYINT is 999',
+          source: `SALARYINT (${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`,
           column: 'HOURLYRATE',
         });
         return false;
-      } else {
-        this._hourlyRate = myHourlyRate;
-        return true;
-      }
-    } else {
-      return true;
+
+      default:
+        if (this._alreadyHaveSalaryIntError()) {
+          return true;
+        } else {
+          this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
+            lineNumber: this._lineNumber,
+            errCode: WorkerCsvValidator.SALARY_INT_NOT_MATCH_HOURLY_RATE_ERROR,
+            errType: 'SALARY_INT_ERROR',
+            error: 'The code you have entered for SALARYINT does not match HOURLYRATE',
+            source: `SALARYINT (${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`,
+            column: 'SALARYINT/HOURLYRATE',
+          });
+          return false;
+        }
     }
   }
 
@@ -2428,17 +2476,16 @@ class WorkerCsvValidator {
     }
   }
 
-  __validateQualification(
-    qualificationIndex,
-    qualificationName,
-    qualificationError,
-    qualificationErrorName,
-    qualification,
-    qualificationDescName,
-    qualificationDescError,
-    qualificationDescErrorName,
-    qualificationDesc,
-  ) {
+  __validateQualification(qualificationIndex) {
+    const qualificationName = `QUALACH${qualificationIndex}`;
+    const qualification = this._currentLine[`QUALACH${qualificationIndex}`];
+    const qualificationYearError = WorkerCsvValidator[`QUAL_ACH${qualificationIndex}_YEAR_ERROR`];
+    const qualificationYearErrorName = `QUAL_ACH${qualificationIndex}_YEAR_ERROR`;
+    const qualificationDescName = `QUALACH${qualificationIndex}NOTES`;
+    const qualificationDescError = WorkerCsvValidator[`QUAL_ACH${qualificationIndex}_NOTES_ERROR`];
+    const qualificationDescErrorName = `QUAL_ACH${qualificationIndex}_NOTES_ERROR`;
+    const qualificationDesc = this._currentLine[`QUALACH${qualificationIndex}NOTES`];
+
     const myQualification = qualification ? qualification.split(';') : null;
 
     // optional
@@ -2452,8 +2499,8 @@ class WorkerCsvValidator {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: qualificationError,
-          errType: qualificationErrorName,
+          errCode: WorkerCsvValidator[`QUAL_ACH${qualificationIndex}_CODE_ERROR`],
+          errType: `QUAL_ACH${qualificationIndex}_CODE_ERROR`,
           error: `The code you have entered for (${qualificationName}) is incorrect`,
           source: qualification,
           column: qualificationName,
@@ -2474,8 +2521,8 @@ class WorkerCsvValidator {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: qualificationError,
-          warnType: qualificationErrorName,
+          warnCode: qualificationYearError,
+          warnType: qualificationYearErrorName,
           warning: `Year achieved for ${qualificationName} is blank`,
           source: qualification,
           column: qualificationName,
@@ -2485,8 +2532,8 @@ class WorkerCsvValidator {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: qualificationError,
-          errType: qualificationErrorName,
+          errCode: qualificationYearError,
+          errType: qualificationYearErrorName,
           error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
           column: qualificationName,
@@ -2496,8 +2543,8 @@ class WorkerCsvValidator {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: qualificationError,
-          errType: qualificationErrorName,
+          errCode: qualificationYearError,
+          errType: qualificationYearErrorName,
           error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
           column: qualificationName,
@@ -2554,17 +2601,7 @@ class WorkerCsvValidator {
       .map((x, i) => {
         const index = padNumber(i + 1);
 
-        return this.__validateQualification(
-          index,
-          `QUALACH${index}`,
-          WorkerCsvValidator[`QUAL_ACH${index}_ERROR`],
-          `QUAL_ACH${index}_ERROR`,
-          this._currentLine[`QUALACH${index}`],
-          `QUALACH${index}NOTES`,
-          WorkerCsvValidator[`QUAL_ACH${index}_NOTES_ERROR`],
-          `QUAL_ACH${index}_NOTES_ERROR`,
-          this._currentLine[`QUALACH${index}NOTES`],
-        );
+        return this.__validateQualification(index);
       });
 
     // remove from the local set of qualifications any false/null entries
@@ -2854,8 +2891,8 @@ class WorkerCsvValidator {
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: WorkerCsvValidator[`QUAL_ACH${thisQualification.column}_ERROR`],
-            errType: `QUAL_ACH${thisQualification.column}_ERROR`,
+            errCode: WorkerCsvValidator[`QUAL_ACH${thisQualification.column}_CODE_ERROR`],
+            errType: `QUAL_ACH${thisQualification.column}_CODE_ERROR`,
             error: `Qualification (QUALACH${thisQualification.column}): ${thisQualification.id} is unknown`,
             source: `${this._currentLine[`QUALACH${thisQualification.column}`]}`,
             column: `QUALACH${thisQualification.column}`,
@@ -3168,6 +3205,9 @@ class WorkerCsvValidator {
       if (this._salaryInt === 'Hourly') {
         changeProperties.annualHourlyPay.rate = this._hourlyRate ? this._hourlyRate : undefined;
       }
+      if (this._salaryInt === "Don't know") {
+        changeProperties.annualHourlyPay.rate = undefined;
+      }
     }
 
     if (this._contHours !== null) {
@@ -3269,13 +3309,23 @@ class WorkerCsvValidator {
   }
 
   get validationErrors() {
-    // include the "origin" of validation error
-    return this._validationErrors.map((thisValidation) => {
-      return {
-        origin: 'Workers',
-        ...thisValidation,
-      };
-    });
+    let codes = [];
+    let uniqueValidationErrors = [];
+    if (this._validationErrors.length > 0) {
+      this._validationErrors.forEach((thisValidation) => {
+        if (thisValidation.warnCode && !codes.includes(thisValidation.warnCode)) {
+          codes.push(thisValidation.warnCode);
+          uniqueValidationErrors.push({ origin: 'Workers', ...thisValidation });
+        }
+
+        if (thisValidation.errCode && !codes.includes(thisValidation.errCode)) {
+          codes.push(thisValidation.errCode);
+          uniqueValidationErrors.push({ origin: 'Workers', ...thisValidation });
+        }
+      });
+    }
+
+    return uniqueValidationErrors;
   }
 }
 

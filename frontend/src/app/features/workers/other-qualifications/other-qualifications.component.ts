@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
-import { QuestionComponent } from '../question/question.component';
+import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
   selector: 'app-other-qualifications',
   templateUrl: './other-qualifications.component.html',
 })
-export class OtherQualificationsComponent extends QuestionComponent {
+export class OtherQualificationsComponent extends FinalQuestionComponent {
   public answersAvailable = [
     { value: 'Yes', tag: 'Yes' },
     { value: 'No', tag: 'No' },
@@ -27,8 +28,18 @@ export class OtherQualificationsComponent extends QuestionComponent {
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
+    protected alertService: AlertService,
   ) {
-    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
+    super(
+      formBuilder,
+      router,
+      route,
+      backLinkService,
+      errorSummaryService,
+      workerService,
+      establishmentService,
+      alertService,
+    );
 
     this.form = this.formBuilder.group({
       otherQualification: null,
@@ -39,7 +50,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
     if (this.worker.otherQualification) {
       this.prefill();
     }
-    this.next = this.getRoutePath('confirm-staff-record');
+    this.next = this.getRoutePath('staff-record-summary');
   }
 
   private prefill(): void {
@@ -65,12 +76,21 @@ export class OtherQualificationsComponent extends QuestionComponent {
     if (otherQualification === 'Yes') {
       nextRoute.push('other-qualifications-level');
     } else if (this.insideFlow) {
-      nextRoute.push('confirm-staff-record');
+      nextRoute.push('staff-record-summary');
     }
     return nextRoute;
   }
 
+  protected formValueIsEmpty(): boolean {
+    const { otherQualification } = this.form.value;
+    return otherQualification === null;
+  }
+
   onSuccess(): void {
     this.next = this.determineConditionalRouting();
+
+    if (!this.next.includes('staff-record-summary')) {
+      this.continueToNextQuestion = true;
+    }
   }
 }

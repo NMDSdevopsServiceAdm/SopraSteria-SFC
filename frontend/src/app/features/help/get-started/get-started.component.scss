@@ -1,0 +1,24 @@
+@import 'govuk-frontend/govuk/base';
+
+.asc-image-border {
+  border: 1px solid $govuk-border-colour;
+}
+
+.asc-image-width {
+  max-width: 100%;
+  height: auto;
+}
+
+.video_wrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  border: 1px solid $govuk-border-colour;
+}
+.video_wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

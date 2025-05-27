@@ -37,6 +37,7 @@ export enum JourneyType {
   SUBSIDIARY,
   OLD_BENCHMARKS_DATA_TAB,
   DELETE_WORKPLACE,
+  HELP,
 }
 
 export interface JourneyRoute {

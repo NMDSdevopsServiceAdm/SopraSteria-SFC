@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { jobOptionsEnum, Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -12,11 +11,16 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveStartersComponent } from './do-you-have-starters.component';
+import { FormatUtil } from '@core/utils/format-util';
 
 describe('DoYouHaveStartersComponent', () => {
+  const today = new Date();
+  today.setFullYear(today.getFullYear() - 1);
+  const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
+
   async function setup(overrides: any = {}) {
     const setupTools = await render(DoYouHaveStartersComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
         UntypedFormBuilder,
@@ -28,6 +32,15 @@ describe('DoYouHaveStartersComponent', () => {
             overrides?.workplace,
           ),
           deps: [HttpClient],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {},
+              data: {},
+            },
+          },
         },
       ],
     });
@@ -61,7 +74,7 @@ describe('DoYouHaveStartersComponent', () => {
     const { getByRole, getByTestId } = await setup();
 
     const heading = getByRole('heading', {
-      name: /have you had any new starters in the last 12 months?/i,
+      name: `Have you had any starters SINCE ${todayOneYearAgo}?`,
     });
 
     const sectionHeading = within(getByTestId('section-heading'));
@@ -73,7 +86,7 @@ describe('DoYouHaveStartersComponent', () => {
   it('should show the hint text', async () => {
     const { getByTestId } = await setup();
 
-    const hintText = 'We only want to know about new starters who are in permanent and temporary job roles.';
+    const hintText = "We only want to know about starters who're in permanent and temporary job roles.";
 
     expect(within(getByTestId('hint-text')).getByText(hintText)).toBeTruthy();
   });
@@ -422,7 +435,7 @@ describe('DoYouHaveStartersComponent', () => {
       fireEvent.click(continueButton);
       fixture.detectChanges();
 
-      expect(getAllByText("Select yes if you've had any new starters in the last 12 months").length).toBe(2);
+      expect(getAllByText(`Select yes if you've had starters since ${todayOneYearAgo}`).length).toBe(2);
     });
   });
 

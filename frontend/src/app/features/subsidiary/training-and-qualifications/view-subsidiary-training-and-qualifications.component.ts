@@ -64,14 +64,14 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.tAndQsLastUpdated = this.route.snapshot.data.workers?.tAndQsLastUpdated;
     this.workplace = this.route.snapshot.data.establishment;
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
 
-    this.route.queryParams.subscribe((params) => {
+    this.route.queryParams?.subscribe((params) => {
       if (params.view === 'categories') {
         this.viewTrainingByCategory = true;
       }
     });
-
-    this.getParentPermissions();
 
     // if returning to this page from adding multiple training and using the back link
     // we need to remove any staff that were selected
@@ -85,17 +85,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     if ('workers' in changes || 'trainingCounts' in changes) {
       this.trainingTotals();
     }
-  }
-  
-  public getParentPermissions(): void {
-    const parentUid = this.workplace.parentUid;
-
-    this.canEditWorker = this.permissionsService.can(parentUid, 'canEditWorker');
-    this.canEditEstablishment = this.permissionsService.can(parentUid, 'canEditEstablishment');
-  }
-
-  public navigateToMultipleTraining(): void {
-    this.router.navigate(['/workplace', this.workplace.uid, 'add-multiple-training', 'select-staff']);
   }
 
   private getAllTrainingByCategory(): void {

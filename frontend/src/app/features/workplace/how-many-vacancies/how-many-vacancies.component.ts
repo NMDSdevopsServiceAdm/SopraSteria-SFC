@@ -9,27 +9,41 @@ import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turno
   styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
 })
 export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDirective {
-  public heading = 'How many current staff vacancies do you have for each job role?';
+  public heading = 'How many current staff vacancies do you have?';
   public instruction = 'Only add the number of vacancies for permanent and temporary job roles.';
   public revealTextContent =
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
   public jobRoleType = 'vacancies';
   public fieldName = 'vacancies';
   public fieldJobRoles = 'vacanciesJobRoles';
+  public jobRolesTableTitle = 'Current staff vacancies';
+  public totalNumberDescription = 'Total number of vacancies';
 
   protected selectedJobRoles: Array<Vacancy> = [];
 
   protected clearLocalStorageData(): void {
     localStorage.removeItem('hasVacancies');
-    localStorage.removeItem('vacanciesJobRoles');
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
+  }
+
+  protected getSelectedJobRoleFromService(): Vacancy[] {
+    return this.vacanciesAndTurnoverService.selectedVacancies;
+  }
+
+  protected saveSelectedJobRolesToService(): void {
+    this.vacanciesAndTurnoverService.selectedVacancies = this.jobRoleNumbersTable.currentValues;
   }
 
   protected returnToFirstPage(): void {
-    this.router.navigate(['/workplace', `${this.establishment.uid}`, 'do-you-have-vacancies']);
+    this.router.navigate(['/workplace', this.establishment.uid, 'do-you-have-vacancies']);
+  }
+
+  protected returnToJobRoleSelectionPage(): void {
+    this.router.navigate(['/workplace', this.establishment.uid, 'select-vacancy-job-roles']);
   }
 
   protected setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'select-vacancy-job-roles'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'select-vacancy-job-roles'];
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -38,9 +52,6 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
         jobId: Number(job.jobId),
         total: parseInt(this.jobRoleNumbers.value[index]),
       };
-      if (job.other) {
-        fieldsToUpdate.other = job.other;
-      }
       return fieldsToUpdate;
     });
 
@@ -48,6 +59,7 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-starters'];
+    this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
+    this.nextRoute = ['/workplace', this.establishment.uid, 'do-you-have-starters'];
   }
 }

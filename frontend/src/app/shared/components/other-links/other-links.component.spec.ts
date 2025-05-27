@@ -103,7 +103,7 @@ describe('OtherLinksComponent', () => {
       const otherLinkText = getByText('Does your data meet funding requirements?');
 
       expect(otherLinkText).toBeTruthy();
-      expect(otherLinkText.getAttribute('href')).toEqual('/wdf');
+      expect(otherLinkText.getAttribute('href')).toEqual('/funding');
     });
 
     it('should not show link if canViewReports is true and isParentSubsidiaryView is true', async () => {
@@ -150,14 +150,5 @@ describe('OtherLinksComponent', () => {
 
     expect(otherLinkText).toBeTruthy();
     expect(otherLinkText.getAttribute('href')).toEqual('/about-ascwds');
-  });
-
-  it('should show Help to get you started link', async () => {
-    const { getByText } = await setup();
-
-    const otherLinkText = getByText('Help to get you started');
-
-    expect(otherLinkText).toBeTruthy();
-    expect(otherLinkText.getAttribute('href')).toEqual('/first-login-wizard');
   });
 });

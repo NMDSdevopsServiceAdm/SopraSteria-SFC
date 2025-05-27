@@ -1,0 +1,60 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+      <fieldset class="govuk-fieldset">
+        <h1 class="govuk-heading-l">Select job roles for the {{ jobRoleType }} you want to add</h1>
+        <p class="govuk-body-m">
+          You can review the number of {{ jobRoleType }} for each role after you click Continue.
+        </p>
+
+        <div [class.govuk-form-group--error]="submitted && form.invalid">
+          <app-accordion-group #accordion data-testid="selectJobRolesAccordion" contentName="job roles">
+            <p *ngIf="submitted && form.invalid" id="selectedJobRoles-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ errorMessageOnEmptyInput }}
+            </p>
+            <app-accordion-section
+              *ngFor="let group of jobGroups"
+              [title]="group.title"
+              [description]="group.descriptionText"
+              [expandedAtStart]="jobGroupsToOpenAtStart.includes(group.title)"
+            >
+              <ng-container *ngFor="let job of group.items">
+                <div
+                  class="govuk-checkboxes__item"
+                  [class.asc-checkboxes__item--disabled]="disabledJobIds.includes(job.id)"
+                >
+                  <input
+                    type="checkbox"
+                    class="govuk-checkboxes__input"
+                    [id]="'job-' + job.id"
+                    [name]="job.label"
+                    [value]="job.id"
+                    (change)="onCheckboxClick($event.target)"
+                    [disabled]="disabledJobIds.includes(job.id)"
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" [for]="'job-' + job.id">
+                    {{ job.label }} {{ disabledJobIds.includes(job.id) ? '(role already added)' : '' }}
+                  </label>
+                </div>
+              </ng-container>
+            </app-accordion-section>
+          </app-accordion-group>
+        </div>
+      </fieldset>
+
+      <div class="govuk-button-group govuk-!-margin-top-12">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Continue</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          (click)="onCancel($event)"
+          href="#"
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

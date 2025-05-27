@@ -16,7 +16,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService, workerWithWdf } from '@core/test-utils/MockWorkerService';
-import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
+import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -28,7 +28,7 @@ describe('StaffRecordSummaryComponent', () => {
     const { fixture, getByText, queryByText, getAllByText, getByAltText, getByTestId, queryByTestId } = await render(
       StaffRecordSummaryComponent,
       {
-        imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
+        imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, FundingModule],
         providers: [
           InternationalRecruitmentService,
           {

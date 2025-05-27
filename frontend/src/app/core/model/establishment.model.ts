@@ -68,6 +68,8 @@ export interface Leaver {
   other?: string;
 }
 
+export type StarterLeaverVacancy = Starter | Leaver | Vacancy;
+
 export interface Category {
   trainingId: number;
   title: string;
@@ -152,7 +154,6 @@ export interface Establishment {
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
-  recruitmentJourneyExistingUserBanner?: boolean;
   doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
@@ -195,13 +196,6 @@ export enum StaffBenefitEnum {
   YES = 'Yes',
   NO = 'No',
   DONT_KNOW = "Don't know",
-}
-
-export interface StaffRecruitmentDataRequest {
-  amountSpent?: string;
-  numberOfInterviews?: string;
-  trainingRequired?: string;
-  acceptCareCertificatesFromPreviousEmployment?: string;
 }
 
 export interface LocalIdentifiersRequest {

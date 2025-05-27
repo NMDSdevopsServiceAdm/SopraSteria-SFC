@@ -226,13 +226,18 @@ const getComparisonGroupAndCalculateRanking = async function (
     };
   }
 
-  const valuesData = mappedComparisonGroupRankings
-    .sort((a, b) => b - a)
-    .map((rank) => {
-      return { value: rank, currentEst: false };
-    });
+  const valuesData = mappedComparisonGroupRankings.map((rank) => {
+    return { value: rank, currentEst: false };
+  });
 
   const maxRank = mappedComparisonGroupRankings.length + 1;
+
+  if (metric.value) {
+    valuesData.push({ value: metric.value, currentEst: true });
+  }
+
+  valuesData.sort((a, b) => b.value - a.value);
+
   if (metric.stateMessage) {
     return {
       allValues: valuesData,
@@ -243,7 +248,6 @@ const getComparisonGroupAndCalculateRanking = async function (
   }
 
   const currentRank = await calculateRankingCallback(metric.value, mappedComparisonGroupRankings);
-  valuesData.splice(currentRank - 1, 0, { value: metric.value, currentEst: true });
 
   return {
     maxRank,

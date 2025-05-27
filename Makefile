@@ -7,6 +7,7 @@ install:
 	export NODE_ENV=localhost
 	npm install --prefix frontend
 	npm install --prefix backend
+	npm install --prefix lambdas/bulkUpload
 
 run:
 	(cd backend && npm run new-start) & \
@@ -17,6 +18,9 @@ test-fe:
 
 test-be:
 	npm run server:test:unit --prefix backend
+
+test-bu:
+	npm run test --prefix lambdas/bulkUpload
 
 db-migrate:
 	cd backend && export NODE_ENV=localhost && npm run db:migrate
@@ -39,3 +43,6 @@ stop-containers:
 	docker stop frontend_backend
 	docker stop sfc-test
 	docker stop soprasteria-sfc-sfc-redis-1
+
+deploy-bu-dev:
+	cd lambdas/bulkUpload && npm ci && npx serverless deploy --stage dev

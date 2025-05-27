@@ -152,7 +152,7 @@ export class GaugeOptionsBuilder {
       } else {
         value = this.value;
       }
-      if (this.value === 1) {
+      if (Number(this.value) === 1) {
         return (
           '<span data-testid="highest" class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-right-2">' +
           'Highest ranking ' +
@@ -161,7 +161,7 @@ export class GaugeOptionsBuilder {
           '</span></span>'
         );
       }
-      if (this.value < 0) return;
+      if (Number(this.value) < 0) return;
       return (
         '<span data-testid="lowest" class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-left-2">' +
         '<span class="govuk-!-font-weight-bold govuk-!-margin-right-4">' +
