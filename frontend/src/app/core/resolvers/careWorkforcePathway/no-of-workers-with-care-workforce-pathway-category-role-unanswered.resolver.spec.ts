@@ -58,7 +58,7 @@ describe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () =>
   });
 
   it('should call with the establishmentId', async () => {
-    const establishmentId = 213;
+    const establishmentId = '213';
     const overrides = { establishmentIdInParams: establishmentId, permissions: ['canViewWorker'] };
     const { resolver, route, getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerSpy } = await setup(overrides);
 
