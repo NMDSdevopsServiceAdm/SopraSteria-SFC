@@ -8,6 +8,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { JobRole } from '@core/model/job.model';
+import { Params } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -31,9 +32,13 @@ export class CareWorkforcePathwayService {
       .pipe(map((res) => res));
   }
 
-  getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId: string): Observable<CWPGetAllWorkersResponse> {
+  getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(
+    establishmentId: string,
+    queryParams: Params = {},
+  ): Observable<CWPGetAllWorkersResponse> {
     return this.http.get<CWPGetAllWorkersResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoRequireCareWorkforcePathwayRoleAnswer`,
+      { params: queryParams },
     );
   }
 }

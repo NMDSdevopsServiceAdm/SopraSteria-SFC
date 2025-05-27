@@ -9,20 +9,23 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockRouter } from '@core/test-utils/MockRouter';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary.component';
-import { MockRouter } from '@core/test-utils/MockRouter';
 
 describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
   const setup = async (overrides: any = {}) => {
     const workersToShow = overrides.workersToShow ?? mockWorkers;
-    const getWorkersSpy = jasmine.createSpy().and.returnValue(of({ workers: workersToShow }));
+    const workerCount = overrides.workerCount ?? workersToShow.length;
+    const getCWPWorkersSpy = jasmine
+      .createSpy()
+      .and.returnValue(of({ workers: workersToShow, workerCount: workerCount }));
 
     const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
 
@@ -36,7 +39,7 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
         {
           provide: CareWorkforcePathwayService,
           useFactory: MockCareWorkforcePathwayService.factory({
-            getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer: getWorkersSpy,
+            getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer: getCWPWorkersSpy,
           }),
         },
         {
@@ -49,10 +52,11 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
 
     const fixture = setuptools.fixture;
     const component = fixture.componentInstance;
+    fixture.autoDetectChanges();
 
     const injector = getTestBed();
-    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const workerService = injector.inject(WorkerService) as WorkerService;
+    const establishmentService = injector.inject(EstablishmentService);
+    const workerService = injector.inject(WorkerService);
     const router = injector.inject(Router) as Router;
 
     return {
@@ -61,6 +65,7 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
       fixture,
       establishmentService,
       workerService,
+      getCWPWorkersSpy,
       router,
       routerSpy,
     };
@@ -96,10 +101,33 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     });
   });
 
+  it('should show a return to home button', async () => {
+    const { getByRole, routerSpy } = await setup();
+
+    const returnToHomeButton = getByRole('button', { name: 'Return to home' });
+    expect(returnToHomeButton).toBeTruthy();
+
+    userEvent.click(returnToHomeButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+  });
+
+  it('should retrieve the first 15 unanswered workers on page load', async () => {
+    const { getCWPWorkersSpy } = await setup();
+    expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', { pageIndex: 0, itemsPerPage: 15 });
+  });
+
+  it('should redirect to home page if all workers have been answered', async () => {
+    const { fixture, routerSpy } = await setup({ workersToShow: [] });
+
+    await fixture.whenStable();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+  });
+
   describe('workers table', () => {
-    it('should display a row for each worker whose CWP role category was empty', async () => {
-      const { fixture, getByTestId } = await setup();
-      fixture.detectChanges();
+    it('should display a row for each worker whose CWP role category is not answered', async () => {
+      const { getByTestId } = await setup();
 
       mockWorkers.forEach((worker, index) => {
         const workerRow = getByTestId(`worker-row-${index}`);
@@ -115,10 +143,9 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
       });
     });
 
-    it('should set return to this page when Choose a category link is clicked', async () => {
-      const { router, fixture, getAllByText, workerService } = await setup();
+    it('should set returnTo as this page when "Choose a category" link is clicked', async () => {
+      const { router, getAllByText, workerService } = await setup();
       const setReturnToSpy = spyOn(workerService, 'setReturnTo').and.callThrough();
-      fixture.detectChanges();
 
       const chooseACategoryLink = getAllByText('Choose a category', {
         selector: 'a',
@@ -131,22 +158,43 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     });
   });
 
-  it('should show a return to home button', async () => {
-    const { getByRole, routerSpy } = await setup();
+  describe('pagination', () => {
+    it('should show pagination links when number of non-answered workers is larger then number of workers per page', async () => {
+      const { getByTestId } = await setup({ workerCount: 20 });
 
-    const returnToHomeButton = getByRole('button', { name: 'Return to home' });
-    expect(returnToHomeButton).toBeTruthy();
+      const pagination = getByTestId('pagination');
+      expect(within(pagination).getByRole('link', { name: '2' })).toBeTruthy();
+      expect(within(pagination).getByRole('link', { name: 'Next' })).toBeTruthy();
+    });
 
-    userEvent.click(returnToHomeButton);
+    it('should not show pagination links when number of non-answered workers is less then or equal number of workers per page', async () => {
+      const { fixture, queryByTestId } = await setup({ workerCount: 15 });
+      fixture.detectChanges();
 
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
-  });
+      expect(queryByTestId('pagination')).toBeFalsy();
+    });
 
-  it('should redirect to home page if all workers have been answered', async () => {
-    const { fixture, routerSpy } = await setup({ workersToShow: [] });
+    it('should retrieve and display the workers for next page when "Next" link is clicked', async () => {
+      const { fixture, getByRole, getByTestId, getCWPWorkersSpy } = await setup({ workerCount: 20 });
 
-    await fixture.whenStable();
+      const mockNextPageWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+      getCWPWorkersSpy.and.returnValue(of({ workers: mockNextPageWorkers, workerCount: 20 }));
 
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+      userEvent.click(getByRole('link', { name: 'Next' }));
+      await fixture.whenStable();
+
+      expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', { pageIndex: 1, itemsPerPage: 15 });
+
+      mockNextPageWorkers.forEach((worker, index) => {
+        const workerRow = getByTestId(`worker-row-${index}`);
+        const workerNameLink = within(workerRow).getByText(worker.nameOrId, { selector: 'a' }) as HTMLLinkElement;
+        expect(workerNameLink).toBeTruthy();
+        expect(workerNameLink.href).toContain(`${worker.uid}/staff-record-summary`);
+      });
+
+      const pagination = getByTestId('pagination');
+      expect(within(pagination).getByRole('link', { name: '1' })).toBeTruthy();
+      expect(within(pagination).getByRole('link', { name: 'Previous' })).toBeTruthy();
+    });
   });
 });

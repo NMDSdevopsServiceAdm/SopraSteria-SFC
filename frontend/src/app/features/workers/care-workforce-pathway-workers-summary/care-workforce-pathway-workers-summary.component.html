@@ -59,6 +59,14 @@
         </tbody>
       </table>
 
+      <app-pagination
+        [attr.data-testid]="'pagination'"
+        *ngIf="workerCount > itemsPerPage"
+        [itemsPerPage]="itemsPerPage"
+        [totalNoOfItems]="workerCount"
+        (currentPageIndexChange)="handlePageUpdate($event)"
+        [currentPageIndex]="pageIndex"/>
+
       <button class="govuk-button" type="button" (click)="returnToHome()">Return to home</button>
     </div>
   </div>

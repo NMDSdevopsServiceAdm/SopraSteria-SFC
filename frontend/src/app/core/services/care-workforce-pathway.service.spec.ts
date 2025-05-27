@@ -38,12 +38,25 @@ describe('CareWorkforcePathwayService', () => {
     expect(req.request.method).toBe('GET');
   });
 
-  it('should call the /api/${establishmentId}/careWorkforcePathway/workersWhoRequireCareWorkforcePathwayRoleAnswer endpoint', () => {
-    service.getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId).subscribe();
+  describe('getAllWorkers', () => {
+    const endpoint = '/careWorkforcePathway/workersWhoRequireCareWorkforcePathwayRoleAnswer';
 
-    const req = http.expectOne(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoRequireCareWorkforcePathwayRoleAnswer`,
-    );
-    expect(req.request.method).toBe('GET');
+    it('should call the expected endpoint', () => {
+      service.getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId).subscribe();
+
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}${endpoint}`);
+      expect(req.request.method).toBe('GET');
+    });
+
+    it('should call the endpoint with pagination query params if given', async () => {
+      service
+        .getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId, { pageIndex: 1, itemsPerPage: 15 })
+        .subscribe();
+
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}${endpoint}?pageIndex=1&itemsPerPage=15`,
+      );
+      expect(req.request.method).toBe('GET');
+    });
   });
 });
