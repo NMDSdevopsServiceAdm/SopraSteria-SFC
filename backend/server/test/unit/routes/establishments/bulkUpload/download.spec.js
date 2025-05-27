@@ -72,6 +72,7 @@ describe('download', () => {
     };
     const worker = apiWorkerBuilder();
     const downloadType = 'workers';
+    sinon.stub(models.careWorkforcePathwayRoleCategory, 'findAll').resolves([]);
     const downloadWorkers = sinon.stub(models.establishment, 'downloadWorkers').returns([
       {
         ...establishment,
