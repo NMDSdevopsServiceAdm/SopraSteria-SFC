@@ -1217,8 +1217,12 @@ class WorkerCsvValidator {
     if (this._currentLine.CWPCATEGORY && this._currentLine.CWPCATEGORY.length > 0) {
       if (isNaN(myCwpCategory) || !allowedCwpCategoryValues.includes(myCwpCategory)) {
         this._validationErrors.push(
-          this._generateWarning('The code you have entered for CWPCATEGORY is incorrect', 'CWPCATEGORY'),
+          this._generateWarning(
+            'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
+            'CWPCATEGORY',
+          ),
         );
+
         return false;
       } else {
         this._careWorkForcePathwayCategory = myCwpCategory;
