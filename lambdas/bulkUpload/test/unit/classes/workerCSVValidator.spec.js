@@ -69,7 +69,7 @@ const buildWorkerRecord = build('WorkerRecord', {
   },
 });
 
-describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
+describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
   describe('validations', () => {
     describe('days sick', () => {
       it('should emit a warning when days sick not already changed today', async () => {
