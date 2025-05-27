@@ -17,6 +17,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   public section = 'Training and qualifications';
+  public heading = 'Where are they currently on the care workforce pathway?';
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
   public revealTitle = "What's the care workforce pathway?";
   public cwpQuestionsFlag: boolean;
@@ -48,11 +49,11 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
       this.prefill();
     }
 
+    this.setupPageWhenCameFromCWPSummaryPage();
+
     this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
     this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
     this.next = this.getRoutePath('staff-record-summary');
-
-    this.setupPageWhenCameFromCWPSummaryPage();
   }
 
   prefill() {
@@ -85,6 +86,7 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
       return;
     }
 
+    this.heading = 'Where are your staff on the care workforce pathway?';
     this.returnUrl = this.return.url;
   }
 

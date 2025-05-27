@@ -75,7 +75,7 @@ const expectWorkerToHaveCWPRoleCategory = (workerName, cwpRoleCategory) => {
 
 const answerCWPRoleCategoryForWorker = (workerName, cwpRoleCategory) => {
   cy.contains(workerName).parents().get('a').contains('Choose a category').click();
-  cy.get('h1').should('contain', 'Where are they currently on the care workforce pathway?');
+  cy.get('h1').should('contain', 'Where are your staff on the care workforce pathway?');
   cy.getByLabel(cwpRoleCategory).check();
-  cy.get('button').contains('Save and return').click();
+  cy.get('button').contains('Save').click();
 };

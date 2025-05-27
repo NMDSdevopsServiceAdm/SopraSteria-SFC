@@ -294,20 +294,32 @@ describe('CareWorkforcePathwayRoleComponent', () => {
       },
     };
 
-    it("should show the worker's nameOrId", async () => {
-      const { fixture, getByText } = await setup({ ...overrideReturnTo });
+    it('should show a different h1 heading', async () => {
+      const { getByRole } = await setup({ ...overrideReturnTo });
 
-      fixture.detectChanges();
+      expect(getByRole('heading', { level: 1 }).textContent).toContain(
+        'Where are your staff on the care workforce pathway?',
+      );
+    });
+
+    it("should show the worker's nameOrId", async () => {
+      const { getByText } = await setup({ ...overrideReturnTo });
 
       expect(getByText('Name or ID number')).toBeTruthy();
       expect(getByText(mockWorker.nameOrId as string)).toBeTruthy();
+    });
+
+    it('should set submit button text as "Save"', async () => {
+      const { getByText } = await setup({ ...overrideReturnTo });
+
+      expect(getByText('Save')).toBeTruthy();
     });
 
     it('should return to the CWP summary page and add an alert when submitted', async () => {
       const { fixture, getByText, routerSpy, alertSpy } = await setup(overrideReturnTo);
 
       userEvent.click(getByText('New to care'));
-      userEvent.click(getByText('Save and return'));
+      userEvent.click(getByText('Save'));
 
       await fixture.whenStable();
 

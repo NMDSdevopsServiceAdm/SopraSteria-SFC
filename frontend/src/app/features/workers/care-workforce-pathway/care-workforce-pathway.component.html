@@ -9,7 +9,7 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading" style="width: 90%">
               <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-              Where are they currently on the care workforce pathway?
+              {{ heading }}
             </h1>
           </legend>
 
@@ -78,5 +78,16 @@
     </div>
   </div>
 
-  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+  <ng-container *ngIf="cameFromCWPSummaryPage; else normalSubmitButton">
+    <app-submit-button
+      [overrideCallToActionLabel]="true"
+      [callToAction]="'Save'"
+      [return]="!insideFlow"
+      (clicked)="setSubmitAction($event)"
+    ></app-submit-button>
+  </ng-container>
+
+  <ng-template #normalSubmitButton>
+    <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+  </ng-template>
 </form>
