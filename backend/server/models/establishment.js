@@ -914,6 +914,14 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'MandatoryTraining',
     });
+
+    Establishment.belongsToMany(models.CareWorkforcePathwayReasons, {
+      through: 'EstablishmentCWPReason',
+      foreignKey: 'establishmentID',
+      sourceKey: 'id',
+      as: 'CareWorkforcePathwayReasons',
+      onDelete: 'CASCADE',
+    });
   };
 
   Establishment.turnoverAndVacanciesData = function (establishmentId) {
