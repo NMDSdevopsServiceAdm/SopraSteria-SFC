@@ -6,10 +6,10 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
   try {
-    let workers = await models.worker.getAllWorkersWithoutCareWorkforceCategory(establishmentId);
+    let workerCount = await models.worker.countAllWorkersWithoutCareWorkforceCategory(establishmentId);
 
     res.status(200).send({
-      noOfWorkersWhoRequireAnswers: workers.length,
+      noOfWorkersWhoRequireAnswers: workerCount,
     });
   } catch (err) {
     console.error('worker::GET:total - failed', err);

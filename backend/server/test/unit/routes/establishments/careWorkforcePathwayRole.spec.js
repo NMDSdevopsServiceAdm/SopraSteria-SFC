@@ -43,7 +43,7 @@ describe('careWorkforcePathwayRole', () => {
     };
 
     it('should return the number when there are workers with care workforce pathway category unanswered', async () => {
-      sinon.stub(models.worker, 'getAllWorkersWithoutCareWorkforceCategory').returns(workersFromDB);
+      sinon.stub(models.worker, 'countAllWorkersWithoutCareWorkforceCategory').returns(workersFromDB.length);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -56,7 +56,7 @@ describe('careWorkforcePathwayRole', () => {
     });
 
     it('should return 0 when there are no workers with care workforce pathway category unanswered', async () => {
-      sinon.stub(models.worker, 'getAllWorkersWithoutCareWorkforceCategory').returns([]);
+      sinon.stub(models.worker, 'countAllWorkersWithoutCareWorkforceCategory').returns(0);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -69,7 +69,7 @@ describe('careWorkforcePathwayRole', () => {
     });
 
     it('should return an error', async () => {
-      sinon.stub(models.worker, 'getAllWorkersWithoutCareWorkforceCategory').throws();
+      sinon.stub(models.worker, 'countAllWorkersWithoutCareWorkforceCategory').throws();
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -151,23 +151,16 @@ describe('careWorkforcePathwayRole', () => {
           mainJob: { title: 'Care worker' },
         }));
 
-      const createRequestWithQuery = ({ pageIndex, itemsPerPage }) => {
+      const createRequestWithQuery = (query = {}) => {
         const request = {
           method: 'GET',
           url: `/api/establishment/${establishmentId}/workersWhoRequireCareWorkforcePathwayRoleAnswer`,
           params: {
             id: establishmentId,
           },
-          query: {},
+          query,
           establishmentId,
         };
-
-        if (pageIndex) {
-          request.query.pageIndex = pageIndex;
-        }
-        if (itemsPerPage) {
-          request.query.itemsPerPage = itemsPerPage;
-        }
 
         return httpMocks.createRequest(request);
       };
@@ -196,7 +189,7 @@ describe('careWorkforcePathwayRole', () => {
         });
       });
 
-      it('should call database with the itemsPerPage = 15 and pageIndex = 0 if not given', async () => {
+      it('should call database with itemsPerPage = 15 and pageIndex = 0 if no query was given', async () => {
         const req = createRequestWithQuery({});
         const res = httpMocks.createResponse();
         await getWorkersWhoRequireCareWorkforcePathwayRoleAnswer(req, res);
