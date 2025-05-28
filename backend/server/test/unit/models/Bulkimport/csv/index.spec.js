@@ -33,7 +33,7 @@ describe('/server/models/Bulkimport/BUDI/index.js', () => {
 
     it('should return bulk upload code for the care workforce pathway category', async () => {
       sinon.stub(dbmodels.careWorkforcePathwayRoleCategory, 'findAll').resolves(careWorkforcePathwayRoleCategory);
-      const cwp = await BUDI.initialize();
+      await BUDI.initialize();
 
       const roleCategory = 1;
       const bulkUploadCode = BUDI.careWorkforcePathwayRoleCategory(BUDI.FROM_ASC, roleCategory);
