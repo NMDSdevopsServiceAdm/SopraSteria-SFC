@@ -38,14 +38,10 @@
           </div>
 
           <h2 class="govuk-heading-s">Care workforce pathway role categories</h2>
-          <div
-            class="govuk-radios"
-            data-module="govuk-radios"
-            *ngFor="let careWorkforcePathwayCategory of careWorkforcePathwayCategories; let idx = index"
-          >
+          <div class="govuk-radios" data-module="govuk-radios">
             <div
               class="govuk-radios__item"
-              [ngClass]="{ 'govuk-!-margin-bottom-2': !careWorkforcePathwayCategory.description }"
+              *ngFor="let careWorkforcePathwayCategory of careWorkforcePathwayCategories; let idx = index"
             >
               <input
                 class="govuk-radios__input"
@@ -59,7 +55,7 @@
               <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ idx }}">
                 {{ careWorkforcePathwayCategory.title }}
               </label>
-              <div id="careWorkforcePathwayCategory-description" class="govuk-hint govuk-radios__hint">
+              <div id="careWorkforcePathwayCategory-description" class="govuk-hint govuk-radios__hint asc__preline">
                 {{ careWorkforcePathwayCategory.description }}
               </div>
             </div>
