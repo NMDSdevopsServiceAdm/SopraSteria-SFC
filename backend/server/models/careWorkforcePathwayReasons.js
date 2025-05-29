@@ -15,9 +15,14 @@ module.exports = function (sequelize, DataTypes) {
         unique: true,
         field: 'Seq',
       },
-      reason: {
+      text: {
         type: DataTypes.TEXT,
-        field: 'Reason',
+        field: 'Text',
+      },
+      isOther: {
+        type: DataTypes.BOOLEAN,
+        field: 'IsOther',
+        defaultValue: false,
       },
       analysisFileCode: {
         type: DataTypes.INTEGER,
@@ -41,7 +46,7 @@ module.exports = function (sequelize, DataTypes) {
 
   CareWorkforcePathwayReasons.associate = (models) => {
     CareWorkforcePathwayReasons.belongsToMany(models.establishment, {
-      through: 'EstablishmentCWPReason',
+      through: 'EstablishmentCWPReasons',
       foreignKey: 'careWorkforcePathwayReasonID',
       sourceKey: 'id',
     });
