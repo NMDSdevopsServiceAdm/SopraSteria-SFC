@@ -6,7 +6,7 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
   try {
-    let workerCount = await models.worker.countAllWorkersWithoutCareWorkforceCategory(establishmentId);
+    const workerCount = await models.worker.countAllWorkersWithoutCareWorkforceCategory(establishmentId);
 
     res.status(200).send({
       noOfWorkersWhoRequireAnswers: workerCount,
