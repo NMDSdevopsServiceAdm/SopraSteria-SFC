@@ -7,7 +7,7 @@ module.exports = {
 
   provider: {
     name: 'aws',
-    runtime: 'nodejs18.x',
+    runtime: 'nodejs22.x',
     lambdaHashingVersion: '20201221',
     stage: process.env.STAGE ?? 'dev',
     region: process.env.BULK_UPLOAD_LAMBDA_REGION ?? 'eu-west-2',

@@ -161,8 +161,8 @@
     "webpack-bundle-analyzer": "^4.4.2"
   },
   "engines": {
-    "node": "18",
-    "npm": "9"
+    "node": "22.16.0",
+    "npm": "10.9.2"
   },
   "nyc": {
     "branches": 22,
