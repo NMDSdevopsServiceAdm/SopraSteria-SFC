@@ -1,10 +1,10 @@
 /* jshint indent: 2 */
 
 module.exports = function (sequelize, DataTypes) {
-  const EstablishmentCWPReason = sequelize.define(
-    'EstablishmentCWPReason',
+  const EstablishmentCWPReasons = sequelize.define(
+    'EstablishmentCWPReasons',
     {
-      establishmentID: {
+      establishmentId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
@@ -37,23 +37,23 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      tableName: 'EstablishmentCWPReason',
+      tableName: 'EstablishmentCWPReasons',
       schema: 'cqc',
       createdAt: false,
       updatedAt: false,
     },
   );
 
-  EstablishmentCWPReason.associate = (models) => {
-    EstablishmentCWPReason.belongsTo(models.establishment, {
-      foreignKey: 'establishmentID',
+  EstablishmentCWPReasons.associate = (models) => {
+    EstablishmentCWPReasons.belongsTo(models.establishment, {
+      foreignKey: 'establishmentId',
       targetKey: 'id',
     });
-    EstablishmentCWPReason.belongsTo(models.CareWorkforcePathwayReasons, {
+    EstablishmentCWPReasons.belongsTo(models.CareWorkforcePathwayReasons, {
       foreignKey: 'careWorkforcePathwayReasonID',
       targetKey: 'id',
     });
   };
 
-  return EstablishmentCWPReason;
+  return EstablishmentCWPReasons;
 };

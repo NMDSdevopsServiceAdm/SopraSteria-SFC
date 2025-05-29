@@ -3,7 +3,7 @@
 const models = require('../server/models/index');
 
 const cwpReasonsTable = { tableName: 'CareWorkforcePathwayReasons', schema: 'cqc' };
-const junctionTable = { tableName: 'EstablishmentCWPReason', schema: 'cqc' };
+const junctionTable = { tableName: 'EstablishmentCWPReasons', schema: 'cqc' };
 const establishmentTable = { tableName: 'Establishment', schema: 'cqc' };
 
 /** @type {import('sequelize-cli').Migration} */
@@ -21,8 +21,12 @@ module.exports = {
             type: Sequelize.DataTypes.INTEGER,
             unique: true,
           },
-          Reason: {
+          Text: {
             type: Sequelize.DataTypes.TEXT,
+          },
+          IsOther: {
+            type: Sequelize.DataTypes.BOOLEAN,
+            defaultValue: false,
           },
           AnalysisFileCode: {
             type: Sequelize.DataTypes.INTEGER,
@@ -99,44 +103,44 @@ module.exports = {
 };
 
 const reasonTableData = [
-  { reason: "To help define our organisation's values", id: 1, seq: 10, analysisFileCode: 1, bulkUploadCode: 1 },
-  { reason: 'To help update our job descriptions', id: 2, seq: 20, analysisFileCode: 2, bulkUploadCode: 2 },
+  { text: "To help define our organisation's values", id: 1, seq: 10, analysisFileCode: 1, bulkUploadCode: 1 },
+  { text: 'To help update our job descriptions', id: 2, seq: 20, analysisFileCode: 2, bulkUploadCode: 2 },
   {
-    reason: 'To help update our HR and learning and development policies',
+    text: 'To help update our HR and learning and development policies',
     id: 3,
     seq: 30,
     analysisFileCode: 3,
     bulkUploadCode: 3,
   },
   {
-    reason: 'To help identify skills and knowledge gaps in our staff',
+    text: 'To help identify skills and knowledge gaps in our staff',
     id: 4,
     seq: 40,
     analysisFileCode: 4,
     bulkUploadCode: 4,
   },
   {
-    reason: 'To help identify learning and development opportunities for our staff',
+    text: 'To help identify learning and development opportunities for our staff',
     id: 5,
     seq: 50,
     analysisFileCode: 5,
     bulkUploadCode: 5,
   },
-  { reason: 'To help set levels of pay', id: 6, seq: 60, analysisFileCode: 6, bulkUploadCode: 6 },
+  { text: 'To help set levels of pay', id: 6, seq: 60, analysisFileCode: 6, bulkUploadCode: 6 },
   {
-    reason: 'To help with advertising job roles and recruitment',
+    text: 'To help with advertising job roles and recruitment',
     id: 7,
     seq: 70,
     analysisFileCode: 7,
     bulkUploadCode: 7,
   },
   {
-    reason: 'To help demonstrate delivery and outcomes to commissioners and CQC',
+    text: 'To help demonstrate delivery and outcomes to commissioners and CQC',
     id: 8,
     seq: 80,
     analysisFileCode: 8,
     bulkUploadCode: 8,
   },
-  { reason: 'To help plan our future workforce', id: 9, seq: 90, analysisFileCode: 9, bulkUploadCode: 9 },
-  { reason: 'For something else', id: 10, seq: 100, analysisFileCode: 10, bulkUploadCode: 10 },
+  { text: 'To help plan our future workforce', id: 9, seq: 90, analysisFileCode: 9, bulkUploadCode: 9 },
+  { text: 'For something else', id: 10, seq: 100, analysisFileCode: 10, bulkUploadCode: 10, isOther: true },
 ];
