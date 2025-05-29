@@ -12,8 +12,7 @@ module.exports = {
           autoIncrement: true,
         },
         Seq: {
-          type: Sequelize.INTEGER,
-          primaryKey: true,
+          type: Sequelize.DataTypes.INTEGER,
           unique: true,
         },
         Title: {
@@ -21,12 +20,12 @@ module.exports = {
           allowNull: true,
         },
         AnalysisFileCode: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.DataTypes.INTEGER,
           allowNull: false,
           unique: true,
         },
         BulkUploadCode: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.DataTypes.INTEGER,
           allowNull: false,
           unique: true,
         },
@@ -48,9 +47,9 @@ module.exports = {
 
   async down(queryInterface){
     return queryInterface.dropTable({
-      tableName: 'CWPWorkplaceAwareness',
-      schema: 'cqc'
-    })
+      tableName: 'CareWorkforcePathwayWorkplaceAwareness',
+      schema: 'cqc',
+    });
   }
 };
 
