@@ -774,6 +774,12 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareWorkforcePathwayWorkplaceAwarenessChangedBy"',
       },
+      careWorkforcePathwayUse: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'CareWorkforcePathwayUse',
+      },
     },
     {
       defaultScope: {
@@ -916,8 +922,9 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     Establishment.belongsToMany(models.CareWorkforcePathwayReasons, {
-      through: 'EstablishmentCWPReason',
-      foreignKey: 'establishmentID',
+      through: 'EstablishmentCWPReasons',
+      attributes: ['other'],
+      foreignKey: 'establishmentId',
       sourceKey: 'id',
       as: 'CareWorkforcePathwayReasons',
       onDelete: 'CASCADE',
