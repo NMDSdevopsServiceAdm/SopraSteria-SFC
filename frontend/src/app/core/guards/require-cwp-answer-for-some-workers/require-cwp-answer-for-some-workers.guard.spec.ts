@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, CanActivateFn, provideRouter, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRoute, provideRouter, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
@@ -17,6 +17,7 @@ describe('RequireCWPAnswerForSomeWorkersGuard', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
+        RequireCWPAnswerForSomeWorkersGuard,
         { provide: CareWorkforcePathwayService, useClass: MockCareWorkforcePathwayService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: ParentSubsidiaryViewService, useClass: MockParentSubsidiaryViewService },
@@ -24,13 +25,15 @@ describe('RequireCWPAnswerForSomeWorkersGuard', () => {
       ],
     });
 
+    const guard = TestBed.inject(RequireCWPAnswerForSomeWorkersGuard);
+
     const establishmentService = TestBed.inject(EstablishmentService);
     const careWorkforcePathwayService = TestBed.inject(CareWorkforcePathwayService);
     const parentSubsidiaryViewService = TestBed.inject(ParentSubsidiaryViewService);
     const route = TestBed.inject(ActivatedRoute).snapshot;
 
-    const resolver: CanActivateFn = (...guardParameters) =>
-      TestBed.runInInjectionContext(() => RequireCWPAnswerForSomeWorkersGuard(...guardParameters));
+    const cwpServiceSpy = spyOn(careWorkforcePathwayService, 'getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer');
+    cwpServiceSpy.and.returnValue(of({ noOfWorkersWhoRequireAnswers: overrides.noOfWorkersWhoRequireAnswers ?? 0 }));
 
     if (overrides.isViewingSubAsParent) {
       establishmentService.establishment.uid = 'mock-subsidiary-uid';
@@ -40,37 +43,34 @@ describe('RequireCWPAnswerForSomeWorkersGuard', () => {
       spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(false);
     }
 
-    return { resolver, route, establishmentService, careWorkforcePathwayService, parentSubsidiaryViewService };
+    return { guard, route, establishmentService, cwpServiceSpy, parentSubsidiaryViewService };
   };
 
   const mockRouterStateSnapshot = {} as RouterStateSnapshot;
 
   it('should be created', async () => {
-    const { resolver } = await setup();
-    expect(resolver).toBeTruthy();
+    const { guard } = await setup();
+    expect(guard).toBeTruthy();
   });
 
   it('should return true when some workers still require answer for CWP Role Category question', async () => {
-    const { resolver, route, establishmentService, careWorkforcePathwayService } = await setup();
+    const { guard, route, establishmentService, cwpServiceSpy } = await setup({
+      noOfWorkersWhoRequireAnswers: 2,
+    });
 
-    const cwpServiceSpy = spyOn(careWorkforcePathwayService, 'getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer');
-    cwpServiceSpy.and.returnValue(of({ noOfWorkersWhoRequireAnswers: 2 }));
-
-    const result = await resolver(route, mockRouterStateSnapshot);
+    const result = await guard.canActivate(route, mockRouterStateSnapshot);
 
     expect(cwpServiceSpy).toHaveBeenCalledWith(establishmentService.establishment.uid);
     expect(result).toEqual(true);
   });
 
   it('should redirect to dashboard home tab when every worker has got the CWP question answered', async () => {
-    const { resolver, route, establishmentService, careWorkforcePathwayService } = await setup({
+    const { guard, route, establishmentService, cwpServiceSpy } = await setup({
       isViewingSubAsParent: false,
+      noOfWorkersWhoRequireAnswers: 0,
     });
 
-    const cwpServiceSpy = spyOn(careWorkforcePathwayService, 'getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer');
-    cwpServiceSpy.and.returnValue(of({ noOfWorkersWhoRequireAnswers: 0 }));
-
-    const result = await resolver(route, mockRouterStateSnapshot);
+    const result = await guard.canActivate(route, mockRouterStateSnapshot);
 
     expect(cwpServiceSpy).toHaveBeenCalledWith(establishmentService.establishment.uid);
     expect(result).toBeInstanceOf(UrlTree);
@@ -78,12 +78,12 @@ describe('RequireCWPAnswerForSomeWorkersGuard', () => {
   });
 
   it('should redirect to subsidiary dashboard home tab when every worker has got the CWP question answered and viewing sub as parent', async () => {
-    const { resolver, route, careWorkforcePathwayService } = await setup({ isViewingSubAsParent: true });
+    const { guard, route, cwpServiceSpy } = await setup({
+      isViewingSubAsParent: true,
+      noOfWorkersWhoRequireAnswers: 0,
+    });
 
-    const cwpServiceSpy = spyOn(careWorkforcePathwayService, 'getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer');
-    cwpServiceSpy.and.returnValue(of({ noOfWorkersWhoRequireAnswers: 0 }));
-
-    const result = await resolver(route, mockRouterStateSnapshot);
+    const result = await guard.canActivate(route, mockRouterStateSnapshot);
 
     expect(cwpServiceSpy).toHaveBeenCalledWith('mock-subsidiary-uid');
     expect(result).toBeInstanceOf(UrlTree);
