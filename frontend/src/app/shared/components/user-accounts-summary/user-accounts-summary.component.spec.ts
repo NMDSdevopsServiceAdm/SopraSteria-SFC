@@ -10,16 +10,15 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { EditUser, ReadUser } from '@core/test-utils/MockUserService';
 import { UserAccountsSummaryComponent } from '@shared/components/user-accounts-summary/user-accounts-summary.component';
 import { SharedModule } from '@shared/shared.module';
-import { queryByTestId, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
-
 describe('UserAccountsSummaryComponent', () => {
   const setup = async (showBanner = undefined, overLimit = false, isParentUsers = false) => {
     const workplace = Establishment;
 
     const setupTools = await render(UserAccountsSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
       declarations: [],
       componentProperties: {
         workplace,
@@ -192,88 +191,37 @@ describe('UserAccountsSummaryComponent', () => {
   });
 
   describe('Permissions column', () => {
-    it('should have permission as Primary edit and WDF when user isPrimary and canManageWdfClaims are true and role is Edit', async () => {
+    it('should have permission as Primary edit when user isPrimary is true and role is Edit', async () => {
       const { component, fixture, queryByText } = await setup();
 
       component.users[0].role = 'Edit' as Roles;
       component.users[0].isPrimary = true;
-      component.users[0].canManageWdfClaims = true;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Primary edit and WDF')).toBeTruthy();
-    });
-
-    it('should have permission as Primary edit when user isPrimary is true, canManageWdfClaims is false and role is Edit', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.users[0].role = 'Edit' as Roles;
-      component.users[0].isPrimary = true;
-      component.users[0].canManageWdfClaims = false;
 
       fixture.detectChanges();
 
       expect(queryByText('Primary edit')).toBeTruthy();
     });
 
-    it('should have permission as Edit and WDF when user isPrimary is false, canManageWdfClaims is true and role is Edit', async () => {
+    it('should have permission as Edit when user isPrimary is false and role is Edit', async () => {
       const { component, fixture, queryByText } = await setup();
 
       component.users[0].role = 'Edit' as Roles;
       component.users[0].isPrimary = false;
-      component.users[0].canManageWdfClaims = true;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Edit and WDF')).toBeTruthy();
-    });
-
-    it('should have permission as Edit when user isPrimary is false, canManageWdfClaims is false and role is Edit', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.users[0].role = 'Edit' as Roles;
-      component.users[0].isPrimary = false;
-      component.users[0].canManageWdfClaims = false;
 
       fixture.detectChanges();
 
       expect(queryByText('Edit')).toBeTruthy();
     });
 
-    it('should have permission as Read only and WDF when user canManageWdfClaims is true and role is Read', async () => {
+    it('should have permission as Read only when role is Read', async () => {
       const { component, fixture, queryByText } = await setup();
 
       component.users[0].role = 'Read' as Roles;
-      component.users[0].canManageWdfClaims = true;
-      component.users[0].isPrimary = false;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Read only and WDF')).toBeTruthy();
-    });
-
-    it('should have permission as Read only when user canManageWdfClaims is false and role is Read', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.users[0].role = 'Read' as Roles;
-      component.users[0].canManageWdfClaims = false;
       component.users[0].isPrimary = false;
 
       fixture.detectChanges();
 
       expect(queryByText('Read only')).toBeTruthy();
-    });
-
-    it('should have permission as WDF when user canManageWdfClaims is true and role is None', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.users[0].role = 'None' as Roles;
-      component.users[0].canManageWdfClaims = true;
-      component.users[0].isPrimary = false;
-
-      fixture.detectChanges();
-
-      expect(queryByText('WDF')).toBeTruthy();
     });
   });
 });

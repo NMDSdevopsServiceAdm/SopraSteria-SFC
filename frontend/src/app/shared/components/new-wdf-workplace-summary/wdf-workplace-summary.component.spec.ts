@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
@@ -8,7 +9,7 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import { WorkerService } from '@core/services/worker.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentWithShareWith,
@@ -16,10 +17,10 @@ import {
   MockEstablishmentService,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 
@@ -28,7 +29,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     const workplace = establishmentWithWdfBuilder() as Establishment;
 
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WDFWorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, FundingModule],
       declarations: [],
       providers: [
         {
@@ -41,12 +42,12 @@ describe('WDFWorkplaceSummaryComponent', () => {
           useClass: MockEstablishmentService,
         },
         {
-          provide: WorkerService,
-          useClass: MockWorkerService,
-        },
-        {
           provide: CqcStatusChangeService,
           useClass: MockCqcStatusChangeService,
+        },
+        {
+          provide: VacanciesAndTurnoverService,
+          useClass: MockVacanciesAndTurnoverService,
         },
       ],
       componentProperties: {
@@ -57,9 +58,13 @@ describe('WDFWorkplaceSummaryComponent', () => {
         ...overrides,
       },
     });
+
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getByTestId, queryByTestId, rerender };
+    const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
+    const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
+
+    return { component, fixture, getByText, getByTestId, queryByTestId, rerender, clearAllSelectedJobRolesSpy };
   };
 
   it('should render a WorkplaceSummaryComponent', async () => {
@@ -69,7 +74,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
   });
 
   it('should render a heading', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
 
     expect(getByText('Your workplace details')).toBeTruthy();
   });
@@ -87,9 +92,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
     expect(getByTestId('employerType')).toBeTruthy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
   it('should render the services section with top margin when removeServiceSectionMargin is false, and without margin when true', async () => {
@@ -313,7 +317,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show the Change link when there is a main service', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const mainServiceRow = within(document.body).queryByTestId('mainService');
         const link = within(mainServiceRow).queryByText('Change');
@@ -351,7 +355,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     });
 
     describe('Other services', () => {
-      it('should show dash and have Add information button on when otherServices is null', async () => {
+      it('should show dash and have Add information button on when otherServices value is null', async () => {
         const { component, fixture } = await setup();
 
         component.workplace.otherServices = { value: null };
@@ -565,14 +569,14 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
         expect(within(vacanciesRow).queryByText('-')).toBeTruthy();
       });
 
-      it(`should show Don't know and a Change link when vacancies is set to Don't know`, async () => {
+      it(`should show Not known and a Change link when vacancies is set to Don't know`, async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.vacancies = `Don't know`;
+        component.workplace.vacancies = 'Not known';
 
         fixture.detectChanges();
 
@@ -580,8 +584,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
-        expect(within(vacanciesRow).queryByText(`Don't know`)).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
+        expect(within(vacanciesRow).queryByText('Not known')).toBeTruthy();
       });
 
       it(`should show None and a Change link when vacancies is set to None`, async () => {
@@ -595,7 +599,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
         expect(within(vacanciesRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -610,8 +614,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
-        expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
+        expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
       it(`should show multiple job vacancies with the number of vacancies for each job and a Change link when multiple jobs have vacancies`, async () => {
@@ -628,9 +632,19 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const vacanciesRow = within(document.body).queryByTestId('vacancies');
 
         expect(within(vacanciesRow).queryByText('Change')).toBeTruthy();
-        expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
-        expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
-        expect(within(vacanciesRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+        expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('2 x nursing')).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
+      });
+
+      it('should clear selected job roles on navigation to update vacancies page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const vacanciesRow = getByTestId('vacancies');
+        const link = within(vacanciesRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
       });
     });
 
@@ -640,7 +654,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         const startersRow = getByTestId('starters');
 
-        expect(within(startersRow).getByText('New starters in the last 12 months')).toBeTruthy();
+        expect(within(startersRow).getByText('Starters in the last 12 months')).toBeTruthy();
       });
 
       it('should show dash and have Add information button on when starters is null', async () => {
@@ -654,14 +668,14 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
         expect(within(startersRow).queryByText('-')).toBeTruthy();
       });
 
-      it(`should show Don't know and a Change link when starters is set to Don't know`, async () => {
+      it(`should show Not known and a Change link when starters is set to Don't know`, async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.starters = `Don't know`;
+        component.workplace.starters = 'Not known';
 
         fixture.detectChanges();
 
@@ -669,8 +683,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
-        expect(within(startersRow).queryByText(`Don't know`)).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
+        expect(within(startersRow).queryByText('Not known')).toBeTruthy();
       });
 
       it(`should show None and a Change link when starters is set to None`, async () => {
@@ -684,7 +698,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
         expect(within(startersRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -699,8 +713,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
-        expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
+        expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
       it(`should show multiple jobs with the number of starters for each job and a Change link when multiple jobs have starters`, async () => {
@@ -717,9 +731,19 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const startersRow = within(document.body).queryByTestId('starters');
 
         expect(within(startersRow).queryByText('Change')).toBeTruthy();
-        expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
-        expect(within(startersRow).queryByText('2 Nursing')).toBeTruthy();
-        expect(within(startersRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+        expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
+        expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
+        expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
+      });
+
+      it('should clear selected job roles on navigation to update starters page', async () => {
+        const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+        const startersRow = getByTestId('starters');
+        const link = within(startersRow).queryByText('Add');
+
+        fireEvent.click(link);
+        expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
       });
     });
 
@@ -729,7 +753,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         const leaversRow = getByTestId('leavers');
 
-        expect(within(leaversRow).getByText('Staff leavers in the last 12 months')).toBeTruthy();
+        expect(within(leaversRow).getByText('Leavers in the last 12 months')).toBeTruthy();
       });
 
       it('should show dash and have Add information button on when leavers is null', async () => {
@@ -743,14 +767,14 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
         expect(within(leaversRow).queryByText('-')).toBeTruthy();
       });
 
-      it(`should show Don't know and a Change link when leavers is set to Don't know`, async () => {
+      it(`should show Not known and a Change link when leavers is set to Don't know`, async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.leavers = `Don't know`;
+        component.workplace.leavers = 'Not known';
 
         fixture.detectChanges();
 
@@ -758,8 +782,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
-        expect(within(leaversRow).queryByText(`Don't know`)).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
+        expect(within(leaversRow).queryByText('Not known')).toBeTruthy();
       });
 
       it(`should show None and a Change link when leavers is set to None`, async () => {
@@ -773,7 +797,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
         expect(within(leaversRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -787,8 +811,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
-        expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
+        expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
       it(`should show multiple jobs with the number of leavers for each job and a Change link when multiple jobs have leavers`, async () => {
@@ -804,76 +828,24 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const leaversRow = within(document.body).queryByTestId('leavers');
 
         expect(within(leaversRow).queryByText('Change')).toBeTruthy();
-        expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
-        expect(within(leaversRow).queryByText('2 Nursing')).toBeTruthy();
-        expect(within(leaversRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+        expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
+        expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
+        expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
+    });
+
+    it('should clear selected job roles on navigation to update leavers page', async () => {
+      const { getByTestId, clearAllSelectedJobRolesSpy } = await setup();
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Add');
+
+      fireEvent.click(link);
+      expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
     });
   });
 
-  describe('Recruitment section', () => {
-    describe('Advertising spend', () => {
-      it('should show dash and have Add information button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks = null;
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(within(advertisingSpendRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(
-          within(advertisingSpendRow).getByText(
-            `£${component.formatMonetaryValue(component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks)}`,
-          ),
-        ).toBeTruthy();
-      });
-    });
-
-    describe('People interviewed', () => {
-      it('should show dash and have Add information button on People Interviewed row when peopleInterviewedInTheLastFourWeeks is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.peopleInterviewedInTheLastFourWeeks = null;
-        fixture.detectChanges();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(within(peopleInterviewedRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on People Interviewed row when peopleInterviewedInTheLastFourWeeks has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(
-          within(peopleInterviewedRow).queryByText(component.workplace.peopleInterviewedInTheLastFourWeeks),
-        ).toBeTruthy();
-      });
-    });
-
+  describe('Recruitment and benefits section', () => {
     describe('Repeat training', () => {
       it('should show dash and have Add information button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
@@ -892,7 +864,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment has a value (answered)', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const repeatTrainingRow = within(document.body).queryByTestId('repeat-training');
 
@@ -929,7 +901,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment has a value (answered)', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const acceptCareCertificateRow = within(document.body).queryByTestId('accept-care-certificate');
         const link = within(acceptCareCertificateRow).queryByText('Change');
@@ -945,9 +917,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         ).toBeTruthy();
       });
     });
-  });
 
-  describe('Staff benefits section', () => {
     describe('Cash loyalty bonus', () => {
       it('should show dash and have Add information button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
@@ -964,7 +934,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears has a value (answered)', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
         const link = within(careWorkersCashLoyaltyRow).queryByText('Change');
@@ -995,7 +965,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Change button on statutory sick pay row when sickPay has a value (answered)', async () => {
-        const { component, fixture } = await setup();
+        const { component } = await setup();
 
         const statutorySickPayRow = within(document.body).queryByTestId('offer-more-than-statutory-sick-pay');
         const link = within(statutorySickPayRow).queryByText('Change');
@@ -1105,7 +1075,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
       it('should show Not sharing and have Change button on Data sharing when cqc and localAuthorities are set to false', async () => {
         const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: false });
-        const { component, fixture } = await setup({ workplace });
+        await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
 
@@ -1115,7 +1085,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
       it('should show Not sharing and have Change button on Data sharing when cqc is set to false and localAuthorities is null (not answered)', async () => {
         const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: null });
-        const { component, fixture } = await setup({ workplace });
+        await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
 
@@ -1149,6 +1119,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
     [
       {
         fieldName: 'vacancies',
+        shouldClearJobRoles: true,
+        expectedPath: 'update-vacancies',
         value: [
           {
             jobId: 1,
@@ -1159,6 +1131,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'starters',
+        shouldClearJobRoles: true,
+        expectedPath: 'update-starters',
         value: [
           {
             jobId: 1,
@@ -1169,6 +1143,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'leavers',
+        shouldClearJobRoles: true,
+        expectedPath: 'update-leavers',
         value: [
           {
             jobId: 1,
@@ -1179,22 +1155,26 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
       {
         fieldName: 'mainService',
+        expectedPath: 'main-service-cqc',
         value: { name: 'Care Giving' },
       },
       {
         fieldName: 'capacities',
+        expectedPath: 'capacity-of-services',
         value: [{ message: '4 beds' }],
       },
       {
         fieldName: 'serviceUsers',
+        expectedPath: 'service-users',
         value: [{ service: 'Care Giving' }],
       },
       {
         fieldName: 'numberOfStaff',
+        expectedPath: 'total-staff',
         value: 3,
       },
     ].forEach((field) => {
-      const establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective = (fieldName, value) => {
+      const establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective = (field) => {
         const workplace = establishmentWithWdfBuilder() as Establishment;
         workplace.wdf[field.fieldName].isEligible = Eligibility.YES;
         workplace.wdf[field.fieldName].updatedSinceEffectiveDate = false;
@@ -1204,17 +1184,25 @@ describe('WDFWorkplaceSummaryComponent', () => {
       };
 
       it(`should show WdfFieldConfirmation when is eligible but needs to be confirmed for ${field.fieldName}`, async () => {
-        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field.fieldName, field.value);
+        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
 
         const { getByText } = await setup({ workplace });
 
         expect(getByText('Is this still correct?')).toBeTruthy();
         expect(getByText('Yes, it is')).toBeTruthy();
-        expect(getByText('No, change it')).toBeTruthy();
+      });
+
+      it(`should have No, change it link when is eligible but needs to be confirmed for ${field.fieldName}`, async () => {
+        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
+
+        const { getByText } = await setup({ workplace });
+
+        const noChangeItLink = getByText('No, change it');
+        expect(noChangeItLink.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/${field.expectedPath}`);
       });
 
       it(`should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for ${field.fieldName}`, async () => {
-        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field.fieldName, field.value);
+        const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
 
         const { fixture, getByText } = await setup({ workplace });
 
@@ -1225,6 +1213,19 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(getByText('Meeting requirements')).toBeTruthy();
       });
+
+      if (field.shouldClearJobRoles) {
+        it('should clear selected job roles on click of No, change it', async () => {
+          const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field);
+
+          const { getByText, clearAllSelectedJobRolesSpy } = await setup({ workplace });
+
+          const changeLink = getByText('No, change it');
+          fireEvent.click(changeLink);
+
+          expect(clearAllSelectedJobRolesSpy).toHaveBeenCalled();
+        });
+      }
     });
   });
 

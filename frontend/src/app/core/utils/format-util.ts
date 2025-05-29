@@ -19,4 +19,17 @@ export class FormatUtil {
       `${this.formatSingleDigit(date.year)}-${this.formatSingleDigit(date.month)}-${this.formatSingleDigit(date.day)}`,
     );
   }
+
+  public static formatDateToLocaleDateString(date): string {
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  public static formatToLowercaseExcludingAcronyms(text: string): string {
+    return text
+      .split(' ')
+      .map((word) => {
+        return /^[A-Z]{2,}/.test(word) ? word : word.toLowerCase();
+      })
+      .join(' ');
+  }
 }

@@ -9,7 +9,6 @@ import { GetCQCStatusChangeResolver } from '@core/resolvers/admin/cqc-main-servi
 import { GetIndividualCqcMainServiceChangeResolver } from '@core/resolvers/admin/cqc-main-service-change/get-individual-cqc-main-service-change.resolver';
 import { EmailCampaignHistoryResolver } from '@core/resolvers/admin/email-campaign-history.resolver';
 import { EmailTemplateResolver } from '@core/resolvers/admin/email-template.resolver';
-import { InactiveWorkplacesForDeletionResolver } from '@core/resolvers/admin/inactive-workplaces-for-deletion.resolver';
 import { InactiveWorkplacesResolver } from '@core/resolvers/admin/inactive-workplaces.resolver';
 import { GetDatesResolver } from '@core/resolvers/admin/local-authorities-return/get-dates.resolver';
 import { GetLaResolver } from '@core/resolvers/admin/local-authorities-return/get-la.resolver';
@@ -119,7 +118,6 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     ParentRequestsListResolver,
     EmailCampaignHistoryResolver,
     GetIndividualParentRequestResolver,
-    InactiveWorkplacesForDeletionResolver,
     DragAndDropUploadComponent,
     GetAdminUsersResolver,
     GetAdminUserResolver,

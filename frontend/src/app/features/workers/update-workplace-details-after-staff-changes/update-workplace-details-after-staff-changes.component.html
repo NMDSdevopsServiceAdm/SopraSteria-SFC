@@ -1,0 +1,123 @@
+<div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">Check this information and make any changes before you continue</h1>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div [class.govuk-summary-list__warning]="!allPagesVisited">
+        <h2 class="govuk-heading-m">
+          Total number of staff, vacancies and {{ flowType === WorkplaceUpdateFlowType.ADD ? 'starters' : 'leavers' }}
+        </h2>
+        <span *ngIf="!allPagesVisited" class="govuk-error-message govuk-summary-list__warning-message">
+          This data does not update automatically when you
+          {{ flowType === WorkplaceUpdateFlowType.ADD ? 'add' : 'delete' }} staff records.
+          <br />
+          You need to check and change these yourself.
+        </span>
+        <span class="govuk-error-message govuk-summary-list__warning-message"> </span>
+        <dl class="govuk-summary-list govuk-summary-list--top-border govuk-summary-list--medium">
+          <div class="govuk-summary-list__row" data-testid="numberOfStaff">
+            <dt class="govuk-summary-list__key">Total number of staff</dt>
+            <dd class="govuk-summary-list__value">
+              <app-summary-record-value>
+                {{ workplace.numberOfStaff | numericAnswer }}
+              </app-summary-record-value>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <app-summary-record-change
+                [explanationText]="' total number of staff'"
+                [link]="['update-total-staff']"
+                [hasData]="workplace.numberOfStaff | hasValue"
+              ></app-summary-record-change>
+            </dd>
+          </div>
+
+          <div class="govuk-summary-list__row" data-testid="vacancies">
+            <dt class="govuk-summary-list__key">Current staff vacancies</dt>
+            <dd class="govuk-summary-list__value">
+              <app-summary-record-value>
+                <ng-container *ngIf="!workplace.vacancies?.length; else vacancies"> - </ng-container>
+                <ng-template #vacancies>
+                  <ng-container *ngIf="isArray(workplace.vacancies)">
+                    <ul class="govuk-list govuk-!-margin-bottom-0">
+                      <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy | formatSLV }}</li>
+                    </ul>
+                  </ng-container>
+                  <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
+                </ng-template>
+              </app-summary-record-value>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <app-summary-record-change
+                [explanationText]="' staff vacancies'"
+                [link]="['update-vacancies']"
+                [hasData]="workplace.vacancies?.length"
+              ></app-summary-record-change>
+            </dd>
+          </div>
+
+          <div *ngIf="flowType === WorkplaceUpdateFlowType.ADD" class="govuk-summary-list__row" data-testid="starters">
+            <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
+            <dd class="govuk-summary-list__value">
+              <app-summary-record-value>
+                <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
+                <ng-template #starters>
+                  <ng-container *ngIf="isArray(workplace.starters)">
+                    <ul class="govuk-list govuk-!-margin-bottom-0">
+                      <li *ngFor="let starter of workplace.starters">{{ starter | formatSLV }}</li>
+                    </ul>
+                  </ng-container>
+                  <ng-container *ngIf="!isArray(workplace.starters)">
+                    {{ workplace.starters }}
+                  </ng-container>
+                </ng-template>
+              </app-summary-record-value>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <app-summary-record-change
+                [explanationText]="' starters'"
+                [link]="['update-starters']"
+                [hasData]="workplace.starters?.length"
+              ></app-summary-record-change>
+            </dd>
+          </div>
+
+          <div
+            *ngIf="flowType === WorkplaceUpdateFlowType.DELETE"
+            class="govuk-summary-list__row"
+            data-testid="leavers"
+          >
+            <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
+            <dd class="govuk-summary-list__value">
+              <app-summary-record-value>
+                <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
+                <ng-template #leavers>
+                  <ng-container *ngIf="isArray(workplace.leavers)">
+                    <ul class="govuk-list govuk-!-margin-bottom-0">
+                      <li *ngFor="let leaver of workplace.leavers">{{ leaver | formatSLV }}</li>
+                    </ul>
+                  </ng-container>
+                  <ng-container *ngIf="!isArray(workplace.leavers)">
+                    {{ workplace.leavers }}
+                  </ng-container>
+                </ng-template>
+              </app-summary-record-value>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <app-summary-record-change
+                [explanationText]="' new leavers'"
+                [link]="['update-leavers']"
+                [hasData]="workplace.leavers?.length"
+              ></app-summary-record-change>
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <button class="govuk-button govuk-!-margin-top-5" type="submit" (click)="clickContinue($event)">Continue</button>
+    </div>
+  </div>
+</div>

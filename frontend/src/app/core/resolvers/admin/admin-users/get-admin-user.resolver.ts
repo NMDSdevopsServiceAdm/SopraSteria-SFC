@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class GetAdminUserResolver implements Resolve<any> {
+export class GetAdminUserResolver  {
   constructor(private router: Router, private adminUserService: AdminUsersService) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<UserDetails> {

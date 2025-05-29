@@ -6,9 +6,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { mockLeaveReasons, MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -38,9 +40,13 @@ describe('DeleteStaffRecordComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { reasonsForLeaving: mockLeaveReasons },
+              data: { reasonsForLeaving: mockLeaveReasons, totalNumberOfStaff: 2, ...overrides.snapshot },
             },
           },
+        },
+        {
+          provide: VacanciesAndTurnoverService,
+          useClass: MockVacanciesAndTurnoverService,
         },
         AlertService,
         WindowRef,
@@ -58,6 +64,8 @@ describe('DeleteStaffRecordComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService) as VacanciesAndTurnoverService;
+
     return {
       ...setupTools,
       component,
@@ -65,6 +73,7 @@ describe('DeleteStaffRecordComponent', () => {
       workerService,
       deleteWorkerSpy,
       alertServiceSpy,
+      vacanciesAndTurnoverService,
     };
   };
 
@@ -159,19 +168,58 @@ describe('DeleteStaffRecordComponent', () => {
       });
     });
 
-    it('should navigate to staff record page and show an alert when worker is successfully deleted', async () => {
+    it('should navigate to staff record page and show an alert when worker is successfully deleted and more than one staff record', async () => {
       const { component, getByRole, routerSpy, alertServiceSpy } = await setup();
 
       userEvent.click(getByRole('checkbox', { name: /I know that/ }));
       userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        'delete-another-staff-record',
+      ]);
 
       await routerSpy.calls.mostRecent().returnValue;
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
         message: `Staff record deleted (${component.worker.nameOrId})`,
       });
+    });
+
+    it('should navigate to check this information page and show an alert when worker is successfully deleted and is last staff record', async () => {
+      const { component, getByRole, routerSpy, alertServiceSpy } = await setup({ snapshot: { totalNumberOfStaff: 1 } });
+
+      userEvent.click(getByRole('checkbox', { name: /I know that/ }));
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        'update-workplace-details-after-deleting-staff',
+      ]);
+
+      await routerSpy.calls.mostRecent().returnValue;
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `Staff record deleted (${component.worker.nameOrId})`,
+      });
+    });
+
+    it('should clear doYouWantToAddOrDeleteAnswer on deletion to ensure no side effects from previous visits to delete another page', async () => {
+      const { getByRole, vacanciesAndTurnoverService } = await setup();
+
+      const clearDoYouWantToAddOrDeleteAnswerSpy = spyOn(
+        vacanciesAndTurnoverService,
+        'clearDoYouWantToAddOrDeleteAnswer',
+      );
+
+      userEvent.click(getByRole('checkbox', { name: /I know that/ }));
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+
+      expect(clearDoYouWantToAddOrDeleteAnswerSpy).toHaveBeenCalled();
     });
 
     it('should show an error message if confirmation checkbox is not ticked', async () => {

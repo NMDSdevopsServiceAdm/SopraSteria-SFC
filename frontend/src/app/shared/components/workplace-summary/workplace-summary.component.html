@@ -128,7 +128,7 @@
         <dd class="govuk-summary-list__value">
           <p *ngIf="workplace.numberOfStaff > workerCount">You've more staff than staff records</p>
           <p *ngIf="workplace.numberOfStaff < workerCount">You've more staff records than staff</p>
-          <p *ngIf="workplace.numberOfStaff == null">The number of staff is missing</p>
+          <p *ngIf="workplace.numberOfStaff === null">The number of staff is missing</p>
         </dd>
         <dd class="govuk-summary-list__actions">
           <a *ngIf="workplace.numberOfStaff" href="#" (click)="selectStaffTab($event)">View staff records</a>
@@ -251,7 +251,7 @@
       <dt class="govuk-summary-list__key">Other services</dt>
       <dd class="govuk-summary-list__value">
         <ng-container [ngSwitch]="workplace.otherServices.value">
-          <span *ngSwitchCase="undefined"> - </span>
+          <span *ngSwitchCase="null"> - </span>
           <span *ngSwitchCase="'No'"> None </span>
           <div *ngSwitchCase="'Yes'">
             <ul class="govuk-list govuk-!-margin-bottom-0">
@@ -390,7 +390,9 @@
                 <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy | formatSLV }}</li>
               </ul>
             </ng-container>
-            <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
+            <ng-container *ngIf="!isArray(workplace.vacancies)"
+              >{{ workplace.vacancies | closedEndedAnswer }}
+            </ng-container>
           </ng-template>
         </app-summary-record-value>
         <app-wdf-field-confirmation
@@ -424,7 +426,7 @@
     </div>
 
     <div class="govuk-summary-list__row" data-testid="starters">
-      <dt class="govuk-summary-list__key">New starters in the last 12 months</dt>
+      <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
           [wdfView]="wdfView"
@@ -439,7 +441,7 @@
               </ul>
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.starters)">
-              {{ workplace.starters }}
+              {{ workplace.starters | closedEndedAnswer }}
             </ng-container>
           </ng-template>
         </app-summary-record-value>
@@ -474,7 +476,7 @@
     </div>
 
     <div class="govuk-summary-list__row" data-testid="leavers">
-      <dt class="govuk-summary-list__key">Staff leavers in the last 12 months</dt>
+      <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
           [wdfView]="wdfView"
@@ -489,7 +491,7 @@
               </ul>
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.leavers)">
-              {{ workplace.leavers }}
+              {{ workplace.leavers | closedEndedAnswer }}
             </ng-container>
           </ng-template>
         </app-summary-record-value>
@@ -525,84 +527,14 @@
   </ng-container>
 
   <ng-container *ngIf="!workplace.showAddWorkplaceDetailsBanner">
-    <div class="govuk-summary-list__row" data-testid="recruitment-section">
+    <div class="govuk-summary-list__row" data-testid="recruitment-and-benefits-section">
       <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Recruitment</h2>
+        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5 govuk__nowrap">
+          Recruitment and benefits
+        </h2>
       </dt>
       <dd class="govuk-summary-list__value"></dd>
       <dd class="govuk-summary-list__actions"></dd>
-    </div>
-    <div class="govuk-summary-list__row" data-testid="advertising-spend">
-      <dt class="govuk-summary-list__key">Advertising spend</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container
-            *ngIf="
-              !workplace.moneySpentOnAdvertisingInTheLastFourWeeks;
-              else moneySpentOnAdvertisingInTheLastFourWeeksType
-            "
-          >
-            -
-          </ng-container>
-          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksType>
-            <ng-container
-              *ngIf="
-                workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'None' ||
-                  workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'Don\'t know';
-                then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
-                else moneySpentOnAdvertisingInTheLastFourWeeksKnown
-              "
-            >
-            </ng-container>
-            <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
-              {{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
-            </ng-template>
-            <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
-              £{{ this.formatMonetaryValue(workplace.moneySpentOnAdvertisingInTheLastFourWeeks) }}
-            </ng-template>
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' advertising spend'"
-          [link]="['/workplace', workplace.uid, 'recruitment-advertising-cost']"
-          [hasData]="workplace.moneySpentOnAdvertisingInTheLastFourWeeks"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
-
-    <div class="govuk-summary-list__row" data-testid="people-interviewed">
-      <dt class="govuk-summary-list__key">People interviewed</dt>
-      <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container
-            *ngIf="!workplace.peopleInterviewedInTheLastFourWeeks; else peopleInterviewedInTheLastFourWeeksType"
-          >
-            -
-          </ng-container>
-          <ng-template #peopleInterviewedInTheLastFourWeeksType>
-            {{ workplace.peopleInterviewedInTheLastFourWeeks }}
-          </ng-template>
-        </app-summary-record-value>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' people interviewed'"
-          [link]="['/workplace', workplace.uid, 'number-of-interviews']"
-          [hasData]="workplace.peopleInterviewedInTheLastFourWeeks"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
     </div>
 
     <div class="govuk-summary-list__row" data-testid="repeat-training">
@@ -666,16 +598,7 @@
         ></app-summary-record-change>
       </dd>
     </div>
-  </ng-container>
 
-  <ng-container *ngIf="!workplace.showAddWorkplaceDetailsBanner">
-    <div class="govuk-summary-list__row" data-testid="staff-benefits-section">
-      <dt class="govuk-summary-list__key">
-        <h2 class="govuk-heading-m govuk-!-margin-bottom-2 govuk-!-margin-top-5">Staff benefits</h2>
-      </dt>
-      <dd class="govuk-summary-list__value"></dd>
-      <dd class="govuk-summary-list__actions"></dd>
-    </div>
     <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
       <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
       <dd class="govuk-summary-list__value">
@@ -692,9 +615,9 @@
           <ng-template #careWorkersCashLoyaltyForFirstTwoYearsType>
             <ng-container
               *ngIf="
-                workplace.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
-                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know' ||
-                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Yes';
+                workplace.careWorkersCashLoyaltyForFirstTwoYears === 'No' ||
+                  workplace.careWorkersCashLoyaltyForFirstTwoYears === 'Don\'t know' ||
+                  workplace.careWorkersCashLoyaltyForFirstTwoYears === 'Yes';
                 then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
                 else careWorkersCashLoyaltyForFirstTwoYearsKnown
               "

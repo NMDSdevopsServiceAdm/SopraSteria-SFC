@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -59,8 +59,10 @@ describe('PensionsComponent', () => {
   it('should render the headings', async () => {
     const { getByText } = await setup();
     const heading = `Do you contribute more than the minimum 3% into workplace pensions for your care workers?`;
+    const sectionCaption = 'Recruitment and benefits';
 
     expect(getByText(heading)).toBeTruthy;
+    expect(getByText(sectionCaption)).toBeTruthy;
   });
 
   it('should render the reveal', async () => {
@@ -198,34 +200,14 @@ describe('PensionsComponent', () => {
 
   describe('progress bar', () => {
     it('should render the section, the question but not the progress bar when not in the flow', async () => {
-      const { getByText, getByTestId, queryByTestId, fixture, component } = await setup();
-      component.inStaffRecruitmentFlow = false;
-      fixture.detectChanges();
+      const { getByTestId, queryByTestId } = await setup();
 
       expect(getByTestId('section-heading')).toBeTruthy();
       expect(queryByTestId('progress-bar')).toBeFalsy();
-      expect(queryByTestId('progress-bar-2')).toBeFalsy();
-      expect(queryByTestId('progress-bar-3')).toBeFalsy();
-    });
-
-    it('should render the progress bar when in the flow', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.return = null;
-      component.inStaffRecruitmentFlow = true;
-
-      fixture.detectChanges();
-
-      expect(getByTestId('progress-bar-2')).toBeTruthy();
-      expect(getByTestId('progress-bar-3')).toBeTruthy();
     });
 
     it('should render the workplace progress bar when in the workplace flow', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.return = null;
-      component.inStaffRecruitmentFlow = false;
-      fixture.detectChanges();
+      const { getByTestId } = await setup(null);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });

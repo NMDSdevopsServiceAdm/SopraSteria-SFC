@@ -191,9 +191,9 @@ describe('BritishCitizenshipComponent', () => {
       ]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing save and return when in wdf version of the page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing save and return when in funding version of the page', async () => {
       const { component, router, fixture, routerSpy, getByText } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -202,12 +202,12 @@ describe('BritishCitizenshipComponent', () => {
       const skipButton = getByText('Save and return');
       fireEvent.click(skipButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing cancel when in wdf version of the page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing cancel when in funding version of the page', async () => {
       const { component, router, fixture, routerSpy, getByText } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -216,7 +216,7 @@ describe('BritishCitizenshipComponent', () => {
       const skipButton = getByText('Cancel');
       fireEvent.click(skipButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
   });
 

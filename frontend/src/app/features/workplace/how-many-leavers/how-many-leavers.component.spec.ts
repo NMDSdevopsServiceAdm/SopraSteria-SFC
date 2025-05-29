@@ -1,12 +1,16 @@
+import dayjs from 'dayjs';
+
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Leaver } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { FormatUtil } from '@core/utils/format-util';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -14,6 +18,7 @@ import userEvent from '@testing-library/user-event';
 import { HowManyLeaversComponent } from './how-many-leavers.component';
 
 describe('HowManyLeaversComponent', () => {
+  const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(dayjs().subtract(1, 'years').toDate());
   const mockSelectedJobRoles: Leaver[] = [
     {
       jobId: 10,
@@ -28,23 +33,18 @@ describe('HowManyLeaversComponent', () => {
   ];
 
   const setup = async (override: any = {}) => {
-    const returnToUrl = override.returnToUrl ?? false;
     const availableJobs = override.availableJobs;
     const workplace = override.workplace ?? {};
 
-    const selectedJobRoles = override.selectedJobRoles ?? mockSelectedJobRoles;
-    const localStorageData = override.noLocalStorageData
-      ? null
-      : JSON.stringify({ establishmentUid: 'mock-uid', leavers: selectedJobRoles });
-    spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
+    const selectedJobRoles = override.noLocalStorageData ? null : override.selectedJobRoles ?? mockSelectedJobRoles;
 
     const renderResults = await render(HowManyLeaversComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnToUrl, workplace),
+          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, null, workplace),
           deps: [HttpClient],
         },
         {
@@ -58,6 +58,10 @@ describe('HowManyLeaversComponent', () => {
             },
           },
         },
+        {
+          provide: VacanciesAndTurnoverService,
+          useFactory: MockVacanciesAndTurnoverService.factory({ selectedLeavers: selectedJobRoles }),
+        },
       ],
     });
 
@@ -65,6 +69,7 @@ describe('HowManyLeaversComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const vacanciesAndTurnoverService = injector.inject(VacanciesAndTurnoverService) as VacanciesAndTurnoverService;
     const updateJobsSpy = spyOn(establishmentService, 'updateJobs').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
@@ -74,12 +79,18 @@ describe('HowManyLeaversComponent', () => {
       router,
       routerSpy,
       updateJobsSpy,
+      vacanciesAndTurnoverService,
       ...renderResults,
     };
   };
 
   const getInputBoxForJobRole = (jobTitle: string): HTMLInputElement => {
-    return screen.getByRole('spinbutton', { name: 'Number of leavers for ' + jobTitle });
+    return screen.getByRole('textbox', { name: jobTitle });
+  };
+  const fillInValueForJobRole = async (jobRoleTitle: string, inputText: string) => {
+    const numberInputForJobRole = screen.getByLabelText(jobRoleTitle) as HTMLInputElement;
+    userEvent.clear(numberInputForJobRole);
+    userEvent.type(numberInputForJobRole, inputText);
   };
 
   it('should create', async () => {
@@ -89,12 +100,14 @@ describe('HowManyLeaversComponent', () => {
 
   describe('rendering', () => {
     it('should display a heading and a section heading', async () => {
-      const { getByRole } = await setup();
-      const heading = getByRole('heading', { level: 1 });
-      const sectionHeading = heading.previousSibling;
+      const { getByRole, getByTestId } = await setup();
 
-      expect(heading.textContent).toEqual('How many leavers have you had for each job role in the last 12 months?');
-      expect(sectionHeading.textContent).toEqual('Vacancies and turnover');
+      const heading = getByRole('heading', { level: 1 });
+      const sectionHeading = within(getByTestId('section-heading'));
+
+      expect(heading).toBeTruthy();
+      expect(heading.textContent).toEqual(`How many leavers have you had SINCE ${todayOneYearAgo}?`);
+      expect(sectionHeading.getByText('Vacancies and turnover')).toBeTruthy();
     });
 
     it('should render a reveal text to explain why we ask for this information', async () => {
@@ -111,28 +124,23 @@ describe('HowManyLeaversComponent', () => {
 
     describe('Leaver numbers input form', () => {
       it('should render a input box for each selected job role', async () => {
-        const { getByText, getByRole } = await setup();
+        const { getByText } = await setup();
 
         mockSelectedJobRoles.forEach((role) => {
           expect(getByText(role.title)).toBeTruthy();
-          const numberInput = getByRole('spinbutton', { name: 'Number of leavers for ' + role.title });
+          const numberInput = getInputBoxForJobRole(role.title);
           expect(numberInput).toBeTruthy();
         });
       });
 
-      it('should show the job role title together with additonal optional text if given', async () => {
-        const selectedJobRoles = [
-          {
-            jobId: 20,
-            title: 'Other (directly involved in providing care)',
-            other: 'Special care worker',
-            total: null,
-          },
-        ];
-        const { getByText } = await setup({ selectedJobRoles });
+      it('should show a title for the job roles number table', async () => {
+        const { getByText } = await setup();
+        expect(getByText('Leavers in the last 12 months')).toBeTruthy();
+      });
 
-        const expectedText = 'Other (directly involved in providing care): Special care worker';
-        expect(getByText(expectedText)).toBeTruthy();
+      it('should show a description for the total number', async () => {
+        const { getByText } = await setup();
+        expect(getByText('Total number of leavers')).toBeTruthy();
       });
     });
 
@@ -142,14 +150,9 @@ describe('HowManyLeaversComponent', () => {
         expect(getByRole('button', { name: 'Save and continue' })).toBeTruthy();
       });
 
-      it('should render a "Save and return" CTA button when not in the flow', async () => {
-        const { getByRole } = await setup({ returnToUrl: true });
-        expect(getByRole('button', { name: 'Save and return' })).toBeTruthy();
-      });
-
-      it('should render a "Cancel" button when not in the flow', async () => {
-        const { getByText } = await setup({ returnToUrl: true });
-        expect(getByText('Cancel')).toBeTruthy();
+      it('should not render a "Cancel" button', async () => {
+        const { queryByText } = await setup();
+        expect(queryByText('Cancel')).toBeFalsy();
       });
 
       it('should not render a "Skip this question" button', async () => {
@@ -164,13 +167,6 @@ describe('HowManyLeaversComponent', () => {
 
         expect(getByTestId('progress-bar')).toBeTruthy();
       });
-
-      it('should not render a progress bar when not in the flow', async () => {
-        const { getByTestId, queryByTestId } = await setup({ returnToUrl: true });
-
-        expect(getByTestId('section-heading')).toBeTruthy();
-        expect(queryByTestId('progress-bar')).toBeFalsy();
-      });
     });
 
     describe('prefill', () => {
@@ -184,15 +180,15 @@ describe('HowManyLeaversComponent', () => {
           {
             jobId: 23,
             title: 'Registered nurse',
-            total: null,
+            total: 2,
           },
         ];
 
         const { getByTestId } = await setup({ selectedJobRoles: mockSelectedJobRoles });
 
         expect(getInputBoxForJobRole('Care worker').value).toEqual('3');
-        expect(getInputBoxForJobRole('Registered nurse').value).toEqual('');
-        expect(getByTestId('total-number').innerText).toEqual('3');
+        expect(getInputBoxForJobRole('Registered nurse').value).toEqual('2');
+        expect(getByTestId('total-number').innerText).toEqual('5');
       });
 
       it('should prefill job roles from workplace when not in local storage (when user has submitted previously and gone back to third page)', async () => {
@@ -218,8 +214,8 @@ describe('HowManyLeaversComponent', () => {
       it('should call updateJobs with the input leavers number', async () => {
         const { component, getByRole, updateJobsSpy } = await setup();
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
+        await fillInValueForJobRole('Care worker', '2');
+        await fillInValueForJobRole('Registered nurse', '4');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
         expect(updateJobsSpy).toHaveBeenCalledWith(component.establishment.uid, {
@@ -230,56 +226,34 @@ describe('HowManyLeaversComponent', () => {
         });
       });
 
-      it('should navigate to the recruitment-advertising-cost page if in the flow', async () => {
+      it('should navigate to the staff-recruitment-capture-training-requirement page', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           component.establishment.uid,
-          'recruitment-advertising-cost',
+          'staff-recruitment-capture-training-requirement',
         ]);
       });
 
-      it('should navigate to workplace summary page if not in the flow', async () => {
-        const { getByRole, routerSpy } = await setup({ returnToUrl: true });
+      it('should clear the selected job roles stored in service after submit', async () => {
+        const { getByRole, vacanciesAndTurnoverService } = await setup();
+        const clearJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
-        userEvent.click(getByRole('button', { name: 'Save and return' }));
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
-      });
-
-      it('should navigate to wdf summary page if not in the flow and visited from wdf page', async () => {
-        const { component, getByRole, routerSpy } = await setup({ returnToUrl: true });
-        component.return = { url: ['/wdf', 'workplaces', 'mock-uid'] };
-
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
-        userEvent.click(getByRole('button', { name: 'Save and return' }));
-
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'workplaces', 'mock-uid'], jasmine.anything());
-      });
-
-      it('should clear the cache data in local storage after submit', async () => {
-        const { getByRole } = await setup({ returnToUrl: true });
-        const localStorageSpy = spyOn(localStorage, 'removeItem');
-
-        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
-        userEvent.click(getByRole('button', { name: 'Save and return' }));
-
-        expect(localStorageSpy).toHaveBeenCalled();
+        expect(clearJobRolesSpy).toHaveBeenCalled();
       });
     });
 
     describe('errors', () => {
       it('should show an error message if number input box is empty', async () => {
         const { fixture, getByRole, getByText, getByTestId, updateJobsSpy } = await setup();
+
+        userEvent.clear(getInputBoxForJobRole('Care worker'));
+        userEvent.clear(getInputBoxForJobRole('Registered nurse'));
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
@@ -298,8 +272,8 @@ describe('HowManyLeaversComponent', () => {
       it('should show an error message if the input number is out of range', async () => {
         const { fixture, getByRole, getByText, getByTestId, updateJobsSpy } = await setup();
 
-        userEvent.type(getInputBoxForJobRole('Care worker'), '-10');
-        userEvent.type(getInputBoxForJobRole('Registered nurse'), '99999');
+        await fillInValueForJobRole('Care worker', '0');
+        await fillInValueForJobRole('Registered nurse', '99999');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
 
@@ -316,12 +290,27 @@ describe('HowManyLeaversComponent', () => {
 
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
+
+      it('should show the error message without converting abbreviation in job titles to lower case', async () => {
+        const { fixture, getByText, getByRole } = await setup({
+          selectedJobRoles: [{ jobId: 36, title: 'IT manager', total: 1 }],
+        });
+
+        await fillInValueForJobRole('IT manager', '0');
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+        fixture.detectChanges();
+
+        const errorSummaryBox = getByText('There is a problem').parentElement;
+        expect(
+          within(errorSummaryBox).getByText('Number of leavers must be between 1 and 999 (IT manager)'),
+        ).toBeTruthy();
+      });
     });
   });
 
   describe('navigation', async () => {
     it('should navigate to "Do you have leavers" page if failed to load selected job roles data', async () => {
-      const { component, routerSpy } = await setup({ selectedJobRoles: '[]' });
+      const { component, routerSpy } = await setup({ selectedJobRoles: [] });
       component.loadSelectedJobRoles();
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-leavers']);
     });
@@ -333,43 +322,34 @@ describe('HowManyLeaversComponent', () => {
           url: ['/workplace', component.establishment.uid, 'select-leaver-job-roles'],
         });
       });
-
-      it('should set the backlink to job role selection page when not in the flow', async () => {
-        const { component } = await setup({ returnToUrl: '/dashboard#workplace' });
-        expect(component.back).toEqual({
-          url: ['/workplace', component.establishment.uid, 'select-leaver-job-roles'],
-        });
-      });
     });
 
-    describe('cancel button', () => {
-      it('should navigate to workplace summary page when cancel button is clicked', async () => {
-        const { getByText, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
-
-        userEvent.click(getByText('Cancel'));
-
-        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+    describe('Add job roles button', () => {
+      it('should show an "Add job roles" button', async () => {
+        const { getByRole } = await setup();
+        expect(getByRole('button', { name: 'Add job roles' })).toBeTruthy();
       });
 
-      it('should return to the wdf workplace summary page when visited from wdf and cancel button is clicked', async () => {
-        const { component, getByText, routerSpy } = await setup({
-          returnToUrl: true,
-        });
-        component.return = { url: ['/wdf', 'workplaces', 'mock-uid'] };
+      it('should navigate to job role selection page when AddJobRoles button is clicked', async () => {
+        const { component, fixture, getByRole, routerSpy } = await setup();
 
-        const cancelButton = getByText('Cancel');
+        userEvent.click(getByRole('button', { name: 'Add job roles' }));
+        fixture.detectChanges();
 
-        userEvent.click(cancelButton);
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'workplaces', 'mock-uid'], jasmine.anything());
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'select-leaver-job-roles']);
       });
 
-      it('should clear the cache data in local storage on cancel', async () => {
-        const { getByText } = await setup({ returnToUrl: '/dashboard#workplace' });
-        const localStorageSpy = spyOn(localStorage, 'removeItem');
+      it('should save any change in job role number to vacanciesAndTurnoverService before navigation', async () => {
+        const { getByRole, vacanciesAndTurnoverService } = await setup();
 
-        userEvent.click(getByText('Cancel'));
+        await fillInValueForJobRole('Care worker', '10');
+        await fillInValueForJobRole('Registered nurse', '20');
 
-        expect(localStorageSpy).toHaveBeenCalled();
+        userEvent.click(getByRole('button', { name: 'Add job roles' }));
+        expect(vacanciesAndTurnoverService.selectedLeavers).toEqual([
+          { jobId: 10, title: 'Care worker', total: 10 },
+          { jobId: 23, title: 'Registered nurse', total: 20 },
+        ]);
       });
     });
   });

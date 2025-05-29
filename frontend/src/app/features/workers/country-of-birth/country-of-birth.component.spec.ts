@@ -383,9 +383,9 @@ describe('CountryOfBirthComponent', () => {
       ]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of the page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing cancel in funding version of the page', async () => {
       const { component, router, fixture, routerSpy, getByText } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -394,12 +394,12 @@ describe('CountryOfBirthComponent', () => {
       const link = getByText('Cancel');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf year-arrived-uk page when pressing Save and I do not know is selected in wdf version of page', async () => {
+    it('should navigate to funding year-arrived-uk page when pressing Save and I do not know is selected in funding version of page', async () => {
       const { component, fixture, router, routerSpy, getByText, getByLabelText } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -412,12 +412,12 @@ describe('CountryOfBirthComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'year-arrived-uk']);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId, 'year-arrived-uk']);
     });
 
-    it(`should navigate to wdf year-arrived-uk page when pressing Save and Other is selected with optional input in wdf version of the page`, async () => {
+    it(`should navigate to funding year-arrived-uk page when pressing Save and Other is selected with optional input in funding version of the page`, async () => {
       const { component, fixture, router, getByText, getByLabelText, routerSpy } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -427,12 +427,12 @@ describe('CountryOfBirthComponent', () => {
       userEvent.type(getByLabelText('Country (optional)'), 'France');
       fireEvent.click(getByText('Save'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid, 'year-arrived-uk']);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', component.worker.uid, 'year-arrived-uk']);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing Save and United Kingdom is selected in wdf version of page', async () => {
+    it('should navigate to funding staff-summary-page page when pressing Save and United Kingdom is selected in funding version of page', async () => {
       const { component, router, fixture, routerSpy, getByLabelText, getByText } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -445,12 +445,12 @@ describe('CountryOfBirthComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf year-arrived-uk-summary page when pressing Save and other country is selected in wdf version of page', async () => {
+    it('should navigate to funding year-arrived-uk-summary page when pressing Save and other country is selected in funding version of page', async () => {
       const { component, router, fixture, routerSpy, getByLabelText, getByText } = await setup(false);
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
@@ -463,7 +463,7 @@ describe('CountryOfBirthComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'year-arrived-uk']);
+      expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId, 'year-arrived-uk']);
     });
   });
 

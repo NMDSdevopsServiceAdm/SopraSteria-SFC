@@ -1,0 +1,31 @@
+<div class="asc-number-input">
+  <input
+    #inputEl
+    class="govuk-input"
+    [id]="inputId"
+    [name]="inputId"
+    (input)="onInput($event)"
+    [disabled]="disabled"
+    [class.govuk-input--error]="hasError"
+    aria-live="polite"
+    inputmode="numeric"
+  />
+  <button
+    *ngIf="showMinusButton"
+    class="asc-number-input--toggle-button asc-number-input--minus-button"
+    type="button"
+    [attr.data-testid]="'minus-button-' + inputId"
+    (click)="decrease()"
+  >
+    <img src="/assets/images/minus-sign.svg" alt="decrease by 1" draggable="false" />
+  </button>
+  <button
+    *ngIf="showPlusButton"
+    class="asc-number-input--toggle-button asc-number-input--plus-button"
+    type="button"
+    [attr.data-testid]="'plus-button-' + inputId"
+    (click)="increase()"
+  >
+    <img src="/assets/images/plus-sign.svg" alt="increase by 1" draggable="false" />
+  </button>
+</div>

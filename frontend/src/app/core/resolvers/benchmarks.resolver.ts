@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 @Injectable()
-export class BenchmarksResolver implements Resolve<any> {
+export class BenchmarksResolver  {
   constructor(private establishmentService: EstablishmentService, private benchmarksService: BenchmarksServiceBase) {}
 
   resolve(route: ActivatedRouteSnapshot) {

@@ -26,7 +26,6 @@ import { AcceptPreviousCareCertificateComponent } from '@features/workplace/acce
 import { BenefitsStatutorySickPayComponent } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { ChangeExpiresSoonAlertsComponent } from '@features/workplace/change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from '@features/workplace/check-answers/check-answers.component';
-import { ConfirmStaffRecruitmentAndBenefitsComponent } from '@features/workplace/confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from '@features/workplace/delete-user-account/delete-user-account.component';
@@ -39,10 +38,8 @@ import { HealthAndCareVisaExistingWorkers } from '@features/workplace/health-and
 import { HowManyLeaversComponent } from '@features/workplace/how-many-leavers/how-many-leavers.component';
 import { HowManyStartersComponent } from '@features/workplace/how-many-starters/how-many-starters.component';
 import { HowManyVacanciesComponent } from '@features/workplace/how-many-vacancies/how-many-vacancies.component';
-import { NumberOfInterviewsComponent } from '@features/workplace/number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
 import { PensionsComponent } from '@features/workplace/pensions/pensions.component';
-import { RecruitmentAdvertisingCostComponent } from '@features/workplace/recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from '@features/workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectLeaverJobRolesComponent } from '@features/workplace/select-leaver-job-roles/select-leaver-job-roles.component';
 import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
@@ -58,7 +55,6 @@ import { ServicesCapacityComponent } from '@features/workplace/services-capacity
 import { StaffBenefitCashLoyaltyComponent } from '@features/workplace/staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffBenefitHolidayLeaveComponent } from '@features/workplace/staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from '@features/workplace/staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
-import { StaffRecruitmentStartComponent } from '@features/workplace/staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from '@features/workplace/start/start.component';
 import { TotalStaffQuestionComponent } from '@features/workplace/total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
@@ -68,6 +64,13 @@ import { UserAccountSavedComponent } from '@features/workplace/user-account-save
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
+import {
+  JobRoleType,
+  SelectJobRolesToAddComponent,
+} from '@shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
+import { UpdateLeaversComponent } from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
+import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 
 import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
 import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
@@ -95,9 +98,9 @@ const routes: Routes = [
     loadChildren: () => import('@features/pages/pages.module').then((m) => m.PagesModule),
   },
   {
-    path: 'wdf',
-    loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
-    data: { title: 'Workforce Development Fund Data' },
+    path: 'funding',
+    loadChildren: () => import('@features/funding/funding.module').then((m) => m.FundingModule),
+    data: { title: 'Funding Data' },
   },
 
   {
@@ -227,13 +230,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Start',
-        },
-      },
-      {
-        path: 'staff-recruitment-start',
-        component: StaffRecruitmentStartComponent,
-        data: {
-          title: 'Staff Recruitment Start',
         },
       },
       {
@@ -400,6 +396,26 @@ const routes: Routes = [
         },
       },
       {
+        path: 'update-vacancies',
+        component: UpdateVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update Vacancies',
+        },
+      },
+      {
+        path: 'update-vacancies-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Vacancies,
+          title: 'Select job roles to add',
+        },
+      },
+      {
         path: 'do-you-have-starters',
         component: DoYouHaveStartersComponent,
         canActivate: [CheckPermissionsGuard],
@@ -426,6 +442,26 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'How many starters',
+        },
+      },
+      {
+        path: 'update-starters',
+        component: UpdateStartersComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Update Starters',
+        },
+      },
+      {
+        path: 'update-starters-job-roles',
+        component: SelectJobRolesToAddComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Starters,
+          title: 'Select job roles to add',
         },
       },
       {
@@ -458,21 +494,23 @@ const routes: Routes = [
         },
       },
       {
-        path: 'recruitment-advertising-cost',
-        component: RecruitmentAdvertisingCostComponent,
+        path: 'update-leavers',
+        component: UpdateLeaversComponent,
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Recruitment Advertising Cost',
+          title: 'Update Leavers',
         },
       },
       {
-        path: 'number-of-interviews',
-        component: NumberOfInterviewsComponent,
+        path: 'update-leavers-job-roles',
+        component: SelectJobRolesToAddComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Number Of Interviews',
+          jobRoleType: JobRoleType.Leavers,
+          title: 'Select job roles to add',
         },
       },
       {
@@ -482,15 +520,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff Recruitment Capture Training Requirement',
-        },
-      },
-      {
-        path: 'confirm-staff-recruitment-and-benefits',
-        component: ConfirmStaffRecruitmentAndBenefitsComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Confirm Staff Recruitment And Benefits',
         },
       },
       {

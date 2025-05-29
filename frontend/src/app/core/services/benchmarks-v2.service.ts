@@ -41,12 +41,12 @@ export class BenchmarksV2Service implements BenchmarksServiceBase {
     }
 
     return {
-      workplaceValue: initialiseOldBenchmarkValue(tileData.workplaceValue),
-      comparisonGroup: initialiseOldBenchmarkValue(tileData.comparisonGroup),
-      goodCqc: initialiseOldBenchmarkValue(tileData.goodCqc),
-      lowTurnover: initialiseOldBenchmarkValue(tileData.lowTurnover),
-      workplaces: tileData.workplaces ? tileData.workplaces : 0,
-      staff: tileData.staff ? tileData.staff : 0,
+      workplaceValue: initialiseOldBenchmarkValue(tileData?.workplaceValue),
+      comparisonGroup: initialiseOldBenchmarkValue(tileData?.comparisonGroup),
+      goodCqc: initialiseOldBenchmarkValue(tileData?.goodCqc),
+      lowTurnover: initialiseOldBenchmarkValue(tileData?.lowTurnover),
+      workplaces: tileData?.workplaces ? tileData?.workplaces : 0,
+      staff: tileData?.staff ? tileData?.staff : 0,
     };
   }
 

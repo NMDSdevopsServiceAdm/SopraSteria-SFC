@@ -5,6 +5,7 @@ import { staffRecruitmentOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { Question } from '../question/question.component';
 
@@ -13,7 +14,7 @@ import { Question } from '../question/question.component';
   templateUrl: './accept-previous-care-certificate.component.html',
 })
 export class AcceptPreviousCareCertificateComponent extends Question implements OnInit, OnDestroy {
-  public section: string;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
   public previousCareCertificateOptions = [
     {
       label: 'Yes, always',
@@ -33,8 +34,6 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     },
   ];
 
-  public inStaffRecruitmentFlow: boolean;
-
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
@@ -48,14 +47,12 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   protected init(): void {
     this.setupForm();
     this.setPreviousRoute();
-    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
-    this.section = this.inStaffRecruitmentFlow ? 'Care Certificates' : 'Recruitment';
+    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-capture-training-requirement'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
   }
 
   private setupForm(): void {

@@ -6,6 +6,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import groupBy from 'lodash/groupBy';
 
 import { Question } from '../question/question.component';
@@ -17,7 +18,7 @@ import { Question } from '../question/question.component';
 export class ServicesCapacityComponent extends Question {
   public capacities = [];
   public intPattern = INT_PATTERN.toString();
-  public section = 'Services';
+  public section = WorkplaceFlowSections.SERVICES;
   public errorsSummaryErrorsMap: ErrorDetails[] = [];
 
   constructor(

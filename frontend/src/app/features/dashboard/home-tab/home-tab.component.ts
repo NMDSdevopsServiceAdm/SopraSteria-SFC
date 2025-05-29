@@ -70,8 +70,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   public canRunLocalAuthorityReport: boolean;
   public workplaceUid: string;
   public now: Date = new Date();
-  public wdfNewDesignFlag: boolean;
-  public recruitmentJourneyExistingUserBanner: boolean;
   public addWorkplaceDetailsBanner: boolean;
 
   constructor(
@@ -92,7 +90,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.user = this.userService.loggedInUser;
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.recruitmentJourneyExistingUserBanner = this.primaryWorkplace.recruitmentJourneyExistingUserBanner;
 
     this.addWorkplaceDetailsBanner = this.primaryWorkplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();
@@ -132,7 +129,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
         event: 'firstLogin',
       });
     }
-    this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
   }
 
   public downloadLocalAuthorityReport(event: Event) {
@@ -390,18 +386,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
 
   public convertToDate(dateString: string): Date {
     return new Date(dateString);
-  }
-
-  public setRecuritmentBannerToTrue(event: Event): void {
-    event.preventDefault();
-    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
-    if (this.canEditEstablishment) {
-      this.subscriptions.add(
-        this.establishmentService
-          .updateSingleEstablishmentField(this.workplace.uid, data)
-          .subscribe(() => this.router.navigate(['/workplace', this.workplace.uid, 'staff-recruitment-start'])),
-      );
-    }
   }
 
   ngOnDestroy(): void {

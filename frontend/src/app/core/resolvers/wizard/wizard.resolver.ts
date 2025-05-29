@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Resolve } from '@angular/router';
+
 import { Wizard } from '@core/model/wizard.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -8,7 +8,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class WizardResolver implements Resolve<any> {
+export class WizardResolver  {
   constructor(
     private wizardService: WizardService,
     private permissionService: PermissionsService,

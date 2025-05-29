@@ -1,0 +1,65 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl">{{ workplace.name }}</span>
+    <span class="govuk-caption-xl">(Workplace ID: {{ workplace.nmdsId | removeTrailingWhitespace }})</span>
+
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">
+      Does your data meet funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}?
+    </h1>
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <span class="govuk-warning-text__text" style="font-weight: 500">
+        <span class="govuk-visually-hidden">Warning</span>
+        Your eligibility resets every year on 1 April, so you'll need to complete or update your data on or after this
+        date.
+      </span>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full-width">
+    <app-wdf-summary-panel
+      [wdfStartDate]="wdfStartDate"
+      [wdfEndDate]="wdfEndDate"
+      [workplaceWdfEligibilityStatus]="wdfEligibilityStatus.currentWorkplace"
+      [staffWdfEligibilityStatus]="wdfEligibilityStatus.currentStaff"
+      [overallWdfEligibility]="overallWdfEligibility"
+      [isParent]="isParent"
+      [subsidiariesOverallWdfEligibility]="subsidiariesOverallWdfEligibility"
+      [someSubsidiariesMeetingRequirements]="someSubsidiariesMeetingRequirements"
+      [onDataPage]="false"
+    ></app-wdf-summary-panel>
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-top-7">
+  <div class="govuk-grid-column-three-quarters">
+    <ng-container *ngIf="(overallWdfEligibility && !isParent) || (parentOverallWdfEligibility && isParent)">
+      <div data-testid="dataMetFunding">
+        <p>
+          Your data met the funding requirements on {{ parentOverallEligibilityDate ?? overallEligibilityDate }} and
+          will continue to meet them until 31 March {{ wdfEndDate | date: 'yyyy' }}.
+          <a [routerLink]="['data']" [relativeTo]="route">Keep your data current</a>, it might save you time next year.
+        </p>
+      </div>
+    </ng-container>
+
+    <div>
+      <p class="govuk-!-margin-bottom-7">
+        <a class="govuk-link" [routerLink]="['funding-requirements']" [relativeTo]="route">
+          View the ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+          {{ wdfEndDate | date: 'yyyy' }}</a
+        >
+      </p>
+    </div>
+
+    <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Find out more</h2>
+    <p>
+      <a [routerLink]="['learn-more']" [relativeTo]="route">Learn more about the funds that you can claim from</a>
+    </p>
+    <div class="govuk-!-margin-top-8">
+      <button type="button" class="govuk-button" data-module="govuk-button" (click)="viewYourData()">
+        Check your data
+      </button>
+    </div>
+  </div>
+</div>

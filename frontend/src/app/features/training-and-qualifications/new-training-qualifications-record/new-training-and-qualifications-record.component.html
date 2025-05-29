@@ -4,8 +4,8 @@
       <p class="govuk-tag govuk-tag--grey asc-tag govuk-!-margin-bottom-0">
         Long-term absent
         <a
-          (click)="navigateToLongTermAbsence()"
-          href="javascript:void(0)"
+          (click)="navigateToLongTermAbsence($event)"
+          href="#"
           data-testid="longTermAbsence"
           class="govuk-link govuk-link--no-visited-state govuk-!-padding-left-1"
         >
@@ -32,9 +32,9 @@
         *ngIf="canEditWorker && worker.longTermAbsence === null"
         draggable="false"
         role="button"
-        href="javascript:void(0)"
+        href="#"
         data-testid="flagLongTermAbsence"
-        (click)="navigateToLongTermAbsence()"
+        (click)="navigateToLongTermAbsence($event)"
         >Flag long-term absence</a
       >
     </div>
@@ -141,8 +141,8 @@
             <a
               *ngIf="canEditWorker"
               class="govuk-link--no-visited-state govuk-util__float-right"
-              (click)="actionsListNavigate(actionListItem)"
-              href="javascript:void(0)"
+              (click)="actionsListNavigate($event, actionListItem)"
+              href="#"
               >{{ actionListItem.trainingStatus !== trainingStatusService.MISSING ? 'Update' : 'Add' }}</a
             >
           </td>
@@ -162,8 +162,8 @@
       <a
         class="govuk-tabs__tab asc-tabs__link"
         role="tab"
-        href="javascript:void(0)"
-        (click)="navigateToNewTab('all-records')"
+        href="#"
+        (click)="navigateToNewTab($event, 'all-records')"
         data-testid="allRecordsTabLink"
         [class.asc-tabs__link--active]="currentFragment === fragmentsObject.allRecords"
         >All records</a
@@ -177,8 +177,8 @@
       <a
         class="govuk-tabs__tab asc-tabs__link"
         role="tab"
-        href="javascript:void(0)"
-        (click)="navigateToNewTab('mandatory-training')"
+        href="#"
+        (click)="navigateToNewTab($event, 'mandatory-training')"
         data-testid="mandatoryTrainingTabLink"
         [class.asc-tabs__link--active]="currentFragment === fragmentsObject.mandatoryTraining"
         >Mandatory training</a
@@ -192,8 +192,8 @@
       <a
         class="govuk-tabs__tab asc-tabs__link"
         role="tab"
-        href="javascript:void(0)"
-        (click)="navigateToNewTab('non-mandatory-training')"
+        href="#"
+        (click)="navigateToNewTab($event, 'non-mandatory-training')"
         data-testid="nonMandatoryTrainingTabLink"
         [class.asc-tabs__link--active]="currentFragment === fragmentsObject.nonMandatoryTraining"
         >Non-mandatory training</a
@@ -208,8 +208,8 @@
         class="govuk-tabs__tab asc-tabs__link"
         role="tab"
         data-testid="qualificationsTabLink"
-        href="javascript:void(0)"
-        (click)="navigateToNewTab('qualifications')"
+        href="#"
+        (click)="navigateToNewTab($event, 'qualifications')"
         [class.asc-tabs__link--active]="currentFragment === fragmentsObject.qualifications"
         >Qualifications</a
       >

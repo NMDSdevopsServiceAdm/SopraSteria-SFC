@@ -3,10 +3,6 @@
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub staff records page as edit user where parent owns data but sub has view workplace and staff records permissions', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editSubUserNonDataOwner'), Cypress.env('userPassword'));
     onHomePage.clickTab('Staff records');

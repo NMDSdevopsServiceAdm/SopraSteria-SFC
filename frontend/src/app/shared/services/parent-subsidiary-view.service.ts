@@ -27,7 +27,7 @@ export class ParentSubsidiaryViewService {
     this.establishmentService.setWorkplace(this.establishmentService.primaryWorkplace);
   }
 
-  getViewingSubAsParentDashboard(navUrl): boolean {
+  getViewingSubAsParentDashboard(navUrl: string): boolean {
     const subsidiaryDashboardUrls = [
       `/subsidiary/${this.subsidiaryUid}/home`,
       `/subsidiary/${this.subsidiaryUid}/workplace`,
@@ -36,7 +36,9 @@ export class ParentSubsidiaryViewService {
       `/subsidiary/${this.subsidiaryUid}/benchmarks`,
       `/subsidiary/${this.subsidiaryUid}/workplace-users`,
     ];
-    return subsidiaryDashboardUrls.includes(navUrl);
+    return subsidiaryDashboardUrls.some((url) => {
+      return navUrl === url || navUrl.startsWith(`${url}?`);
+    });
   }
 
   getViewingSubAsParent() {

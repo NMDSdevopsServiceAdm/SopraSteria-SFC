@@ -699,16 +699,6 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'IsNationalOrg',
       },
-      peopleInterviewedInTheLastFourWeeks: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"PeopleInterviewedInTheLastFourWeeks"',
-      },
-      moneySpentOnAdvertisingInTheLastFourWeeks: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"MoneySpentOnAdvertisingInTheLastFourWeeks"',
-      },
       doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -720,12 +710,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         values: ['Yes, always', 'Yes, very often', 'Yes, but not very often', 'No, never'],
         field: '"WouldYouAcceptCareCertificatesFromPreviousEmployment"',
-      },
-      recruitmentJourneyExistingUserBanner: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-        field: 'RecruitmentJourneyExistingUserBanner',
       },
       showAddWorkplaceDetailsBanner: {
         type: DataTypes.BOOLEAN,
@@ -1368,8 +1352,6 @@ module.exports = function (sequelize, DataTypes) {
         'StartersValue',
         'LeaversValue',
         'reasonsForLeaving',
-        'moneySpentOnAdvertisingInTheLastFourWeeks',
-        'peopleInterviewedInTheLastFourWeeks',
         'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
         'wouldYouAcceptCareCertificatesFromPreviousEmployment',
         'careWorkersLeaveDaysPerYear',

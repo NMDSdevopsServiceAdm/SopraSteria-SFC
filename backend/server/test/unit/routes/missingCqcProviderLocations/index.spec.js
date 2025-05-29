@@ -17,6 +17,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
   describe('get missingCqcProviderLocations', async () => {
     const provId = '1-2003';
     const cqcLocationIds = ['1-12427547986', '1-2043158439', '1-5310224737'];
+    const locationsTableIds = ['1-12427547986', '1-2043158439', '1-5310224737'];
 
     let request;
 
@@ -26,6 +27,14 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           providerId: provId,
           locationIds: cqcLocationIds,
         };
+      });
+
+      sinon.stub(models.location, 'findMultipleByLocationID').callsFake(async (locationIds) => {
+        return [
+          { locationid: '1-12427547986' },
+          { locationid: '1-2043158439' },
+          { locationid: '1-5310224737' },
+        ];
       });
 
       request = {
@@ -262,14 +271,48 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
 
       expect(childWorkplacesLocationIds).to.deep.equal(expectedResult);
     });
+  });
+
+  describe('findMissingCqcLocationsIds', async () => {
+    setup = (overrides = {}) => {
+      const provId = '1-2003';
+      const childWorkplacesLocationIds = ['1-123', '1-53'];
+
+      sinon.restore();
+      sinon.stub(CQCDataAPI, 'getCQCProviderData').returns({ locationIds: overrides?.cqcLocationIds ??  ['1-123', '1-53', '1-324'] });
+
+      sinon.stub(models.location, 'findMultipleByLocationID').callsFake(async(locationIds) => {
+        return overrides?.locationTableIds ??
+          [
+            { locationid: '1-123' },
+            { locationid: '1-53' },
+            { locationid: '1-324' },
+          ]
+      });
+
+      return {
+        provId,
+        childWorkplacesLocationIds
+      }
+    }
 
     it('should return an array of missing cqc child workplaces location ids and count', async () => {
-      const cqcLocationIds = ['1-123', '1-53', '1-324'];
-      const childWorkplacesLocationIds = ['1-123', '1-53'];
+
+      const { provId, childWorkplacesLocationIds } = setup();
 
       const expectedResult = { count: 1, missingCqcLocationIds: ['1-324'] };
 
-      const missingCqcLocationIds = await findMissingCqcLocationIds(cqcLocationIds, childWorkplacesLocationIds);
+      const missingCqcLocationIds = await findMissingCqcLocationIds(provId, childWorkplacesLocationIds);
+
+      expect(missingCqcLocationIds).to.deep.equal(expectedResult);
+    });
+
+    it('should not count deregistered cqc child workplace locations', async () => {
+      const { provId, childWorkplacesLocationIds } = setup({ cqcLocationIds: ['1-123', '1-53', '1-324', '1-DEREGISTERED'] });
+
+      const expectedResult = { count: 1, missingCqcLocationIds: ['1-324'] };
+
+      const missingCqcLocationIds = await findMissingCqcLocationIds(provId, childWorkplacesLocationIds);
 
       expect(missingCqcLocationIds).to.deep.equal(expectedResult);
     });

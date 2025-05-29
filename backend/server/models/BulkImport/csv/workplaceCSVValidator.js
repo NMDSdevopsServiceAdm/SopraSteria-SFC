@@ -34,7 +34,7 @@ const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
-  'ADVERTISING,INTERVIEWS,REPEATTRAINING,ACCEPTCARECERT,BENEFITS,SICKPAY,PENSION,HOLIDAY';
+  'REPEATTRAINING,ACCEPTCARECERT,BENEFITS,SICKPAY,PENSION,HOLIDAY';
 
 class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
@@ -82,8 +82,6 @@ class WorkplaceCSVValidator {
     this._reasonsForLeaving = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
-    this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
-    this._peopleInterviewedInTheLastFourWeeks = null;
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._sickPay = null;
     this._pensionContribution = null;
@@ -241,12 +239,6 @@ class WorkplaceCSVValidator {
   }
   static get REASONS_FOR_LEAVING_WARNING() {
     return 2360;
-  }
-  static get ADVERTISING_WARNING() {
-    return 2400;
-  }
-  static get INTERVIEWS_WARNING() {
-    return 2410;
   }
   static get REPEAT_TRAINING_WARNING() {
     return 2420;
@@ -406,14 +398,6 @@ class WorkplaceCSVValidator {
 
   get doNewStartersRepeatMandatoryTrainingFromPreviousEmployment() {
     return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-  }
-
-  get moneySpentOnAdvertisingInTheLastFourWeeks() {
-    return this._moneySpentOnAdvertisingInTheLastFourWeeks;
-  }
-
-  get peopleInterviewedInTheLastFourWeeks() {
-    return this._peopleInterviewedInTheLastFourWeeks;
   }
 
   get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
@@ -1922,50 +1906,6 @@ class WorkplaceCSVValidator {
     }
   }
 
-  _validateInterviews() {
-    const interviewsRegex = /^[0-9]*$/;
-    const interviews = this._currentLine.INTERVIEWS;
-
-    if (!interviewsRegex.test(interviews) && interviews.toLowerCase() !== 'unknown') {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: WorkplaceCSVValidator.INTERVIEWS_WARNING,
-        warnType: 'INTERVIEWS_WARNING',
-        warning:
-          "The value you entered for INTERVIEWS should be a whole number or the value 'unknown' and will be ignored",
-        source: interviews,
-        column: 'INTERVIEWS',
-        name: this.currentLine.LOCALESTID,
-      });
-      return false;
-    } else {
-      this._peopleInterviewedInTheLastFourWeeks = interviews;
-      return true;
-    }
-  }
-
-  _validateAdvertising() {
-    const advertisingRegex = /^\d*(\.\d{1,2})?$/;
-    const advertising = this._currentLine.ADVERTISING;
-
-    if (!advertisingRegex.test(advertising) && advertising.toLowerCase() !== 'unknown') {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: WorkplaceCSVValidator.ADVERTISING_WARNING,
-        warnType: 'ADVERTISING_WARNING',
-        warning:
-          "The value you entered for ADVERTISING should be a number in pounds and pence or the value 'unknown' and will be ignored",
-        source: advertising,
-        column: 'ADVERTISING',
-        name: this.currentLine.LOCALESTID,
-      });
-      return false;
-    } else {
-      this._moneySpentOnAdvertisingInTheLastFourWeeks = advertising;
-      return true;
-    }
-  }
-
   _validateBenefits() {
     const benefitsRegex = /^\d*(\.\d{1,2})?$/;
     const benefits = this._currentLine.BENEFITS.split(';').join('');
@@ -2581,28 +2521,6 @@ class WorkplaceCSVValidator {
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = mapping[acceptCareCert];
   }
 
-  _transformAdvertisingAndInterviews() {
-    const DONT_KNOW = 'unknown';
-    const NONE = '0';
-
-    const interview = this._peopleInterviewedInTheLastFourWeeks;
-    const advertising = this._moneySpentOnAdvertisingInTheLastFourWeeks;
-    const interviewAndAdvertisingArr = [
-      { name: '_peopleInterviewedInTheLastFourWeeks', value: interview },
-      { name: '_moneySpentOnAdvertisingInTheLastFourWeeks', value: advertising },
-    ];
-
-    interviewAndAdvertisingArr.forEach((property) => {
-      if (!property.value) {
-        this[property.name] = null;
-      } else if (property.value.toLowerCase() === DONT_KNOW) {
-        this[property.name] = "Don't know";
-      } else if (property.value === NONE) {
-        this[property.name] = 'None';
-      }
-    });
-  }
-
   _transformCashLoyaltyForFirstTwoYears() {
     const YES = '1';
     const YES_COMMA = '1;';
@@ -2760,8 +2678,6 @@ class WorkplaceCSVValidator {
       this._validateJobRoleTotals();
 
       this._validateReasonsForLeaving();
-      this._validateAdvertising();
-      this._validateInterviews();
       this._validateRepeatTraining();
       this._validateAcceptCareCertificate();
       this._validateSickPay();
@@ -2850,7 +2766,6 @@ class WorkplaceCSVValidator {
       status = !this._transformAllCapacities() ? false : status;
       status = !this._transformAllUtilisation() ? false : status;
       status = !this._transformAllVacanciesStartersLeavers() ? false : status;
-      status = !this._transformAdvertisingAndInterviews() ? false : status;
       status = !this._transformRepeatTrainingAndAcceptCareCert() ? false : status;
       status = !this._transformCashLoyaltyForFirstTwoYears() ? false : status;
       status = !this._transformPensionAndSickPay() ? false : status;
@@ -2981,8 +2896,6 @@ class WorkplaceCSVValidator {
       leavers: this._leavers,
       doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
-      moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
-      peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
       wouldYouAcceptCareCertificatesFromPreviousEmployment: this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
       careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
       sickPay: this._sickPay,
@@ -3196,22 +3109,6 @@ class WorkplaceCSVValidator {
       columns.push('');
       columns.push('');
     }
-
-    // Advertising, interviews,
-    const advertisingAndInterviewsMapping = (value) => {
-      if (value === "Don't know") {
-        return 'unknown';
-      } else if (value === 'None') {
-        return 0;
-      } else if (!value) {
-        return '';
-      } else {
-        return value;
-      }
-    };
-
-    columns.push(advertisingAndInterviewsMapping(entity.moneySpentOnAdvertisingInTheLastFourWeeks));
-    columns.push(advertisingAndInterviewsMapping(entity.peopleInterviewedInTheLastFourWeeks));
 
     // RepeatTraining and AcceptCareCertifiicate
     const repeatTrainingAndCareCertMapping = (value) => {

@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, isDevMode } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
@@ -15,8 +15,8 @@ import {
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
@@ -77,7 +77,6 @@ export class EstablishmentService {
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
   private _employerTypeHasValue: boolean = null;
-  private _inStaffRecruitmentFlow: boolean;
   private _standAloneAccount$: boolean;
   private _checkForChildWorkplaceChanges$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -151,7 +150,6 @@ export class EstablishmentService {
   public resetState() {
     this._establishmentId = null;
     this._establishment$.next(null);
-    this._inStaffRecruitmentFlow = false;
     this.standAloneAccount = false;
     this.setPrimaryWorkplace(null);
     this.setCheckCQCDetailsBanner(false);
@@ -206,27 +204,6 @@ export class EstablishmentService {
 
   public setCheckCQCDetailsBanner(data: boolean) {
     this._checkCQCDetailsBanner$.next(data);
-  }
-
-  public get inStaffRecruitmentFlow() {
-    if (this._inStaffRecruitmentFlow) {
-      return this._inStaffRecruitmentFlow;
-    }
-
-    const inStaffRecruitmentFlow = localStorage.getItem('inStaffRecruitmentFlow');
-
-    if (inStaffRecruitmentFlow) {
-      this._inStaffRecruitmentFlow = JSON.parse(inStaffRecruitmentFlow);
-    } else if (isDevMode() && !this._inStaffRecruitmentFlow) {
-      throw new TypeError('No value for inRecruitmentFlow in local storage!');
-    }
-
-    return this._inStaffRecruitmentFlow;
-  }
-
-  public setInStaffRecruitmentFlow(data: boolean) {
-    this._inStaffRecruitmentFlow = data;
-    localStorage.setItem('inStaffRecruitmentFlow', data.toString());
   }
 
   getEstablishment(id: string, wdf: boolean = false) {
@@ -327,11 +304,15 @@ export class EstablishmentService {
     );
   }
 
-  updateJobs(establishmentId, data: UpdateJobsRequest): Observable<Establishment> {
-    return this.http.post<Establishment>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`,
-      data,
-    );
+  updateJobs(establishmentId: string, data: UpdateJobsRequest): Observable<Partial<Establishment>> {
+    return this.http
+      .post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data)
+      .pipe(
+        mergeMap((response) => {
+          this.setState({ ...this.establishment, ...response });
+          return of(response);
+        }),
+      );
   }
 
   updateWorkers(establishmentId, data) {

@@ -6,8 +6,7 @@ export class WorkplacePage {
     cy.get('[data-testid="workplace-section"]').should('exist');
     cy.get('[data-testid="services-section"]').should('exist');
     cy.get('[data-testid="vacancies-and-turnover-section"]').should('exist');
-    cy.get('[data-testid="recruitment-section"]').should('exist');
-    cy.get('[data-testid="staff-benefits-section"]').should('exist');
+    cy.get('[data-testid="recruitment-and-benefits-section"]').should('exist');
     cy.get('[data-testid="permissions-section"]').should('exist');
   }
 
@@ -100,26 +99,6 @@ export class WorkplacePage {
       cy.get('[data-testid="leavers"]').contains('Change');
     } else {
       cy.get('[data-testid="leavers"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="advertising-spend"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="advertising-spend"]').contains('Change');
-    } else {
-      cy.get('[data-testid="advertising-spend"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="people-interviewed"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="people-interviewed"]').contains('Change');
-    } else {
-      cy.get('[data-testid="people-interviewed"]').contains('Add');
     }
 
     if (

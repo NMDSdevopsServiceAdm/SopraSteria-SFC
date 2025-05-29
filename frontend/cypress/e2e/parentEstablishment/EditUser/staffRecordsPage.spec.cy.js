@@ -3,10 +3,6 @@
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Parent staff records page as edit user', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     onHomePage.clickTab('Staff records');

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Resolve } from '@angular/router';
+
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { take } from 'rxjs/operators';
 
 @Injectable()
-export class WorkplacesReferencesResolver implements Resolve<any> {
+export class WorkplacesReferencesResolver  {
   constructor(private bulkUploadService: BulkUploadService) {}
 
   resolve() {

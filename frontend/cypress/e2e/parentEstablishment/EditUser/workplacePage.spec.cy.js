@@ -3,10 +3,6 @@
 import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
 
 describe('Standalone home page as edit user', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();

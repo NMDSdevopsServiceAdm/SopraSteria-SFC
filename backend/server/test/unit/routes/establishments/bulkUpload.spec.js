@@ -265,8 +265,6 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       VACANCIES: '0',
       REASONS: '',
       REASONNOS: '',
-      ADVERTISING: '',
-      INTERVIEWS: '',
       REPEATTRAINING: '',
       ACCEPTCARECERT: '',
       BENEFITS: '',

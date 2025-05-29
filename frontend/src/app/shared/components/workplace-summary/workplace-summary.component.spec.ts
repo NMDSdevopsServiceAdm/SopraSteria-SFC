@@ -17,7 +17,7 @@ import {
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
+import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
@@ -27,7 +27,7 @@ import { WorkplaceSummaryComponent } from './workplace-summary.component';
 describe('WorkplaceSummaryComponent', () => {
   const setup = async (shareWith = null) => {
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, FundingModule],
       declarations: [],
       providers: [
         {
@@ -77,9 +77,8 @@ describe('WorkplaceSummaryComponent', () => {
     expect(getByTestId('employerType')).toBeTruthy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
   it('should render the certain sections when on the check-answers page', async () => {
@@ -94,9 +93,8 @@ describe('WorkplaceSummaryComponent', () => {
     expect(queryByTestId('employerType')).toBeFalsy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
   it('should render the services section with top margin when removeServiceSectionMargin is false, and without margin when true', async () => {
@@ -124,7 +122,7 @@ describe('WorkplaceSummaryComponent', () => {
     expect(queryByTestId('vacancies-and-turnover-section')).toBeFalsy();
     expect(queryByTestId('recruitment-section')).toBeFalsy();
     expect(queryByTestId('permissions-section')).toBeFalsy();
-    expect(queryByTestId('staff-benefits-section')).toBeFalsy();
+    expect(queryByTestId('recruitment-and-benefits-section')).toBeFalsy();
   });
 
   describe('workplace-section', () => {
@@ -500,7 +498,7 @@ describe('WorkplaceSummaryComponent', () => {
     });
 
     describe('Other services', () => {
-      it('should show dash and have Add information button on when otherServices is null', async () => {
+      it('should show dash and have Add information button on when otherServices value is null', async () => {
         const { component, fixture } = await setup();
 
         component.workplace.otherServices = { value: null };
@@ -722,10 +720,10 @@ describe('WorkplaceSummaryComponent', () => {
         expect(within(vacanciesRow).queryByText('-')).toBeTruthy();
       });
 
-      it(`should show Don't know and a Change link when vacancies is set to Don't know`, async () => {
+      it(`should show Not known and a Change link when vacancies is set to Don't know`, async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.vacancies = `Don't know`;
+        component.workplace.vacancies = 'Not known';
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
@@ -734,7 +732,7 @@ describe('WorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
-        expect(within(vacanciesRow).queryByText(`Don't know`)).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('Not known')).toBeTruthy();
       });
 
       it(`should show None and a Change link when vacancies is set to None`, async () => {
@@ -764,7 +762,7 @@ describe('WorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
-        expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
+        expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
       it(`should show multiple job vacancies with the number of vacancies for each job and a Change link when multiple jobs have vacancies`, async () => {
@@ -781,9 +779,9 @@ describe('WorkplaceSummaryComponent', () => {
         const vacanciesRow = within(document.body).queryByTestId('vacancies');
 
         expect(within(vacanciesRow).queryByText('Change')).toBeTruthy();
-        expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
-        expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
-        expect(within(vacanciesRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+        expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('2 x nursing')).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
 
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Current Staff Vacancies', async () => {
@@ -836,7 +834,7 @@ describe('WorkplaceSummaryComponent', () => {
 
         const startersRow = getByTestId('starters');
 
-        expect(within(startersRow).getByText('New starters in the last 12 months')).toBeTruthy();
+        expect(within(startersRow).getByText('Starters in the last 12 months')).toBeTruthy();
       });
 
       it('should show dash and have Add information button on when starters is null', async () => {
@@ -854,10 +852,10 @@ describe('WorkplaceSummaryComponent', () => {
         expect(within(startersRow).queryByText('-')).toBeTruthy();
       });
 
-      it(`should show Don't know and a Change link when starters is set to Don't know`, async () => {
+      it(`should show Not known and a Change link when starters is set to Don't know`, async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.starters = `Don't know`;
+        component.workplace.starters = 'Not known';
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
@@ -866,7 +864,7 @@ describe('WorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
-        expect(within(startersRow).queryByText(`Don't know`)).toBeTruthy();
+        expect(within(startersRow).queryByText('Not known')).toBeTruthy();
       });
 
       it(`should show None and a Change link when starters is set to None`, async () => {
@@ -896,7 +894,7 @@ describe('WorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
-        expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
+        expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
       it(`should show multiple jobs with the number of starters for each job and a Change link when multiple jobs have starters`, async () => {
@@ -913,9 +911,9 @@ describe('WorkplaceSummaryComponent', () => {
         const startersRow = within(document.body).queryByTestId('starters');
 
         expect(within(startersRow).queryByText('Change')).toBeTruthy();
-        expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
-        expect(within(startersRow).queryByText('2 Nursing')).toBeTruthy();
-        expect(within(startersRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+        expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
+        expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
+        expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
 
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for New Starters', async () => {
@@ -968,7 +966,7 @@ describe('WorkplaceSummaryComponent', () => {
 
         const leaversRow = getByTestId('leavers');
 
-        expect(within(leaversRow).getByText('Staff leavers in the last 12 months')).toBeTruthy();
+        expect(within(leaversRow).getByText('Leavers in the last 12 months')).toBeTruthy();
       });
 
       it('should show dash and have Add information button on when leavers is null', async () => {
@@ -986,10 +984,10 @@ describe('WorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText('-')).toBeTruthy();
       });
 
-      it(`should show Don't know and a Change link when leavers is set to Don't know`, async () => {
+      it(`should show Not known and a Change link when leavers is set to Don't know`, async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.leavers = `Don't know`;
+        component.workplace.leavers = 'Not known';
         component.canEditEstablishment = true;
         fixture.detectChanges();
 
@@ -998,7 +996,7 @@ describe('WorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
-        expect(within(leaversRow).queryByText(`Don't know`)).toBeTruthy();
+        expect(within(leaversRow).queryByText('Not known')).toBeTruthy();
       });
 
       it(`should show None and a Change link when leavers is set to None`, async () => {
@@ -1028,7 +1026,7 @@ describe('WorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
-        expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
+        expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
       it(`should show multiple jobs with the number of leavers for each job and a Change link when multiple jobs have leavers`, async () => {
@@ -1045,9 +1043,9 @@ describe('WorkplaceSummaryComponent', () => {
         const leaversRow = within(document.body).queryByTestId('leavers');
 
         expect(within(leaversRow).queryByText('Change')).toBeTruthy();
-        expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
-        expect(within(leaversRow).queryByText('2 Nursing')).toBeTruthy();
-        expect(within(leaversRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+        expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
+        expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
+        expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
 
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Staff Leavers', async () => {
@@ -1096,74 +1094,6 @@ describe('WorkplaceSummaryComponent', () => {
   });
 
   describe('Recruitment section', () => {
-    describe('Advertising spend', () => {
-      it('should show dash and have Add information button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(within(advertisingSpendRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(
-          within(advertisingSpendRow).getByText(
-            `£${component.formatMonetaryValue(component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks)}`,
-          ),
-        ).toBeTruthy();
-      });
-    });
-
-    describe('People interviewed', () => {
-      it('should show dash and have Add information button on People Interviewed row when peopleInterviewedInTheLastFourWeeks is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.peopleInterviewedInTheLastFourWeeks = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(within(peopleInterviewedRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on People Interviewed row when peopleInterviewedInTheLastFourWeeks has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(
-          within(peopleInterviewedRow).queryByText(component.workplace.peopleInterviewedInTheLastFourWeeks),
-        ).toBeTruthy();
-      });
-    });
-
     describe('Repeat training', () => {
       it('should show dash and have Add information button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is set to null (not answered)', async () => {
         const { component, fixture } = await setup();

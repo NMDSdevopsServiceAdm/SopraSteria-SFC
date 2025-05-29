@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Resolve, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { LAs } from '@core/model/admin/local-authorities-return.model';
 import {
   LocalAuthoritiesReturnService,
@@ -8,7 +8,7 @@ import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class GetLasResolver implements Resolve<any> {
+export class GetLasResolver  {
   constructor(private router: Router, private localAuthoritiesReturnService: LocalAuthoritiesReturnService) {}
 
   resolve(): Observable<LAs> {

@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
@@ -16,7 +15,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     const { fixture, getByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       StaffRecruitmentCaptureTrainingRequirementComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -58,8 +57,10 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   it('should render the heading, input and radio buttons', async () => {
     const { getByText, getByLabelText } = await setup();
     const heading = `Do new care workers have to repeat training they've done with previous employers?`;
+    const sectionCaption = 'Recruitment and benefits';
 
     expect(getByText(heading)).toBeTruthy;
+    expect(getByText(sectionCaption)).toBeTruthy;
     expect(getByLabelText('Yes, always')).toBeTruthy();
     expect(getByLabelText('Yes, very often')).toBeTruthy();
     expect(getByLabelText('Yes, but not very often')).toBeTruthy();
@@ -265,16 +266,13 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
+  });
 
-    it('should render the recruitment and staff benefits progress bar when in the staff recruitment flow', async () => {
-      const { component, fixture, getByTestId } = await setup();
+  describe('Back button', () => {
+    it('should set the back link to how-many-leavers page', async () => {
+      const { component } = await setup(false);
 
-      component.return = null;
-      component.inStaffRecruitmentFlow = true;
-      fixture.detectChanges();
-
-      expect(getByTestId('progress-bar-2')).toBeTruthy();
-      expect(getByTestId('progress-bar-3')).toBeTruthy();
+      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
     });
   });
 });

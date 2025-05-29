@@ -3,9 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -35,7 +35,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workerCount: number;
   public showSharingPermissionsBanner: boolean;
   private showBanner = false;
-  public wdfNewDesignFlag: boolean;
   public tAndQsLastUpdated: string;
   public newDataAreaFlag: boolean;
   public canSeeNewDataArea: boolean;
@@ -59,10 +58,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
-    this.establishmentService.setInStaffRecruitmentFlow(false);
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
-
 
     if (this.workplace) {
       this.getPermissions();
@@ -76,7 +73,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     this.showBanner && this.showStaffRecordBanner();
-    this.wdfNewDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('wdfNewDesign', false);
     this.workerService.setState(null);
   }
 
