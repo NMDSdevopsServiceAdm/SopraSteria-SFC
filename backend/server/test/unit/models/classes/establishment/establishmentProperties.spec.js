@@ -26,10 +26,11 @@ describe('EstablishmentPropertyManager', () => {
     'CountyProperty',
     'PostcodeProperty',
     'IsRegulatedProperty',
+    'CareWorkforcePathwayWorkplaceAwarenessProperty',
   ];
   it('should have the correct property types', () => {
     const establishmentProperties = new EstablishmentPropertyManager();
-    expect(establishmentProperties._thisManager._propertyTypes.length).to.deep.equal(20);
+    expect(establishmentProperties._thisManager._propertyTypes.length).to.deep.equal(21);
     establishmentProperties._thisManager._propertyTypes.forEach((propertyType) => {
       expect(typeof propertyType).to.deep.equal('function');
       expect(properties).to.include(propertyType.name);
