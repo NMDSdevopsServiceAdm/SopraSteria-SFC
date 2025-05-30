@@ -39,29 +39,3 @@ export class RequireCWPAnswerForSomeWorkersGuard implements CanActivate {
     return this.router.parseUrl(homeUrl);
   }
 }
-
-// export const RequireCWPAnswerForSomeWorkersGuardOld: CanActivateFn = async (route, _state) => {
-//   const careWorkforcePathwayService = inject(CareWorkforcePathwayService);
-//   const establishmentService = inject(EstablishmentService);
-//   const router = inject(Router);
-//   const parentSubsidiaryViewService = inject(ParentSubsidiaryViewService);
-
-//   const establishmentUid = establishmentService.establishment?.uid ?? route.paramMap.get('establishmentuid');
-//   const response = await careWorkforcePathwayService
-//     .getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentUid)
-//     .toPromise();
-//   const numberOfWorkers = response?.noOfWorkersWhoRequireAnswers ?? 0;
-
-//   if (numberOfWorkers > 0) {
-//     return true;
-//   }
-
-//   const isViewingSubAsParent = parentSubsidiaryViewService.getViewingSubAsParent();
-
-//   const homeUrl = isViewingSubAsParent
-//     ? `/subsidiary/${parentSubsidiaryViewService.getSubsidiaryUid()}/home`
-//     : '/dashboard#home';
-
-//   const redirectToHome = router.parseUrl(homeUrl);
-//   return redirectToHome;
-// };
