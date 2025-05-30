@@ -74,7 +74,7 @@ const careWorkforcePathwayRoleCategories = [
     description:
       'Select this for admin, ancillary and other roles not yet&nbsp;included&nbsp;in&nbsp;the&nbsp;care&nbsp;workforce&nbsp;pathway',
     analysisFileCode: 8,
-    bulkUploadCode: 8,
+    bulkUploadCode: 998,
   },
 ];
 
