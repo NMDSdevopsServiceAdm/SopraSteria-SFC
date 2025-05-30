@@ -30,6 +30,7 @@ describe('workerCSV', () => {
       sandbox.stub(BUDI, 'nursingSpecialist').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'qualificationLevels').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'qualifications').callsFake((method, value) => value);
+      sandbox.stub(BUDI, 'careWorkforcePathwayRoleCategory').callsFake((method, value) => value);
     });
     afterEach(() => {
       sandbox.restore();
@@ -867,6 +868,23 @@ describe('workerCSV', () => {
           const csvAsArray = csv.split(',');
 
           expect(csvAsArray[getWorkerColumnIndex('NONSCQUAL')]).to.equal('');
+        });
+
+        it('should return the correct code for care workforce pathway', async () => {
+          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[getWorkerColumnIndex('CWPCATEGORY')]).to.equal(
+            `${worker.careWorkforcePathwayRoleCategory.id}`,
+          );
+        });
+        it('should be blank if no careWorkforcePathwayRoleCategory', async () => {
+          worker.careWorkforcePathwayRoleCategory = null;
+
+          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[getWorkerColumnIndex('CWPCATEGORY')]).to.equal('');
         });
 
         it('should return the correct code and year for qual 01', async () => {
