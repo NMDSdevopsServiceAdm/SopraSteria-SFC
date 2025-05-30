@@ -774,6 +774,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareWorkforcePathwayWorkplaceAwarenessChangedBy"',
       },
+      CWPAwarenessQuestionViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'CWPAwarenessQuestionViewed',
+      },
     },
     {
       defaultScope: {
