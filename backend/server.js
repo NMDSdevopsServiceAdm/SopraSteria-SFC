@@ -57,6 +57,7 @@ var longTermAbsence = require('./server/routes/longTermAbsence');
 var nhsBsaApi = require('./server/routes/nhsBsaApi/workplaceData');
 var nhsBsaApiAuth = require('./server/routes/nhsBsaApi/index');
 var nhsBsaApiDocumentation = require('./server/routes/nhsBsaApi/apiDocs');
+var careWorkforcePathwayWorkplaceAwarenessAnswers = require('./server/routes/careWorkforcePathwayWorkplaceAwarenessAnswers');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -263,6 +264,10 @@ app.use('/api/trainingCategories', [cacheMiddleware.nocache, workerTrainingCateg
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
 app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 app.use('/api/longTermAbsence', [refCacheMiddleware.refcache, longTermAbsence]);
+app.use('/api/careWorkforcePathwayWorkplaceAwarenessAnswers', [
+  cacheMiddleware.nocache,
+  careWorkforcePathwayWorkplaceAwarenessAnswers,
+]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
