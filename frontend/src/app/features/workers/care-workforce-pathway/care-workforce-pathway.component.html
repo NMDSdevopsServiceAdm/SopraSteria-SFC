@@ -55,9 +55,11 @@
               <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ idx }}">
                 {{ careWorkforcePathwayCategory.title }}
               </label>
-              <div id="careWorkforcePathwayCategory-description" class="govuk-hint govuk-radios__hint asc__preline">
-                {{ careWorkforcePathwayCategory.description }}
-              </div>
+              <div
+                id="careWorkforcePathwayCategory-description"
+                class="govuk-hint govuk-radios__hint"
+                [innerHTML]="careWorkforcePathwayCategory.description"
+              ></div>
             </div>
           </div>
         </fieldset>
