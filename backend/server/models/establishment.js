@@ -749,6 +749,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CssrID"',
       },
+      CWPAwarenessQuestionViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'CWPAwarenessQuestionViewed',
+      },
     },
     {
       defaultScope: {
