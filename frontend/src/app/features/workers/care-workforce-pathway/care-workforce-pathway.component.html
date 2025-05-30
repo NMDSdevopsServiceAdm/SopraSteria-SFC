@@ -9,7 +9,7 @@
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading" style="width: 90%">
               <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-              Where are they currently on the care workforce pathway?
+              {{ heading }}
             </h1>
           </legend>
 
@@ -31,15 +31,17 @@
               >
             </p>
           </app-details>
+
+          <div class="govuk-!-margin-bottom-6" *ngIf="cameFromCWPSummaryPage">
+            <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
+            <p class="govuk-body">{{ worker.nameOrId }}</p>
+          </div>
+
           <h2 class="govuk-heading-s">Care workforce pathway role categories</h2>
-          <div
-            class="govuk-radios"
-            data-module="govuk-radios"
-            *ngFor="let careWorkforcePathwayCategory of careWorkforcePathwayCategories; let idx = index"
-          >
+          <div class="govuk-radios" data-module="govuk-radios">
             <div
               class="govuk-radios__item"
-              [ngClass]="{ 'govuk-!-margin-bottom-2': !careWorkforcePathwayCategory.description }"
+              *ngFor="let careWorkforcePathwayCategory of careWorkforcePathwayCategories; let idx = index"
             >
               <input
                 class="govuk-radios__input"
@@ -53,9 +55,11 @@
               <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ idx }}">
                 {{ careWorkforcePathwayCategory.title }}
               </label>
-              <div id="careWorkforcePathwayCategory-description" class="govuk-hint govuk-radios__hint">
-                {{ careWorkforcePathwayCategory.description }}
-              </div>
+              <div
+                id="careWorkforcePathwayCategory-description"
+                class="govuk-hint govuk-radios__hint"
+                [innerHTML]="careWorkforcePathwayCategory.description"
+              ></div>
             </div>
           </div>
         </fieldset>
@@ -72,5 +76,16 @@
     </div>
   </div>
 
-  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+  <ng-container *ngIf="cameFromCWPSummaryPage; else normalSubmitButton">
+    <app-submit-button
+      [overrideCallToActionLabel]="true"
+      [callToAction]="'Save'"
+      [return]="!insideFlow"
+      (clicked)="setSubmitAction($event)"
+    ></app-submit-button>
+  </ng-container>
+
+  <ng-template #normalSubmitButton>
+    <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+  </ng-template>
 </form>

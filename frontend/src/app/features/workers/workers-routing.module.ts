@@ -76,6 +76,8 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
 import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
+import { CareWorkforcePathwayWorkersSummaryComponent as CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary/care-workforce-pathway-workers-summary.component';
+import { RequireCWPAnswerForSomeWorkersGuard } from '@core/guards/require-cwp-answer-for-some-workers/require-cwp-answer-for-some-workers.guard';
 
 const routes: Routes = [
   {
@@ -234,6 +236,11 @@ const routes: Routes = [
   {
     path: 'delete-another-staff-record',
     component: DeleteAnotherStaffRecordComponent,
+  },
+  {
+    path: 'care-workforce-pathway-workers-summary',
+    component: CareWorkforcePathwayWorkersSummaryComponent,
+    canActivate: [RequireCWPAnswerForSomeWorkersGuard],
   },
   {
     path: 'basic-records-save-success',

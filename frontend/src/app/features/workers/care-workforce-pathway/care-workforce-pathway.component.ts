@@ -17,9 +17,11 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   public section = 'Training and qualifications';
+  public heading = 'Where are they currently on the care workforce pathway?';
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
   public revealTitle = "What's the care workforce pathway?";
   public cwpQuestionsFlag: boolean;
+  public cameFromCWPSummaryPage: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -47,6 +49,8 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
       this.prefill();
     }
 
+    this.setupPageWhenCameFromCWPSummaryPage();
+
     this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
     this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
     this.next = this.getRoutePath('staff-record-summary');
@@ -73,6 +77,19 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
     );
   }
 
+  private setupPageWhenCameFromCWPSummaryPage(): void {
+    this.cameFromCWPSummaryPage = Boolean(
+      this.return?.url?.some((urlPart) => urlPart?.includes('care-workforce-pathway-workers-summary')),
+    );
+
+    if (!this.cameFromCWPSummaryPage) {
+      return;
+    }
+
+    this.heading = 'Where are your staff on the care workforce pathway?';
+    this.returnUrl = this.return.url;
+  }
+
   generateUpdateProps() {
     const { careWorkforcePathwayRoleCategory } = this.form.value;
     if (!careWorkforcePathwayRoleCategory) {
@@ -94,13 +111,28 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   addAlert(): void {
     if (this.insideFlow) {
       this.addCompletedStaffFlowAlert();
+    } else if (this.cameFromCWPSummaryPage) {
+      this.addRoleCategorySavedAlert();
     }
   }
 
-  addCompletedStaffFlowAlert(): void {
+  private addCompletedStaffFlowAlert(): void {
     this.alertService.addAlert({
       type: 'success',
       message: 'Staff record saved',
     });
+  }
+
+  private addRoleCategorySavedAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: 'Role category saved',
+    });
+  }
+
+  _onSuccess(data: any) {
+    this.workerService.setState({ ...this.worker, ...data });
+    this.onSuccess();
+    this.navigate().then(() => this.addAlert());
   }
 }

@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
@@ -41,5 +42,17 @@ export const MockCWPRoleCategories = lodash.mapValues(
 export class MockCareWorkforcePathwayService extends CareWorkforcePathwayService {
   getCareWorkforcePathwayRoleCategories(): Observable<CareWorkforcePathwayRoleCategory[]> {
     return of(careWorkforcePathwayRoleCategories);
+  }
+
+  public static factory(overrides: any = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockCareWorkforcePathwayService(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        service[overrideName] = overrides[overrideName];
+      });
+
+      return service;
+    };
   }
 }

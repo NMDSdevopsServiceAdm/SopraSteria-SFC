@@ -7,6 +7,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { JobRole } from '@core/model/job.model';
+import { Params } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -22,11 +24,32 @@ export class CareWorkforcePathwayService {
       .pipe(map((res) => res.careWorkforcePathwayRoleCategories));
   }
 
-  getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(establishmentId): Observable<any> {
+  getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer(
+    establishmentId: string,
+  ): Observable<CWPGetNumberOfWorkersResponse> {
     return this.http
-      .get<any>(
+      .get<CWPGetNumberOfWorkersResponse>(
         `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,
       )
       .pipe(map((res) => res));
   }
+
+  getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer(
+    establishmentId: string,
+    queryParams: Params = {},
+  ): Observable<CWPGetAllWorkersResponse> {
+    return this.http.get<CWPGetAllWorkersResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/workersWhoRequireCareWorkforcePathwayRoleAnswer`,
+      { params: queryParams },
+    );
+  }
 }
+
+export type CWPGetNumberOfWorkersResponse = {
+  noOfWorkersWhoRequireAnswers: number;
+};
+
+export type CWPGetAllWorkersResponse = {
+  workers: { uid: string; nameOrId: string; mainJob: JobRole }[];
+  workerCount: number;
+};
