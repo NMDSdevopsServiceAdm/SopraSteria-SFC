@@ -5,6 +5,7 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
 ) {
   constructor() {
     super('CareWorkforcePathwayWorkplaceAwareness');
+    this._allowNull = true;
   }
 
   static clone() {

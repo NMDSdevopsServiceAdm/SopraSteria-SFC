@@ -142,6 +142,10 @@ export class MockEstablishmentService extends EstablishmentService {
     sickPay: 'No',
     pensionContribution: 'No',
     careWorkersLeaveDaysPerYear: '35',
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    },
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}, childWorkplaces: any = null) {
@@ -208,6 +212,10 @@ export class MockEstablishmentService extends EstablishmentService {
   public _primaryWorkplace: Establishment = {
     address: '',
     capacities: [],
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    },
     created: undefined,
     dataOwner: undefined,
     dataOwnershipRequested: '',
@@ -342,6 +350,10 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
   public establishmentObj = {
     address: 'mock establishment address',
     capacities: [],
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    },
     created: undefined,
     dataOwner: 'Workplace',
     dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
