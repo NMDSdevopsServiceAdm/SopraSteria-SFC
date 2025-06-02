@@ -64,6 +64,10 @@ export const establishmentBuilder = build('Establishment', {
     careWorkersLeaveDaysPerYear: fake((f) => f.datatype.number(1000)),
     wdf: null,
     isParentParentApprovedBannerViewed: null,
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: fake((f) => f.lorem.sentence()),
+    },
   },
 });
 
