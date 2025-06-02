@@ -2140,15 +2140,6 @@ module.exports = function (sequelize, DataTypes) {
           )
         		LIMIT 1
         	) IS NOT NULL THEN true
-        -- No training has been added
-        WHEN (
-          SELECT w."ID"
-          FROM cqc."WorkerTraining" wt
-              JOIN cqc."Worker" w ON wt."WorkerFK" = w."ID"
-          WHERE w."EstablishmentFK" = "EstablishmentID"
-          AND w."Archived" = false
-          LIMIT 1
-        ) IS NULL THEN true
         -- Training is expired or expires soon
         WHEN (
           SELECT w."ID"
