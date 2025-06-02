@@ -927,7 +927,6 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
       as: 'CareWorkforcePathwayReasons',
-      onDelete: 'CASCADE',
     });
   };
 
