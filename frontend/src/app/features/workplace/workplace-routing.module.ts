@@ -73,6 +73,7 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -436,6 +437,15 @@ const routes: Routes = [
         },
       },
       {
+        path: 'care-workforce-pathway-awareness',
+        component: CareWorkforcePathwayAwarenessComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Care Workforce Pathway Awareness',
+        },
+      },
+      {
         path: 'cash-loyalty',
         component: StaffBenefitCashLoyaltyComponent,
         canActivate: [CheckPermissionsGuard],
@@ -444,7 +454,6 @@ const routes: Routes = [
           title: 'Cash Loyalty',
         },
       },
-
       {
         path: 'benefits-statutory-sick-pay',
         component: BenefitsStatutorySickPayComponent,

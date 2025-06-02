@@ -68,6 +68,7 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 
 @NgModule({
   imports: [
@@ -115,6 +116,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     UsersComponent,
     StaffRecruitmentCaptureTrainingRequirementComponent,
     AcceptPreviousCareCertificateComponent,
+    CareWorkforcePathwayAwarenessComponent,
     StaffBenefitHolidayLeaveComponent,
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
