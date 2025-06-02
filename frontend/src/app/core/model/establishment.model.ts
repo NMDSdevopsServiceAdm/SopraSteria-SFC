@@ -173,6 +173,7 @@ export interface Establishment {
   provId?: string;
   careWorkforcePathwayWorkplaceAwareness: CareWorkforcePathwayWorkplaceAwareness;
   careWorkforcePathwayUse: CareWorkforcePathwayUse;
+  CWPAwarenessQuestionViewed?: boolean;
 }
 
 export interface UpdateJobsRequest {
