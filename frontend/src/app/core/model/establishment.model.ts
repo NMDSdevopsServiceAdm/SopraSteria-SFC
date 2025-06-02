@@ -171,6 +171,7 @@ export interface Establishment {
   isParentApprovedBannerViewed?: boolean;
   provId?: string;
   careWorkforcePathwayWorkplaceAwareness: CareWorkforcePathwayWorkplaceAwareness;
+  CWPAwarenessQuestionViewed?: boolean;
 }
 
 export interface UpdateJobsRequest {
