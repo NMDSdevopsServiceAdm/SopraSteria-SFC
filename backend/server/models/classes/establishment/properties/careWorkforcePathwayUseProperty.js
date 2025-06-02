@@ -7,6 +7,8 @@ const [YES, NO, DONT_KNOW] = ['Yes', 'No', "Don't know"];
 exports.CareWorkforcePathwayUseProperty = class CareWorkforcePathwayUseProperty extends ChangePropertyPrototype {
   constructor() {
     super('CareWorkforcePathwayUse');
+    this._allowNull = true;
+    this._isValid;
   }
 
   static clone() {
@@ -27,7 +29,7 @@ exports.CareWorkforcePathwayUseProperty = class CareWorkforcePathwayUseProperty 
           use: YES,
           reasons,
         };
-        break;
+        return;
       }
 
       case NO:
@@ -38,7 +40,19 @@ exports.CareWorkforcePathwayUseProperty = class CareWorkforcePathwayUseProperty 
         };
         return;
       }
+
+      default: {
+        this.property = null;
+        this._isValid = false;
+      }
     }
+  }
+
+  get valid() {
+    if (!super.valid) {
+      return false;
+    }
+    return this._isValid ?? true;
   }
 
   async _validateReasons(reasons) {
@@ -53,6 +67,11 @@ exports.CareWorkforcePathwayUseProperty = class CareWorkforcePathwayUseProperty 
       order: [['seq', 'ASC']],
       raw: true,
     });
+
+    if (validReasonsFound.length !== reasons.length) {
+      this._isValid = false;
+      return null;
+    }
 
     validReasonsFound.forEach((reason) => {
       if (reason.isOther) {

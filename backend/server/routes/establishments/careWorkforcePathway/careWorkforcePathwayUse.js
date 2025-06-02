@@ -20,7 +20,7 @@ const updateCareWorkforcePathwayUse = async (req, res) => {
     });
 
     if (!isValidUpdate) {
-      throw new HttpError('Failed to update careWorkforcePathwayUse', 400);
+      throw new HttpError('Invalid request body', 400);
     }
 
     await thisEstablishment.save(req.username);

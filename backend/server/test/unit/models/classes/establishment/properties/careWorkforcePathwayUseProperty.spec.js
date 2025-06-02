@@ -82,51 +82,45 @@ describe('careWorkforcePathwayUseProperty', () => {
       expect(cwpUseProperty.property).to.deep.equal(expectedProperty);
     });
 
-    it('should ignore invalid reasons from incoming document', async () => {
-      const cwpUseProperty = new propertyClass();
-      const document = {
-        careWorkforcePathwayUse: {
-          use: 'Yes',
-          reasons: [{ id: 99999 }, { id: 1 }, { 'something without id': 'apple banana orange' }],
-        },
-      };
-
-      const expectedProperty = {
-        use: 'Yes',
-        reasons: [{ id: 1, text: "To help define our organisation's values", isOther: false }],
-      };
-
-      await cwpUseProperty.restoreFromJson(document);
-
-      expect(cwpUseProperty.property).to.deep.equal(expectedProperty);
-    });
-
     it('should keep the property unchanged when incoming document does not have the field careWorkforcePathwayUse', async () => {
       const cwpUseProperty = new propertyClass();
-      const mockOriginalProperyValue = { use: "Don't know" };
-      cwpUseProperty.property = mockOriginalProperyValue;
 
       const document = {};
 
-      const expectedProperty = { use: "Don't know" };
-
       await cwpUseProperty.restoreFromJson(document);
 
-      expect(cwpUseProperty.property).to.deep.equal(expectedProperty);
+      expect(cwpUseProperty.property).to.equal(null);
+      expect(cwpUseProperty._notSet).to.equal(true);
     });
 
-    it('should ignore invalid value for careWorkforcePathwayUse from incoming document', async () => {
+    it('should set valid() to false when incoming document has an malformed value for careWorkforcePathwayUse', async () => {
       const cwpUseProperty = new propertyClass();
-      const mockOriginalProperyValue = { use: 'Yes', reasons: [mockReasons[0]] };
-      cwpUseProperty.property = mockOriginalProperyValue;
 
       const document = { careWorkforcePathwayUse: { fruits: 'apple banana cranberry' } };
 
-      const expectedProperty = { use: 'Yes', reasons: [mockReasons[0]] };
+      await cwpUseProperty.restoreFromJson(document);
+
+      expect(cwpUseProperty.valid).to.equal(false);
+    });
+
+    it('should set valid() to false when use is an invalid value', async () => {
+      const cwpUseProperty = new propertyClass();
+
+      const document = { careWorkforcePathwayUse: { use: 'Cat food' } };
 
       await cwpUseProperty.restoreFromJson(document);
 
-      expect(cwpUseProperty.property).to.deep.equal(expectedProperty);
+      expect(cwpUseProperty.valid).to.equal(false);
+    });
+
+    it('should set valid() to false when use is Yes and some of the reasons are invalid', async () => {
+      const cwpUseProperty = new propertyClass();
+
+      const document = { careWorkforcePathwayUse: { use: 'Yes', reasons: [{ id: 1 }, { id: 99999999 }] } };
+
+      await cwpUseProperty.restoreFromJson(document);
+
+      expect(cwpUseProperty.valid).to.equal(false);
     });
   });
 
