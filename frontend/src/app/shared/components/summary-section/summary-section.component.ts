@@ -95,6 +95,8 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     this.sections[0].redFlag = false;
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
+    } else if (!this.workplace.CWPAwarenessQuestionViewed) {
+      this.sections[0].message = 'How aware of the CWP is your workplace?';
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {

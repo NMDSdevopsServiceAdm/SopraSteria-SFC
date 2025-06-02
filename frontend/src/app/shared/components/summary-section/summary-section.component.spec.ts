@@ -168,6 +168,19 @@ describe('Summary section', () => {
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
+    it('should show the CWP awareness message if workplace details added and CWPAwarenessQuestionViewed null', async () => {
+      const establishment = {
+        ...Establishment,
+        showAddWorkplaceDetailsBanner: false,
+        CWPAwarenessQuestionViewed: null,
+      };
+      const { getByTestId } = await setup(true, establishment);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).getByText('How aware of the CWP is your workplace?')).toBeTruthy();
+      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+    });
+
     it('should navigate to sub workplace page when clicking the add workplace details message in sub view', async () => {
       const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
 

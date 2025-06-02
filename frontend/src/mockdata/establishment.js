@@ -140,4 +140,5 @@ module.exports.Establishment = {
   dataOwnershipRequested: '',
   ownershipChangeRequestId: '',
   showAddWorkplaceDetailsBanner: false,
+  CWPAwarenessQuestionViewed: true,
 };
