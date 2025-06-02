@@ -3,15 +3,12 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const models = require('../../../../../../models/');
 const { cloneDeep } = require('lodash');
+const { MockCareWorkforcePathwayUseReasons } = require('../../../../mockdata/careWorkforcePathway');
 
 const propertyClass =
   require('../../../../../../models/classes/establishment/properties/careWorkforcePathwayUseProperty').CareWorkforcePathwayUseProperty;
 
-const mockReasons = [
-  { id: 1, text: "To help define our organisation's values", isOther: false },
-  { id: 2, text: 'To help update our job descriptions', isOther: false },
-  { id: 10, text: 'For something else', isOther: true },
-];
+const mockReasons = MockCareWorkforcePathwayUseReasons;
 
 const testValues = {
   empty: null,
