@@ -10,19 +10,19 @@ const propertyClass =
 
 const mockReasons = MockCareWorkforcePathwayUseReasons;
 
-const testValues = {
-  empty: null,
-  no: { use: 'No', reasons: null },
-  dont_know: { use: "Don't know", reasons: null },
-  yes_without_reasons: { use: 'Yes', reasons: null },
-  yes_with_reasons: { use: 'Yes', reasons: [mockReasons[0]] },
-  yes_with_reason_0_and_other_reason: {
-    use: 'Yes',
-    reasons: [mockReasons[0], { ...mockReasons[2], other: 'some specific reasons' }],
-  },
-};
-
 describe('careWorkforcePathwayUseProperty', () => {
+  const mockCwpUseValues = {
+    empty: null,
+    no: { use: 'No', reasons: null },
+    dont_know: { use: "Don't know", reasons: null },
+    yes_without_reasons: { use: 'Yes', reasons: null },
+    yes_with_reasons: { use: 'Yes', reasons: [mockReasons[0]] },
+    yes_with_reason_0_and_other_reason: {
+      use: 'Yes',
+      reasons: [mockReasons[0], { ...mockReasons[2], other: 'some specific reasons' }],
+    },
+  };
+
   describe('restoreFromJson()', () => {
     beforeEach(() => {
       sinon.stub(models.CareWorkforcePathwayReasons, 'findAll').callsFake((queryOption) => {
@@ -162,7 +162,7 @@ describe('careWorkforcePathwayUseProperty', () => {
           careWorkforcePathwayReasons: [mockReasons[0], { ...mockReasons[2], other: 'some specific reasons' }],
         };
 
-        const expectedProperty = testValues.yes_with_reason_0_and_other_reason;
+        const expectedProperty = mockCwpUseValues.yes_with_reason_0_and_other_reason;
 
         const restored = cwpUseProperty.restorePropertyFromSequelize(sequelizeDocument);
         expect(restored).to.deep.equal(expectedProperty);
@@ -200,7 +200,7 @@ describe('careWorkforcePathwayUseProperty', () => {
 
       it('when use is Yes with some reasons', () => {
         const cwpUseProperty = new propertyClass();
-        cwpUseProperty.property = testValues.yes_with_reason_0_and_other_reason;
+        cwpUseProperty.property = mockCwpUseValues.yes_with_reason_0_and_other_reason;
 
         const saved = cwpUseProperty.savePropertyToSequelize();
         expect(saved.careWorkforcePathwayUse).to.equal('Yes');
@@ -223,7 +223,7 @@ describe('careWorkforcePathwayUseProperty', () => {
 
   describe('isEqual()', () => {
     describe('should return true if both values are equal', () => {
-      Object.entries(testValues).forEach(([testValueName, value]) => {
+      Object.entries(mockCwpUseValues).forEach(([testValueName, value]) => {
         it(`when value is ${testValueName}`, () => {
           const cwpUseProperty = new propertyClass();
           const result = cwpUseProperty.isEqual(value, cloneDeep(value));
@@ -234,8 +234,8 @@ describe('careWorkforcePathwayUseProperty', () => {
     });
 
     describe('should return false if values are not equal', () => {
-      Object.entries(testValues).forEach(([currValueName, currValue]) => {
-        Object.entries(testValues).forEach(([newValueName, newValue]) => {
+      Object.entries(mockCwpUseValues).forEach(([currValueName, currValue]) => {
+        Object.entries(mockCwpUseValues).forEach(([newValueName, newValue]) => {
           if (currValueName === newValueName) {
             return;
           }
@@ -290,14 +290,14 @@ describe('careWorkforcePathwayUseProperty', () => {
   describe('toJSON()', () => {
     it('should return correctly formatted JSON for the property', () => {
       const cwpUseProperty = new propertyClass();
-      cwpUseProperty.property = testValues.yes_with_reasons;
+      cwpUseProperty.property = mockCwpUseValues.yes_with_reasons;
 
       const json = cwpUseProperty.toJSON();
 
       expect(json).to.deep.equal({
         careWorkforcePathwayUse: {
           use: 'Yes',
-          reasons: testValues.yes_with_reasons.reasons,
+          reasons: mockCwpUseValues.yes_with_reasons.reasons,
         },
       });
     });

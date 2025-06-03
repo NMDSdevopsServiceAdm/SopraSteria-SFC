@@ -6,7 +6,7 @@ const updateCareWorkforcePathwayUse = async (req, res) => {
   const establishmentId = req.establishmentId;
 
   try {
-    const { use, reasons } = req.body.careWorkforcePathwayUse;
+    const { careWorkforcePathwayUse } = req.body;
 
     const thisEstablishment = new Establishment.Establishment(req.username);
     const establishmentFound = await thisEstablishment.restore(establishmentId);
@@ -16,7 +16,7 @@ const updateCareWorkforcePathwayUse = async (req, res) => {
     }
 
     const isValidUpdate = await thisEstablishment.load({
-      careWorkforcePathwayUse: { use, reasons },
+      careWorkforcePathwayUse,
     });
 
     if (!isValidUpdate) {
