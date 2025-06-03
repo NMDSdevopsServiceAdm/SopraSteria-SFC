@@ -168,17 +168,71 @@ describe('Summary section', () => {
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
-    it('should show the CWP awareness message if workplace details added and CWPAwarenessQuestionViewed null', async () => {
-      const establishment = {
-        ...Establishment,
-        showAddWorkplaceDetailsBanner: false,
-        CWPAwarenessQuestionViewed: null,
-      };
-      const { getByTestId } = await setup(true, establishment);
+    describe('CWP awareness question', () => {
+      it('should show the CWP awareness message if workplace details added, CWPAwarenessQuestionViewed null and awareness question not answered', async () => {
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
 
-      const workplaceRow = getByTestId('workplace-row');
-      expect(within(workplaceRow).getByText('How aware of the CWP is your workplace?')).toBeTruthy();
-      expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+        const { getByTestId } = await setup(true, establishment);
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).getByText('How aware of the CWP is your workplace?')).toBeTruthy();
+        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+      });
+
+      it('should not show the CWP awareness message if workplace details added and CWPAwarenessQuestionViewed null, but awareness question answered', async () => {
+        // user has answered question in workplace flow or from workplace tab so should not show
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 1,
+            title: 'Aware of how the care workforce pathway works in practice',
+          },
+        };
+
+        const { getByTestId } = await setup(true, establishment);
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
+      });
+
+      it('should not show the CWP awareness message if CWPAwarenessQuestionViewed true and awareness question not answered', async () => {
+        // user has clicked link and still not answered, should no longer see it
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: true,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
+
+        const { getByTestId } = await setup(true, establishment);
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
+      });
+
+      it('should not show the CWP awareness message if CWPAwarenessQuestionViewed true and awareness question answered', async () => {
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 1,
+            title: 'Aware of how the care workforce pathway works in practice',
+          },
+        };
+
+        const { getByTestId } = await setup(true, establishment);
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
+      });
     });
 
     it('should navigate to sub workplace page when clicking the add workplace details message in sub view', async () => {
