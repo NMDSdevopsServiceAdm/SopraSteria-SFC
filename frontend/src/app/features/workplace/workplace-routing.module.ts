@@ -73,6 +73,7 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -490,6 +491,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Pensions',
+        },
+      },
+      {
+        path: 'care-workforce-pathway-use',
+        component: CareWorkforcePathwayUseComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Care workforce pathway use',
         },
       },
       {
