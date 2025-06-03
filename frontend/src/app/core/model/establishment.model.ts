@@ -80,6 +80,11 @@ export interface BannerFlag {
   value: boolean;
 }
 
+export interface CareWorkforcePathwayWorkplaceAwareness {
+  id: number;
+  title: string;
+}
+
 export interface WDF {
   effectiveFrom: Date;
   overalWdfEligible: boolean;
@@ -165,6 +170,7 @@ export interface Establishment {
   sickPay?: string;
   isParentApprovedBannerViewed?: boolean;
   provId?: string;
+  careWorkforcePathwayWorkplaceAwareness: CareWorkforcePathwayWorkplaceAwareness;
 }
 
 export interface UpdateJobsRequest {

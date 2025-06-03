@@ -64,6 +64,10 @@ export const establishmentBuilder = build('Establishment', {
     careWorkersLeaveDaysPerYear: fake((f) => f.datatype.number(1000)),
     wdf: null,
     isParentParentApprovedBannerViewed: null,
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: fake((f) => f.lorem.sentence()),
+    },
   },
 });
 
@@ -142,6 +146,10 @@ export class MockEstablishmentService extends EstablishmentService {
     sickPay: 'No',
     pensionContribution: 'No',
     careWorkersLeaveDaysPerYear: '35',
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    },
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}, childWorkplaces: any = null) {
@@ -208,6 +216,10 @@ export class MockEstablishmentService extends EstablishmentService {
   public _primaryWorkplace: Establishment = {
     address: '',
     capacities: [],
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    },
     created: undefined,
     dataOwner: undefined,
     dataOwnershipRequested: '',
@@ -342,6 +354,10 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
   public establishmentObj = {
     address: 'mock establishment address',
     capacities: [],
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    },
     created: undefined,
     dataOwner: 'Workplace',
     dataOwnershipRequested: 'mock establishment dataOwnershipRequested',

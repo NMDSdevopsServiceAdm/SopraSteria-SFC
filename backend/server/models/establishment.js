@@ -749,6 +749,31 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CssrID"',
       },
+      careWorkforcePathwayWorkplaceAwarenessFK: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessFK"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessSavedAt"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessChangedAt"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessSavedBy: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessSavedBy"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessChangedBy: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessChangedBy"',
+      },
     },
     {
       defaultScope: {
@@ -827,6 +852,11 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'MainServiceFKValue',
       targetKey: 'id',
       as: 'mainService',
+    });
+    Establishment.belongsTo(models.careWorkforcePathwayWorkplaceAwareness, {
+      foreignKey: 'careWorkforcePathwayWorkplaceAwarenessFK',
+      targetKey: 'id',
+      as: 'careWorkforcePathwayWorkplaceAwareness',
     });
     Establishment.belongsToMany(models.services, {
       through: 'establishmentServices',

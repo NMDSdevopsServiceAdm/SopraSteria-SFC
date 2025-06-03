@@ -22,6 +22,8 @@ const townProperty = require('./properties/townProperty').TownProperty;
 const countyProperty = require('./properties/countyProperty').CountyProperty;
 const postcodeProperty = require('./properties/postcodeProperty').PostcodeProperty;
 const isRegulatedProperty = require('./properties/isRegulatedProperty').IsRegulatedProperty;
+const careWorkforcePathwayWorkplaceAwarenessProperty =
+  require('./properties/careWorkforcePathwayWorkplaceAwarenessProperty').CareWorkforcePathwayWorkplaceAwarenessProperty;
 
 class EstablishmentPropertyManager {
   constructor() {
@@ -47,6 +49,7 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(countyProperty);
     this._thisManager.registerProperty(postcodeProperty);
     this._thisManager.registerProperty(isRegulatedProperty);
+    this._thisManager.registerProperty(careWorkforcePathwayWorkplaceAwarenessProperty);
   }
 
   get manager() {

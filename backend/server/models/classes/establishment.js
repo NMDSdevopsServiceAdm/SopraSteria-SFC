@@ -98,6 +98,7 @@ class Establishment extends EntityValidator {
     this._sickPay = null;
     this._isParentApprovedBannerViewed = null;
     this._primaryAuthorityCssr = null;
+    this._careWorkforcePathwayWorkplaceAwareness = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -389,6 +390,13 @@ class Establishment extends EntityValidator {
   get primaryAuthorityCssr() {
     return this._primaryAuthorityCssr;
   }
+
+  get careWorkforcePathwayWorkplaceAwareness() {
+    return this._properties.get('careWorkforcePathwayWorkplaceAwarenessFK')
+      ? this._properties.get('CareWorkforcePathwayWorkplaceAwarenessFK').property
+      : null;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -600,6 +608,9 @@ class Establishment extends EntityValidator {
         }
         if ('primaryAuthorityCssr' in document) {
           this._primaryAuthorityCssr = document.primaryAuthorityCssr;
+        }
+        if ('careWorkforcePathwayWorkplaceAwareness' in document) {
+          this._careWorkforcePathwayWorkplaceAwareness = document.careWorkforcePathwayWorkplaceAwareness;
         }
       }
 
@@ -825,6 +836,7 @@ class Establishment extends EntityValidator {
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
+          CareWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1515,6 +1527,22 @@ class Establishment extends EntityValidator {
             },
           ],
         });
+
+        if (fetchResults.careWorkforcePathwayWorkplaceAwarenessFK) {
+          const careWorkforcePathwayWorkplaceAwarenessResult =
+            await models.careWorkforcePathwayWorkplaceAwareness.findOne({
+              where: {
+                id: fetchResults.careWorkforcePathwayWorkplaceAwarenessFK,
+              },
+              attributes: ['id', 'title'],
+              raw: true,
+            });
+
+          fetchResults.careWorkforcePathwayWorkplaceAwareness = {
+             id: careWorkforcePathwayWorkplaceAwarenessResult.id,
+             title: careWorkforcePathwayWorkplaceAwarenessResult?.title,
+           };
+        }
 
         const allAssociatedServiceIndices = [];
 
