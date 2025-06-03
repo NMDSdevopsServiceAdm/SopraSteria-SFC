@@ -1,0 +1,39 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <h1 class="govuk-fieldset__heading">
+        <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+        Is your workplace using the <span class="govuk__nowrap-responsive">care workforce pathway?</span>
+      </h1>
+    </legend>
+
+    <app-details [title]="'What\'s the care workforce pathway (CWP)?'" data-testid="reveal-whatsCareWorkforcePathway">
+      <p>
+        The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in adult
+        social care. It provides a clear career structure for your staff.
+      </p>
+      <p>
+        You'll use the pathway to set out how staff can gain skills, learn and develop, and progress in their careers.
+      </p>
+      <p>
+        <a
+          href="https://www.gov.uk/government/publications/care-workforce-pathway-for-adult-social-care/care-workforce-pathway-for-adult-social-care-overview"
+          class="govuk-link"
+          target="_blank"
+          >Read more about the care workforce pathway</a
+        >
+      </p>
+    </app-details>
+    <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)"></app-workplace-submit-button>
+  </div>
+
+  <div class="govuk-grid-column-one-third">
+    <div *ngIf="!return" class="govuk-util__float-right">
+      <app-progress-bar
+        data-testid="progress-bar"
+        [sections]="workplaceFlowSections"
+        [currentSection]="section"
+      ></app-progress-bar>
+    </div>
+  </div>
+</div>
