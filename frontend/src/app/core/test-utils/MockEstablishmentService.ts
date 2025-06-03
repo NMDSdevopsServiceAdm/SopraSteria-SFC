@@ -460,7 +460,18 @@ export class MockEstablishmentServiceWithOverrides extends MockEstablishmentServ
       const service = new MockEstablishmentService(httpClient);
 
       Object.keys(overrides).forEach((overrideName) => {
-        service[overrideName] = overrides[overrideName];
+        switch (overrideName) {
+          case 'returnTo': {
+            Object.defineProperty(service, 'returnTo', {
+              get: () => overrides['returnTo'],
+            });
+            break;
+          }
+          default: {
+            service[overrideName] = overrides[overrideName];
+            break;
+          }
+        }
       });
 
       return service;
