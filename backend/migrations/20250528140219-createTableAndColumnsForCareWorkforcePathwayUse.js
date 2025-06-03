@@ -9,7 +9,7 @@ const establishmentTable = { tableName: 'Establishment', schema: 'cqc' };
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    return queryInterface.sequelize.transaction((transaction) => {
+    return queryInterface.sequelize.transaction(async (transaction) => {
       const createReasonTable = queryInterface.createTable(
         cwpReasonsTable,
         {
@@ -84,12 +84,9 @@ module.exports = {
         models.CareWorkforcePathwayReasons.create(rowData, { transaction }),
       );
 
-      return Promise.all([
-        createReasonTable,
-        createJunctionTable,
-        addColumnToEstablishmentTable,
-        ...addDataToReasonTable,
-      ]);
+      await Promise.all([createReasonTable, createJunctionTable, addColumnToEstablishmentTable]);
+
+      await Promise.all(addDataToReasonTable);
     });
   },
 
