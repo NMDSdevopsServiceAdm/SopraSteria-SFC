@@ -774,11 +774,28 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareWorkforcePathwayWorkplaceAwarenessChangedBy"',
       },
+
       careWorkforcePathwayUse: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Yes', 'No', "Don't know"],
-        field: 'CareWorkforcePathwayUse',
+        field: 'CareWorkforcePathwayUseValue',
+      },
+      CareWorkforcePathwayUseSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
     },
     {

@@ -69,22 +69,46 @@ module.exports = {
         { transaction },
       );
 
-      const addColumnToEstablishmentTable = queryInterface.addColumn(
-        establishmentTable,
-        'CareWorkforcePathwayUse',
-        {
-          type: Sequelize.DataTypes.ENUM,
-          allowNull: true,
-          values: ['Yes', 'No', "Don't know"],
-        },
-        { transaction },
-      );
+      const addColumnsToEstablishmentTable = [
+        queryInterface.addColumn(
+          establishmentTable,
+          'CareWorkforcePathwayUseValue',
+          {
+            type: Sequelize.DataTypes.ENUM,
+            allowNull: true,
+            values: ['Yes', 'No', "Don't know"],
+          },
+          { transaction },
+        ),
+        ['SavedAt', 'ChangedAt'].map((suffix) => {
+          return queryInterface.addColumn(
+            establishmentTable,
+            `CareWorkforcePathwayUse${suffix}`,
+            {
+              type: Sequelize.DataTypes.DATE,
+              allowNull: true,
+            },
+            { transaction },
+          );
+        }),
+        ['SavedBy', 'ChangedBy'].map((suffix) => {
+          return queryInterface.addColumn(
+            establishmentTable,
+            `CareWorkforcePathwayUse${suffix}`,
+            {
+              type: Sequelize.DataTypes.TEXT,
+              allowNull: true,
+            },
+            { transaction },
+          );
+        }),
+      ];
 
       const addDataToReasonTable = reasonTableData.map((rowData) =>
         models.CareWorkforcePathwayReasons.create(rowData, { transaction }),
       );
 
-      await Promise.all([createReasonTable, createJunctionTable, addColumnToEstablishmentTable]);
+      await Promise.all([createReasonTable, createJunctionTable, ...addColumnsToEstablishmentTable]);
 
       await Promise.all(addDataToReasonTable);
     });
@@ -93,7 +117,11 @@ module.exports = {
   async down(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.dropTable(junctionTable, { transaction });
-      await queryInterface.removeColumn(establishmentTable, 'CareWorkforcePathwayUse', { transaction });
+      await queryInterface.removeColumn(establishmentTable, 'CareWorkforcePathwayUseValue', { transaction });
+      await queryInterface.removeColumn(establishmentTable, 'CareWorkforcePathwayUseSavedAt', { transaction });
+      await queryInterface.removeColumn(establishmentTable, 'CareWorkforcePathwayUseChangedAt', { transaction });
+      await queryInterface.removeColumn(establishmentTable, 'CareWorkforcePathwayUseSavedBy', { transaction });
+      await queryInterface.removeColumn(establishmentTable, 'CareWorkforcePathwayUseChangedBy', { transaction });
       await queryInterface.dropTable(cwpReasonsTable, { transaction });
     });
   },
