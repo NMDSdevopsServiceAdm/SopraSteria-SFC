@@ -81,7 +81,7 @@ export interface BannerFlag {
 }
 
 export interface CareWorkforcePathwayWorkplaceAwareness {
-  id: number;
+  awarnessId: number;
   title: string;
 }
 

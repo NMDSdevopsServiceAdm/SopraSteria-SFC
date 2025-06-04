@@ -65,7 +65,7 @@ export const establishmentBuilder = build('Establishment', {
     wdf: null,
     isParentParentApprovedBannerViewed: null,
     careWorkforcePathwayWorkplaceAwareness: {
-      id: 1,
+      awarnessId: 1,
       title: fake((f) => f.lorem.sentence()),
     },
   },
@@ -147,7 +147,7 @@ export class MockEstablishmentService extends EstablishmentService {
     pensionContribution: 'No',
     careWorkersLeaveDaysPerYear: '35',
     careWorkforcePathwayWorkplaceAwareness: {
-      id: 1,
+      awarnessId: 1,
       title: 'Aware of how the care workforce pathway works in practice',
     },
   };
@@ -217,7 +217,7 @@ export class MockEstablishmentService extends EstablishmentService {
     address: '',
     capacities: [],
     careWorkforcePathwayWorkplaceAwareness: {
-      id: 1,
+      awarnessId: 1,
       title: 'Aware of how the care workforce pathway works in practice',
     },
     created: undefined,
@@ -355,7 +355,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     address: 'mock establishment address',
     capacities: [],
     careWorkforcePathwayWorkplaceAwareness: {
-      id: 1,
+      awarnessId: 1,
       title: 'Aware of how the care workforce pathway works in practice',
     },
     created: undefined,
