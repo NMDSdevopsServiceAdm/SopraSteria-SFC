@@ -184,6 +184,27 @@ describe('Summary section', () => {
         expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
       });
 
+      it('should navigate to awareness-of-care-workforce-pathway when question link clicked', async () => {
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
+
+        const { getByTestId, routerSpy } = await setup(true, establishment);
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
+
+        fireEvent.click(link);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          Establishment.uid,
+          'awareness-of-care-workforce-pathway',
+        ]);
+      });
+
       it('should not show the CWP awareness message if workplace details added and CWPAwarenessQuestionViewed null, but awareness question answered', async () => {
         // user has answered question in workplace flow or from workplace tab so should not show
         const establishment = {

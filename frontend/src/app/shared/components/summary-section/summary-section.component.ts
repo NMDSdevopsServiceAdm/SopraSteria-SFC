@@ -97,6 +97,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[0].message = 'Add more details to your workplace';
     } else if (!this.workplace.CWPAwarenessQuestionViewed && !this.workplace.careWorkforcePathwayWorkplaceAwareness) {
       this.sections[0].message = 'How aware of the CWP is your workplace?';
+      this.sections[0].route = ['/workplace', this.workplace.uid, 'awareness-of-care-workforce-pathway'];
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
