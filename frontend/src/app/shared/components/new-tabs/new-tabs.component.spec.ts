@@ -1,4 +1,3 @@
-import { BehaviorSubject } from 'rxjs';
 import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -12,6 +11,7 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { BehaviorSubject } from 'rxjs';
 
 import { NewTabsComponent } from './new-tabs.component';
 
@@ -192,6 +192,10 @@ describe('NewTabsComponent', () => {
           mockUrl: `/workplace/${mockUid1}/training-and-qualifications/missing-mandatory-training`,
           expectedActiveTab: 'training-and-qualifications',
         },
+        {
+          mockUrl: `/workplace/${mockUid1}/awareness-of-care-workforce-pathway`,
+          expectedActiveTab: 'workplace',
+        },
       ];
 
       testCases.forEach(({ mockUrl, expectedActiveTab }) => {
@@ -227,6 +231,10 @@ describe('NewTabsComponent', () => {
         {
           mockUrl: `/subsidiary/workplace/${mockUid1}/training-and-qualifications/missing-mandatory-training`,
           expectedActiveTab: 'training-and-qualifications',
+        },
+        {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/awareness-of-care-workforce-pathway`,
+          expectedActiveTab: 'workplace',
         },
       ];
 
