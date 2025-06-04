@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -6,13 +6,14 @@ import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import dayjs from 'dayjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-summary-section',
   templateUrl: './summary-section.component.html',
   styleUrls: ['./summary-section.component.scss'],
 })
-export class SummarySectionComponent implements OnInit, OnChanges {
+export class SummarySectionComponent implements OnInit, OnChanges, OnDestroy {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
   @Input() workersCreatedDate;
@@ -47,6 +48,8 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   };
 
   public isParent: boolean;
+  private careWorkforcePathwayLinkDisplaying: boolean;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private tabsService: TabsService,
@@ -67,6 +70,10 @@ export class SummarySectionComponent implements OnInit, OnChanges {
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();
+    if (this.careWorkforcePathwayLinkDisplaying && fragment == 'workplace') {
+      this.setCwpAwarenessQuestionViewed();
+    }
+
     if (this.isParentSubsidiaryView) {
       await this.navigateInSubView(fragment, route);
     } else if (route) {
@@ -90,6 +97,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     } else if (!this.workplace.CWPAwarenessQuestionViewed && !this.workplace.careWorkforcePathwayWorkplaceAwareness) {
       this.sections[0].message = 'How aware of the CWP is your workplace?';
       this.sections[0].route = ['/workplace', this.workplace.uid, 'awareness-of-care-workforce-pathway'];
+      this.careWorkforcePathwayLinkDisplaying = true;
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
@@ -219,5 +227,19 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     } else if (linkText === this.sections[2].linkText && !this.canViewListOfWorkers) {
       this.sections[2].link = false;
     }
+  }
+
+  private setCwpAwarenessQuestionViewed(): void {
+    const cwpData = {
+      property: 'CWPAwarenessQuestionViewed',
+      value: true,
+    };
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, cwpData).subscribe(),
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
