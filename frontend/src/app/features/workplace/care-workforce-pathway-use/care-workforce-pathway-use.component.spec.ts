@@ -1,13 +1,15 @@
-import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
-import { render, within } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
-import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { SharedModule } from '@shared/shared.module';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
+
+import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
 
 fdescribe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
@@ -23,6 +25,10 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
 
   const reasonForSomethingElse = mockReasons[2];
 
+  const getInputByLabel = (labelText: string): HTMLInputElement => {
+    return screen.getByLabelText(labelText);
+  };
+
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(CareWorkforcePathwayUseComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -35,8 +41,13 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       ],
     });
 
+    const injector = getTestBed();
+    const establishmentService = injector.inject(EstablishmentService);
+    const router = injector.inject(Router);
+    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
+
     const component = setupTools.fixture.componentInstance;
-    return { ...setupTools, component };
+    return { ...setupTools, component, establishmentService, routerSpy };
   };
 
   it('should create', async () => {
@@ -152,6 +163,32 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
     });
 
     xit('should clear the selected reasons when user clicked "No"', async () => {});
+
+    describe('prefill', () => {
+      it('should prefill the form with the establishment data from backend', async () => {
+        const mockEstablishment = {
+          careWorkforcePathwayUse: {
+            use: 'Yes',
+            reasons: [
+              { id: mockReasons[0].id, isOther: false },
+              { id: mockReasons[2].id, other: 'Free text entered for something else', isOther: true },
+            ],
+          },
+        };
+
+        await setup({ establishmentService: { establishment: mockEstablishment } });
+
+        expect(getInputByLabel(RadioButtonLabels.YES).checked).toBeTrue();
+        expect(getInputByLabel(RadioButtonLabels.NO).checked).toBeFalse();
+        expect(getInputByLabel(RadioButtonLabels.DO_NOT_KNOW).checked).toBeFalse();
+
+        expect(getInputByLabel(mockReasons[0].text).checked).toBeTrue();
+        expect(getInputByLabel(mockReasons[1].text).checked).toBeFalse();
+        expect(getInputByLabel(mockReasons[2].text).checked).toBeTrue();
+
+        expect(getInputByLabel('Tell us what (optional)').value).toEqual('Free text entered for something else');
+      });
+    });
   });
 
   describe('when in new workplace workflow', async () => {
@@ -170,8 +207,17 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    xit('should set the previous page to CWP awareness question page', async () => {});
+    it('should set the previous page to CWP awareness question page', async () => {
+      const { component } = await setup(overrides);
+      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness']);
+    });
 
-    xit('should set the next page to xxx', async () => {});
+    it('should navigate to cash-loyalty page when skipped the question', async () => {
+      const { getByText, routerSpy } = await setup(overrides);
+
+      userEvent.click(getByText('Skip this question'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
+    });
   });
 });

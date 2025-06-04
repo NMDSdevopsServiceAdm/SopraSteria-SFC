@@ -68,6 +68,10 @@ export const establishmentBuilder = build('Establishment', {
       id: 1,
       title: fake((f) => f.lorem.sentence()),
     },
+    careWorkforcePathwayUse: {
+      use: 'Yes',
+      reasons: [{ id: 1 }, { id: 10, other: 'some specific reason' }],
+    },
   },
 });
 
@@ -150,6 +154,7 @@ export class MockEstablishmentService extends EstablishmentService {
       id: 1,
       title: 'Aware of how the care workforce pathway works in practice',
     },
+    careWorkforcePathwayUse: null,
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}, childWorkplaces: any = null) {
@@ -220,6 +225,7 @@ export class MockEstablishmentService extends EstablishmentService {
       id: 1,
       title: 'Aware of how the care workforce pathway works in practice',
     },
+    careWorkforcePathwayUse: null,
     created: undefined,
     dataOwner: undefined,
     dataOwnershipRequested: '',
@@ -358,6 +364,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
       id: 1,
       title: 'Aware of how the care workforce pathway works in practice',
     },
+    careWorkforcePathwayUse: null,
     created: undefined,
     dataOwner: 'Workplace',
     dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
@@ -465,6 +472,10 @@ export class MockEstablishmentServiceWithOverrides extends MockEstablishmentServ
             Object.defineProperty(service, 'returnTo', {
               get: () => overrides['returnTo'],
             });
+            break;
+          }
+          case 'establishment': {
+            service.establishmentObj = { ...service.establishmentObj, ...overrides['establishment'] };
             break;
           }
           default: {

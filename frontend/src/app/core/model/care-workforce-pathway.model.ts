@@ -1,3 +1,4 @@
+export type CareWorkforcePathwayUse = YES | NO | DONT_KNOW | null;
 export interface CareWorkforcePathwayUseReason {
   id: number;
   text: string;
@@ -7,7 +8,7 @@ export interface CareWorkforcePathwayUseReason {
 
 type YES = {
   use: 'Yes';
-  reasons: Pick<CareWorkforcePathwayUseReason, 'id' | 'other'>[] | null;
+  reasons: Array<CareWorkforcePathwayUseReason> | null;
 };
 
 type NO = {
@@ -19,5 +20,3 @@ type DONT_KNOW = {
   use: "Don't know";
   reasons: null;
 };
-
-export type CareWorkforcePathwayUse = YES | NO | DONT_KNOW;

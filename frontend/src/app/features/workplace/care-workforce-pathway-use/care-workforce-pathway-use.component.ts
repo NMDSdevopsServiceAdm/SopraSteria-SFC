@@ -19,11 +19,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     { value: 'No', label: 'No, we do not currently use the pathway' },
     { value: "Don't know", label: 'I do not know' },
   ];
-  public allReasons: Array<CareWorkforcePathwayUseReason> = [
-    { text: "To help define our organisation's values", id: 1, isOther: false },
-    { text: 'To help update our job descriptions', id: 2, isOther: false },
-    { text: 'For something else', id: 10, isOther: true },
-  ];
+  public allReasons: Array<CareWorkforcePathwayUseReason>;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -38,15 +34,21 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
   protected init(): void {
     this.getAllReasons();
     this.setupForm();
-    this.setPreviousRoute();
     this.prefill();
-    // this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.setPreviousRoute();
+    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
   }
 
-  private getAllReasons() {}
+  private getAllReasons() {
+    this.allReasons = [
+      { text: "To help define our organisation's values", id: 1, isOther: false },
+      { text: 'To help update our job descriptions', id: 2, isOther: false },
+      { text: 'For something else', id: 10, isOther: true },
+    ];
+  }
 
   private setPreviousRoute(): void {
-    // this.previousRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness'];
   }
 
   private setupForm(): void {
@@ -65,7 +67,26 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
       });
   }
 
-  private prefill(): void {}
+  private prefill(): void {
+    const careWorkforcePathwayUse = this.establishment.careWorkforcePathwayUse;
+    if (!careWorkforcePathwayUse) {
+      return;
+    }
+
+    const { use, reasons } = careWorkforcePathwayUse;
+    const idsOfSelectedReasons = reasons.map((reason) => reason.id);
+
+    const reasonCheckboxesValue = this.allReasons.map((reason) => idsOfSelectedReasons.includes(reason.id));
+    const formValue = { use, reasons: reasonCheckboxesValue };
+
+    reasons
+      .filter((reason) => reason.other && reason.isOther)
+      .forEach((otherReason) => {
+        formValue[`otherReasonText-${otherReason.id}`] = otherReason.other;
+      });
+
+    this.form.patchValue(formValue);
+  }
 
   public getFormControlForOtherText(reasonId: number): AbstractControl {
     return this.form.get(`otherReasonText-${reasonId}`);
@@ -75,9 +96,9 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     return null;
   }
 
-  public onSubmit(): void {
-    console.log(this.form.value, '<--- value');
-  }
+  // public onSubmit(): void {
+  //   console.log(this.form.value, '<--- value');
+  // }
 
   protected updateEstablishment(props: any): void {}
 
