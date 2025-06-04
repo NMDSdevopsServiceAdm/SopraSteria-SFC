@@ -2903,26 +2903,17 @@ class WorkerCsvValidator {
 
   _transformCwpCategory() {
     if (this._careWorkForcePathwayCategory) {
-      if (this._careWorkForcePathwayCategory === 999) {
-        this._careWorkForcePathwayCategory = 101;
-      } else if (this._careWorkForcePathwayCategory === 998) {
-        this._careWorkForcePathwayCategory = 102;
-      } else {
-        const myValidatedCwpCategory = this.BUDI.careWorkforcePathwayRoleCategory(
-          this.BUDI.TO_ASC,
-          this.careWorkForcePathwayCategory,
-        );
+      const myValidatedCwpCategory = this.BUDI.cwpCategory(this.BUDI.TO_ASC, this._careWorkForcePathwayCategory);
 
-        if (!myValidatedCwpCategory) {
-          this._validationErrors.push(
-            this._generateWarning(
-              'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
-              'CWPCATEGORY',
-            ),
-          );
-        } else {
-          this._careWorkForcePathwayCategory = myValidatedCwpCategory;
-        }
+      if (!myValidatedCwpCategory) {
+        this._validationErrors.push(
+          this._generateWarning(
+            'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
+            'CWPCATEGORY',
+          ),
+        );
+      } else {
+        this._careWorkForcePathwayCategory = myValidatedCwpCategory;
       }
     }
   }
