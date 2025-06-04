@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,13 +12,14 @@ import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
+import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
+    const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule, RouterModule],
       providers: [
         {
@@ -30,14 +31,7 @@ describe('Summary section', () => {
           useFactory: MockEstablishmentServiceCheckCQCDetails.factory(overrides.checkCqcDetails ?? false),
           deps: [HttpClient],
         },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {},
-            },
-          },
-        },
+        provideRouter([]),
       ],
       componentProperties: {
         workplace: overrides.establishment ?? Establishment,
@@ -62,22 +56,24 @@ describe('Summary section', () => {
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const tabsService = injector.inject(TabsService) as TabsService;
 
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const updateSingleFieldSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+      of(null),
+    );
+
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      queryByText,
-      getByTestId,
-      queryByTestId,
       routerSpy,
       tabsService,
+      updateSingleFieldSpy,
     };
   };
 
@@ -177,7 +173,7 @@ describe('Summary section', () => {
           careWorkforcePathwayWorkplaceAwareness: null,
         };
 
-        const { getByTestId } = await setup(true, establishment);
+        const { getByTestId } = await setup({ establishment });
 
         const workplaceRow = getByTestId('workplace-row');
         expect(within(workplaceRow).getByText('How aware of the CWP is your workplace?')).toBeTruthy();
@@ -192,7 +188,7 @@ describe('Summary section', () => {
           careWorkforcePathwayWorkplaceAwareness: null,
         };
 
-        const { getByTestId, routerSpy } = await setup(true, establishment);
+        const { getByTestId, routerSpy } = await setup({ establishment });
 
         const workplaceRow = getByTestId('workplace-row');
         const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
@@ -203,6 +199,43 @@ describe('Summary section', () => {
           Establishment.uid,
           'awareness-of-care-workforce-pathway',
         ]);
+      });
+
+      it("should update CWPAwarenessQuestionViewed when question link clicked so user doesn't see question again", async () => {
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
+
+        const { getByTestId, updateSingleFieldSpy } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
+
+        fireEvent.click(link);
+        expect(updateSingleFieldSpy).toHaveBeenCalledWith(Establishment.uid, {
+          property: 'CWPAwarenessQuestionViewed',
+          value: true,
+        });
+      });
+
+      it('should not update CWPAwarenessQuestionViewed when Workplace link clicked', async () => {
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
+
+        const { getByTestId, updateSingleFieldSpy } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText('Workplace');
+
+        fireEvent.click(link);
+        expect(updateSingleFieldSpy).not.toHaveBeenCalled();
       });
 
       it('should not show the CWP awareness message if workplace details added and CWPAwarenessQuestionViewed null, but awareness question answered', async () => {
@@ -217,7 +250,7 @@ describe('Summary section', () => {
           },
         };
 
-        const { getByTestId } = await setup(true, establishment);
+        const { getByTestId } = await setup({ establishment });
 
         const workplaceRow = getByTestId('workplace-row');
         expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
@@ -232,7 +265,7 @@ describe('Summary section', () => {
           careWorkforcePathwayWorkplaceAwareness: null,
         };
 
-        const { getByTestId } = await setup(true, establishment);
+        const { getByTestId } = await setup({ establishment });
 
         const workplaceRow = getByTestId('workplace-row');
         expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
@@ -249,7 +282,7 @@ describe('Summary section', () => {
           },
         };
 
-        const { getByTestId } = await setup(true, establishment);
+        const { getByTestId } = await setup({ establishment });
 
         const workplaceRow = getByTestId('workplace-row');
         expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
