@@ -55,7 +55,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-awareness'];
   }
 
   public onChange(answer: string) {
