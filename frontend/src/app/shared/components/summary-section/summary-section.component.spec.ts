@@ -42,7 +42,7 @@ describe('Summary section', () => {
       componentProperties: {
         workplace: overrides.establishment ?? Establishment,
         trainingCounts: (overrides.trainingCounts as TrainingCounts) ?? ({} as TrainingCounts),
-        navigateToTab: (event, selectedTab) => {
+        navigateToTab: (event, _selectedTab) => {
           event.preventDefault();
         },
         workerCount: overrides?.workerCount ?? Establishment.numberOfStaff,
@@ -212,6 +212,20 @@ describe('Summary section', () => {
       const workplaceRow = getByTestId('workplace-row');
       expect(within(workplaceRow).getByText(`You've not added your total number of staff`)).toBeTruthy();
       expect(within(workplaceRow).getByTestId('red-flag')).toBeTruthy();
+    });
+
+    it('should not show the total staff error if numberOfStaff is 0', async () => {
+      const establishment = { ...Establishment, numberOfStaff: 0 };
+      const overrides = {
+        checkCqcDetails: false,
+        establishment,
+        numberOfStaff: 0,
+      };
+      const { getByTestId } = await setup(overrides);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).queryByText(`You've not added your total number of staff`)).toBeFalsy();
+      expect(within(workplaceRow).queryByTestId('red-flag')).toBeFalsy();
     });
 
     it('should show the staff total does not match staff records warning when they do not match and it is after eight weeks since first login', async () => {

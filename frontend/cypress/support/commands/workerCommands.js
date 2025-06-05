@@ -41,3 +41,15 @@ Cypress.Commands.add('deleteTestWorkerFromDb', (workerName) => {
 
   cy.task('multipleDbQueries', dbQueries);
 });
+
+Cypress.Commands.add('getWorkerId', (establishmentID, workerName) => {
+  const queryString = `SELECT "ID" FROM cqc."Worker"
+  WHERE "EstablishmentFK" = $1
+  AND "NameOrIdValue" = $2`;
+
+  const parameters = [establishmentID, workerName];
+
+  cy.task('dbQuery', { queryString, parameters }).then((result) => {
+    cy.wrap(result.rows[0]?.ID).as('workerId');
+  });
+});

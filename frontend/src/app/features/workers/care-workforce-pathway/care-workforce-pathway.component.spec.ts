@@ -251,7 +251,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: 'Staff record saved',
+        message: 'Staff record details saved',
       });
     });
 
@@ -264,7 +264,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: 'Staff record saved',
+          message: 'Staff record details saved',
         });
       });
     });

@@ -150,15 +150,6 @@ describe('DashboardComponent', () => {
       expect(getByTestId('tab_training-and-qualifications')).toBeTruthy();
     });
 
-    it('should display the WDF tab', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.ngOnInit();
-      fixture.detectChanges();
-
-      expect(getByTestId('tab_wdf')).toBeTruthy();
-    });
-
     xit('should display the Benchmarks tab', async () => {
       const { fixture, getByTestId } = await setup();
 

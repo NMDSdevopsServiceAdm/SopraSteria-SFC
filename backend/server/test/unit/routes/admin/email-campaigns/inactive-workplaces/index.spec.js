@@ -9,6 +9,7 @@ const setParentWorkplaces = require('../../../../../../services/email-campaigns/
 const setInactiveWorkplacesForDeletion = require('../../../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
 const sendEmail = require('../../../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const inactiveWorkplaceRoutes = require('../../../../../../routes/admin/email-campaigns/inactive-workplaces');
+const inactiveWorkplacesUtils = require('../../../../../../utils/db/inactiveWorkplacesUtils');
 
 describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   afterEach(() => {
@@ -106,9 +107,54 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   ];
 
   describe('getInactiveWorkplaces', () => {
+    it('should not call refreshEstablishmentLastActivityView when there is a request to stop refreshing the view', async () => {
+      sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+      const refreshEstablishmentLastActivityViewSpy = sinon
+      .stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView')
+      .returns();
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces',
+        query: {
+          stopViewRefresh: 'true',
+        },
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+
+      expect(refreshEstablishmentLastActivityViewSpy).not.to.have.been.called;
+    });
+
+    it('should call refreshEstablishmentLastActivityView when there is no request to stop refreshing the view', async () => {
+      sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
+      sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+      const refreshEstablishmentLastActivityViewSpy = sinon
+      .stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView')
+      .returns();
+
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces',
+      });
+
+      req.role = 'Admin';
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+
+      expect(refreshEstablishmentLastActivityViewSpy).to.be.called;
+    });
+
     it('should get the inactive workplaces', async () => {
       sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
       sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
+      sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').returns({})
+      sinon.stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView').returns({});
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -120,6 +166,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       const res = httpMocks.createResponse();
       await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
       const response = res._getJSONData();
+      console.log(response)
 
       expect(response.inactiveWorkplaces).to.deep.equal(3);
     });
@@ -146,10 +193,45 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   });
 
   describe('getInactiveWorkplcesForDeletion', () => {
+    it('should not call refreshEstablishmentLastActivityView when there is a request to stop refreshing the view', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion',
+        query: {
+          stopViewRefresh: 'true',
+        },
+      });
+      const refreshEstablishmentLastActivityViewSpy = sinon
+        .stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView')
+        .returns();
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+
+      expect(refreshEstablishmentLastActivityViewSpy).not.to.have.been.called;
+    });
+
+    it('should call refreshEstablishmentLastActivityView when there is no request to stop refreshing the view', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion',
+      });
+      const refreshEstablishmentLastActivityViewSpy = sinon
+        .stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView')
+        .returns();
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+
+      expect(refreshEstablishmentLastActivityViewSpy).to.be.called;
+    });
+
     it('should get the number of inactive workplaces', async () => {
       sinon
         .stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion')
         .returns(dummyInactiveWorkplacesForDeletion);
+      sinon.stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView').returns();
+
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion',
@@ -185,11 +267,45 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
   });
 
   describe('inactiveWorkplacesIdsForDeletions', () => {
+    it('should not call refreshEstablishmentLastActivityView when there is a request to stop refreshing the view', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions',
+        query: {
+          stopViewRefresh: 'true',
+        },
+      });
+      const refreshEstablishmentLastActivityViewSpy = sinon
+        .stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView')
+        .returns();
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+
+      expect(refreshEstablishmentLastActivityViewSpy).not.to.have.been.called;
+    });
+
+    it('should call refreshEstablishmentLastActivityView when there is no request to stop refreshing the view', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        url: '/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions',
+      });
+      const refreshEstablishmentLastActivityViewSpy = sinon
+        .stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView')
+        .returns();
+
+      const res = httpMocks.createResponse();
+      await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
+
+      expect(refreshEstablishmentLastActivityViewSpy).to.be.called;
+    });
+
     it('should get the establishmentIds of the inactive workplaces for deletion', async () => {
       sinon
         .stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion')
         .returns(dummyInactiveWorkplacesForDeletion);
       sinon.stub(models.establishment, 'archiveInactiveWorkplaces');
+      sinon.stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView').returns();
 
       const req = httpMocks.createRequest({
         method: 'GET',

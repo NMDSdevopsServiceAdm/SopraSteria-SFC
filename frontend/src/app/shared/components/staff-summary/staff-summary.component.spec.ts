@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
@@ -15,14 +15,13 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
-import sinon from 'sinon';
 
 import { PaginationComponent } from '../pagination/pagination.component';
 import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/table-pagination-wrapper.component';
 import { StaffSummaryComponent } from './staff-summary.component';
 
 describe('StaffSummaryComponent', () => {
-  async function setup(isWdf = false, qsParamGetMock = sinon.fake()) {
+  async function setup(isWdf = false) {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
@@ -36,16 +35,6 @@ describe('StaffSummaryComponent', () => {
           deps: [HttpClient, Router, UserService],
         },
         WorkerService,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              queryParamMap: {
-                get: qsParamGetMock,
-              },
-            },
-          },
-        },
       ],
       componentProperties: {
         workplace: establishment,
@@ -178,24 +167,6 @@ describe('StaffSummaryComponent', () => {
 
       expect(component.getByText('There are no matching results')).toBeTruthy();
       expect(component.getByText('Make sure that your spelling is correct.')).toBeTruthy();
-    });
-  });
-
-  describe('Query search params update correctly', () => {
-    it('sets the searchTerm for staff record input if query params are found on render', async () => {
-      const qsParamGetMock = sinon.stub();
-      qsParamGetMock.onCall(0).returns('mysupersearch');
-      qsParamGetMock.onCall(1).returns('staff');
-
-      const { component } = await setup(false, qsParamGetMock);
-
-      await component.fixture.whenStable();
-      component.fixture.componentInstance.totalWorkerCount = 16;
-      component.fixture.detectChanges();
-
-      expect(
-        (component.getByLabelText('Search by name or ID number for staff records') as HTMLInputElement).value,
-      ).toBe('mysupersearch');
     });
   });
 

@@ -2,10 +2,6 @@ const moment = require('moment');
 
 const models = require('../../index');
 
-const refreshInactiveWorkplacesForDeletion = async () => {
-  return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
-};
-
 const getInactiveWorkplacesForDeletion = async () => {
   const lastMonth = moment().subtract(1, 'months').endOf('month');
   const twentyFourLastMonths = lastMonth.clone().subtract(24, 'months').format('YYYY-MM-DD');
@@ -23,7 +19,9 @@ const getInactiveWorkplacesForDeletion = async () => {
     "Address1",
     "Town",
     "County",
-    "PostCode"
+    "PostCode",
+    "LocationID",
+    "ParentNmdsID"
   FROM
   	cqc."EstablishmentLastActivity" e
 
@@ -57,5 +55,4 @@ const getInactiveWorkplacesForDeletion = async () => {
 
 module.exports = {
   getInactiveWorkplacesForDeletion,
-  refreshInactiveWorkplacesForDeletion,
 };

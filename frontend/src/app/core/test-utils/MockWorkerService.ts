@@ -416,6 +416,8 @@ export const qualificationRecord = {
 export class MockWorkerService extends WorkerService {
   public _worker;
   public _alert;
+  public _returnTo;
+  public _addStaffRecordInProgress: boolean;
 
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
@@ -438,6 +440,18 @@ export class MockWorkerService extends WorkerService {
 
   public set worker(val) {
     this._worker = val;
+  }
+
+  public set returnTo(returnUrl) {
+    this._returnTo = returnUrl;
+  }
+
+  public set addStaffRecordInProgress(value: boolean) {
+    this._addStaffRecordInProgress = value;
+  }
+
+  public get addStaffRecordInProgress(): boolean {
+    return this._addStaffRecordInProgress;
   }
 
   public get returnTo(): URLStructure {

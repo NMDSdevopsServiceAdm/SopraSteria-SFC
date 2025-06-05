@@ -328,7 +328,9 @@
               <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy | formatSLV }}</li>
             </ul>
           </ng-container>
-          <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
+          <ng-container *ngIf="!isArray(workplace.vacancies)"
+            >{{ workplace.vacancies | closedEndedAnswer }}
+          </ng-container>
         </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
@@ -362,7 +364,7 @@
       }"
       data-testid="starters"
     >
-      <dt class="govuk-summary-list__key">New starters in the last 12 months</dt>
+      <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
       <dd class="govuk-summary-list__value">
         <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
         <ng-template #starters>
@@ -372,7 +374,7 @@
             </ul>
           </ng-container>
           <ng-container *ngIf="!isArray(workplace.starters)">
-            {{ workplace.starters }}
+            {{ workplace.starters | closedEndedAnswer }}
           </ng-container>
         </ng-template>
       </dd>
@@ -407,7 +409,7 @@
           showWdfConfirmations.leavers || workplace.wdf?.leavers?.isEligible === Eligibility.NO
       }"
     >
-      <dt class="govuk-summary-list__key">Staff leavers in the last 12 months</dt>
+      <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
       <dd class="govuk-summary-list__value">
         <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
         <ng-template #leavers>
@@ -417,7 +419,7 @@
             </ul>
           </ng-container>
           <ng-container *ngIf="!isArray(workplace.leavers)">
-            {{ workplace.leavers }}
+            {{ workplace.leavers | closedEndedAnswer }}
           </ng-container>
         </ng-template>
       </dd>

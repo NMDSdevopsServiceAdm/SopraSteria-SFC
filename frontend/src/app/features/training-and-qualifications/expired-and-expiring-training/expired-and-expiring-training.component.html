@@ -16,6 +16,7 @@
   label="Search by name or ID number"
   accessibleLabel="staff training records"
   (fetchData)="getTrainingByStatus($event)"
+  [setQueryInParams]="true"
 >
   <table class="govuk-table" data-testid="table" *ngIf="workerCount; else noTrainingFoundInSearch">
     <thead class="govuk-table__head">

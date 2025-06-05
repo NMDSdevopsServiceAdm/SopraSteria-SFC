@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
-import { onTrainingAndQualsPage } from '../../../support/page_objects/onTrainingAndQualsPage';
+import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { onTrainingAndQualsPage } from '../../support/page_objects/onTrainingAndQualsPage';
 
 describe('Standalone training and qualifications page as edit user', () => {
   beforeEach(() => {

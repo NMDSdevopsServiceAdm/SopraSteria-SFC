@@ -8,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 
-import { QuestionComponent } from '../question/question.component';
+import { FinalQuestionComponent } from '../final-question/final-question.component';
 import { AlertService } from '@core/services/alert.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
@@ -16,7 +16,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
   selector: 'app-other-qualifications-level',
   templateUrl: './other-qualifications-level.component.html',
 })
-export class OtherQualificationsLevelComponent extends QuestionComponent {
+export class OtherQualificationsLevelComponent extends FinalQuestionComponent {
   public qualifications: QualificationLevel[];
   public section = 'Training and qualifications';
   public cwpQuestionsFlag: boolean;
@@ -32,7 +32,16 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     protected alertService: AlertService,
     private featureFlagService: FeatureFlagsService,
   ) {
-    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
+    super(
+      formBuilder,
+      router,
+      route,
+      backLinkService,
+      errorSummaryService,
+      workerService,
+      establishmentService,
+      alertService,
+    );
 
     this.form = this.formBuilder.group({
       qualification: null,
@@ -40,14 +49,14 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
   }
 
   async init() {
-    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
-    this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
-
     this.getAndSetQualifications();
 
     if (this.worker.highestQualification) {
       this.prefill();
     }
+
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
 
     this.cwpQuestionsFlag
       ? (this.next = this.getRoutePath('staff-record-summary'))
@@ -91,10 +100,8 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     }
   }
 
-  addCompletedStaffFlowAlert(): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message: 'Staff record saved',
-    });
+  protected formValueIsEmpty(): boolean {
+    const { qualification } = this.form.value;
+    return qualification === null;
   }
 }
