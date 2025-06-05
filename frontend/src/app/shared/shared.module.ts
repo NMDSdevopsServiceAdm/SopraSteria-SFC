@@ -139,6 +139,8 @@ import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 import { JobRoleNumbersTableComponent } from './components/job-role-numbers-table/job-role-numbers-table.component';
+import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pathway-role-category.pipe';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { HasValuePipe } from './pipes/has-value.pipe';
 
 @NgModule({
@@ -280,6 +282,7 @@ import { HasValuePipe } from './pipes/has-value.pipe';
     SelectJobRolesToAddComponent,
     NumberInputWithButtonsComponent,
     JobRoleNumbersTableComponent,
+    CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
   ],
   exports: [
@@ -412,8 +415,17 @@ import { HasValuePipe } from './pipes/has-value.pipe';
     FormatStartersLeaversVacanciesPipe,
     NumberInputWithButtonsComponent,
     JobRoleNumbersTableComponent,
+    CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
   ],
-  providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver, QuestionsAndAnswersResolver],
+  providers: [
+    DialogService,
+    TotalStaffComponent,
+    ArticleListResolver,
+    PageResolver,
+    QuestionsAndAnswersResolver,
+    FeatureFlagsResolver,
+    HasValuePipe,
+  ],
 })
 export class SharedModule {}

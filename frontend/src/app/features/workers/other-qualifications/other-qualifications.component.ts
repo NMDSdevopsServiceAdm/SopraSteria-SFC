@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
+import { AlertService } from '@core/services/alert.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
@@ -19,7 +20,7 @@ export class OtherQualificationsComponent extends FinalQuestionComponent {
     { value: 'No', tag: 'No' },
     { value: `Don't know`, tag: 'I do not know' },
   ];
-
+  public cwpQuestionsFlag: boolean;
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
@@ -29,6 +30,7 @@ export class OtherQualificationsComponent extends FinalQuestionComponent {
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     protected alertService: AlertService,
+    private featureFlagService: FeatureFlagsService,
   ) {
     super(
       formBuilder,
@@ -46,11 +48,16 @@ export class OtherQualificationsComponent extends FinalQuestionComponent {
     });
   }
 
-  init(): void {
+  async init() {
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
+
     if (this.worker.otherQualification) {
       this.prefill();
     }
-    this.next = this.getRoutePath('staff-record-summary');
+    this.cwpQuestionsFlag
+      ? (this.next = this.getRoutePath('staff-record-summary'))
+      : (this.next = this.getRoutePath('care-workforce-pathway'));
   }
 
   private prefill(): void {
@@ -75,15 +82,26 @@ export class OtherQualificationsComponent extends FinalQuestionComponent {
 
     if (otherQualification === 'Yes') {
       nextRoute.push('other-qualifications-level');
-    } else if (this.insideFlow) {
+    } else if (otherQualification !== 'Yes' && this.insideFlow && this.cwpQuestionsFlag == true) {
       nextRoute.push('staff-record-summary');
+    } else if (otherQualification !== 'Yes' && this.insideFlow && this.cwpQuestionsFlag == false) {
+      nextRoute.push('care-workforce-pathway');
     }
     return nextRoute;
   }
 
   protected formValueIsEmpty(): boolean {
     const { otherQualification } = this.form.value;
+
     return otherQualification === null;
+  }
+
+  addAlert(): void {
+    const { otherQualification } = this.form.value;
+
+    if (otherQualification !== 'Yes' && this.insideFlow && this.cwpQuestionsFlag == true) {
+      this.addCompletedStaffFlowAlert();
+    }
   }
 
   onSuccess(): void {

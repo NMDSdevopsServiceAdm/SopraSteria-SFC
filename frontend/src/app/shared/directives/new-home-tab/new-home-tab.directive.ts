@@ -85,6 +85,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public isParentSubsidiaryView: boolean;
   public article: Article;
   public noOfWorkersWhoRequireInternationalRecruitment: number;
+  public noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  public cwpQuestionsFlag: boolean;
 
   constructor(
     private userService: UserService,
@@ -109,6 +111,11 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
     this.noOfWorkersWhoRequireInternationalRecruitment =
       this.route.snapshot.data.noOfWorkersWhoRequireInternationalRecruitment?.noOfWorkersWhoRequireAnswers;
+
+    this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered =
+      this.route.snapshot.data.noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer?.noOfWorkersWhoRequireAnswers;
+
+    this.cwpQuestionsFlag = this.route.snapshot.data?.featureFlags?.cwpQuestions ?? false;
 
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;

@@ -13,13 +13,13 @@ import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
-import {
-  GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
-} from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
+import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
@@ -30,30 +30,16 @@ import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
-import {
-  ForgotYourPasswordComponent,
-} from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
-import {
-  ForgotYourUsernameOrPasswordComponent,
-} from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
-import {
-  ForgotYourUsernameComponent,
-} from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
-import {
-  SecurityQuestionAnswerNotMatchComponent,
-} from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
-import {
-  UserAccountNotFoundComponent,
-} from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
+import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
+import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
+import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
 import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 import { LoginComponent } from '@features/login/login.component';
-import {
-  VacanciesAndTurnoverLoginMessage,
-} from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
+import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import {
-  MigratedUserTermsConditionsComponent,
-} from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
@@ -211,6 +197,9 @@ const routes: Routes = [
           usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
           noOfWorkersWhoRequireInternationalRecruitment:
             GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
+          noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer:
+            GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+          featureFlags: FeatureFlagsResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },

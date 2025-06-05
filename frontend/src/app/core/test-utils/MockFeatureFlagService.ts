@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { mockConfigCatClient } from './MockConfigCatClient';
 
 @Injectable()
@@ -9,21 +9,16 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
 
   constructor() {
     super();
-    this.configCatClient.getValueAsync = (flagName, defaultSetting) => {
-      if (flagName === 'homePageNewDesign') {
-        return new Promise((resolve) => {
-          return resolve(true);
-        });
+  }
+  public static factory(override: Record<string, boolean>) {
+    return () => {
+      const service = new MockFeatureFlagsService();
+      if (override) {
+        service.configCatClient.getValueAsync = async (flagName, defaultSetting) => {
+          return override?.[flagName] ?? defaultSetting;
+        };
       }
-      if (flagName === 'homePageNewDesignParent') {
-        return new Promise((resolve) => {
-          return resolve(true);
-        });
-      }
-
-      return new Promise((resolve) => {
-        return resolve(defaultSetting);
-      });
+      return service;
     };
   }
 

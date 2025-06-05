@@ -74,6 +74,7 @@ export const workerBuilder = build('Worker', {
     nationality: { value: null },
     britishCitizenship: null,
     updated: '2024-05-01T06:50:45.882Z',
+    careWorkforcePathwayRoleCategory: null,
   },
 });
 
@@ -588,12 +589,23 @@ export class MockWorkerServiceWithOverrides extends MockWorkerService {
       const service = new MockWorkerServiceWithOverrides(httpClient);
 
       Object.keys(overrides).forEach((overrideName) => {
-        if (overrideName == 'worker') {
-          const worker = { ...workerBuilder(), ...overrides[overrideName] };
-          service.worker = worker;
-          service.worker$ = of(worker as Worker);
-        } else {
-          service[overrideName] = overrides[overrideName];
+        switch (overrideName) {
+          case 'worker': {
+            const worker = { ...workerBuilder(), ...overrides[overrideName] };
+            service.worker = worker;
+            service.worker$ = of(worker as Worker);
+            break;
+          }
+          case 'returnTo': {
+            Object.defineProperty(service, 'returnTo', {
+              get: () => overrides['returnTo'],
+            });
+            break;
+          }
+          default: {
+            service[overrideName] = overrides[overrideName];
+            break;
+          }
         }
       });
 

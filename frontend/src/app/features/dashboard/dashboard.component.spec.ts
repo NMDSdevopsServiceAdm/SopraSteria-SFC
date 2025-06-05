@@ -78,7 +78,7 @@ describe('DashboardComponent', () => {
           useClass: MockBenchmarksService,
         },
         { provide: WindowToken, useValue: MockWindow },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ wdfNewDesign: true }) },
         { provide: WorkerService, useClass: MockWorkerService },
         {
           provide: ActivatedRoute,

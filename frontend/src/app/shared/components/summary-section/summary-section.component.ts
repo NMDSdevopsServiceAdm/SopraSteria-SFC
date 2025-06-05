@@ -25,8 +25,10 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
+  @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  @Input() cwpQuestionsFlag: boolean;
 
-  public sections = [
+  public sections: Section[] = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
     { linkText: 'Staff records', fragment: 'staff-records', message: '', route: undefined, redFlag: false, link: true },
     {
@@ -65,14 +67,17 @@ export class SummarySectionComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {}
 
-  public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
+  public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
     event.preventDefault();
     if (this.isParentSubsidiaryView) {
-      await this.navigateInSubView(fragment, route);
-    } else if (route) {
+      return await this.navigateInSubView(fragment, route);
+    }
+
+    if (route) {
       await this.router.navigate(route);
-      this.tabsService.selectedTab = fragment;
-    } else {
+    }
+
+    if (fragment && !skipTabSwitch) {
       this.tabsService.selectedTab = fragment;
     }
   }
@@ -113,6 +118,15 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
+    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && !this.cwpQuestionsFlag) {
+      this.sections[1].message = 'Where are your staff on the care workforce pathway?';
+      this.sections[1].skipTabSwitch = true;
+      this.sections[1].route = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        'care-workforce-pathway-workers-summary',
+      ];
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
     } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
@@ -217,4 +231,14 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[2].link = false;
     }
   }
+}
+
+interface Section {
+  linkText: string;
+  fragment: string;
+  message: string;
+  route: string[];
+  redFlag: boolean;
+  link: boolean;
+  skipTabSwitch?: boolean;
 }

@@ -1,0 +1,91 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="!cwpQuestionsFlag" data-testid="cwp-flag">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="submitted && form.get('careWorkforcePathwayRoleCategory').invalid"
+      >
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading" style="width: 90%">
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              {{ heading }}
+            </h1>
+          </legend>
+
+          <app-details [title]="revealTitle" data-testid="reveal-whatsCareWorkforcePathway">
+            <p>
+              The care workforce pathway outlines the knowledge, skills, values and behaviours needed for a career in
+              adult social care. It provides a clear career structure for your staff.
+            </p>
+            <p>
+              You'll use the pathway to set out how staff can gain skills, learn and develop, and progress in their
+              careers.
+            </p>
+            <p>
+              <a
+                href="https://www.gov.uk/government/publications/care-workforce-pathway-for-adult-social-care/care-workforce-pathway-for-adult-social-care-overview"
+                class="govuk-link"
+                target="_blank"
+                >Read more about the care workforce pathway</a
+              >
+            </p>
+          </app-details>
+
+          <div class="govuk-!-margin-bottom-6" *ngIf="cameFromCWPSummaryPage">
+            <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Name or ID number</h2>
+            <p class="govuk-body">{{ worker.nameOrId }}</p>
+          </div>
+
+          <h2 class="govuk-heading-s">Care workforce pathway role categories</h2>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div
+              class="govuk-radios__item"
+              *ngFor="let careWorkforcePathwayCategory of careWorkforcePathwayCategories; let idx = index"
+            >
+              <input
+                class="govuk-radios__input"
+                id="careWorkforcePathwayRoleCategory-{{ idx }}"
+                [formControlName]="'careWorkforcePathwayRoleCategory'"
+                name="careWorkforcePathwayRoleCategory"
+                type="radio"
+                [value]="careWorkforcePathwayCategory.id"
+                aria-describedby="careWorkforcePathwayCategory-description"
+              />
+              <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayRoleCategory-{{ idx }}">
+                {{ careWorkforcePathwayCategory.title }}
+              </label>
+              <div
+                id="careWorkforcePathwayCategory-description"
+                class="govuk-hint govuk-radios__hint"
+                [innerHTML]="careWorkforcePathwayCategory.description"
+              ></div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="cameFromCWPSummaryPage; else normalSubmitButton">
+    <app-submit-button
+      [overrideCallToActionLabel]="true"
+      [callToAction]="'Save'"
+      [return]="!insideFlow"
+      (clicked)="setSubmitAction($event)"
+    ></app-submit-button>
+  </ng-container>
+
+  <ng-template #normalSubmitButton>
+    <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+  </ng-template>
+</form>
