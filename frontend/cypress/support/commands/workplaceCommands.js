@@ -67,3 +67,13 @@ Cypress.Commands.add('updateVacancies', (args) => {
   cy.task('dbQuery', { queryString: queryString1, parameters: parameters1 });
   cy.task('dbQuery', { queryString: queryString2, parameters: parameters2 });
 });
+
+Cypress.Commands.add('archiveAllWorkersInWorkplace', (establishmentID) => {
+  const queryString = `UPDATE cqc."Worker"
+      SET "Archived" = 'true'
+      WHERE "EstablishmentFK" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString: queryString, parameters: parameters });
+});
