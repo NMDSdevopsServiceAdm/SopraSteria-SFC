@@ -1,24 +1,118 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Question } from '../question/question.component';
 import { UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
+import { CareWorkforcePathwayWorkplaceAwarenessAnswer } from '@core/model/care-workforce-pathway.model';
 
 @Component({
   selector: 'app-care-workforce-pathway-awareness',
   templateUrl: './care-workforce-pathway-awareness.component.html',
 })
-export class CareWorkforcePathwayAwarenessComponent extends Question {
-  constructor(
-      protected formBuilder: UntypedFormBuilder,
-      protected router: Router,
-      protected backService: BackService,
-      protected errorSummaryService: ErrorSummaryService,
-      protected establishmentService: EstablishmentService,
-    ) {
-      super(formBuilder, router, backService, errorSummaryService, establishmentService);
-    }
-}
+export class CareWorkforcePathwayAwarenessComponent extends Question implements OnInit, OnDestroy {
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public careWorkforcePathwayAwarenessAnswers: CareWorkforcePathwayWorkplaceAwarenessAnswer[];
 
+  constructor(
+    protected formBuilder: UntypedFormBuilder,
+    protected router: Router,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    protected careWorkforcePathwayService: CareWorkforcePathwayService,
+  ) {
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+  }
+
+  protected init(): void {
+    this.setupForm();
+    this.getCareWorkforcePathwayAwarenessAnswers();
+    this.setPreviousRoute();
+    this.prefill();
+
+    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+
+    // this.return = { url: ['/dashboard'], fragment: 'workplace' };
+  }
+
+  private setPreviousRoute(): void {
+    this.previousRoute = ['/workplace', this.establishment.uid, 'accept-previous-care-certificate'];
+  }
+
+  private setupForm(): void {
+    this.form = this.formBuilder.group(
+      {
+        careWorkforcePathwayAwareness: null,
+      },
+      { updateOn: 'submit' },
+    );
+  }
+
+  private getCareWorkforcePathwayAwarenessAnswers(): void {
+    this.subscriptions.add(
+      this.careWorkforcePathwayService.getCareWorkforcePathwayWorkplaceAwarenessAnswers().subscribe(
+        (answers) => {
+          if (answers) {
+            this.careWorkforcePathwayAwarenessAnswers = answers;
+          }
+        },
+        (error) => {
+          console.error(error.error);
+        },
+      ),
+    );
+  }
+
+  private prefill(): void {
+    if (this.establishment.careWorkforcePathwayWorkplaceAwareness?.awarnessId) {
+      this.form.patchValue({
+        careWorkforcePathwayAwareness: this.establishment.careWorkforcePathwayWorkplaceAwareness.awarnessId,
+      });
+    }
+  }
+
+  protected generateUpdateProps(): any {
+    const { careWorkforcePathwayAwareness } = this.form.value;
+    if (careWorkforcePathwayAwareness) {
+      return { careWorkforcePathwayAwareness };
+    }
+    return null;
+  }
+
+  protected updateEstablishment(props: any): void {
+    const cwpData = {
+      property: 'careWorkforcePathwayWorkplaceAwarenessFK',
+      value: props.careWorkforcePathwayAwareness,
+    };
+
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, cwpData).subscribe(
+        (data) => this._onSuccess(data.data),
+        (error) => this.onError(error),
+      ),
+    );
+  }
+
+  protected onSuccess(): void {
+    const awareAnswersIds = this.careWorkforcePathwayAwarenessAnswers.slice(0, 3).map((answer) => {
+      return answer.id;
+    });
+
+    const { careWorkforcePathwayAwareness } = this.form.value;
+
+    if (awareAnswersIds.includes(careWorkforcePathwayAwareness)) {
+      this.submitAction = { action: 'continue', save: true };
+      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-usage'];
+    } else {
+      this.nextRoute = this.skipRoute;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+}
