@@ -25,6 +25,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
+  @Input() workplacesNeedAttention: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -43,6 +44,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     linkText: 'Your other workplaces',
     message: '',
     orangeFlag: false,
+    redFlag: false,
     link: true,
   };
 
@@ -201,6 +203,10 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.otherWorkplacesSection.message = 'Have you added all of your workplaces?';
       this.otherWorkplacesSection.link = true;
       this.otherWorkplacesSection.orangeFlag = true;
+    } else if (this.workplacesNeedAttention) {
+      this.otherWorkplacesSection.message = 'You need to check your other workplaces';
+      this.otherWorkplacesSection.link = true;
+      this.otherWorkplacesSection.redFlag = true;
     } else {
       this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
       this.otherWorkplacesSection.link = false;
