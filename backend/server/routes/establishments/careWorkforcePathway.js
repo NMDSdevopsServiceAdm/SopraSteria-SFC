@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../models');
 const { hasPermission } = require('../../utils/security/hasPermission');
+const { updateCareWorkforcePathwayUse } = require('./careWorkforcePathway/careWorkforcePathwayUse');
 
 const getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -54,7 +55,10 @@ router
   .route('/workersWhoRequireCareWorkforcePathwayRoleAnswer')
   .get(hasPermission('canViewWorker'), getWorkersWhoRequireCareWorkforcePathwayRoleAnswer);
 
+router.route('/careWorkforcePathwayUse').post(hasPermission('canEditEstablishment'), updateCareWorkforcePathwayUse);
+
 module.exports = router;
+
 module.exports.getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer =
   getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer;
 module.exports.getWorkersWhoRequireCareWorkforcePathwayRoleAnswer = getWorkersWhoRequireCareWorkforcePathwayRoleAnswer;
