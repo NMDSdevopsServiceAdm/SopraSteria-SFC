@@ -1414,6 +1414,11 @@ class Establishment extends EntityValidator {
           raw: true,
         });
 
+        const careWorkforcePathwayReasons = await fetchResults.getCareWorkforcePathwayReasons({
+          attributes: ['id', 'text', 'isOther', [models.sequelize.col('EstablishmentCWPReasons.Other'), 'other']],
+          raw: true,
+        });
+
         const [otherServices, mainService, serviceUsers, capacity, jobs] = await Promise.all([
           ServiceCache.allMyOtherServices(establishmentServices.map((x) => x)),
           models.services.findOne({
@@ -1489,6 +1494,8 @@ class Establishment extends EntityValidator {
             return otherService;
           }
         });
+
+        fetchResults.careWorkforcePathwayReasons = careWorkforcePathwayReasons;
 
         fetchResults.capacity = capacity;
 
