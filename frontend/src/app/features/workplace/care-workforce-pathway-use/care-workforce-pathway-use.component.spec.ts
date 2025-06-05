@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
@@ -37,6 +37,10 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides.establishmentService ?? {}),
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: { careWorkforcePathwayUseReasons: mockReasons } } },
         },
       ],
     });
@@ -162,7 +166,43 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       expect(otherReasonsTextContainer.className).toContain('govuk-checkboxes__conditional--hidden');
     });
 
-    xit('should clear the selected reasons when user clicked "No"', async () => {});
+    [RadioButtonLabels.NO, RadioButtonLabels.DO_NOT_KNOW].forEach((label) => {
+      it(`should clear the selected reasons when user clicked "${label}"`, async () => {
+        const { fixture, getByLabelText } = await setup();
+
+        fixture.autoDetectChanges();
+
+        userEvent.click(getByLabelText(RadioButtonLabels.YES));
+
+        userEvent.click(getByLabelText(mockReasons[0].text));
+        userEvent.click(getByLabelText(mockReasons[2].text));
+        userEvent.type(getInputByLabel('Tell us what (optional)'), 'some specific reasons');
+
+        userEvent.click(getByLabelText(label));
+
+        expect(getInputByLabel(mockReasons[0].text).checked).toBeFalse();
+        expect(getInputByLabel(mockReasons[2].text).checked).toBeFalse();
+        expect(getInputByLabel('Tell us what (optional)').value).toEqual('');
+      });
+    });
+
+    it('should clear the selected reasons when user clicked "No"', async () => {
+      const { fixture, getByLabelText } = await setup();
+
+      fixture.autoDetectChanges();
+
+      userEvent.click(getByLabelText(RadioButtonLabels.YES));
+
+      userEvent.click(getByLabelText(mockReasons[0].text));
+      userEvent.click(getByLabelText(mockReasons[2].text));
+      userEvent.type(getInputByLabel('Tell us what (optional)'), 'some specific reasons');
+
+      userEvent.click(getByLabelText(RadioButtonLabels.NO));
+
+      expect(getInputByLabel(mockReasons[0].text).checked).toBeFalse();
+      expect(getInputByLabel(mockReasons[2].text).checked).toBeFalse();
+      expect(getInputByLabel('Tell us what (optional)').value).toEqual('');
+    });
 
     describe('prefill', () => {
       it('should prefill the form with the establishment data from backend', async () => {
@@ -189,6 +229,8 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
         expect(getInputByLabel('Tell us what (optional)').value).toEqual('Free text entered for something else');
       });
     });
+
+    xdescribe('form submit', () => {});
   });
 
   describe('when in new workplace workflow', async () => {

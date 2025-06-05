@@ -2,11 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Question } from '../question/question.component';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { AbstractControl, UntypedFormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
+import { CareWorkforcePathwayService } from '../../../core/services/care-workforce-pathway.service';
 
 @Component({
   selector: 'app-care-workforce-pathway-use',
@@ -19,7 +20,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     { value: 'No', label: 'No, we do not currently use the pathway' },
     { value: "Don't know", label: 'I do not know' },
   ];
-  public allReasons: Array<CareWorkforcePathwayUseReason>;
+  public allReasons: Array<CareWorkforcePathwayUseReason> = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -27,6 +28,8 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
+    protected careWorkforcePathwayService: CareWorkforcePathwayService,
+    protected route: ActivatedRoute,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -40,11 +43,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
   }
 
   private getAllReasons() {
-    this.allReasons = [
-      { text: "To help define our organisation's values", id: 1, isOther: false },
-      { text: 'To help update our job descriptions', id: 2, isOther: false },
-      { text: 'For something else', id: 10, isOther: true },
-    ];
+    this.allReasons = this.route.snapshot.data.careWorkforcePathwayUseReasons;
   }
 
   private setPreviousRoute(): void {
@@ -92,13 +91,25 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     return this.form.get(`otherReasonText-${reasonId}`);
   }
 
+  public handleRadioButtonClick(value: string) {
+    if (['No', "Don't know"].includes(value)) {
+      this.clearAllReasons();
+    }
+  }
+
+  private clearAllReasons() {
+    this.form.get('reasons').patchValue(this.allReasons.map(() => null));
+
+    this.allReasons
+      .filter((reason) => reason.isOther)
+      .forEach((otherReason) => {
+        this.getFormControlForOtherText(otherReason.id).patchValue(null);
+      });
+  }
+
   protected generateUpdateProps(): any {
     return null;
   }
-
-  // public onSubmit(): void {
-  //   console.log(this.form.value, '<--- value');
-  // }
 
   protected updateEstablishment(props: any): void {}
 

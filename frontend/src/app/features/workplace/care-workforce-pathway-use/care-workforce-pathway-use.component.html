@@ -31,7 +31,7 @@
           </p>
         </app-details>
 
-        <div class="govuk-form-group">
+        <div class="govuk-form-group .asc__cancel-out-grid-column-two-thirds">
           <div class="govuk-radios govuk-!-margin-bottom-4">
             <ng-container *ngFor="let option of cwpUseOptions; let i = index">
               <div class="govuk-radios__item">
@@ -42,6 +42,7 @@
                   type="radio"
                   [formControlName]="'use'"
                   [value]="option.value"
+                  (click)="handleRadioButtonClick(option.value)"
                 />
                 <label class="govuk-label govuk-radios__label" for="use-{{ i }}">
                   {{ option.label }}
