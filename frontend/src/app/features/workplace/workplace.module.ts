@@ -69,6 +69,7 @@ import { WorkplaceNameAddressComponent } from './workplace-name-address/workplac
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
+import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 
 @NgModule({
   imports: [
@@ -145,6 +146,7 @@ import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/c
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
+    CareWorkforcePathwayUseReasonsResolver,
   ],
 })
 export class WorkplaceModule {}

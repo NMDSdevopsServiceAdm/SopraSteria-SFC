@@ -74,6 +74,7 @@ import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
+import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -497,6 +498,7 @@ const routes: Routes = [
         path: 'care-workforce-pathway-use',
         component: CareWorkforcePathwayUseComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { careWorkforcePathwayUseReasons: CareWorkforcePathwayUseReasonsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Care workforce pathway use',
