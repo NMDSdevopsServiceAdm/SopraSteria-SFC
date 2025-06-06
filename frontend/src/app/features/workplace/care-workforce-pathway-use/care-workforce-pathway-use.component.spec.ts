@@ -12,6 +12,7 @@ import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
+import { repeat } from 'lodash';
 
 fdescribe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
@@ -25,7 +26,7 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
     { id: 10, text: 'For something else', isOther: true },
   ];
 
-  const reasonForSomethingElse = mockReasons[2];
+  const otherReason = mockReasons[2];
 
   const getInputByLabel = (labelText: string): HTMLInputElement => {
     return screen.getByLabelText(labelText);
@@ -49,11 +50,15 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService);
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateCareWorkforcePathwayUse').and.returnValue(
+      of({ ...establishmentService.establishment }),
+    );
+
     const router = injector.inject(Router);
     const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
     const component = setupTools.fixture.componentInstance;
-    return { ...setupTools, component, establishmentService, routerSpy };
+    return { ...setupTools, component, establishmentService, establishmentServiceSpy, routerSpy };
   };
 
   it('should create', async () => {
@@ -144,7 +149,7 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       fixture.autoDetectChanges();
 
       userEvent.click(getByLabelText(RadioButtonLabels.YES));
-      userEvent.click(getByLabelText(reasonForSomethingElse.text));
+      userEvent.click(getByLabelText(otherReason.text));
 
       const otherReasonsTextContainer = getByTestId('otherReasonsText');
       const textBox = within(otherReasonsTextContainer).getByRole('textbox', { name: 'Tell us what (optional)' });
@@ -158,7 +163,7 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       fixture.autoDetectChanges();
 
       userEvent.click(getByLabelText(RadioButtonLabels.YES));
-      const checkbox = getByLabelText(reasonForSomethingElse.text);
+      const checkbox = getByLabelText(otherReason.text);
       const otherReasonsTextContainer = getByTestId('otherReasonsText');
 
       userEvent.click(checkbox); // checkbox is ticked
@@ -206,6 +211,23 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       expect(getInputByLabel('Tell us what (optional)').value).toEqual('');
     });
 
+    it('should clear the other reasons text when user untick the related checkbox', async () => {
+      const { fixture, getByLabelText } = await setup();
+
+      fixture.autoDetectChanges();
+
+      userEvent.click(getByLabelText(RadioButtonLabels.YES));
+
+      userEvent.click(getByLabelText(mockReasons[2].text));
+      userEvent.type(getInputByLabel('Tell us what (optional)'), 'some free text');
+
+      // untick checkbox
+      userEvent.click(getByLabelText(mockReasons[2].text));
+
+      expect(getInputByLabel(mockReasons[2].text).checked).toBeFalse();
+      expect(getInputByLabel('Tell us what (optional)').value).toEqual('');
+    });
+
     describe('prefill', () => {
       it('should prefill the form with the establishment data from backend', async () => {
         const mockEstablishment = {
@@ -232,24 +254,57 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       });
     });
 
-    describe('form submit', () => {
-      it('should call updateCareWorkforcePathwayUse() on service', async () => {
-        const { getByLabelText, getByText, establishmentService } = await setup({
+    describe('form submit and validation', () => {
+      it('should call updateCareWorkforcePathwayUse() method of establishment service', async () => {
+        const { getByLabelText, getByText, establishmentServiceSpy } = await setup({
           establishmentService: { returnTo: null },
         });
-        const establishmentServiceSpy = spyOn(establishmentService, 'updateCareWorkforcePathwayUse').and.returnValue(
-          of({ ...establishmentService.establishment }),
-        );
 
         userEvent.click(getByLabelText(RadioButtonLabels.YES));
 
         userEvent.click(getByLabelText(mockReasons[0].text));
-        userEvent.click(getByLabelText(mockReasons[2].text));
+        userEvent.click(getByLabelText(otherReason.text));
         userEvent.type(getInputByLabel('Tell us what (optional)'), 'some specific reasons');
 
         userEvent.click(getByText('Save and continue'));
 
-        expect(establishmentServiceSpy).toHaveBeenCalled();
+        const expectedPayload = {
+          use: 'Yes' as const,
+          reasons: [mockReasons[0], { ...otherReason, other: 'some specific reasons' }],
+        };
+
+        expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', expectedPayload);
+      });
+
+      it('should not call updateCareWorkforcePathwayUse() if user has not input anything', async () => {
+        const { getByText, establishmentServiceSpy } = await setup({
+          establishmentService: { returnTo: null },
+        });
+
+        userEvent.click(getByText('Save and continue'));
+
+        expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      });
+
+      it('should show an error message if "other" text field contain text that is longer than allowed', async () => {
+        const { fixture, getByLabelText, getByText, getAllByText, establishmentServiceSpy } = await setup({
+          establishmentService: { returnTo: null },
+        });
+
+        userEvent.click(getByLabelText(RadioButtonLabels.YES));
+
+        userEvent.click(getByLabelText(mockReasons[0].text));
+        userEvent.click(getByLabelText(otherReason.text));
+        userEvent.type(getInputByLabel('Tell us what (optional)'), repeat('veryverylongtext', 100));
+
+        userEvent.click(getByText('Save and continue'));
+
+        fixture.detectChanges();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText('Reason must be 120 characters or less')).toHaveSize(2);
+
+        expect(establishmentServiceSpy).not.toHaveBeenCalled();
       });
     });
   });
@@ -276,11 +331,21 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
     });
 
     it('should navigate to cash-loyalty page when skipped the question', async () => {
-      const { getByText, routerSpy } = await setup(overrides);
+      const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
       userEvent.click(getByText('Skip this question'));
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to cash-loyalty page after submit', async () => {
+      const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+
+      userEvent.click(getByText('Save and continue'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
   });
 });

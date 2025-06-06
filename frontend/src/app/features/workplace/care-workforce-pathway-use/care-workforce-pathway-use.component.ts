@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   CareWorkforcePathwayUseReason,
@@ -25,6 +25,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     { value: "Don't know", label: 'I do not know' },
   ];
   public allReasons: Array<CareWorkforcePathwayUseReason> = [];
+  public otherTextMaxLength = 120;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -63,11 +64,10 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     this.allReasons
       .filter((reason) => reason.isOther)
       .forEach((otherReason) => {
-        this.form.addControl(
-          `otherReasonText-${otherReason.id}`,
-          this.formBuilder.control(null, { updateOn: 'submit' }),
-        );
+        this.addFormControlForOtherText(otherReason.id);
       });
+
+    this.clearAllReasonsWhenSelectedNoOrDontKnow();
   }
 
   private prefill(): void {
@@ -79,15 +79,15 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     const { use, reasons } = careWorkforcePathwayUse;
     this.form.patchValue({ use });
 
-    if (use === 'Yes' && reasons) {
+    if (use === 'Yes' && Array.isArray(reasons)) {
       this.prefillReasonsValue(reasons);
     }
   }
 
   private prefillReasonsValue(reasons: Array<CareWorkforcePathwayUseReason>) {
-    const idsOfSelectedReasons = reasons.map((reason) => reason.id);
+    const selectedReasonIds = reasons.map((reason) => reason.id);
 
-    const reasonCheckboxesValue = this.allReasons.map((reason) => idsOfSelectedReasons.includes(reason.id));
+    const reasonCheckboxesValue = this.allReasons.map((reason) => selectedReasonIds.includes(reason.id));
     const formValue = { reasons: reasonCheckboxesValue };
 
     reasons
@@ -99,14 +99,52 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     this.form.patchValue(formValue);
   }
 
+  private addFormControlForOtherText(reasonId: number): void {
+    this.form.addControl(
+      `otherReasonText-${reasonId}`,
+      this.formBuilder.control(null, {
+        updateOn: 'submit',
+        validators: [Validators.maxLength(this.otherTextMaxLength)],
+      }),
+    );
+
+    this.clearOtherTextWhenUntickedOtherReason(reasonId);
+
+    this.formErrorsMap.push({
+      item: `otherReasonText-${reasonId}`,
+      type: [
+        {
+          name: 'maxlength',
+          message: `Reason must be ${this.otherTextMaxLength} characters or less`,
+        },
+      ],
+    });
+  }
+
   public getFormControlForOtherText(reasonId: number): AbstractControl {
     return this.form.get(`otherReasonText-${reasonId}`);
   }
 
-  public handleRadioButtonClick(value: string) {
-    if (['No', "Don't know"].includes(value)) {
-      this.clearAllReasons();
-    }
+  private clearAllReasonsWhenSelectedNoOrDontKnow() {
+    this.subscriptions.add(
+      this.form.get('use').valueChanges.subscribe((newValue) => {
+        if (['No', "Don't know"].includes(newValue)) {
+          this.clearAllReasons();
+        }
+      }),
+    );
+  }
+
+  private clearOtherTextWhenUntickedOtherReason(reasonId: number) {
+    const arrayIndex = this.allReasons.findIndex((r) => r.id === reasonId);
+
+    this.subscriptions.add(
+      this.form.get(`reasons.${arrayIndex}`).valueChanges.subscribe((newValue) => {
+        if (!newValue) {
+          this.form.get(`otherReasonText-${reasonId}`).patchValue(null);
+        }
+      }),
+    );
   }
 
   private clearAllReasons() {
@@ -130,7 +168,8 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
       .filter((_reason, index) => reasonCheckboxes[index])
       .map((selectedReason) => {
         if (selectedReason.isOther) {
-          return { ...selectedReason, other: this.getFormControlForOtherText(selectedReason.id).value };
+          const otherText = this.getFormControlForOtherText(selectedReason.id).value;
+          return { ...selectedReason, other: otherText };
         }
         return selectedReason;
       });
