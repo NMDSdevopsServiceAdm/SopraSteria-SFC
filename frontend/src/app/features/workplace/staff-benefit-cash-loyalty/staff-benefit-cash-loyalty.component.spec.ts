@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty.component';
 
-describe('StaffBenefitCashLoyaltyComponent', () => {
+fdescribe('StaffBenefitCashLoyaltyComponent', () => {
   async function setup(returnUrl = true, cashLoyalty = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       StaffBenefitCashLoyaltyComponent,
@@ -127,6 +127,11 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
 
     expect(radioButton.checked).toBeTruthy();
     expect(component.form.value).toEqual({ cashLoyalty: 'No' });
+  });
+
+  it('should set the previous route as care workforce pathway use question page', async () => {
+    const { component } = await setup(false);
+    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'care-workforce-pathway-use']);
   });
 
   describe('submit buttons and submitting form', () => {
