@@ -14,6 +14,16 @@ const sandbox = require('sinon').createSandbox();
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
 const pCodeCheck = require('../../../../../utils/postcodeSanitizer');
 
+const workplaceMappings = {
+  cwpAwareness: [
+    { id: 1, bulkUploadCode: '1' },
+    { id: 2, bulkUploadCode: '2' },
+    { id: 3, bulkUploadCode: '3' },
+    { id: 4, bulkUploadCode: '4' },
+    { id: 5, bulkUploadCode: '999' },
+  ],
+};
+
 const validateAPIObject = (establishmentRow) => {
   return {
     address1: establishmentRow.ADDRESS1,
@@ -55,7 +65,7 @@ const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishm
 };
 
 const generateEstablishmentFromCsv = async (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
-  const establishment = new WorkplaceCSVValidator(currentLine, lineNumber, allCurrentEstablishments);
+  const establishment = new WorkplaceCSVValidator(currentLine, lineNumber, allCurrentEstablishments, workplaceMappings);
 
   await establishment.validate();
 
@@ -1108,6 +1118,44 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
+    describe('careWorkforcePathwayAware', () => {
+      it('should pass if there is no input', async () => {
+        establishmentRow.CWPAWARE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      workplaceMappings.cwpAwareness.forEach((mapping) => {
+        it(`should pass if input is bulkUploadCode in mappings: ${mapping.bulkUploadCode}`, async () => {
+          establishmentRow.CWPAWARE = mapping.bulkUploadCode;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([]);
+        });
+      });
+
+      ['asdf', '23'].forEach((invalidInput) => {
+        it(`should return warning if input is invalid (${invalidInput})`, async () => {
+          establishmentRow.CWPAWARE = invalidInput;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2480,
+              warnType: 'CWPAWARE_WARNING',
+              warning: 'The code you have entered for CWPAWARE is incorrect and will be ignored',
+              source: invalidInput,
+              column: 'CWPAWARE',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+      });
+    });
+
     describe('benefit', () => {
       it('should validate and pass if there is no input', async () => {
         establishmentRow.BENEFITS = '';
@@ -1876,16 +1924,6 @@ describe('Bulk Upload - Establishment CSV', () => {
   });
 
   describe('toCSV', () => {
-    const workplaceMappings = {
-      cwpAwareness: [
-        { id: 1, bulkUploadCode: '1' },
-        { id: 2, bulkUploadCode: '2' },
-        { id: 3, bulkUploadCode: '3' },
-        { id: 4, bulkUploadCode: '4' },
-        { id: 5, bulkUploadCode: '999' },
-      ],
-    };
-
     beforeEach(() => {
       sandbox.stub(BUDI, 'establishmentType').callsFake((method, value) => value);
       sandbox.stub(BUDI, 'serviceUsers').callsFake((method, value) => value);
