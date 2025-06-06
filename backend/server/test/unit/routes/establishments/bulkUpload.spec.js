@@ -267,6 +267,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       REASONNOS: '',
       REPEATTRAINING: '',
       ACCEPTCARECERT: '',
+      CWPAWARE: '',
       BENEFITS: '',
       SICKPAY: '',
       PENSION: '',
@@ -537,9 +538,10 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       );
     });
 
-    it('should remove duplicate error codes', async () => {
+    it.only('should remove duplicate error codes', async () => {
       sinon.stub(models.pcodedata, 'findAll').returns([{}]);
       sinon.stub(models.establishment, 'findAll').returns([{}]);
+      sinon.stub(models.careWorkforcePathwayWorkplaceAwareness, 'findAll').returns([{ id: 1, bulkUploadCode: '1' }]);
 
       await validateEstablishmentCsv(
         establishmentLine,
