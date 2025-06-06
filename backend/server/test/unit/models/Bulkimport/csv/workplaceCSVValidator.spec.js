@@ -51,6 +51,7 @@ const validateAPIObject = (establishmentRow) => {
     capacities: [0, 0, 0, 0],
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 1,
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 2,
+    careWorkforcePathwayWorkplaceAwareness: '',
     careWorkersCashLoyaltyForFirstTwoYears: '200',
     sickPay: 0,
     pensionContribution: 1,
@@ -455,6 +456,30 @@ describe('Bulk Upload - Establishment CSV', () => {
         const apiObject = establishment.toAPI();
 
         expect(apiObject.wouldYouAcceptCareCertificatesFromPreviousEmployment).to.equal(null);
+      });
+    });
+
+    describe('careWorkforcePathwayAwareness', () => {
+      workplaceMappings.cwpAwareness.forEach((mapping) => {
+        it(`should return id mapping (${mapping.id}) of bulkUploadCode (${mapping.bulkUploadCode})`, async () => {
+          establishmentRow.CWPAWARE = mapping.bulkUploadCode;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+          const apiObject = establishment.toAPI();
+
+          expect(apiObject.careWorkforcePathwayWorkplaceAwareness).to.deep.equal({ id: mapping.id });
+        });
+      });
+
+      it('should return null when no answer provided', async () => {
+        establishmentRow.CWPAWARE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.careWorkforcePathwayWorkplaceAwareness).to.equal(null);
       });
     });
   });

@@ -31,7 +31,7 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
 
   savePropertyToSequelize() {
     return {
-      careWorkforcePathwayWorkplaceAwarenessFK: this.property === null ? null : this.property.id,
+      CareWorkforcePathwayWorkplaceAwarenessFK: this.property === null ? null : this.property.id,
     };
   }
 
@@ -39,18 +39,18 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
     return currentValue && newValue && currentValue.id === newValue.id;
   }
 
-  toJSON(withHistory = false, showPropertyHistoryOnly = true){
-    if(!withHistory){
+  toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+    if (!withHistory) {
       return {
-        careWorkforcePathwayWorkplaceAwareness: this.property
-      }
+        careWorkforcePathwayWorkplaceAwareness: this.property,
+      };
     }
 
     return {
       careWorkforcePathwayWorkplaceAwareness: {
         currentValue: this.property,
-        ...this.changePropsToJSON(showPropertyHistoryOnly)
-      }
-    }
+        ...this.changePropsToJSON(showPropertyHistoryOnly),
+      },
+    };
   }
 };
