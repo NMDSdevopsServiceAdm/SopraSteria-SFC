@@ -393,7 +393,7 @@ class Establishment extends EntityValidator {
 
   get careWorkforcePathwayWorkplaceAwareness() {
     return this._properties.get('careWorkforcePathwayWorkplaceAwarenessFK')
-      ? this._properties.get('CareWorkforcePathwayWorkplaceAwarenessFK').property
+      ? this._properties.get('careWorkforcePathwayWorkplaceAwarenessFK').property
       : null;
   }
 
