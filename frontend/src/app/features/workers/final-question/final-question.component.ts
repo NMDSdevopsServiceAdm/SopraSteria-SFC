@@ -50,7 +50,7 @@ export class FinalQuestionComponent extends QuestionComponent {
     }
   }
 
-  private addCompletedStaffFlowAlert(): void {
+  protected addCompletedStaffFlowAlert(): void {
     this.alertService.addAlert({
       type: 'success',
       message: 'Staff record details saved',

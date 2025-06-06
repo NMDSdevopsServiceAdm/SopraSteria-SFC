@@ -21,21 +21,6 @@ describe('careWorkforcePathwayWorkplaceAwarenessAnswers', () => {
     {
       id: 1,
       title: 'Aware of how the care workforce pathway works in practice',
-      analysisFileCode: 1,
-      bulkUploadCode: 1,
-    },
-    {
-      id: 2,
-      title: 'Aware of the aims of the care workforce pathway',
-      analysisFileCode: 2,
-      bulkUploadCode: 2,
-    },
-  ];
-
-  const expectedAnswers = [
-    {
-      id: 1,
-      title: 'Aware of how the care workforce pathway works in practice',
     },
     {
       id: 2,
@@ -45,18 +30,18 @@ describe('careWorkforcePathwayWorkplaceAwarenessAnswers', () => {
 
   it('should return all the careWorkforcePathwayWorkplaceAwarenessAnswers', async () => {
     sinon.stub(models.careWorkforcePathwayWorkplaceAwareness, 'findAll').callsFake(() => {
-        return answers
-    })
+      return answers;
+    });
 
     const req = httpMocks.createRequest(request);
     const res = httpMocks.createResponse();
-    await getAllCareWorkforcePathwayWorkplaceAwarenessAnswers(req, res)
+    await getAllCareWorkforcePathwayWorkplaceAwarenessAnswers(req, res);
 
     const response = res._getData();
 
     expect(res.statusCode).to.deep.equal(200);
-    expect(response.careWorkforcePathwayWorkplaceAwarenessAnswers).to.deep.equal(expectedAnswers);
-  })
+    expect(response.careWorkforcePathwayWorkplaceAwarenessAnswers).to.deep.equal(answers);
+  });
 
   it('should return an error', async () => {
     sinon.stub(models.careWorkforcePathwayWorkplaceAwareness, 'findAll').throws();

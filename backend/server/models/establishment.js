@@ -774,6 +774,29 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareWorkforcePathwayWorkplaceAwarenessChangedBy"',
       },
+
+      careWorkforcePathwayUse: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'CareWorkforcePathwayUseValue',
+      },
+      CareWorkforcePathwayUseSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       defaultScope: {
@@ -913,6 +936,14 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentFK',
       sourceKey: 'id',
       as: 'MandatoryTraining',
+    });
+
+    Establishment.belongsToMany(models.CareWorkforcePathwayReasons, {
+      through: 'EstablishmentCWPReasons',
+      attributes: ['other'],
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'CareWorkforcePathwayReasons',
     });
   };
 

@@ -1,6 +1,16 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { IConfigCatClient, SettingKeyValue } from 'configcat-common/lib/ConfigCatClient';
 
+export const DefaultFeatureFlagsForLocalTest = {
+  wdfUser: false,
+  wdfNewDesign: false,
+  homePageNewDesign: true,
+  homePageNewDesignParent: true,
+  newBenchmarksDataArea: true,
+  bulkUploadHelp: true,
+  cwpQuestions: false,
+};
+
 export const mockConfigCatClient = {
   dispose: () => {},
   getValue: () => {},
@@ -35,32 +45,20 @@ export const mockConfigCatClient = {
     });
   },
   getAllValues: () => {},
-  getAllValuesAsync: () => {
-    return new Promise((resolve) => {
-      return new SettingKeyValue();
-    });
+  getAllValuesAsync: async () => {
+    const mockConfigCatResponse: SettingKeyValue[] = Object.entries(DefaultFeatureFlagsForLocalTest).map(
+      ([key, value]) => {
+        return {
+          settingKey: key,
+          settingValue: value,
+        };
+      },
+    );
+    return mockConfigCatResponse;
   },
 
-  getValueAsync: (flagName, defaultSetting) => {
-    if (flagName === 'homePageNewDesign') {
-      return new Promise((resolve) => {
-        return resolve(true);
-      });
-    }
-    if (flagName === 'homePageNewDesignParent') {
-      return new Promise((resolve) => {
-        return resolve(true);
-      });
-    }
-
-    if (flagName === 'newBenchmarksDataArea') {
-      return new Promise((resolve) => {
-        return resolve(true);
-      });
-    }
-
-    return new Promise((resolve) => {
-      return resolve(defaultSetting);
-    });
+  getValueAsync: (flagName: string, defaultSetting: boolean) => {
+    const flagValue = DefaultFeatureFlagsForLocalTest[flagName] ?? defaultSetting;
+    return Promise.resolve(flagValue);
   },
 } as IConfigCatClient;
