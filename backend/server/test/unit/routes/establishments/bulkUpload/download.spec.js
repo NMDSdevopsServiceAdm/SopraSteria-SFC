@@ -22,6 +22,7 @@ describe('download', () => {
     sinon.stub(BUDI, 'establishmentType').callsFake((method, value) => value);
     sinon.stub(BUDI, 'serviceUsers').callsFake((method, value) => value);
     sinon.stub(BUDI, 'jobRoles').callsFake((method, value) => value);
+    sinon.stub(BUDI, 'careWorkforcePathwayRoleCategory').callsFake((method, value) => value);
   });
 
   const establishmentId = 123;
@@ -72,6 +73,7 @@ describe('download', () => {
     };
     const worker = apiWorkerBuilder();
     const downloadType = 'workers';
+    sinon.stub(models.careWorkforcePathwayRoleCategory, 'findAll').resolves([]);
     const downloadWorkers = sinon.stub(models.establishment, 'downloadWorkers').returns([
       {
         ...establishment,
