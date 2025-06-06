@@ -1,3 +1,4 @@
+import { repeat } from 'lodash';
 import { of } from 'rxjs';
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -7,12 +8,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
-import { repeat } from 'lodash';
 
 describe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
@@ -33,6 +34,8 @@ describe('CareWorkforcePathwayUseComponent', () => {
   };
 
   const setup = async (overrides: any = {}) => {
+    const routerSpy = jasmine.createSpy().and.resolveTo(true);
+
     const setupTools = await render(CareWorkforcePathwayUseComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
       providers: [
@@ -45,6 +48,12 @@ describe('CareWorkforcePathwayUseComponent', () => {
           provide: ActivatedRoute,
           useValue: { snapshot: { data: { careWorkforcePathwayUseReasons: mockReasons } } },
         },
+        {
+          provide: Router,
+          useFactory: MockRouter.factory({
+            navigate: routerSpy,
+          }),
+        },
       ],
     });
 
@@ -53,9 +62,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
     const establishmentServiceSpy = spyOn(establishmentService, 'updateCareWorkforcePathwayUse').and.returnValue(
       of({ ...establishmentService.establishment }),
     );
-
-    const router = injector.inject(Router);
-    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
     const component = setupTools.fixture.componentInstance;
     return { ...setupTools, component, establishmentService, establishmentServiceSpy, routerSpy };
@@ -93,7 +99,19 @@ describe('CareWorkforcePathwayUseComponent', () => {
     });
   });
 
-  xit('should redirect to care workforce pathway awareness question if the answer of awareness is negative');
+  it('should redirect to care workforce pathway awareness question if the workplace is not aware of CWP', async () => {
+    const workplaceNotAwareOfCWP = {
+      careWorkforcePathwayWorkplaceAwareness: {
+        id: 4,
+        title: 'Not aware of the care workforce pathway',
+      },
+    };
+    const { routerSpy } = await setup({
+      establishmentService: { establishment: workplaceNotAwareOfCWP },
+    });
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'care-workforce-pathway-workplace-awareness']);
+  });
 
   describe('form', () => {
     it('should show radio buttons for answer', async () => {
@@ -184,49 +202,31 @@ describe('CareWorkforcePathwayUseComponent', () => {
         userEvent.click(getByLabelText(RadioButtonLabels.YES));
 
         userEvent.click(getByLabelText(mockReasons[0].text));
-        userEvent.click(getByLabelText(mockReasons[2].text));
+        userEvent.click(getByLabelText(otherReason.text));
         userEvent.type(getInputByLabel('Tell us what (optional)'), 'some specific reasons');
 
         userEvent.click(getByLabelText(label));
 
         expect(getInputByLabel(mockReasons[0].text).checked).toBeFalse();
-        expect(getInputByLabel(mockReasons[2].text).checked).toBeFalse();
+        expect(getInputByLabel(otherReason.text).checked).toBeFalse();
         expect(getInputByLabel('Tell us what (optional)').value).toEqual('');
       });
     });
 
-    it('should clear the selected reasons when user clicked "No"', async () => {
+    it('should clear the other reasons text when user untick the reason checkbox', async () => {
       const { fixture, getByLabelText } = await setup();
 
       fixture.autoDetectChanges();
 
       userEvent.click(getByLabelText(RadioButtonLabels.YES));
 
-      userEvent.click(getByLabelText(mockReasons[0].text));
-      userEvent.click(getByLabelText(mockReasons[2].text));
-      userEvent.type(getInputByLabel('Tell us what (optional)'), 'some specific reasons');
-
-      userEvent.click(getByLabelText(RadioButtonLabels.NO));
-
-      expect(getInputByLabel(mockReasons[0].text).checked).toBeFalse();
-      expect(getInputByLabel(mockReasons[2].text).checked).toBeFalse();
-      expect(getInputByLabel('Tell us what (optional)').value).toEqual('');
-    });
-
-    it('should clear the other reasons text when user untick the related checkbox', async () => {
-      const { fixture, getByLabelText } = await setup();
-
-      fixture.autoDetectChanges();
-
-      userEvent.click(getByLabelText(RadioButtonLabels.YES));
-
-      userEvent.click(getByLabelText(mockReasons[2].text));
+      userEvent.click(getByLabelText(otherReason.text));
       userEvent.type(getInputByLabel('Tell us what (optional)'), 'some free text');
 
       // untick checkbox
-      userEvent.click(getByLabelText(mockReasons[2].text));
+      userEvent.click(getByLabelText(otherReason.text));
 
-      expect(getInputByLabel(mockReasons[2].text).checked).toBeFalse();
+      expect(getInputByLabel(otherReason.text).checked).toBeFalse();
       expect(getInputByLabel('Tell us what (optional)').value).toEqual('');
     });
 
@@ -237,7 +237,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
             use: 'Yes',
             reasons: [
               { id: mockReasons[0].id, isOther: false },
-              { id: mockReasons[2].id, other: 'Free text entered for something else', isOther: true },
+              { id: otherReason.id, other: 'Free text entered for something else', isOther: true },
             ],
           },
         };
@@ -250,7 +250,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
 
         expect(getInputByLabel(mockReasons[0].text).checked).toBeTrue();
         expect(getInputByLabel(mockReasons[1].text).checked).toBeFalse();
-        expect(getInputByLabel(mockReasons[2].text).checked).toBeTrue();
+        expect(getInputByLabel(otherReason.text).checked).toBeTrue();
 
         expect(getInputByLabel('Tell us what (optional)').value).toEqual('Free text entered for something else');
       });
@@ -329,7 +329,12 @@ describe('CareWorkforcePathwayUseComponent', () => {
 
     it('should set the previous page to CWP awareness question page', async () => {
       const { component } = await setup(overrides);
-      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness']);
+
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'care-workforce-pathway-workplace-awareness',
+      ]);
     });
 
     it('should navigate to cash-loyalty page when skipped the question', async () => {

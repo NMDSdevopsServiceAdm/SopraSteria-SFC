@@ -58,8 +58,8 @@
 
               <div
                 class="govuk-radios__conditional"
-                [ngClass]="{ 'govuk-radios__conditional--hidden': form.get('use').value !== 'Yes' }"
                 *ngIf="option.value === 'Yes'"
+                [ngClass]="{ 'govuk-radios__conditional--hidden': form.get('use').value !== 'Yes' }"
                 data-testid="reasons"
               >
                 <p class="govuk-body">Select all the reasons that apply.</p>
@@ -86,7 +86,9 @@
                     >
                       <div
                         class="govuk-form-group"
-                        [class.govuk-form-group--error]="submitted && getFormControlForOtherText(reason.id).invalid"
+                        [class.govuk-form-group--error]="
+                          submitted && getFormControlForOtherReasonText(reason.id).invalid
+                        "
                       >
                         <label class="govuk-label" for="otherReasonText-{{ reason.id }}">
                           Tell us what (optional)
@@ -95,7 +97,7 @@
                         <span
                           id="otherReasonText-{{ reason.id }}-error"
                           class="govuk-error-message"
-                          *ngIf="submitted && getFormControlForOtherText(reason.id).invalid"
+                          *ngIf="submitted && getFormControlForOtherReasonText(reason.id).invalid"
                         >
                           <span class="govuk-visually-hidden">Error:</span>
                           {{ getFirstErrorMessage('otherReasonText-' + reason.id) }}
@@ -104,10 +106,10 @@
                         <input
                           type="text"
                           class="govuk-input govuk-!-width-one-half"
-                          [class.govuk-input--error]="submitted && getFormControlForOtherText(reason.id).invalid"
+                          [class.govuk-input--error]="submitted && getFormControlForOtherReasonText(reason.id).invalid"
                           id="otherReasonText-{{ reason.id }}"
                           name="otherReasonText-{{ reason.id }}"
-                          [formControl]="getFormControlForOtherText(reason.id)"
+                          [formControl]="getFormControlForOtherReasonText(reason.id)"
                         />
                       </div>
                     </div>

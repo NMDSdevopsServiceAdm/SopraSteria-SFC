@@ -25,7 +25,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     { value: "Don't know", label: 'I do not know' },
   ];
   public allReasons: Array<CareWorkforcePathwayUseReason> = [];
-  public otherTextMaxLength = 120;
+  public OtherReasonTextMaxLength = 120;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -40,6 +40,8 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
   }
 
   protected init(): void {
+    this.redirectToAwarenessQuestionIfNotAwareOfCWP();
+
     this.getAllReasons();
     this.setupForm();
     this.prefill();
@@ -47,12 +49,23 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
   }
 
+  private redirectToAwarenessQuestionIfNotAwareOfCWP() {
+    const workplaceAwarenessOfCWP = this.establishment.careWorkforcePathwayWorkplaceAwareness;
+
+    // TODO: update the way to check for awareness depending on ticket #1712
+    const notAwareOfCWP = !workplaceAwarenessOfCWP || [4, 5].includes(workplaceAwarenessOfCWP?.id);
+
+    if (notAwareOfCWP) {
+      this.router.navigate(['/workplace', this.establishment.uid, 'care-workforce-pathway-workplace-awareness']);
+    }
+  }
+
   private getAllReasons() {
     this.allReasons = this.route.snapshot.data.careWorkforcePathwayUseReasons;
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-workplace-awareness'];
   }
 
   private setupForm(): void {
@@ -64,7 +77,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     this.allReasons
       .filter((reason) => reason.isOther)
       .forEach((otherReason) => {
-        this.addFormControlForOtherText(otherReason.id);
+        this.addFormControlForOtherReasonText(otherReason.id);
       });
 
     this.clearAllReasonsWhenSelectedNoOrDontKnow();
@@ -99,29 +112,29 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     this.form.patchValue(formValue);
   }
 
-  private addFormControlForOtherText(reasonId: number): void {
+  private addFormControlForOtherReasonText(reasonId: number): void {
     this.form.addControl(
       `otherReasonText-${reasonId}`,
       this.formBuilder.control(null, {
         updateOn: 'submit',
-        validators: [Validators.maxLength(this.otherTextMaxLength)],
+        validators: [Validators.maxLength(this.OtherReasonTextMaxLength)],
       }),
     );
 
-    this.clearOtherTextWhenUntickedOtherReason(reasonId);
+    this.clearOtherReasonTextWhenUnticked(reasonId);
 
     this.formErrorsMap.push({
       item: `otherReasonText-${reasonId}`,
       type: [
         {
           name: 'maxlength',
-          message: `Reason must be ${this.otherTextMaxLength} characters or less`,
+          message: `Reason must be ${this.OtherReasonTextMaxLength} characters or less`,
         },
       ],
     });
   }
 
-  public getFormControlForOtherText(reasonId: number): AbstractControl {
+  public getFormControlForOtherReasonText(reasonId: number): AbstractControl {
     return this.form.get(`otherReasonText-${reasonId}`);
   }
 
@@ -135,7 +148,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     );
   }
 
-  private clearOtherTextWhenUntickedOtherReason(reasonId: number) {
+  private clearOtherReasonTextWhenUnticked(reasonId: number) {
     const arrayIndex = this.allReasons.findIndex((r) => r.id === reasonId);
 
     this.subscriptions.add(
@@ -153,7 +166,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     this.allReasons
       .filter((reason) => reason.isOther)
       .forEach((otherReason) => {
-        this.getFormControlForOtherText(otherReason.id).patchValue(null);
+        this.getFormControlForOtherReasonText(otherReason.id).patchValue(null);
       });
   }
 
@@ -168,7 +181,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
       .filter((_reason, index) => reasonCheckboxes[index])
       .map((selectedReason) => {
         if (selectedReason.isOther) {
-          const otherText = this.getFormControlForOtherText(selectedReason.id).value;
+          const otherText = this.getFormControlForOtherReasonText(selectedReason.id).value;
           return { ...selectedReason, other: otherText };
         }
         return selectedReason;
