@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
 import { repeat } from 'lodash';
 
-fdescribe('CareWorkforcePathwayUseComponent', () => {
+describe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
     YES: 'Yes, we use the pathway for one or more reasons',
     NO: 'No, we do not currently use the pathway',
@@ -92,6 +92,8 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       expect(revealElement.textContent).toContain(paragraph);
     });
   });
+
+  xit('should redirect to care workforce pathway awareness question if the answer of awareness is negative');
 
   describe('form', () => {
     it('should show radio buttons for answer', async () => {

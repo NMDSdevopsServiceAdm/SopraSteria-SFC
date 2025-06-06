@@ -5,7 +5,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { of } from 'rxjs';
 
-fdescribe('CareWorkforcePathwayUseReasonsResolver', () => {
+describe('CareWorkforcePathwayUseReasonsResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],

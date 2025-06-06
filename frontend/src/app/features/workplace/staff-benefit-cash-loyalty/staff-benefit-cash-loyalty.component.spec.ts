@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty.component';
 
-fdescribe('StaffBenefitCashLoyaltyComponent', () => {
+describe('StaffBenefitCashLoyaltyComponent', () => {
   async function setup(returnUrl = true, cashLoyalty = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       StaffBenefitCashLoyaltyComponent,

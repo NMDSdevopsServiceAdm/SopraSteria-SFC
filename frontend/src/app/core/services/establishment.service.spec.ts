@@ -126,7 +126,7 @@ describe('EstablishmentService', () => {
     });
   });
 
-  fdescribe('updateCareWorkforcePathwayUse', () => {
+  describe('updateCareWorkforcePathwayUse', () => {
     const mockWorkplaceUid = 'mockWorkplaceUid';
     const payload = {
       use: 'Yes',
