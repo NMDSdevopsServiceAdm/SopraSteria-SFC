@@ -34,7 +34,7 @@ const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
-  'REPEATTRAINING,ACCEPTCARECERT,BENEFITS,SICKPAY,PENSION,HOLIDAY';
+  'REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,BENEFITS,SICKPAY,PENSION,HOLIDAY';
 
 class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
@@ -86,6 +86,7 @@ class WorkplaceCSVValidator {
     this._sickPay = null;
     this._pensionContribution = null;
     this._careWorkersLeaveDaysPerYear = null;
+    this._careWorkforcePathwayAware = null;
 
     this._id = null;
     this._ignore = false;
@@ -259,6 +260,10 @@ class WorkplaceCSVValidator {
     return 2470;
   }
 
+  static get CWPAWARE_WARNING() {
+    return 2480;
+  }
+
   get id() {
     if (this._id === null) {
       const est = this._allCurrentEstablishments.find((currentEstablishment) => currentEstablishment.key === this._key);
@@ -418,6 +423,10 @@ class WorkplaceCSVValidator {
 
   get sickPay() {
     return this._sickPay;
+  }
+
+  get careWorkforcePathwayAware() {
+    return this._careWorkforcePathwayAware;
   }
 
   _validateLocalisedId() {
@@ -2967,7 +2976,7 @@ class WorkplaceCSVValidator {
   }
 
   // takes the given establishment entity and writes it out to CSV string (one line)
-  static toCSV(entity) {
+  static toCSV(entity, mappings) {
     // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
     columns.push(csvQuote(entity.LocalIdentifierValue));
@@ -3127,6 +3136,14 @@ class WorkplaceCSVValidator {
 
     columns.push(repeatTrainingAndCareCertMapping(entity.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment));
     columns.push(repeatTrainingAndCareCertMapping(entity.wouldYouAcceptCareCertificatesFromPreviousEmployment));
+
+    // CWP awareness
+    const getBulkUploadCodeFromId = (id, mappings) => {
+      const match = mappings.find((mapping) => mapping.id === id);
+      return match?.bulkUploadCode || '';
+    };
+
+    columns.push(getBulkUploadCodeFromId(entity.careWorkforcePathwayWorkplaceAwarenessFK, mappings.cwpAwareness));
 
     // cash Loyalty
     const cashLoyaltyMapping = (value) => {
