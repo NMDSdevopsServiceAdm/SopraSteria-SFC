@@ -538,7 +538,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       );
     });
 
-    it.only('should remove duplicate error codes', async () => {
+    it('should remove duplicate error codes', async () => {
       sinon.stub(models.pcodedata, 'findAll').returns([{}]);
       sinon.stub(models.establishment, 'findAll').returns([{}]);
       sinon.stub(models.careWorkforcePathwayWorkplaceAwareness, 'findAll').returns([{ id: 1, bulkUploadCode: '1' }]);

@@ -87,7 +87,7 @@ class WorkplaceCSVValidator {
     this._sickPay = null;
     this._pensionContribution = null;
     this._careWorkersLeaveDaysPerYear = null;
-    this._careWorkforcePathwayAware = null;
+    this._careWorkforcePathwayAwareness = null;
 
     this._id = null;
     this._ignore = false;
@@ -426,8 +426,8 @@ class WorkplaceCSVValidator {
     return this._sickPay;
   }
 
-  get careWorkforcePathwayAware() {
-    return this._careWorkforcePathwayAware;
+  get careWorkforcePathwayAwareness() {
+    return this._careWorkforcePathwayAwareness;
   }
 
   _validateLocalisedId() {
@@ -1917,7 +1917,7 @@ class WorkplaceCSVValidator {
   }
 
   _validateCwpAwareness() {
-    const cwpAwarenessBulkUploadCodes = this.mappings.cwpAwareness.map((mapping) => mapping.bulkUploadCode);
+    const cwpAwarenessBulkUploadCodes = this.mappings.cwpAwareness.map((mapping) => mapping.bulkUploadCode.toString());
     const ALLOWED_VALUES = ['', ...cwpAwarenessBulkUploadCodes];
 
     if (!ALLOWED_VALUES.includes(this._currentLine.CWPAWARE)) {
@@ -1934,7 +1934,7 @@ class WorkplaceCSVValidator {
     } else {
       const cwpAwareAsInt = parseInt(this._currentLine.CWPAWARE, 10);
 
-      this._careWorkforcePathwayAware = Number.isNaN(cwpAwareAsInt) ? this._currentLine.CWPAWARE : cwpAwareAsInt;
+      this._careWorkforcePathwayAwareness = Number.isNaN(cwpAwareAsInt) ? this._currentLine.CWPAWARE : cwpAwareAsInt;
       return true;
     }
   }
@@ -2554,14 +2554,14 @@ class WorkplaceCSVValidator {
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = mapping[acceptCareCert];
   }
 
-  _transformCareWorkforcePathwayAware() {
+  _transformCareWorkforcePathwayAwareness() {
     const getIdFromBulkUploadCode = (buCode, mappings) => {
-      const match = mappings.find((mapping) => mapping.bulkUploadCode === buCode);
-      return match?.id || null;
+      const match = mappings.find((mapping) => mapping.bulkUploadCode == buCode);
+      return match?.id ? { id: match.id } : null;
     };
 
-    this._careWorkforcePathwayAware = getIdFromBulkUploadCode(
-      this._careWorkforcePathwayAware,
+    this._careWorkforcePathwayAwareness = getIdFromBulkUploadCode(
+      this._careWorkforcePathwayAwareness,
       this.mappings.cwpAwareness,
     );
   }
@@ -2813,7 +2813,7 @@ class WorkplaceCSVValidator {
       status = !this._transformAllUtilisation() ? false : status;
       status = !this._transformAllVacanciesStartersLeavers() ? false : status;
       status = !this._transformRepeatTrainingAndAcceptCareCert() ? false : status;
-      status = !this._transformCareWorkforcePathwayAware() ? false : status;
+      status = !this._transformCareWorkforcePathwayAwareness() ? false : status;
       status = !this._transformCashLoyaltyForFirstTwoYears() ? false : status;
       status = !this._transformPensionAndSickPay() ? false : status;
       return status;
@@ -2944,6 +2944,7 @@ class WorkplaceCSVValidator {
       doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
       wouldYouAcceptCareCertificatesFromPreviousEmployment: this._wouldYouAcceptCareCertificatesFromPreviousEmployment,
+      careWorkforcePathwayWorkplaceAwareness: this._careWorkforcePathwayAwareness,
       careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
       sickPay: this._sickPay,
       pensionContribution: this._pensionContribution,
