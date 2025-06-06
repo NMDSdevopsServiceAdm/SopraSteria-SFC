@@ -1,6 +1,8 @@
+import { environment } from 'src/environments/environment';
+
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { environment } from 'src/environments/environment';
+import { UpdateCareWorkforcePathwayUsePayload } from '@core/model/care-workforce-pathway.model';
 
 import { EstablishmentService } from './establishment.service';
 
@@ -121,6 +123,25 @@ describe('EstablishmentService', () => {
       expect(setStateSpy).not.toHaveBeenCalled();
       expect(onSuccessSpy).not.toHaveBeenCalled();
       expect(onErrorSpy).toHaveBeenCalled();
+    });
+  });
+
+  fdescribe('updateCareWorkforcePathwayUse', () => {
+    const mockWorkplaceUid = 'mockWorkplaceUid';
+    const payload = {
+      use: 'Yes',
+      reasons: [{ id: 1 }, { id: 2 }, { id: 10, other: 'some free text' }],
+    } as UpdateCareWorkforcePathwayUsePayload;
+
+    const endpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/careWorkforcePathway/careWorkforcePathwayUse`;
+
+    it('should make call to expected backend endpoint', async () => {
+      service.updateCareWorkforcePathwayUse(mockWorkplaceUid, payload).subscribe();
+
+      const expectedRequest = http.expectOne(endpoint);
+
+      expect(expectedRequest.request.method).toBe('POST');
+      expect(expectedRequest.request.body).toEqual(payload);
     });
   });
 });

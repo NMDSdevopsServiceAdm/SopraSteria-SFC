@@ -1,4 +1,5 @@
 export type CareWorkforcePathwayUse = YES | NO | DONT_KNOW | null;
+export type UpdateCareWorkforcePathwayUsePayload = YES | NO | DONT_KNOW;
 export interface CareWorkforcePathwayUseReason {
   id: number;
   text: string;

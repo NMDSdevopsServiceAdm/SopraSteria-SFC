@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -230,7 +232,26 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       });
     });
 
-    xdescribe('form submit', () => {});
+    describe('form submit', () => {
+      it('should call updateCareWorkforcePathwayUse() on service', async () => {
+        const { getByLabelText, getByText, establishmentService } = await setup({
+          establishmentService: { returnTo: null },
+        });
+        const establishmentServiceSpy = spyOn(establishmentService, 'updateCareWorkforcePathwayUse').and.returnValue(
+          of({ ...establishmentService.establishment }),
+        );
+
+        userEvent.click(getByLabelText(RadioButtonLabels.YES));
+
+        userEvent.click(getByLabelText(mockReasons[0].text));
+        userEvent.click(getByLabelText(mockReasons[2].text));
+        userEvent.type(getInputByLabel('Tell us what (optional)'), 'some specific reasons');
+
+        userEvent.click(getByText('Save and continue'));
+
+        expect(establishmentServiceSpy).toHaveBeenCalled();
+      });
+    });
   });
 
   describe('when in new workplace workflow', async () => {

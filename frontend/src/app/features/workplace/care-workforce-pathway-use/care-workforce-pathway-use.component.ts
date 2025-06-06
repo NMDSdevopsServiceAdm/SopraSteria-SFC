@@ -1,13 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Question } from '../question/question.component';
-import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { AbstractControl, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import {
+  CareWorkforcePathwayUseReason,
+  UpdateCareWorkforcePathwayUsePayload,
+} from '@core/model/care-workforce-pathway.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+
 import { CareWorkforcePathwayService } from '../../../core/services/care-workforce-pathway.service';
+import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-care-workforce-pathway-use',
@@ -53,7 +57,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
   private setupForm(): void {
     this.form = this.formBuilder.group({
       use: null,
-      reasons: this.formBuilder.array(this.allReasons.map((_reason) => null)),
+      reasons: this.formBuilder.array(this.allReasons.map(() => null)),
     });
 
     this.allReasons
@@ -73,10 +77,18 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     }
 
     const { use, reasons } = careWorkforcePathwayUse;
+    this.form.patchValue({ use });
+
+    if (use === 'Yes' && reasons) {
+      this.prefillReasonsValue(reasons);
+    }
+  }
+
+  private prefillReasonsValue(reasons: Array<CareWorkforcePathwayUseReason>) {
     const idsOfSelectedReasons = reasons.map((reason) => reason.id);
 
     const reasonCheckboxesValue = this.allReasons.map((reason) => idsOfSelectedReasons.includes(reason.id));
-    const formValue = { use, reasons: reasonCheckboxesValue };
+    const formValue = { reasons: reasonCheckboxesValue };
 
     reasons
       .filter((reason) => reason.other && reason.isOther)
@@ -107,13 +119,39 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
       });
   }
 
-  protected generateUpdateProps(): any {
-    return null;
+  protected generateUpdateProps(): UpdateCareWorkforcePathwayUsePayload {
+    const use = this.form.get('use').value;
+    if (!use) {
+      return null;
+    }
+
+    const reasonCheckboxes = this.form.get('reasons').value;
+    const selectedReasons = this.allReasons
+      .filter((_reason, index) => reasonCheckboxes[index])
+      .map((selectedReason) => {
+        if (selectedReason.isOther) {
+          return { ...selectedReason, other: this.getFormControlForOtherText(selectedReason.id).value };
+        }
+        return selectedReason;
+      });
+
+    return { use, reasons: selectedReasons };
   }
 
-  protected updateEstablishment(props: any): void {}
+  protected updateEstablishment(props: UpdateCareWorkforcePathwayUsePayload): void {
+    if (!props) {
+      return;
+    }
+
+    this.subscriptions.add(
+      this.establishmentService.updateCareWorkforcePathwayUse(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
+    );
+  }
 
   protected onSuccess(): void {
-    // this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
   }
 }
