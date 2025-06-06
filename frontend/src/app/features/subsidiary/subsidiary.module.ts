@@ -26,6 +26,7 @@ import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-su
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
+import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 
 @NgModule({
   imports: [
@@ -60,6 +61,7 @@ import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
     FeatureFlagsResolver,
+    CareWorkforcePathwayUseReasonsResolver,
   ],
 })
 export class SubsidiaryModule {}
