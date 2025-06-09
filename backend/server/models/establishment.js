@@ -2147,6 +2147,7 @@ module.exports = function (sequelize, DataTypes) {
           JOIN cqc."Worker" w ON wt."WorkerFK" = w."ID"
           WHERE wt."Expires" <= ('now'::timestamp + '90 days'::interval) -- wt."Expires" < CURRENT_DATE
           AND w."EstablishmentFK" = "EstablishmentID"
+          AND w."Archived" = false
           LIMIT 1
         ) IS NOT NULL THEN true
         -- Mandatory training is missing
