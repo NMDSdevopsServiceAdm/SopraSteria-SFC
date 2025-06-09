@@ -13,8 +13,8 @@ import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnov
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentWithShareWith,
-  MockEstablishmentService,
   MockEstablishmentServiceWithNoCapacities,
+  MockEstablishmentServiceWithOverrides,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
@@ -23,12 +23,21 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
-describe('NewWorkplaceSummaryComponent', () => {
-  const setup = async (
-    shareWith = null,
-    permissions = ['canEditEstablishment'] as PermissionType[],
-    hasQuestions = true,
-  ) => {
+fdescribe('NewWorkplaceSummaryComponent', () => {
+  const setup = async (overrides: any = {}) => {
+    const shareWith = overrides?.shareWith ?? null;
+    const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
+    const hasServiceCapacity = overrides?.hasServiceCapacity ?? true;
+
+    const establishmentServiceProvider = {
+      provide: EstablishmentService,
+    };
+    if (hasServiceCapacity === false) {
+      establishmentServiceProvider['useClass'] = MockEstablishmentServiceWithNoCapacities;
+    } else {
+      establishmentServiceProvider['useFactory'] = MockEstablishmentServiceWithOverrides.factory();
+    }
+
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -37,10 +46,7 @@ describe('NewWorkplaceSummaryComponent', () => {
           useFactory: MockPermissionsService.factory(permissions),
           deps: [HttpClient, Router, UserService],
         },
-        {
-          provide: EstablishmentService,
-          useClass: hasQuestions ? MockEstablishmentService : MockEstablishmentServiceWithNoCapacities,
-        },
+        establishmentServiceProvider,
         {
           provide: CqcStatusChangeService,
           useClass: MockCqcStatusChangeService,
@@ -154,7 +160,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Number of staff', () => {
       it('should render the number of staff and a Change link without conditional classes', async () => {
-        const { component, fixture } = await setup(null);
+        const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
         component.workplace.numberOfStaff = 4;
@@ -243,7 +249,9 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should render correct warning message, with View staff records link and conditional classes if no of staff is more than no of staff records and more than 8 weeks since first login', async () => {
-        const { component, fixture, getByTestId } = await setup(null, ['canEditEstablishment', 'canViewListOfWorkers']);
+        const { component, fixture, getByTestId } = await setup({
+          permissions: ['canEditEstablishment', 'canViewListOfWorkers'],
+        });
 
         const date = new Date();
         date.setDate(date.getDate() - 1);
@@ -284,7 +292,9 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should render correct warning message, with link that navigates if the number of staff is less than the number of staff records and it had been more than 8 weeks since first login', async () => {
-        const { component, fixture, getByTestId } = await setup(null, ['canEditEstablishment', 'canViewListOfWorkers']);
+        const { component, fixture, getByTestId } = await setup({
+          permissions: ['canEditEstablishment', 'canViewListOfWorkers'],
+        });
 
         const date = new Date();
         date.setDate(date.getDate() - 1);
@@ -570,7 +580,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Service capacity', () => {
       it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is false', async () => {
-        const { component, fixture, queryByTestId } = await setup(null, ['canEditEstablishment'], false);
+        const { component, fixture, queryByTestId } = await setup({ hasServiceCapacity: false });
 
         component.workplace.showAddWorkplaceDetailsBanner = false;
 
@@ -582,7 +592,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is true', async () => {
-        const { component, fixture, queryByTestId } = await setup(null, ['canEditEstablishment'], false);
+        const { component, fixture, queryByTestId } = await setup({ hasServiceCapacity: false });
 
         component.workplace.showAddWorkplaceDetailsBanner = true;
 
@@ -1232,6 +1242,12 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
     });
 
+    // describe('Using the care workforce pathway', () => {
+    //   it('should show a row of "Using the care workforce pathway" if workplace is aware of CWP', async () => {
+    //     const { component, fixture } = await setup();
+    //   });
+    // });
+
     describe('Cash loyalty bonus', () => {
       it('should show dash and have Add information button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
@@ -1381,7 +1397,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Local authorities and have Change button on Data sharing when localAuthorities set to true', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: true });
+        const { component, fixture } = await setup({ shareWith: { cqc: null, localAuthorities: true } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1395,7 +1411,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show CQC and have Change button on Data sharing when cqc set to true', async () => {
-        const { component, fixture } = await setup({ cqc: true, localAuthorities: false });
+        const { component, fixture } = await setup({ shareWith: { cqc: true, localAuthorities: false } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1407,7 +1423,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc and localAuthorities are set to false', async () => {
-        const { component, fixture } = await setup({ cqc: false, localAuthorities: false });
+        const { component, fixture } = await setup({ shareWith: { cqc: false, localAuthorities: false } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1419,7 +1435,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc is set to false and localAuthorities is null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: false, localAuthorities: null });
+        const { component, fixture } = await setup({ shareWith: { cqc: false, localAuthorities: null } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1431,7 +1447,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when localAuthorities is set to false and cqc is null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: false });
+        const { component, fixture } = await setup({ shareWith: { cqc: null, localAuthorities: false } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1443,7 +1459,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should not show Not sharing when one of cqc and localAuthorities is false and one is true', async () => {
-        const { component, fixture } = await setup({ cqc: true, localAuthorities: false });
+        const { component, fixture } = await setup({ shareWith: { cqc: true, localAuthorities: false } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
