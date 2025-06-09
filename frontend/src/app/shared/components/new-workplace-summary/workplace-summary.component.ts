@@ -109,8 +109,8 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   private checkIfWorkplaceIsAwareOfCareWorkforcePathway(): void {
     // TODO: update the way to check for awareness depending on ticket #1712
     const awareness = this.workplace.careWorkforcePathwayWorkplaceAwareness;
-    const awarenessId = awareness.id ?? awareness['awarnessId'] ?? awareness['awarenessId'];
-    this.isAwareOfCareWorkforcePathway = [1, 2, 3].includes(awarenessId);
+    this.isAwareOfCareWorkforcePathway =
+      awareness && [1, 2, 3].includes(awareness.id ?? awareness['awarnessId'] ?? awareness['awarenessId']);
   }
 
   private getPermissions(): void {

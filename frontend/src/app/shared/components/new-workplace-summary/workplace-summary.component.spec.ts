@@ -10,6 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
+import { MockCWPUseReasons } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentBuilder,
@@ -23,7 +24,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
-fdescribe('NewWorkplaceSummaryComponent', () => {
+describe('NewWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const shareWith = overrides?.shareWith ?? null;
     const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
@@ -33,11 +34,13 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
       id: 1,
       title: 'Aware of how the care workforce pathway works in practice',
     };
+    const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
 
     const mockWorkplace = establishmentBuilder({
       overrides: {
         shareWith,
         careWorkforcePathwayWorkplaceAwareness,
+        careWorkforcePathwayUse,
         otherService: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
       },
     }) as Establishment;
@@ -1277,6 +1280,50 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
         };
         const { queryByText } = await setup({ ...workplaceNotAwareOfCWP });
         expect(queryByText('Using the care workforce pathway')).toBeFalsy();
+      });
+
+      it('should show a dash "-" and "Add" button if not yet answered the CWP use question', async () => {
+        const careWorkforcePathwayUse = null;
+        const { component, getByTestId } = await setup({ ...workplaceOverride, careWorkforcePathwayUse });
+
+        const cwpUseRow = getByTestId('care-workforce-pathway-use');
+        const link = within(cwpUseRow).getByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(within(cwpUseRow).getByText('-')).toBeTruthy();
+      });
+
+      it('should show the answer and "Change" button if already answered the CWP use question', async () => {
+        const careWorkforcePathwayUse = { use: "Don't know", reasons: null };
+        const { component, getByTestId } = await setup({ ...workplaceOverride, careWorkforcePathwayUse });
+
+        const cwpUseRow = getByTestId('care-workforce-pathway-use');
+        const link = within(cwpUseRow).getByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(within(cwpUseRow).getByText('Not known')).toBeTruthy();
+      });
+
+      it('should show a list of the reasons if user answered "Yes" and chose some reasons', async () => {
+        const mockReasons = [
+          MockCWPUseReasons[0],
+          MockCWPUseReasons[1],
+          { ...MockCWPUseReasons[2], other: 'some free text' },
+        ];
+        const careWorkforcePathwayUse = { use: 'Yes', reasons: mockReasons };
+
+        const { component, getByTestId } = await setup({ ...workplaceOverride, careWorkforcePathwayUse });
+
+        const cwpUseRow = getByTestId('care-workforce-pathway-use');
+        const link = within(cwpUseRow).getByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(within(cwpUseRow).getByText(MockCWPUseReasons[0].text)).toBeTruthy();
+        expect(within(cwpUseRow).getByText(MockCWPUseReasons[1].text)).toBeTruthy();
+        expect(within(cwpUseRow).getByText('some free text')).toBeTruthy();
       });
     });
 
