@@ -2112,12 +2112,32 @@ module.exports = function (sequelize, DataTypes) {
       WHEN "NumberOfStaffValue" IS NULL THEN true
       -- No vacancy data
       WHEN "VacanciesValue" IS NULL THEN true
+      -- Add workplace details banner showing
+      WHEN "ShowAddWorkplaceDetailsBanner" = true THEN true
       -- Number of staff does not equal worker count
       WHEN (
         SELECT (COUNT(w."ID") != "NumberOfStaffValue")
         FROM cqc."Worker" w
         WHERE w."EstablishmentFK" = "EstablishmentID"
         AND w."Archived" = false
+      ) THEN true
+      -- No worker records
+      WHEN (
+        SELECT (COUNT(w."ID") = 0)
+        FROM cqc."Worker" w
+        WHERE w."EstablishmentFK" = "EstablishmentID"
+        AND w."Archived" = false
+      ) THEN true
+      -- No workers created in last 12 months
+      WHEN (
+        'now'::timestamp >= ("created" + '12 months'::interval) AND
+        "NumberOfStaffValue" > 10 AND
+        'now'::timestamp >= (
+          SELECT MAX(w."created") + '12 months'::interval
+          FROM cqc."Worker" w
+          WHERE w."EstablishmentFK" = "EstablishmentID"
+          AND w."Archived" = false
+        )
       ) THEN true
 
       WHEN (
