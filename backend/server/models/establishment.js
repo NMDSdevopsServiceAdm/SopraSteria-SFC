@@ -2116,7 +2116,7 @@ module.exports = function (sequelize, DataTypes) {
       WHEN "ShowAddWorkplaceDetailsBanner" = true THEN true
       -- Number of staff does not equal worker count
       WHEN (
-        SELECT (COUNT(w."ID") != "NumberOfStaffValue")
+        SELECT (COUNT(w."ID") != "NumberOfStaffValue") AND "eightWeeksFromFirstLogin" < now()::timestamp
         FROM cqc."Worker" w
         WHERE w."EstablishmentFK" = "EstablishmentID"
         AND w."Archived" = false
