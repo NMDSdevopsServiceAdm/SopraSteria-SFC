@@ -334,7 +334,6 @@ export class EstablishmentService {
   }
 
   updateCareWorkforcePathwayAwareness(establishmentId: string, data: any): Observable<any> {
-    console.log(data);
     return this.http.post<Establishment>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/careWorkforcePathwayAwareness`,
       data,
