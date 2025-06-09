@@ -15,10 +15,8 @@ describe('updateCareWorkforcePathwayUse', () => {
     url: '/api/establishment/mock-workplace-uid/careWorkforcePathway/careWorkforcePathwayUse',
     establishmentId: 'mock-workplace-uid',
     body: {
-      careWorkforcePathwayUse: {
-        use: 'Yes',
-        reasons: [{ id: 1 }, { id: 2 }, { id: 10, other: 'some specific reasons' }],
-      },
+      use: 'Yes',
+      reasons: [{ id: 1 }, { id: 2 }, { id: 10, other: 'some specific reasons' }],
     },
   };
 

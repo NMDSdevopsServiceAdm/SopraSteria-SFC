@@ -68,6 +68,8 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
+import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 
 @NgModule({
   imports: [
@@ -130,6 +132,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     DoYouHaveLeaversComponent,
     SelectLeaverJobRolesComponent,
     HowManyLeaversComponent,
+    CareWorkforcePathwayUseComponent,
   ],
   providers: [
     DialogService,
@@ -143,6 +146,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
+    CareWorkforcePathwayUseReasonsResolver,
   ],
 })
 export class WorkplaceModule {}

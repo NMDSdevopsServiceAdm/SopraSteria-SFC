@@ -80,6 +80,8 @@ import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-su
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
+import { CareWorkforcePathwayUseComponent } from '@features/workplace/care-workforce-pathway-use/care-workforce-pathway-use.component';
+import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -579,6 +581,16 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Pensions',
+        },
+      },
+      {
+        path: 'care-workforce-pathway-use',
+        component: CareWorkforcePathwayUseComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { careWorkforcePathwayUseReasons: CareWorkforcePathwayUseReasonsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Care workforce pathway use',
         },
       },
       {
