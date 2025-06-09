@@ -83,6 +83,19 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     this.clearAllReasonsWhenSelectedNoOrDontKnow();
   }
 
+  protected setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'Failed to update care workforce pathway usage',
+      },
+      {
+        name: 500,
+        message: 'Failed to update care workforce pathway usage',
+      },
+    ];
+  }
+
   private prefill(): void {
     const careWorkforcePathwayUse = this.establishment.careWorkforcePathwayUse;
     if (!careWorkforcePathwayUse) {

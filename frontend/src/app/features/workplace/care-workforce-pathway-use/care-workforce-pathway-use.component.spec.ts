@@ -1,6 +1,7 @@
 import { repeat } from 'lodash';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -307,6 +308,22 @@ describe('CareWorkforcePathwayUseComponent', () => {
         expect(getAllByText('Reason must be 120 characters or less')).toHaveSize(2);
 
         expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      });
+
+      it('should handle server error', async () => {
+        const { fixture, getByText, establishmentServiceSpy } = await setup({
+          establishmentService: { returnTo: null },
+        });
+        establishmentServiceSpy.and.returnValue(
+          throwError(new HttpErrorResponse({ error: 'Bad request', status: 400 })),
+        );
+
+        userEvent.click(getInputByLabel(RadioButtonLabels.YES));
+        userEvent.click(getByText('Save and continue'));
+
+        fixture.detectChanges();
+
+        expect(getByText('Failed to update care workforce pathway usage')).toBeTruthy();
       });
     });
   });
