@@ -80,6 +80,7 @@ import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-su
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
+import { CareWorkforcePathwayAwarenessComponent } from '@features/workplace/care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -543,6 +544,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Accept Previous Care Certificate',
+        },
+      },
+      {
+        path: 'care-workforce-pathway-awareness',
+        component: CareWorkforcePathwayAwarenessComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Care Workforce Pathway Awareness',
         },
       },
       {

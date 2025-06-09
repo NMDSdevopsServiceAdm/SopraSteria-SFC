@@ -333,6 +333,14 @@ export class EstablishmentService {
     );
   }
 
+  updateCareWorkforcePathwayAwareness(establishmentId: string, data: any): Observable<any> {
+    console.log(data);
+    return this.http.post<Establishment>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/careWorkforcePathwayAwareness`,
+      data,
+    );
+  }
+
   public deleteWorkplace(workplaceUid: string): Observable<any> {
     return this.http.delete<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}`);
   }

@@ -35,8 +35,6 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
     this.prefill();
 
     this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
-
-    // this.return = { url: ['/dashboard'], fragment: 'workplace' };
   }
 
   private setPreviousRoute(): void {
@@ -68,9 +66,9 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
   }
 
   private prefill(): void {
-    if (this.establishment.careWorkforcePathwayWorkplaceAwareness?.awarnessId) {
+    if (this.establishment.careWorkforcePathwayWorkplaceAwareness?.id) {
       this.form.patchValue({
-        careWorkforcePathwayAwareness: this.establishment.careWorkforcePathwayWorkplaceAwareness.awarnessId,
+        careWorkforcePathwayAwareness: this.establishment.careWorkforcePathwayWorkplaceAwareness.id,
       });
     }
   }
@@ -84,13 +82,13 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
   }
 
   protected updateEstablishment(props: any): void {
+
     const cwpData = {
-      property: 'careWorkforcePathwayWorkplaceAwarenessFK',
-      value: props.careWorkforcePathwayAwareness,
+      careWorkforcePathwayWorkplaceAwareness: { id: props.careWorkforcePathwayAwareness },
     };
 
     this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, cwpData).subscribe(
+      this.establishmentService.updateCareWorkforcePathwayAwareness(this.establishment.uid, cwpData).subscribe(
         (data) => this._onSuccess(data.data),
         (error) => this.onError(error),
       ),
@@ -106,7 +104,7 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
 
     if (awareAnswersIds.includes(careWorkforcePathwayAwareness)) {
       this.submitAction = { action: 'continue', save: true };
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-usage'];
+      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-use'];
     } else {
       this.nextRoute = this.skipRoute;
     }

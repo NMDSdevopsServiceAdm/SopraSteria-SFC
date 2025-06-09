@@ -39,7 +39,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     const injector = getTestBed();
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateCareWorkforcePathwayAwareness').and.returnValue(
       of({ data: {} }),
     );
 
@@ -89,7 +89,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     const selectedId = careWorkforcePathwayAwarenessAnswers[0].id;
     const establishment = {
       careWorkforcePathwayWorkplaceAwareness: {
-        awarnessId: selectedId,
+        id: selectedId,
       },
     };
     const { component, getByLabelText } = await setup({ establishmentObj: establishment });
@@ -155,10 +155,9 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           fixture.detectChanges();
 
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
-            property: 'careWorkforcePathwayWorkplaceAwarenessFK',
-            value: awareAnswer.id,
+            careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'care-workforce-pathway-usage']);
+          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'care-workforce-pathway-use']);
         });
       });
 
@@ -179,8 +178,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           fixture.detectChanges();
 
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
-            property: 'careWorkforcePathwayWorkplaceAwarenessFK',
-            value: awareAnswer.id,
+            careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
           expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'cash-loyalty']);
         });
@@ -222,10 +220,9 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           fixture.detectChanges();
 
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
-            property: 'careWorkforcePathwayWorkplaceAwarenessFK',
-            value: awareAnswer.id,
+            careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'care-workforce-pathway-usage']);
+          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'care-workforce-pathway-use']);
         });
       });
 
@@ -246,8 +243,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           fixture.detectChanges();
 
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
-            property: 'careWorkforcePathwayWorkplaceAwarenessFK',
-            value: awareAnswer.id,
+            careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
           expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
         });
