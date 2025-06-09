@@ -2154,7 +2154,7 @@ module.exports = function (sequelize, DataTypes) {
           -- International recruitment data required
             OR (
               w."HealthAndCareVisaValue" IS NULL
-                AND ((w."NationalityValue" = 'Other' AND w."BritishCitizenshipValue" IN ('No', 'Don''t know', NULL))
+                AND ((w."NationalityValue" = 'Other' AND (w."BritishCitizenshipValue" IN ('No', 'Don''t know') OR w."BritishCitizenshipValue" IS NULL))
                   OR (w."NationalityValue" = 'Don''t know' AND w."BritishCitizenshipValue" = 'No'))
             )
           )
