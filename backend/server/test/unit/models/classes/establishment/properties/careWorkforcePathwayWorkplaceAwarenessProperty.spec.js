@@ -63,7 +63,7 @@ describe('careWorkforcePathwayWorkplaceAwarenessProperty', () => {
       };
 
       const expectedResult = {
-        awarnessId: 1,
+        id: 1,
         title: 'Aware of how the care workforce pathway works in practice',
       };
 
@@ -82,14 +82,14 @@ describe('careWorkforcePathwayWorkplaceAwarenessProperty', () => {
       };
 
       const property = {
-        awarnessId: 1,
+        id: 1,
         title: 'Aware of how the care workforce pathway works in practice',
       };
 
       careWorkforcePathwayWorkplaceAwarenessProperty.property = property;
 
       const saved = careWorkforcePathwayWorkplaceAwarenessProperty.savePropertyToSequelize();
-      expect(saved.CareWorkforcePathwayWorkplaceAwarenessFK).to.equal(
+      expect(saved.careWorkforcePathwayWorkplaceAwarenessFK).to.equal(
         document.careWorkforcePathwayWorkplaceAwareness.id,
       );
     });
@@ -99,13 +99,13 @@ describe('careWorkforcePathwayWorkplaceAwarenessProperty', () => {
     it('should return true if the values are equal', () => {
       const document = {
         careWorkforcePathwayWorkplaceAwareness: {
-          awarnessId: 1,
+          id: 1,
           title: 'Aware of how the care workforce pathway works in practice',
         },
       };
 
       const property = {
-        awarnessId: 1,
+        id: 1,
         title: 'Aware of how the care workforce pathway works in practice',
       };
 
@@ -119,13 +119,13 @@ describe('careWorkforcePathwayWorkplaceAwarenessProperty', () => {
     it('should return false if the values are not equal', () => {
       const document = {
         careWorkforcePathwayWorkplaceAwareness: {
-          awarnessId: 1,
+          id: 1,
           title: 'Aware of how the care workforce pathway works in practice',
         },
       };
 
       const property = {
-        awarnessId: 3,
+        id: 3,
         title: 'Aware of how the care workforce pathway works in practice',
       };
 
@@ -140,7 +140,7 @@ describe('careWorkforcePathwayWorkplaceAwarenessProperty', () => {
   describe('toJSON()', () => {
     it('should return the correctly formatted JSON', () => {
       const property = {
-        awarnessId: 1,
+        id: 1,
         title: 'Aware of how the care workforce pathway works in practice',
       };
 

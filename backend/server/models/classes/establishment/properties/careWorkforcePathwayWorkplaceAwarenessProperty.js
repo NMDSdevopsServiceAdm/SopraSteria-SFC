@@ -4,7 +4,7 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
   ChangePropertyPrototype
 ) {
   constructor() {
-    super('CareWorkforcePathwayWorkplaceAwareness');
+    super('careWorkforcePathwayWorkplaceAwareness');
     this._allowNull = true;
   }
 
@@ -23,7 +23,7 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
   restorePropertyFromSequelize(document) {
     if (document.careWorkforcePathwayWorkplaceAwareness) {
       return {
-        awarnessId: document.careWorkforcePathwayWorkplaceAwareness.id,
+        id: document.careWorkforcePathwayWorkplaceAwareness.id,
         title: document.careWorkforcePathwayWorkplaceAwareness.title,
       };
     }
@@ -31,12 +31,12 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
 
   savePropertyToSequelize() {
     return {
-      CareWorkforcePathwayWorkplaceAwarenessFK: this.property === null ? null : this.property.awarnessId
-    }
+      careWorkforcePathwayWorkplaceAwarenessFK: this.property === null ? null : this.property.id,
+    };
   }
 
   isEqual(currentValue, newValue) {
-    return currentValue && newValue && currentValue.awarnessId === newValue.awarnessId;
+    return currentValue && newValue && currentValue.id === newValue.id;
   }
 
   toJSON(withHistory = false, showPropertyHistoryOnly = true){
