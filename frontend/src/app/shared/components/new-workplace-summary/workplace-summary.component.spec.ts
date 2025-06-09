@@ -12,7 +12,7 @@ import { UserService } from '@core/services/user.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
-  establishmentWithShareWith,
+  establishmentBuilder,
   MockEstablishmentServiceWithNoCapacities,
   MockEstablishmentServiceWithOverrides,
 } from '@core/test-utils/MockEstablishmentService';
@@ -28,6 +28,19 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
     const shareWith = overrides?.shareWith ?? null;
     const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
     const hasServiceCapacity = overrides?.hasServiceCapacity ?? true;
+
+    const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    };
+
+    const mockWorkplace = establishmentBuilder({
+      overrides: {
+        shareWith,
+        careWorkforcePathwayWorkplaceAwareness,
+        otherService: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
+      },
+    }) as Establishment;
 
     const establishmentServiceProvider = {
       provide: EstablishmentService,
@@ -58,7 +71,7 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
         provideRouter([]),
       ],
       componentProperties: {
-        workplace: establishmentWithShareWith(shareWith) as Establishment,
+        workplace: mockWorkplace,
         navigateToTab(event) {
           event.preventDefault();
         },
@@ -1242,11 +1255,30 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
       });
     });
 
-    // describe('Using the care workforce pathway', () => {
-    //   it('should show a row of "Using the care workforce pathway" if workplace is aware of CWP', async () => {
-    //     const { component, fixture } = await setup();
-    //   });
-    // });
+    describe('Using the care workforce pathway', () => {
+      const workplaceOverride = {
+        careWorkforcePathwayWorkplaceAwareness: {
+          id: 1,
+          title: 'Aware of how the care workforce pathway works in practice',
+        },
+      };
+
+      it('should show a row of "Using the care workforce pathway" if workplace is aware of CWP', async () => {
+        const { queryByText } = await setup({ ...workplaceOverride });
+        expect(queryByText('Using the care workforce pathway')).toBeTruthy();
+      });
+
+      it('should not show a row of "Using the care workforce pathway" if workplace is not aware of CWP', async () => {
+        const workplaceNotAwareOfCWP = {
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 4,
+            title: 'Not aware of the care workforce pathway',
+          },
+        };
+        const { queryByText } = await setup({ ...workplaceNotAwareOfCWP });
+        expect(queryByText('Using the care workforce pathway')).toBeFalsy();
+      });
+    });
 
     describe('Cash loyalty bonus', () => {
       it('should show dash and have Add information button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears is set to null (not answered)', async () => {

@@ -40,6 +40,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
   public isParent: boolean;
+  public isAwareOfCareWorkforcePathway: boolean;
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
@@ -90,6 +91,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
 
     this.checkNumberOfStaffErrorsAndWarnings();
     this.checkVacancyAndTurnoverData();
+    this.checkIfWorkplaceIsAwareOfCareWorkforcePathway();
   }
 
   public checkNumberOfStaffErrorsAndWarnings(): void {
@@ -102,6 +104,13 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     const { vacancies, starters, leavers } = this.workplace;
     this.noVacancyAndTurnoverData = !vacancies && !starters && !leavers;
     this.noVacancyData = !vacancies && (!!leavers || !!starters);
+  }
+
+  private checkIfWorkplaceIsAwareOfCareWorkforcePathway(): void {
+    // TODO: update the way to check for awareness depending on ticket #1712
+    const awareness = this.workplace.careWorkforcePathwayWorkplaceAwareness;
+    const awarenessId = awareness.id ?? awareness['awarnessId'] ?? awareness['awarenessId'];
+    this.isAwareOfCareWorkforcePathway = [1, 2, 3].includes(awarenessId);
   }
 
   private getPermissions(): void {

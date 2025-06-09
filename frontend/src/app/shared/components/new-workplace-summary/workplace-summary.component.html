@@ -406,6 +406,19 @@
         </dd>
       </div>
 
+      <div class="govuk-summary-list__row" data-testid="care-workforce-pathway-workplace-awareness">
+        // placeholder to avoid git confusing with next row when merged
+      </div>
+
+      <div
+        class="govuk-summary-list__row"
+        data-testid="care-workforce-pathway-use"
+        *ngIf="isAwareOfCareWorkforcePathway"
+      >
+        <dt class="govuk-summary-list__key">Using the care workforce pathway</dt>
+        <dd class="govuk-summary-list__value">-</dd>
+      </div>
+
       <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
         <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
         <dd class="govuk-summary-list__value">
