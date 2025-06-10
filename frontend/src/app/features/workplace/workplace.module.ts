@@ -68,6 +68,7 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 
@@ -117,6 +118,7 @@ import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-wor
     UsersComponent,
     StaffRecruitmentCaptureTrainingRequirementComponent,
     AcceptPreviousCareCertificateComponent,
+    CareWorkforcePathwayAwarenessComponent,
     StaffBenefitHolidayLeaveComponent,
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,

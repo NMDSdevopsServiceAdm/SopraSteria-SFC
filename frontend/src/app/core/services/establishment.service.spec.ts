@@ -9,6 +9,7 @@ import { EstablishmentService } from './establishment.service';
 describe('EstablishmentService', () => {
   let service: EstablishmentService;
   let http: HttpTestingController;
+  const mockWorkplaceUid = 'mockWorkplaceUid';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -60,7 +61,6 @@ describe('EstablishmentService', () => {
   });
 
   describe('updateJobs', () => {
-    const mockWorkplaceUid = 'mockWorkplaceUid';
     const payload = {
       vacancies: [
         { jobId: 10, total: 2 },
@@ -123,6 +123,19 @@ describe('EstablishmentService', () => {
       expect(setStateSpy).not.toHaveBeenCalled();
       expect(onSuccessSpy).not.toHaveBeenCalled();
       expect(onErrorSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('updateCareWorkforcePathwayAwareness', () => {
+    const updateCareWorkforcePathwayAwarenessEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/careWorkforcePathway/careWorkforcePathwayAwareness`;
+
+    it('should make call to updateCareWorkforcePathwayAwarenessEndpoint', async () => {
+      const requestBody = { careWorkforcePathwayWorkplaceAwareness: { id: 1 } };
+      service.updateCareWorkforcePathwayAwareness(mockWorkplaceUid, requestBody).subscribe();
+
+      const updateCareWorkforcePathwayAwareness = http.expectOne(updateCareWorkforcePathwayAwarenessEndpoint);
+      expect(updateCareWorkforcePathwayAwareness.request.method).toBe('POST');
+      expect(updateCareWorkforcePathwayAwareness.request.body).toEqual(requestBody);
     });
   });
 

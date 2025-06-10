@@ -47,7 +47,7 @@ module.exports = {
           table,
           'CareWorkforcePathwayWorkplaceAwarenessSavedBy',
           {
-            type: Sequelize.DataTypes.DATE,
+            type: Sequelize.DataTypes.TEXT,
             allowNull: true,
           },
           { transaction },
@@ -56,7 +56,7 @@ module.exports = {
           table,
           'CareWorkforcePathwayWorkplaceAwarenessChangedBy',
           {
-            type: Sequelize.DataTypes.DATE,
+            type: Sequelize.DataTypes.TEXT,
             allowNull: true,
           },
           { transaction },

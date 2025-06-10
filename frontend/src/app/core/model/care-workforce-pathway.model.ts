@@ -1,3 +1,12 @@
+export interface CareWorkforcePathwayWorkplaceAwarenessAnswer {
+  id: number;
+  title: string;
+}
+
+export interface CareWorkforcePathwayWorkplaceAwarenessResponse {
+  careWorkforcePathwayWorkplaceAwarenessAnswers: CareWorkforcePathwayWorkplaceAwarenessAnswer[]
+}
+
 export interface CareWorkforcePathwayUseReason {
   id: number;
   text: string;

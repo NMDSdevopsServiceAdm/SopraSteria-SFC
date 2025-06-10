@@ -56,7 +56,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     const notAwareOfCWP = !workplaceAwarenessOfCWP || [4, 5].includes(workplaceAwarenessOfCWP?.id);
 
     if (notAwareOfCWP) {
-      this.router.navigate(['/workplace', this.establishment.uid, 'care-workforce-pathway-workplace-awareness']);
+      this.router.navigate(['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness']);
     }
   }
 
@@ -65,7 +65,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-workplace-awareness'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness'];
   }
 
   private setupForm(): void {

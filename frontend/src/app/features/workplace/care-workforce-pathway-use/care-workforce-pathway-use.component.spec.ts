@@ -111,7 +111,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
       establishmentService: { establishment: workplaceNotAwareOfCWP },
     });
 
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'care-workforce-pathway-workplace-awareness']);
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness']);
   });
 
   describe('form', () => {
@@ -347,11 +347,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
     it('should set the previous page to CWP awareness question page', async () => {
       const { component } = await setup(overrides);
 
-      expect(component.previousRoute).toEqual([
-        '/workplace',
-        'mocked-uid',
-        'care-workforce-pathway-workplace-awareness',
-      ]);
+      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness']);
     });
 
     it('should navigate to cash-loyalty page when skipped the question', async () => {

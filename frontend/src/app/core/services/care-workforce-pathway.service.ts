@@ -1,4 +1,8 @@
 import {
+  CareWorkforcePathwayWorkplaceAwarenessAnswer,
+  CareWorkforcePathwayWorkplaceAwarenessResponse,
+} from '@core/model/care-workforce-pathway.model';
+import {
   CareWorkforcePathwayRoleCategory,
   CareWorkforcePathwayRoleCategoryResponse,
 } from '@core/model/careWorkforcePathwayCategory.model';
@@ -16,6 +20,14 @@ import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathwa
 })
 export class CareWorkforcePathwayService {
   constructor(private http: HttpClient) {}
+
+  getCareWorkforcePathwayWorkplaceAwarenessAnswers(): Observable<CareWorkforcePathwayWorkplaceAwarenessAnswer[]> {
+    return this.http
+      .get<CareWorkforcePathwayWorkplaceAwarenessResponse>(
+        `${environment.appRunnerEndpoint}/api/careWorkforcePathwayWorkplaceAwarenessAnswers`,
+      )
+      .pipe(map((res) => res.careWorkforcePathwayWorkplaceAwarenessAnswers));
+  }
 
   getCareWorkforcePathwayRoleCategories(): Observable<CareWorkforcePathwayRoleCategory[]> {
     return this.http

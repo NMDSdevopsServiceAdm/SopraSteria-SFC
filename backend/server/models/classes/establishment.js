@@ -392,7 +392,7 @@ class Establishment extends EntityValidator {
   }
 
   get careWorkforcePathwayWorkplaceAwareness() {
-    return this._properties.get('careWorkforcePathwayWorkplaceAwarenessFK')
+    return this._properties.get('CareWorkforcePathwayWorkplaceAwarenessFK')
       ? this._properties.get('CareWorkforcePathwayWorkplaceAwarenessFK').property
       : null;
   }
@@ -836,7 +836,7 @@ class Establishment extends EntityValidator {
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
-          CareWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
+          CareWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1545,10 +1545,7 @@ class Establishment extends EntityValidator {
               raw: true,
             });
 
-          fetchResults.careWorkforcePathwayWorkplaceAwareness = {
-             id: careWorkforcePathwayWorkplaceAwarenessResult.id,
-             title: careWorkforcePathwayWorkplaceAwarenessResult?.title,
-           };
+          fetchResults.careWorkforcePathwayWorkplaceAwareness = careWorkforcePathwayWorkplaceAwarenessResult;
         }
 
         const allAssociatedServiceIndices = [];

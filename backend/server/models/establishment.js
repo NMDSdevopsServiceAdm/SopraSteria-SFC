@@ -765,12 +765,12 @@ module.exports = function (sequelize, DataTypes) {
         field: '"CareWorkforcePathwayWorkplaceAwarenessChangedAt"',
       },
       careWorkforcePathwayWorkplaceAwarenessSavedBy: {
-        type: DataTypes.DATE,
+        type: DataTypes.TEXT,
         allowNull: true,
         field: '"CareWorkforcePathwayWorkplaceAwarenessSavedBy"',
       },
       careWorkforcePathwayWorkplaceAwarenessChangedBy: {
-        type: DataTypes.DATE,
+        type: DataTypes.TEXT,
         allowNull: true,
         field: '"CareWorkforcePathwayWorkplaceAwarenessChangedBy"',
       },

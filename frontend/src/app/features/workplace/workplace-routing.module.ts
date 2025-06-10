@@ -73,6 +73,7 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 
@@ -438,6 +439,25 @@ const routes: Routes = [
         },
       },
       {
+        path: 'care-workforce-pathway-awareness',
+        component: CareWorkforcePathwayAwarenessComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Care Workforce Pathway Awareness',
+        },
+      },
+      {
+        path: 'care-workforce-pathway-use',
+        component: CareWorkforcePathwayUseComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { careWorkforcePathwayUseReasons: CareWorkforcePathwayUseReasonsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Care workforce pathway use',
+        },
+      },
+      {
         path: 'cash-loyalty',
         component: StaffBenefitCashLoyaltyComponent,
         canActivate: [CheckPermissionsGuard],
@@ -446,7 +466,6 @@ const routes: Routes = [
           title: 'Cash Loyalty',
         },
       },
-
       {
         path: 'benefits-statutory-sick-pay',
         component: BenefitsStatutorySickPayComponent,
@@ -494,16 +513,7 @@ const routes: Routes = [
           title: 'Pensions',
         },
       },
-      {
-        path: 'care-workforce-pathway-use',
-        component: CareWorkforcePathwayUseComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { careWorkforcePathwayUseReasons: CareWorkforcePathwayUseReasonsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Care workforce pathway use',
-        },
-      },
+
       {
         path: 'user/create',
         canActivate: [CheckPermissionsGuard],

@@ -22,6 +22,13 @@ describe('CareWorkforcePathwayService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should call the /api/careWorkforcePathwayWorkplaceAwarenessAnswers endpoint to get the careWorkforcePathwayWorkplaceAwarenessAnswers', () => {
+    service.getCareWorkforcePathwayWorkplaceAwarenessAnswers().subscribe();
+
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/careWorkforcePathwayWorkplaceAwarenessAnswers`);
+    expect(req.request.method).toBe('GET');
+  });
+
   it('should call the /api/careWorkforcePathwayRoleCategories endpoint to get the careWorkforcePathwayRoleCategories', () => {
     service.getCareWorkforcePathwayRoleCategories().subscribe();
 
