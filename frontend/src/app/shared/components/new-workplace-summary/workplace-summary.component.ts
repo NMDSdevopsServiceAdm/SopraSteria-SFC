@@ -1,17 +1,19 @@
+import { sortBy } from 'lodash';
+import { Subscription } from 'rxjs';
+
 import { I18nPluralPipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
-import { sortBy } from 'lodash';
-import { Subscription } from 'rxjs';
-import { TabsService } from '../../../core/services/tabs.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-workplace-summary',
@@ -48,6 +50,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private cqcStatusChangeService: CqcStatusChangeService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
+    private careWorkforcePathwayService: CareWorkforcePathwayService,
     // TabsService and Router are needed here for navigateToTab() to work properly
     private tabsService: TabsService,
     private router: Router,
@@ -107,10 +110,9 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   }
 
   private checkIfWorkplaceIsAwareOfCareWorkforcePathway(): void {
-    // TODO: update the way to check for awareness depending on ticket #1712
-    const awareness = this.workplace.careWorkforcePathwayWorkplaceAwareness;
+    const awarenessAnswer = this.workplace.careWorkforcePathwayWorkplaceAwareness;
     this.isAwareOfCareWorkforcePathway =
-      awareness && [1, 2, 3].includes(awareness.id ?? awareness['awarnessId'] ?? awareness['awarenessId']);
+      this.careWorkforcePathwayService.isAwareOfCareWorkforcePathway(awarenessAnswer);
   }
 
   private getPermissions(): void {

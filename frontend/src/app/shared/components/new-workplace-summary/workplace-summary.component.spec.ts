@@ -5,17 +5,18 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionType } from '@core/model/permissions.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
-import { MockCWPUseReasons } from '@core/test-utils/MockCareWorkforcePathwayService';
+import { MockCareWorkforcePathwayService, MockCWPUseReasons } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentBuilder,
+  MockEstablishmentService,
   MockEstablishmentServiceWithNoCapacities,
-  MockEstablishmentServiceWithOverrides,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
@@ -30,10 +31,7 @@ describe('NewWorkplaceSummaryComponent', () => {
     const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
     const hasServiceCapacity = overrides?.hasServiceCapacity ?? true;
 
-    const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? {
-      id: 1,
-      title: 'Aware of how the care workforce pathway works in practice',
-    };
+    const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? null;
     const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
 
     const mockWorkplace = establishmentBuilder({
@@ -45,15 +43,6 @@ describe('NewWorkplaceSummaryComponent', () => {
       },
     }) as Establishment;
 
-    const establishmentServiceProvider = {
-      provide: EstablishmentService,
-    };
-    if (hasServiceCapacity === false) {
-      establishmentServiceProvider['useClass'] = MockEstablishmentServiceWithNoCapacities;
-    } else {
-      establishmentServiceProvider['useFactory'] = MockEstablishmentServiceWithOverrides.factory();
-    }
-
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -62,7 +51,10 @@ describe('NewWorkplaceSummaryComponent', () => {
           useFactory: MockPermissionsService.factory(permissions),
           deps: [HttpClient, Router, UserService],
         },
-        establishmentServiceProvider,
+        {
+          provide: EstablishmentService,
+          useClass: hasServiceCapacity ? MockEstablishmentService : MockEstablishmentServiceWithNoCapacities,
+        },
         {
           provide: CqcStatusChangeService,
           useClass: MockCqcStatusChangeService,
@@ -70,6 +62,12 @@ describe('NewWorkplaceSummaryComponent', () => {
         {
           provide: VacanciesAndTurnoverService,
           useClass: MockVacanciesAndTurnoverService,
+        },
+        {
+          provide: CareWorkforcePathwayService,
+          useFactory: MockCareWorkforcePathwayService.factory({
+            isAwareOfCareWorkforcePathway: () => overrides?.workplaceIsAwareOfCareWorkforcePathway ?? true,
+          }),
         },
         provideRouter([]),
       ],
@@ -1259,32 +1257,19 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
 
     describe('Using the care workforce pathway', () => {
-      const workplaceOverride = {
-        careWorkforcePathwayWorkplaceAwareness: {
-          id: 1,
-          title: 'Aware of how the care workforce pathway works in practice',
-        },
-      };
-
       it('should show a row of "Using the care workforce pathway" if workplace is aware of CWP', async () => {
-        const { queryByText } = await setup({ ...workplaceOverride });
+        const { queryByText } = await setup({ workplaceIsAwareOfCareWorkforcePathway: true });
         expect(queryByText('Using the care workforce pathway')).toBeTruthy();
       });
 
       it('should not show a row of "Using the care workforce pathway" if workplace is not aware of CWP', async () => {
-        const workplaceNotAwareOfCWP = {
-          careWorkforcePathwayWorkplaceAwareness: {
-            id: 4,
-            title: 'Not aware of the care workforce pathway',
-          },
-        };
-        const { queryByText } = await setup({ ...workplaceNotAwareOfCWP });
+        const { queryByText } = await setup({ workplaceIsAwareOfCareWorkforcePathway: false });
         expect(queryByText('Using the care workforce pathway')).toBeFalsy();
       });
 
       it('should show a dash "-" and "Add" button if not yet answered the CWP use question', async () => {
         const careWorkforcePathwayUse = null;
-        const { component, getByTestId } = await setup({ ...workplaceOverride, careWorkforcePathwayUse });
+        const { component, getByTestId } = await setup({ careWorkforcePathwayUse });
 
         const cwpUseRow = getByTestId('care-workforce-pathway-use');
         const link = within(cwpUseRow).getByText('Add');
@@ -1296,7 +1281,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
       it('should show the answer and "Change" button if already answered the CWP use question', async () => {
         const careWorkforcePathwayUse = { use: "Don't know", reasons: null };
-        const { component, getByTestId } = await setup({ ...workplaceOverride, careWorkforcePathwayUse });
+        const { component, getByTestId } = await setup({ careWorkforcePathwayUse });
 
         const cwpUseRow = getByTestId('care-workforce-pathway-use');
         const link = within(cwpUseRow).getByText('Change');
@@ -1314,7 +1299,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         ];
         const careWorkforcePathwayUse = { use: 'Yes', reasons: mockReasons };
 
-        const { component, getByTestId } = await setup({ ...workplaceOverride, careWorkforcePathwayUse });
+        const { component, getByTestId } = await setup({ careWorkforcePathwayUse });
 
         const cwpUseRow = getByTestId('care-workforce-pathway-use');
         const link = within(cwpUseRow).getByText('Change');
