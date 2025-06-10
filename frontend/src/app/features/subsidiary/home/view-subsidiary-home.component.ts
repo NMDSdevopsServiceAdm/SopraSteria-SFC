@@ -41,6 +41,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public canRunLocalAuthorityReport: boolean;
   public canBulkUpload: boolean;
   public canEditEstablishment: boolean;
+  public canEditWorker: boolean;
   public canViewListOfWorkers: boolean;
   public trainingCounts: TrainingCounts;
   public now: Date = new Date();
@@ -118,6 +119,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     const workplaceUid: string = this.subsidiaryWorkplace ? this.subsidiaryWorkplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
     this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
+    this.canEditWorker = this.permissionsService.can(workplaceUid, 'canEditWorker');
     this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.subsidiaryWorkplace && this.subsidiaryWorkplace.isParent;

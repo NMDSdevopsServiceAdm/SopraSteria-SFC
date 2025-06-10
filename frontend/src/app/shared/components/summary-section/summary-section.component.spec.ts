@@ -50,6 +50,7 @@ describe('Summary section', () => {
         workersNotCompleted: (overrides.workersNotCompleted as Worker[]) ?? ([workerBuilder()] as Worker[]),
         isParent: overrides.isParent ?? false,
         canViewListOfWorkers: overrides.canViewListOfWorkers ?? true,
+        canEditWorker: overrides.canEditWorker ?? true,
         canViewEstablishment: overrides.canViewEstablishment ?? true,
         showMissingCqcMessage: overrides.showMissingCqcMessage ?? false,
         workplacesCount: overrides.workplacesCount ?? 0,
@@ -437,6 +438,7 @@ describe('Summary section', () => {
           expect(workersCareWorkforcePathwayLink).toBeFalsy();
         });
       });
+
       describe('with cwpQuestionsFlag false', () => {
         it('should show if there are staff without an answer', async () => {
           const overrides = {
@@ -458,6 +460,21 @@ describe('Summary section', () => {
             'care-workforce-pathway-workers-summary',
           ]);
           expect(selectedTabSpy).not.toHaveBeenCalled();
+        });
+
+        it('should show with no link if there are staff without an answer but no edit permission for workers', async () => {
+          const overrides = {
+            noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+            cwpQuestionsFlag: false,
+            canEditWorker: false,
+          };
+          const { getByText } = await setup(overrides);
+
+          const workersCareWorkforcePathwayText = getByText('Where are your staff on the care workforce pathway?');
+          expect(workersCareWorkforcePathwayText.tagName).not.toBe('A');
+
+          const staffRecordsLink = getByText('Staff records');
+          expect(staffRecordsLink.tagName).toBe('A');
         });
 
         it('should not show if there are no staff without an answer', async () => {
