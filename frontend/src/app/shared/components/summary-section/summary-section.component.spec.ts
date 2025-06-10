@@ -348,7 +348,7 @@ describe('Summary section', () => {
       expect(getByText('Staff records')).toBeTruthy();
     });
 
-    it('should not show clickable staff records link if no access to data', async () => {
+    it('should not show clickable staff records link if no permissions to view staff records', async () => {
       const establishment = {
         ...Establishment,
         created: dayjs().subtract(1, 'year'),
@@ -373,6 +373,22 @@ describe('Summary section', () => {
       const staffRecordsLinkText = getByText('Staff records');
 
       expect(staffRecordsLinkText.getAttribute('href')).toBeFalsy();
+    });
+
+    it('should show default message if no permission to view staff records', async () => {
+      const overrides = {
+        checkCqcDetails: false,
+        establishment: Establishment,
+        workerCount: 0,
+        canViewListOfWorkers: false,
+      };
+
+      const { fixture, getByTestId } = await setup(overrides);
+
+      fixture.detectChanges();
+
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).getByText('Remember to check and update this data often')).toBeTruthy();
     });
 
     it('should show clickable staff records link if access to workplace', async () => {

@@ -116,6 +116,11 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   }
 
   public getStaffSummaryMessage(): void {
+    if (!this.canViewListOfWorkers) {
+      this.showViewSummaryLinks(this.sections[1].linkText);
+      return;
+    }
+
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
