@@ -1258,13 +1258,15 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Using the care workforce pathway', () => {
       it('should show a row of "Using the care workforce pathway" if workplace is aware of CWP', async () => {
-        const { queryByText } = await setup({ workplaceIsAwareOfCareWorkforcePathway: true });
-        expect(queryByText('Using the care workforce pathway')).toBeTruthy();
+        const { queryByTestId } = await setup({ workplaceIsAwareOfCareWorkforcePathway: true });
+        const cwpUseRow = queryByTestId('care-workforce-pathway-use');
+        expect(within(cwpUseRow).queryByText('Using the care workforce pathway')).toBeTruthy();
       });
 
       it('should not show a row of "Using the care workforce pathway" if workplace is not aware of CWP', async () => {
-        const { queryByText } = await setup({ workplaceIsAwareOfCareWorkforcePathway: false });
-        expect(queryByText('Using the care workforce pathway')).toBeFalsy();
+        const { queryByTestId } = await setup({ workplaceIsAwareOfCareWorkforcePathway: false });
+        const cwpUseRow = queryByTestId('care-workforce-pathway-use');
+        expect(cwpUseRow).toBeFalsy();
       });
 
       it('should show a dash "-" and "Add" button if not yet answered the CWP use question', async () => {

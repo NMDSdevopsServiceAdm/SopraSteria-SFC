@@ -21,15 +21,18 @@ export class FormatCwpUsePipe implements PipeTransform {
 
       case 'Yes': {
         if (Array.isArray(reasons) && reasons.length > 0) {
-          return this.listTheReasons(reasons);
+          return this.getReasonTexts(reasons);
         }
 
         return 'Yes';
       }
+
+      default:
+        return '-';
     }
   }
 
-  listTheReasons(reasons: CareWorkforcePathwayUse['reasons']): Array<string> {
+  private getReasonTexts(reasons: CareWorkforcePathwayUse['reasons']): Array<string> {
     return reasons.map((reason) => {
       if (!reason.isOther) {
         return reason.text;
