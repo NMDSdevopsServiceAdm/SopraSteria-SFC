@@ -27,7 +27,7 @@
               data-testid="orange-flag"
             />
           </ng-template>
-          <ng-container *ngIf="section.link; else noLink">
+          <ng-container *ngIf="section.link && !section.showMessageAsText; else noLink">
             <a (click)="onClick($event, section.fragment, section.route, section.skipTabSwitch)" href="#">
               {{ section.message }}</a
             >

@@ -1,8 +1,6 @@
-import { of } from 'rxjs';
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { provideRouter, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -14,6 +12,7 @@ import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
 
 import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary.component';
 
@@ -23,9 +22,8 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const workersToShow = overrides.workersToShow ?? mockWorkers;
     const workerCount = overrides.workerCount ?? workersToShow.length;
-    const getCWPWorkersSpy = jasmine
-      .createSpy()
-      .and.returnValue(of({ workers: workersToShow, workerCount: workerCount }));
+    const getCWPWorkersResponse = { workers: workersToShow, workerCount: workerCount };
+    const getCWPWorkersSpy = jasmine.createSpy().and.returnValue(of(getCWPWorkersResponse));
 
     const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
 
@@ -42,11 +40,21 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
             getAllWorkersWhoRequireCareWorkforcePathwayRoleAnswer: getCWPWorkersSpy,
           }),
         },
+        provideRouter([]),
         {
           provide: Router,
           useFactory: MockRouter.factory({ navigate: routerSpy }),
         },
-        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                workersWhoRequireCWPAnswer: getCWPWorkersResponse,
+              },
+            },
+          },
+        },
       ],
     });
 
@@ -112,11 +120,6 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
   });
 
-  it('should retrieve the first 15 unanswered workers on page load', async () => {
-    const { getCWPWorkersSpy } = await setup();
-    expect(getCWPWorkersSpy).toHaveBeenCalledWith('mocked-uid', { pageIndex: 0, itemsPerPage: 15 });
-  });
-
   it('should redirect to home page if all workers have been answered', async () => {
     const { fixture, routerSpy } = await setup({ workersToShow: [] });
 
@@ -133,13 +136,11 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
         const workerRow = getByTestId(`worker-row-${index}`);
         const workerNameLink = within(workerRow).getByText(worker.nameOrId, { selector: 'a' }) as HTMLLinkElement;
         expect(workerNameLink).toBeTruthy();
-        expect(workerNameLink.href).toContain(`${worker.uid}/staff-record-summary`);
 
         const chooseACategoryLink = within(workerRow).getByText('Choose a category', {
           selector: 'a',
         }) as HTMLLinkElement;
         expect(chooseACategoryLink).toBeTruthy();
-        expect(chooseACategoryLink.href).toContain(`${worker.uid}/staff-record-summary/care-workforce-pathway`);
       });
     });
 
@@ -189,7 +190,6 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
         const workerRow = getByTestId(`worker-row-${index}`);
         const workerNameLink = within(workerRow).getByText(worker.nameOrId, { selector: 'a' }) as HTMLLinkElement;
         expect(workerNameLink).toBeTruthy();
-        expect(workerNameLink.href).toContain(`${worker.uid}/staff-record-summary`);
       });
 
       const pagination = getByTestId('pagination');

@@ -21,6 +21,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() workersNotCompleted: Worker[];
   @Input() canViewListOfWorkers: boolean;
   @Input() canViewEstablishment: boolean;
+  @Input() canEditWorker: boolean;
   @Input() showMissingCqcMessage: boolean;
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
@@ -115,6 +116,11 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   }
 
   public getStaffSummaryMessage(): void {
+    if (!this.canViewListOfWorkers) {
+      this.showViewSummaryLinks(this.sections[1].linkText);
+      return;
+    }
+
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
@@ -127,6 +133,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
         'staff-record',
         'care-workforce-pathway-workers-summary',
       ];
+      this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
     } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
@@ -241,4 +248,5 @@ interface Section {
   redFlag: boolean;
   link: boolean;
   skipTabSwitch?: boolean;
+  showMessageAsText?: boolean;
 }
