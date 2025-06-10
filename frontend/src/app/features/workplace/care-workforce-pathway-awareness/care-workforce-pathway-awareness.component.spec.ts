@@ -104,6 +104,12 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     expect(form.valid).toBeTruthy();
   });
 
+  it('should set the previous page to accept-previous-care-certificate page', async () => {
+    const { component } = await setup();
+
+    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'accept-previous-care-certificate']);
+  });
+
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
       const { getByTestId } = await setup({ returnToUrl: null });

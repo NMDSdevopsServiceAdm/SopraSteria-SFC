@@ -66,9 +66,10 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
   }
 
   private prefill(): void {
-    if (this.establishment.careWorkforcePathwayWorkplaceAwareness?.id) {
+    const careWorkforcePathwayWorkplaceAwareness = this.establishment.careWorkforcePathwayWorkplaceAwareness;
+    if (careWorkforcePathwayWorkplaceAwareness?.id) {
       this.form.patchValue({
-        careWorkforcePathwayAwareness: this.establishment.careWorkforcePathwayWorkplaceAwareness.id,
+        careWorkforcePathwayAwareness: careWorkforcePathwayWorkplaceAwareness.id,
       });
     }
   }

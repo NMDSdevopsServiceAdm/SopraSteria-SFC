@@ -448,6 +448,16 @@ const routes: Routes = [
         },
       },
       {
+        path: 'care-workforce-pathway-use',
+        component: CareWorkforcePathwayUseComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { careWorkforcePathwayUseReasons: CareWorkforcePathwayUseReasonsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Care workforce pathway use',
+        },
+      },
+      {
         path: 'cash-loyalty',
         component: StaffBenefitCashLoyaltyComponent,
         canActivate: [CheckPermissionsGuard],
@@ -503,16 +513,7 @@ const routes: Routes = [
           title: 'Pensions',
         },
       },
-      {
-        path: 'care-workforce-pathway-use',
-        component: CareWorkforcePathwayUseComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { careWorkforcePathwayUseReasons: CareWorkforcePathwayUseReasonsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Care workforce pathway use',
-        },
-      },
+
       {
         path: 'user/create',
         canActivate: [CheckPermissionsGuard],
