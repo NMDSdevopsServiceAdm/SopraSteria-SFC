@@ -1,3 +1,4 @@
+import { CareWorkforcePathwayUse } from './care-workforce-pathway.model';
 import { DataPermissions, WorkplaceDataOwner } from './my-workplaces.model';
 import { WDFValue } from './wdf.model';
 
@@ -171,6 +172,7 @@ export interface Establishment {
   isParentApprovedBannerViewed?: boolean;
   provId?: string;
   careWorkforcePathwayWorkplaceAwareness: CareWorkforcePathwayWorkplaceAwareness;
+  careWorkforcePathwayUse: CareWorkforcePathwayUse;
 }
 
 export interface UpdateJobsRequest {

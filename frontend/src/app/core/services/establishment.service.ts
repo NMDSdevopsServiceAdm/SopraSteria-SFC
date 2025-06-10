@@ -21,6 +21,10 @@ import { environment } from 'src/environments/environment';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
+import {
+  CareWorkforcePathwayUse,
+  UpdateCareWorkforcePathwayUsePayload,
+} from '@core/model/care-workforce-pathway.model';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -63,6 +67,13 @@ interface CQCLocationChangeRequest {
   mainServiceOther?: string;
   postalCode: string;
   townCity: string;
+}
+
+interface UpdateCareWorkforcePathwayUseResponse {
+  id: number;
+  uid: string;
+  name: string;
+  careWorkforcePathwayUse: CareWorkforcePathwayUse;
 }
 
 @Injectable({
@@ -471,5 +482,12 @@ export class EstablishmentService {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/missingCqcProviderLocations`, {
       params,
     });
+  }
+
+  public updateCareWorkforcePathwayUse(establishmentUid: string, payload: UpdateCareWorkforcePathwayUsePayload) {
+    return this.http.post<UpdateCareWorkforcePathwayUseResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/careWorkforcePathway/careWorkforcePathwayUse`,
+      payload,
+    );
   }
 }

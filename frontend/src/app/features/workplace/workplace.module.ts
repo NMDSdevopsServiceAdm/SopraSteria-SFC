@@ -69,6 +69,8 @@ import { WorkplaceNameAddressComponent } from './workplace-name-address/workplac
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
+import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
+import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 
 @NgModule({
   imports: [
@@ -132,6 +134,7 @@ import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway
     DoYouHaveLeaversComponent,
     SelectLeaverJobRolesComponent,
     HowManyLeaversComponent,
+    CareWorkforcePathwayUseComponent,
   ],
   providers: [
     DialogService,
@@ -145,6 +148,7 @@ import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
+    CareWorkforcePathwayUseReasonsResolver,
   ],
 })
 export class WorkplaceModule {}

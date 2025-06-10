@@ -6,7 +6,7 @@ import { environment } from 'src/environments/environment';
 describe('CareWorkforcePathwayService', () => {
   let service: CareWorkforcePathwayService;
   let http: HttpTestingController;
-  let establishmentId = '124';
+  const establishmentId = '124';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -63,6 +63,17 @@ describe('CareWorkforcePathwayService', () => {
       const req = http.expectOne(
         `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}${endpoint}?pageIndex=1&itemsPerPage=15`,
       );
+      expect(req.request.method).toBe('GET');
+    });
+  });
+
+  describe('getAllCareWorkforcePathwayUseReasons', () => {
+    const endpoint = '/api/careWorkforcePathway/useReasons';
+
+    it('should call the expected endpoint', () => {
+      service.getAllCareWorkforcePathwayUseReasons().subscribe();
+
+      const req = http.expectOne(`${environment.appRunnerEndpoint}${endpoint}`);
       expect(req.request.method).toBe('GET');
     });
   });

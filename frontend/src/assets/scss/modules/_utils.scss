@@ -168,3 +168,9 @@
   border: none;
   height: 1px;
 }
+
+.asc__cancel-out-grid-column-two-thirds {
+  @media (min-width: 40.0625em) {
+    width: 150%;
+  }
+}

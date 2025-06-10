@@ -13,6 +13,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { JobRole } from '@core/model/job.model';
 import { Params } from '@angular/router';
+import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
 
 @Injectable({
   providedIn: 'root',
@@ -55,6 +56,12 @@ export class CareWorkforcePathwayService {
       { params: queryParams },
     );
   }
+
+  getAllCareWorkforcePathwayUseReasons(): Observable<CWPGetUseReasonsResponse> {
+    return this.http.get<CWPGetUseReasonsResponse>(
+      `${environment.appRunnerEndpoint}/api/careWorkforcePathway/useReasons`,
+    );
+  }
 }
 
 export type CWPGetNumberOfWorkersResponse = {
@@ -64,4 +71,8 @@ export type CWPGetNumberOfWorkersResponse = {
 export type CWPGetAllWorkersResponse = {
   workers: { uid: string; nameOrId: string; mainJob: JobRole }[];
   workerCount: number;
+};
+
+export type CWPGetUseReasonsResponse = {
+  allReasons: Array<CareWorkforcePathwayUseReason>;
 };
