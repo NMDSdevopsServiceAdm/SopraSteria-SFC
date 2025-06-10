@@ -67,30 +67,34 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
 
   private prefill(): void {
     const careWorkforcePathwayWorkplaceAwareness = this.establishment.careWorkforcePathwayWorkplaceAwareness;
-    if (careWorkforcePathwayWorkplaceAwareness?.id) {
-      this.form.patchValue({
-        careWorkforcePathwayAwareness: careWorkforcePathwayWorkplaceAwareness.id,
-      });
+    if (!careWorkforcePathwayWorkplaceAwareness) {
+      return;
     }
+    this.form.patchValue({
+      careWorkforcePathwayAwareness: careWorkforcePathwayWorkplaceAwareness?.id,
+    });
   }
 
   protected generateUpdateProps(): any {
     const { careWorkforcePathwayAwareness } = this.form.value;
-    if (careWorkforcePathwayAwareness) {
-      return { careWorkforcePathwayAwareness };
+    if (!careWorkforcePathwayAwareness) {
+      return null;
     }
-    return null;
+
+    return { careWorkforcePathwayAwareness };
   }
 
   protected updateEstablishment(props: any): void {
-
+    if (!props) {
+      return;
+    }
     const cwpData = {
       careWorkforcePathwayWorkplaceAwareness: { id: props.careWorkforcePathwayAwareness },
     };
 
     this.subscriptions.add(
       this.establishmentService.updateCareWorkforcePathwayAwareness(this.establishment.uid, cwpData).subscribe(
-        (data) => this._onSuccess(data.data),
+        (data) => this._onSuccess(data),
         (error) => this.onError(error),
       ),
     );
@@ -104,11 +108,24 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
     const { careWorkforcePathwayAwareness } = this.form.value;
 
     if (awareAnswersIds.includes(careWorkforcePathwayAwareness)) {
-      this.submitAction = { action: 'continue', save: true };
       this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-use'];
+      this.submitAction = { action: 'continue', save: true };
     } else {
       this.nextRoute = this.skipRoute;
     }
+  }
+
+  protected setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'Failed to update care workforce pathway awareness',
+      },
+      {
+        name: 500,
+        message: 'Failed to update care workforce pathway awareness',
+      },
+    ];
   }
 
   ngOnDestroy(): void {

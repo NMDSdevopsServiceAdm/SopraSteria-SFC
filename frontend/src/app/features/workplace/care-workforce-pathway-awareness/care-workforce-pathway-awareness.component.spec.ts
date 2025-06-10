@@ -1,14 +1,14 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness.component';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { getTestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import {
   MockCareWorkforcePathwayService,
@@ -32,6 +32,10 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         {
           provide: CareWorkforcePathwayService,
           useClass: MockCareWorkforcePathwayService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { data: {} } },
         },
       ],
     });
@@ -253,6 +257,46 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           });
           expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
         });
+      });
+    });
+
+    describe('errors', () => {
+      it('should handle server error that returns 400', async () => {
+        const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup({
+          returnToUrl: null,
+        });
+        establishmentServiceSpy.and.returnValue(
+          throwError(new HttpErrorResponse({ error: 'Bad request', status: 400 })),
+        );
+
+        const radioButton = getByLabelText(awareAnswers[0].title);
+        fireEvent.click(radioButton);
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save and continue');
+        fireEvent.click(saveButton);
+        fixture.detectChanges();
+
+        expect(getByText('Failed to update care workforce pathway awareness')).toBeTruthy();
+      });
+
+      it('should handle server error that returns 500', async () => {
+        const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup({
+          returnToUrl: null,
+        });
+        establishmentServiceSpy.and.returnValue(
+          throwError(new HttpErrorResponse({ error: 'Bad request', status: 500 })),
+        );
+
+        const radioButton = getByLabelText(awareAnswers[0].title);
+        fireEvent.click(radioButton);
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save and continue');
+        fireEvent.click(saveButton);
+        fixture.detectChanges();
+
+        expect(getByText('Failed to update care workforce pathway awareness')).toBeTruthy();
       });
     });
   });

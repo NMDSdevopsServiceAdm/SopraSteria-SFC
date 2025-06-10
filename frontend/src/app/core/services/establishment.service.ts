@@ -4,6 +4,7 @@ import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
   CancelOwnerShip,
+  CareWorkforcePathwayWorkplaceAwareness,
   ChangeOwner,
   Establishment,
   LocalIdentifiersRequest,
@@ -74,6 +75,13 @@ interface UpdateCareWorkforcePathwayUseResponse {
   uid: string;
   name: string;
   careWorkforcePathwayUse: CareWorkforcePathwayUse;
+}
+
+interface UpdateCareWorkforcePathwayWorkplaceAwarenessResponse {
+  id: number;
+  uid: string;
+  name: string;
+  careWorkforcePathwayWorkforceAwareness: CareWorkforcePathwayWorkplaceAwareness;
 }
 
 @Injectable({
@@ -345,7 +353,7 @@ export class EstablishmentService {
   }
 
   updateCareWorkforcePathwayAwareness(establishmentId: string, data: any): Observable<any> {
-    return this.http.post<Establishment>(
+    return this.http.post<UpdateCareWorkforcePathwayWorkplaceAwarenessResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/careWorkforcePathwayAwareness`,
       data,
     );
