@@ -35,7 +35,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { data: {} } },
+          useValue: {
+            snapshot: {
+              data: {
+                careWorkforcePathwayWorkplaceAwarenessAnswers: careWorkforcePathwayAwarenessAnswers,
+              },
+            },
+          },
         },
       ],
     });

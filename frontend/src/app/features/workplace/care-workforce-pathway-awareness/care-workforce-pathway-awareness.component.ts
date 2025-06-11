@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Question } from '../question/question.component';
 import { UntypedFormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -24,6 +24,7 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected careWorkforcePathwayService: CareWorkforcePathwayService,
+    protected route: ActivatedRoute,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -51,18 +52,7 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
   }
 
   private getCareWorkforcePathwayAwarenessAnswers(): void {
-    this.subscriptions.add(
-      this.careWorkforcePathwayService.getCareWorkforcePathwayWorkplaceAwarenessAnswers().subscribe(
-        (answers) => {
-          if (answers) {
-            this.careWorkforcePathwayAwarenessAnswers = answers;
-          }
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      ),
-    );
+    this.careWorkforcePathwayAwarenessAnswers = this.route.snapshot.data.careWorkforcePathwayWorkplaceAwarenessAnswers;
   }
 
   private prefill(): void {
