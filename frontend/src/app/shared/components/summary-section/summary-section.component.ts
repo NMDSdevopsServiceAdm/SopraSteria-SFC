@@ -75,6 +75,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     event.preventDefault();
     if (this.careWorkforcePathwayLinkDisplaying && fragment == 'workplace') {
       this.setCwpAwarenessQuestionViewed();
+      this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
     }
 
     if (this.isParentSubsidiaryView) {
