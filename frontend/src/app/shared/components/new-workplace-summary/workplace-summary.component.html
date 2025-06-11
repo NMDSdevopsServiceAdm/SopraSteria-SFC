@@ -409,7 +409,7 @@
       <div class="govuk-summary-list__row" data-testid="care-workforce-pathway-awareness">
         <dt class="govuk-summary-list__key">Care workforce pathway aware</dt>
         <dd class="govuk-summary-list__value">
-          {{ workplace.careWorkforcePathwayWorkplaceAwareness | CWPWorkplaceAwarenessTitle }}
+          {{ workplace.careWorkforcePathwayWorkplaceAwareness | formatCWPWorkplaceAwareness }}
         </dd>
         <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
           <app-summary-record-change
