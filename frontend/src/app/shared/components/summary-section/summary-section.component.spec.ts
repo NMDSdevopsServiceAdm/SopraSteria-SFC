@@ -36,7 +36,7 @@ describe('Summary section', () => {
       componentProperties: {
         workplace: overrides.establishment ?? Establishment,
         trainingCounts: (overrides.trainingCounts as TrainingCounts) ?? ({} as TrainingCounts),
-        navigateToTab: (event, _selectedTab) => {
+        navigateToTab: (event) => {
           event.preventDefault();
         },
         workerCount: overrides?.workerCount ?? Establishment.numberOfStaff,
@@ -167,15 +167,16 @@ describe('Summary section', () => {
     });
 
     describe('CWP awareness question', () => {
-      it('should show the CWP awareness message if workplace details added, CWPAwarenessQuestionViewed null and awareness question not answered', async () => {
-        const establishment = {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
           ...Establishment,
           showAddWorkplaceDetailsBanner: false,
           CWPAwarenessQuestionViewed: null,
           careWorkforcePathwayWorkplaceAwareness: null,
         };
-
-        const { getByTestId } = await setup({ establishment });
+      };
+      it('should show the CWP awareness message if workplace details added, CWPAwarenessQuestionViewed null and awareness question not answered', async () => {
+        const { getByTestId } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
 
         const workplaceRow = getByTestId('workplace-row');
         expect(within(workplaceRow).getByText('How aware of the CWP is your workplace?')).toBeTruthy();
@@ -183,14 +184,7 @@ describe('Summary section', () => {
       });
 
       it('should navigate to care-workforce-pathway-awareness when question link clicked', async () => {
-        const establishment = {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          CWPAwarenessQuestionViewed: null,
-          careWorkforcePathwayWorkplaceAwareness: null,
-        };
-
-        const { getByTestId, routerSpy } = await setup({ establishment });
+        const { getByTestId, routerSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
 
         const workplaceRow = getByTestId('workplace-row');
         const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
@@ -200,14 +194,9 @@ describe('Summary section', () => {
       });
 
       it("should update CWPAwarenessQuestionViewed when question link clicked so user doesn't see question again", async () => {
-        const establishment = {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          CWPAwarenessQuestionViewed: null,
-          careWorkforcePathwayWorkplaceAwareness: null,
-        };
-
-        const { getByTestId, updateSingleFieldSpy } = await setup({ establishment });
+        const { getByTestId, updateSingleFieldSpy } = await setup({
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
 
         const workplaceRow = getByTestId('workplace-row');
         const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
@@ -220,14 +209,7 @@ describe('Summary section', () => {
       });
 
       it('should set return in establishment service when question link clicked', async () => {
-        const establishment = {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          CWPAwarenessQuestionViewed: null,
-          careWorkforcePathwayWorkplaceAwareness: null,
-        };
-
-        const { getByTestId, setReturnToSpy } = await setup({ establishment });
+        const { getByTestId, setReturnToSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
 
         const workplaceRow = getByTestId('workplace-row');
         const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
@@ -237,14 +219,9 @@ describe('Summary section', () => {
       });
 
       it('should not update CWPAwarenessQuestionViewed when Workplace link clicked', async () => {
-        const establishment = {
-          ...Establishment,
-          showAddWorkplaceDetailsBanner: false,
-          CWPAwarenessQuestionViewed: null,
-          careWorkforcePathwayWorkplaceAwareness: null,
-        };
-
-        const { getByTestId, updateSingleFieldSpy } = await setup({ establishment });
+        const { getByTestId, updateSingleFieldSpy } = await setup({
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
 
         const workplaceRow = getByTestId('workplace-row');
         const link = within(workplaceRow).getByText('Workplace');
