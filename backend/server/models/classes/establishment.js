@@ -836,7 +836,7 @@ class Establishment extends EntityValidator {
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
-          CareWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness,
+          careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1067,6 +1067,7 @@ class Establishment extends EntityValidator {
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
             isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
             primaryAuthorityCssr: this._primaryAuthorityCssr,
+            careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
           };
 
           // Every time the establishment is saved, need to calculate

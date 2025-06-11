@@ -31,7 +31,7 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
 
   savePropertyToSequelize() {
     return {
-      CareWorkforcePathwayWorkplaceAwarenessFK: this.property === null ? null : this.property.id,
+      careWorkforcePathwayWorkplaceAwarenessFK: this.property === null ? null : this.property.id,
     };
   }
 
