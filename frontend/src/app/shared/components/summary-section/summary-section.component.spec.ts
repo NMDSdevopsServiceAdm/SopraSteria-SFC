@@ -66,6 +66,7 @@ describe('Summary section', () => {
     const updateSingleFieldSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
       of(null),
     );
+    const setReturnToSpy = spyOn(establishmentService, 'setReturnTo');
 
     return {
       ...setupTools,
@@ -73,6 +74,7 @@ describe('Summary section', () => {
       routerSpy,
       tabsService,
       updateSingleFieldSpy,
+      setReturnToSpy,
     };
   };
 
@@ -214,6 +216,23 @@ describe('Summary section', () => {
           property: 'CWPAwarenessQuestionViewed',
           value: true,
         });
+      });
+
+      it('should set return in establishment service when question link clicked', async () => {
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
+
+        const { getByTestId, setReturnToSpy } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
+
+        fireEvent.click(link);
+        expect(setReturnToSpy).toHaveBeenCalled();
       });
 
       it('should not update CWPAwarenessQuestionViewed when Workplace link clicked', async () => {
