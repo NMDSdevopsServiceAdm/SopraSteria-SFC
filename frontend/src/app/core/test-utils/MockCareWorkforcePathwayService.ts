@@ -1,10 +1,12 @@
+import lodash from 'lodash';
+import { Observable, of } from 'rxjs';
+
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswer } from '@core/model/care-workforce-pathway.model';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
-import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
 import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
-import lodash from 'lodash';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 
 export const careWorkforcePathwayAwarenessAnswers = [
   {
@@ -61,6 +63,12 @@ export const MockCWPRoleCategories = lodash.mapValues(
   },
   (obj) => ({ ...obj, roleCategoryId: obj.id }),
 );
+
+export const MockCWPUseReasons: Array<CareWorkforcePathwayUseReason> = [
+  { id: 1, text: "To help define our organisation's values", isOther: false },
+  { id: 2, text: 'To help update our job descriptions', isOther: false },
+  { id: 10, text: 'For something else', isOther: true },
+];
 
 @Injectable()
 export class MockCareWorkforcePathwayService extends CareWorkforcePathwayService {

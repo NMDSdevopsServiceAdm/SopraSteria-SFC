@@ -15,8 +15,6 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
   async restoreFromJson(document) {
     if (document.careWorkforcePathwayWorkplaceAwareness) {
       this.property = document.careWorkforcePathwayWorkplaceAwareness;
-    } else {
-      this.property = null;
     }
   }
 
@@ -39,18 +37,18 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
     return currentValue && newValue && currentValue.id === newValue.id;
   }
 
-  toJSON(withHistory = false, showPropertyHistoryOnly = true){
-    if(!withHistory){
+  toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+    if (!withHistory) {
       return {
-        careWorkforcePathwayWorkplaceAwareness: this.property
-      }
+        careWorkforcePathwayWorkplaceAwareness: this.property,
+      };
     }
 
     return {
       careWorkforcePathwayWorkplaceAwareness: {
         currentValue: this.property,
-        ...this.changePropsToJSON(showPropertyHistoryOnly)
-      }
-    }
+        ...this.changePropsToJSON(showPropertyHistoryOnly),
+      },
+    };
   }
 };

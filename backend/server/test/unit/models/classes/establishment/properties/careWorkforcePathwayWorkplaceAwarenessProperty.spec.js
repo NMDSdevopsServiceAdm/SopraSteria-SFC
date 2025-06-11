@@ -11,11 +11,12 @@ describe('careWorkforcePathwayWorkplaceAwarenessProperty', () => {
   });
 
   describe('restoreFromJson()', () => {
-    it('should not return anything if undefined', async () => {
+    it('should keep the property unchanged when incoming document does not have the field careWorkforcePathwayWorkplaceAwareness', async () => {
       const document = {};
 
       await careWorkforcePathwayWorkplaceAwarenessProperty.restoreFromJson(document);
       expect(careWorkforcePathwayWorkplaceAwarenessProperty.property).to.deep.equal(null);
+      expect(careWorkforcePathwayWorkplaceAwarenessProperty._notSet).to.equal(true);
     });
 
     it('should return null if careWorkforcePathwayWorkplaceAwareness in the document is null', async () => {

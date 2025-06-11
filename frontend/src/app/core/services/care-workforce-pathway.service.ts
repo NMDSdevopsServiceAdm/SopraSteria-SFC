@@ -14,11 +14,14 @@ import { map } from 'rxjs/operators';
 import { JobRole } from '@core/model/job.model';
 import { Params } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
+import { CareWorkforcePathwayWorkplaceAwareness } from '@core/model/establishment.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CareWorkforcePathwayService {
+  private _awarenessAnswersTruthyIds = [1, 2, 3];
+
   constructor(private http: HttpClient) {}
 
   getCareWorkforcePathwayWorkplaceAwarenessAnswers(): Observable<CareWorkforcePathwayWorkplaceAwarenessAnswer[]> {
@@ -61,6 +64,10 @@ export class CareWorkforcePathwayService {
     return this.http.get<CWPGetUseReasonsResponse>(
       `${environment.appRunnerEndpoint}/api/careWorkforcePathway/useReasons`,
     );
+  }
+
+  isAwareOfCareWorkforcePathway(awarenessAnswer: CareWorkforcePathwayWorkplaceAwareness): boolean {
+    return this._awarenessAnswersTruthyIds.includes(awarenessAnswer?.id);
   }
 }
 

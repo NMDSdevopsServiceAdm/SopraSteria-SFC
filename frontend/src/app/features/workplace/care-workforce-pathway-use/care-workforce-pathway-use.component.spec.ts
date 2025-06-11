@@ -7,7 +7,9 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
@@ -53,6 +55,12 @@ describe('CareWorkforcePathwayUseComponent', () => {
           provide: Router,
           useFactory: MockRouter.factory({
             navigate: routerSpy,
+          }),
+        },
+        {
+          provide: CareWorkforcePathwayService,
+          useFactory: MockCareWorkforcePathwayService.factory({
+            isAwareOfCareWorkforcePathway: () => overrides.workplaceIsAwareOfCareWorkforcePathway ?? true,
           }),
         },
       ],
@@ -101,14 +109,8 @@ describe('CareWorkforcePathwayUseComponent', () => {
   });
 
   it('should redirect to care workforce pathway awareness question if the workplace is not aware of CWP', async () => {
-    const workplaceNotAwareOfCWP = {
-      careWorkforcePathwayWorkplaceAwareness: {
-        id: 4,
-        title: 'Not aware of the care workforce pathway',
-      },
-    };
     const { routerSpy } = await setup({
-      establishmentService: { establishment: workplaceNotAwareOfCWP },
+      workplaceIsAwareOfCareWorkforcePathway: false,
     });
 
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness']);

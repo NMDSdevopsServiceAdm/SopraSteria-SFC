@@ -6,11 +6,11 @@ import {
   UpdateCareWorkforcePathwayUsePayload,
 } from '@core/model/care-workforce-pathway.model';
 import { BackService } from '@core/services/back.service';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { CareWorkforcePathwayService } from '../../../core/services/care-workforce-pathway.service';
 import { Question } from '../question/question.component';
 
 @Component({
@@ -50,12 +50,9 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
   }
 
   private redirectToAwarenessQuestionIfNotAwareOfCWP() {
-    const workplaceAwarenessOfCWP = this.establishment.careWorkforcePathwayWorkplaceAwareness;
-
-    // TODO: update the way to check for awareness depending on ticket #1712
-    const notAwareOfCWP = !workplaceAwarenessOfCWP || [4, 5].includes(workplaceAwarenessOfCWP?.id);
-
-    if (notAwareOfCWP) {
+    const awarenessAnswer = this.establishment.careWorkforcePathwayWorkplaceAwareness;
+    const workplaceIsAwareOfCWP = this.careWorkforcePathwayService.isAwareOfCareWorkforcePathway(awarenessAnswer);
+    if (!workplaceIsAwareOfCWP) {
       this.router.navigate(['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness']);
     }
   }

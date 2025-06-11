@@ -77,4 +77,22 @@ describe('CareWorkforcePathwayService', () => {
       expect(req.request.method).toBe('GET');
     });
   });
+
+  describe('isAwareOfCareWorkforcePathway', () => {
+    const testCases = [
+      { inputValue: null, expected: false },
+      { inputValue: { id: 1, title: 'Aware of how the care workforce pathway works in practice' }, expected: true },
+      { inputValue: { id: 2, title: 'Aware of the aims of the care workforce pathway' }, expected: true },
+      { inputValue: { id: 3, title: "Aware of the term 'care workforce pathway'" }, expected: true },
+      { inputValue: { id: 4, title: 'Not aware of the care workforce pathway' }, expected: false },
+      { inputValue: { id: 5, title: 'I do not know how aware our workplace is' }, expected: false },
+    ];
+
+    testCases.forEach(({ inputValue, expected }) => {
+      it(`should return ${expected} when input is ${inputValue}`, () => {
+        const actual = service.isAwareOfCareWorkforcePathway(inputValue);
+        expect(actual).toEqual(expected);
+      });
+    });
+  });
 });
