@@ -180,7 +180,7 @@ describe('Summary section', () => {
         expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
       });
 
-      it('should navigate to awareness-of-care-workforce-pathway when question link clicked', async () => {
+      it('should navigate to care-workforce-pathway-awareness when question link clicked', async () => {
         const establishment = {
           ...Establishment,
           showAddWorkplaceDetailsBanner: false,
@@ -194,11 +194,7 @@ describe('Summary section', () => {
         const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
 
         fireEvent.click(link);
-        expect(routerSpy).toHaveBeenCalledWith([
-          '/workplace',
-          Establishment.uid,
-          'awareness-of-care-workforce-pathway',
-        ]);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', Establishment.uid, 'care-workforce-pathway-awareness']);
       });
 
       it("should update CWPAwarenessQuestionViewed when question link clicked so user doesn't see question again", async () => {

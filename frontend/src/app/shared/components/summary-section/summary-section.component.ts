@@ -71,8 +71,6 @@ export class SummarySectionComponent implements OnInit, OnChanges, OnDestroy {
     this.getOtherWorkplacesSummaryMessage();
   }
 
-  ngOnChanges(): void {}
-
   public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
     event.preventDefault();
     if (this.careWorkforcePathwayLinkDisplaying && fragment == 'workplace') {
@@ -104,7 +102,7 @@ export class SummarySectionComponent implements OnInit, OnChanges, OnDestroy {
       this.sections[0].message = 'Add more details to your workplace';
     } else if (!this.workplace.CWPAwarenessQuestionViewed && !this.workplace.careWorkforcePathwayWorkplaceAwareness) {
       this.sections[0].message = 'How aware of the CWP is your workplace?';
-      this.sections[0].route = ['/workplace', this.workplace.uid, 'awareness-of-care-workforce-pathway'];
+      this.sections[0].route = ['/workplace', this.workplace.uid, 'care-workforce-pathway-awareness'];
       this.careWorkforcePathwayLinkDisplaying = true;
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';

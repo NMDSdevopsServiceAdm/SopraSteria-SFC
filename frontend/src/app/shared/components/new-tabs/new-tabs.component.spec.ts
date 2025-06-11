@@ -193,7 +193,7 @@ describe('NewTabsComponent', () => {
           expectedActiveTab: 'training-and-qualifications',
         },
         {
-          mockUrl: `/workplace/${mockUid1}/awareness-of-care-workforce-pathway`,
+          mockUrl: `/workplace/${mockUid1}/care-workforce-pathway-awareness`,
           expectedActiveTab: 'workplace',
         },
       ];
@@ -233,7 +233,7 @@ describe('NewTabsComponent', () => {
           expectedActiveTab: 'training-and-qualifications',
         },
         {
-          mockUrl: `/subsidiary/workplace/${mockUid1}/awareness-of-care-workforce-pathway`,
+          mockUrl: `/subsidiary/workplace/${mockUid1}/care-workforce-pathway-awareness`,
           expectedActiveTab: 'workplace',
         },
       ];
