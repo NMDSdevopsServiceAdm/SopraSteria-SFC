@@ -409,17 +409,7 @@
       <div class="govuk-summary-list__row" data-testid="care-workforce-pathway-awareness">
         <dt class="govuk-summary-list__key">Care workforce pathway aware</dt>
         <dd class="govuk-summary-list__value">
-          <ng-container
-            *ngIf="
-              !workplace.careWorkforcePathwayWorkplaceAwareness?.title;
-              else careWorkforcePathwayWorkplaceAwareness
-            "
-          >
-            -
-          </ng-container>
-          <ng-template #careWorkforcePathwayWorkplaceAwareness>
-            {{ workplace.careWorkforcePathwayWorkplaceAwareness.title }}</ng-template
-          >
+          {{ workplace.careWorkforcePathwayWorkplaceAwareness | CWPWorkplaceAwarenessTitle }}
         </dd>
         <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
           <app-summary-record-change

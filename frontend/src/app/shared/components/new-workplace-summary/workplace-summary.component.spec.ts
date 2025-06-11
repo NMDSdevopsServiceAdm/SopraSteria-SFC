@@ -1293,6 +1293,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link.getAttribute('href')).toEqual(
           `/workplace/${component.workplace.uid}/care-workforce-pathway-awareness`,
         );
+        expect(within(careWorkforcePathwayAwarenessRow).getByText('Not aware')).toBeTruthy();
       });
     });
 
