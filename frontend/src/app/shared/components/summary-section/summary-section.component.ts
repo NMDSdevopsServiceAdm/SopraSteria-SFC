@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './summary-section.component.html',
   styleUrls: ['./summary-section.component.scss'],
 })
-export class SummarySectionComponent implements OnInit, OnChanges, OnDestroy {
+export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
   @Input() workersCreatedDate;
