@@ -1420,6 +1420,7 @@ module.exports = function (sequelize, DataTypes) {
         'sickPay',
         'pensionContribution',
         'careWorkforcePathwayWorkplaceAwarenessFK',
+        'CareWorkforcePathwayUseValue',
       ],
       where: {
         [Op.or]: [
@@ -1481,6 +1482,11 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.establishmentJobs,
           attributes: ['jobId', 'type', 'total'],
           as: 'jobs',
+        },
+        {
+          model: sequelize.models.CareWorkforcePathwayReasons,
+          attributes: ['id', 'bulkUploadCode'],
+          as: 'CareWorkforcePathwayReasons',
         },
       ],
     });
