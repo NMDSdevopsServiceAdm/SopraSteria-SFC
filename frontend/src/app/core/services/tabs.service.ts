@@ -27,7 +27,7 @@ export const SubsidiaryViewTabs = {
 };
 
 export const UrlPartsRelatedToTabs = [
-  { urlPart: 'awareness-of-care-workforce-pathway', tabSlug: MainDashboardTabs.workplaceTab.slug },
+  { urlPart: 'care-workforce-pathway-awareness', tabSlug: MainDashboardTabs.workplaceTab.slug },
   { urlPart: 'staff-record', tabSlug: MainDashboardTabs.staffRecordsTab.slug },
   { urlPart: 'staff-records', tabSlug: MainDashboardTabs.staffRecordsTab.slug },
   { urlPart: 'training-and-qualifications-record', tabSlug: MainDashboardTabs.tAndQTab.slug },
