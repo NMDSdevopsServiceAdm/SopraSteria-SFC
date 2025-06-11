@@ -1256,6 +1256,46 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
     });
 
+    describe('Care workforce pathway aware', () => {
+      it('should show dash and have Add information button when is set to null (not answered)', async () => {
+        const overrides = { careWorkforcePathwayWorkplaceAwareness: null, canEditEstablishment: true };
+
+        const { component } = await setup(overrides);
+
+        const careWorkforcePathwayAwarenessRow = within(document.body).queryByTestId(
+          'care-workforce-pathway-awareness',
+        );
+        const link = within(careWorkforcePathwayAwarenessRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/care-workforce-pathway-awareness`,
+        );
+        expect(within(careWorkforcePathwayAwarenessRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button when there is a value (answered)', async () => {
+        const overrides = {
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 4,
+            title: 'Not aware of the care workforce pathway',
+          },
+          canEditEstablishment: true,
+        };
+        const { component } = await setup(overrides);
+
+        const careWorkforcePathwayAwarenessRow = within(document.body).queryByTestId(
+          'care-workforce-pathway-awareness',
+        );
+        const link = within(careWorkforcePathwayAwarenessRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/care-workforce-pathway-awareness`,
+        );
+      });
+    });
+
     describe('Using the care workforce pathway', () => {
       it('should show a row of "Using the care workforce pathway" if workplace is aware of CWP', async () => {
         const { queryByTestId } = await setup({ workplaceIsAwareOfCareWorkforcePathway: true });
