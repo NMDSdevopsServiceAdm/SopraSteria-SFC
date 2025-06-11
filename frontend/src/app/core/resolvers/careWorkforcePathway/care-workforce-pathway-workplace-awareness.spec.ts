@@ -31,7 +31,7 @@ describe('getCareWorkforcePathwayWorkplaceAwarenessAnswersResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it('should call with the establishmentId', () => {
+  it('should call getCareWorkforcePathwayWorkplaceAwarenessAnswers', () => {
     const { resolver, getCareWorkforcePathwayWorkplaceAwarenessAnswersSpy } = setup();
 
     resolver.resolve();
