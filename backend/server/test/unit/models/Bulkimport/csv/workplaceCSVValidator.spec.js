@@ -22,6 +22,18 @@ const workplaceMappings = {
     { id: 4, bulkUploadCode: '4' },
     { id: 5, bulkUploadCode: '999' },
   ],
+  cwpUseReason: [
+    { id: 1, bulkUploadCode: '1' },
+    { id: 2, bulkUploadCode: '2' },
+    { id: 3, bulkUploadCode: '3' },
+    { id: 4, bulkUploadCode: '4' },
+    { id: 5, bulkUploadCode: '5' },
+    { id: 6, bulkUploadCode: '6' },
+    { id: 7, bulkUploadCode: '7' },
+    { id: 8, bulkUploadCode: '8' },
+    { id: 9, bulkUploadCode: '9' },
+    { id: 10, bulkUploadCode: '10' },
+  ],
 };
 
 const validateAPIObject = (establishmentRow) => {
@@ -52,6 +64,7 @@ const validateAPIObject = (establishmentRow) => {
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 1,
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 2,
     careWorkforcePathwayWorkplaceAwareness: '',
+    careWorkforcePathwayUse: null,
     careWorkersCashLoyaltyForFirstTwoYears: '200',
     sickPay: 0,
     pensionContribution: 1,
@@ -2357,10 +2370,13 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     describe('BENEFITS, SICKPAY, PENSION and HOLIDAY', () => {
-      const benefitsIndex = 32;
-      const sickPayIndex = 33;
-      const pensionIndex = 34;
-      const holidayIndex = 35;
+      const benefitsIndex = WorkplaceCSVValidator.headers()
+        .split(',')
+        .findIndex((columnName) => columnName === 'BENEFITS');
+
+      const sickPayIndex = benefitsIndex + 1;
+      const pensionIndex = benefitsIndex + 2;
+      const holidayIndex = benefitsIndex + 3;
 
       it('should leave the BENEFITS, SICKPAY and  PENSION columns blank if there values are null', async () => {
         const establishment = apiEstablishmentBuilder();
