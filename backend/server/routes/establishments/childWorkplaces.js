@@ -13,6 +13,7 @@ const getChildWorkplaces = async (req, res) => {
       pageIndex ? +pageIndex : undefined,
       searchTerm,
       convertToBoolean(getPendingWorkplaces),
+      true,
     );
 
     const activeWorkplaceCount = childWorkplaces.count - childWorkplaces.pendingCount;
@@ -42,6 +43,7 @@ const formatChildWorkplaces = (childWorkplaces) => {
       updated: workplace.updated,
       ustatus: workplace.ustatus,
       postcode: workplace.postcode,
+      showFlag: workplace.dataValues?.showFlag,
     };
   });
 };

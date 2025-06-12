@@ -100,6 +100,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public noOfWorkersWhoRequireInternationalRecruitment: number;
   public noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
   public cwpQuestionsFlag: boolean;
+  public workplacesNeedAttention: boolean;
 
   constructor(
     private userService: UserService,
@@ -186,6 +187,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;
     this.locationId = this.workplace.locationId;
     this.workplacesCount = this.route.snapshot.data.cqcLocations?.childWorkplacesCount;
+    this.workplacesNeedAttention = this.route.snapshot.data?.cqcLocations?.showFlag;
+
     this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
 
     if (this.isParentApprovedBannerViewed === false) {

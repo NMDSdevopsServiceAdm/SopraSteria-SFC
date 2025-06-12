@@ -62,6 +62,13 @@
             data-testid="workplaces-orange-flag"
             *ngIf="otherWorkplacesSection.orangeFlag"
           />
+          <img
+            src="/assets/images/flag-red.svg"
+            alt="action-required-red-flag"
+            class="govuk-!-margin-right-2"
+            data-testid="red-flag"
+            *ngIf="otherWorkplacesSection.redFlag"
+          />
           <a [routerLink]="['/workplace', 'view-all-workplaces']" href="#"> {{ otherWorkplacesSection.message }}</a>
         </ng-container>
         <ng-template #noWorkplacesLink>
