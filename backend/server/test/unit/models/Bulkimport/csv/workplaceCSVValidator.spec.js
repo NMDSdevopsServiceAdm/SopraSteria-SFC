@@ -497,6 +497,50 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
   });
 
+  describe('careWorkforcePathwayUse', () => {
+    const testCases = [
+      {
+        bulkUploadInput: '1',
+        expectedValue: { use: 'Yes', reasons: [] },
+      },
+      {
+        bulkUploadInput: '1;1;2',
+        expectedValue: { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }] },
+      },
+      {
+        bulkUploadInput: '2',
+        expectedValue: { use: 'No', reasons: [] },
+      },
+      {
+        bulkUploadInput: '999',
+        expectedValue: { use: "Don't know", reasons: [] },
+      },
+    ];
+
+    testCases.forEach(({ bulkUploadInput, expectedValue }) => {
+      const reasonAsString = JSON.stringify(expectedValue.reasons);
+      it(`should return cwpUse as (${expectedValue.use}) and reasons as (${reasonAsString}) when bulk upload input is (${bulkUploadInput})`, async () => {
+        establishmentRow.CWPUSE = bulkUploadInput;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.careWorkforcePathwayUse).to.deep.equal(expectedValue);
+      });
+    });
+
+    it('should return null when no answer provided', async () => {
+      establishmentRow.CWPUSE = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkforcePathwayUse).to.equal(null);
+    });
+  });
+
   describe('benefit', () => {
     it('should return the value when a number in CSV', async () => {
       establishmentRow.BENEFITS = '200';
@@ -1191,6 +1235,62 @@ describe('Bulk Upload - Establishment CSV', () => {
             },
           ]);
         });
+      });
+    });
+
+    describe('careWorkforcePathwayUse', () => {
+      it('should pass if there is no input', async () => {
+        establishmentRow.CWPUSE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      const validInputs = ['1', '1;1;2;3;10', '2', '999'];
+
+      validInputs.forEach((validInput) => {
+        it(`should pass if input is valid: ${validInput}`, async () => {
+          establishmentRow.CWPUSE = validInput;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([]);
+        });
+      });
+
+      it(`should return warning if input cwp use value is invalid ('78')`, async () => {
+        establishmentRow.CWPUSE = '78';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2490,
+            warnType: 'CWPUSE_WARNING',
+            warning: 'The code you have entered for CWPUSE is incorrect and will be ignored',
+            source: '78',
+            column: 'CWPUSE',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it(`should return warning if input cwp use reason value is invalid ('1;789')`, async () => {
+        establishmentRow.CWPUSE = '1;789';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2490,
+            warnType: 'CWPUSE_WARNING',
+            warning: 'The code you have entered for CWPUSE reason is incorrect and will be ignored',
+            source: '1;789',
+            column: 'CWPUSE',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
       });
     });
 
@@ -2365,6 +2465,60 @@ describe('Bulk Upload - Establishment CSV', () => {
           const csvAsArray = csv.split(',');
 
           expect(csvAsArray[cwpIndex]).to.equal(mapping.bulkUploadCode);
+        });
+      });
+    });
+
+    describe('CWPUSE', () => {
+      const cwpUseIndex = WorkplaceCSVValidator.headers()
+        .split(',')
+        .findIndex((columnName) => columnName === 'CWPUSE');
+
+      it('should leave the CWPUSE column blank if value is null', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkforcePathwayUse = null;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[cwpUseIndex]).to.equal('');
+      });
+
+      const testCases = [
+        {
+          bulkUploadValue: '1',
+          databaseValue: { use: 'Yes', reasons: [] },
+        },
+        {
+          bulkUploadValue: '1;1;2',
+          databaseValue: {
+            use: 'Yes',
+            reasons: [
+              { id: 1, bulkUploadCode: 1 },
+              { id: 2, bulkUploadCode: 2 },
+            ],
+          },
+        },
+        {
+          bulkUploadValue: '2',
+          databaseValue: { use: 'No', reasons: [] },
+        },
+        {
+          bulkUploadValue: '999',
+          databaseValue: { use: "Don't know", reasons: [] },
+        },
+      ];
+
+      testCases.forEach(({ bulkUploadValue, databaseValue }) => {
+        it('should map from careWorkforcePathwayUse to BU code format of CWPUSE', () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.careWorkforcePathwayUse = databaseValue.use;
+          establishment.CareWorkforcePathwayReasons = databaseValue.reasons;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[cwpUseIndex]).to.equal(bulkUploadValue);
         });
       });
     });
