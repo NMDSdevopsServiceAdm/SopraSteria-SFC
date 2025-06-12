@@ -52,6 +52,7 @@ const buildWorkerCsv = build('WorkerCSV', {
     UNIQUEWORKERID: '3',
     YEAROFENTRY: '',
     ZEROHRCONT: '2',
+    CWPCATEGORY: '1',
   },
 });
 
@@ -2217,5 +2218,60 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         column: 'QUALACH01',
       },
     ]);
+  });
+
+  describe(' _validateCwpCategory()', () => {
+    describe('Valid inputs', () => {
+      const allowedCwpCategoryValues = [1, 2, 3, 4, 5, 6, 7, 998, 999];
+
+      it(`should not add warning when the CWPCATEGORY value is valid:(${allowedCwpCategoryValues})`, async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            CWPCATEGORY: allowedCwpCategoryValues,
+          },
+        });
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+    });
+
+    describe('Invalid inputs', () => {
+      const invalidInputs = ['995', '8888', '666'];
+      invalidInputs.forEach((invalidCwpCategoryInput) => {
+        it(`should add warning when the CWPCATEGORY value is invalid: (${invalidCwpCategoryInput})`, async () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              CWPCATEGORY: invalidCwpCategoryInput,
+            },
+          });
+          const expectedWarning = {
+            column: 'CWPCATEGORY',
+            lineNumber: 2,
+            name: 'MARMA',
+            source: invalidCwpCategoryInput,
+            warnCode: WorkerCsvValidator.CWPCATEGORY_WARNING,
+            warnType: 'CWPCATEGORY_WARNING',
+            warning: 'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
+            worker: '3',
+          };
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          validator.validate();
+          validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+          expect(validator._validationErrors.length).to.equal(1);
+          expect(validator._careWorkForcePathwayCategory).to.equal(null);
+        });
+      });
+    });
   });
 });

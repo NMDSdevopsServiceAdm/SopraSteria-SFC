@@ -33,7 +33,7 @@ const _convertYesNoDontKnow = (value) => {
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
   //     "CARECERT","L2CARECERT","RECSOURCE","HANDCVISA","INOUTUK","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
-  //     "NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
+  //     "NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","CWPCATEGORY","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
   const columns = [];
 
   // "LOCALESTID"
@@ -474,6 +474,13 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
       break;
   }
   columns.push(nonscqual);
+
+  //CWPCATEGORY
+  columns.push(
+    get(entity, 'careWorkforcePathwayRoleCategory')
+      ? BUDI.careWorkforcePathwayRoleCategory(BUDI.FROM_ASC, entity.careWorkforcePathwayRoleCategory.id)
+      : '',
+  );
 
   const myQualifications = entity.qualifications.slice(0, MAX_QUALIFICATIONS);
   const len = Math.max(3, Math.min(myQualifications.length, MAX_QUALIFICATIONS));
