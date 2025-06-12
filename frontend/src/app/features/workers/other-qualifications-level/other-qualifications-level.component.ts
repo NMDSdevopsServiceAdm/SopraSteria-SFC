@@ -2,15 +2,15 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QualificationLevel } from '@core/model/qualification.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 import { FinalQuestionComponent } from '../final-question/final-question.component';
-import { AlertService } from '@core/services/alert.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-other-qualifications-level',
@@ -55,7 +55,7 @@ export class OtherQualificationsLevelComponent extends FinalQuestionComponent {
       this.prefill();
     }
 
-    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestions', false);
     this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
 
     this.cwpQuestionsFlag

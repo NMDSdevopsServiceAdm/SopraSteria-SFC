@@ -1,25 +1,25 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level.component';
-import { AlertService } from '@core/services/alert.service';
-import { HttpClient } from '@angular/common/http';
 
 describe('OtherQualificationsLevelComponent', () => {
   async function setup(overrides: any = {}) {
-    const cwpQuestionsFlag = overrides.cwpQuestionsFlag ?? false;
+    const cwpQuestions = overrides.cwpQuestionsFlag ?? false;
     const setupTools = await render(OtherQualificationsLevelComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -60,13 +60,10 @@ describe('OtherQualificationsLevelComponent', () => {
           provide: QualificationService,
           useClass: MockQualificationService,
         },
-        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestionsFlag }) },
+        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestions }) },
         AlertService,
         WindowRef,
       ],
-      componentProperties: {
-        cwpQuestionsFlag: overrides.cwpQuestionsFlag,
-      },
     });
     const injector = getTestBed();
 

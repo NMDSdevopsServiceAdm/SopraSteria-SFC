@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-
-import { AlertService } from '@core/services/alert.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+
 import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
@@ -49,7 +49,7 @@ export class OtherQualificationsComponent extends FinalQuestionComponent {
   }
 
   async init() {
-    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestions', false);
     this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
 
     if (this.worker.otherQualification) {

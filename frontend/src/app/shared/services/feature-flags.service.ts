@@ -44,11 +44,11 @@ export class FeatureFlagsService {
     this._newDataAreaFlag = value;
   }
 
-    public get cwpQuestionsFlag(): boolean {
+  public get cwpQuestionsFlag(): boolean {
     return this._cwpQuestionsFlag;
   }
 
   public set cwpQuestionsFlag(value: boolean) {
-    this._cwpQuestionsFlag= value;
+    this._cwpQuestionsFlag = value;
   }
 }
