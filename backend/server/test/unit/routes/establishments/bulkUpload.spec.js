@@ -268,6 +268,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       REPEATTRAINING: '',
       ACCEPTCARECERT: '',
       CWPAWARE: '',
+      CWPUSE: '',
       BENEFITS: '',
       SICKPAY: '',
       PENSION: '',
