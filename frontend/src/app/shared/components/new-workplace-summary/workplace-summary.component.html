@@ -406,9 +406,20 @@
         </dd>
       </div>
 
-      <!-- placeholder for awareness row -->
-      <div class="govuk-summary-list__row" data-testid="care-workforce-pathway-workplace-awareness"></div>
-
+      <div class="govuk-summary-list__row" data-testid="care-workforce-pathway-awareness">
+        <dt class="govuk-summary-list__key">Care workforce pathway aware</dt>
+        <dd class="govuk-summary-list__value">
+          {{ workplace.careWorkforcePathwayWorkplaceAwareness | formatCWPWorkplaceAwareness }}
+        </dd>
+        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+          <app-summary-record-change
+            [explanationText]="' care workforce pathway aware'"
+            [link]="['/workplace', workplace.uid, 'care-workforce-pathway-awareness']"
+            [hasData]="workplace.careWorkforcePathwayWorkplaceAwareness"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </dd>
+      </div>
       <div
         class="govuk-summary-list__row"
         data-testid="care-workforce-pathway-use"

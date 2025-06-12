@@ -143,6 +143,7 @@ import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pat
 import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { HasValuePipe } from './pipes/has-value.pipe';
 import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
+import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -286,6 +287,7 @@ import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
     CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
     FormatCwpUsePipe,
+    CareWorkforcePathwayWorkplaceAwarenessTitle,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -420,6 +422,7 @@ import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
     CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
     FormatCwpUsePipe,
+    CareWorkforcePathwayWorkplaceAwarenessTitle,
   ],
   providers: [
     DialogService,

@@ -71,6 +71,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
+import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
 
 @NgModule({
   imports: [
@@ -149,6 +150,7 @@ import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-wor
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
     CareWorkforcePathwayUseReasonsResolver,
+    CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
   ],
 })
 export class WorkplaceModule {}

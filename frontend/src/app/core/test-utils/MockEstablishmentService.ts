@@ -84,7 +84,7 @@ export const establishmentWithShareWith = (shareWith) => {
   });
 };
 
-export const establishmentWithWdfBuilder = () => {
+export const establishmentWithWdfBuilder = (additionalProperties: any = {}) => {
   return establishmentBuilder({
     overrides: {
       wdf: {
@@ -97,6 +97,7 @@ export const establishmentWithWdfBuilder = () => {
         numberOfStaff: { isEligible: false, updatedSinceEffectiveDate: true },
         employerType: { isEligible: false, updatedSinceEffectiveDate: true },
       },
+      ...additionalProperties,
     },
   });
 };
