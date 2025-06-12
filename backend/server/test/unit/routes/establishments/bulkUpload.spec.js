@@ -34,6 +34,10 @@ const errorsBuilder = build('Error', {
 });
 
 describe('/server/routes/establishment/bulkUpload.js', () => {
+  beforeEach(() => {
+    sinon.stub(models.careWorkforcePathwayWorkplaceAwareness, 'findAll').returns([{ id: 1, bulkUploadCode: '1' }]);
+  });
+
   afterEach(() => {
     sinon.restore();
   });
@@ -267,6 +271,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       REASONNOS: '',
       REPEATTRAINING: '',
       ACCEPTCARECERT: '',
+      CWPAWARE: '',
       BENEFITS: '',
       SICKPAY: '',
       PENSION: '',

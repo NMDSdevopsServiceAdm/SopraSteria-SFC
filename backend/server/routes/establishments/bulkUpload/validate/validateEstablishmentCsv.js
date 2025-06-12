@@ -1,6 +1,7 @@
 'use strict';
 
 const { Establishment } = require('../../../../models/classes/establishment');
+const models = require('../../../../models');
 const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 
 const validateEstablishmentCsv = async (
@@ -11,7 +12,15 @@ const validateEstablishmentCsv = async (
   myAPIEstablishments,
   myCurrentEstablishments,
 ) => {
-  const lineValidator = new WorkplaceCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments);
+  const cwpAwarenessMappings = await models.careWorkforcePathwayWorkplaceAwareness.findAll({
+    attributes: ['id', 'bulkUploadCode'],
+  });
+
+  const mappings = {
+    cwpAwareness: cwpAwarenessMappings,
+  };
+
+  const lineValidator = new WorkplaceCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments, mappings);
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   await lineValidator.validate();
