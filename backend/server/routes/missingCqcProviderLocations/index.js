@@ -18,6 +18,10 @@ const missingCqcProviderLocations = async (req, res) => {
 
   try {
     const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid);
+    const childWorkplaceHasFlag = await models.establishment.hasChildWorkplaceWhichNeedsAttention(establishmentId);
+
+    result.showFlag = childWorkplaceHasFlag?.id ? true : false;
+
     result.childWorkplacesCount = childWorkplaces.count;
 
     if (establishmentId) {
