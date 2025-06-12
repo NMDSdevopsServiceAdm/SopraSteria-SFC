@@ -508,6 +508,14 @@ describe('Bulk Upload - Establishment CSV', () => {
         expectedValue: { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }] },
       },
       {
+        bulkUploadInput: '1;555',
+        expectedValue: { use: 'Yes', reasons: [] },
+      },
+      {
+        bulkUploadInput: '1;555;2',
+        expectedValue: { use: 'Yes', reasons: [{ id: 2 }] },
+      },
+      {
         bulkUploadInput: '2',
         expectedValue: { use: 'No', reasons: [] },
       },

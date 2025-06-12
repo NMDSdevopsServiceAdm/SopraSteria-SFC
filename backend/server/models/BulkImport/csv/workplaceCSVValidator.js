@@ -1978,7 +1978,10 @@ class WorkplaceCSVValidator {
 
     const cwpUseAsString = this._convertYesNoDontKnow(cwpUse);
 
-    const everyReasonIsValid = cwpUseReasons.every((reasonId) => ALLOWED_REASON_VALUES.includes(reasonId));
+    const validReasons = cwpUseReasons?.filter((reasonId) => ALLOWED_REASON_VALUES.includes(reasonId));
+    const everyReasonIsValid = cwpUseReasons && validReasons.length === cwpUseReasons.length;
+
+    this._careWorkforcePathwayUse = { use: cwpUseAsString, reasons: validReasons ?? [] };
 
     if (!everyReasonIsValid) {
       this._validationErrors.push(
@@ -1986,7 +1989,6 @@ class WorkplaceCSVValidator {
       );
       return false;
     }
-    this._careWorkforcePathwayUse = { use: cwpUseAsString, reasons: cwpUseReasons };
     return true;
   }
 
