@@ -1420,7 +1420,7 @@ module.exports = function (sequelize, DataTypes) {
         'sickPay',
         'pensionContribution',
         'careWorkforcePathwayWorkplaceAwarenessFK',
-        'CareWorkforcePathwayUseValue',
+        'careWorkforcePathwayUse',
       ],
       where: {
         [Op.or]: [

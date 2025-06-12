@@ -3267,10 +3267,9 @@ class WorkplaceCSVValidator {
       }
     };
 
-    const cwpUse = cwpUseMapping(entity.CareWorkforcePathwayUseValue);
-    console.log(entity, '<---- entity');
+    const cwpUse = cwpUseMapping(entity.careWorkforcePathwayUse);
     let reasonsCode = [];
-    if (entity.CareWorkforcePathwayUseValue === 'Yes' && entity.CareWorkforcePathwayReasons?.length > 0) {
+    if (entity.careWorkforcePathwayUse === 'Yes' && entity.CareWorkforcePathwayReasons?.length > 0) {
       reasonsCode = entity.CareWorkforcePathwayReasons.map((reason) => reason.bulkUploadCode);
     }
     const cwpUseAndReasons = [cwpUse, ...reasonsCode].join(';');
