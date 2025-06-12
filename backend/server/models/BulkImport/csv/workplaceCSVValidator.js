@@ -1972,45 +1972,41 @@ class WorkplaceCSVValidator {
     }
   }
 
-  _validateCwpUse() {
+  _validateCwpReasons(cwpUse, cwpUseReasons) {
     const cwpUseReasonBulkUploadCodes = this.mappings.cwpUseReason.map((mapping) => mapping.bulkUploadCode.toString());
-    const ALLOWED_REASON_VALUES = [...cwpUseReasonBulkUploadCodes]; // ['1', '2', '3', '4', ..., '10']
+    const ALLOWED_REASON_VALUES = [...cwpUseReasonBulkUploadCodes];
+
+    const cwpUseAsString = this._convertYesNoDontKnow(cwpUse);
+
+    const everyReasonIsValid = cwpUseReasons.every((reasonId) => ALLOWED_REASON_VALUES.includes(reasonId));
+
+    if (!everyReasonIsValid) {
+      this._validationErrors.push(
+        this._generateWarning('The code you have entered for CWPUSE reason is incorrect and will be ignored', 'CWPUSE'),
+      );
+      return false;
+    }
+    this._careWorkforcePathwayUse = { use: cwpUseAsString, reasons: cwpUseReasons };
+    return true;
+  }
+
+  _validateCwpUse() {
     const ALLOWED_USE_VALUES = ['', '1', '2', '999'];
 
-    // this._currentLine.CWPUSE    '1;1;2;3'
-
-    const cwpUseAndReasons = this._currentLine.CWPUSE.split(';'); // ['1', '1', '2', '3']
-    const cwpUse = cwpUseAndReasons[0]; // '1' or '2' or '999'
-    const cwpUseReasons = cwpUseAndReasons.slice(1); //   ['1', '2', '3']
+    const cwpUseAndReasons = this._currentLine.CWPUSE.split(';');
+    const cwpUse = cwpUseAndReasons[0];
+    const cwpUseReasons = cwpUseAndReasons.slice(1);
 
     if (!ALLOWED_USE_VALUES.includes(cwpUse)) {
       this._validationErrors.push(
         this._generateWarning('The code you have entered for CWPUSE is incorrect and will be ignored', 'CWPUSE'),
       );
       return false;
+    } else if (cwpUse === '') {
+      this._careWorkforcePathwayUse = null;
+      return true;
     } else {
-      const cwpAwareAsInt = parseInt(this._currentLine.CWPUSE, 10);
-      const cwpUseAsString = this._convertYesNoDontKnow(cwpUse); // 'Yes'  or  'No' or 'Don't know'
-
-      if (cwpUseAsString === 'Yes') {
-        const everyReasonIsValid = cwpUseReasons.every((reasonId) => ALLOWED_REASON_VALUES.includes(reasonId));
-
-        if (!everyReasonIsValid) {
-          this._validationErrors.push(
-            this._generateWarning(
-              'The code you have entered for CWPUSE reason is incorrect and will be ignored',
-              'CWPUSE',
-            ),
-          );
-          return false;
-        }
-        this._careWorkforcePathwayUse = { use: cwpUseAsString, reasons: cwpUseReasons };
-        return true;
-      } else {
-        // case of No and Don't know. just assign the property with reasons = null
-        this._careWorkforcePathwayUse = { use: cwpUseAsString, reasons: cwpUseReasons };
-        return true;
-      }
+      return this._validateCwpReasons(cwpUse, cwpUseReasons);
     }
   }
 
