@@ -119,7 +119,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
   protected addErrorLinkFunctionality(): void {}
   protected addAlert(): void {}
 
-  protected navigate(): void {
+  protected navigate(): Promise<boolean> {
     const { action } = this.submitAction;
     if (!action) {
       return;
@@ -127,20 +127,16 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
 
     switch (action) {
       case 'continue':
-        this.router.navigate(this.next);
-        break;
+        return this.router.navigate(this.next);
 
       case 'summary':
-        this.router.navigate(this.getRoutePath(''));
-        break;
+        return this.router.navigate(this.getRoutePath(''));
 
       case 'exit':
-        this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
-        break;
+        return this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
 
       case 'return':
-        this.router.navigate(this.returnUrl);
-        break;
+        return this.router.navigate(this.returnUrl);
     }
   }
 

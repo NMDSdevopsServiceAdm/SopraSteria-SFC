@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
+import { GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
@@ -35,6 +36,8 @@ import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-week
 import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
+import { CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary/care-workforce-pathway-workers-summary.component';
+import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
@@ -135,6 +138,8 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DeleteStaffRecordComponent,
     UpdateWorkplaceDetailsAfterStaffChangesComponent,
     UpdateTotalNumberOfStaffComponent,
+    CareWorkforcePathwayRoleComponent,
+    CareWorkforcePathwayWorkersSummaryComponent,
   ],
   providers: [
     DialogService,
@@ -153,6 +158,8 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     QualificationCertificateService,
     VacanciesAndTurnoverService,
     WorkerReasonsForLeavingResolver,
+    CareWorkforcePathwayWorkersSummaryComponent,
+    GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
   ],
 })
 export class WorkersModule {}

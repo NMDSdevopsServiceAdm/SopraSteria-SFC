@@ -70,7 +70,11 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
       const returnTo = { url: staffRecordPath };
       this.workerService.setReturnTo(returnTo);
     }
+
+    this.init();
   }
+
+  protected init(): void {}
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
