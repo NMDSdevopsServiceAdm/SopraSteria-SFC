@@ -1,5 +1,4 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceSubmitButtonComponent } from './workplace-submit-button.component';
@@ -7,7 +6,7 @@ import { WorkplaceSubmitButtonComponent } from './workplace-submit-button.compon
 describe('WorkplaceSubmitButtonComponent', () => {
   const setup = async (overrides: any = {}) =>
     render(WorkplaceSubmitButtonComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [HttpClientTestingModule],
       componentProperties: {
         return: false,
         callToAction: 'Save and continue',
@@ -89,6 +88,22 @@ describe('WorkplaceSubmitButtonComponent', () => {
       expect(getByText('Call to action')).toBeTruthy();
       expect(getByText('Exit')).toBeTruthy();
     });
+
+    describe('hasConditionalRouting', () => {
+      it('should render "Save and continue" button when hasConditionalRouting is false', async () => {
+        const overrides = { return: false, hasConditionalRouting: false };
+        const { getByText } = await setup(overrides);
+
+        expect(getByText('Save and continue')).toBeTruthy();
+      });
+
+      it('should render "Save and " button when hasConditionalRouting is true', async () => {
+        const overrides = { return: false, hasConditionalRouting: true };
+        const { getByText } = await setup(overrides);
+
+        expect(getByText('Save and continue')).toBeTruthy();
+      });
+    });
   });
 
   describe('return is true', () => {
@@ -130,6 +145,24 @@ describe('WorkplaceSubmitButtonComponent', () => {
         // update directive
         rerender({ exitText: 'Exit' });
         expect(getByText('Exit')).toBeTruthy();
+      });
+    });
+
+    describe('hasConditionalRouting', () => {
+      it('should render "Save and return" button when hasConditionalRouting is false', async () => {
+        const overrides = { return: true, hasConditionalRouting: false };
+        const { getByText } = await setup(overrides);
+
+        expect(getByText('Save and return')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
+      });
+
+      it('should render "Save" button when hasConditionalRouting is true', async () => {
+        const overrides = { return: true, hasConditionalRouting: true };
+        const { getByText } = await setup(overrides);
+
+        expect(getByText('Save')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
       });
     });
   });
