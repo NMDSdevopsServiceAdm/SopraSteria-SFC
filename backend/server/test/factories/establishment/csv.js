@@ -35,6 +35,7 @@ module.exports = build('EstablishmentCSV', {
     ACCEPTCARECERT: '2',
     CWPAWARE: '',
     CWPUSE: '',
+    CWPUSEDESC: '',
     BENEFITS: '200',
     SICKPAY: '0',
     PENSION: '1',

@@ -34,7 +34,7 @@ const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
-  'REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,BENEFITS,SICKPAY,PENSION,HOLIDAY';
+  'REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,CWPUSEDESC,BENEFITS,SICKPAY,PENSION,HOLIDAY';
 
 class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments, mappings) {
@@ -267,6 +267,9 @@ class WorkplaceCSVValidator {
   }
   static get CWPUSE_WARNING() {
     return 2490;
+  }
+  static get CWPUSEDESC_WARNING() {
+    return 2500;
   }
 
   get id() {
@@ -3293,6 +3296,17 @@ class WorkplaceCSVValidator {
     const cwpUseAndReasons = [cwpUse, ...reasonsCode].join(';');
 
     columns.push(cwpUseAndReasons);
+
+    // cwp use desc
+    const useIsYes = entity.careWorkforcePathwayUse === 'Yes';
+    const somethingElseReason = entity.CareWorkforcePathwayReasons?.find((reason) => reason.isOther === true);
+
+    if (useIsYes && somethingElseReason) {
+      const reasonDescriptionText = somethingElseReason.EstablishmentCWPReasons.other ?? '';
+      columns.push(reasonDescriptionText);
+    } else {
+      columns.push('');
+    }
 
     // cash Loyalty
     const cashLoyaltyMapping = (value) => {
