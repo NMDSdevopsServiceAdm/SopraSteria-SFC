@@ -16,8 +16,13 @@ const validateEstablishmentCsv = async (
     attributes: ['id', 'bulkUploadCode'],
   });
 
+  const cwpUseReasonMappings = await models.CareWorkforcePathwayReasons.findAll({
+    attributes: ['id', 'bulkUploadCode'],
+  });
+
   const mappings = {
     cwpAwareness: cwpAwarenessMappings,
+    cwpUseReason: cwpUseReasonMappings,
   };
 
   const lineValidator = new WorkplaceCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments, mappings);
