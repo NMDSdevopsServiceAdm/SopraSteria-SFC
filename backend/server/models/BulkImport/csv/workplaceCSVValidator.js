@@ -462,6 +462,10 @@ class WorkplaceCSVValidator {
       column: columnName,
     };
   }
+  _getIdFromBulkUploadCode(buCode, mappings) {
+    const match = mappings.find((mapping) => mapping.bulkUploadCode == buCode);
+    return match?.id ? { id: match.id } : null;
+  }
 
   _validateLocalisedId() {
     const myLocalId = this._currentLine.LOCALESTID;
@@ -1973,8 +1977,7 @@ class WorkplaceCSVValidator {
   }
 
   _validateCwpReasons(cwpUse, cwpUseReasons) {
-    const cwpUseReasonBulkUploadCodes = this.mappings.cwpUseReason.map((mapping) => mapping.bulkUploadCode.toString());
-    const ALLOWED_REASON_VALUES = [...cwpUseReasonBulkUploadCodes];
+    const ALLOWED_REASON_VALUES = this.mappings.cwpUseReason.map((mapping) => mapping.bulkUploadCode.toString());
 
     const cwpUseAsString = this._convertYesNoDontKnow(cwpUse);
 
@@ -2628,12 +2631,7 @@ class WorkplaceCSVValidator {
   }
 
   _transformCareWorkforcePathwayAwareness() {
-    const getIdFromBulkUploadCode = (buCode, mappings) => {
-      const match = mappings.find((mapping) => mapping.bulkUploadCode == buCode);
-      return match?.id ? { id: match.id } : null;
-    };
-
-    this._careWorkforcePathwayAwareness = getIdFromBulkUploadCode(
+    this._careWorkforcePathwayAwareness = this._getIdFromBulkUploadCode(
       this._careWorkforcePathwayAwareness,
       this.mappings.cwpAwareness,
     );
@@ -2645,15 +2643,11 @@ class WorkplaceCSVValidator {
     }
 
     const { use } = this._careWorkforcePathwayUse;
-    const getIdFromBulkUploadCode = (buCode, mappings) => {
-      const match = mappings.find((mapping) => mapping.bulkUploadCode == buCode);
-      return match?.id ? { id: match.id } : null;
-    };
 
     const careWorkforcePathwayReasonsBUCode = this._careWorkforcePathwayUse.reasons ?? [];
 
     const reasons = careWorkforcePathwayReasonsBUCode.map((buCode) => {
-      return getIdFromBulkUploadCode(buCode, this.mappings.cwpUseReason);
+      return this._getIdFromBulkUploadCode(buCode, this.mappings.cwpUseReason);
     });
 
     this._careWorkforcePathwayUse = { reasons, use };
@@ -3273,12 +3267,9 @@ class WorkplaceCSVValidator {
     columns.push(repeatTrainingAndCareCertMapping(entity.wouldYouAcceptCareCertificatesFromPreviousEmployment));
 
     // CWP awareness
-    const getBulkUploadCodeFromId = (id, mappings) => {
-      const match = mappings.find((mapping) => mapping.id === id);
-      return match?.bulkUploadCode || '';
-    };
 
-    columns.push(getBulkUploadCodeFromId(entity.careWorkforcePathwayWorkplaceAwarenessFK, mappings.cwpAwareness));
+    const cwpAwarenessBUCode = entity.careWorkforcePathwayWorkplaceAwareness?.bulkUploadCode ?? '';
+    columns.push(cwpAwarenessBUCode);
 
     // CWP use
     const cwpUseMapping = (valueFromDatabase) => {

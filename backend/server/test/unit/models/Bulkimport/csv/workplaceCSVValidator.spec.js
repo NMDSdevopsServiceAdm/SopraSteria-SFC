@@ -2467,7 +2467,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       workplaceMappings.cwpAwareness.forEach((mapping) => {
         it('should map from careWorkforcePathwayWorkplaceAwarenessFK to BU code provided in workplaceMappings', () => {
           const establishment = apiEstablishmentBuilder();
-          establishment.careWorkforcePathwayWorkplaceAwarenessFK = mapping.id;
+          establishment.careWorkforcePathwayWorkplaceAwareness = mapping;
 
           const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
           const csvAsArray = csv.split(',');

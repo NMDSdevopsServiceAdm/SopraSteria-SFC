@@ -1419,7 +1419,6 @@ module.exports = function (sequelize, DataTypes) {
         'careWorkersCashLoyaltyForFirstTwoYears',
         'sickPay',
         'pensionContribution',
-        'careWorkforcePathwayWorkplaceAwarenessFK',
         'careWorkforcePathwayUse',
       ],
       where: {
@@ -1487,6 +1486,11 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.CareWorkforcePathwayReasons,
           attributes: ['id', 'bulkUploadCode'],
           as: 'CareWorkforcePathwayReasons',
+        },
+        {
+          model: sequelize.models.careWorkforcePathwayWorkplaceAwareness,
+          attributes: ['id', 'bulkUploadCode'],
+          as: 'careWorkforcePathwayWorkplaceAwareness',
         },
       ],
     });
