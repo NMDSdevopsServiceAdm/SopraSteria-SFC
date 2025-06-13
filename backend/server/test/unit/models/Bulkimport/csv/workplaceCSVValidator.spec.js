@@ -1302,6 +1302,46 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
+    describe.only('careWorkforcePathwayUse Description', () => {
+      it('should pass if there is no input for CWPUSEDESC', async () => {
+        establishmentRow.CWPUSEDESC = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      const testCasesForCwpUseThatShouldHaveWarning = ['1;2;3', '1', '2', '999', ''];
+
+      testCasesForCwpUseThatShouldHaveWarning.forEach((cwpUseInput) => {
+        it(`should return warning if there are some text input in CWPUSEDESC but CWPUSE (${cwpUseInput}) does not have reason 10 (something else)`, async () => {
+          establishmentRow.CWPUSE = cwpUseInput;
+          establishmentRow.CWPUSEDESC = 'some text';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2500,
+              warnType: 'CWPUSEDESC_WARNING',
+              warning: 'CWPUSEDESC will be ignored as 10 is not selected as a reason for CWPUSE',
+              source: 'some text',
+              column: 'CWPUSEDESC',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+      });
+
+      it('should pass if CWPUSEDESC has input and CWPUSE is 1 with reason 10', async () => {
+        establishmentRow.CWPUSE = '1;2;10';
+        establishmentRow.CWPUSEDESC = 'some text';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+    });
+
     describe('benefit', () => {
       it('should validate and pass if there is no input', async () => {
         establishmentRow.BENEFITS = '';

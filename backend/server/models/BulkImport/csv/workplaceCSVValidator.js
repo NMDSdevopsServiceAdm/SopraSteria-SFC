@@ -2018,6 +2018,25 @@ class WorkplaceCSVValidator {
     }
   }
 
+  _validateCwpUseDesc() {
+    if (this._currentLine.CWPUSEDESC === '') {
+      return true;
+    }
+
+    const reasonIds = this._careWorkforcePathwayUse?.reasons;
+
+    const dontHaveReasonForSomethingElse = !reasonIds?.includes('10');
+
+    if (dontHaveReasonForSomethingElse) {
+      this._validationErrors.push(
+        this._generateWarning('CWPUSEDESC will be ignored as 10 is not selected as a reason for CWPUSE', 'CWPUSEDESC'),
+      );
+      return false;
+    }
+
+    return true;
+  }
+
   _validateBenefits() {
     const benefitsRegex = /^\d*(\.\d{1,2})?$/;
     const benefits = this._currentLine.BENEFITS.split(';').join('');
@@ -2817,6 +2836,7 @@ class WorkplaceCSVValidator {
       this._validateAcceptCareCertificate();
       this._validateCwpAwareness();
       this._validateCwpUse();
+      this._validateCwpUseDesc();
       this._validateSickPay();
       this._validateHoliday();
       this._validatePensionContribution();
