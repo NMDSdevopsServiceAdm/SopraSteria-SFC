@@ -89,9 +89,14 @@ class WorkplaceCSVValidator {
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkforcePathwayAwareness = null;
     this._careWorkforcePathwayUse = null;
+    this._careWorkforcePathwayUseDescription = null;
 
     this._id = null;
     this._ignore = false;
+  }
+
+  get CWP_USE_REASON_SOMETHING_ELSE_ID() {
+    return '10';
   }
 
   static get EXPECT_JUST_ONE_ERROR() {
@@ -2023,9 +2028,18 @@ class WorkplaceCSVValidator {
       return true;
     }
 
+    const MAX_LENGTH = 120;
+
+    if (this._currentLine.CWPUSEDESC.length > MAX_LENGTH) {
+      this._validationErrors.push(
+        this._generateWarning(`CWPUSEDESC is longer than ${MAX_LENGTH} characters`, 'CWPUSEDESC'),
+      );
+      return false;
+    }
+
     const reasonIds = this._careWorkforcePathwayUse?.reasons;
 
-    const dontHaveReasonForSomethingElse = !reasonIds?.includes('10');
+    const dontHaveReasonForSomethingElse = !reasonIds?.includes(this.CWP_USE_REASON_SOMETHING_ELSE_ID);
 
     if (dontHaveReasonForSomethingElse) {
       this._validationErrors.push(
@@ -2033,6 +2047,7 @@ class WorkplaceCSVValidator {
       );
       return false;
     }
+    this._careWorkforcePathwayUseDescription = this._currentLine.CWPUSEDESC;
 
     return true;
   }
@@ -2675,6 +2690,17 @@ class WorkplaceCSVValidator {
     this._careWorkforcePathwayUse = { reasons, use };
   }
 
+  _transformCareWorkforcePathwayUseDesc() {
+    const description = this._careWorkforcePathwayUseDescription;
+    const somethingElseReason = this._careWorkforcePathwayUse?.reasons?.find(
+      (reason) => reason.id == this.CWP_USE_REASON_SOMETHING_ELSE_ID,
+    );
+
+    if (description && somethingElseReason) {
+      somethingElseReason.other = description;
+    }
+  }
+
   _transformCashLoyaltyForFirstTwoYears() {
     const YES = '1';
     const YES_COMMA = '1;';
@@ -2926,6 +2952,7 @@ class WorkplaceCSVValidator {
       status = !this._transformRepeatTrainingAndAcceptCareCert() ? false : status;
       status = !this._transformCareWorkforcePathwayAwareness() ? false : status;
       status = !this._transformCareWorkforcePathwayUse() ? false : status;
+      status = !this._transformCareWorkforcePathwayUseDesc() ? false : status;
       status = !this._transformCashLoyaltyForFirstTwoYears() ? false : status;
       status = !this._transformPensionAndSickPay() ? false : status;
       return status;

@@ -549,6 +549,21 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
   });
 
+  describe('careWorkforcePathwayUse description', () => {
+    it('should add the description to CWP use reason when CWPUSE is 1 with reason 10 and CWPUSEDESC has input value', async () => {
+      establishmentRow.CWPUSE = '1;1;2;10';
+      establishmentRow.CWPUSEDESC = 'some description';
+
+      const expectedValue = { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }, { id: 10, other: 'some description' }] };
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkforcePathwayUse).to.deep.equal(expectedValue);
+    });
+  });
+
   describe('benefit', () => {
     it('should return the value when a number in CSV', async () => {
       establishmentRow.BENEFITS = '200';
@@ -1265,7 +1280,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         });
       });
 
-      it(`should return warning if input cwp use value is invalid ('78')`, async () => {
+      it("should return warning if input cwp use value is invalid ('78')", async () => {
         establishmentRow.CWPUSE = '78';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1283,7 +1298,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         ]);
       });
 
-      it(`should return warning if input cwp use reason value is invalid ('1;789')`, async () => {
+      it("should return warning if input cwp use reason value is invalid ('1;789')", async () => {
         establishmentRow.CWPUSE = '1;789';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1302,7 +1317,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe.only('careWorkforcePathwayUse Description', () => {
+    describe('careWorkforcePathwayUse Description', () => {
       it('should pass if there is no input for CWPUSEDESC', async () => {
         establishmentRow.CWPUSEDESC = '';
 
@@ -1331,6 +1346,27 @@ describe('Bulk Upload - Establishment CSV', () => {
             },
           ]);
         });
+      });
+
+      it('should return warning if the CWPUSEDESC is longer than 120 characters', async () => {
+        establishmentRow.CWPUSE = '1;2;10';
+        establishmentRow.CWPUSEDESC =
+          'a very very very very long sentence a very very very very long sentence ' +
+          'a very very very very long sentence a very very very very long sentence ';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2500,
+            warnType: 'CWPUSEDESC_WARNING',
+            warning: 'CWPUSEDESC is longer than 120 characters',
+            source: establishmentRow.CWPUSEDESC,
+            column: 'CWPUSEDESC',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
       });
 
       it('should pass if CWPUSEDESC has input and CWPUSE is 1 with reason 10', async () => {
