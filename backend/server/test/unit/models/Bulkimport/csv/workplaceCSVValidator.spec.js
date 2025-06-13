@@ -2531,6 +2531,67 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
+    describe('CWPUSEDESC', () => {
+      const cwpUseDescIndex = WorkplaceCSVValidator.headers()
+        .split(',')
+        .findIndex((columnName) => columnName === 'CWPUSEDESC');
+
+      it('should leave the CWPUSEDESC column blank if cwp use is null', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkforcePathwayUse = null;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[cwpUseDescIndex]).to.equal('');
+      });
+
+      it('should leave the CWPUSEDESC column blank if cwp use is "No"', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkforcePathwayUse = 'No';
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[cwpUseDescIndex]).to.equal('');
+      });
+
+      it('should leave the CWPUSEDESC column blank if cwp use has reason that is not "something else"', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkforcePathwayUse = 'Yes';
+        establishment.CareWorkforcePathwayReasons = [
+          {
+            id: 1,
+            bulkUploadCode: 1,
+            isOther: false,
+          },
+        ];
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[cwpUseDescIndex]).to.equal('');
+      });
+
+      it('should fill in the reason text to CWPUSEDESC column if cwp use has "something else" selected with text', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkforcePathwayUse = 'Yes';
+        establishment.CareWorkforcePathwayReasons = [
+          {
+            id: 10,
+            bulkUploadCode: 10,
+            isOther: true,
+            EstablishmentCWPReasons: { other: 'description text for something else' },
+          },
+        ];
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[cwpUseDescIndex]).to.equal('description text for something else');
+      });
+    });
+
     describe('BENEFITS, SICKPAY, PENSION and HOLIDAY', () => {
       const benefitsIndex = WorkplaceCSVValidator.headers()
         .split(',')

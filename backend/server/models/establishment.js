@@ -1484,7 +1484,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         {
           model: sequelize.models.CareWorkforcePathwayReasons,
-          attributes: ['id', 'bulkUploadCode'],
+          attributes: ['id', 'bulkUploadCode', 'isOther'],
           as: 'CareWorkforcePathwayReasons',
         },
         {
