@@ -202,10 +202,10 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     });
 
     describe('outside the flow', () => {
-      it("should show 'Save and return' button and 'Cancel' link", async () => {
+      it("should show 'Save' button and 'Cancel' link", async () => {
         const { getByText } = await setup({ returnToUrl: true });
 
-        expect(getByText('Save and return')).toBeTruthy();
+        expect(getByText('Save')).toBeTruthy();
         expect(getByText('Cancel')).toBeTruthy();
       });
 
@@ -231,7 +231,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           fireEvent.click(radioButton);
           fixture.detectChanges();
 
-          const saveButton = getByText('Save and return');
+          const saveButton = getByText('Save');
           fireEvent.click(saveButton);
           fixture.detectChanges();
 
@@ -254,7 +254,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           fireEvent.click(radioButton);
           fixture.detectChanges();
 
-          const saveButton = getByText('Save and return');
+          const saveButton = getByText('Save');
           fireEvent.click(saveButton);
           fixture.detectChanges();
 
