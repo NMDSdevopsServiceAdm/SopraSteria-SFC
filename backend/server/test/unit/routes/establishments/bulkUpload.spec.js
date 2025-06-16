@@ -274,6 +274,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       ACCEPTCARECERT: '',
       CWPAWARE: '',
       CWPUSE: '',
+      CWPUSEDESC: '',
       BENEFITS: '',
       SICKPAY: '',
       PENSION: '',
