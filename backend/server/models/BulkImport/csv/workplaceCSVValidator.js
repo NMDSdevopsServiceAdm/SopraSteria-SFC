@@ -1,6 +1,7 @@
 const BUDI = require('../BUDI').BUDI;
 const models = require('../../index');
 const clonedeep = require('lodash.clonedeep');
+const lodash = require('lodash');
 const moment = require('moment');
 const { sanitisePostcode } = require('../../../utils/postcodeSanitizer');
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
@@ -1984,10 +1985,37 @@ class WorkplaceCSVValidator {
     }
   }
 
-  _validateCwpReasons(cwpUse, cwpUseReasons) {
-    const ALLOWED_REASON_VALUES = this.mappings.cwpUseReason.map((mapping) => mapping.bulkUploadCode.toString());
+  _validateCwpUse() {
+    if (this._currentLine.CWPUSE === '') {
+      this._careWorkforcePathwayUse = null;
+      return true;
+    }
 
-    const cwpUseAsString = this._convertYesNoDontKnow(cwpUse);
+    const ALLOWED_USE_VALUES = ['1', '2', '999'];
+
+    const cwpUseAndReasons = this._currentLine.CWPUSE.split(';');
+    const cwpUse = cwpUseAndReasons[0];
+    const cwpUseReasons = lodash.uniq(cwpUseAndReasons.slice(1));
+
+    if (!ALLOWED_USE_VALUES.includes(cwpUse)) {
+      this._validationErrors.push(
+        this._generateWarning('The code you have entered for CWPUSE is incorrect and will be ignored', 'CWPUSE'),
+      );
+      return false;
+    } else {
+      const cwpUseAsString = this._convertYesNoDontKnow(cwpUse);
+
+      return this._validateCwpReasons(cwpUseAsString, cwpUseReasons);
+    }
+  }
+
+  _validateCwpReasons(cwpUseAsString, cwpUseReasons) {
+    if (cwpUseAsString !== 'Yes') {
+      this._careWorkforcePathwayUse = { use: cwpUseAsString, reasons: [] };
+      return true;
+    }
+
+    const ALLOWED_REASON_VALUES = this.mappings.cwpUseReason.map((mapping) => mapping.bulkUploadCode.toString());
 
     const validReasons = cwpUseReasons?.filter((reasonId) => ALLOWED_REASON_VALUES.includes(reasonId));
     const everyReasonIsValid = cwpUseReasons && validReasons.length === cwpUseReasons.length;
@@ -2003,45 +2031,22 @@ class WorkplaceCSVValidator {
     return true;
   }
 
-  _validateCwpUse() {
-    const ALLOWED_USE_VALUES = ['', '1', '2', '999'];
-
-    const cwpUseAndReasons = this._currentLine.CWPUSE.split(';');
-    const cwpUse = cwpUseAndReasons[0];
-    const cwpUseReasons = cwpUseAndReasons.slice(1);
-
-    if (!ALLOWED_USE_VALUES.includes(cwpUse)) {
-      this._validationErrors.push(
-        this._generateWarning('The code you have entered for CWPUSE is incorrect and will be ignored', 'CWPUSE'),
-      );
-      return false;
-    } else if (cwpUse === '') {
-      this._careWorkforcePathwayUse = null;
-      return true;
-    } else {
-      return this._validateCwpReasons(cwpUse, cwpUseReasons);
-    }
-  }
-
   _validateCwpUseDesc() {
-    if (this._currentLine.CWPUSEDESC === '') {
-      return true;
-    }
-
     const MAX_LENGTH = 120;
 
     if (this._currentLine.CWPUSEDESC.length > MAX_LENGTH) {
       this._validationErrors.push(
-        this._generateWarning(`CWPUSEDESC is longer than ${MAX_LENGTH} characters`, 'CWPUSEDESC'),
+        this._generateWarning(`CWPUSEDESC is longer than ${MAX_LENGTH} characters and will be ignored`, 'CWPUSEDESC'),
       );
       return false;
     }
 
+    const hasInput = this._currentLine.CWPUSEDESC?.length > 0;
+
     const reasonIds = this._careWorkforcePathwayUse?.reasons;
+    const didNotSelectReasonForSomethingElse = !reasonIds?.includes(this.CWP_USE_REASON_SOMETHING_ELSE_ID);
 
-    const dontHaveReasonForSomethingElse = !reasonIds?.includes(this.CWP_USE_REASON_SOMETHING_ELSE_ID);
-
-    if (dontHaveReasonForSomethingElse) {
+    if (hasInput && didNotSelectReasonForSomethingElse) {
       this._validationErrors.push(
         this._generateWarning('CWPUSEDESC will be ignored as 10 is not selected as a reason for CWPUSE', 'CWPUSEDESC'),
       );
