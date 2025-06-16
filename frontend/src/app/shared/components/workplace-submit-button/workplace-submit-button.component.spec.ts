@@ -97,7 +97,7 @@ describe('WorkplaceSubmitButtonComponent', () => {
         expect(getByText('Save and continue')).toBeTruthy();
       });
 
-      it('should render "Save and " button when hasConditionalRouting is true', async () => {
+      it('should render "Save and continue" button when hasConditionalRouting is true', async () => {
         const overrides = { return: false, hasConditionalRouting: true };
         const { getByText } = await setup(overrides);
 
