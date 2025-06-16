@@ -14,6 +14,28 @@ const sandbox = require('sinon').createSandbox();
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
 const pCodeCheck = require('../../../../../utils/postcodeSanitizer');
 
+const workplaceMappings = {
+  cwpAwareness: [
+    { id: 1, bulkUploadCode: '1' },
+    { id: 2, bulkUploadCode: '2' },
+    { id: 3, bulkUploadCode: '3' },
+    { id: 4, bulkUploadCode: '4' },
+    { id: 5, bulkUploadCode: '999' },
+  ],
+  cwpUseReason: [
+    { id: 1, bulkUploadCode: '1' },
+    { id: 2, bulkUploadCode: '2' },
+    { id: 3, bulkUploadCode: '3' },
+    { id: 4, bulkUploadCode: '4' },
+    { id: 5, bulkUploadCode: '5' },
+    { id: 6, bulkUploadCode: '6' },
+    { id: 7, bulkUploadCode: '7' },
+    { id: 8, bulkUploadCode: '8' },
+    { id: 9, bulkUploadCode: '9' },
+    { id: 10, bulkUploadCode: '10' },
+  ],
+};
+
 const validateAPIObject = (establishmentRow) => {
   return {
     address1: establishmentRow.ADDRESS1,
@@ -41,6 +63,8 @@ const validateAPIObject = (establishmentRow) => {
     capacities: [0, 0, 0, 0],
     doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 1,
     wouldYouAcceptCareCertificatesFromPreviousEmployment: 2,
+    careWorkforcePathwayWorkplaceAwareness: '',
+    careWorkforcePathwayUse: null,
     careWorkersCashLoyaltyForFirstTwoYears: '200',
     sickPay: 0,
     pensionContribution: 1,
@@ -55,7 +79,7 @@ const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishm
 };
 
 const generateEstablishmentFromCsv = async (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
-  const establishment = new WorkplaceCSVValidator(currentLine, lineNumber, allCurrentEstablishments);
+  const establishment = new WorkplaceCSVValidator(currentLine, lineNumber, allCurrentEstablishments, workplaceMappings);
 
   await establishment.validate();
 
@@ -446,6 +470,82 @@ describe('Bulk Upload - Establishment CSV', () => {
 
         expect(apiObject.wouldYouAcceptCareCertificatesFromPreviousEmployment).to.equal(null);
       });
+    });
+
+    describe('careWorkforcePathwayAwareness', () => {
+      workplaceMappings.cwpAwareness.forEach((mapping) => {
+        it(`should return id mapping (${mapping.id}) of bulkUploadCode (${mapping.bulkUploadCode})`, async () => {
+          establishmentRow.CWPAWARE = mapping.bulkUploadCode;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+          const apiObject = establishment.toAPI();
+
+          expect(apiObject.careWorkforcePathwayWorkplaceAwareness).to.deep.equal({ id: mapping.id });
+        });
+      });
+
+      it('should return null when no answer provided', async () => {
+        establishmentRow.CWPAWARE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.careWorkforcePathwayWorkplaceAwareness).to.equal(null);
+      });
+    });
+  });
+
+  describe('careWorkforcePathwayUse', () => {
+    const testCases = [
+      {
+        bulkUploadInput: '1',
+        expectedValue: { use: 'Yes', reasons: [] },
+      },
+      {
+        bulkUploadInput: '1;1;2',
+        expectedValue: { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }] },
+      },
+      {
+        bulkUploadInput: '1;555',
+        expectedValue: { use: 'Yes', reasons: [] },
+      },
+      {
+        bulkUploadInput: '1;555;2',
+        expectedValue: { use: 'Yes', reasons: [{ id: 2 }] },
+      },
+      {
+        bulkUploadInput: '2',
+        expectedValue: { use: 'No', reasons: [] },
+      },
+      {
+        bulkUploadInput: '999',
+        expectedValue: { use: "Don't know", reasons: [] },
+      },
+    ];
+
+    testCases.forEach(({ bulkUploadInput, expectedValue }) => {
+      const reasonAsString = JSON.stringify(expectedValue.reasons);
+      it(`should return cwpUse as (${expectedValue.use}) and reasons as (${reasonAsString}) when bulk upload input is (${bulkUploadInput})`, async () => {
+        establishmentRow.CWPUSE = bulkUploadInput;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.careWorkforcePathwayUse).to.deep.equal(expectedValue);
+      });
+    });
+
+    it('should return null when no answer provided', async () => {
+      establishmentRow.CWPUSE = '';
+
+      const establishment = await generateEstablishmentFromCsv(establishmentRow);
+      establishment.transform();
+      const apiObject = establishment.toAPI();
+
+      expect(apiObject.careWorkforcePathwayUse).to.equal(null);
     });
   });
 
@@ -1102,6 +1202,100 @@ describe('Bulk Upload - Establishment CSV', () => {
             warning: 'The code you have entered for ACCEPTCARECERT is incorrect and will be ignored',
             source: 'asdf',
             column: 'ACCEPTCARECERT',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('careWorkforcePathwayAware', () => {
+      it('should pass if there is no input', async () => {
+        establishmentRow.CWPAWARE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      workplaceMappings.cwpAwareness.forEach((mapping) => {
+        it(`should pass if input is bulkUploadCode in mappings: ${mapping.bulkUploadCode}`, async () => {
+          establishmentRow.CWPAWARE = mapping.bulkUploadCode;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([]);
+        });
+      });
+
+      ['asdf', '23'].forEach((invalidInput) => {
+        it(`should return warning if input is invalid (${invalidInput})`, async () => {
+          establishmentRow.CWPAWARE = invalidInput;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2480,
+              warnType: 'CWPAWARE_WARNING',
+              warning: 'The code you have entered for CWPAWARE is incorrect and will be ignored',
+              source: invalidInput,
+              column: 'CWPAWARE',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+      });
+    });
+
+    describe('careWorkforcePathwayUse', () => {
+      it('should pass if there is no input', async () => {
+        establishmentRow.CWPUSE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([]);
+      });
+
+      const validInputs = ['1', '1;1;2;3;10', '2', '999'];
+
+      validInputs.forEach((validInput) => {
+        it(`should pass if input is valid: ${validInput}`, async () => {
+          establishmentRow.CWPUSE = validInput;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([]);
+        });
+      });
+
+      it(`should return warning if input cwp use value is invalid ('78')`, async () => {
+        establishmentRow.CWPUSE = '78';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2490,
+            warnType: 'CWPUSE_WARNING',
+            warning: 'The code you have entered for CWPUSE is incorrect and will be ignored',
+            source: '78',
+            column: 'CWPUSE',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it(`should return warning if input cwp use reason value is invalid ('1;789')`, async () => {
+        establishmentRow.CWPUSE = '1;789';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2490,
+            warnType: 'CWPUSE_WARNING',
+            warning: 'The code you have entered for CWPUSE reason is incorrect and will be ignored',
+            source: '1;789',
+            column: 'CWPUSE',
             name: establishmentRow.LOCALESTID,
           },
         ]);
@@ -1884,7 +2078,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     it('should return basic CSV info in expected order', async () => {
       const establishment = apiEstablishmentBuilder();
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[0]).to.equal(establishment.LocalIdentifierValue);
@@ -1899,7 +2093,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     it('should return more CSV info', async () => {
       const establishment = apiEstablishmentBuilder();
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[8]).to.equal(establishment.EmployerTypeValue.toString());
@@ -1908,7 +2102,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     it('should have 0s in PERMCQC, PERMLA and REGTYPE columns when shareWithCQC, shareWithLA and isRegulated are false', async () => {
       const establishment = apiEstablishmentBuilder();
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[10]).to.equal('0');
@@ -1925,7 +2119,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         },
       });
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[10]).to.equal('1');
@@ -1938,7 +2132,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       establishment.shareWithCQC = null;
       establishment.shareWithLA = null;
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[10]).to.equal('');
@@ -1947,7 +2141,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     it('should have the same number in MAINSERVICE column and ALLSERVICES column', async () => {
       const establishment = apiEstablishmentBuilder();
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[16]).to.include(csvAsArray[16]);
@@ -1956,7 +2150,7 @@ describe('Bulk Upload - Establishment CSV', () => {
     it('should include all reporting IDs from other services in ALLSERVICES column', async () => {
       const establishment = apiEstablishmentBuilder();
       establishment.otherServices = [{ reportingID: 23 }, { reportingID: 12 }];
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[16]).to.include('23');
@@ -1965,7 +2159,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     it('should put correct number of staff in TOTALPERMTEMP column', async () => {
       const establishment = apiEstablishmentBuilder();
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[22]).to.equal(establishment.NumberOfStaffValue.toString());
@@ -1974,7 +2168,7 @@ describe('Bulk Upload - Establishment CSV', () => {
     it('should include all reporting IDs from other services in ALLSERVICES column', async () => {
       const establishment = apiEstablishmentBuilder();
       establishment.otherServices = [{ reportingID: 23 }, { reportingID: 12 }];
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[16]).to.include('23');
@@ -1983,7 +2177,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     it('should store NumberOfStaffValue in TOTALPERMTEMP column', async () => {
       const establishment = apiEstablishmentBuilder();
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[22]).to.include(establishment.NumberOfStaffValue);
@@ -2015,7 +2209,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           },
         },
       ];
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[17]).to.include(';' + establishment.capacity[0].answer + ';');
@@ -2028,7 +2222,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         { reportingID: 23, establishmentServices: { other: 'Care without care' } },
         { reportingID: 12, establishmentServices: { other: 'Caring less' } },
       ];
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[19]).to.include(establishment.otherServices[1].establishmentServices.other);
@@ -2042,7 +2236,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           id: 2,
         },
       ];
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[20]).to.include(establishment.serviceUsers[0].id);
@@ -2058,7 +2252,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           },
         },
       ];
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[20]).to.include(establishment.serviceUsers[0].id);
@@ -2075,7 +2269,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           jobId: 16,
         },
       ];
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[23]).to.include(establishment.jobs[0].jobId);
@@ -2106,7 +2300,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           total: 12,
         },
       ];
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[23]).to.include(establishment.jobs[0].jobId);
@@ -2133,7 +2327,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         ];
         establishment[`${slv}Value`] = "Don't know";
 
-        const csv = WorkplaceCSVValidator.toCSV(establishment);
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[column]).to.include('999');
@@ -2144,7 +2338,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         const establishment = apiEstablishmentBuilder();
         establishment[`${slv}Value`] = null;
 
-        const csv = WorkplaceCSVValidator.toCSV(establishment);
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[column]).to.deep.equal('');
@@ -2155,7 +2349,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         const establishment = apiEstablishmentBuilder();
         establishment[`${slv}Value`] = 'None';
 
-        const csv = WorkplaceCSVValidator.toCSV(establishment);
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[column]).to.deep.equal('0');
@@ -2174,7 +2368,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         ];
         establishment[`${slv}Value`] = 'None';
 
-        const csv = WorkplaceCSVValidator.toCSV(establishment);
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[column]).to.deep.equal('0;0');
@@ -2184,7 +2378,7 @@ describe('Bulk Upload - Establishment CSV', () => {
     it('should include reasons for leaving in REASONS and REASONNOS column', async () => {
       const establishment = apiEstablishmentBuilder();
       establishment.reasonsForLeaving = '34:|18:Hello|29:Test';
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
+      const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
       const csvAsArray = csv.split(',');
 
       expect(csvAsArray[27]).to.include('34');
@@ -2193,149 +2387,232 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(csvAsArray[28]).to.include('Hello');
       expect(csvAsArray[28]).to.include('Test');
     });
-  });
 
-  describe('REPEATTRAINNG and ACCEPTCARECERT', () => {
-    const repeatTrainingIndex = 29;
-    const acceptCareCertIndex = 30;
+    describe('REPEATTRAINNG and ACCEPTCARECERT', () => {
+      const repeatTrainingIndex = 29;
+      const acceptCareCertIndex = 30;
 
-    it('should leave the REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are null', async () => {
-      const establishment = apiEstablishmentBuilder();
+      it('should leave the REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are null', async () => {
+        const establishment = apiEstablishmentBuilder();
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
 
-      expect(csvAsArray[repeatTrainingIndex]).to.equal('');
-      expect(csvAsArray[acceptCareCertIndex]).to.equal('');
+        expect(csvAsArray[repeatTrainingIndex]).to.equal('');
+        expect(csvAsArray[acceptCareCertIndex]).to.equal('');
+      });
+
+      it("should include '1' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, always'", async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, always';
+        establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, always';
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[repeatTrainingIndex]).to.include(1);
+        expect(csvAsArray[acceptCareCertIndex]).to.include(1);
+      });
+
+      it("should include '2' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, very often'", async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, very often';
+        establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, very often';
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[repeatTrainingIndex]).to.include(2);
+        expect(csvAsArray[acceptCareCertIndex]).to.include(2);
+      });
+
+      it("should include '3' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, but not very often'", async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, but not very often';
+        establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, but not very often';
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[repeatTrainingIndex]).to.include(3);
+        expect(csvAsArray[acceptCareCertIndex]).to.include(3);
+      });
+
+      it("should include '4' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'No, never'", async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'No, never';
+        establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'No, never';
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[repeatTrainingIndex]).to.include(4);
+        expect(csvAsArray[acceptCareCertIndex]).to.include(4);
+      });
     });
 
-    it("should include '1' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, always'", async () => {
-      const establishment = apiEstablishmentBuilder();
-      establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, always';
-      establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, always';
+    describe('CWPAWARENESS', () => {
+      const cwpIndex = 31;
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
+      it('should leave the CWPAWARENESS column blank if value is null', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkforcePathwayWorkplaceAwarenessFK = null;
 
-      expect(csvAsArray[repeatTrainingIndex]).to.include(1);
-      expect(csvAsArray[acceptCareCertIndex]).to.include(1);
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[cwpIndex]).to.equal('');
+      });
+
+      workplaceMappings.cwpAwareness.forEach((mapping) => {
+        it('should map from careWorkforcePathwayWorkplaceAwarenessFK to BU code provided in workplaceMappings', () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.careWorkforcePathwayWorkplaceAwareness = mapping;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[cwpIndex]).to.equal(mapping.bulkUploadCode);
+        });
+      });
     });
 
-    it("should include '2' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, very often'", async () => {
-      const establishment = apiEstablishmentBuilder();
-      establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, very often';
-      establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, very often';
+    describe('CWPUSE', () => {
+      const cwpUseIndex = WorkplaceCSVValidator.headers()
+        .split(',')
+        .findIndex((columnName) => columnName === 'CWPUSE');
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
+      it('should leave the CWPUSE column blank if value is null', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkforcePathwayUse = null;
 
-      expect(csvAsArray[repeatTrainingIndex]).to.include(2);
-      expect(csvAsArray[acceptCareCertIndex]).to.include(2);
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[cwpUseIndex]).to.equal('');
+      });
+
+      const testCases = [
+        {
+          bulkUploadValue: '1',
+          databaseValue: { use: 'Yes', reasons: [] },
+        },
+        {
+          bulkUploadValue: '1;1;2',
+          databaseValue: {
+            use: 'Yes',
+            reasons: [
+              { id: 1, bulkUploadCode: 1 },
+              { id: 2, bulkUploadCode: 2 },
+            ],
+          },
+        },
+        {
+          bulkUploadValue: '2',
+          databaseValue: { use: 'No', reasons: [] },
+        },
+        {
+          bulkUploadValue: '999',
+          databaseValue: { use: "Don't know", reasons: [] },
+        },
+      ];
+
+      testCases.forEach(({ bulkUploadValue, databaseValue }) => {
+        it('should map from careWorkforcePathwayUse to BU code format of CWPUSE', () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.careWorkforcePathwayUse = databaseValue.use;
+          establishment.CareWorkforcePathwayReasons = databaseValue.reasons;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[cwpUseIndex]).to.equal(bulkUploadValue);
+        });
+      });
     });
 
-    it("should include '3' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'Yes, but not very often'", async () => {
-      const establishment = apiEstablishmentBuilder();
-      establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'Yes, but not very often';
-      establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'Yes, but not very often';
+    describe('BENEFITS, SICKPAY, PENSION and HOLIDAY', () => {
+      const benefitsIndex = WorkplaceCSVValidator.headers()
+        .split(',')
+        .findIndex((columnName) => columnName === 'BENEFITS');
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
+      const sickPayIndex = benefitsIndex + 1;
+      const pensionIndex = benefitsIndex + 2;
+      const holidayIndex = benefitsIndex + 3;
 
-      expect(csvAsArray[repeatTrainingIndex]).to.include(3);
-      expect(csvAsArray[acceptCareCertIndex]).to.include(3);
-    });
+      it('should leave the BENEFITS, SICKPAY and  PENSION columns blank if there values are null', async () => {
+        const establishment = apiEstablishmentBuilder();
 
-    it("should include '4' in REPEATTRAINNG and ACCEPTCARECERT columns blank if there values are 'No, never'", async () => {
-      const establishment = apiEstablishmentBuilder();
-      establishment.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = 'No, never';
-      establishment.wouldYouAcceptCareCertificatesFromPreviousEmployment = 'No, never';
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
+        expect(csvAsArray[benefitsIndex]).to.equal('');
+        expect(csvAsArray[sickPayIndex]).to.equal('');
+        expect(csvAsArray[pensionIndex]).to.equal('');
+      });
 
-      expect(csvAsArray[repeatTrainingIndex]).to.include(4);
-      expect(csvAsArray[acceptCareCertIndex]).to.include(4);
-    });
-  });
+      it("should include 0 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'No'", async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkersCashLoyaltyForFirstTwoYears = 'No';
+        establishment.sickPay = 'No';
+        establishment.pensionContribution = 'No';
 
-  describe('BENEFITS, SICKPAY, PENSION and HOLIDAY', () => {
-    const benefitsIndex = 31;
-    const sickPayIndex = 32;
-    const pensionIndex = 33;
-    const holidayIndex = 34;
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
 
-    it('should leave the BENEFITS, SICKPAY and  PENSION columns blank if there values are null', async () => {
-      const establishment = apiEstablishmentBuilder();
+        expect(csvAsArray[benefitsIndex]).to.include(0);
+        expect(csvAsArray[sickPayIndex]).to.include(0);
+        expect(csvAsArray[pensionIndex]).to.include(0);
+      });
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
+      it("should include 'unknown' in the BENEFITS ,SICKPAY and PENSION columns if there values are \"Don't know\"", async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
+        establishment.sickPay = "Don't know";
+        establishment.pensionContribution = "Don't know";
 
-      expect(csvAsArray[benefitsIndex]).to.equal('');
-      expect(csvAsArray[sickPayIndex]).to.equal('');
-      expect(csvAsArray[pensionIndex]).to.equal('');
-    });
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
 
-    it("should include 0 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'No'", async () => {
-      const establishment = apiEstablishmentBuilder();
-      establishment.careWorkersCashLoyaltyForFirstTwoYears = 'No';
-      establishment.sickPay = 'No';
-      establishment.pensionContribution = 'No';
+        expect(csvAsArray[benefitsIndex]).to.include('unknown');
+        expect(csvAsArray[sickPayIndex]).to.include('unknown');
+        expect(csvAsArray[pensionIndex]).to.include('unknown');
+      });
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
+      it("should include 1 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'Yes'", async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
+        establishment.sickPay = 'Yes';
+        establishment.pensionContribution = 'Yes';
 
-      expect(csvAsArray[benefitsIndex]).to.include(0);
-      expect(csvAsArray[sickPayIndex]).to.include(0);
-      expect(csvAsArray[pensionIndex]).to.include(0);
-    });
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
 
-    it("should include 'unknown' in the BENEFITS ,SICKPAY and PENSION columns if there values are \"Don't know\"", async () => {
-      const establishment = apiEstablishmentBuilder();
-      establishment.careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
-      establishment.sickPay = "Don't know";
-      establishment.pensionContribution = "Don't know";
+        expect(csvAsArray[benefitsIndex]).to.include('1;');
+        expect(csvAsArray[sickPayIndex]).to.include('1');
+        expect(csvAsArray[pensionIndex]).to.include('1');
+      });
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
+      it('should include a value in the columns BENEFITS and  HOLIDAY if it they have  values', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.careWorkersCashLoyaltyForFirstTwoYears = '200';
+        establishment.careWorkersLeaveDaysPerYear = '35';
 
-      expect(csvAsArray[benefitsIndex]).to.include('unknown');
-      expect(csvAsArray[sickPayIndex]).to.include('unknown');
-      expect(csvAsArray[pensionIndex]).to.include('unknown');
-    });
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
 
-    it("should include 1 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'Yes'", async () => {
-      const establishment = apiEstablishmentBuilder();
-      establishment.careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
-      establishment.sickPay = 'Yes';
-      establishment.pensionContribution = 'Yes';
+        expect(csvAsArray[benefitsIndex]).to.include('200');
+        expect(csvAsArray[holidayIndex]).to.include('35');
+      });
 
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
+      it('should leave the  HOLIDAY column blank if its value  is null', async () => {
+        const establishment = apiEstablishmentBuilder();
 
-      expect(csvAsArray[benefitsIndex]).to.include('1;');
-      expect(csvAsArray[sickPayIndex]).to.include('1');
-      expect(csvAsArray[pensionIndex]).to.include('1');
-    });
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
 
-    it('should include a value in the columns BENEFITS and  HOLIDAY if it they have  values', async () => {
-      const establishment = apiEstablishmentBuilder();
-      establishment.careWorkersCashLoyaltyForFirstTwoYears = '200';
-      establishment.careWorkersLeaveDaysPerYear = '35';
-
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
-
-      expect(csvAsArray[benefitsIndex]).to.include('200');
-      expect(csvAsArray[holidayIndex]).to.include('35');
-    });
-
-    it('should leave the  HOLIDAY column blank if its value  is null', async () => {
-      const establishment = apiEstablishmentBuilder();
-
-      const csv = WorkplaceCSVValidator.toCSV(establishment);
-      const csvAsArray = csv.split(',');
-
-      expect(csvAsArray[holidayIndex]).to.equal('');
+        expect(csvAsArray[holidayIndex]).to.equal('');
+      });
     });
   });
 });

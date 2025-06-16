@@ -22,6 +22,8 @@ describe('download', () => {
     sinon.stub(BUDI, 'establishmentType').callsFake((method, value) => value);
     sinon.stub(BUDI, 'serviceUsers').callsFake((method, value) => value);
     sinon.stub(BUDI, 'jobRoles').callsFake((method, value) => value);
+    sinon.stub(models.CareWorkforcePathwayReasons, 'findAll').returns([{ id: 1, bulkUploadCode: '1' }]);
+    sinon.stub(models.careWorkforcePathwayWorkplaceAwareness, 'findAll').returns([{ id: 1, bulkUploadCode: '1' }]);
   });
 
   const establishmentId = 123;

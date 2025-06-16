@@ -33,6 +33,8 @@ module.exports = build('EstablishmentCSV', {
     REASONNOS: '',
     REPEATTRAINING: '1',
     ACCEPTCARECERT: '2',
+    CWPAWARE: '',
+    CWPUSE: '',
     BENEFITS: '200',
     SICKPAY: '0',
     PENSION: '1',

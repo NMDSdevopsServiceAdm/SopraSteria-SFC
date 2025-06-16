@@ -99,6 +99,7 @@ class Establishment extends EntityValidator {
     this._isParentApprovedBannerViewed = null;
     this._primaryAuthorityCssr = null;
     this._careWorkforcePathwayWorkplaceAwareness = null;
+    this._careWorkforcePathwayUse = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -394,6 +395,12 @@ class Establishment extends EntityValidator {
   get careWorkforcePathwayWorkplaceAwareness() {
     return this._properties.get('CareWorkforcePathwayWorkplaceAwarenessFK')
       ? this._properties.get('CareWorkforcePathwayWorkplaceAwarenessFK').property
+      : null;
+  }
+
+  get careWorkforcePathwayWorkplaceUse() {
+    return this._properties.get('CareWorkforcePathwayUse')
+      ? this._properties.get('CareWorkforcePathwayUse').property
       : null;
   }
 
@@ -836,7 +843,7 @@ class Establishment extends EntityValidator {
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
-          CareWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness,
+          careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1067,6 +1074,7 @@ class Establishment extends EntityValidator {
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
             isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
             primaryAuthorityCssr: this._primaryAuthorityCssr,
+            careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
           };
 
           // Every time the establishment is saved, need to calculate
