@@ -2,7 +2,7 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 
 const models = require('../../../index');
 
-const [YES, NO, DONT_KNOW] = ['Yes', 'No', "Don't know"];
+const [YES, NO, DONT_KNOW, NULL] = ['Yes', 'No', "Don't know", null];
 
 exports.CareWorkforcePathwayUseProperty = class CareWorkforcePathwayUseProperty extends ChangePropertyPrototype {
   constructor() {
@@ -32,6 +32,7 @@ exports.CareWorkforcePathwayUseProperty = class CareWorkforcePathwayUseProperty 
         return;
       }
 
+      case NULL:
       case NO:
       case DONT_KNOW: {
         this.property = {

@@ -35,9 +35,9 @@ describe('careWorkforcePathwayUseProperty', () => {
       sinon.restore();
     });
 
-    describe("should restore the property from a JSON object when use is No / Don't know / Yes without reason", async () => {
-      ['Yes', 'No', "Don't know"].forEach((value) => {
-        it(value, async () => {
+    describe("should restore the property from a JSON object when use is null / No / Don't know / Yes without reason", async () => {
+      ['Yes', 'No', "Don't know", null].forEach((value) => {
+        it(`${value}`, async () => {
           const cwpUseProperty = new propertyClass();
           const document = {
             careWorkforcePathwayUse: {
