@@ -176,11 +176,13 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
   protected createDynamicErrorMessaging(): void {}
   protected addErrorLinkFunctionality(): void {}
+  protected addAlert(): void {}
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
     this.onSuccess();
     this.navigate();
+    this.addAlert();
   }
 
   protected onError(error) {

@@ -1,19 +1,22 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
+import {
+  careWorkforcePathwayAwarenessAnswers,
+  MockCareWorkforcePathwayService,
+} from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness.component';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { getTestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
-import {
-  MockCareWorkforcePathwayService,
-  careWorkforcePathwayAwarenessAnswers,
-} from '@core/test-utils/MockCareWorkforcePathwayService';
+
+import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness.component';
 
 describe('CareWorkforcePathwayAwarenessComponent', () => {
   const awareAnswers = careWorkforcePathwayAwarenessAnswers.slice(0, 3);
@@ -43,6 +46,8 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
             },
           },
         },
+        AlertService,
+        WindowRef,
       ],
     });
     const component = setupTools.fixture.componentInstance;
@@ -56,11 +61,15 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
       ...setupTools,
       component,
       routerSpy,
       establishmentServiceSpy,
+      alertSpy,
     };
   }
 
@@ -303,6 +312,62 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         fixture.detectChanges();
 
         expect(getByText('Failed to update care workforce pathway awareness')).toBeTruthy();
+      });
+    });
+  });
+
+  describe('When coming from summary panel', () => {
+    notAwareAnswers.forEach((answer) => {
+      it(`should display banner when user submits '${answer.title}' and return is to home page`, async () => {
+        const workplaceName = 'Test workplace name';
+        const { getByText, getByLabelText, alertSpy } = await setup({
+          returnTo: { url: ['/dashboard'], fragment: 'home' },
+          establishment: { name: workplaceName },
+        });
+
+        const radioButton = getByLabelText(answer.title);
+        fireEvent.click(radioButton);
+
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: `Care workforce pathway information saved in '${workplaceName}'`,
+        });
+      });
+
+      it(`should not display banner when user submits '${answer.title}' but has not come from home page`, async () => {
+        const workplaceName = 'Test workplace name';
+        const { getByText, getByLabelText, alertSpy } = await setup({
+          establishment: { name: workplaceName },
+        });
+
+        const radioButton = getByLabelText(answer.title);
+        fireEvent.click(radioButton);
+
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+
+        expect(alertSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    awareAnswers.forEach((answer) => {
+      it('should not display banner when user gives aware answer which takes them to use question', async () => {
+        const workplaceName = 'Test workplace name';
+        const { getByText, getByLabelText, alertSpy } = await setup({
+          returnTo: { url: ['/dashboard'], fragment: 'home' },
+          establishment: { name: workplaceName },
+        });
+
+        const radioButton = getByLabelText(answer.title);
+        fireEvent.click(radioButton);
+
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+
+        expect(alertSpy).not.toHaveBeenCalled();
       });
     });
   });

@@ -1,13 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Question } from '../question/question.component';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CareWorkforcePathwayWorkplaceAwarenessAnswer } from '@core/model/care-workforce-pathway.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
-import { CareWorkforcePathwayWorkplaceAwarenessAnswer } from '@core/model/care-workforce-pathway.model';
+
+import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-care-workforce-pathway-awareness',
@@ -16,6 +18,7 @@ import { CareWorkforcePathwayWorkplaceAwarenessAnswer } from '@core/model/care-w
 export class CareWorkforcePathwayAwarenessComponent extends Question implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
   public careWorkforcePathwayAwarenessAnswers: CareWorkforcePathwayWorkplaceAwarenessAnswer[];
+  private hasGivenNotAwareAnswer: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -25,6 +28,7 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
     protected establishmentService: EstablishmentService,
     protected careWorkforcePathwayService: CareWorkforcePathwayService,
     protected route: ActivatedRoute,
+    private alertService: AlertService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -102,6 +106,26 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
       this.submitAction = { action: 'continue', save: true };
     } else {
       this.nextRoute = this.skipRoute;
+      this.hasGivenNotAwareAnswer = true;
+    }
+  }
+
+  private hasComeFromSummaryPanelLink(): boolean {
+    return (
+      this.return &&
+      Array.isArray(this.return.url) &&
+      this.return.url.length === 1 &&
+      this.return.url[0] === '/dashboard' &&
+      this.return.fragment === 'home'
+    );
+  }
+
+  protected addAlert(): void {
+    if (this.hasComeFromSummaryPanelLink() && this.hasGivenNotAwareAnswer) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: `Care workforce pathway information saved in '${this.establishment.name}'`,
+      });
     }
   }
 
