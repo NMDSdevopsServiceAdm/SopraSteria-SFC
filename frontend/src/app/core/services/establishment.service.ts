@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
+import { CareWorkforcePathwayUse, UpdateCareWorkforcePathwayUsePayload } from '@core/model/care-workforce-pathway.model';
 import {
   adminMoveWorkplace,
   CancelOwnerShip,
@@ -22,10 +23,6 @@ import { environment } from 'src/environments/environment';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
-import {
-  CareWorkforcePathwayUse,
-  UpdateCareWorkforcePathwayUsePayload,
-} from '@core/model/care-workforce-pathway.model';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -211,6 +208,16 @@ export class EstablishmentService {
   public setReturnTo(returnTo: URLStructure): void {
     localStorage.setItem('returnTo', JSON.stringify(returnTo));
     this.returnTo$.next(returnTo);
+  }
+
+  public returnIsSetToHomePage(): boolean {
+    return (
+      this.returnTo &&
+      Array.isArray(this.returnTo.url) &&
+      this.returnTo.url.length === 1 &&
+      this.returnTo.url[0] === '/dashboard' &&
+      this.returnTo.fragment === 'home'
+    );
   }
 
   public get checkCQCDetailsBanner$(): Observable<boolean> {

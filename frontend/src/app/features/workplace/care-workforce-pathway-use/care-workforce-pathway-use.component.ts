@@ -222,18 +222,8 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     );
   }
 
-  private hasComeFromSummaryPanelLink(): boolean {
-    return (
-      this.return &&
-      Array.isArray(this.return.url) &&
-      this.return.url.length === 1 &&
-      this.return.url[0] === '/dashboard' &&
-      this.return.fragment === 'home'
-    );
-  }
-
   protected addAlert(): void {
-    if (this.hasComeFromSummaryPanelLink()) {
+    if (this.establishmentService.returnIsSetToHomePage()) {
       this.alertService.addAlert({
         type: 'success',
         message: `Care workforce pathway information saved in '${this.establishment.name}'`,

@@ -1,8 +1,7 @@
-import { environment } from 'src/environments/environment';
-
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { UpdateCareWorkforcePathwayUsePayload } from '@core/model/care-workforce-pathway.model';
+import { environment } from 'src/environments/environment';
 
 import { EstablishmentService } from './establishment.service';
 
@@ -155,6 +154,29 @@ describe('EstablishmentService', () => {
 
       expect(expectedRequest.request.method).toBe('POST');
       expect(expectedRequest.request.body).toEqual(payload);
+    });
+  });
+
+  describe('returnIsSetToHomePage', () => {
+    it('should return true when returnTo is dashboard with fragment as home', () => {
+      const returnTo = { url: ['/dashboard'], fragment: 'home' };
+      service.setReturnTo(returnTo);
+
+      expect(service.returnIsSetToHomePage()).toBe(true);
+    });
+
+    it('should return false if url is not dashboard', () => {
+      const returnTo = { url: ['/workplace/abc123'], fragment: 'home' };
+      service.setReturnTo(returnTo);
+
+      expect(service.returnIsSetToHomePage()).toBe(false);
+    });
+
+    it('should return false if fragment is not home', () => {
+      const returnTo = { url: ['/dashboard'], fragment: 'workplace' };
+      service.setReturnTo(returnTo);
+
+      expect(service.returnIsSetToHomePage()).toBe(false);
     });
   });
 });
