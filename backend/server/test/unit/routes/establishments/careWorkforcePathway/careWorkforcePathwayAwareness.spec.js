@@ -11,12 +11,17 @@ describe('server/routes/establishments/careWorkforcePathway/CareWorkforcePathway
   const establishmentId = 'mock-uid';
 
   let establishmentRecord;
-  const mockRequest = {
-    method: 'POST',
-    url: `/api/establishment/${establishmentId}/careWorkforcePathway/careWorkforcePathwayAwareness`,
-    establishmentId: establishmentId,
-    body: { careWorkforcePathwayWorkplaceAwareness: { id: 1 } },
-    username: 'user',
+
+  let mockRequest;
+
+  const setupMockRequest = (awarenessId = 1) => {
+    mockRequest = {
+      method: 'POST',
+      url: `/api/establishment/${establishmentId}/careWorkforcePathway/careWorkforcePathwayAwareness`,
+      establishmentId: establishmentId,
+      body: { careWorkforcePathwayWorkplaceAwareness: { id: awarenessId } },
+      username: 'user',
+    };
   };
 
   const awareAnswers = [1, 2, 3];
@@ -25,6 +30,7 @@ describe('server/routes/establishments/careWorkforcePathway/CareWorkforcePathway
   beforeEach(() => {
     establishmentRecord = sinon.createStubInstance(Establishment.Establishment);
     sinon.stub(Establishment, 'Establishment').callsFake(() => establishmentRecord);
+    setupMockRequest();
   });
 
   afterEach(() => {
@@ -48,7 +54,7 @@ describe('server/routes/establishments/careWorkforcePathway/CareWorkforcePathway
 
   awareAnswers.forEach((awareAnswer) => {
     it(`should not call the load function with careWorkforcePathwayUse when the value is ${awareAnswer}`, async () => {
-      mockRequest.body.careWorkforcePathwayWorkplaceAwareness.id = awareAnswer;
+      setupMockRequest(awareAnswer);
 
       establishmentRecord.restore = sinon.stub().resolves(true);
       establishmentRecord.load = sinon.stub().resolves(true);
@@ -65,7 +71,7 @@ describe('server/routes/establishments/careWorkforcePathway/CareWorkforcePathway
 
   notAwareAnswers.forEach((awareAnswer) => {
     it(`should call the load function with careWorkforcePathwayUse when the value is ${awareAnswer}`, async () => {
-      mockRequest.body.careWorkforcePathwayWorkplaceAwareness.id = awareAnswer;
+      setupMockRequest(awareAnswer);
 
       establishmentRecord.restore = sinon.stub().resolves(true);
       establishmentRecord.load = sinon.stub().resolves(true);
@@ -76,7 +82,7 @@ describe('server/routes/establishments/careWorkforcePathway/CareWorkforcePathway
       await updateCareWorkforcePathwayAwareness(req, res);
 
       expect(establishmentRecord.load).to.have.been.calledWith({
-        careWorkforcePathwayWorkplaceAwareness: mockRequest.body.careWorkforcePathwayWorkplaceAwareness,
+        careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer },
         careWorkforcePathwayUse: { use: null, reasons: [] },
       });
       expect(res.statusCode).to.equal(200);
@@ -98,7 +104,6 @@ describe('server/routes/establishments/careWorkforcePathway/CareWorkforcePathway
     });
 
     it('should respond with 400 if it failed to update', async () => {
-      mockRequest.body.careWorkforcePathwayWorkplaceAwareness.id = 1;
       establishmentRecord.restore = sinon.stub().resolves(true);
       establishmentRecord.load = sinon.stub().resolves(false);
 
