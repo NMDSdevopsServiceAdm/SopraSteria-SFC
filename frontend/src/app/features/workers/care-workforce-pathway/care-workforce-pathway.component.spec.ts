@@ -1,32 +1,33 @@
-import { fireEvent, render, within } from '@testing-library/angular';
-import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway.component';
-import { UntypedFormBuilder } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
-import { WorkersModule } from '../workers.module';
-import { WindowRef } from '@core/services/window.ref';
 import { AlertService } from '@core/services/alert.service';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import {
+  careWorkforcePathwayRoleCategories,
+  MockCareWorkforcePathwayService,
+} from '@core/test-utils/MockCareWorkforcePathwayService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkerServiceWithOverrides, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { DetailsComponent } from '@shared/components/details/details.component';
-import { getTestBed } from '@angular/core/testing';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
-import {
-  MockCareWorkforcePathwayService,
-  careWorkforcePathwayRoleCategories,
-} from '@core/test-utils/MockCareWorkforcePathwayService';
-import { HttpClient } from '@angular/common/http';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+
+import { WorkersModule } from '../workers.module';
+import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway.component';
 
 describe('CareWorkforcePathwayRoleComponent', () => {
   const categorySelected = careWorkforcePathwayRoleCategories[0].title;
 
   async function setup(overrides: any = {}) {
     const insideFlow = overrides.insideFlow ?? false;
-    const cwpQuestionsFlag = overrides.cwpQuestionsFlag ?? false;
+    const cwpQuestions = overrides.cwpQuestionsFlag ?? false;
     const setupTools = await render(CareWorkforcePathwayRoleComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
       declarations: [DetailsComponent],
@@ -58,7 +59,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
           provide: CareWorkforcePathwayService,
           useClass: MockCareWorkforcePathwayService,
         },
-        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestionsFlag }) },
+        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestions }) },
         AlertService,
         WindowRef,
       ],

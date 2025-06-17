@@ -21,12 +21,14 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() workersNotCompleted: Worker[];
   @Input() canViewListOfWorkers: boolean;
   @Input() canViewEstablishment: boolean;
+  @Input() canEditWorker: boolean;
   @Input() showMissingCqcMessage: boolean;
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
   @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
   @Input() cwpQuestionsFlag: boolean;
+  @Input() workplacesNeedAttention: boolean;
 
   public sections: Section[] = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -45,6 +47,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     linkText: 'Your other workplaces',
     message: '',
     orangeFlag: false,
+    redFlag: false,
     link: true,
   };
 
@@ -115,6 +118,11 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   }
 
   public getStaffSummaryMessage(): void {
+    if (!this.canViewListOfWorkers) {
+      this.showViewSummaryLinks(this.sections[1].linkText);
+      return;
+    }
+
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
@@ -127,6 +135,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
         'staff-record',
         'care-workforce-pathway-workers-summary',
       ];
+      this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
     } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
@@ -215,6 +224,10 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.otherWorkplacesSection.message = 'Have you added all of your workplaces?';
       this.otherWorkplacesSection.link = true;
       this.otherWorkplacesSection.orangeFlag = true;
+    } else if (this.workplacesNeedAttention) {
+      this.otherWorkplacesSection.message = 'You need to check your other workplaces';
+      this.otherWorkplacesSection.link = true;
+      this.otherWorkplacesSection.redFlag = true;
     } else {
       this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
       this.otherWorkplacesSection.link = false;
@@ -241,4 +254,5 @@ interface Section {
   redFlag: boolean;
   link: boolean;
   skipTabSwitch?: boolean;
+  showMessageAsText?: boolean;
 }

@@ -1,6 +1,3 @@
-import { of } from 'rxjs';
-import { delay } from 'rxjs/operators';
-
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -9,21 +6,23 @@ import { WorkerEditResponse } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsComponent } from './other-qualifications.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('OtherQualificationsComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   async function setup(overrides: any = {}) {
     const insideFlow = overrides.insideFlow ?? false;
     const workerOverrides = overrides.worker ?? { otherQualification: null };
-    const cwpQuestionsFlag = overrides.cwpQuestionsFlag ?? false;
+    const cwpQuestions = overrides.cwpQuestionsFlag ?? false;
 
     const setupTools = await render(OtherQualificationsComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
@@ -50,7 +49,7 @@ describe('OtherQualificationsComponent', () => {
           useFactory: MockWorkerServiceWithOverrides.factory({ worker: workerOverrides }),
           deps: [HttpClient],
         },
-        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestionsFlag }) },
+        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestions }) },
         WindowRef,
         AlertService,
       ],

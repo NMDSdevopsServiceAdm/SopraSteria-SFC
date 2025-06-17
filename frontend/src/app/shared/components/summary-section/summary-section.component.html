@@ -27,7 +27,7 @@
               data-testid="orange-flag"
             />
           </ng-template>
-          <ng-container *ngIf="section.link; else noLink">
+          <ng-container *ngIf="section.link && !section.showMessageAsText; else noLink">
             <a (click)="onClick($event, section.fragment, section.route, section.skipTabSwitch)" href="#">
               {{ section.message }}</a
             >
@@ -61,6 +61,13 @@
             class="govuk-!-margin-right-2"
             data-testid="workplaces-orange-flag"
             *ngIf="otherWorkplacesSection.orangeFlag"
+          />
+          <img
+            src="/assets/images/flag-red.svg"
+            alt="action-required-red-flag"
+            class="govuk-!-margin-right-2"
+            data-testid="red-flag"
+            *ngIf="otherWorkplacesSection.redFlag"
           />
           <a [routerLink]="['/workplace', 'view-all-workplaces']" href="#"> {{ otherWorkplacesSection.message }}</a>
         </ng-container>
