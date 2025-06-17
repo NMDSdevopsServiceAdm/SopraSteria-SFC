@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,13 +12,14 @@ import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
+import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
+    const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule, RouterModule],
       providers: [
         {
@@ -30,19 +31,12 @@ describe('Summary section', () => {
           useFactory: MockEstablishmentServiceCheckCQCDetails.factory(overrides.checkCqcDetails ?? false),
           deps: [HttpClient],
         },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {},
-            },
-          },
-        },
+        provideRouter([]),
       ],
       componentProperties: {
         workplace: overrides.establishment ?? Establishment,
         trainingCounts: (overrides.trainingCounts as TrainingCounts) ?? ({} as TrainingCounts),
-        navigateToTab: (event, selectedTab) => {
+        navigateToTab: (event) => {
           event.preventDefault();
         },
         workerCount: overrides?.workerCount ?? Establishment.numberOfStaff,
@@ -50,6 +44,8 @@ describe('Summary section', () => {
         workersNotCompleted: (overrides.workersNotCompleted as Worker[]) ?? ([workerBuilder()] as Worker[]),
         isParent: overrides.isParent ?? false,
         canViewListOfWorkers: overrides.canViewListOfWorkers ?? true,
+        canEditWorker: overrides.canEditWorker ?? true,
+        canEditEstablishment: overrides.canEditEstablishment ?? true,
         canViewEstablishment: overrides.canViewEstablishment ?? true,
         showMissingCqcMessage: overrides.showMissingCqcMessage ?? false,
         workplacesCount: overrides.workplacesCount ?? 0,
@@ -61,20 +57,26 @@ describe('Summary section', () => {
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const tabsService = injector.inject(TabsService) as TabsService;
+
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const updateSingleFieldSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+      of(null),
+    );
+    const setReturnToSpy = spyOn(establishmentService, 'setReturnTo');
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      queryByText,
-      getByTestId,
-      queryByTestId,
       routerSpy,
+      tabsService,
+      updateSingleFieldSpy,
+      setReturnToSpy,
     };
   };
 
@@ -165,6 +167,136 @@ describe('Summary section', () => {
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
     });
 
+    describe('CWP awareness question', () => {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
+      };
+
+      it('should show the CWP awareness message if workplace details added, CWPAwarenessQuestionViewed null and awareness question not answered', async () => {
+        const { getByTestId } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).getByText('How aware of the CWP is your workplace?')).toBeTruthy();
+        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+      });
+
+      it('should navigate to care-workforce-pathway-awareness when question link clicked', async () => {
+        const { getByTestId, routerSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
+
+        fireEvent.click(link);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', Establishment.uid, 'care-workforce-pathway-awareness']);
+      });
+
+      it("should update CWPAwarenessQuestionViewed when question link clicked so user doesn't see question again", async () => {
+        const { getByTestId, updateSingleFieldSpy } = await setup({
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
+
+        fireEvent.click(link);
+        expect(updateSingleFieldSpy).toHaveBeenCalledWith(Establishment.uid, {
+          property: 'CWPAwarenessQuestionViewed',
+          value: true,
+        });
+      });
+
+      it('should set return in establishment service when question link clicked', async () => {
+        const { getByTestId, setReturnToSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
+
+        fireEvent.click(link);
+        expect(setReturnToSpy).toHaveBeenCalled();
+      });
+
+      it('should not update CWPAwarenessQuestionViewed when Workplace link clicked', async () => {
+        const { getByTestId, updateSingleFieldSpy } = await setup({
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText('Workplace');
+
+        fireEvent.click(link);
+        expect(updateSingleFieldSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not show the CWP awareness message if workplace details added and CWPAwarenessQuestionViewed null, but awareness question answered', async () => {
+        // user has answered question in workplace flow or from workplace tab so should not show
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 1,
+            title: 'Aware of how the care workforce pathway works in practice',
+          },
+        };
+
+        const { getByTestId } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
+      });
+
+      it('should not show the CWP awareness message if CWPAwarenessQuestionViewed true and awareness question not answered', async () => {
+        // user has clicked link and still not answered, should no longer see it
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: true,
+          careWorkforcePathwayWorkplaceAwareness: null,
+        };
+
+        const { getByTestId } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
+      });
+
+      it('should not show the CWP awareness message if CWPAwarenessQuestionViewed true and awareness question answered', async () => {
+        const establishment = {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          CWPAwarenessQuestionViewed: null,
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 1,
+            title: 'Aware of how the care workforce pathway works in practice',
+          },
+        };
+
+        const { getByTestId } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
+      });
+
+      it('should show with no link if there CWP awareness not viewed or answered but no edit permission for establishment', async () => {
+        const { getByTestId, getByText } = await setup({
+          canEditEstablishment: false,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const cwpMessage = within(workplaceRow).queryByText('How aware of the CWP is your workplace?');
+        expect(cwpMessage.tagName).not.toBe('A');
+
+        const workplaceLink = getByText('Workplace');
+        expect(workplaceLink.tagName).toBe('A');
+      });
+    });
+
     it('should navigate to sub workplace page when clicking the add workplace details message in sub view', async () => {
       const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
 
@@ -210,6 +342,20 @@ describe('Summary section', () => {
       const workplaceRow = getByTestId('workplace-row');
       expect(within(workplaceRow).getByText(`You've not added your total number of staff`)).toBeTruthy();
       expect(within(workplaceRow).getByTestId('red-flag')).toBeTruthy();
+    });
+
+    it('should not show the total staff error if numberOfStaff is 0', async () => {
+      const establishment = { ...Establishment, numberOfStaff: 0 };
+      const overrides = {
+        checkCqcDetails: false,
+        establishment,
+        numberOfStaff: 0,
+      };
+      const { getByTestId } = await setup(overrides);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).queryByText(`You've not added your total number of staff`)).toBeFalsy();
+      expect(within(workplaceRow).queryByTestId('red-flag')).toBeFalsy();
     });
 
     it('should show the staff total does not match staff records warning when they do not match and it is after eight weeks since first login', async () => {
@@ -331,7 +477,7 @@ describe('Summary section', () => {
       expect(getByText('Staff records')).toBeTruthy();
     });
 
-    it('should not show clickable staff records link if no access to data', async () => {
+    it('should not show clickable staff records link if no permissions to view staff records', async () => {
       const establishment = {
         ...Establishment,
         created: dayjs().subtract(1, 'year'),
@@ -356,6 +502,22 @@ describe('Summary section', () => {
       const staffRecordsLinkText = getByText('Staff records');
 
       expect(staffRecordsLinkText.getAttribute('href')).toBeFalsy();
+    });
+
+    it('should show default message if no permission to view staff records', async () => {
+      const overrides = {
+        checkCqcDetails: false,
+        establishment: Establishment,
+        workerCount: 0,
+        canViewListOfWorkers: false,
+      };
+
+      const { fixture, getByTestId } = await setup(overrides);
+
+      fixture.detectChanges();
+
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).getByText('Remember to check and update this data often')).toBeTruthy();
     });
 
     it('should show clickable staff records link if access to workplace', async () => {
@@ -421,19 +583,43 @@ describe('Summary section', () => {
           expect(workersCareWorkforcePathwayLink).toBeFalsy();
         });
       });
+
       describe('with cwpQuestionsFlag false', () => {
         it('should show if there are staff without an answer', async () => {
           const overrides = {
             noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
             cwpQuestionsFlag: false,
           };
-          const { getByText, routerSpy } = await setup(overrides);
+          const { fixture, getByText, routerSpy, tabsService } = await setup(overrides);
+          const selectedTabSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
 
           const workersCareWorkforcePathwayLink = getByText('Where are your staff on the care workforce pathway?');
           fireEvent.click(workersCareWorkforcePathwayLink);
+          await fixture.whenStable();
 
           expect(workersCareWorkforcePathwayLink).toBeTruthy();
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', Establishment.uid, 'care-workforce-pathway-workers']);
+          expect(routerSpy).toHaveBeenCalledOnceWith([
+            '/workplace',
+            Establishment.uid,
+            'staff-record',
+            'care-workforce-pathway-workers-summary',
+          ]);
+          expect(selectedTabSpy).not.toHaveBeenCalled();
+        });
+
+        it('should show with no link if there are staff without an answer but no edit permission for workers', async () => {
+          const overrides = {
+            noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+            cwpQuestionsFlag: false,
+            canEditWorker: false,
+          };
+          const { getByText } = await setup(overrides);
+
+          const workersCareWorkforcePathwayText = getByText('Where are your staff on the care workforce pathway?');
+          expect(workersCareWorkforcePathwayText.tagName).not.toBe('A');
+
+          const staffRecordsLink = getByText('Staff records');
+          expect(staffRecordsLink.tagName).toBe('A');
         });
 
         it('should not show if there are no staff without an answer', async () => {

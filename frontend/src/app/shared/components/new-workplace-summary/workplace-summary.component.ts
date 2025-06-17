@@ -1,15 +1,19 @@
+import { sortBy } from 'lodash';
+import { Subscription } from 'rxjs';
+
 import { I18nPluralPipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
-import { sortBy } from 'lodash';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-workplace-summary',
@@ -38,6 +42,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
   public isParent: boolean;
+  public isAwareOfCareWorkforcePathway: boolean;
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
@@ -45,6 +50,10 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private cqcStatusChangeService: CqcStatusChangeService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
+    private careWorkforcePathwayService: CareWorkforcePathwayService,
+    // TabsService and Router are needed here for navigateToTab() to work properly
+    private tabsService: TabsService,
+    private router: Router,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -85,10 +94,11 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
 
     this.checkNumberOfStaffErrorsAndWarnings();
     this.checkVacancyAndTurnoverData();
+    this.checkIfWorkplaceIsAwareOfCareWorkforcePathway();
   }
 
   public checkNumberOfStaffErrorsAndWarnings(): void {
-    this.numberOfStaffError = !this.workplace.numberOfStaff;
+    this.numberOfStaffError = this.workplace.numberOfStaff === null || this.workplace.numberOfStaff === undefined;
     const afterEightWeeksFromFirstLogin = new Date(this.workplace.eightWeeksFromFirstLogin) < new Date();
     this.numberOfStaffWarning = this.workplace.numberOfStaff !== this.workerCount && afterEightWeeksFromFirstLogin;
   }
@@ -97,6 +107,12 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     const { vacancies, starters, leavers } = this.workplace;
     this.noVacancyAndTurnoverData = !vacancies && !starters && !leavers;
     this.noVacancyData = !vacancies && (!!leavers || !!starters);
+  }
+
+  private checkIfWorkplaceIsAwareOfCareWorkforcePathway(): void {
+    const awarenessAnswer = this.workplace.careWorkforcePathwayWorkplaceAwareness;
+    this.isAwareOfCareWorkforcePathway =
+      this.careWorkforcePathwayService.isAwareOfCareWorkforcePathway(awarenessAnswer);
   }
 
   private getPermissions(): void {

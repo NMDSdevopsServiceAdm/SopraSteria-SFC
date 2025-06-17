@@ -129,6 +129,11 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
     expect(component.form.value).toEqual({ cashLoyalty: 'No' });
   });
 
+  it('should set the previous route as care workforce pathway use question page', async () => {
+    const { component } = await setup(false);
+    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'care-workforce-pathway-use']);
+  });
+
   describe('submit buttons and submitting form', () => {
     it(`should show 'Save and continue' cta button and 'Skip this question'`, async () => {
       const { getByText } = await setup(false);

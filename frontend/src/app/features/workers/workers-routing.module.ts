@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { RequireCWPAnswerForSomeWorkersGuard } from '@core/guards/require-cwp-answer-for-some-workers/require-cwp-answer-for-some-workers.guard';
 import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
+import { GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
@@ -37,6 +40,8 @@ import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-week
 import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
+import { CareWorkforcePathwayWorkersSummaryComponent as CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary/care-workforce-pathway-workers-summary.component';
+import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
@@ -74,8 +79,6 @@ import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-af
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 
 const routes: Routes = [
   {
@@ -234,6 +237,12 @@ const routes: Routes = [
   {
     path: 'delete-another-staff-record',
     component: DeleteAnotherStaffRecordComponent,
+  },
+  {
+    path: 'care-workforce-pathway-workers-summary',
+    component: CareWorkforcePathwayWorkersSummaryComponent,
+    canActivate: [RequireCWPAnswerForSomeWorkersGuard],
+    resolve: { workersWhoRequireCWPAnswer: GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver },
   },
   {
     path: 'basic-records-save-success',

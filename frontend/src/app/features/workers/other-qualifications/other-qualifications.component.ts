@@ -1,20 +1,20 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-
-import { QuestionComponent } from '../question/question.component';
-import { AlertService } from '@core/services/alert.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+
+import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
   selector: 'app-other-qualifications',
   templateUrl: './other-qualifications.component.html',
 })
-export class OtherQualificationsComponent extends QuestionComponent {
+export class OtherQualificationsComponent extends FinalQuestionComponent {
   public answersAvailable = [
     { value: 'Yes', tag: 'Yes' },
     { value: 'No', tag: 'No' },
@@ -32,7 +32,16 @@ export class OtherQualificationsComponent extends QuestionComponent {
     protected alertService: AlertService,
     private featureFlagService: FeatureFlagsService,
   ) {
-    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
+    super(
+      formBuilder,
+      router,
+      route,
+      backLinkService,
+      errorSummaryService,
+      workerService,
+      establishmentService,
+      alertService,
+    );
 
     this.form = this.formBuilder.group({
       otherQualification: null,
@@ -40,7 +49,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
   }
 
   async init() {
-    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestions', false);
     this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
 
     if (this.worker.otherQualification) {
@@ -81,13 +90,10 @@ export class OtherQualificationsComponent extends QuestionComponent {
     return nextRoute;
   }
 
-  onSubmit(): void {
-    super.onSubmit();
+  protected formValueIsEmpty(): boolean {
     const { otherQualification } = this.form.value;
 
-    if ((!this.submitted || !otherQualification) && this.insideFlow && this.cwpQuestionsFlag == true) {
-      this.addCompletedStaffFlowAlert();
-    }
+    return otherQualification === null;
   }
 
   addAlert(): void {
@@ -98,13 +104,11 @@ export class OtherQualificationsComponent extends QuestionComponent {
     }
   }
 
-  addCompletedStaffFlowAlert(): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message: 'Staff record saved',
-    });
-  }
   onSuccess(): void {
     this.next = this.determineConditionalRouting();
+
+    if (!this.next.includes('staff-record-summary')) {
+      this.continueToNextQuestion = true;
+    }
   }
 }

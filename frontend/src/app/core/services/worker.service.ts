@@ -19,7 +19,7 @@ import {
 } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
-import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
+import { MandatoryInfoAndMetadataFields, Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -56,7 +56,6 @@ export class WorkerService {
   public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
   private _newWorkerMandatoryInfo: NewWorkerMandatoryInfo = null;
-  private _hasCompletedStaffRecordFlow: boolean = null;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
@@ -334,15 +333,15 @@ export class WorkerService {
     this._newWorkerMandatoryInfo = null;
   }
 
-  public set hasCompletedStaffRecordFlow(hasCompleted: boolean) {
-    this._hasCompletedStaffRecordFlow = hasCompleted;
-  }
+  public hasAnsweredNonMandatoryQuestion(): boolean {
+    if (!this.worker) {
+      return false;
+    }
 
-  public get hasCompletedStaffRecordFlow(): boolean {
-    return this._hasCompletedStaffRecordFlow;
-  }
+    const nonMandatoryQuestions = Object.entries(this.worker).filter(
+      ([fieldName, _answer]) => !MandatoryInfoAndMetadataFields.includes(fieldName),
+    );
 
-  public clearHasCompletedStaffRecordFlow(): void {
-    this._hasCompletedStaffRecordFlow = null;
+    return nonMandatoryQuestions.some(([_fieldName, answer]) => answer !== null);
   }
 }

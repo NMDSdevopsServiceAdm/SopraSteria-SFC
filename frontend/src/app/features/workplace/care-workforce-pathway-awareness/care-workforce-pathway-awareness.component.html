@@ -1,0 +1,62 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [form]="form"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group" class="govuk-!-padding-bottom-5">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              How aware of the care workforce pathway is your workplace?
+            </h1>
+          </legend>
+          <p>Select the option that best matches how aware your workplace is.</p>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <ng-container
+              *ngFor="let careWorkforcePathwayAwarenessAnswer of careWorkforcePathwayAwarenessAnswers; let i = index"
+            >
+              <hr
+                *ngIf="i === careWorkforcePathwayAwarenessAnswers.length - 1"
+                class="govuk-!-margin-top-6 govuk-!-margin-bottom-6 asc__hr_answer_divider"
+              />
+              <div class="govuk-radios__item govuk-!-margin-left-1">
+                <input
+                  class="govuk-radios__input"
+                  id="careWorkforcePathwayAwareness-{{ i }}"
+                  [formControlName]="'careWorkforcePathwayAwareness'"
+                  name="careWorkforcePathwayAwareness"
+                  type="radio"
+                  [value]="careWorkforcePathwayAwarenessAnswer.id"
+                />
+                <label class="govuk-label govuk-radios__label" for="careWorkforcePathwayAwareness-{{ i }}">
+                  {{ careWorkforcePathwayAwarenessAnswer.title }}
+                </label>
+              </div>
+            </ng-container>
+          </div>
+        </fieldset>
+      </div>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+        [hasConditionalRouting]="true"
+      ></app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+</form>

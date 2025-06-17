@@ -1,25 +1,28 @@
-import { UntypedFormBuilder } from '@angular/forms';
-import { QuestionComponent } from '../question/question.component';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Component } from '@angular/core';
+import { UntypedFormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
-import { AlertService } from '@core/services/alert.service';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+
+import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
   selector: 'app-care-workforce-pathway',
   templateUrl: './care-workforce-pathway.component.html',
 })
-export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
+export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   public section = 'Training and qualifications';
+  public heading = 'Where are they currently on the care workforce pathway?';
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
   public revealTitle = "What's the care workforce pathway?";
   public cwpQuestionsFlag: boolean;
+  public cameFromCWPSummaryPage: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -29,11 +32,20 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
-    private alertService: AlertService,
+    protected alertService: AlertService,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
     private featureFlagService: FeatureFlagsService,
   ) {
-    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
+    super(
+      formBuilder,
+      router,
+      route,
+      backLinkService,
+      errorSummaryService,
+      workerService,
+      establishmentService,
+      alertService,
+    );
 
     this.form = this.formBuilder.group({
       careWorkforcePathwayRoleCategory: null,
@@ -47,7 +59,9 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
       this.prefill();
     }
 
-    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.setupPageWhenCameFromCWPSummaryPage();
+
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestions', false);
     this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
     this.next = this.getRoutePath('staff-record-summary');
   }
@@ -73,6 +87,19 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
     );
   }
 
+  private setupPageWhenCameFromCWPSummaryPage(): void {
+    this.cameFromCWPSummaryPage = Boolean(
+      this.return?.url?.some((urlPart) => urlPart?.includes('care-workforce-pathway-workers-summary')),
+    );
+
+    if (!this.cameFromCWPSummaryPage) {
+      return;
+    }
+
+    this.heading = 'Where are your staff on the care workforce pathway?';
+    this.returnUrl = this.return.url;
+  }
+
   generateUpdateProps() {
     const { careWorkforcePathwayRoleCategory } = this.form.value;
     if (!careWorkforcePathwayRoleCategory) {
@@ -94,13 +121,26 @@ export class CareWorkforcePathwayRoleComponent extends QuestionComponent {
   addAlert(): void {
     if (this.insideFlow) {
       this.addCompletedStaffFlowAlert();
+    } else if (this.cameFromCWPSummaryPage) {
+      this.addRoleCategorySavedAlert();
     }
   }
 
-  addCompletedStaffFlowAlert(): void {
+  private addRoleCategorySavedAlert(): void {
     this.alertService.addAlert({
       type: 'success',
-      message: 'Staff record saved',
+      message: 'Role category saved',
     });
+  }
+
+  _onSuccess(data: any) {
+    this.workerService.setState({ ...this.worker, ...data });
+    this.onSuccess();
+    this.navigate().then(() => this.addAlert());
+  }
+
+  protected formValueIsEmpty(): boolean {
+    const { careWorkforcePathwayRoleCategory } = this.form.value;
+    return careWorkforcePathwayRoleCategory === null;
   }
 }

@@ -496,36 +496,50 @@ describe('workerCSV', () => {
           expect(csvAsArray[getWorkerColumnIndex('DAYSSICK')]).to.equal('');
         });
 
-        it('should return hourly value and rate', async () => {
-          worker.AnnualHourlyPayValue = 'Hourly';
+        describe('AnnualHourlyPayValue and AnnualHourlyPayRate', () => {
+          it('should return with SALARYINT = 3 and HOURLYRATE filled if AnnualHourlyPayValue is Hourly', async () => {
+            worker.AnnualHourlyPayValue = 'Hourly';
 
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('3');
-          expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal('');
-          expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal(String(worker.AnnualHourlyPayRate));
-        });
+            expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('3');
+            expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal('');
+            expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal(String(worker.AnnualHourlyPayRate));
+          });
 
-        it('should return annual value and rate', async () => {
-          worker.AnnualHourlyPayValue = 'Annually';
+          it('should return with SALARYINT = 1 and SALARY filled if AnnualHourlyPayValue is Annually', async () => {
+            worker.AnnualHourlyPayValue = 'Annually';
 
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('1');
-          expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal(String(worker.AnnualHourlyPayRate));
-          expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal('');
-        });
-        it('should not return annual/hourly value or rate', async () => {
-          worker.AnnualHourlyPayValue = null;
+            expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('1');
+            expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal(String(worker.AnnualHourlyPayRate));
+            expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal('');
+          });
 
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
+          it('should return with SALARYINT = 999, SALARY and HOURLYRATE as blank if AnnualHourlyPayValue is "Don\'t know"', () => {
+            worker.AnnualHourlyPayValue = "Don't know";
 
-          expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('');
-          expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal('');
-          expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal('');
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('999');
+            expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal('');
+            expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal('');
+          });
+
+          it('should return SALARYINT, SALARY and HOURLYRATE as blank if AnnualHourlyPayValue is null', async () => {
+            worker.AnnualHourlyPayValue = null;
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('');
+            expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal('');
+            expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal('');
+          });
         });
 
         it('should return main job id', async () => {

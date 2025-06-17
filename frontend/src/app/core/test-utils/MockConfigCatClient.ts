@@ -2,10 +2,12 @@
 import { IConfigCatClient, SettingKeyValue } from 'configcat-common/lib/ConfigCatClient';
 
 export const DefaultFeatureFlagsForLocalTest = {
-  wdfUser: true,
-  wdfNewDesign: true,
+  wdfUser: false,
+  wdfNewDesign: false,
   homePageNewDesign: true,
   homePageNewDesignParent: true,
+  newBenchmarksDataArea: true,
+  bulkUploadHelp: true,
   cwpQuestions: false,
 };
 

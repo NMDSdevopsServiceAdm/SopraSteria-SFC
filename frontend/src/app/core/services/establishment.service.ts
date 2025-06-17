@@ -4,6 +4,7 @@ import { Params } from '@angular/router';
 import {
   adminMoveWorkplace,
   CancelOwnerShip,
+  CareWorkforcePathwayWorkplaceAwareness,
   ChangeOwner,
   Establishment,
   LocalIdentifiersRequest,
@@ -21,6 +22,10 @@ import { environment } from 'src/environments/environment';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
+import {
+  CareWorkforcePathwayUse,
+  UpdateCareWorkforcePathwayUsePayload,
+} from '@core/model/care-workforce-pathway.model';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -63,6 +68,20 @@ interface CQCLocationChangeRequest {
   mainServiceOther?: string;
   postalCode: string;
   townCity: string;
+}
+
+interface UpdateCareWorkforcePathwayUseResponse {
+  id: number;
+  uid: string;
+  name: string;
+  careWorkforcePathwayUse: CareWorkforcePathwayUse;
+}
+
+interface UpdateCareWorkforcePathwayWorkplaceAwarenessResponse {
+  id: number;
+  uid: string;
+  name: string;
+  careWorkforcePathwayWorkforceAwareness: CareWorkforcePathwayWorkplaceAwareness;
 }
 
 @Injectable({
@@ -333,6 +352,13 @@ export class EstablishmentService {
     );
   }
 
+  updateCareWorkforcePathwayAwareness(establishmentId: string, data: any): Observable<any> {
+    return this.http.post<UpdateCareWorkforcePathwayWorkplaceAwarenessResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/careWorkforcePathwayAwareness`,
+      data,
+    );
+  }
+
   public deleteWorkplace(workplaceUid: string): Observable<any> {
     return this.http.delete<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}`);
   }
@@ -464,5 +490,12 @@ export class EstablishmentService {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/missingCqcProviderLocations`, {
       params,
     });
+  }
+
+  public updateCareWorkforcePathwayUse(establishmentUid: string, payload: UpdateCareWorkforcePathwayUsePayload) {
+    return this.http.post<UpdateCareWorkforcePathwayUseResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/careWorkforcePathway/careWorkforcePathwayUse`,
+      payload,
+    );
   }
 }

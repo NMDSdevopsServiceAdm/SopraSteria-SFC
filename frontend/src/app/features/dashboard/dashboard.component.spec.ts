@@ -78,7 +78,7 @@ describe('DashboardComponent', () => {
           useClass: MockBenchmarksService,
         },
         { provide: WindowToken, useValue: MockWindow },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ wdfNewDesign: true }) },
         { provide: WorkerService, useClass: MockWorkerService },
         {
           provide: ActivatedRoute,
@@ -148,15 +148,6 @@ describe('DashboardComponent', () => {
     it('should display the Training and Qualifications tab', async () => {
       const { getByTestId } = await setup();
       expect(getByTestId('tab_training-and-qualifications')).toBeTruthy();
-    });
-
-    it('should display the WDF tab', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.ngOnInit();
-      fixture.detectChanges();
-
-      expect(getByTestId('tab_wdf')).toBeTruthy();
     });
 
     xit('should display the Benchmarks tab', async () => {

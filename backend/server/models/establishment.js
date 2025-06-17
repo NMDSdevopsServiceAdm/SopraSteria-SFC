@@ -749,6 +749,58 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CssrID"',
       },
+      careWorkforcePathwayWorkplaceAwarenessFK: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessFK"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessSavedAt"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessChangedAt"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessSavedBy"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessChangedBy"',
+      },
+      CWPAwarenessQuestionViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'CWPAwarenessQuestionViewed',
+      },
+      careWorkforcePathwayUse: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'CareWorkforcePathwayUseValue',
+      },
+      CareWorkforcePathwayUseSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       defaultScope: {
@@ -828,6 +880,11 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'mainService',
     });
+    Establishment.belongsTo(models.careWorkforcePathwayWorkplaceAwareness, {
+      foreignKey: 'careWorkforcePathwayWorkplaceAwarenessFK',
+      targetKey: 'id',
+      as: 'careWorkforcePathwayWorkplaceAwareness',
+    });
     Establishment.belongsToMany(models.services, {
       through: 'establishmentServices',
       foreignKey: 'establishmentId',
@@ -883,6 +940,14 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentFK',
       sourceKey: 'id',
       as: 'MandatoryTraining',
+    });
+
+    Establishment.belongsToMany(models.CareWorkforcePathwayReasons, {
+      through: 'EstablishmentCWPReasons',
+      attributes: ['other'],
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'CareWorkforcePathwayReasons',
     });
   };
 
@@ -1358,6 +1423,7 @@ module.exports = function (sequelize, DataTypes) {
         'careWorkersCashLoyaltyForFirstTwoYears',
         'sickPay',
         'pensionContribution',
+        'careWorkforcePathwayUse',
       ],
       where: {
         [Op.or]: [
@@ -1419,6 +1485,16 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.establishmentJobs,
           attributes: ['jobId', 'type', 'total'],
           as: 'jobs',
+        },
+        {
+          model: sequelize.models.CareWorkforcePathwayReasons,
+          attributes: ['id', 'bulkUploadCode', 'isOther'],
+          as: 'CareWorkforcePathwayReasons',
+        },
+        {
+          model: sequelize.models.careWorkforcePathwayWorkplaceAwareness,
+          attributes: ['id', 'bulkUploadCode'],
+          as: 'careWorkforcePathwayWorkplaceAwareness',
         },
       ],
     });
@@ -2111,12 +2187,96 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  const shouldShowFlagOnWorkplace = `
+    CASE
+      -- Number of staff is null
+      WHEN "NumberOfStaffValue" IS NULL THEN true
+      -- No vacancy data
+      WHEN "VacanciesValue" IS NULL THEN true
+      -- Add workplace details banner showing
+      WHEN "ShowAddWorkplaceDetailsBanner" = true THEN true
+      -- Number of staff does not equal worker count
+      WHEN (
+        SELECT (COUNT(w."ID") != "NumberOfStaffValue") AND "eightWeeksFromFirstLogin" < now()::timestamp
+        FROM cqc."Worker" w
+        WHERE w."EstablishmentFK" = "EstablishmentID"
+        AND w."Archived" = false
+      ) THEN true
+      -- No worker records
+      WHEN (
+        SELECT (COUNT(w."ID") = 0)
+        FROM cqc."Worker" w
+        WHERE w."EstablishmentFK" = "EstablishmentID"
+        AND w."Archived" = false
+      ) THEN true
+      -- No workers created in last 12 months
+      WHEN (
+        'now'::timestamp >= ("created" + '12 months'::interval) AND
+        "NumberOfStaffValue" > 10 AND
+        'now'::timestamp >= (
+          SELECT MAX(w."created") + '12 months'::interval
+          FROM cqc."Worker" w
+          WHERE w."EstablishmentFK" = "EstablishmentID"
+          AND w."Archived" = false
+        )
+      ) THEN true
+
+      WHEN (
+        SELECT w."ID"
+        FROM cqc."Worker" w
+        WHERE w."EstablishmentFK" = "EstablishmentID"
+        AND w."Archived" = false
+        AND (
+          -- Workers not completed
+            (
+              w."CompletedValue" = false
+                  AND ('now'::timestamp - '1 month'::interval) > w."created"
+            )
+          -- International recruitment data required
+            OR (
+              w."HealthAndCareVisaValue" IS NULL
+                AND ((w."NationalityValue" = 'Other' AND (w."BritishCitizenshipValue" IN ('No', 'Don''t know') OR w."BritishCitizenshipValue" IS NULL))
+                  OR (w."NationalityValue" = 'Don''t know' AND w."BritishCitizenshipValue" = 'No'))
+            )
+          )
+        		LIMIT 1
+        	) IS NOT NULL THEN true
+        -- Training is expired or expires soon
+        WHEN (
+          SELECT w."ID"
+          FROM cqc."WorkerTraining" wt
+          JOIN cqc."Worker" w ON wt."WorkerFK" = w."ID"
+          WHERE wt."Expires" <= ('now'::timestamp + '90 days'::interval) -- wt."Expires" < CURRENT_DATE
+          AND w."EstablishmentFK" = "EstablishmentID"
+          AND w."Archived" = false
+          LIMIT 1
+        ) IS NOT NULL THEN true
+        -- Mandatory training is missing
+        WHEN (
+          SELECT mt."ID" FROM cqc."MandatoryTraining" mt
+            JOIN cqc."Worker" w
+              ON mt."JobFK" = w."MainJobFKValue"
+              WHERE mt."TrainingCategoryFK" NOT IN (
+                SELECT
+                  DISTINCT "CategoryFK"
+                FROM cqc."WorkerTraining" wt
+            WHERE wt."WorkerFK" = w."ID"
+                )
+          AND mt."EstablishmentFK" = "EstablishmentID"
+				AND w."EstablishmentFK" = "EstablishmentID"
+				AND w."Archived" = false
+        LIMIT 1
+          ) IS NOT NULL THEN true
+          ELSE false
+      END`;
+
   Establishment.getChildWorkplaces = async function (
     establishmentUid,
     limit = 0,
     pageIndex = 0,
     searchTerm = '',
     getPendingWorkplaces = false,
+    getAttentionFlags = false,
   ) {
     const offset = pageIndex * limit;
     let ustatus;
@@ -2145,6 +2305,7 @@ module.exports = function (sequelize, DataTypes) {
         'ustatus',
         'postcode',
         'locationId',
+        ...(getAttentionFlags ? [[sequelize.literal(shouldShowFlagOnWorkplace), 'showFlag']] : []),
       ],
       include: [
         {
@@ -2176,6 +2337,13 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     return { ...data, pendingCount };
+  };
+
+  Establishment.hasChildWorkplaceWhichNeedsAttention = async function (parentId) {
+    return await this.findOne({
+      attributes: ['id'],
+      where: sequelize.and({ parentId }, sequelize.literal(shouldShowFlagOnWorkplace)),
+    });
   };
 
   Establishment.getRegistrationIdsForArchiving = async function (establishmentIds, transaction) {

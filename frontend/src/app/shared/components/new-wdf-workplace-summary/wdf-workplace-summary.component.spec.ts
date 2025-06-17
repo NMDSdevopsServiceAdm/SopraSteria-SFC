@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
@@ -11,6 +10,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
+import { MockCareWorkforcePathwayService, MockCWPUseReasons } from '@core/test-utils/MockCareWorkforcePathwayService';
 import {
   establishmentWithShareWith,
   establishmentWithWdfBuilder,
@@ -23,14 +23,22 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
+import { WdfStaffMismatchMessageComponent } from '../wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 
 describe('WDFWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const workplace = establishmentWithWdfBuilder() as Establishment;
+    const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? null;
+    const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
+
+    const workplace = establishmentWithWdfBuilder({
+      careWorkforcePathwayWorkplaceAwareness,
+      careWorkforcePathwayUse,
+    }) as Establishment;
 
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WDFWorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, FundingModule],
-      declarations: [],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, FundingModule],
+      declarations: [WdfStaffMismatchMessageComponent],
       providers: [
         {
           provide: PermissionsService,
@@ -48,6 +56,16 @@ describe('WDFWorkplaceSummaryComponent', () => {
         {
           provide: VacanciesAndTurnoverService,
           useClass: MockVacanciesAndTurnoverService,
+        },
+        {
+          provide: CareWorkforcePathwayService,
+          useFactory: MockCareWorkforcePathwayService.factory({
+            isAwareOfCareWorkforcePathway: () => overrides?.workplaceIsAwareOfCareWorkforcePathway ?? true,
+          }),
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { params: { establishmentuid: 'mock-uid' }, data: {} } },
         },
       ],
       componentProperties: {
@@ -573,10 +591,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(vacanciesRow).queryByText('-')).toBeTruthy();
       });
 
-      it(`should show Don't know and a Change link when vacancies is set to Don't know`, async () => {
+      it(`should show Not known and a Change link when vacancies is set to Don't know`, async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.vacancies = `Don't know`;
+        component.workplace.vacancies = 'Not known';
 
         fixture.detectChanges();
 
@@ -585,7 +603,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
-        expect(within(vacanciesRow).queryByText(`Don't know`)).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('Not known')).toBeTruthy();
       });
 
       it(`should show None and a Change link when vacancies is set to None`, async () => {
@@ -654,7 +672,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         const startersRow = getByTestId('starters');
 
-        expect(within(startersRow).getByText('New starters in the last 12 months')).toBeTruthy();
+        expect(within(startersRow).getByText('Starters in the last 12 months')).toBeTruthy();
       });
 
       it('should show dash and have Add information button on when starters is null', async () => {
@@ -672,10 +690,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(startersRow).queryByText('-')).toBeTruthy();
       });
 
-      it(`should show Don't know and a Change link when starters is set to Don't know`, async () => {
+      it(`should show Not known and a Change link when starters is set to Don't know`, async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.starters = `Don't know`;
+        component.workplace.starters = 'Not known';
 
         fixture.detectChanges();
 
@@ -684,7 +702,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
-        expect(within(startersRow).queryByText(`Don't know`)).toBeTruthy();
+        expect(within(startersRow).queryByText('Not known')).toBeTruthy();
       });
 
       it(`should show None and a Change link when starters is set to None`, async () => {
@@ -753,7 +771,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         const leaversRow = getByTestId('leavers');
 
-        expect(within(leaversRow).getByText('Staff leavers in the last 12 months')).toBeTruthy();
+        expect(within(leaversRow).getByText('Leavers in the last 12 months')).toBeTruthy();
       });
 
       it('should show dash and have Add information button on when leavers is null', async () => {
@@ -771,10 +789,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText('-')).toBeTruthy();
       });
 
-      it(`should show Don't know and a Change link when leavers is set to Don't know`, async () => {
+      it(`should show Not known and a Change link when leavers is set to Don't know`, async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.leavers = `Don't know`;
+        component.workplace.leavers = 'Not known';
 
         fixture.detectChanges();
 
@@ -783,7 +801,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
-        expect(within(leaversRow).queryByText(`Don't know`)).toBeTruthy();
+        expect(within(leaversRow).queryByText('Not known')).toBeTruthy();
       });
 
       it(`should show None and a Change link when leavers is set to None`, async () => {
@@ -915,6 +933,105 @@ describe('WDFWorkplaceSummaryComponent', () => {
             component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment,
           ),
         ).toBeTruthy();
+      });
+    });
+
+    describe('Care workforce pathway aware', () => {
+      it('should show dash and have Add information button when is set to null (not answered)', async () => {
+        const overrides = { careWorkforcePathwayWorkplaceAwareness: null, canEditEstablishment: true };
+
+        const { component } = await setup(overrides);
+
+        const careWorkforcePathwayAwarenessRow = within(document.body).queryByTestId(
+          'care-workforce-pathway-awareness',
+        );
+        const link = within(careWorkforcePathwayAwarenessRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/care-workforce-pathway-awareness`,
+        );
+        expect(within(careWorkforcePathwayAwarenessRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button when there is a value (answered)', async () => {
+        const overrides = {
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 4,
+            title: 'Not aware of the care workforce pathway',
+          },
+          canEditEstablishment: true,
+        };
+        const { component } = await setup(overrides);
+
+        const careWorkforcePathwayAwarenessRow = within(document.body).queryByTestId(
+          'care-workforce-pathway-awareness',
+        );
+        const link = within(careWorkforcePathwayAwarenessRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/care-workforce-pathway-awareness`,
+        );
+        expect(within(careWorkforcePathwayAwarenessRow).getByText('Not aware')).toBeTruthy();
+      });
+    });
+
+    describe('Using the care workforce pathway', () => {
+      it('should show a row of "Using the care workforce pathway" if workplace is aware of CWP', async () => {
+        const { queryByTestId } = await setup({ workplaceIsAwareOfCareWorkforcePathway: true });
+        const cwpUseRow = queryByTestId('care-workforce-pathway-use');
+        expect(within(cwpUseRow).queryByText('Using the care workforce pathway')).toBeTruthy();
+      });
+
+      it('should not show a row of "Using the care workforce pathway" if workplace is not aware of CWP', async () => {
+        const { queryByTestId } = await setup({ workplaceIsAwareOfCareWorkforcePathway: false });
+        const cwpUseRow = queryByTestId('care-workforce-pathway-use');
+        expect(cwpUseRow).toBeFalsy();
+      });
+
+      it('should show a dash "-" and "Add" button if not yet answered the CWP use question', async () => {
+        const careWorkforcePathwayUse = null;
+        const { component, getByTestId } = await setup({ careWorkforcePathwayUse });
+
+        const cwpUseRow = getByTestId('care-workforce-pathway-use');
+        const link = within(cwpUseRow).getByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(within(cwpUseRow).getByText('-')).toBeTruthy();
+      });
+
+      it('should show the answer and "Change" button if already answered the CWP use question', async () => {
+        const careWorkforcePathwayUse = { use: "Don't know", reasons: null };
+        const { component, getByTestId } = await setup({ careWorkforcePathwayUse });
+
+        const cwpUseRow = getByTestId('care-workforce-pathway-use');
+        const link = within(cwpUseRow).getByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(within(cwpUseRow).getByText('Not known')).toBeTruthy();
+      });
+
+      it('should show a list of the reasons if user answered "Yes" and chose some reasons', async () => {
+        const mockReasons = [
+          MockCWPUseReasons[0],
+          MockCWPUseReasons[1],
+          { ...MockCWPUseReasons[2], other: 'some free text' },
+        ];
+        const careWorkforcePathwayUse = { use: 'Yes', reasons: mockReasons };
+
+        const { component, getByTestId } = await setup({ careWorkforcePathwayUse });
+
+        const cwpUseRow = getByTestId('care-workforce-pathway-use');
+        const link = within(cwpUseRow).getByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(within(cwpUseRow).getByText(MockCWPUseReasons[0].text)).toBeTruthy();
+        expect(within(cwpUseRow).getByText(MockCWPUseReasons[1].text)).toBeTruthy();
+        expect(within(cwpUseRow).getByText('some free text')).toBeTruthy();
       });
     });
 

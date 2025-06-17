@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, S
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { Eligibility } from '@core/model/wdf.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -43,6 +44,7 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   };
   public Eligibility = Eligibility;
   public wdfView = true;
+  public isAwareOfCareWorkforcePathway: boolean;
 
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
@@ -84,6 +86,7 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     private permissionsService: PermissionsService,
     private cqcStatusChangeService: CqcStatusChangeService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
+    private careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -163,6 +166,7 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     );
 
     this.setShowWdfConfirmations();
+    this.checkIfWorkplaceIsAwareOfCareWorkforcePathway();
   }
 
   public sortedCapacityService(capacityService: any) {
@@ -270,6 +274,12 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
       this.workplace.wdf?.[field]?.isEligible === 'Yes' &&
       !this.workplace.wdf?.[field]?.updatedSinceEffectiveDate
     );
+  }
+
+  private checkIfWorkplaceIsAwareOfCareWorkforcePathway(): void {
+    const awarenessAnswer = this.workplace.careWorkforcePathwayWorkplaceAwareness;
+    this.isAwareOfCareWorkforcePathway =
+      this.careWorkforcePathwayService.isAwareOfCareWorkforcePathway(awarenessAnswer);
   }
 
   ngOnDestroy(): void {
