@@ -1,9 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -13,15 +13,16 @@ import { BenefitAccordionComponent } from './benefit-accordion/benefit-accordion
 import { BenefitsBundleComponent } from './benefits-bundle.component';
 
 describe('BenefitsBundleComponent', () => {
-  const workplaceName = 'Test Workplace Name';
   async function setup() {
-    const { fixture, getByText, getByTestId, getAllByText, queryByText } = await render(BenefitsBundleComponent, {
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
+    const workplaceName = 'Test Workplace Name';
+
+    const setupTools = await render(BenefitsBundleComponent, {
+      imports: [SharedModule, HttpClientTestingModule],
       declarations: [BenefitAccordionComponent],
       providers: [
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory(null, true, { name: workplaceName }),
+          useFactory: MockEstablishmentServiceWithOverrides.factory({ establishment: { name: workplaceName } }),
         },
         {
           provide: BreadcrumbService,
@@ -31,18 +32,16 @@ describe('BenefitsBundleComponent', () => {
           provide: FeatureFlagsService,
           useClass: MockFeatureFlagsService,
         },
+        provideRouter([]),
       ],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
-      fixture,
+      ...setupTools,
       component,
-      getAllByText,
-      queryByText,
-      getByText,
-      getByTestId,
+      workplaceName,
     };
   }
 
@@ -59,7 +58,8 @@ describe('BenefitsBundleComponent', () => {
   });
 
   it('should display the workplace name', async () => {
-    const { getByText } = await setup();
+    const { getByText, workplaceName } = await setup();
+
     const workplaceNameOnPage = getByText(workplaceName);
     expect(workplaceNameOnPage).toBeTruthy();
   });
