@@ -45,6 +45,7 @@ describe('Summary section', () => {
         isParent: overrides.isParent ?? false,
         canViewListOfWorkers: overrides.canViewListOfWorkers ?? true,
         canEditWorker: overrides.canEditWorker ?? true,
+        canEditEstablishment: overrides.canEditEstablishment ?? true,
         canViewEstablishment: overrides.canViewEstablishment ?? true,
         showMissingCqcMessage: overrides.showMissingCqcMessage ?? false,
         workplacesCount: overrides.workplacesCount ?? 0,
@@ -175,6 +176,7 @@ describe('Summary section', () => {
           careWorkforcePathwayWorkplaceAwareness: null,
         };
       };
+
       it('should show the CWP awareness message if workplace details added, CWPAwarenessQuestionViewed null and awareness question not answered', async () => {
         const { getByTestId } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
 
@@ -278,6 +280,20 @@ describe('Summary section', () => {
 
         const workplaceRow = getByTestId('workplace-row');
         expect(within(workplaceRow).queryByText('How aware of the CWP is your workplace?')).toBeFalsy();
+      });
+
+      it('should show with no link if there CWP awareness not viewed or answered but no edit permission for establishment', async () => {
+        const { getByTestId, getByText } = await setup({
+          canEditEstablishment: false,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const cwpMessage = within(workplaceRow).queryByText('How aware of the CWP is your workplace?');
+        expect(cwpMessage.tagName).not.toBe('A');
+
+        const workplaceLink = getByText('Workplace');
+        expect(workplaceLink.tagName).toBe('A');
       });
     });
 

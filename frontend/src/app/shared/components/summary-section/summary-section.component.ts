@@ -23,6 +23,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() canViewListOfWorkers: boolean;
   @Input() canViewEstablishment: boolean;
   @Input() canEditWorker: boolean;
+  @Input() canEditEstablishment: boolean;
   @Input() showMissingCqcMessage: boolean;
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
@@ -105,6 +106,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[0].message = 'How aware of the CWP is your workplace?';
       this.sections[0].route = ['/workplace', this.workplace.uid, 'care-workforce-pathway-awareness'];
       this.careWorkforcePathwayLinkDisplaying = true;
+      this.sections[0].showMessageAsText = !this.canEditEstablishment;
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
