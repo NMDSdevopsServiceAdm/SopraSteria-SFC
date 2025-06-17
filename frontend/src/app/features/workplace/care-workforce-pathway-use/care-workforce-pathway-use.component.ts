@@ -5,6 +5,7 @@ import {
   CareWorkforcePathwayUseReason,
   UpdateCareWorkforcePathwayUsePayload,
 } from '@core/model/care-workforce-pathway.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
@@ -37,6 +38,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     protected careWorkforcePathwayService: CareWorkforcePathwayService,
     protected route: ActivatedRoute,
     private backLinkService: BackLinkService,
+    protected alertService: AlertService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -218,6 +220,25 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
         (error) => this.onError(error),
       ),
     );
+  }
+
+  private hasComeFromSummaryPanelLink(): boolean {
+    return (
+      this.return &&
+      Array.isArray(this.return.url) &&
+      this.return.url.length === 1 &&
+      this.return.url[0] === '/dashboard' &&
+      this.return.fragment === 'home'
+    );
+  }
+
+  protected addAlert(): void {
+    if (this.hasComeFromSummaryPanelLink()) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: `Care workforce pathway information saved in '${this.establishment.name}'`,
+      });
+    }
   }
 
   protected onSuccess(): void {
