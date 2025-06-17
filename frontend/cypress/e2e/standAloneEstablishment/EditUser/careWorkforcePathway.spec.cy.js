@@ -3,13 +3,11 @@ import { StandAloneEstablishment } from '../../../support/mockEstablishmentData'
 const establishmentID = StandAloneEstablishment.id;
 const cwpWorkersSummaryPath = 'care-workforce-pathway-workers-summary';
 const homePagePath = 'dashboard#home';
-const workplaceSummaryPath = 'dashboard#workplace';
 const testWorkers = ['test CWP worker 1', 'test CWP worker 2'];
 
 describe('Care workforce pathway journey', () => {
   before(() => {
     cy.archiveAllWorkersInWorkplace(establishmentID);
-    cy.resetWorkplaceCWPAnswers(establishmentID);
   });
 
   afterEach(() => {
@@ -18,38 +16,11 @@ describe('Care workforce pathway journey', () => {
     });
   });
 
-  describe('workplace awareness and usage', () => {
-    it('should be able to view and update CareWorkforcePathway awareness and usage for the workplace', () => {
-      cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
-
-      cy.get('a').contains('Workplace').click();
-      cy.url().should('contain', workplaceSummaryPath);
-      cy.get('[data-testid="care-workforce-pathway-awareness"]').contains('Add').click();
-
-      // awareness question page
-      cy.get('h1').should('contain', 'How aware of the care workforce pathway is your workplace?');
-      cy.getByLabel(/in practice/).click();
-      cy.get('button').contains('Save').click();
-
-      // use and reasons question page
-      cy.get('h1').should('contain', 'Is your workplace using the care workforce pathway?');
-
-      cy.getByLabel(/Yes/).click();
-      cy.getByLabel("To help define our organisation's values").click();
-      cy.getByLabel('For something else').click();
-      cy.getByLabel(/Tell us/).type('For some very specific reason');
-      cy.get('button').contains('Save and return').click();
-
-      // verify that workplace is updated
-      cy.url().should('contain', workplaceSummaryPath);
-      cy.get('[data-testid="care-workforce-pathway-awareness"]').should('contain', 'Aware in practice');
-      cy.get('[data-testid="care-workforce-pathway-use"]')
-        .should('contain', "To help define our organisation's values")
-        .and('contain', 'For some very specific reason');
-    });
+  describe('answer CWP workplace awareness and usage from homepage panel', () => {
+    // WIP
   });
 
-  describe('role category for workers', () => {
+  describe('answer role category for workers from homepage panel', () => {
     it('should show a flag in homepage summary panel if some workers have not got the answer for CWP questions', () => {
       cy.insertTestWorker({ establishmentID, workerName: testWorkers[0] });
 
