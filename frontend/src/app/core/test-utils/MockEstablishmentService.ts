@@ -444,7 +444,13 @@ export class MockEstablishmentServiceWithOverrides extends MockEstablishmentServ
       const service = new MockEstablishmentService(httpClient);
 
       Object.keys(overrides).forEach((overrideName) => {
-        service[overrideName] = overrides[overrideName];
+        if (overrideName === 'establishment') {
+          Object.keys(overrides[overrideName]).forEach((key) => {
+            service.establishmentObj[key] = overrides[overrideName][key];
+          });
+        } else {
+          service[overrideName] = overrides[overrideName];
+        }
       });
 
       return service;
