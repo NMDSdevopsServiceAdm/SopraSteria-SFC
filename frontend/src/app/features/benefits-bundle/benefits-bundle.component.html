@@ -28,6 +28,44 @@
         </button>
       </div>
 
+      <app-benefit-accordion [benefit]="benefits[0]" [index]="0" (toggleEmitter)="toggleAccordion(0)">
+        <p>
+          These seminars from Skills for Care offer learning on a range of topics. They can be tailored to your needs
+          and delivered directly to your organisation. Claim 10% off with your ASC-WDS workplace ID.
+        </p>
+        <p>
+          <a [routerLink]="['tailored-seminars']">Read more about these tailored seminars</a>
+        </p>
+      </app-benefit-accordion>
+
+      <app-benefit-accordion [benefit]="benefits[1]" [index]="1" (toggleEmitter)="toggleAccordion(1)">
+        <p>
+          Skills for Care offer low cost eLearning on a variety of topics. Your ASC-WDS account entitles you to 10% off
+          the purchase price of the modules.
+        </p>
+
+        <p>
+          <a [routerLink]="['elearning-discounts']">Read more about the eLearning modules on offer</a>
+        </p>
+      </app-benefit-accordion>
+
+      <app-benefit-accordion [benefit]="benefits[2]" [index]="2" (toggleEmitter)="toggleAccordion(2)">
+        <p>
+          We've negotiated some great discounts from endorsed providers who offer high quality learning and development
+          to the social care sector.
+        </p>
+        <p>
+          <a [routerLink]="['training-discounts']">View discounts from Skills for Care's endorsed training providers</a>
+        </p>
+      </app-benefit-accordion>
+
+      <app-benefit-accordion [benefit]="benefits[3]" [index]="3" (toggleEmitter)="toggleAccordion(3)">
+        <p>
+          <a href="https://bookshop.skillsforcare.org.uk/Shop" target="_blank">Visit the Skills for Care bookshop</a>
+          and use voucher code <strong>ASCWDS-2526</strong> to claim your discount.
+        </p>
+      </app-benefit-accordion>
+
       <app-benefit-accordion [benefit]="benefits[4]" [index]="4" (toggleEmitter)="toggleAccordion(4)">
         <p>
           <a
@@ -88,44 +126,6 @@
           Having a positive, inclusive workplace culture enables employers to both attract and keep a diverse workforce
           of great staff. This toolkit will support you at different stages of your workplace culture journey to make
           sure your workplace is inclusive, compassionate and collaborative.
-        </p>
-      </app-benefit-accordion>
-
-      <app-benefit-accordion [benefit]="benefits[0]" [index]="0" (toggleEmitter)="toggleAccordion(0)">
-        <p>
-          We've negotiated some great discounts from endorsed providers who offer high quality learning and development
-          to the social care sector.
-        </p>
-        <p>
-          <a [routerLink]="['training-discounts']">View discounts from Skills for Care's endorsed training providers</a>
-        </p>
-      </app-benefit-accordion>
-
-      <app-benefit-accordion [benefit]="benefits[1]" [index]="1" (toggleEmitter)="toggleAccordion(1)">
-        <p>
-          Skills for Care offer low cost eLearning on a variety of topics. Your ASC-WDS account entitles you to 10% off
-          the purchase price of the modules.
-        </p>
-
-        <p>
-          <a [routerLink]="['elearning-discounts']">Read more about the eLearning modules on offer</a>
-        </p>
-      </app-benefit-accordion>
-
-      <app-benefit-accordion [benefit]="benefits[2]" [index]="2" (toggleEmitter)="toggleAccordion(2)">
-        <p>
-          <a href="https://bookshop.skillsforcare.org.uk/Shop" target="_blank">Visit the Skills for Care bookshop</a>
-          and use voucher code <strong>ASCWDS-2526</strong> to claim your discount.
-        </p>
-      </app-benefit-accordion>
-
-      <app-benefit-accordion [benefit]="benefits[3]" [index]="3" (toggleEmitter)="toggleAccordion(3)">
-        <p>
-          These seminars from Skills for Care offer learning on a range of topics. They can be tailored to your needs
-          and delivered directly to your organisation. Claim 10% off with your ASC-WDS workplace ID.
-        </p>
-        <p>
-          <a [routerLink]="['tailored-seminars']">Read more about these tailored seminars</a>
         </p>
       </app-benefit-accordion>
     </div>
