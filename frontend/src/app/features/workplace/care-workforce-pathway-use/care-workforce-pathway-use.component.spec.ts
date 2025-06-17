@@ -1,12 +1,10 @@
-import { repeat } from 'lodash';
-import { of, throwError } from 'rxjs';
-
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
+import { BackLinkService } from '@core/services/backLink.service';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
@@ -15,6 +13,8 @@ import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { repeat } from 'lodash';
+import { of, throwError } from 'rxjs';
 
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
 
@@ -38,6 +38,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
+    const backLinkServiceSpy = jasmine.createSpyObj('BacklinkService', ['showBackLink']);
 
     const setupTools = await render(CareWorkforcePathwayUseComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -63,6 +64,10 @@ describe('CareWorkforcePathwayUseComponent', () => {
             isAwareOfCareWorkforcePathway: () => overrides.workplaceIsAwareOfCareWorkforcePathway ?? true,
           }),
         },
+        {
+          provide: BackLinkService,
+          useValue: backLinkServiceSpy,
+        },
       ],
     });
 
@@ -73,7 +78,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
     );
 
     const component = setupTools.fixture.componentInstance;
-    return { ...setupTools, component, establishmentService, establishmentServiceSpy, routerSpy };
+    return { ...setupTools, component, establishmentService, establishmentServiceSpy, routerSpy, backLinkServiceSpy };
   };
 
   it('should create', async () => {
@@ -369,5 +374,11 @@ describe('CareWorkforcePathwayUseComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
+  });
+
+  it('should set the back link', async () => {
+    const { backLinkServiceSpy } = await setup();
+
+    expect(backLinkServiceSpy.showBackLink).toHaveBeenCalled();
   });
 });

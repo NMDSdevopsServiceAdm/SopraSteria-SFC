@@ -68,7 +68,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  setBackLink() {
+  protected setBackLink(): void {
     this.back = this.return ? this.return : { url: this.previousRoute };
     this.backService.setBackLink(this.back);
   }
