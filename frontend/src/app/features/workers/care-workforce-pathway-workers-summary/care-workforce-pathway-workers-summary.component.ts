@@ -1,13 +1,12 @@
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JobRole } from '@core/model/job.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CareWorkforcePathwayService, CWPGetAllWorkersResponse } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-care-workforce-pathway-workers-summary',
@@ -27,12 +26,14 @@ export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDe
     private backLinkService: BackLinkService,
     private router: Router,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.backLinkService.showBackLink();
     this.workplaceUid = this.establishmentService.establishment.uid;
-    this.getWorkers();
+
+    this.handleGetWorkersResponse(this.route.snapshot.data.workersWhoRequireCWPAnswer);
   }
 
   private getWorkers(): void {

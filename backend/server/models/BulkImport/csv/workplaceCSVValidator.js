@@ -1,6 +1,7 @@
 const BUDI = require('../BUDI').BUDI;
 const models = require('../../index');
 const clonedeep = require('lodash.clonedeep');
+const lodash = require('lodash');
 const moment = require('moment');
 const { sanitisePostcode } = require('../../../utils/postcodeSanitizer');
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
@@ -34,7 +35,7 @@ const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
   'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
-  'REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,BENEFITS,SICKPAY,PENSION,HOLIDAY';
+  'REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,CWPUSEDESC,BENEFITS,SICKPAY,PENSION,HOLIDAY';
 
 class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments, mappings) {
@@ -89,9 +90,14 @@ class WorkplaceCSVValidator {
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkforcePathwayAwareness = null;
     this._careWorkforcePathwayUse = null;
+    this._careWorkforcePathwayUseDescription = null;
 
     this._id = null;
     this._ignore = false;
+  }
+
+  get CWP_USE_REASON_SOMETHING_ELSE_ID() {
+    return '10';
   }
 
   static get EXPECT_JUST_ONE_ERROR() {
@@ -267,6 +273,9 @@ class WorkplaceCSVValidator {
   }
   static get CWPUSE_WARNING() {
     return 2490;
+  }
+  static get CWPUSEDESC_WARNING() {
+    return 2500;
   }
 
   get id() {
@@ -1976,10 +1985,37 @@ class WorkplaceCSVValidator {
     }
   }
 
-  _validateCwpReasons(cwpUse, cwpUseReasons) {
-    const ALLOWED_REASON_VALUES = this.mappings.cwpUseReason.map((mapping) => mapping.bulkUploadCode.toString());
+  _validateCwpUse() {
+    if (this._currentLine.CWPUSE === '') {
+      this._careWorkforcePathwayUse = null;
+      return true;
+    }
 
-    const cwpUseAsString = this._convertYesNoDontKnow(cwpUse);
+    const ALLOWED_USE_VALUES = ['1', '2', '999'];
+
+    const cwpUseAndReasons = this._currentLine.CWPUSE.split(';');
+    const cwpUse = cwpUseAndReasons[0];
+    const cwpUseReasons = lodash.uniq(cwpUseAndReasons.slice(1));
+
+    if (!ALLOWED_USE_VALUES.includes(cwpUse)) {
+      this._validationErrors.push(
+        this._generateWarning('The code you have entered for CWPUSE is incorrect and will be ignored', 'CWPUSE'),
+      );
+      return false;
+    } else {
+      const cwpUseAsString = this._convertYesNoDontKnow(cwpUse);
+
+      return this._validateCwpReasons(cwpUseAsString, cwpUseReasons);
+    }
+  }
+
+  _validateCwpReasons(cwpUseAsString, cwpUseReasons) {
+    if (cwpUseAsString !== 'Yes') {
+      this._careWorkforcePathwayUse = { use: cwpUseAsString, reasons: [] };
+      return true;
+    }
+
+    const ALLOWED_REASON_VALUES = this.mappings.cwpUseReason.map((mapping) => mapping.bulkUploadCode.toString());
 
     const validReasons = cwpUseReasons?.filter((reasonId) => ALLOWED_REASON_VALUES.includes(reasonId));
     const everyReasonIsValid = cwpUseReasons && validReasons.length === cwpUseReasons.length;
@@ -1995,24 +2031,30 @@ class WorkplaceCSVValidator {
     return true;
   }
 
-  _validateCwpUse() {
-    const ALLOWED_USE_VALUES = ['', '1', '2', '999'];
+  _validateCwpUseDesc() {
+    const MAX_LENGTH = 120;
 
-    const cwpUseAndReasons = this._currentLine.CWPUSE.split(';');
-    const cwpUse = cwpUseAndReasons[0];
-    const cwpUseReasons = cwpUseAndReasons.slice(1);
-
-    if (!ALLOWED_USE_VALUES.includes(cwpUse)) {
+    if (this._currentLine.CWPUSEDESC.length > MAX_LENGTH) {
       this._validationErrors.push(
-        this._generateWarning('The code you have entered for CWPUSE is incorrect and will be ignored', 'CWPUSE'),
+        this._generateWarning(`CWPUSEDESC is longer than ${MAX_LENGTH} characters and will be ignored`, 'CWPUSEDESC'),
       );
       return false;
-    } else if (cwpUse === '') {
-      this._careWorkforcePathwayUse = null;
-      return true;
-    } else {
-      return this._validateCwpReasons(cwpUse, cwpUseReasons);
     }
+
+    const hasInput = this._currentLine.CWPUSEDESC?.length > 0;
+
+    const reasonIds = this._careWorkforcePathwayUse?.reasons;
+    const didNotSelectReasonForSomethingElse = !reasonIds?.includes(this.CWP_USE_REASON_SOMETHING_ELSE_ID);
+
+    if (hasInput && didNotSelectReasonForSomethingElse) {
+      this._validationErrors.push(
+        this._generateWarning('CWPUSEDESC will be ignored as 10 is not selected as a reason for CWPUSE', 'CWPUSEDESC'),
+      );
+      return false;
+    }
+    this._careWorkforcePathwayUseDescription = this._currentLine.CWPUSEDESC;
+
+    return true;
   }
 
   _validateBenefits() {
@@ -2653,6 +2695,17 @@ class WorkplaceCSVValidator {
     this._careWorkforcePathwayUse = { reasons, use };
   }
 
+  _transformCareWorkforcePathwayUseDesc() {
+    const description = this._careWorkforcePathwayUseDescription;
+    const somethingElseReason = this._careWorkforcePathwayUse?.reasons?.find(
+      (reason) => reason.id == this.CWP_USE_REASON_SOMETHING_ELSE_ID,
+    );
+
+    if (description && somethingElseReason) {
+      somethingElseReason.other = description;
+    }
+  }
+
   _transformCashLoyaltyForFirstTwoYears() {
     const YES = '1';
     const YES_COMMA = '1;';
@@ -2814,6 +2867,7 @@ class WorkplaceCSVValidator {
       this._validateAcceptCareCertificate();
       this._validateCwpAwareness();
       this._validateCwpUse();
+      this._validateCwpUseDesc();
       this._validateSickPay();
       this._validateHoliday();
       this._validatePensionContribution();
@@ -2903,6 +2957,7 @@ class WorkplaceCSVValidator {
       status = !this._transformRepeatTrainingAndAcceptCareCert() ? false : status;
       status = !this._transformCareWorkforcePathwayAwareness() ? false : status;
       status = !this._transformCareWorkforcePathwayUse() ? false : status;
+      status = !this._transformCareWorkforcePathwayUseDesc() ? false : status;
       status = !this._transformCashLoyaltyForFirstTwoYears() ? false : status;
       status = !this._transformPensionAndSickPay() ? false : status;
       return status;
@@ -3293,6 +3348,17 @@ class WorkplaceCSVValidator {
     const cwpUseAndReasons = [cwpUse, ...reasonsCode].join(';');
 
     columns.push(cwpUseAndReasons);
+
+    // cwp use desc
+    const useIsYes = entity.careWorkforcePathwayUse === 'Yes';
+    const somethingElseReason = entity.CareWorkforcePathwayReasons?.find((reason) => reason.isOther === true);
+
+    if (useIsYes && somethingElseReason) {
+      const reasonDescriptionText = somethingElseReason.EstablishmentCWPReasons.other ?? '';
+      columns.push(reasonDescriptionText);
+    } else {
+      columns.push('');
+    }
 
     // cash Loyalty
     const cashLoyaltyMapping = (value) => {

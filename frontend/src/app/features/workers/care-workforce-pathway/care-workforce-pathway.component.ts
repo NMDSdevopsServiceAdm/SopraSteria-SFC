@@ -1,14 +1,15 @@
+import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component } from '@angular/core';
+import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { CareWorkforcePathwayRoleCategory } from '@core/model/careWorkforcePathwayCategory.model';
-import { AlertService } from '@core/services/alert.service';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+
 import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
@@ -60,7 +61,7 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
 
     this.setupPageWhenCameFromCWPSummaryPage();
 
-    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestionsFlag', false);
+    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestions', false);
     this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
     this.next = this.getRoutePath('staff-record-summary');
   }
