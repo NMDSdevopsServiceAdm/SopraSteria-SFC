@@ -55,7 +55,6 @@ import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-w
 import { NavigateToWorkplaceDropdownComponent } from './components/navigate-to-workplace-dropdown/navigate-to-workplace-dropdown.component';
 import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
 import { NewTabsComponent } from './components/new-tabs/new-tabs.component';
-import { WDFTabComponent } from './components/new-wdf-tabs/new-wdf-tab.component';
 import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-summary/wdf-workplace-summary.component';
 import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/workplace-summary.component';
 import { NumberInputWithButtonsComponent } from './components/number-input-with-buttons/number-input-with-buttons.component';
@@ -111,11 +110,9 @@ import { UpdateVacanciesComponent } from './components/update-starters-leavers-v
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { UserTableComponent } from './components/users-table/user.table.component';
-import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
 import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
-import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
@@ -142,6 +139,9 @@ import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 import { JobRoleNumbersTableComponent } from './components/job-role-numbers-table/job-role-numbers-table.component';
+import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pathway-role-category.pipe';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
+import { HasValuePipe } from './pipes/has-value.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -193,7 +193,6 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
     TrainingLinkPanelComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
-    WdfConfirmationPanelComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
@@ -232,7 +231,6 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
-    WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
@@ -254,7 +252,6 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
     NewWorkplaceSummaryComponent,
     NewArticleListComponent,
     LinkWithArrowComponent,
-    WDFTabComponent,
     WDFWorkplaceSummaryComponent,
     NewDashboardHeaderComponent,
     ServiceNamePipe,
@@ -285,6 +282,8 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
     SelectJobRolesToAddComponent,
     NumberInputWithButtonsComponent,
     JobRoleNumbersTableComponent,
+    CareWorkforcePathwayRoleCategoryPipe,
+    HasValuePipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -330,7 +329,6 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
     TabsComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
-    WdfConfirmationPanelComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
@@ -370,7 +368,6 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
-    WdfTabComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
@@ -393,7 +390,6 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
     NewWorkplaceSummaryComponent,
     NewArticleListComponent,
     LinkWithArrowComponent,
-    WDFTabComponent,
     WDFWorkplaceSummaryComponent,
     NewDashboardHeaderComponent,
     ServiceNamePipe,
@@ -418,9 +414,18 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
     HelpContentComponent,
     FormatStartersLeaversVacanciesPipe,
     NumberInputWithButtonsComponent,
-    NumberInputWithButtonsComponent,
     JobRoleNumbersTableComponent,
+    CareWorkforcePathwayRoleCategoryPipe,
+    HasValuePipe,
   ],
-  providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver, QuestionsAndAnswersResolver],
+  providers: [
+    DialogService,
+    TotalStaffComponent,
+    ArticleListResolver,
+    PageResolver,
+    QuestionsAndAnswersResolver,
+    FeatureFlagsResolver,
+    HasValuePipe,
+  ],
 })
 export class SharedModule {}

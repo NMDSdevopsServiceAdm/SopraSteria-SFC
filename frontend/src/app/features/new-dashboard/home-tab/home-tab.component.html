@@ -10,7 +10,12 @@
     [workersNotCompleted]="workersNotCompleted"
     [(navigateToTab)]="navigateToTab"
     [canViewEstablishment]="canViewEstablishment"
+    [canEditWorker]="canEditWorker"
     [noOfWorkersWhoRequireInternationalRecruitment]="noOfWorkersWhoRequireInternationalRecruitment"
+    [noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered]="
+      noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered
+    "
+    [cwpQuestionsFlag]="cwpQuestionsFlag"
   ></app-summary-section>
 </div>
 <div class="govuk-width-container govuk-!-margin-top-7" data-cy="cards-and-links">
@@ -56,10 +61,7 @@
         <h3 class="govuk-heading-s">Other links</h3>
         <ul class="govuk-list govuk-!-margin-bottom-6">
           <app-link-with-arrow>
-            <a class="govuk-link" [routerLink]="['/asc-wds-certificate']"
-              ><p class="govuk-tag govuk-tag--blue govuk-!-margin-right-6 asc-tag" style="float: right">NEW</p>
-              Get your ASC-WDS certificate</a
-            >
+            <a class="govuk-link" [routerLink]="['/asc-wds-certificate']">Get your ASC-WDS certificate</a>
           </app-link-with-arrow>
 
           <app-link-with-arrow *ngIf="canBulkUpload">

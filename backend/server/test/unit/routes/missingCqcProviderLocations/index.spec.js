@@ -17,6 +17,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
   describe('get missingCqcProviderLocations', async () => {
     const provId = '1-2003';
     const cqcLocationIds = ['1-12427547986', '1-2043158439', '1-5310224737'];
+    const locationsTableIds = ['1-12427547986', '1-2043158439', '1-5310224737'];
 
     let request;
 
@@ -26,6 +27,14 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           providerId: provId,
           locationIds: cqcLocationIds,
         };
+      });
+
+      sinon.stub(models.location, 'findMultipleByLocationID').callsFake(async (locationIds) => {
+        return [
+          { locationid: '1-12427547986' },
+          { locationid: '1-2043158439' },
+          { locationid: '1-5310224737' },
+        ];
       });
 
       request = {
@@ -84,6 +93,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       });
 
       sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
 
       const expectedResult = {
         showMissingCqcMessage: false,
@@ -93,6 +103,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: cqcLocationIds,
         },
         childWorkplacesCount: 3,
+        showFlag: false,
       };
 
       const req = httpMocks.createRequest(request);
@@ -110,6 +121,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       });
 
       sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
 
       const expectedResult = {
         showMissingCqcMessage: false,
@@ -119,6 +131,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: [],
         },
         childWorkplacesCount: 3,
+        showFlag: false,
       };
 
       request.query.provId = null;
@@ -140,6 +153,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       });
 
       sinon.stub(CQCDataAPI, 'getCQCProviderData').throws();
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
 
       const expectedResult = {
         showMissingCqcMessage: false,
@@ -149,6 +163,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: [],
         },
         childWorkplacesCount: 3,
+        showFlag: false,
       };
 
       const req = httpMocks.createRequest(request);
@@ -165,6 +180,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       sinon.stub(models.establishment, 'getChildWorkplaces').returns({ rows: [], count: 0 });
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns(null);
       sinon.stub(CQCDataAPI, 'getCQCProviderData').returns(null);
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
 
       request.locationId = null;
 
@@ -176,6 +192,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: [],
         },
         childWorkplacesCount: 0,
+        showFlag: false,
       };
 
       const req = httpMocks.createRequest(request);
@@ -203,6 +220,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
       sinon.stub(CQCDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
         return {};
       });
@@ -215,6 +233,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: [],
         },
         childWorkplacesCount: 3,
+        showFlag: false,
       };
 
       const req = httpMocks.createRequest(request);
@@ -226,20 +245,74 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       expect(res.statusCode).to.deep.equal(200);
     });
 
+    it('should return with showFlag set to true if establishment object returned from hasChildWorkplaceWhichNeedsAttention', async () => {
+      sinon.restore();
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
+        updatedAt: moment(moment().subtract(21, 'days')),
+      });
+      sinon.stub(CQCDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
+        return {};
+      });
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns({ id: 1234 });
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await missingCqcProviderLocations(req, res);
+      const response = res._getData();
+      expect(response.showFlag).to.be.true;
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
     it('should return an array of child workplaces location ids', async () => {
       const expectedResult = ['1-123', '1-53'];
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
 
       expect(childWorkplacesLocationIds).to.deep.equal(expectedResult);
     });
+  });
+
+  describe('findMissingCqcLocationsIds', async () => {
+    setup = (overrides = {}) => {
+      const provId = '1-2003';
+      const childWorkplacesLocationIds = ['1-123', '1-53'];
+
+      sinon.restore();
+      sinon.stub(CQCDataAPI, 'getCQCProviderData').returns({ locationIds: overrides?.cqcLocationIds ??  ['1-123', '1-53', '1-324'] });
+
+      sinon.stub(models.location, 'findMultipleByLocationID').callsFake(async(locationIds) => {
+        return overrides?.locationTableIds ??
+          [
+            { locationid: '1-123' },
+            { locationid: '1-53' },
+            { locationid: '1-324' },
+          ]
+      });
+
+      return {
+        provId,
+        childWorkplacesLocationIds
+      }
+    }
 
     it('should return an array of missing cqc child workplaces location ids and count', async () => {
-      const cqcLocationIds = ['1-123', '1-53', '1-324'];
-      const childWorkplacesLocationIds = ['1-123', '1-53'];
+
+      const { provId, childWorkplacesLocationIds } = setup();
 
       const expectedResult = { count: 1, missingCqcLocationIds: ['1-324'] };
 
-      const missingCqcLocationIds = await findMissingCqcLocationIds(cqcLocationIds, childWorkplacesLocationIds);
+      const missingCqcLocationIds = await findMissingCqcLocationIds(provId, childWorkplacesLocationIds);
+
+      expect(missingCqcLocationIds).to.deep.equal(expectedResult);
+    });
+
+    it('should not count deregistered cqc child workplace locations', async () => {
+      const { provId, childWorkplacesLocationIds } = setup({ cqcLocationIds: ['1-123', '1-53', '1-324', '1-DEREGISTERED'] });
+
+      const expectedResult = { count: 1, missingCqcLocationIds: ['1-324'] };
+
+      const missingCqcLocationIds = await findMissingCqcLocationIds(provId, childWorkplacesLocationIds);
 
       expect(missingCqcLocationIds).to.deep.equal(expectedResult);
     });

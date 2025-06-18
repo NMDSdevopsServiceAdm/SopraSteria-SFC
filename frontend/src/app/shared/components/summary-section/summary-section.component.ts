@@ -21,12 +21,16 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() workersNotCompleted: Worker[];
   @Input() canViewListOfWorkers: boolean;
   @Input() canViewEstablishment: boolean;
+  @Input() canEditWorker: boolean;
   @Input() showMissingCqcMessage: boolean;
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
+  @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  @Input() cwpQuestionsFlag: boolean;
+  @Input() workplacesNeedAttention: boolean;
 
-  public sections = [
+  public sections: Section[] = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
     { linkText: 'Staff records', fragment: 'staff-records', message: '', route: undefined, redFlag: false, link: true },
     {
@@ -43,6 +47,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     linkText: 'Your other workplaces',
     message: '',
     orangeFlag: false,
+    redFlag: false,
     link: true,
   };
 
@@ -65,14 +70,17 @@ export class SummarySectionComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {}
 
-  public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
+  public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
     event.preventDefault();
     if (this.isParentSubsidiaryView) {
-      await this.navigateInSubView(fragment, route);
-    } else if (route) {
+      return await this.navigateInSubView(fragment, route);
+    }
+
+    if (route) {
       await this.router.navigate(route);
-      this.tabsService.selectedTab = fragment;
-    } else {
+    }
+
+    if (fragment && !skipTabSwitch) {
       this.tabsService.selectedTab = fragment;
     }
   }
@@ -89,7 +97,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[0].message = 'Add more details to your workplace';
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
-    } else if (!numberOfStaff) {
+    } else if (numberOfStaff === undefined || numberOfStaff === null) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.sections[0].redFlag = true;
     } else if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
@@ -110,9 +118,24 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   }
 
   public getStaffSummaryMessage(): void {
+    if (!this.canViewListOfWorkers) {
+      this.showViewSummaryLinks(this.sections[1].linkText);
+      return;
+    }
+
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
+    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && !this.cwpQuestionsFlag) {
+      this.sections[1].message = 'Where are your staff on the care workforce pathway?';
+      this.sections[1].skipTabSwitch = true;
+      this.sections[1].route = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        'care-workforce-pathway-workers-summary',
+      ];
+      this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
     } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
@@ -201,6 +224,10 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.otherWorkplacesSection.message = 'Have you added all of your workplaces?';
       this.otherWorkplacesSection.link = true;
       this.otherWorkplacesSection.orangeFlag = true;
+    } else if (this.workplacesNeedAttention) {
+      this.otherWorkplacesSection.message = 'You need to check your other workplaces';
+      this.otherWorkplacesSection.link = true;
+      this.otherWorkplacesSection.redFlag = true;
     } else {
       this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
       this.otherWorkplacesSection.link = false;
@@ -217,4 +244,15 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[2].link = false;
     }
   }
+}
+
+interface Section {
+  linkText: string;
+  fragment: string;
+  message: string;
+  route: string[];
+  redFlag: boolean;
+  link: boolean;
+  skipTabSwitch?: boolean;
+  showMessageAsText?: boolean;
 }

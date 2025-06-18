@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
@@ -6,11 +7,10 @@ import { AlertService } from '@core/services/alert.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -18,7 +18,8 @@ import { WorkersModule } from '../workers.module';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level.component';
 
 describe('OtherQualificationsLevelComponent', () => {
-  async function setup(returnUrl = true) {
+  async function setup(overrides: any = {}) {
+    const cwpQuestions = overrides.cwpQuestionsFlag ?? false;
     const setupTools = await render(OtherQualificationsLevelComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -28,7 +29,7 @@ describe('OtherQualificationsLevelComponent', () => {
           useValue: {
             parent: {
               snapshot: {
-                url: [{ path: returnUrl ? 'staff-record-summary' : 'staff-uid' }],
+                url: [{ path: overrides.returnUrl ? 'staff-record-summary' : 'staff-uid' }],
                 data: {
                   establishment: { uid: 'mocked-uid' },
                   primaryWorkplace: {},
@@ -42,12 +43,24 @@ describe('OtherQualificationsLevelComponent', () => {
         },
         {
           provide: WorkerService,
-          useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
+          // useFactory: MockWorkerServiceWithOverrides.factory(overrides),
+          deps: [HttpClient],
+          useFactory: MockWorkerServiceWithOverrides.factory({
+            returnTo: () => {
+              return overrides.returnUrl
+                ? {
+                    url: ['/dashboard'],
+                    fragment: 'workplace',
+                  }
+                : null;
+            },
+          }),
         },
         {
           provide: QualificationService,
           useClass: MockQualificationService,
         },
+        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestions }) },
         AlertService,
         WindowRef,
       ],
@@ -56,9 +69,13 @@ describe('OtherQualificationsLevelComponent', () => {
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.stub();
+
+    // hasAnsweredNonMandatoryQuestion should always be true,
+    // as this question only visited when OtherQualifications was answered with yes
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    spyOn(workerService, 'hasAnsweredNonMandatoryQuestion').and.returnValue(true);
 
     return {
       ...setupTools,
@@ -70,23 +87,37 @@ describe('OtherQualificationsLevelComponent', () => {
   }
 
   it('should render a OtherQualificationsLevelComponent', async () => {
-    const { component } = await setup();
+    const overrides = { cwpQuestionsFlag: false, returnUrl: true };
+    const { component } = await setup(overrides);
     expect(component).toBeTruthy();
   });
 
   it('should render the OtherQualificationsLevelComponent heading, subheading and select box', async () => {
-    const { getByText, getByLabelText, getByTestId } = await setup();
+    const overrides = { cwpQuestionsFlag: false, returnUrl: true };
+    const { getByText, getByTestId } = await setup(overrides);
 
     expect(getByText(`What's the highest level of their other qualifications?`)).toBeTruthy;
     expect(getByTestId('section-heading')).toBeTruthy();
-    expect(getByLabelText('Qualification level')).toBeTruthy();
+    expect(getByText('Qualification level')).toBeTruthy();
+  });
+
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Get help with qualification levels')).toBeTruthy();
+  });
+
+  it("should show the correct format for don't know answer", async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('I do not know')).toBeTruthy();
   });
 
   describe('submit buttons', () => {
-    it('should render the page with a save button when the return value is null', async () => {
-      const { getByText } = await setup(false);
+    it('should render the page with a Save and continue button when the return value is null', async () => {
+      const { getByText } = await setup({ returnUrl: false });
 
-      const button = getByText('Save');
+      const button = getByText('Save and continue');
       const viewRecordLink = getByText('View this staff record');
 
       expect(button).toBeTruthy();
@@ -94,7 +125,8 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should render the page with a save and return button and an cancel link when there is a return value', async () => {
-      const { getByText } = await setup();
+      const overrides = { cwpQuestionsFlag: false, returnUrl: true };
+      const { getByText } = await setup(overrides);
 
       const button = getByText('Save and return');
       const exitLink = getByText('Cancel');
@@ -106,29 +138,75 @@ describe('OtherQualificationsLevelComponent', () => {
 
   describe('progress bar', () => {
     it('should render the workplace progress bar', async () => {
-      const { getByTestId } = await setup(false);
+      const { getByTestId } = await setup({ returnUrl: false });
 
       expect(getByTestId('progress-bar-1')).toBeTruthy();
     });
 
     it('should not render the progress bars when accessed from outside the flow', async () => {
-      const { queryByTestId } = await setup();
+      const overrides = { cwpQuestionsFlag: false, returnUrl: true };
+      const { queryByTestId } = await setup(overrides);
 
       expect(queryByTestId('progress-bar-1')).toBeFalsy();
     });
   });
 
   describe('navigation', () => {
-    it('should navigate to staff-record-summary page when submitting from flow', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+    it('should navigate to care-workforce-pathway page when submitting from flow', async () => {
+      const overrides = { cwpQuestionsFlag: false, returnUrl: false };
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(overrides);
+
+      await fixture.whenStable();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      fireEvent.click(getByLabelText('Level 1'));
 
-      const saveButton = getByText('Save');
+      const saveButton = getByText('Save and continue');
+      fireEvent.click(saveButton);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'care-workforce-pathway',
+      ]);
+    });
+
+    it('should navigate to care-workforce-pathway page when skipping the question in the flow', async () => {
+      const overrides = { cwpQuestionsFlag: false, returnUrl: false };
+      const { component, routerSpy, getByText } = await setup(overrides);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const skipButton = getByText('Skip this question');
+      fireEvent.click(skipButton);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'care-workforce-pathway',
+      ]);
+    });
+
+    it('should navigate to staff-record-summary page when submitting from flow and the feature flsg is on', async () => {
+      const overrides = { cwpQuestionsFlag: true, returnUrl: false };
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(overrides);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
       fixture.detectChanges();
 
@@ -141,8 +219,9 @@ describe('OtherQualificationsLevelComponent', () => {
       ]);
     });
 
-    it('should navigate to staff-record-summary page when skipping the question in the flow', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
+    it('should navigate to staff-record-summary page when skipping the question in the flow and the feature flag is on', async () => {
+      const overrides = { cwpQuestionsFlag: true, returnUrl: false };
+      const { component, routerSpy, getByText } = await setup(overrides);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -160,13 +239,15 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
+      const overrides = { returnUrl: true };
+      const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(overrides);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
       const skipButton = getByText('Save and return');
       fireEvent.click(skipButton);
@@ -182,7 +263,8 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const { component, routerSpy, getByText } = await setup();
+      const overrides = { returnUrl: true };
+      const { component, routerSpy, getByText } = await setup(overrides);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -200,15 +282,17 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing save and return in funding version of page', async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+      const overrides = { cwpQuestionsFlag: false, returnUrl: false };
+      const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(overrides);
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
       fixture.detectChanges();
       const workerId = component.worker.uid;
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
       const skipButton = getByText('Save and return');
       fireEvent.click(skipButton);
@@ -218,7 +302,8 @@ describe('OtherQualificationsLevelComponent', () => {
     });
 
     it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
-      const { component, routerSpy, getByText, router, fixture } = await setup(false);
+      const overrides = { cwpQuestionsFlag: false, returnUrl: false };
+      const { component, routerSpy, getByText, router, fixture } = await setup(overrides);
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
@@ -233,39 +318,44 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('Completing Add details to staff record flow', () => {
-    it('should add Staff record added alert when submitting from flow', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup(false);
+    it('should add Staff record added alert when submitting from flow if cwpQuestion is hidden by feature flag', async () => {
+      const { getByText, getByLabelText, alertSpy, fixture } = await setup({
+        returnUrl: false,
+        cwpQuestionsFlag: true,
+      });
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
-      const saveButton = getByText('Save');
+      const saveButton = getByText('Save and continue');
       fireEvent.click(saveButton);
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: 'Staff record saved',
+        message: 'Staff record details saved',
       });
     });
 
     ['Skip this question', 'View this staff record'].forEach((link) => {
       it(`should add Staff record added alert when '${link}' is clicked`, async () => {
-        const { getByText, alertSpy } = await setup(false);
+        const { getByText, alertSpy } = await setup({ returnUrl: false });
 
         fireEvent.click(getByText(link));
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: 'Staff record saved',
+          message: 'Staff record details saved',
         });
       });
     });
 
     it('should not add Staff record added alert when user submits but not in flow', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup();
+      const { getByText, getByLabelText, alertSpy, fixture } = await setup({ returnUrl: true });
 
-      const select = getByLabelText('Qualification level', { exact: false });
-      fireEvent.change(select, { target: { value: '1' } });
+      const radioButton = getByLabelText('Entry level');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
       const saveButton = getByText('Save and return');
       fireEvent.click(saveButton);

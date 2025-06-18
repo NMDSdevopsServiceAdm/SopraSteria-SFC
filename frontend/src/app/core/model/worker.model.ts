@@ -107,7 +107,33 @@ export interface Worker {
   longTermAbsence: string;
   healthAndCareVisa?: string;
   employedFromOutsideUk?: string;
+  careWorkforcePathwayRoleCategory?: {
+    roleCategoryId: number;
+    title: string;
+    description: string;
+  };
 }
+
+const MandatoryInfoFields = ['nameOrId', 'mainJob', 'contract'];
+const MetadataFields = [
+  'uid',
+  'ustatus',
+  'created',
+  'updated',
+  'updatedBy',
+  'completed',
+  'localIdentifier',
+  'wdf',
+  'wdfEligible',
+  'trainingCount',
+  'trainingLastUpdated',
+  'expiredTrainingCount',
+  'qualificationsLastUpdated',
+  'missingMandatoryTrainingCount',
+  'qualificationCount',
+];
+
+export const MandatoryInfoAndMetadataFields = MandatoryInfoFields.concat(MetadataFields);
 
 export interface WorkerPay {
   value: string;

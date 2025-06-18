@@ -228,6 +228,16 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       expect(addLink.getAttribute('ng-reflect-router-link')).toEqual('update-total-staff');
       expect(within(numberOfStaffRow).queryByText('-')).toBeTruthy();
     });
+
+    it('should display 0 and a Change link if the number of staff is 0', async () => {
+      const { queryByTestId } = await setup({ workplace: { numberOfStaff: 0 } });
+
+      const numberOfStaffRow = queryByTestId('numberOfStaff');
+      const changeLink = within(numberOfStaffRow).queryByText('Change');
+
+      expect(changeLink.getAttribute('ng-reflect-router-link')).toEqual('update-total-staff');
+      expect(within(numberOfStaffRow).queryByText('0')).toBeTruthy();
+    });
   });
 
   describe('Current staff vacancies', () => {

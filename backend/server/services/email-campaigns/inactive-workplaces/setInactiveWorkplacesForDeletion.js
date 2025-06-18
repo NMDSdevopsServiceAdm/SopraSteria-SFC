@@ -1,6 +1,5 @@
 const {
   getInactiveWorkplacesForDeletion,
-  refreshInactiveWorkplacesForDeletion,
 } = require('../../../models/email-campaigns/inactive-workplaces/getInactiveWorkplacesForDeletion');
 
 const transformInactiveWorkplacesForDeletion = (inactiveWorkplace) => {
@@ -11,6 +10,8 @@ const transformInactiveWorkplacesForDeletion = (inactiveWorkplace) => {
   const lastUpdated = inactiveWorkplace.LastUpdated;
   const dataOwner = inactiveWorkplace.DataOwner;
   const address = formattedAddress(inactiveWorkplace);
+  const locationId = inactiveWorkplace.LocationID;
+  const parentNmdsId = inactiveWorkplace.ParentNmdsID;
 
   return {
     name,
@@ -20,6 +21,8 @@ const transformInactiveWorkplacesForDeletion = (inactiveWorkplace) => {
     lastUpdated,
     dataOwner,
     establishmentID,
+    locationId,
+    parentNmdsId,
   };
 };
 
@@ -30,7 +33,6 @@ const formattedAddress = (inactiveWorkplace) => {
 };
 
 const findInactiveWorkplacesForDeletion = async () => {
-  await refreshInactiveWorkplacesForDeletion();
   return (await getInactiveWorkplacesForDeletion()).map(transformInactiveWorkplacesForDeletion);
 };
 

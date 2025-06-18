@@ -36,7 +36,7 @@
         </h3>
         <p>Access all your special offers and discounts across Skills for Care's product range.</p>
       </div>
-      <div *ngIf="canViewReports && !wdfNewDesignFlag">
+      <div *ngIf="canViewReports">
         <h3 class="govuk-heading-m govuk-!-font-weight-regular govuk-!-margin-bottom-0">
           <a [routerLink]="['/funding']"> Check your data </a>
         </h3>
@@ -58,10 +58,7 @@
     <h3 class="govuk-heading-s govuk-!-margin-top-1">Other links</h3>
     <ul class="govuk-list govuk-!-margin-bottom-6">
       <li class="govuk-!-margin-bottom-3">
-        <a [routerLink]="['/asc-wds-certificate']"
-          ><p class="govuk-tag govuk-tag--blue govuk-!-margin-right-8 asc-tag" style="float: right">NEW</p>
-          Get your ASC-WDS certificate</a
-        >
+        <a [routerLink]="['/asc-wds-certificate']">Get your ASC-WDS certificate</a>
       </li>
       <li class="govuk-!-margin-bottom-3">
         <a [routerLink]="['/about-ascwds']">About ASC-WDS</a>

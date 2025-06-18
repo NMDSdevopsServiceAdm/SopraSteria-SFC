@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { RequireCWPAnswerForSomeWorkersGuard } from '@core/guards/require-cwp-answer-for-some-workers/require-cwp-answer-for-some-workers.guard';
 import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
+import { GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
@@ -15,39 +18,21 @@ import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-rec
 import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-for-leaving.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
-import {
-  SelectQualificationTypeComponent,
-} from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
-import {
-  SelectTrainingCategoryComponent,
-} from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
-import {
-  ViewTrainingComponent,
-} from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
-import {
-  UpdateLeaversComponent,
-} from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
-import {
-  UpdateStartersComponent,
-} from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
-import {
-  UpdateVacanciesComponent,
-} from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
+import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
+import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
+import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
+import { UpdateLeaversComponent } from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
+import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 
 import {
   JobRoleType,
   SelectJobRolesToAddComponent,
 } from '../../shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
-import {
-  AddEditQualificationComponent,
-} from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
+import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from '../training-and-qualifications/add-edit-training/add-edit-training.component';
-import {
-  DeleteRecordComponent,
-} from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
-import {
-  NewTrainingAndQualificationsRecordComponent,
-} from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
+import { DeleteRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
+import { NewTrainingAndQualificationsRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
@@ -55,6 +40,8 @@ import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-week
 import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
+import { CareWorkforcePathwayWorkersSummaryComponent as CareWorkforcePathwayWorkersSummaryComponent } from './care-workforce-pathway-workers-summary/care-workforce-pathway-workers-summary.component';
+import { CareWorkforcePathwayRoleComponent } from './care-workforce-pathway/care-workforce-pathway.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
@@ -68,9 +55,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
-import {
-  Level2AdultSocialCareCertificateComponent,
-} from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
@@ -85,19 +70,13 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
-import {
-  UpdateTotalNumberOfStaffComponent,
-} from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
-import {
-  UpdateWorkplaceDetailsAfterStaffChangesComponent,
-} from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
+import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
+import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
@@ -260,6 +239,12 @@ const routes: Routes = [
     component: DeleteAnotherStaffRecordComponent,
   },
   {
+    path: 'care-workforce-pathway-workers-summary',
+    component: CareWorkforcePathwayWorkersSummaryComponent,
+    canActivate: [RequireCWPAnswerForSomeWorkersGuard],
+    resolve: { workersWhoRequireCWPAnswer: GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver },
+  },
+  {
     path: 'basic-records-save-success',
     canActivate: [CheckPermissionsGuard],
     component: BasicRecordsSaveSuccessComponent,
@@ -278,7 +263,7 @@ const routes: Routes = [
     path: ':id',
     canActivate: [CheckPermissionsGuard],
     component: EditWorkerComponent,
-    resolve: { worker: WorkerResolver, jobs: JobsResolver },
+    resolve: { worker: WorkerResolver, jobs: JobsResolver, featureFlags: FeatureFlagsResolver },
     data: {
       permissions: ['canViewWorker'],
     },
@@ -459,6 +444,11 @@ const routes: Routes = [
             path: 'other-qualifications-level',
             component: OtherQualificationsLevelComponent,
             data: { title: 'Highest Level of Other Qualifications' },
+          },
+          {
+            path: 'care-workforce-pathway',
+            component: CareWorkforcePathwayRoleComponent,
+            data: { title: 'Care Workforce Pathway' },
           },
           {
             path: 'add-qualification',
@@ -747,6 +737,11 @@ const routes: Routes = [
         path: 'other-qualifications-level',
         component: OtherQualificationsLevelComponent,
         data: { title: 'Highest Level of Other Qualifications' },
+      },
+      {
+        path: 'care-workforce-pathway',
+        component: CareWorkforcePathwayRoleComponent,
+        data: { title: 'Care Workforce Pathway' },
       },
       {
         path: 'add-qualification',

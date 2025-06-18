@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, OnChanges } from '@angular/core';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 
@@ -6,10 +6,20 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
   selector: 'app-qualifications-and-training',
   templateUrl: './qualifications-and-training.component.html',
 })
-export class QualificationsAndTrainingComponent extends StaffRecordSummaryComponent {
+export class QualificationsAndTrainingComponent
+  extends StaffRecordSummaryComponent
+  implements OnInit, OnDestroy, OnChanges
+{
+  public cwpQuestionsFlag: boolean;
+
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() public canEditWorker: boolean;
+
+  protected init(): void {
+    const snapshotData = this.route.snapshot.data;
+    this.cwpQuestionsFlag = snapshotData?.featureFlags?.cwpQuestions ?? true;
+  }
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
@@ -19,7 +29,7 @@ export class QualificationsAndTrainingComponent extends StaffRecordSummaryCompon
     return this.worker.otherQualification === 'Yes';
   }
 
-  public showWdfConfirmations: any = {
+  public showWdfConfirmations: Record<string, boolean> = {
     careCertificate: null,
     qualificationInSocialCare: null,
     socialCareQualification: null,

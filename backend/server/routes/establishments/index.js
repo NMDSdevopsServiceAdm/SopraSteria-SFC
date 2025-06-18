@@ -32,13 +32,13 @@ const MandatoryTraining = require('./mandatoryTraining');
 const Workers = require('./workers');
 const Benchmarks = require('./benchmarks');
 const ExpiresSoonAlertDates = require('./expiresSoonAlertDates');
-const WdfClaims = require('./wdfClaims');
 const ChildWorkplaces = require('./childWorkplaces');
 const UpdateSingleEstablishmentField = require('./updateSingleEstablishmentField');
 const Certificates = require('./certificates');
 const TrainingAndQualifications = require('./trainingSummary');
 const InternationalRecruitment = require('./internationalRecruitment');
 const HasTrainingCertificates = require('./hasTrainingCertificates.js');
+const CareWorkforcePathway = require('./careWorkforcePathway.js');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -64,13 +64,13 @@ router.use('/:id/mandatoryTraining', MandatoryTraining);
 router.use('/:id/workers', Workers);
 router.use('/:id/benchmarks', Benchmarks);
 router.use('/:id/expiresSoonAlertDates', ExpiresSoonAlertDates);
-router.use('/:id/wdfClaims', WdfClaims);
 router.use('/:id/childWorkplaces', ChildWorkplaces);
 router.use('/:id/updateSingleEstablishmentField', UpdateSingleEstablishmentField);
 router.use('/:id/certificate', Certificates);
 router.use('/:id/trainingAndQualifications', TrainingAndQualifications);
 router.use('/:id/internationalRecruitment', InternationalRecruitment);
 router.use('/:id/hasTrainingCertificates', HasTrainingCertificates);
+router.use('/:id/careWorkforcePathway', CareWorkforcePathway);
 
 router.route('/:id').get(getEstablishment);
 router.route('/:id').post(hasPermission('canAddEstablishment'), addEstablishment);

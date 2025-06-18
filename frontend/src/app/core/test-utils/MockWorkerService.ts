@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { QualificationsByGroup, QualificationType } from '@core/model/qualification.model';
-import { CreateTrainingRecordResponse, MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
+import {
+  CreateTrainingRecordResponse,
+  MultipleTrainingResponse,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { NewWorkerMandatoryInfo, Reason, WorkerService } from '@core/services/worker.service';
@@ -70,6 +74,7 @@ export const workerBuilder = build('Worker', {
     nationality: { value: null },
     britishCitizenship: null,
     updated: '2024-05-01T06:50:45.882Z',
+    careWorkforcePathwayRoleCategory: null,
   },
 });
 
@@ -411,6 +416,8 @@ export const qualificationRecord = {
 export class MockWorkerService extends WorkerService {
   public _worker;
   public _alert;
+  public _returnTo;
+  public _addStaffRecordInProgress: boolean;
 
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
@@ -433,6 +440,18 @@ export class MockWorkerService extends WorkerService {
 
   public set worker(val) {
     this._worker = val;
+  }
+
+  public set returnTo(returnUrl) {
+    this._returnTo = returnUrl;
+  }
+
+  public set addStaffRecordInProgress(value: boolean) {
+    this._addStaffRecordInProgress = value;
+  }
+
+  public get addStaffRecordInProgress(): boolean {
+    return this._addStaffRecordInProgress;
   }
 
   public get returnTo(): URLStructure {
@@ -570,12 +589,23 @@ export class MockWorkerServiceWithOverrides extends MockWorkerService {
       const service = new MockWorkerServiceWithOverrides(httpClient);
 
       Object.keys(overrides).forEach((overrideName) => {
-        if (overrideName == 'worker') {
-          const worker = { ...workerBuilder(), ...overrides[overrideName] };
-          service.worker = worker;
-          service.worker$ = of(worker as Worker);
-        } else {
-          service[overrideName] = overrides[overrideName];
+        switch (overrideName) {
+          case 'worker': {
+            const worker = { ...workerBuilder(), ...overrides[overrideName] };
+            service.worker = worker;
+            service.worker$ = of(worker as Worker);
+            break;
+          }
+          case 'returnTo': {
+            Object.defineProperty(service, 'returnTo', {
+              get: () => overrides['returnTo'],
+            });
+            break;
+          }
+          default: {
+            service[overrideName] = overrides[overrideName];
+            break;
+          }
         }
       });
 

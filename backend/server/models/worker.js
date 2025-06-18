@@ -1060,6 +1060,31 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"RegisteredNurseChangedBy"',
       },
+      CareWorkforcePathwayRoleCategoryFK: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategoryFK"',
+      },
+      CareWorkforcePathwayRoleCategorySavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategorySavedAt"',
+      },
+      CareWorkforcePathwayRoleCategoryChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategoryChangedAt"',
+      },
+      CareWorkforcePathwayRoleCategorySavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategorySavedBy"',
+      },
+      CareWorkforcePathwayRoleCategoryChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CareWorkforcePathwayRoleCategoryChangedBy"',
+      },
       created: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -1188,6 +1213,11 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'RecruitedFromOtherFK',
       targetKey: 'id',
       as: 'recruitedFrom',
+    });
+    Worker.belongsTo(models.careWorkforcePathwayRoleCategory, {
+      foreignKey: 'CareWorkforcePathwayRoleCategoryFK',
+      targetKey: 'id',
+      as: 'careWorkforcePathwayRoleCategory',
     });
     Worker.belongsToMany(models.job, {
       through: 'workerJobs',
@@ -1418,6 +1448,48 @@ module.exports = function (sequelize, DataTypes) {
         ],
       },
     });
+  };
+
+  Worker.countAllWorkersWithoutCareWorkforceCategory = async function (establishmentId) {
+    return await this.count({
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CareWorkforcePathwayRoleCategoryFK: null,
+      },
+    });
+  };
+
+  Worker.getAndCountAllWorkersWithoutCareWorkforceCategory = async function ({
+    establishmentId,
+    itemsPerPage,
+    pageIndex,
+  }) {
+    const { count, rows } = await this.findAndCountAll({
+      attributes: ['uid', 'NameOrIdValue'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CareWorkforcePathwayRoleCategoryFK: null,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+        },
+      ],
+      order: [['NameOrIdValue', 'ASC']],
+      offset: itemsPerPage * pageIndex,
+      limit: itemsPerPage,
+    });
+
+    const workers = rows.map((worker) => {
+      const { uid, mainJob, NameOrIdValue: nameOrId } = worker;
+      return { uid, mainJob, nameOrId };
+    });
+
+    return { count, workers };
   };
 
   return Worker;

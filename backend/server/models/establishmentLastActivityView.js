@@ -69,6 +69,16 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'LastLogin',
       },
+      locationId: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'LocationID',
+      },
+      parentNmdsId: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'ParentNmdsID',
+      },
     },
     {
       tableName: '"EstablishmentLastActivity"',
