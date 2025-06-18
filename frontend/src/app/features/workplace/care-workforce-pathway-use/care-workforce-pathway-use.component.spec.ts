@@ -4,9 +4,11 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
@@ -68,6 +70,8 @@ describe('CareWorkforcePathwayUseComponent', () => {
           provide: BackLinkService,
           useValue: backLinkServiceSpy,
         },
+        AlertService,
+        WindowRef,
       ],
     });
 
@@ -77,8 +81,19 @@ describe('CareWorkforcePathwayUseComponent', () => {
       of({ ...establishmentService.establishment }),
     );
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     const component = setupTools.fixture.componentInstance;
-    return { ...setupTools, component, establishmentService, establishmentServiceSpy, routerSpy, backLinkServiceSpy };
+    return {
+      ...setupTools,
+      component,
+      establishmentService,
+      establishmentServiceSpy,
+      routerSpy,
+      backLinkServiceSpy,
+      alertSpy,
+    };
   };
 
   it('should create', async () => {
@@ -380,5 +395,38 @@ describe('CareWorkforcePathwayUseComponent', () => {
     const { backLinkServiceSpy } = await setup();
 
     expect(backLinkServiceSpy.showBackLink).toHaveBeenCalled();
+  });
+
+  describe('When coming from summary panel', () => {
+    it('should display banner when user submits and return is to home page', async () => {
+      const workplaceName = 'Test workplace name';
+      const { getByText, getByLabelText, alertSpy } = await setup({
+        establishmentService: {
+          returnTo: { url: ['/dashboard'], fragment: 'home' },
+          establishment: { name: workplaceName },
+        },
+      });
+
+      userEvent.click(getByLabelText(RadioButtonLabels.YES));
+      userEvent.click(getByLabelText(mockReasons[0].text));
+
+      userEvent.click(getByText('Save and return'));
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `Care workforce pathway information saved in '${workplaceName}'`,
+      });
+    });
+
+    it('should not display banner when user submits but has not come from home page', async () => {
+      const { getByText, getByLabelText, alertSpy } = await setup();
+
+      userEvent.click(getByLabelText(RadioButtonLabels.YES));
+      userEvent.click(getByLabelText(mockReasons[0].text));
+
+      userEvent.click(getByText('Save and return'));
+
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
   });
 });
