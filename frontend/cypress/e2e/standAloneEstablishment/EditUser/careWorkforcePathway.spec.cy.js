@@ -1,6 +1,7 @@
 import { CWPAwarenessAnswers, CWPUseReasons } from '../../../support/careWorkforcePathwayData';
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
+import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../../support/page_objects/workplaceQuestionPages';
 
 const establishmentID = StandAloneEstablishment.id;
 const establishmentName = StandAloneEstablishment.name;
@@ -124,21 +125,6 @@ describe('Care workforce pathway journey', () => {
     });
   });
 });
-
-const answerCWPAwarenessQuestion = (answer = CWPAwarenessAnswers[0]) => {
-  cy.get('h1').should('contain', 'How aware of the care workforce pathway is your workplace?');
-  cy.getByLabel(answer.title).click();
-  cy.get('button').contains('Save').click();
-};
-
-const answerCWPUseQuestion = (use = 'Yes', reasons = []) => {
-  cy.get('h1').should('contain', 'Is your workplace using the care workforce pathway?');
-  cy.getByLabel(use).click();
-  reasons.forEach((reason) => {
-    cy.getByLabel(reason.text).click();
-  });
-  cy.get('button').contains('Save').click();
-};
 
 const visitCWPWorkersSummaryPage = () => {
   cy.get('a').contains('Where are your staff on the care workforce pathway?').click();

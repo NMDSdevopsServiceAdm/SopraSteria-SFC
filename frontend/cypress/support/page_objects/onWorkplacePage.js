@@ -76,6 +76,14 @@ export class WorkplacePage {
   expectRowNotExist = (testIdForRow) => {
     return cy.get(`[data-testid="${testIdForRow}"]`).should('not.exist');
   };
+
+  clickIntoQuestion = (testIdForRow) => {
+    return cy.get(`[data-testid="${testIdForRow}"]`).within(() => {
+      cy.get('a')
+        .contains(/Add|Change/)
+        .click();
+    });
+  };
 }
 
 export const onWorkplacePage = new WorkplacePage();

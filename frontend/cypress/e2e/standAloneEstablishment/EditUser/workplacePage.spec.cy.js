@@ -1,7 +1,9 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { CWPAwarenessAnswers, CWPUseReasons } from '../../../support/careWorkforcePathwayData';
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
+import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../../support/page_objects/workplaceQuestionPages';
 
 const workplaceSummaryPath = 'dashboard#workplace';
 
@@ -196,63 +198,37 @@ describe('Standalone home page as edit user', () => {
   });
 
   describe('Care workforce pathway workplace awareness and usage', () => {
-    const reasons = [
-      { id: 1, text: "To help define our organisation's values" },
-      {
-        id: 3,
-        text: 'To help update our HR and learning and development policies',
-      },
-      {
-        id: 5,
-        text: 'To help identify learning and development opportunities for our staff',
-      },
-      { id: 10, text: 'For something else' },
-    ];
+    const reasons = [CWPUseReasons[0], CWPUseReasons[2], CWPUseReasons[5], CWPUseReasons[9]];
+    const mockOtherReasonText = 'some free text for "Something else"';
 
     it('can update CareWorkforcePathway awareness and usage for the workplace', () => {
       cy.url().should('contain', workplaceSummaryPath);
-      cy.get('[data-testid="care-workforce-pathway-awareness"]').contains('Add').click();
+      onWorkplacePage.clickIntoQuestion('care-workforce-pathway-awareness');
 
-      // CWP awareness question page
-      cy.get('h1').should('contain', 'How aware of the care workforce pathway is your workplace?');
-      cy.getByLabel(/in practice/).click();
-      cy.get('button').contains('Save').click();
-
-      // CWP use question page
-      cy.get('h1').should('contain', 'Is your workplace using the care workforce pathway?');
-      cy.getByLabel(/No/).click();
-      cy.get('button').contains('Save and return').click();
+      answerCWPAwarenessQuestion(CWPAwarenessAnswers[0]); // aware in practise
+      answerCWPUseQuestion(/No/);
 
       // verify that answers are added to workplace summary
       cy.url().should('contain', workplaceSummaryPath);
-      onWorkplacePage.expectRow('care-workforce-pathway-awareness').toHaveValue('Aware in practice');
+      onWorkplacePage.expectRow('care-workforce-pathway-awareness').toHaveValue(CWPAwarenessAnswers[0].textForSummary);
       onWorkplacePage.expectRow('care-workforce-pathway-use').toHaveValue('No');
 
       // change CWP use to Yes with some reasons
-      cy.get('[data-testid="care-workforce-pathway-use"]').contains('Change').click();
-      cy.getByLabel(/Yes/).click();
-      reasons.forEach((reason) => {
-        cy.getByLabel(reason.text).click();
-      });
-
-      const mockOtherReasonText = 'Free text entered for "something else"';
-      cy.getByLabel(/Tell us/).type(mockOtherReasonText);
-
-      cy.get('button').contains('Save and return').click();
+      onWorkplacePage.clickIntoQuestion('care-workforce-pathway-use');
+      answerCWPUseQuestion(/Yes/, reasons, mockOtherReasonText);
 
       // verify that workplace is updated with reasons
-      const expectedReasonTexts = [reasons[0].text, reasons[1].text, reasons[2].text, mockOtherReasonText];
+      const expectedReasonTexts = [...reasons.slice(0, -1).map((reason) => reason.text), mockOtherReasonText];
       onWorkplacePage.expectRow('care-workforce-pathway-use').toHaveMultipleValues(expectedReasonTexts);
 
       // change CWP awareness to Not aware
-      cy.get('[data-testid="care-workforce-pathway-awareness"]').contains('Change').click();
-      cy.getByLabel(/Not aware/).click();
-      cy.get('button').contains('Save').click();
+      onWorkplacePage.clickIntoQuestion('care-workforce-pathway-awareness');
+      answerCWPAwarenessQuestion(CWPAwarenessAnswers[3]); // not aware
 
       // should return to workplace summary without seeing CWP use question. also should hide the CWP use row
       cy.url().should('contain', workplaceSummaryPath);
 
-      onWorkplacePage.expectRow('care-workforce-pathway-awareness').toHaveValue('Not aware');
+      onWorkplacePage.expectRow('care-workforce-pathway-awareness').toHaveValue(CWPAwarenessAnswers[3].textForSummary);
       onWorkplacePage.expectRow('care-workforce-pathway-use').notExist();
     });
   });
