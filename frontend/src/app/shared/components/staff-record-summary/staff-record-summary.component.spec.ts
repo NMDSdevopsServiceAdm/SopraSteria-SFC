@@ -239,6 +239,78 @@ describe('StaffRecordSummaryComponent', () => {
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeTrue();
     });
+
+    it('should return true if otherQualification needs updating but is set to Yes and all other required fields are eligible', async () => {
+      const { component, fixture } = await setup();
+
+      component.worker.wdf.otherQualification = eligibleButNotUpdatedObject;
+      component.worker.otherQualification = 'Yes';
+
+      fixture.detectChanges();
+
+      expect(component.allRequiredFieldsUpdatedAndEligible()).toBeTrue();
+    });
+
+    it('should return false if otherQualification is set to Yes but highestQualification needs updating', async () => {
+      const { component, fixture } = await setup();
+
+      component.worker.wdf.otherQualification = eligibleButNotUpdatedObject;
+      component.worker.otherQualification = 'Yes';
+
+      component.worker.wdf.highestQualification = eligibleButNotUpdatedObject;
+
+      fixture.detectChanges();
+
+      expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
+    });
+
+    it('should return true if qualificationInSocialCare needs updating but is set to Yes and all other required fields are eligible', async () => {
+      const { component, fixture } = await setup();
+
+      component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
+      component.worker.qualificationInSocialCare = 'Yes';
+
+      fixture.detectChanges();
+
+      expect(component.allRequiredFieldsUpdatedAndEligible()).toBeTrue();
+    });
+
+    it('should return false if qualificationInSocialCare is set to Yes but socialCareQualification needs updating', async () => {
+      const { component, fixture } = await setup();
+
+      component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
+      component.worker.qualificationInSocialCare = 'Yes';
+
+      component.worker.wdf.socialCareQualification = eligibleButNotUpdatedObject;
+
+      fixture.detectChanges();
+
+      expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
+    });
+
+    ['No', "Don't know"].forEach((answer) => {
+      it(`should return false if otherQualification needs updating and is set to something other than Yes (${answer})`, async () => {
+        const { component, fixture } = await setup();
+
+        component.worker.wdf.otherQualification = eligibleButNotUpdatedObject;
+        component.worker.otherQualification = answer;
+
+        fixture.detectChanges();
+
+        expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
+      });
+
+      it(`should return false if qualificationInSocialCare needs updating and is set to something other than Yes (${answer})`, async () => {
+        const { component, fixture } = await setup();
+
+        component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
+        component.worker.qualificationInSocialCare = answer;
+
+        fixture.detectChanges();
+
+        expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
+      });
+    });
   });
 
   describe('WdfFieldConfirmation', () => {
