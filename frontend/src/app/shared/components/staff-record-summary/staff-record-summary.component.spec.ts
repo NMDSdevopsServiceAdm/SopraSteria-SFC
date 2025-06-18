@@ -25,33 +25,30 @@ import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
 describe('StaffRecordSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, queryByText, getAllByText, getByAltText, getByTestId, queryByTestId } = await render(
-      StaffRecordSummaryComponent,
-      {
-        imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, FundingModule],
-        providers: [
-          InternationalRecruitmentService,
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(overrides.permissions ?? ['canEditWorker']),
-            deps: [HttpClient, Router, UserService],
-          },
-          {
-            provide: WorkerService,
-            useClass: MockWorkerService,
-          },
-          WdfConfirmFieldsService,
-        ],
-        componentProperties: {
-          wdfView: overrides.wdfView ?? true,
-          workplace: establishmentBuilder() as Establishment,
-          worker: overrides.worker ?? (workerWithWdf() as Worker),
-          overallWdfEligibility: overrides.overallWdfEligibility ?? false,
+    const setupTools = await render(StaffRecordSummaryComponent, {
+      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, FundingModule],
+      providers: [
+        InternationalRecruitmentService,
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(overrides.permissions ?? ['canEditWorker']),
+          deps: [HttpClient, Router, UserService],
         },
+        {
+          provide: WorkerService,
+          useClass: MockWorkerService,
+        },
+        WdfConfirmFieldsService,
+      ],
+      componentProperties: {
+        wdfView: overrides.wdfView ?? true,
+        workplace: establishmentBuilder() as Establishment,
+        worker: buildWorker(overrides.worker),
+        overallWdfEligibility: overrides.overallWdfEligibility ?? false,
       },
-    );
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const workerService = injector.inject(WorkerService) as WorkerService;
     spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
@@ -59,18 +56,13 @@ describe('StaffRecordSummaryComponent', () => {
     const wdfConfirmFieldsService = injector.inject(WdfConfirmFieldsService) as WdfConfirmFieldsService;
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      queryByText,
       workerService,
       wdfConfirmFieldsService,
-      getAllByText,
-      getByAltText,
-      getByTestId,
-      queryByTestId,
     };
   };
+
   const eligibleObject = {
     isEligible: Eligibility.YES,
     updatedSinceEffectiveDate: true,
@@ -91,15 +83,15 @@ describe('StaffRecordSummaryComponent', () => {
   const buildWorker = (workerOverrides) => {
     const worker = workerWithWdf() as Worker;
 
-    if (workerOverrides.overrides) {
-      workerOverrides.overrides.forEach((override) => {
-        worker[override.name] = override.response;
-      });
-    }
-
-    if (workerOverrides.wdf) {
-      workerOverrides.wdf.forEach((field) => {
-        worker.wdf[field.name] = field.response;
+    if (workerOverrides) {
+      Object.keys(workerOverrides).forEach((override) => {
+        if (override == 'wdf') {
+          Object.keys(workerOverrides.wdf).forEach((field) => {
+            worker.wdf[field] = workerOverrides.wdf[field];
+          });
+        } else {
+          worker[override] = workerOverrides[override];
+        }
       });
     }
 
@@ -114,21 +106,19 @@ describe('StaffRecordSummaryComponent', () => {
 
   describe('updateFieldsWhichDontRequireConfirmation()', () => {
     it('should update worker if there are auto fields which have not been updated and are eligible', async () => {
-      const { component, fixture, workerService } = await setup();
+      const { component, workerService } = await setup({
+        worker: { wdf: { dateOfBirth: eligibleButNotUpdatedObject } },
+      });
 
-      component.worker.wdf.dateOfBirth = eligibleButNotUpdatedObject;
-
-      fixture.detectChanges();
       await component.updateFieldsWhichDontRequireConfirmation();
 
       expect(workerService.updateWorker).toHaveBeenCalled();
     });
 
     it('should NOT auto update the worker when confirm field is called after all fields are updated and eligible', async () => {
-      const { component, fixture, workerService } = await setup();
-
-      component.worker.wdf.dateOfBirth = eligibleObject;
-      fixture.detectChanges();
+      const { component, workerService } = await setup({
+        worker: { wdf: { dateOfBirth: eligibleObject } },
+      });
 
       await component.updateFieldsWhichDontRequireConfirmation();
       component.confirmField('daysSick');
@@ -139,11 +129,9 @@ describe('StaffRecordSummaryComponent', () => {
     });
 
     it('should update the worker for careCertificate if its Yes, completed and not updated', async () => {
-      const { component, fixture, workerService } = await setup();
-
-      component.worker.wdf.careCertificate = eligibleButNotUpdatedObject;
-      component.worker.careCertificate = 'Yes, completed';
-      fixture.detectChanges();
+      const { component, workerService } = await setup({
+        worker: { careCertificate: 'Yes, completed', wdf: { careCertificate: eligibleButNotUpdatedObject } },
+      });
 
       await component.updateFieldsWhichDontRequireConfirmation();
 
@@ -153,11 +141,9 @@ describe('StaffRecordSummaryComponent', () => {
     });
 
     it('should NOT update the worker for careCertificate if it is No and not updated', async () => {
-      const { component, fixture, workerService } = await setup();
-
-      component.worker.wdf.careCertificate = eligibleButNotUpdatedObject;
-      component.worker.careCertificate = 'No';
-      fixture.detectChanges();
+      const { component, workerService } = await setup({
+        worker: { careCertificate: 'No', wdf: { careCertificate: eligibleButNotUpdatedObject } },
+      });
 
       await component.updateFieldsWhichDontRequireConfirmation();
       component.confirmField('daysSick');
@@ -168,11 +154,9 @@ describe('StaffRecordSummaryComponent', () => {
     });
 
     it('should update the worker for qualificationInSocialCare if it is Yes and not updated', async () => {
-      const { component, fixture, workerService } = await setup();
-
-      component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
-      component.worker.qualificationInSocialCare = 'Yes';
-      fixture.detectChanges();
+      const { component, workerService } = await setup({
+        worker: { qualificationInSocialCare: 'Yes', wdf: { qualificationInSocialCare: eligibleButNotUpdatedObject } },
+      });
 
       await component.updateFieldsWhichDontRequireConfirmation();
       component.confirmField('daysSick');
@@ -182,12 +166,10 @@ describe('StaffRecordSummaryComponent', () => {
       });
     });
 
-    it('should NOT update the worker for qualificationInSocialCare if it is NO and not updated', async () => {
-      const { component, fixture, workerService } = await setup();
-
-      component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
-      component.worker.qualificationInSocialCare = 'NO';
-      fixture.detectChanges();
+    it('should NOT update the worker for qualificationInSocialCare if it is No and not updated', async () => {
+      const { component, workerService } = await setup({
+        worker: { qualificationInSocialCare: 'No', wdf: { qualificationInSocialCare: eligibleButNotUpdatedObject } },
+      });
 
       await component.updateFieldsWhichDontRequireConfirmation();
       component.confirmField('daysSick');
@@ -200,113 +182,108 @@ describe('StaffRecordSummaryComponent', () => {
 
   describe('allRequiredFieldsUpdatedAndEligible()', () => {
     it('should return false if any required fields not updated since effective date and not confirmed', async () => {
-      const { component, fixture, wdfConfirmFieldsService } = await setup();
+      const { component, wdfConfirmFieldsService } = await setup({
+        worker: { wdf: { contract: eligibleButNotUpdatedObject } },
+      });
       spyOn(wdfConfirmFieldsService, 'getConfirmedFields').and.returnValue([]);
-
-      component.worker.wdf.contract = eligibleButNotUpdatedObject;
-      fixture.detectChanges();
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
     });
 
     it('should return false if any required fields are not eligible', async () => {
-      const { component, fixture, wdfConfirmFieldsService } = await setup();
+      const { component, wdfConfirmFieldsService } = await setup({
+        worker: { wdf: { daysSick: notEligible } },
+      });
       spyOn(wdfConfirmFieldsService, 'getConfirmedFields').and.returnValue([]);
-
-      component.worker.wdf.daysSick = notEligible;
-      fixture.detectChanges();
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
     });
 
     it('should return true if all required fields are either eligible and updated since effective date or Not relevant', async () => {
-      const { component, fixture, wdfConfirmFieldsService } = await setup();
+      const { component, wdfConfirmFieldsService } = await setup({
+        worker: { wdf: { daysSick: notRelevant } },
+      });
       spyOn(wdfConfirmFieldsService, 'getConfirmedFields').and.returnValue([]);
-
-      component.worker.wdf.daysSick = notRelevant;
-      fixture.detectChanges();
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeTrue();
     });
 
     it('should return true if all required fields are either eligible and updated since effective date or in confirmed fields array', async () => {
-      const { component, fixture, wdfConfirmFieldsService } = await setup();
+      const { component, wdfConfirmFieldsService } = await setup({
+        worker: { wdf: { mainJob: eligibleButNotUpdatedObject, otherQualification: eligibleButNotUpdatedObject } },
+      });
       spyOn(wdfConfirmFieldsService, 'getConfirmedFields').and.returnValue(['mainJob', 'otherQualification']);
-
-      component.worker.wdf.mainJob = eligibleButNotUpdatedObject;
-      component.worker.wdf.otherQualification = eligibleButNotUpdatedObject;
-      fixture.detectChanges();
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeTrue();
     });
 
     it('should return true if otherQualification needs updating but is set to Yes and all other required fields are eligible', async () => {
-      const { component, fixture } = await setup();
-
-      component.worker.wdf.otherQualification = eligibleButNotUpdatedObject;
-      component.worker.otherQualification = 'Yes';
-
-      fixture.detectChanges();
+      const { component } = await setup({
+        worker: { otherQualification: 'Yes', wdf: { otherQualification: eligibleButNotUpdatedObject } },
+      });
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeTrue();
     });
 
     it('should return false if otherQualification is set to Yes but highestQualification needs updating', async () => {
-      const { component, fixture } = await setup();
-
-      component.worker.wdf.otherQualification = eligibleButNotUpdatedObject;
-      component.worker.otherQualification = 'Yes';
-
-      component.worker.wdf.highestQualification = eligibleButNotUpdatedObject;
-
-      fixture.detectChanges();
+      const { component } = await setup({
+        worker: {
+          otherQualification: 'Yes',
+          wdf: { otherQualification: eligibleButNotUpdatedObject, highestQualification: eligibleButNotUpdatedObject },
+        },
+      });
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
     });
 
     it('should return true if qualificationInSocialCare needs updating but is set to Yes and all other required fields are eligible', async () => {
-      const { component, fixture } = await setup();
-
-      component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
-      component.worker.qualificationInSocialCare = 'Yes';
-
-      fixture.detectChanges();
+      const { component } = await setup({
+        worker: {
+          qualificationInSocialCare: 'Yes',
+          wdf: { qualificationInSocialCare: eligibleButNotUpdatedObject },
+        },
+      });
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeTrue();
     });
 
     it('should return false if qualificationInSocialCare is set to Yes but socialCareQualification needs updating', async () => {
-      const { component, fixture } = await setup();
-
-      component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
-      component.worker.qualificationInSocialCare = 'Yes';
-
-      component.worker.wdf.socialCareQualification = eligibleButNotUpdatedObject;
-
-      fixture.detectChanges();
+      const { component } = await setup({
+        worker: {
+          qualificationInSocialCare: 'Yes',
+          wdf: {
+            qualificationInSocialCare: eligibleButNotUpdatedObject,
+            socialCareQualification: eligibleButNotUpdatedObject,
+          },
+        },
+      });
 
       expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
     });
 
     ['No', "Don't know"].forEach((answer) => {
       it(`should return false if otherQualification needs updating and is set to something other than Yes (${answer})`, async () => {
-        const { component, fixture } = await setup();
-
-        component.worker.wdf.otherQualification = eligibleButNotUpdatedObject;
-        component.worker.otherQualification = answer;
-
-        fixture.detectChanges();
+        const { component } = await setup({
+          worker: {
+            otherQualification: answer,
+            wdf: {
+              otherQualification: eligibleButNotUpdatedObject,
+            },
+          },
+        });
 
         expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
       });
 
       it(`should return false if qualificationInSocialCare needs updating and is set to something other than Yes (${answer})`, async () => {
-        const { component, fixture } = await setup();
-
-        component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
-        component.worker.qualificationInSocialCare = answer;
-
-        fixture.detectChanges();
+        const { component } = await setup({
+          worker: {
+            qualificationInSocialCare: answer,
+            wdf: {
+              qualificationInSocialCare: eligibleButNotUpdatedObject,
+            },
+          },
+        });
 
         expect(component.allRequiredFieldsUpdatedAndEligible()).toBeFalse();
       });
@@ -315,18 +292,15 @@ describe('StaffRecordSummaryComponent', () => {
 
   describe('WdfFieldConfirmation', () => {
     const buildWorkerWithFieldNotUpdatedSinceEffectiveDate = (fields) => {
-      return buildWorker({
-        overrides: fields,
-        wdf: [
-          {
-            name: fields[0].name,
-            response: {
-              isEligible: Eligibility.YES,
-              updatedSinceEffectiveDate: false,
-            },
+      return {
+        ...fields,
+        wdf: {
+          [Object.keys(fields)[0]]: {
+            isEligible: Eligibility.YES,
+            updatedSinceEffectiveDate: false,
           },
-        ],
-      });
+        },
+      };
     };
 
     it('should not show WdfFieldConfirmation component when fields do not need to be confirmed', async () => {
@@ -340,167 +314,105 @@ describe('StaffRecordSummaryComponent', () => {
     [
       {
         name: 'Main job role',
-        fields: [
-          { name: 'mainJob', response: { jobId: 10, title: 'Care Worker' } },
-          { name: 'contract', response: Contracts.Permanent },
-        ],
+        fields: {
+          mainJob: { jobId: 10, title: 'Care Worker' },
+          contract: Contracts.Permanent,
+        },
       },
       {
         name: 'Contract type',
-        fields: [{ name: 'contract', response: Contracts.Permanent }],
+        fields: { contract: Contracts.Permanent },
       },
       {
         name: 'Date started in main job role',
-        fields: [{ name: 'mainJobStartDate', response: '2020-01-12' }],
+        fields: { mainJobStartDate: '2020-01-12' },
       },
       {
         name: 'Days sickness in last 12 months',
-        fields: [
-          {
-            name: 'daysSick',
-            response: {
-              days: 4,
-              value: null,
-            } as WorkerDays,
-          },
-          { name: 'contract', response: Contracts.Permanent },
-        ],
+        fields: {
+          daysSick: {
+            days: 4,
+            value: null,
+          } as WorkerDays,
+          contract: Contracts.Permanent,
+        },
       },
       {
         name: 'Zero hours contract',
-        fields: [
-          {
-            name: 'zeroHoursContract',
-            response: 'Yes',
-          },
-        ],
+        fields: {
+          zeroHoursContract: 'Yes',
+        },
       },
       {
         name: 'Highest level of social care qualification',
-        fields: [
-          {
-            name: 'socialCareQualification',
-            response: { qualificationId: 4, title: 'Level 3' },
-          },
-          {
-            name: 'qualificationInSocialCare',
-            response: 'Yes',
-          },
-        ],
+        fields: {
+          socialCareQualification: { qualificationId: 4, title: 'Level 3' },
+          qualificationInSocialCare: 'Yes',
+        },
       },
       {
         name: 'Has a social care qualification when answer No',
-        fields: [
-          {
-            name: 'qualificationInSocialCare',
-            response: 'No',
-          },
-        ],
+        fields: {
+          qualificationInSocialCare: 'No',
+        },
       },
       {
         name: "Has a social care qualification when answer Don't know",
-        fields: [
-          {
-            name: 'qualificationInSocialCare',
-            response: "Don't know",
-          },
-        ],
+        fields: {
+          qualificationInSocialCare: "Don't know",
+        },
       },
       {
         name: "Started or completed Care Certificate when answered 'No'",
-        fields: [
-          {
-            name: 'careCertificate',
-            response: 'No',
-          },
-        ],
+        fields: {
+          careCertificate: 'No',
+        },
       },
       {
         name: "Started or completed Care Certificate when answered 'Yes, in progress or partially completed'",
-        fields: [
-          {
-            name: 'careCertificate',
-            response: 'Yes, in progress or partially completed',
-          },
-        ],
+        fields: {
+          careCertificate: 'Yes, in progress or partially completed',
+        },
       },
       {
         name: 'Highest level of non-social care qualification',
-        fields: [
-          {
-            name: 'highestQualification',
-            response: { qualificationId: 5, title: 'Level 4' },
-          },
-          {
-            name: 'otherQualification',
-            response: 'Yes',
-          },
-        ],
+        fields: {
+          highestQualification: { qualificationId: 5, title: 'Level 4' },
+          otherQualification: 'Yes',
+        },
       },
       {
         name: 'Salary',
-        fields: [
-          {
-            name: 'annualHourlyPay',
-            response: { value: 'Annually', rate: 24000 },
-          },
-          {
-            name: 'contract',
-            response: Contracts.Permanent,
-          },
-        ],
+        fields: {
+          annualHourlyPay: { value: 'Annually', rate: 24000 },
+          contract: Contracts.Permanent,
+        },
       },
       {
         name: 'Average weekly working hours',
-        fields: [
-          {
-            name: 'weeklyHoursAverage',
-            response: { value: 'Yes', hours: 30 },
-          },
-          {
-            name: 'contract',
-            response: Contracts.Agency,
-          },
-          {
-            name: 'zeroHoursContract',
-            response: 'Yes',
-          },
-        ],
+        fields: {
+          weeklyHoursAverage: { value: 'Yes', hours: 30 },
+          contract: Contracts.Agency,
+          zeroHoursContract: 'Yes',
+        },
       },
       {
         name: 'Contracted weekly hours',
-        fields: [
-          {
-            name: 'weeklyHoursContracted',
-            response: { value: 'Yes', hours: 30 },
-          },
-          {
-            name: 'contract',
-            response: Contracts.Permanent,
-          },
-          {
-            name: 'zeroHoursContract',
-            response: 'No',
-          },
-        ],
+        fields: {
+          weeklyHoursContracted: { value: 'Yes', hours: 30 },
+          contract: Contracts.Permanent,
+          zeroHoursContract: 'No',
+        },
       },
       {
         name: "Non-social care qualification when answered 'No'",
-        fields: [
-          {
-            name: 'otherQualification',
-            response: 'No',
-          },
-        ],
+        fields: {
+          otherQualification: 'No',
+        },
       },
       {
         name: "Non-social care qualification when answered 'Don't know'",
-        fields: [
-          {
-            name: 'otherQualification',
-            response: "Don't know",
-          },
-        ],
+        fields: { otherQualification: "Don't know" },
       },
     ].forEach((scenario) => {
       describe(scenario.name, () => {
@@ -538,9 +450,7 @@ describe('StaffRecordSummaryComponent', () => {
     describe('Responses where confirmation is not required', () => {
       it("should not show when 'Has a social care qualification' is set to Yes", async () => {
         const { queryByText } = await setup({
-          worker: buildWorkerWithFieldNotUpdatedSinceEffectiveDate([
-            { name: 'qualificationInSocialCare', response: 'Yes' },
-          ]),
+          worker: buildWorkerWithFieldNotUpdatedSinceEffectiveDate({ qualificationInSocialCare: 'Yes' }),
         });
 
         expect(queryByText('Is this still correct?')).toBeFalsy();
@@ -550,9 +460,7 @@ describe('StaffRecordSummaryComponent', () => {
 
       it("should not show when Care Certificate answered with 'Yes, completed'", async () => {
         const { queryByText } = await setup({
-          worker: buildWorkerWithFieldNotUpdatedSinceEffectiveDate([
-            { name: 'careCertificate', response: 'Yes, completed' },
-          ]),
+          worker: buildWorkerWithFieldNotUpdatedSinceEffectiveDate({ careCertificate: 'Yes, completed' }),
         });
 
         expect(queryByText('Is this still correct?')).toBeFalsy();
@@ -562,7 +470,7 @@ describe('StaffRecordSummaryComponent', () => {
 
       it('should not show when Non-social care qualification is set to Yes', async () => {
         const { queryByText } = await setup({
-          worker: buildWorkerWithFieldNotUpdatedSinceEffectiveDate([{ name: 'otherQualification', response: 'Yes' }]),
+          worker: buildWorkerWithFieldNotUpdatedSinceEffectiveDate({ otherQualification: 'Yes' }),
         });
 
         expect(queryByText('Is this still correct?')).toBeFalsy();
@@ -579,30 +487,28 @@ describe('StaffRecordSummaryComponent', () => {
       { name: 'nationality', validResponse: { value: 'British' } },
       { name: 'mainJobStartDate', validResponse: '01/01/2021' },
       { name: 'recruitedFrom', validResponse: 'Agency' },
-      { name: 'daysSick', validResponse: 3, overrides: [{ name: 'contract', response: Contracts.Permanent }] },
+      { name: 'daysSick', validResponse: 3, overrides: { contract: Contracts.Permanent } },
       { name: 'zeroHoursContract', validResponse: 'Yes' },
-      { name: 'weeklyHoursAverage', validResponse: 35, overrides: [{ name: 'zeroHoursContract', response: 'Yes' }] },
+      { name: 'weeklyHoursAverage', validResponse: 35, overrides: { zeroHoursContract: 'Yes' } },
       { name: 'annualHourlyPay', validResponse: { value: 'Annually' } },
       { name: 'careCertificate', validResponse: { value: 'Yes, completed' } },
       { name: 'qualificationInSocialCare', validResponse: 'Yes' },
       {
         name: 'socialCareQualification',
         validResponse: 'Level 4',
-        overrides: [{ name: 'qualificationInSocialCare', response: 'Yes' }],
+        overrides: { qualificationInSocialCare: 'Yes' },
       },
       { name: 'otherQualification', validResponse: 'Yes' },
       {
         name: 'highestQualification',
         validResponse: 'Level 4',
-        overrides: [{ name: 'otherQualification', response: 'Yes' }],
+        overrides: { otherQualification: 'Yes' },
       },
     ].forEach((field) => {
       it(`should show 'Add this information' message when worker is not eligible and needs to add ${field.name}`, async () => {
-        const worker = buildWorker(field);
-        worker[field.name] = null;
-        worker.wdf[field.name].isEligible = Eligibility.NO;
-
-        const { getByTestId } = await setup({ worker });
+        const { getByTestId } = await setup({
+          worker: { ...field.overrides, [field.name]: null, wdf: { [field.name]: { isEligible: Eligibility.NO } } },
+        });
 
         const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
 
@@ -611,11 +517,13 @@ describe('StaffRecordSummaryComponent', () => {
       });
 
       it(`should not show 'Add this information' message when worker is not eligible but has added ${field.name}`, async () => {
-        const worker = buildWorker(field);
-        worker[field.name] = field.validResponse;
-        worker.wdf[field.name].isEligible = Eligibility.YES;
-
-        const { queryByTestId } = await setup({ worker });
+        const { queryByTestId } = await setup({
+          worker: {
+            ...field.overrides,
+            [field.name]: field.validResponse,
+            wdf: { [field.name]: { isEligible: Eligibility.YES } },
+          },
+        });
 
         const wdfWarningSection = queryByTestId(field.name + 'WdfWarning');
 
@@ -623,11 +531,14 @@ describe('StaffRecordSummaryComponent', () => {
       });
 
       it(`should not show 'Add this information' message when worker does not have ${field.name} added but not in WDF view`, async () => {
-        const worker = buildWorker(field);
-        worker[field.name] = null;
-        worker.wdf[field.name].isEligible = Eligibility.NO;
-
-        const { queryByTestId } = await setup({ worker, wdfView: false });
+        const { queryByTestId } = await setup({
+          wdfView: false,
+          worker: {
+            ...field.overrides,
+            [field.name]: null,
+            wdf: { [field.name]: { isEligible: Eligibility.NO } },
+          },
+        });
 
         const wdfWarningSection = queryByTestId(field.name + 'WdfWarning');
 
@@ -635,11 +546,14 @@ describe('StaffRecordSummaryComponent', () => {
       });
 
       it(`should show 'Add this information' and orange flag when worker does not have ${field.name} added but workplace has met WDF eligibility`, async () => {
-        const worker = buildWorker(field);
-        worker[field.name] = null;
-        worker.wdf[field.name].isEligible = Eligibility.NO;
-
-        const { getByTestId } = await setup({ worker, overallWdfEligibility: true });
+        const { getByTestId } = await setup({
+          overallWdfEligibility: true,
+          worker: {
+            ...field.overrides,
+            [field.name]: null,
+            wdf: { [field.name]: { isEligible: Eligibility.NO } },
+          },
+        });
 
         const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
 
