@@ -15,7 +15,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  ignorePatterns: ['/dist'],
+  ignorePatterns: ['/dist', '*.cy.js', '/cypress/*'],
   overrides: [
     {
       files: ['*.ts'],

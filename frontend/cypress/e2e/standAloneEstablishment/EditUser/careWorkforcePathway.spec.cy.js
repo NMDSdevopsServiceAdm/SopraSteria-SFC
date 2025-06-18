@@ -1,4 +1,6 @@
+import { CWPAwarenessAnswers, CWPUseReasons } from '../../../support/careWorkforcePathwayData';
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
+import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
 
 const establishmentID = StandAloneEstablishment.id;
 const cwpWorkersSummaryPath = 'care-workforce-pathway-workers-summary';
@@ -8,16 +10,70 @@ const testWorkers = ['test CWP worker 1', 'test CWP worker 2'];
 describe('Care workforce pathway journey', () => {
   before(() => {
     cy.archiveAllWorkersInWorkplace(establishmentID);
+    cy.resetWorkplaceCWPAnswers(establishmentID);
   });
 
   afterEach(() => {
     testWorkers.forEach((workerName) => {
       cy.deleteTestWorkerFromDb(workerName);
     });
+    cy.resetWorkplaceCWPAnswers(establishmentID);
   });
 
-  describe('answer CWP workplace awareness and usage from homepage panel', () => {
-    // WIP
+  describe('answer Care Workforce Pathway workplace awareness and usage from homepage panel', () => {
+    const flagMessage = 'How aware of the CWP is your workplace?';
+
+    it('should show a flag in homepage summary panel if workplace has not answered the CWP awareness question', () => {
+      cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+
+      cy.url().should('contain', homePagePath);
+      cy.get('[data-testid="summaryBox"]').should('contain', flagMessage);
+    });
+
+    it('the flag should direct user to the CWP awareness question page to answer the questions', () => {
+      const reasonsToSelect = CWPUseReasons.filter((reason) => [1, 3, 6, 9].includes(reason.id));
+
+      cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+
+      cy.url().should('contain', homePagePath);
+      cy.get('[data-testid="summaryBox"]').contains(flagMessage).click();
+
+      // answer CWP awareness question
+      cy.get('h1').should('contain', 'How aware of the care workforce pathway is your workplace?');
+      cy.getByLabel(CWPAwarenessAnswers[0].title).click();
+      cy.get('button').contains('Save').click();
+
+      // answer CWP use question
+      cy.get('h1').should('contain', 'Is your workplace using the care workforce pathway?');
+      cy.getByLabel(/Yes/).click();
+      reasonsToSelect.forEach((reason) => {
+        cy.getByLabel(reason.text).click();
+      });
+      cy.get('button').contains('Save and return').click();
+
+      cy.url().should('contain', homePagePath);
+      cy.get('[data-testid="summaryBox"]').should('not.contain', flagMessage);
+
+      // verify that workplace summary got the answers
+      cy.get('a').contains('Workplace').click();
+      onWorkplacePage.expectRow('care-workforce-pathway-awareness').toHaveValue(CWPAwarenessAnswers[0].textForSummary);
+      onWorkplacePage
+        .expectRow('care-workforce-pathway-use')
+        .toHaveMultipleValues(reasonsToSelect.map((reason) => reason.text));
+    });
+
+    it('the flag should disappear when user has visit the CWP awareness question page, even if they didnt answer', () => {
+      cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+
+      cy.url().should('contain', homePagePath);
+      cy.get('[data-testid="summaryBox"]').contains(flagMessage).click();
+
+      cy.get('h1').should('contain', 'How aware of the care workforce pathway is your workplace?');
+      cy.get('a').contains('Back').click();
+
+      cy.url().should('contain', homePagePath);
+      cy.get('[data-testid="summaryBox"]').should('not.contain', flagMessage);
+    });
   });
 
   describe('answer role category for workers from homepage panel', () => {

@@ -82,7 +82,8 @@ Cypress.Commands.add('resetWorkplaceCWPAnswers', (establishmentID) => {
   const queryStrings = [
     `UPDATE cqc."Establishment"
       SET "CareWorkforcePathwayWorkplaceAwarenessFK" = null,
-          "CareWorkforcePathwayUseValue" = null
+          "CareWorkforcePathwayUseValue" = null,
+          "CWPAwarenessQuestionViewed" = null
       WHERE "EstablishmentID" = $1;`,
 
     `DELETE FROM cqc."EstablishmentCWPReasons"
