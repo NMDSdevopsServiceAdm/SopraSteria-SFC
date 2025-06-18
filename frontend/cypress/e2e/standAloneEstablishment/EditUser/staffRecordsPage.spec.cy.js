@@ -178,7 +178,6 @@ describe('Standalone staff records page as edit user', () => {
       skipAllQuestions();
 
       cy.get('h1').should('contain.text', 'Staff record');
-
       cy.contains('Staff record details saved').should('not.exist');
     });
 

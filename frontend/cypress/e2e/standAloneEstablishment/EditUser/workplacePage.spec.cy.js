@@ -205,7 +205,7 @@ describe('Standalone home page as edit user', () => {
       cy.url().should('contain', workplaceSummaryPath);
       onWorkplacePage.clickIntoQuestion('care-workforce-pathway-awareness');
 
-      answerCWPAwarenessQuestion(CWPAwarenessAnswers[0]); // aware in practise
+      answerCWPAwarenessQuestion(CWPAwarenessAnswers[0]); // Aware in practice
       answerCWPUseQuestion(/No/);
 
       // verify that answers are added to workplace summary
@@ -223,7 +223,7 @@ describe('Standalone home page as edit user', () => {
 
       // change CWP awareness to Not aware
       onWorkplacePage.clickIntoQuestion('care-workforce-pathway-awareness');
-      answerCWPAwarenessQuestion(CWPAwarenessAnswers[3]); // not aware
+      answerCWPAwarenessQuestion(CWPAwarenessAnswers[3]); // Not aware
 
       // should return to workplace summary without seeing CWP use question. also should hide the CWP use row
       cy.url().should('contain', workplaceSummaryPath);
