@@ -173,11 +173,11 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
       'highestQualification',
       'mainJob',
       'mainJobStartDate',
-      'otherQualification',
-      'socialCareQualification',
       'weeklyHoursAverage',
       'weeklyHoursContracted',
       'zeroHoursContract',
+      this.worker.otherQualification === 'Yes' ? 'highestQualification' : 'otherQualification',
+      this.worker.qualificationInSocialCare === 'Yes' ? 'socialCareQualification' : 'qualificationInSocialCare',
     ];
 
     return requiredFields.every((field) => {
