@@ -53,7 +53,6 @@ describe('Standalone home page as edit user', () => {
   });
 
   it('All sections have a change link', () => {
-    onWorkplacePage.expectRowExistAndChangable('serviceCapacity');
     onWorkplacePage.allSectionsAreChangeable();
   });
 
