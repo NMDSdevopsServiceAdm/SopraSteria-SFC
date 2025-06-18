@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
@@ -26,7 +25,7 @@ import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 describe('StaffRecordSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(StaffRecordSummaryComponent, {
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, FundingModule],
+      imports: [SharedModule, HttpClientTestingModule, BrowserModule, FundingModule],
       providers: [
         InternationalRecruitmentService,
         {
@@ -39,6 +38,7 @@ describe('StaffRecordSummaryComponent', () => {
           useClass: MockWorkerService,
         },
         WdfConfirmFieldsService,
+        provideRouter([]),
       ],
       componentProperties: {
         wdfView: overrides.wdfView ?? true,
