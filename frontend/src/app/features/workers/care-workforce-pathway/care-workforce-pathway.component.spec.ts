@@ -241,9 +241,11 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     });
 
     ['Skip this question', 'View this staff record'].forEach((link) => {
-      it(`should add Staff record added alert when '${link}' is clicked`, async () => {
+      it(`should add Staff record added alert when '${link}' is clicked, if user has answered other question before`, async () => {
         const overrides = { insideFlow: true };
-        const { getByText, alertSpy } = await setup(overrides);
+        const { getByText, alertSpy, workerService } = await setup(overrides);
+
+        spyOn(workerService, 'hasAnsweredNonMandatoryQuestion').and.returnValue(true);
 
         fireEvent.click(getByText(link));
 
@@ -251,6 +253,17 @@ describe('CareWorkforcePathwayRoleComponent', () => {
           type: 'success',
           message: 'Staff record details saved',
         });
+      });
+
+      it(`should not add Staff record added alert when '${link}' is clicked, if user have not answered other question before`, async () => {
+        const overrides = { insideFlow: true };
+        const { getByText, alertSpy, workerService } = await setup(overrides);
+
+        spyOn(workerService, 'hasAnsweredNonMandatoryQuestion').and.returnValue(false);
+
+        fireEvent.click(getByText(link));
+
+        expect(alertSpy).not.toHaveBeenCalled();
       });
     });
 

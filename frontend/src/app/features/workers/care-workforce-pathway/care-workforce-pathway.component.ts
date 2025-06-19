@@ -105,20 +105,12 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
     };
   }
 
-  onSubmit(): void {
-    super.onSubmit();
-
-    if (!this.submitted && this.insideFlow) {
-      this.addCompletedStaffFlowAlert();
-    }
-  }
-
   addAlert(): void {
-    if (this.insideFlow) {
-      this.addCompletedStaffFlowAlert();
-    } else if (this.cameFromCWPSummaryPage) {
+    if (!this.insideFlow && this.cameFromCWPSummaryPage) {
       this.addRoleCategorySavedAlert();
     }
+
+    super.addAlert();
   }
 
   private addRoleCategorySavedAlert(): void {
