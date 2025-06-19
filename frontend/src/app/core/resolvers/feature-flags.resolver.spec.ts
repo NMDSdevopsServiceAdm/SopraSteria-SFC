@@ -1,24 +1,23 @@
-import { SettingKeyValue } from 'configcat-common/lib/ConfigCatClient';
-
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { SettingKeyValue } from 'configcat-common/lib/ConfigCatClient';
 
 import { FeatureFlagsResolver } from './feature-flags.resolver';
 
 describe('FeatureFlagsResolver', () => {
   async function setup(overrides: any = {}) {
-    const cwpQuestionsFlag: boolean = overrides.cwpQuestionsFlag ?? false;
     const mockFeatureFlag: boolean = overrides.mockFeatureFlag ?? false;
+    const secondMockFeatureFlag: boolean = overrides.secondMockFeatureFlag ?? false;
     const mockResponseFromConfigCat: SettingKeyValue[] = [
       {
         settingKey: 'mockFeatureFlag',
         settingValue: mockFeatureFlag,
       },
       {
-        settingKey: 'cwpQuestions',
-        settingValue: cwpQuestionsFlag,
+        settingKey: 'secondMockFeatureFlag',
+        settingValue: secondMockFeatureFlag,
       },
     ];
 
@@ -61,14 +60,14 @@ describe('FeatureFlagsResolver', () => {
   });
 
   it('should retrieve the feature flags by FeatureFlagsService', async () => {
-    const { resolver, route, featureFlagsSpy } = await setup({ cwpQuestionsFlag: true, mockFeatureFlag: false });
+    const { resolver, route, featureFlagsSpy } = await setup({ mockFeatureFlag: true, secondMockFeatureFlag: false });
 
     const featureFlags = await resolver.resolve(route.snapshot).toPromise();
 
     expect(featureFlagsSpy).toHaveBeenCalledTimes(1);
     expect(featureFlags).toEqual({
-      cwpQuestions: true,
-      mockFeatureFlag: false,
+      mockFeatureFlag: true,
+      secondMockFeatureFlag: false,
     });
   });
 });

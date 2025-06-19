@@ -53,7 +53,6 @@ describe('Summary section', () => {
         noOfWorkersWhoRequireInternationalRecruitment: overrides.noOfWorkersWhoRequireInternationalRecruitment ?? 0,
         noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered:
           overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
-        cwpQuestionsFlag: overrides.cwpQuestionsFlag ?? false,
       },
     });
 
@@ -570,69 +569,50 @@ describe('Summary section', () => {
     });
 
     describe('care workforce pathway link', () => {
-      describe('with cwpQuestionsFlag true', () => {
-        it('should not show if even there are staff without an answer', async () => {
-          const overrides = {
-            noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
-            cwpQuestionsFlag: true,
-          };
-          const { queryByText } = await setup(overrides);
+      it('should show if there are staff without an answer', async () => {
+        const overrides = {
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+        };
+        const { fixture, getByText, routerSpy, tabsService } = await setup(overrides);
+        const selectedTabSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
 
-          const workersCareWorkforcePathwayLink = queryByText('Where are your staff on the care workforce pathway?');
+        const workersCareWorkforcePathwayLink = getByText('Where are your staff on the care workforce pathway?');
+        fireEvent.click(workersCareWorkforcePathwayLink);
+        await fixture.whenStable();
 
-          expect(workersCareWorkforcePathwayLink).toBeFalsy();
-        });
+        expect(workersCareWorkforcePathwayLink).toBeTruthy();
+        expect(routerSpy).toHaveBeenCalledOnceWith([
+          '/workplace',
+          Establishment.uid,
+          'staff-record',
+          'care-workforce-pathway-workers-summary',
+        ]);
+        expect(selectedTabSpy).not.toHaveBeenCalled();
       });
 
-      describe('with cwpQuestionsFlag false', () => {
-        it('should show if there are staff without an answer', async () => {
-          const overrides = {
-            noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
-            cwpQuestionsFlag: false,
-          };
-          const { fixture, getByText, routerSpy, tabsService } = await setup(overrides);
-          const selectedTabSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
+      it('should show with no link if there are staff without an answer but no edit permission for workers', async () => {
+        const overrides = {
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
+          canEditWorker: false,
+        };
+        const { getByText } = await setup(overrides);
 
-          const workersCareWorkforcePathwayLink = getByText('Where are your staff on the care workforce pathway?');
-          fireEvent.click(workersCareWorkforcePathwayLink);
-          await fixture.whenStable();
+        const workersCareWorkforcePathwayText = getByText('Where are your staff on the care workforce pathway?');
+        expect(workersCareWorkforcePathwayText.tagName).not.toBe('A');
 
-          expect(workersCareWorkforcePathwayLink).toBeTruthy();
-          expect(routerSpy).toHaveBeenCalledOnceWith([
-            '/workplace',
-            Establishment.uid,
-            'staff-record',
-            'care-workforce-pathway-workers-summary',
-          ]);
-          expect(selectedTabSpy).not.toHaveBeenCalled();
-        });
+        const staffRecordsLink = getByText('Staff records');
+        expect(staffRecordsLink.tagName).toBe('A');
+      });
 
-        it('should show with no link if there are staff without an answer but no edit permission for workers', async () => {
-          const overrides = {
-            noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 2,
-            cwpQuestionsFlag: false,
-            canEditWorker: false,
-          };
-          const { getByText } = await setup(overrides);
+      it('should not show if there are no staff without an answer', async () => {
+        const overrides = {
+          noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
+        };
+        const { queryByText } = await setup(overrides);
 
-          const workersCareWorkforcePathwayText = getByText('Where are your staff on the care workforce pathway?');
-          expect(workersCareWorkforcePathwayText.tagName).not.toBe('A');
+        const workersCareWorkforcePathwayLink = queryByText('Where are your staff on the care workforce pathway?');
 
-          const staffRecordsLink = getByText('Staff records');
-          expect(staffRecordsLink.tagName).toBe('A');
-        });
-
-        it('should not show if there are no staff without an answer', async () => {
-          const overrides = {
-            noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: 0,
-            cwpQuestionsFlag: false,
-          };
-          const { queryByText } = await setup(overrides);
-
-          const workersCareWorkforcePathwayLink = queryByText('Where are your staff on the care workforce pathway?');
-
-          expect(workersCareWorkforcePathwayLink).toBeFalsy();
-        });
+        expect(workersCareWorkforcePathwayLink).toBeFalsy();
       });
     });
 
