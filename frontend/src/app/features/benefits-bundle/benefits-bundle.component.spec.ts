@@ -69,7 +69,7 @@ describe('BenefitsBundleComponent', () => {
 
     const reveal = getByText(`What's the ASC-WDS Benefits Bundle?`);
     const revealContent = getByText(
-      'The ASC-WDS Benefits Bundle is our way of saying thank you for using the Adult Social Care Workforce Data Set (ASC-WDS).',
+      'The ASC-WDS Benefits Bundle is our way of saying thank you for using the Adult Social Care Workforce Data Set',
       { exact: false },
     );
 
