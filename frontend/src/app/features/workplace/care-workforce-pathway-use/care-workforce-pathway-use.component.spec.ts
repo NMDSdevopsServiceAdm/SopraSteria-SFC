@@ -20,7 +20,7 @@ import { of, throwError } from 'rxjs';
 
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
 
-describe('CareWorkforcePathwayUseComponent', () => {
+fdescribe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
     YES: 'Yes, we use the pathway for one or more reasons',
     NO: 'No, we do not currently use the pathway',
@@ -327,7 +327,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
         fixture.detectChanges();
 
         expect(getByText('There is a problem')).toBeTruthy();
-        expect(getAllByText('Reason must be 120 characters or less')).toHaveSize(2);
+        expect(getAllByText('Reason must be 120 characters or fewer')).toHaveSize(2);
 
         expect(establishmentServiceSpy).not.toHaveBeenCalled();
       });

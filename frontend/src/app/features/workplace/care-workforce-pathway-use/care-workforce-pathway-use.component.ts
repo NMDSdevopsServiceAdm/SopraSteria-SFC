@@ -147,7 +147,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
       type: [
         {
           name: 'maxlength',
-          message: `Reason must be ${this.OtherReasonTextMaxLength} characters or less`,
+          message: `Reason must be ${this.OtherReasonTextMaxLength} characters or fewer`,
         },
       ],
     });
