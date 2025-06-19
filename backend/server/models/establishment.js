@@ -2195,6 +2195,8 @@ module.exports = function (sequelize, DataTypes) {
       WHEN "VacanciesValue" IS NULL THEN true
       -- Add workplace details banner showing
       WHEN "ShowAddWorkplaceDetailsBanner" = true THEN true
+      -- CWP awareness flag showing
+      WHEN "CareWorkforcePathwayWorkplaceAwarenessFK" IS NULL AND "CWPAwarenessQuestionViewed" != true THEN true
       -- Number of staff does not equal worker count
       WHEN (
         SELECT (COUNT(w."ID") != "NumberOfStaffValue") AND "eightWeeksFromFirstLogin" < now()::timestamp
@@ -2238,6 +2240,8 @@ module.exports = function (sequelize, DataTypes) {
                 AND ((w."NationalityValue" = 'Other' AND (w."BritishCitizenshipValue" IN ('No', 'Don''t know') OR w."BritishCitizenshipValue" IS NULL))
                   OR (w."NationalityValue" = 'Don''t know' AND w."BritishCitizenshipValue" = 'No'))
             )
+          -- CWP role category not answered
+            OR (w."CareWorkforcePathwayRoleCategoryFK" IS NULL)
           )
         		LIMIT 1
         	) IS NOT NULL THEN true
