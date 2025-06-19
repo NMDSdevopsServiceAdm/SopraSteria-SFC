@@ -29,7 +29,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
   @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
-  @Input() cwpQuestionsFlag: boolean;
   @Input() workplacesNeedAttention: boolean;
 
   public sections: Section[] = [
@@ -138,7 +137,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
-    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && !this.cwpQuestionsFlag) {
+    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0) {
       this.sections[1].message = 'Where are your staff on the care workforce pathway?';
       this.sections[1].skipTabSwitch = true;
       this.sections[1].route = [
