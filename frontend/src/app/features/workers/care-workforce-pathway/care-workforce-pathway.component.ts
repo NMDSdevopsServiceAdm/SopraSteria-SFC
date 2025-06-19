@@ -8,7 +8,6 @@ import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathw
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 import { FinalQuestionComponent } from '../final-question/final-question.component';
 
@@ -21,7 +20,6 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   public heading = 'Where are they currently on the care workforce pathway?';
   public careWorkforcePathwayCategories: CareWorkforcePathwayRoleCategory[];
   public revealTitle = "What's the care workforce pathway?";
-  public cwpQuestionsFlag: boolean;
   public cameFromCWPSummaryPage: boolean;
 
   constructor(
@@ -34,7 +32,6 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
     protected establishmentService: EstablishmentService,
     protected alertService: AlertService,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
-    private featureFlagService: FeatureFlagsService,
   ) {
     super(
       formBuilder,
@@ -61,8 +58,6 @@ export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
 
     this.setupPageWhenCameFromCWPSummaryPage();
 
-    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestions', false);
-    this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
     this.next = this.getRoutePath('staff-record-summary');
   }
 

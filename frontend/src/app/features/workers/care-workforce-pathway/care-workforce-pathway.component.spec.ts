@@ -11,10 +11,8 @@ import {
   careWorkforcePathwayRoleCategories,
   MockCareWorkforcePathwayService,
 } from '@core/test-utils/MockCareWorkforcePathwayService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkerServiceWithOverrides, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { DetailsComponent } from '@shared/components/details/details.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -27,7 +25,6 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
   async function setup(overrides: any = {}) {
     const insideFlow = overrides.insideFlow ?? false;
-    const cwpQuestions = overrides.cwpQuestionsFlag ?? false;
     const setupTools = await render(CareWorkforcePathwayRoleComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
       declarations: [DetailsComponent],
@@ -59,7 +56,6 @@ describe('CareWorkforcePathwayRoleComponent', () => {
           provide: CareWorkforcePathwayService,
           useClass: MockCareWorkforcePathwayService,
         },
-        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestions }) },
         AlertService,
         WindowRef,
       ],
@@ -89,18 +85,9 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('component should not render when feature flag is on', async () => {
-    const overrides = { cwpQuestionsFlag: true };
-    const { fixture, queryByTestId } = await setup(overrides);
-
-    fixture.detectChanges();
-    expect(queryByTestId('cwp-flag')).toBeFalsy();
-  });
-
   it('should show the heading and caption', async () => {
-    const overrides = { cwpQuestionsFlag: false };
-    const { getByText, getByTestId, component } = await setup(overrides);
-    component.cwpQuestionsFlag = false;
+    const { getByText, getByTestId, component } = await setup();
+
     const sectionHeading = getByTestId('section-heading');
 
     expect(sectionHeading).toBeTruthy();
@@ -110,9 +97,8 @@ describe('CareWorkforcePathwayRoleComponent', () => {
 
   describe('reveal', () => {
     it('should show', async () => {
-      const overrides = { cwpQuestionsFlag: false };
-      const { getByTestId, component } = await setup(overrides);
-      component.cwpQuestionsFlag = false;
+      const { getByTestId } = await setup();
+
       const reveal = getByTestId('reveal-whatsCareWorkforcePathway');
 
       expect(reveal).toBeTruthy();
@@ -120,11 +106,9 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     });
 
     it('should show the link for more information', async () => {
-      const overrides = { cwpQuestionsFlag: false };
-      const { getByText, getByTestId, component } = await setup(overrides);
-      component.cwpQuestionsFlag = false;
-      const reveal = getByTestId('reveal-whatsCareWorkforcePathway');
+      const { getByText, getByTestId, component } = await setup();
 
+      const reveal = getByTestId('reveal-whatsCareWorkforcePathway');
       expect(reveal).toBeTruthy();
 
       const link = getByText('Read more about the care workforce pathway');
@@ -271,7 +255,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
     });
 
     it('should not add Staff record added alert when user submits but not in flow', async () => {
-      const overrides = { cwpQuestionsFlag: false, insideFlow: false };
+      const overrides = { insideFlow: false };
       const { getByText, getByLabelText, alertSpy } = await setup(overrides);
 
       const select = getByLabelText(categorySelected, { exact: false });
