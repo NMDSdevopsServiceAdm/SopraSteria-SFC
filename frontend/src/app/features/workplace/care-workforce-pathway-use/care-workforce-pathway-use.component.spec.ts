@@ -5,7 +5,7 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackLinkService } from '@core/services/backLink.service';
+import { BackService } from '@core/services/back.service';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -19,8 +19,9 @@ import { repeat } from 'lodash';
 import { of, throwError } from 'rxjs';
 
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
-fdescribe('CareWorkforcePathwayUseComponent', () => {
+describe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
     YES: 'Yes, we use the pathway for one or more reasons',
     NO: 'No, we do not currently use the pathway',
@@ -40,7 +41,7 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
-    const backLinkServiceSpy = jasmine.createSpyObj('BacklinkService', ['showBackLink']);
+    const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
 
     const setupTools = await render(CareWorkforcePathwayUseComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
@@ -67,8 +68,12 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
           }),
         },
         {
-          provide: BackLinkService,
-          useValue: backLinkServiceSpy,
+          provide: BackService,
+          useValue: backServiceSpy,
+        },
+        {
+          provide: PreviousRouteService,
+          useValue: { getPreviousUrl: () => overrides?.previousUrl, getPreviousPage: () => overrides?.previousPage },
         },
         AlertService,
         WindowRef,
@@ -91,7 +96,7 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       establishmentService,
       establishmentServiceSpy,
       routerSpy,
-      backLinkServiceSpy,
+      backServiceSpy,
       alertSpy,
     };
   };
@@ -389,23 +394,28 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
-  });
 
-  it('should set the back link', async () => {
-    const { backLinkServiceSpy } = await setup();
+    it('should set the back link to CWP awareness question', async () => {
+      const { backServiceSpy } = await setup(overrides);
 
-    expect(backLinkServiceSpy.showBackLink).toHaveBeenCalled();
+      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+        url: ['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness'],
+      });
+    });
   });
 
   describe('When coming from summary panel', () => {
+    const workplaceName = 'Test workplace name';
+    const comingFromSummaryPanelOverrides = {
+      establishmentService: {
+        returnTo: { url: ['/dashboard'], fragment: 'home' },
+        establishment: { name: workplaceName },
+      },
+      previousPage: 'care-workforce-pathway-awareness',
+    };
+
     it('should display banner when user submits and return is to home page', async () => {
-      const workplaceName = 'Test workplace name';
-      const { getByText, getByLabelText, alertSpy } = await setup({
-        establishmentService: {
-          returnTo: { url: ['/dashboard'], fragment: 'home' },
-          establishment: { name: workplaceName },
-        },
-      });
+      const { getByText, getByLabelText, alertSpy } = await setup(comingFromSummaryPanelOverrides);
 
       userEvent.click(getByLabelText(RadioButtonLabels.YES));
       userEvent.click(getByLabelText(mockReasons[0].text));
@@ -427,6 +437,45 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
       userEvent.click(getByText('Save and return'));
 
       expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    it('should set the back link to CWP awareness question', async () => {
+      const { backServiceSpy } = await setup(comingFromSummaryPanelOverrides);
+
+      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+        url: ['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness'],
+      });
+    });
+  });
+
+  describe('when coming from workplace summary', () => {
+    const returnTo = {
+      url: ['/dashboard'],
+      fragment: 'workplace',
+    };
+
+    it('should set backlink to returnTo when directly visited from workplace summary', async () => {
+      const { backServiceSpy } = await setup({
+        previousPage: 'workplace',
+        establishmentService: {
+          returnTo,
+        },
+      });
+
+      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith(returnTo);
+    });
+
+    it('should set backlink to CWP awareness question when visited via workplace summary --> awareness question', async () => {
+      const { backServiceSpy } = await setup({
+        previousPage: 'care-workforce-pathway-awareness',
+        establishmentService: {
+          returnTo,
+        },
+      });
+
+      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+        url: ['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness'],
+      });
     });
   });
 });
