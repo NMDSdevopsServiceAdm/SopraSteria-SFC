@@ -13,7 +13,6 @@ import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
@@ -135,7 +134,6 @@ const routes: Routes = [
       noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
       noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer:
         GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
-      featureFlags: FeatureFlagsResolver,
     },
     children: [
       {

@@ -6,7 +6,6 @@ import { AvailableQualificationsResolver } from '@core/resolvers/available-quali
 import { GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/get-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
@@ -263,7 +262,7 @@ const routes: Routes = [
     path: ':id',
     canActivate: [CheckPermissionsGuard],
     component: EditWorkerComponent,
-    resolve: { worker: WorkerResolver, jobs: JobsResolver, featureFlags: FeatureFlagsResolver },
+    resolve: { worker: WorkerResolver, jobs: JobsResolver },
     data: {
       permissions: ['canViewWorker'],
     },
