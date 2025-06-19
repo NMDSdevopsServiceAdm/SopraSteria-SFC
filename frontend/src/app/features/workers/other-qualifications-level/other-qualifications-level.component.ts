@@ -8,18 +8,16 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
-import { FinalQuestionComponent } from '../final-question/final-question.component';
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-other-qualifications-level',
   templateUrl: './other-qualifications-level.component.html',
 })
-export class OtherQualificationsLevelComponent extends FinalQuestionComponent {
+export class OtherQualificationsLevelComponent extends QuestionComponent {
   public qualifications: QualificationLevel[];
   public section = 'Training and qualifications';
-  public cwpQuestionsFlag: boolean;
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
@@ -30,18 +28,8 @@ export class OtherQualificationsLevelComponent extends FinalQuestionComponent {
     protected establishmentService: EstablishmentService,
     private qualificationService: QualificationService,
     protected alertService: AlertService,
-    private featureFlagService: FeatureFlagsService,
   ) {
-    super(
-      formBuilder,
-      router,
-      route,
-      backLinkService,
-      errorSummaryService,
-      workerService,
-      establishmentService,
-      alertService,
-    );
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
       qualification: null,
@@ -55,12 +43,7 @@ export class OtherQualificationsLevelComponent extends FinalQuestionComponent {
       this.prefill();
     }
 
-    this.cwpQuestionsFlag = await this.featureFlagService.configCatClient.getValueAsync('cwpQuestions', false);
-    this.featureFlagService.cwpQuestionsFlag = this.cwpQuestionsFlag;
-
-    this.cwpQuestionsFlag
-      ? (this.next = this.getRoutePath('staff-record-summary'))
-      : (this.next = this.getRoutePath('care-workforce-pathway'));
+    this.next = this.getRoutePath('care-workforce-pathway');
   }
 
   private prefill(): void {
@@ -85,19 +68,6 @@ export class OtherQualificationsLevelComponent extends FinalQuestionComponent {
       },
     };
     return props;
-  }
-
-  onSubmit(): void {
-    super.onSubmit();
-    if (!this.submitted && this.insideFlow && this.cwpQuestionsFlag == true) {
-      this.addCompletedStaffFlowAlert();
-    }
-  }
-
-  addAlert(): void {
-    if (this.insideFlow && this.cwpQuestionsFlag == true) {
-      this.addCompletedStaffFlowAlert();
-    }
   }
 
   protected formValueIsEmpty(): boolean {
