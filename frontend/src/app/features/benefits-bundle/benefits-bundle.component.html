@@ -5,8 +5,8 @@
     <app-details [title]="revealTitle">
       <p>
         The ASC-WDS Benefits Bundle is our way of saying thank you for using the Adult Social Care Workforce Data Set
-        (ASC-WDS). The Bundle give you exclusive discounts and special offers across a range of Skills for Care's
-        products and services.
+        <span style="white-space: nowrap">(ASC-WDS)</span>. The Bundle give you exclusive discounts and special offers
+        across a range of Skills for Care's products and services.
       </p>
     </app-details>
     <h3 class="govuk-heading-s govuk-!-margin-top-3">How to use the Benefits Bundle</h3>
@@ -31,7 +31,8 @@
       <app-benefit-accordion [benefit]="benefits[0]" [index]="0" (toggleEmitter)="toggleAccordion(0)">
         <p>
           These seminars from Skills for Care offer learning on a range of topics. They can be tailored to your needs
-          and delivered directly to your organisation. Claim 10% off with your ASC-WDS workplace ID.
+          and delivered directly to your organisation. Claim 10% off with your
+          <span style="white-space: nowrap">ASC-WDS</span> workplace ID.
         </p>
         <p>
           <a [routerLink]="['tailored-seminars']">Read more about these tailored seminars</a>
@@ -40,8 +41,9 @@
 
       <app-benefit-accordion [benefit]="benefits[1]" [index]="1" (toggleEmitter)="toggleAccordion(1)">
         <p>
-          Skills for Care offer low cost eLearning on a variety of topics. Your ASC-WDS account entitles you to 10% off
-          the purchase price of the modules.
+          Skills for Care offer low cost eLearning on a variety of topics. Your
+          <span style="white-space: nowrap">ASC-WDS</span> account entitles you to 10% off the purchase price of the
+          modules.
         </p>
 
         <p>
@@ -62,7 +64,8 @@
       <app-benefit-accordion [benefit]="benefits[3]" [index]="3" (toggleEmitter)="toggleAccordion(3)">
         <p>
           <a href="https://bookshop.skillsforcare.org.uk/Shop" target="_blank">Visit the Skills for Care bookshop</a>
-          and use voucher code <strong>ASCWDS-2526</strong> to claim your discount.
+          and use voucher code <span style="white-space: nowrap"><strong>ASCWDS-2526</strong></span> to claim your
+          discount.
         </p>
       </app-benefit-accordion>
 
