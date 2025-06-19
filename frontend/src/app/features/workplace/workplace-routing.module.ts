@@ -77,6 +77,7 @@ import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
+import { WorkplaceIsAwareOfCwpGuard } from '@core/guards/workplace-is-aware-of-cwp/workplace-is-aware-of-cwp.guard';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -454,7 +455,7 @@ const routes: Routes = [
       {
         path: 'care-workforce-pathway-use',
         component: CareWorkforcePathwayUseComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [CheckPermissionsGuard, WorkplaceIsAwareOfCwpGuard],
         resolve: { careWorkforcePathwayUseReasons: CareWorkforcePathwayUseReasonsResolver },
         data: {
           permissions: ['canEditEstablishment'],

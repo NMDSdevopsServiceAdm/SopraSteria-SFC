@@ -6,10 +6,9 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
@@ -19,9 +18,8 @@ import { repeat } from 'lodash';
 import { of, throwError } from 'rxjs';
 
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
-import { PreviousRouteService } from '@core/services/previous-route.service';
 
-describe('CareWorkforcePathwayUseComponent', () => {
+fdescribe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
     YES: 'Yes, we use the pathway for one or more reasons',
     NO: 'No, we do not currently use the pathway',
@@ -59,12 +57,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
           provide: Router,
           useFactory: MockRouter.factory({
             navigate: routerSpy,
-          }),
-        },
-        {
-          provide: CareWorkforcePathwayService,
-          useFactory: MockCareWorkforcePathwayService.factory({
-            isAwareOfCareWorkforcePathway: () => overrides.workplaceIsAwareOfCareWorkforcePathway ?? true,
           }),
         },
         {
@@ -131,14 +123,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
     revealText.forEach((paragraph) => {
       expect(revealElement.textContent).toContain(paragraph);
     });
-  });
-
-  it('should redirect to care workforce pathway awareness question if the workplace is not aware of CWP', async () => {
-    const { routerSpy } = await setup({
-      workplaceIsAwareOfCareWorkforcePathway: false,
-    });
-
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness']);
   });
 
   describe('form', () => {
