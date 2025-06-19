@@ -1,7 +1,11 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { CWPAwarenessAnswers, CWPUseReasons } from '../../../support/careWorkforcePathwayData';
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
+import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../../support/page_objects/workplaceQuestionPages';
+
+const workplaceSummaryPath = 'dashboard#workplace';
 
 describe('Standalone home page as edit user', () => {
   const establishmentId = StandAloneEstablishment.id;
@@ -25,6 +29,7 @@ describe('Standalone home page as edit user', () => {
 
   before(() => {
     cy.resetStartersLeaversVacancies(establishmentId);
+    cy.resetWorkplaceCWPAnswers(establishmentId);
   });
 
   beforeEach(() => {
@@ -35,6 +40,7 @@ describe('Standalone home page as edit user', () => {
 
   afterEach(() => {
     cy.resetStartersLeaversVacancies(establishmentId);
+    cy.resetWorkplaceCWPAnswers(establishmentId);
   });
 
   it('should see the standalone establishment workplace page', () => {
@@ -46,7 +52,7 @@ describe('Standalone home page as edit user', () => {
     onWorkplacePage.allSectionsAreVisible();
   });
 
-  xit('All sections have a change link', () => {
+  it('All sections have a change link', () => {
     onWorkplacePage.allSectionsAreChangeable();
   });
 
@@ -189,5 +195,40 @@ describe('Standalone home page as edit user', () => {
       });
     });
   });
-});
 
+  describe('Care workforce pathway workplace awareness and usage', () => {
+    const reasons = [CWPUseReasons[0], CWPUseReasons[2], CWPUseReasons[5], CWPUseReasons[9]];
+    const mockOtherReasonText = 'some free text for "Something else"';
+
+    it('can update CareWorkforcePathway awareness and usage for the workplace', () => {
+      cy.url().should('contain', workplaceSummaryPath);
+      onWorkplacePage.clickIntoQuestion('care-workforce-pathway-awareness');
+
+      answerCWPAwarenessQuestion(CWPAwarenessAnswers[0]); // Aware in practice
+      answerCWPUseQuestion(/No/);
+
+      // verify that answers are added to workplace summary
+      cy.url().should('contain', workplaceSummaryPath);
+      onWorkplacePage.expectRow('care-workforce-pathway-awareness').toHaveValue(CWPAwarenessAnswers[0].textForSummary);
+      onWorkplacePage.expectRow('care-workforce-pathway-use').toHaveValue('No');
+
+      // change CWP use to Yes with some reasons
+      onWorkplacePage.clickIntoQuestion('care-workforce-pathway-use');
+      answerCWPUseQuestion(/Yes/, reasons, mockOtherReasonText);
+
+      // verify that workplace is updated with reasons
+      const expectedReasonTexts = [...reasons.slice(0, -1).map((reason) => reason.text), mockOtherReasonText];
+      onWorkplacePage.expectRow('care-workforce-pathway-use').toHaveMultipleValues(expectedReasonTexts);
+
+      // change CWP awareness to Not aware
+      onWorkplacePage.clickIntoQuestion('care-workforce-pathway-awareness');
+      answerCWPAwarenessQuestion(CWPAwarenessAnswers[3]); // Not aware
+
+      // should return to workplace summary without seeing CWP use question. also should hide the CWP use row
+      cy.url().should('contain', workplaceSummaryPath);
+
+      onWorkplacePage.expectRow('care-workforce-pathway-awareness').toHaveValue(CWPAwarenessAnswers[3].textForSummary);
+      onWorkplacePage.expectRow('care-workforce-pathway-use').notExist();
+    });
+  });
+});
