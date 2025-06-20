@@ -19,6 +19,7 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
   public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
   public careWorkforcePathwayAwarenessAnswers: CareWorkforcePathwayWorkplaceAwarenessAnswer[];
   private hasGivenNotAwareAnswer: boolean;
+  private returnIsSetToHomePage: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -40,6 +41,7 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
     this.prefill();
 
     this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 
   private setPreviousRoute(): void {
@@ -111,7 +113,7 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
   }
 
   protected addAlert(): void {
-    if (this.establishmentService.returnIsSetToHomePage() && this.hasGivenNotAwareAnswer) {
+    if (this.returnIsSetToHomePage && this.hasGivenNotAwareAnswer) {
       this.alertService.addAlert({
         type: 'success',
         message: `Care workforce pathway information saved in '${this.establishment.name}'`,

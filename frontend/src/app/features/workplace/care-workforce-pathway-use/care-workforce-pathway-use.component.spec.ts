@@ -19,7 +19,7 @@ import { of, throwError } from 'rxjs';
 
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
 
-fdescribe('CareWorkforcePathwayUseComponent', () => {
+describe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
     YES: 'Yes, we use the pathway for one or more reasons',
     NO: 'No, we do not currently use the pathway',
@@ -399,12 +399,13 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
     };
 
     it('should display banner when user submits and return is to home page', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup(comingFromSummaryPanelOverrides);
+      const { fixture, getByText, getByLabelText, alertSpy } = await setup(comingFromSummaryPanelOverrides);
 
       userEvent.click(getByLabelText(RadioButtonLabels.YES));
       userEvent.click(getByLabelText(mockReasons[0].text));
 
       userEvent.click(getByText('Save and return'));
+      await fixture.whenStable();
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
@@ -413,12 +414,13 @@ fdescribe('CareWorkforcePathwayUseComponent', () => {
     });
 
     it('should not display banner when user submits but has not come from home page', async () => {
-      const { getByText, getByLabelText, alertSpy } = await setup();
+      const { fixture, getByText, getByLabelText, alertSpy } = await setup();
 
       userEvent.click(getByLabelText(RadioButtonLabels.YES));
       userEvent.click(getByLabelText(mockReasons[0].text));
 
       userEvent.click(getByText('Save and return'));
+      await fixture.whenStable();
 
       expect(alertSpy).not.toHaveBeenCalled();
     });
