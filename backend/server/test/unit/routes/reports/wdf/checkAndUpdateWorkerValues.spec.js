@@ -36,9 +36,18 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
       it(`updates if QualificationInSocialCareValue is ${value}`, async () => {
         workersArray[0].QualificationInSocialCareValue = value;
 
-        let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+        let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
         expect(updatedWorkersArray[0].QualificationInSocialCare).to.equal('N/A');
+      });
+
+      it(`should not update if QualificationInSocialCareValue is Yes`, async () => {
+        workersArray[0].QualificationInSocialCareValue = 'Yes';
+        workersArray[0].QualificationInSocialCare = "Don't know";
+
+        let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
+
+        expect(updatedWorkersArray[0].QualificationInSocialCare).to.equal("Don't know");
       });
     });
   });
@@ -47,7 +56,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
     it(`updates if AnnualHourlyPayRate is "Don't know"`, async () => {
       workersArray[0].AnnualHourlyPayRate = "Don't know";
 
-      let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
       expect(updatedWorkersArray[0].AnnualHourlyPayRate).to.equal('N/A');
     });
@@ -55,9 +64,22 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
     it(`updates if AnnualHourlyPayValue is "Don't know"`, async () => {
       workersArray[0].AnnualHourlyPayValue = "Don't know";
 
-      let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
       expect(updatedWorkersArray[0].AnnualHourlyPayRate).to.equal('N/A');
+    });
+
+    ['Annually', 'Hourly'].forEach((value, index) => {
+      const pay = ['30000', '10.40'];
+      it(`does not update if AnnualHourlyPayValue ${value}`, async () => {
+        workersArray[0].AnnualHourlyPayRate = value;
+        workersArray[0].AnnualHourlyPayValue = pay[index];
+
+        let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
+
+        expect(updatedWorkersArray[0].AnnualHourlyPayRate).to.equal(value);
+        expect(updatedWorkersArray[0].AnnualHourlyPayValue).to.equal(pay[index]);
+      });
     });
   });
 
@@ -65,7 +87,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
     it(`updates DaysSickValue to "Don't know" if the value is 'No'`, async () => {
       workersArray[0].DaysSickValue = 'No';
 
-      let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
       expect(updatedWorkersArray[0].DaysSickValue).to.equal("Don't know");
     });
@@ -74,7 +96,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
       workersArray[0].DaysSickValue = 'Yes';
       workersArray[0].DaysSickDays = 4;
 
-      let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
       expect(updatedWorkersArray[0].DaysSickValue).to.equal(4);
     });
@@ -83,7 +105,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
       it(`updates to 'N/A when ContractValue is ${value}`, async () => {
         workersArray[0].ContractValue = value;
 
-        let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+        let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
         expect(updatedWorkersArray[0].DaysSickValue).to.equal('N/A');
       });
@@ -94,7 +116,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
     it(`updates RecruitedFromValue to "Don't know" if the value is 'No'`, async () => {
       workersArray[0].RecruitedFromValue = 'No';
 
-      let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
       expect(updatedWorkersArray[0].RecruitedFromValue).to.equal("Don't know");
     });
@@ -103,7 +125,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
       workersArray[0].RecruitedFromValue = 'Yes';
       workersArray[0].From = 'Adult care sector: local authority';
 
-      let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
       expect(updatedWorkersArray[0].RecruitedFromValue).to.equal('Adult care sector: local authority');
     });
@@ -114,7 +136,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
       workersArray[0].NationalityValue = 'Other';
       workersArray[0].Nationality = 'Portuguese';
 
-      let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
       expect(updatedWorkersArray[0].NationalityValue).to.equal('Portuguese');
     });
@@ -123,7 +145,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
       workersArray[0].NationalityValue = 'Other';
       workersArray[0].Nationality = null;
 
-      let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
       expect(updatedWorkersArray[0].NationalityValue).to.equal('Other');
     });
@@ -132,7 +154,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
       workersArray[0].NationalityValue = 'British';
       workersArray[0].Nationality = null;
 
-      let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
       expect(updatedWorkersArray[0].NationalityValue).to.equal('British');
     });
@@ -147,7 +169,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursContractedHours = '35.0';
           workersArray[0].WeeklyHoursContractedValue = 'Yes';
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal('35.0');
         });
@@ -158,7 +180,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursContractedHours = null;
           workersArray[0].WeeklyHoursContractedValue = 'No';
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal("Don't know");
         });
@@ -169,7 +191,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursContractedHours = null;
           workersArray[0].WeeklyHoursContractedValue = null;
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal('Missing');
         });
@@ -184,7 +206,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursAverageHours = '35.0';
           workersArray[0].WeeklyHoursAverageValue = 'Yes';
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal('35.0');
         });
@@ -195,7 +217,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursAverageHours = null;
           workersArray[0].WeeklyHoursAverageValue = 'No';
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal("Don't know");
         });
@@ -206,7 +228,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursAverageHours = null;
           workersArray[0].WeeklyHoursAverageValue = null;
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal('Missing');
         });
@@ -219,7 +241,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursAverageHours = '35.0';
           workersArray[0].WeeklyHoursAverageValue = 'Yes';
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal('35.0');
         });
@@ -230,7 +252,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursAverageHours = null;
           workersArray[0].WeeklyHoursAverageValue = 'No';
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal("Don't know");
         });
@@ -241,7 +263,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursAverageHours = null;
           workersArray[0].WeeklyHoursAverageValue = null;
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal('Missing');
         });
@@ -256,7 +278,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursAverageHours = '35.0';
           workersArray[0].WeeklyHoursAverageValue = 'Yes';
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal('35.0');
         });
@@ -267,7 +289,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursAverageHours = null;
           workersArray[0].WeeklyHoursAverageValue = 'No';
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal("Don't know");
         });
@@ -278,7 +300,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
           workersArray[0].WeeklyHoursAverageHours = null;
           workersArray[0].WeeklyHoursAverageValue = null;
 
-          let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+          let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
           expect(updatedWorkersArray[0].HoursValue).to.equal('Missing');
         });
@@ -289,7 +311,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
   it('should update the WdfEligible property', async () => {
     WdfCalculator.effectiveDate = new Date('2022-05-13T09:27:34.471Z');
 
-    let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+    let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
     expect(updatedWorkersArray[0].WdfEligible).to.equal(true);
   });
@@ -299,7 +321,7 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
       it(`should update ${prop} property to "Missing" if it has a null value`, async () => {
         workersArray[0][prop] = null;
 
-        let updatedWorkersArray = await checkAndUpdateWorkerValuesForReport(workersArray);
+        let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
 
         expect(updatedWorkersArray[0][prop]).to.equal('Missing');
       });
