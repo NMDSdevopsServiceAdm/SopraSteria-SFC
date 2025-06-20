@@ -64,6 +64,14 @@ export const establishmentBuilder = build('Establishment', {
     careWorkersLeaveDaysPerYear: fake((f) => f.datatype.number(1000)),
     wdf: null,
     isParentParentApprovedBannerViewed: null,
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: fake((f) => f.lorem.sentence()),
+    },
+    careWorkforcePathwayUse: {
+      use: 'Yes',
+      reasons: [{ id: 1 }, { id: 10, other: 'some specific reason' }],
+    },
   },
 });
 
@@ -76,7 +84,7 @@ export const establishmentWithShareWith = (shareWith) => {
   });
 };
 
-export const establishmentWithWdfBuilder = () => {
+export const establishmentWithWdfBuilder = (additionalProperties: any = {}) => {
   return establishmentBuilder({
     overrides: {
       wdf: {
@@ -89,6 +97,7 @@ export const establishmentWithWdfBuilder = () => {
         numberOfStaff: { isEligible: false, updatedSinceEffectiveDate: true },
         employerType: { isEligible: false, updatedSinceEffectiveDate: true },
       },
+      ...additionalProperties,
     },
   });
 };
@@ -142,6 +151,11 @@ export class MockEstablishmentService extends EstablishmentService {
     sickPay: 'No',
     pensionContribution: 'No',
     careWorkersLeaveDaysPerYear: '35',
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    },
+    careWorkforcePathwayUse: null,
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}, childWorkplaces: any = null) {
@@ -208,6 +222,11 @@ export class MockEstablishmentService extends EstablishmentService {
   public _primaryWorkplace: Establishment = {
     address: '',
     capacities: [],
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    },
+    careWorkforcePathwayUse: null,
     created: undefined,
     dataOwner: undefined,
     dataOwnershipRequested: '',
@@ -342,6 +361,11 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
   public establishmentObj = {
     address: 'mock establishment address',
     capacities: [],
+    careWorkforcePathwayWorkplaceAwareness: {
+      id: 1,
+      title: 'Aware of how the care workforce pathway works in practice',
+    },
+    careWorkforcePathwayUse: null,
     created: undefined,
     dataOwner: 'Workplace',
     dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
@@ -444,7 +468,22 @@ export class MockEstablishmentServiceWithOverrides extends MockEstablishmentServ
       const service = new MockEstablishmentService(httpClient);
 
       Object.keys(overrides).forEach((overrideName) => {
-        service[overrideName] = overrides[overrideName];
+        switch (overrideName) {
+          case 'returnTo': {
+            Object.defineProperty(service, 'returnTo', {
+              get: () => overrides['returnTo'],
+            });
+            break;
+          }
+          case 'establishment': {
+            service.establishmentObj = { ...service.establishmentObj, ...overrides['establishment'] };
+            break;
+          }
+          default: {
+            service[overrideName] = overrides[overrideName];
+            break;
+          }
+        }
       });
 
       return service;

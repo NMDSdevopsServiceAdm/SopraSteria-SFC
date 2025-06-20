@@ -32,6 +32,7 @@ class WorkerCsvValidator {
     this._yearOfEntry = null;
     this._healthAndCareVisa = null;
     this._employedFromOutsideUk = null;
+    this._careWorkForcePathwayCategory = null;
 
     this._disabled = null;
     this._careCert = null;
@@ -404,6 +405,10 @@ class WorkerCsvValidator {
     return 5640;
   }
 
+  static get CWPCATEGORY_WARNING() {
+    return 5650;
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -554,6 +559,9 @@ class WorkerCsvValidator {
 
   get employedFromOutsideUk() {
     return this._employedFromOutsideUk;
+  }
+  get careWorkForcePathwayCategory() {
+    return this._careWorkForcePathwayCategory;
   }
 
   _convertYesNoDontKnow(value) {
@@ -1222,6 +1230,31 @@ class WorkerCsvValidator {
       }
     }
     return true;
+  }
+
+  _validateCwpCategory() {
+    const allowedCwpCategoryValues = [1, 2, 3, 4, 5, 6, 7, 998, 999];
+
+    const myCwpCategory = parseInt(this._currentLine.CWPCATEGORY, 10);
+
+    if (this._currentLine.CWPCATEGORY && this._currentLine.CWPCATEGORY.length > 0) {
+      if (isNaN(myCwpCategory) || !allowedCwpCategoryValues.includes(myCwpCategory)) {
+        this._validationErrors.push(
+          this._generateWarning(
+            'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
+            'CWPCATEGORY',
+          ),
+        );
+
+        return false;
+      } else {
+        this._careWorkForcePathwayCategory = myCwpCategory;
+
+        return true;
+      }
+    } else {
+      return true;
+    }
   }
 
   _validateDisabled() {
@@ -2908,6 +2941,23 @@ class WorkerCsvValidator {
     }
   }
 
+  _transformCwpCategory() {
+    if (this._careWorkForcePathwayCategory) {
+      const myValidatedCwpCategory = this.BUDI.cwpCategory(this.BUDI.TO_ASC, this._careWorkForcePathwayCategory);
+
+      if (!myValidatedCwpCategory) {
+        this._validationErrors.push(
+          this._generateWarning(
+            'The code you have entered for CWPCATEGORY is incorrect and will be ignored',
+            'CWPCATEGORY',
+          ),
+        );
+      } else {
+        this._careWorkForcePathwayCategory = myValidatedCwpCategory;
+      }
+    }
+  }
+
   // returns true on success, false is any attribute of Worker fails
   validate() {
     let status = true;
@@ -2956,6 +3006,7 @@ class WorkerCsvValidator {
       status = !this._validateSocialCareQualification() ? false : status;
       status = !this._validateNonSocialCareQualification() ? false : status;
       status = !this._validateAmhp() ? false : status;
+      status = !this._validateCwpCategory() ? false : status;
     }
 
     return status;
@@ -2979,6 +3030,7 @@ class WorkerCsvValidator {
       status = !this._transformSocialCareQualificationLevel() ? false : status;
       status = !this._transformNonSocialCareQualificationLevel() ? false : status;
       status = !this._transformQualificationRecords() ? false : status;
+      status = !this._transformCwpCategory() ? false : status;
 
       return status;
     } else {
@@ -3015,6 +3067,12 @@ class WorkerCsvValidator {
       yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
       healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
       employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
+      careWorkforcePathwayRoleCategory: this._careWorkForcePathwayCategory
+        ? {
+            roleCategoryId: this._careWorkForcePathwayCategory,
+          }
+        : undefined,
+
       disabled: this._disabled !== null ? this._disabled : undefined,
       careCertificate: this._careCert
         ? {
@@ -3103,6 +3161,12 @@ class WorkerCsvValidator {
         : undefined,
       healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
       employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
+      careWorkforcePathwayRoleCategory: this._careWorkForcePathwayCategory
+        ? {
+            roleCategoryId: this._careWorkForcePathwayCategory,
+          }
+        : undefined,
+
       disability: this._disabled ? this._disabled : undefined,
       careCertificate: this._careCert ? this._careCert : undefined,
       level2CareCertificate: this._level2CareCert?.value ? this._level2CareCert : undefined,

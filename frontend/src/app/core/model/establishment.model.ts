@@ -1,3 +1,4 @@
+import { CareWorkforcePathwayUse } from './care-workforce-pathway.model';
 import { DataPermissions, WorkplaceDataOwner } from './my-workplaces.model';
 import { WDFValue } from './wdf.model';
 
@@ -78,6 +79,11 @@ export interface Category {
 export interface BannerFlag {
   property: string;
   value: boolean;
+}
+
+export interface CareWorkforcePathwayWorkplaceAwareness {
+  id: number;
+  title: string;
 }
 
 export interface WDF {
@@ -165,6 +171,9 @@ export interface Establishment {
   sickPay?: string;
   isParentApprovedBannerViewed?: boolean;
   provId?: string;
+  careWorkforcePathwayWorkplaceAwareness: CareWorkforcePathwayWorkplaceAwareness;
+  careWorkforcePathwayUse: CareWorkforcePathwayUse;
+  CWPAwarenessQuestionViewed?: boolean;
 }
 
 export interface UpdateJobsRequest {

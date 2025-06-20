@@ -142,6 +142,8 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
 import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pathway-role-category.pipe';
 import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { HasValuePipe } from './pipes/has-value.pipe';
+import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
+import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -284,6 +286,8 @@ import { HasValuePipe } from './pipes/has-value.pipe';
     JobRoleNumbersTableComponent,
     CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
+    FormatCwpUsePipe,
+    CareWorkforcePathwayWorkplaceAwarenessTitle,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -417,6 +421,8 @@ import { HasValuePipe } from './pipes/has-value.pipe';
     JobRoleNumbersTableComponent,
     CareWorkforcePathwayRoleCategoryPipe,
     HasValuePipe,
+    FormatCwpUsePipe,
+    CareWorkforcePathwayWorkplaceAwarenessTitle,
   ],
   providers: [
     DialogService,
@@ -426,6 +432,7 @@ import { HasValuePipe } from './pipes/has-value.pipe';
     QuestionsAndAnswersResolver,
     FeatureFlagsResolver,
     HasValuePipe,
+    FormatCwpUsePipe,
   ],
 })
 export class SharedModule {}

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 
@@ -10,16 +10,9 @@ export class QualificationsAndTrainingComponent
   extends StaffRecordSummaryComponent
   implements OnInit, OnDestroy, OnChanges
 {
-  public cwpQuestionsFlag: boolean;
-
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() public canEditWorker: boolean;
-
-  protected init(): void {
-    const snapshotData = this.route.snapshot.data;
-    this.cwpQuestionsFlag = snapshotData?.featureFlags?.cwpQuestions ?? true;
-  }
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';

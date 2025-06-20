@@ -14,6 +14,7 @@ export class WorkplaceSubmitButtonComponent {
   @Input() marginTop2 = false;
   @Input() marginTop4 = false;
   @Input() continue = false;
+  @Input() hasConditionalRouting = false;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
   onLinkClick(event: Event, action: string, save: boolean): void {

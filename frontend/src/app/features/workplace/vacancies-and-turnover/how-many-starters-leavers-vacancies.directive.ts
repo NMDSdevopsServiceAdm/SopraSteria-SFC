@@ -1,16 +1,16 @@
 import { Directive, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, Validators } from '@angular/forms';
-import { Leaver, Starter, StarterLeaverVacancy, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
-import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-
-import { Question } from '../question/question.component';
 import { Router } from '@angular/router';
+import { Leaver, Starter, StarterLeaverVacancy, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { VacanciesAndTurnoverService } from '../../../core/services/vacancies-and-turnover.service';
-import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
 import { FormatUtil } from '@core/utils/format-util';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
+
+import { VacanciesAndTurnoverService } from '../../../core/services/vacancies-and-turnover.service';
+import { Question } from '../question/question.component';
 
 @Directive()
 export class HowManyStartersLeaversVacanciesDirective extends Question implements OnInit, OnDestroy {
@@ -96,14 +96,14 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
 
   protected onSuccess(): void {}
 
-  protected navigate(): void {
+  protected navigate(): Promise<boolean> {
     const action = this.submitAction.action;
 
     if (['continue', 'exit', 'return'].includes(action)) {
       this.clearLocalStorageData();
     }
 
-    super.navigate();
+    return super.navigate();
   }
 
   public setBackLink(): void {

@@ -3,7 +3,11 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
+import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
+import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
@@ -24,8 +28,6 @@ import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
-import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 
 @NgModule({
   imports: [
@@ -60,6 +62,8 @@ import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
     FeatureFlagsResolver,
+    CareWorkforcePathwayUseReasonsResolver,
+    CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
   ],
 })
 export class SubsidiaryModule {}

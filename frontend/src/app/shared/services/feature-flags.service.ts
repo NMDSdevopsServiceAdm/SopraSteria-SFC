@@ -8,7 +8,6 @@ export class FeatureFlagsService {
   private _newHomeDesignFlag: boolean;
   private _newHomeDesignParentFlag: boolean;
   private _newDataAreaFlag: boolean;
-  private _cwpQuestionsFlag: boolean;
 
   constructor() {}
 
@@ -42,13 +41,5 @@ export class FeatureFlagsService {
 
   public set newBenchmarksDataArea(value: boolean) {
     this._newDataAreaFlag = value;
-  }
-
-  public get cwpQuestionsFlag(): boolean {
-    return this._cwpQuestionsFlag;
-  }
-
-  public set cwpQuestionsFlag(value: boolean) {
-    this._cwpQuestionsFlag = value;
   }
 }

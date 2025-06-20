@@ -27,9 +27,16 @@
       </button>
     </ng-container>
     <ng-template #saveAndContinue>
-      <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('return', true)">
-        Save and return
-      </button>
+      <ng-container *ngIf="hasConditionalRouting; else saveAndReturn">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9" style="width: 124px;" (click)="onButtonClick('return', true)">
+          Save
+        </button>
+      </ng-container>
+      <ng-template #saveAndReturn>
+        <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="onButtonClick('return', true)">
+          Save and return
+        </button>
+      </ng-template>
     </ng-template>
     <span class="govuk-visually-hidden">or</span>
     <a class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onLinkClick($event, 'return', false)">{{

@@ -7,6 +7,9 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
+import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
+import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
@@ -24,6 +27,8 @@ import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workpla
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { AcceptPreviousCareCertificateComponent } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
+import { CareWorkforcePathwayAwarenessComponent } from '@features/workplace/care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
+import { CareWorkforcePathwayUseComponent } from '@features/workplace/care-workforce-pathway-use/care-workforce-pathway-use.component';
 import { ChangeExpiresSoonAlertsComponent } from '@features/workplace/change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from '@features/workplace/check-answers/check-answers.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
@@ -78,8 +83,7 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
-import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
+import { WorkplaceIsAwareOfCwpGuard } from '@core/guards/workplace-is-aware-of-cwp/workplace-is-aware-of-cwp.guard';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -131,7 +135,6 @@ const routes: Routes = [
       noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
       noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer:
         GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
-      featureFlags: FeatureFlagsResolver,
     },
     children: [
       {
@@ -543,6 +546,28 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Accept Previous Care Certificate',
+        },
+      },
+      {
+        path: 'care-workforce-pathway-awareness',
+        component: CareWorkforcePathwayAwarenessComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Care Workforce Pathway Awareness',
+        },
+        resolve: {
+          careWorkforcePathwayWorkplaceAwarenessAnswers: CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
+        },
+      },
+      {
+        path: 'care-workforce-pathway-use',
+        component: CareWorkforcePathwayUseComponent,
+        canActivate: [CheckPermissionsGuard, WorkplaceIsAwareOfCwpGuard],
+        resolve: { careWorkforcePathwayUseReasons: CareWorkforcePathwayUseReasonsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Care workforce pathway use',
         },
       },
       {

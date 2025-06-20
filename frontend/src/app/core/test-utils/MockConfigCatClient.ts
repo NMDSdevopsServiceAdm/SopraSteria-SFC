@@ -8,7 +8,6 @@ export const DefaultFeatureFlagsForLocalTest = {
   homePageNewDesignParent: true,
   newBenchmarksDataArea: true,
   bulkUploadHelp: true,
-  cwpQuestions: false,
 };
 
 export const mockConfigCatClient = {

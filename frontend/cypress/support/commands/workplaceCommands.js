@@ -77,3 +77,21 @@ Cypress.Commands.add('archiveAllWorkersInWorkplace', (establishmentID) => {
 
   cy.task('dbQuery', { queryString: queryString, parameters: parameters });
 });
+
+Cypress.Commands.add('resetWorkplaceCWPAnswers', (establishmentID) => {
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+      SET "CareWorkforcePathwayWorkplaceAwarenessFK" = null,
+          "CareWorkforcePathwayUseValue" = null,
+          "CWPAwarenessQuestionViewed" = null
+      WHERE "EstablishmentID" = $1;`,
+
+    `DELETE FROM cqc."EstablishmentCWPReasons"
+     WHERE "EstablishmentID" = $1;`,
+  ];
+  const parameters = [establishmentID];
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});

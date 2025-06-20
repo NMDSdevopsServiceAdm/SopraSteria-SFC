@@ -1,4 +1,8 @@
 import {
+  CareWorkforcePathwayWorkplaceAwarenessAnswer,
+  CareWorkforcePathwayWorkplaceAwarenessResponse,
+} from '@core/model/care-workforce-pathway.model';
+import {
   CareWorkforcePathwayRoleCategory,
   CareWorkforcePathwayRoleCategoryResponse,
 } from '@core/model/careWorkforcePathwayCategory.model';
@@ -9,12 +13,24 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { JobRole } from '@core/model/job.model';
 import { Params } from '@angular/router';
+import { CareWorkforcePathwayUseReason } from '@core/model/care-workforce-pathway.model';
+import { CareWorkforcePathwayWorkplaceAwareness } from '@core/model/establishment.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CareWorkforcePathwayService {
+  private _awarenessAnswersTruthyIds = [1, 2, 3];
+
   constructor(private http: HttpClient) {}
+
+  getCareWorkforcePathwayWorkplaceAwarenessAnswers(): Observable<CareWorkforcePathwayWorkplaceAwarenessAnswer[]> {
+    return this.http
+      .get<CareWorkforcePathwayWorkplaceAwarenessResponse>(
+        `${environment.appRunnerEndpoint}/api/careWorkforcePathwayWorkplaceAwarenessAnswers`,
+      )
+      .pipe(map((res) => res.careWorkforcePathwayWorkplaceAwarenessAnswers));
+  }
 
   getCareWorkforcePathwayRoleCategories(): Observable<CareWorkforcePathwayRoleCategory[]> {
     return this.http
@@ -43,6 +59,16 @@ export class CareWorkforcePathwayService {
       { params: queryParams },
     );
   }
+
+  getAllCareWorkforcePathwayUseReasons(): Observable<CWPGetUseReasonsResponse> {
+    return this.http.get<CWPGetUseReasonsResponse>(
+      `${environment.appRunnerEndpoint}/api/careWorkforcePathway/useReasons`,
+    );
+  }
+
+  isAwareOfCareWorkforcePathway(awarenessAnswer: CareWorkforcePathwayWorkplaceAwareness): boolean {
+    return this._awarenessAnswersTruthyIds.includes(awarenessAnswer?.id);
+  }
 }
 
 export type CWPGetNumberOfWorkersResponse = {
@@ -52,4 +78,8 @@ export type CWPGetNumberOfWorkersResponse = {
 export type CWPGetAllWorkersResponse = {
   workers: { uid: string; nameOrId: string; mainJob: JobRole }[];
   workerCount: number;
+};
+
+export type CWPGetUseReasonsResponse = {
+  allReasons: Array<CareWorkforcePathwayUseReason>;
 };

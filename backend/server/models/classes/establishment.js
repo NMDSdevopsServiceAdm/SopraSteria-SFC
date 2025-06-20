@@ -98,6 +98,9 @@ class Establishment extends EntityValidator {
     this._sickPay = null;
     this._isParentApprovedBannerViewed = null;
     this._primaryAuthorityCssr = null;
+    this._careWorkforcePathwayWorkplaceAwareness = null;
+    this._careWorkforcePathwayUse = null;
+    this._CWPAwarenessQuestionViewed = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -389,6 +392,23 @@ class Establishment extends EntityValidator {
   get primaryAuthorityCssr() {
     return this._primaryAuthorityCssr;
   }
+
+  get careWorkforcePathwayWorkplaceAwareness() {
+    return this._properties.get('CareWorkforcePathwayWorkplaceAwarenessFK')
+      ? this._properties.get('CareWorkforcePathwayWorkplaceAwarenessFK').property
+      : null;
+  }
+
+  get careWorkforcePathwayWorkplaceUse() {
+    return this._properties.get('CareWorkforcePathwayUse')
+      ? this._properties.get('CareWorkforcePathwayUse').property
+      : null;
+  }
+
+  get CWPAwarenessQuestionViewed() {
+    return this._CWPAwarenessQuestionViewed;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -598,8 +618,17 @@ class Establishment extends EntityValidator {
         if ('isParentApprovedBannerViewed' in document) {
           this._isParentApprovedBannerViewed = document.isParentApprovedBannerViewed;
         }
+
         if ('primaryAuthorityCssr' in document) {
           this._primaryAuthorityCssr = document.primaryAuthorityCssr;
+        }
+
+        if ('careWorkforcePathwayWorkplaceAwareness' in document) {
+          this._careWorkforcePathwayWorkplaceAwareness = document.careWorkforcePathwayWorkplaceAwareness;
+        }
+
+        if ('CWPAwarenessQuestionViewed' in document) {
+          this._CWPAwarenessQuestionViewed = document.CWPAwarenessQuestionViewed;
         }
       }
 
@@ -825,6 +854,8 @@ class Establishment extends EntityValidator {
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
+          careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
+          CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1055,6 +1086,8 @@ class Establishment extends EntityValidator {
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
             isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
             primaryAuthorityCssr: this._primaryAuthorityCssr,
+            careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
+            CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1369,8 +1402,9 @@ class Establishment extends EntityValidator {
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
         this._isParentApprovedBannerViewed = fetchResults.isParentApprovedBannerViewed;
-
         this._primaryAuthorityCssr = this.primaryAuthorityCssr;
+        this._CWPAwarenessQuestionViewed = fetchResults.CWPAwarenessQuestionViewed;
+
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1399,6 +1433,11 @@ class Establishment extends EntityValidator {
           where: {
             EstablishmentID: this._id,
           },
+          raw: true,
+        });
+
+        const careWorkforcePathwayReasons = await fetchResults.getCareWorkforcePathwayReasons({
+          attributes: ['id', 'text', 'isOther', [models.sequelize.col('EstablishmentCWPReasons.Other'), 'other']],
           raw: true,
         });
 
@@ -1478,6 +1517,8 @@ class Establishment extends EntityValidator {
           }
         });
 
+        fetchResults.careWorkforcePathwayReasons = careWorkforcePathwayReasons;
+
         fetchResults.capacity = capacity;
 
         fetchResults.jobs = jobs;
@@ -1515,6 +1556,19 @@ class Establishment extends EntityValidator {
             },
           ],
         });
+
+        if (fetchResults.careWorkforcePathwayWorkplaceAwarenessFK) {
+          const careWorkforcePathwayWorkplaceAwarenessResult =
+            await models.careWorkforcePathwayWorkplaceAwareness.findOne({
+              where: {
+                id: fetchResults.careWorkforcePathwayWorkplaceAwarenessFK,
+              },
+              attributes: ['id', 'title'],
+              raw: true,
+            });
+
+          fetchResults.careWorkforcePathwayWorkplaceAwareness = careWorkforcePathwayWorkplaceAwarenessResult;
+        }
 
         const allAssociatedServiceIndices = [];
 
@@ -1807,6 +1861,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.careWorkersLeaveDaysPerYear = this.careWorkersLeaveDaysPerYear;
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.isParentApprovedBannerViewed = this.isParentApprovedBannerViewed;
+        myDefaultJSON.CWPAwarenessQuestionViewed = this.CWPAwarenessQuestionViewed;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -6,13 +6,14 @@ import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import dayjs from 'dayjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-summary-section',
   templateUrl: './summary-section.component.html',
   styleUrls: ['./summary-section.component.scss'],
 })
-export class SummarySectionComponent implements OnInit, OnChanges {
+export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
   @Input() workersCreatedDate;
@@ -22,12 +23,12 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() canViewListOfWorkers: boolean;
   @Input() canViewEstablishment: boolean;
   @Input() canEditWorker: boolean;
+  @Input() canEditEstablishment: boolean;
   @Input() showMissingCqcMessage: boolean;
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
   @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
-  @Input() cwpQuestionsFlag: boolean;
   @Input() workplacesNeedAttention: boolean;
 
   public sections: Section[] = [
@@ -52,6 +53,8 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   };
 
   public isParent: boolean;
+  private careWorkforcePathwayLinkDisplaying: boolean;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private tabsService: TabsService,
@@ -68,10 +71,13 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     this.getOtherWorkplacesSummaryMessage();
   }
 
-  ngOnChanges(): void {}
-
   public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
     event.preventDefault();
+    if (this.careWorkforcePathwayLinkDisplaying && fragment == 'workplace') {
+      this.setCwpAwarenessQuestionViewed();
+      this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
+    }
+
     if (this.isParentSubsidiaryView) {
       return await this.navigateInSubView(fragment, route);
     }
@@ -95,6 +101,11 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     this.sections[0].redFlag = false;
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
+    } else if (!this.workplace.CWPAwarenessQuestionViewed && !this.workplace.careWorkforcePathwayWorkplaceAwareness) {
+      this.sections[0].message = 'How aware of the CWP is your workplace?';
+      this.sections[0].route = ['/workplace', this.workplace.uid, 'care-workforce-pathway-awareness'];
+      this.careWorkforcePathwayLinkDisplaying = true;
+      this.sections[0].showMessageAsText = !this.canEditEstablishment;
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
@@ -126,7 +137,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     const afterWorkplaceCreated = dayjs(this.workplace.created).add(12, 'M');
     if (!this.workerCount) {
       this.sections[1].message = 'You can start to add your staff records now';
-    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0 && !this.cwpQuestionsFlag) {
+    } else if (this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered > 0) {
       this.sections[1].message = 'Where are your staff on the care workforce pathway?';
       this.sections[1].skipTabSwitch = true;
       this.sections[1].route = [
@@ -243,6 +254,20 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     } else if (linkText === this.sections[2].linkText && !this.canViewListOfWorkers) {
       this.sections[2].link = false;
     }
+  }
+
+  private setCwpAwarenessQuestionViewed(): void {
+    const cwpData = {
+      property: 'CWPAwarenessQuestionViewed',
+      value: true,
+    };
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, cwpData).subscribe(),
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
 
