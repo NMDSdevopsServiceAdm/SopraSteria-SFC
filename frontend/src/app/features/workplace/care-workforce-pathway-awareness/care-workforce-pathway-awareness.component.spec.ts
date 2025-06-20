@@ -320,7 +320,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     notAwareAnswers.forEach((answer) => {
       it(`should display banner when user submits '${answer.title}' and return is to home page`, async () => {
         const workplaceName = 'Test workplace name';
-        const { getByText, getByLabelText, alertSpy } = await setup({
+        const { fixture, getByText, getByLabelText, alertSpy } = await setup({
           returnTo: { url: ['/dashboard'], fragment: 'home' },
           establishment: { name: workplaceName },
         });
@@ -330,6 +330,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
 
         const saveButton = getByText('Save');
         fireEvent.click(saveButton);
+        await fixture.whenStable();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
@@ -339,7 +340,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
 
       it(`should not display banner when user submits '${answer.title}' but has not come from home page`, async () => {
         const workplaceName = 'Test workplace name';
-        const { getByText, getByLabelText, alertSpy } = await setup({
+        const { fixture, getByText, getByLabelText, alertSpy } = await setup({
           establishment: { name: workplaceName },
         });
 
@@ -348,6 +349,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
 
         const saveButton = getByText('Save');
         fireEvent.click(saveButton);
+        await fixture.whenStable();
 
         expect(alertSpy).not.toHaveBeenCalled();
       });
@@ -356,7 +358,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     awareAnswers.forEach((answer) => {
       it('should not display banner when user gives aware answer which takes them to use question', async () => {
         const workplaceName = 'Test workplace name';
-        const { getByText, getByLabelText, alertSpy } = await setup({
+        const { fixture, getByText, getByLabelText, alertSpy } = await setup({
           returnTo: { url: ['/dashboard'], fragment: 'home' },
           establishment: { name: workplaceName },
         });
@@ -366,6 +368,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
 
         const saveButton = getByText('Save');
         fireEvent.click(saveButton);
+        await fixture.whenStable();
 
         expect(alertSpy).not.toHaveBeenCalled();
       });

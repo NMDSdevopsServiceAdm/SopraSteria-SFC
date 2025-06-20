@@ -9,9 +9,9 @@ import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PreviousRouteService } from '../../../core/services/previous-route.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
+import { PreviousRouteService } from '../../../core/services/previous-route.service';
 import { Question } from '../question/question.component';
 
 @Component({
@@ -27,6 +27,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
   ];
   public allReasons: Array<CareWorkforcePathwayUseReason> = [];
   public OtherReasonTextMaxLength = 120;
+  private returnIsSetToHomePage: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -47,6 +48,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     this.prefill();
     this.setPreviousRoute();
     this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 
   private getAllReasons() {
@@ -221,7 +223,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
   }
 
   protected addAlert(): void {
-    if (this.establishmentService.returnIsSetToHomePage()) {
+    if (this.returnIsSetToHomePage) {
       this.alertService.addAlert({
         type: 'success',
         message: `Care workforce pathway information saved in '${this.establishment.name}'`,
