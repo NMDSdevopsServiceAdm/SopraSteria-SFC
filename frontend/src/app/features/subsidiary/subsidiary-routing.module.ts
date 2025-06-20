@@ -83,6 +83,7 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { WorkplaceIsAwareOfCwpGuard } from '@core/guards/workplace-is-aware-of-cwp/workplace-is-aware-of-cwp.guard';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -562,7 +563,7 @@ const routes: Routes = [
       {
         path: 'care-workforce-pathway-use',
         component: CareWorkforcePathwayUseComponent,
-        canActivate: [CheckPermissionsGuard],
+        canActivate: [CheckPermissionsGuard, WorkplaceIsAwareOfCwpGuard],
         resolve: { careWorkforcePathwayUseReasons: CareWorkforcePathwayUseReasonsResolver },
         data: {
           permissions: ['canEditEstablishment'],

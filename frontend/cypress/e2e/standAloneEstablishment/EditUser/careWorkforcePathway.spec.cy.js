@@ -73,6 +73,22 @@ describe('Care workforce pathway journey', () => {
       onWorkplacePage.expectRow('care-workforce-pathway-use').notExist();
     });
 
+    it('backlink should work properly when visiting CWP question pages from the flag', () => {
+      cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+
+      cy.url().should('contain', homePagePath);
+      cy.get('[data-testid="summaryBox"]').contains(cwpAwarenessFlagMessage).click();
+
+      answerCWPAwarenessQuestion(CWPAwarenessAnswers[0]);
+      cy.get('h1').should('contain', 'Is your workplace using the care workforce pathway?');
+
+      cy.get('a').contains('Back').click();
+      cy.get('h1').should('contain', 'How aware of the care workforce pathway is your workplace?');
+
+      cy.get('a').contains('Back').click();
+      cy.url().should('contain', homePagePath);
+    });
+
     it('should clear the flag when user has visited the CWP awareness question page, even if they didnt answer', () => {
       cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
 
