@@ -22,21 +22,22 @@ const checkAndUpdateWorkerValuesForReport = (workerData) => {
   const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
 
   workerData.forEach((value) => {
-    if (value.QualificationInSocialCareValue === 'No' || value.QualificationInSocialCareValue === "Don't know") {
-      value.QualificationInSocialCare = 'N/A';
-    }
+    value.QualificationInSocialCare =
+      checkValueToReturnNA(value.QualificationInSocialCareValue) ?? value.QualificationInSocialCare;
 
-    if (value.AnnualHourlyPayRate === "Don't know" || value.AnnualHourlyPayValue === "Don't know") {
-      value.AnnualHourlyPayRate = 'N/A';
-    }
+    value.AnnualHourlyPayRate = checkValueToReturnNA(value.AnnualHourlyPayValue) ?? value.AnnualHourlyPayRate;
 
     value.DaysSickValue =
-      checkValueForUpdatingProperty({ valueToCheck: value.DaysSickValue, propertyToReturnIfYes: value.DaysSickDays }) ??
-      value.DaysSickValue;
+      checkValueForUpdatingPropertyValue({
+        valueToCheck: value.DaysSickValue,
+        propertyToReturnIfYes: value.DaysSickDays,
+      }) ?? value.DaysSickValue;
 
     value.RecruitedFromValue =
-      checkValueForUpdatingProperty({ valueToCheck: value.RecruitedFromValue, propertyToReturnIfYes: value.From }) ??
-      value.RecruitedFromValue;
+      checkValueForUpdatingPropertyValue({
+        valueToCheck: value.RecruitedFromValue,
+        propertyToReturnIfYes: value.From,
+      }) ?? value.RecruitedFromValue;
 
     if (value.NationalityValue === 'Other' && value.Nationality) {
       value.NationalityValue = value.Nationality;
@@ -46,12 +47,12 @@ const checkAndUpdateWorkerValuesForReport = (workerData) => {
       (value.ContractValue === 'Permanent' || value.ContractValue === 'Temporary') &&
       value.ZeroHoursContractValue === 'No'
     ) {
-      value.HoursValue = checkValueForUpdatingProperty({
+      value.HoursValue = checkValueForUpdatingPropertyValue({
         valueToCheck: value.WeeklyHoursContractedValue,
         propertyToReturnIfYes: value.WeeklyHoursContractedHours,
       });
     } else {
-      value.HoursValue = checkValueForUpdatingProperty({
+      value.HoursValue = checkValueForUpdatingPropertyValue({
         valueToCheck: value.WeeklyHoursAverageValue,
         propertyToReturnIfYes: value.WeeklyHoursAverageHours,
       });
@@ -73,13 +74,19 @@ const checkAndUpdateWorkerValuesForReport = (workerData) => {
   return workerData;
 };
 
-const checkValueForUpdatingProperty = ({ valueToCheck, propertyToReturnIfYes }) => {
+const checkValueForUpdatingPropertyValue = ({ valueToCheck, propertyToReturnIfYes }) => {
   if (valueToCheck === 'Yes') {
     return propertyToReturnIfYes;
   } else if (valueToCheck === 'No') {
     return "Don't know";
   } else if (valueToCheck === null) {
     return 'Missing';
+  }
+};
+
+const checkValueToReturnNA = (valueToCheck) => {
+  if (valueToCheck === 'No' || valueToCheck === "Don't know") {
+    return 'N/A';
   }
 };
 

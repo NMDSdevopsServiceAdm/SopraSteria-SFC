@@ -53,14 +53,6 @@ describe('checkAndUpdateWorkerValuesForReport', () => {
   });
 
   describe('AnnualHourlyPayRate', () => {
-    it(`updates if AnnualHourlyPayRate is "Don't know"`, async () => {
-      workersArray[0].AnnualHourlyPayRate = "Don't know";
-
-      let updatedWorkersArray = checkAndUpdateWorkerValuesForReport(workersArray);
-
-      expect(updatedWorkersArray[0].AnnualHourlyPayRate).to.equal('N/A');
-    });
-
     it(`updates if AnnualHourlyPayValue is "Don't know"`, async () => {
       workersArray[0].AnnualHourlyPayValue = "Don't know";
 
