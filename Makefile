@@ -34,7 +34,7 @@ db-migrate-e2e:
 
 run-e2e-server: db-migrate-e2e
 	cd backend && export NODE_ENV=e2etest && npm run new-start & \
-	cd frontend && export NODE_ENV=e2etest && npm run build:watch
+	cd frontend && export NODE_ENV=e2etest && npm run build:e2e
 
 test-e2e:
 	cd frontend && npx cypress run

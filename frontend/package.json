@@ -6,6 +6,7 @@
     "build": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --no-progress",
     "build:clean": "rimraf dist",
     "build:watch": "ng serve --proxy-config proxy.conf.json",
+    "build:e2e": "ng serve --proxy-config proxy.conf.json --disable-host-check",
     "build:prod": "npm run build:clean && npm run build -- --configuration=production",
     "build:preprod": "npm run build:clean && npm run build -- --configuration=preproduction",
     "build:test": "npm run build:clean && npm run build -- --configuration=test",
