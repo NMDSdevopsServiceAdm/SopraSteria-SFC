@@ -143,5 +143,4 @@ exports.QUALIFICATIONS = [
   { BUDI: 156, ASC: 150 },
   { BUDI: 157, ASC: 151 },
   { BUDI: 158, ASC: 152 },
-  { BUDI: 159, ASC: 153 },
 ];
