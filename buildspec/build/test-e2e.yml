@@ -8,7 +8,6 @@ env:
 
 
 phases:
-  install:
   pre_build:
     commands:
       - aws s3 cp ${DB_FILE_URL} docker/sfc-e2e-test-db.sql
