@@ -1,6 +1,6 @@
 services:
   sfc-e2e-db:
-    image: postgres:13
+    image: public.ecr.aws/docker/library/postgres:13
     container_name: sfc-e2e-db
     build:
       context: ./docker
@@ -17,7 +17,7 @@ services:
       retries: 300
 
   frontend_backend:
-    image: node:18-alpine
+    image: public.ecr.aws/docker/library/node:18-alpine
     container_name: frontend_backend
     working_dir: /app
     depends_on:
@@ -43,12 +43,12 @@ services:
       start_period: 40s
 
   sfc-redis:
-    image: redis
+    image: public.ecr.aws/docker/library/redis
     ports:
       - '6379:6379'
 
   cypress:
-    image: cypress/included
+    image: public.ecr.aws/docker/library/cypress/included
     working_dir: /frontend
     depends_on:
       frontend_backend:
