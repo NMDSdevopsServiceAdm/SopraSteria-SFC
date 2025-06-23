@@ -46,7 +46,7 @@ install-for-e2e:
 	npm install -g sequelize-cli
 
 test-e2e-inside-docker:
-	docker-compose -f docker-compose-e2e.yml up --abort-on-container-exit --exit-code-from cypress
+	docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
 
 stop-containers:
 	docker stop frontend_backend
