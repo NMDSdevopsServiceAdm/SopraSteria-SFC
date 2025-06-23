@@ -14,8 +14,6 @@ phases:
   pre_build:
     commands:
       - aws s3 cp ${DB_FILE_URL} docker/sfc-e2e-test-db.sql
-      - head docker/sfc-e2e-test-db.sql
-      - echo docker/install-extensions.sh
       - echo POSTGRES_USER=${POSTGRES_USER}\\nPOSTGRES_PASSWORD=${POSTGRES_PASSWORD}\\nPOSTGRES_DB=${POSTGRES_DB} > .env
       - make install-for-e2e
   build:

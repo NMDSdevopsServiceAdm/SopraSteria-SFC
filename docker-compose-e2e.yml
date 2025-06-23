@@ -67,22 +67,3 @@ services:
       DB_TEST_PASS: ${POSTGRES_PASSWORD}
       DB_TEST_NAME: ${POSTGRES_DB}
       DB_TEST_PORT: 5432
-
-  # debug:
-  #   image: node:18-alpine
-  #   depends_on:
-  #     frontend_backend:
-  #       condition: service_healthy
-  #   working_dir: /frontend
-  #   volumes:
-  #     - ./frontend:/frontend
-  #   env_file:
-  #     - .env
-  #   environment:
-  #     CYPRESS_BASE_URL: "http://frontend_backend:8080"
-  #     DB_TEST_HOSTNAME: "sfc-e2e-db"
-  #     DB_TEST_USER: ${POSTGRES_USER}
-  #     DB_TEST_PASS: ${POSTGRES_PASSWORD}
-  #     DB_TEST_NAME: ${POSTGRES_DB}
-  #     DB_TEST_PORT: 5432
-  #   entrypoint: ["tail", "-f", "/dev/null"]
