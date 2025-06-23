@@ -39,6 +39,11 @@ run-e2e-server: db-migrate-e2e
 test-e2e:
 	cd frontend && npx cypress run
 
+stop-containers:
+	docker stop frontend_backend
+	docker stop sfc-test
+	docker stop soprasteria-sfc-sfc-redis-1
+
 install-for-e2e:
 	export NODE_ENV=e2etest
 	npm install --prefix frontend
@@ -47,11 +52,6 @@ install-for-e2e:
 
 test-e2e-inside-docker:
 	docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
-
-stop-containers:
-	docker stop frontend_backend
-	docker stop sfc-test
-	docker stop soprasteria-sfc-sfc-redis-1
 
 deploy-bu-dev:
 	cd lambdas/bulkUpload && npm ci && npx serverless deploy --stage dev
