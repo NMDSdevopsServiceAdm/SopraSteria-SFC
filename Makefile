@@ -39,6 +39,12 @@ run-e2e-server: db-migrate-e2e
 test-e2e:
 	cd frontend && npx cypress run
 
+install-for-e2e:
+	export NODE_ENV=e2etest
+	npm install --prefix frontend
+	npm install --prefix backend
+	npm install -g sequelize-cli
+
 test-e2e-inside-docker:
 	docker-compose -f docker-compose-e2e.yml up --abort-on-container-exit --exit-code-from cypress
 

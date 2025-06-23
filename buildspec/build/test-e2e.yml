@@ -15,6 +15,7 @@ phases:
     commands:
       - aws s3 cp ${DB_FILE_URL} docker/sfc-e2e-test-db.sql
       - touch .env
+      - make install-for-e2e
   build:
     commands:
       - make test-e2e-inside-docker
