@@ -1,10 +1,9 @@
 services:
   sfc-e2e-db:
-    image: local/e2e-test-db
-    # image: postgres:13
-    # container_name: sfc-e2e-db
-    # build:
-      # context: ./docker
+    image: postgres:13
+    container_name: sfc-e2e-db
+    build:
+      context: ./docker
     env_file:
       - .env
     environment:
