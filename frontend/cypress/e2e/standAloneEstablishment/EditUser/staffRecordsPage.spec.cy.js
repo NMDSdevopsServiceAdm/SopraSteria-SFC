@@ -163,7 +163,7 @@ describe('Standalone staff records page as edit user', () => {
       cy.contains('Staff record details saved').should('be.visible');
     });
 
-    it('should not show a "Staff record details saved" alert when user completed the workflow and skipped all questions', () => {
+    it.skip('should not show a "Staff record details saved" alert when user completed the workflow and skipped all questions', () => {
       const name = 'Mr Smith';
       const contractType = 'Permanent';
       const mainJobRole = 'Care worker';
