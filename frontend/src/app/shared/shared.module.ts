@@ -114,7 +114,7 @@ import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmati
 import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
-import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
+import { DisplayWorkplaceNameAddress } from './components/display-workplace-name-address/display-workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
@@ -272,7 +272,7 @@ import { HasValuePipe } from './pipes/has-value.pipe';
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
-    WorkplaceNameAddress,
+    DisplayWorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
     HelpContentComponent,
     NumberInputWithButtonsComponent,
@@ -409,7 +409,7 @@ import { HasValuePipe } from './pipes/has-value.pipe';
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
-    WorkplaceNameAddress,
+    DisplayWorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
     HelpContentComponent,
     FormatStartersLeaversVacanciesPipe,
