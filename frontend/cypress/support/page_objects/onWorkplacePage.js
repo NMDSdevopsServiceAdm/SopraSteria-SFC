@@ -2,6 +2,26 @@
 /// <reference types="cypress" />
 
 export class WorkplacePage {
+  static testIdsForRows = [
+    'vacancies',
+    'starters',
+    'leavers',
+    'number-of-staff-top-row',
+    'employerType',
+    'mainService',
+    'otherServices',
+    'serviceCapacity',
+    'serviceUsers',
+    'repeat-training',
+    'accept-care-certificate',
+    'care-workforce-pathway-awareness',
+    'cash-loyalty-bonus-spend',
+    'offer-more-than-statutory-sick-pay',
+    'higher-pension-contributions',
+    'number-of-days-leave',
+    'permissions-section',
+  ];
+
   allSectionsAreVisible() {
     cy.get('[data-testid="workplace-section"]').should('exist');
     cy.get('[data-testid="services-section"]').should('exist');
@@ -11,166 +31,59 @@ export class WorkplacePage {
   }
 
   allSectionsAreChangeable() {
-    if (
-      cy.get('[data-testid="workplace-name-and-address"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="workplace-name-and-address"]').contains('Change');
-    } else {
-      cy.get('[data-testid="workplace-name-and-address"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="employerType"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="employerType"]').contains('Change');
-    } else {
-      cy.get('[data-testid="employerType"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="mainService"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="mainService"]').contains('Change');
-    } else {
-      cy.get('[data-testid="mainService"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="otherServices"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="otherServices"]').contains('Change');
-    } else {
-      cy.get('[data-testid="otherServices"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="serviceCapacity"]').within(() => {
-        cy.get('.govuk-summary-list__value').should('not.equal', '-').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="serviceCapacity"]').contains('Change');
-    } else {
-      cy.get('[data-testid="serviceCapacity"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="serviceUsers"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="serviceUsers"]').contains('Change');
-    } else {
-      cy.get('[data-testid="serviceUsers"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="vacancies"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="vacancies"]').contains('Change');
-    } else {
-      cy.get('[data-testid="vacancies"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="starters"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="starters"]').contains('Change');
-    } else {
-      cy.get('[data-testid="starters"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="leavers"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="leavers"]').contains('Change');
-    } else {
-      cy.get('[data-testid="leavers"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="repeat-training"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="repeat-training"]').contains('Change');
-    } else {
-      cy.get('[data-testid="repeat-training"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="accept-care-certificate"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="accept-care-certificate"]').contains('Change');
-    } else {
-      cy.get('[data-testid="accept-care-certificate"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="cash-loyalty-bonus-spend"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="cash-loyalty-bonus-spend"]').contains('Change');
-    } else {
-      cy.get('[data-testid="cash-loyalty-bonus-spend"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="offer-more-than-statutory-sick-pay"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="offer-more-than-statutory-sick-pay"]').contains('Change');
-    } else {
-      cy.get('[data-testid="offer-more-than-statutory-sick-pay"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="higher-pension-contributions"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="higher-pension-contributions"]').contains('Change');
-    } else {
-      cy.get('[data-testid="higher-pension-contributions"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="number-of-days-leave"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="number-of-days-leave"]').contains('Change');
-    } else {
-      cy.get('[data-testid="number-of-days-leave"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="permissions-section"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="permissions-section"]').contains('Change');
-    } else {
-      cy.get('[data-testid="permissions-section"]').contains('Add');
-    }
+    WorkplacePage.testIdsForRows.forEach((testId) => {
+      this.expectRowExistAndChangable(testId);
+    });
   }
+
+  expectRow = (testIdForRow) => {
+    return {
+      toHaveValue: (expectedValue) => this.expectRowToHaveValue(testIdForRow, expectedValue),
+      toHaveMultipleValues: (expectedValues) => this.expectRowToHaveMultipleValues(testIdForRow, expectedValues),
+      notExist: () => this.expectRowNotExist(testIdForRow),
+    };
+  };
+
+  expectRowExistAndChangable = (testIdForRow) => {
+    return cy.get(`[data-testid="${testIdForRow}"]`).within(() => {
+      return cy
+        .get('.govuk-summary-list__value')
+        .invoke('text')
+        .then((rowValue) => {
+          if (rowValue.trim() === '-') {
+            cy.get('a').should('contain', 'Add');
+          } else {
+            cy.get('a').should('contain', 'Change');
+          }
+        });
+    });
+  };
+
+  expectRowToHaveValue = (testIdForRow, expectedValue) => {
+    return cy.get(`[data-testid="${testIdForRow}"]`).within(() => {
+      cy.get('.govuk-summary-list__value').should('contain', expectedValue);
+    });
+  };
+
+  expectRowToHaveMultipleValues = (testIdForRow, expectedValues) => {
+    const cyChain = this.expectRowToHaveValue(testIdForRow, expectedValues[0]);
+    expectedValues.slice(1).forEach((value) => {
+      cyChain.and('contain', value);
+    });
+    return cyChain;
+  };
+
+  expectRowNotExist = (testIdForRow) => {
+    return cy.get(`[data-testid="${testIdForRow}"]`).should('not.exist');
+  };
+
+  clickIntoQuestion = (testIdForRow) => {
+    return cy.get(`[data-testid="${testIdForRow}"]`).within(() => {
+      cy.get('a')
+        .contains(/Add|Change/)
+        .click();
+    });
+  };
 }
 
 export const onWorkplacePage = new WorkplacePage();

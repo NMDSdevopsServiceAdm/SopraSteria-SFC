@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+
 import { PreviousRouteService } from './previous-route.service';
 
 export interface Tab {
@@ -26,6 +27,7 @@ export const SubsidiaryViewTabs = {
 };
 
 export const UrlPartsRelatedToTabs = [
+  { urlPart: 'care-workforce-pathway-awareness', tabSlug: MainDashboardTabs.workplaceTab.slug },
   { urlPart: 'staff-record', tabSlug: MainDashboardTabs.staffRecordsTab.slug },
   { urlPart: 'staff-records', tabSlug: MainDashboardTabs.staffRecordsTab.slug },
   { urlPart: 'training-and-qualifications-record', tabSlug: MainDashboardTabs.tAndQTab.slug },

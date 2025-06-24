@@ -88,6 +88,9 @@ module.exports.apiWorkerBuilder = build('Worker', {
         id: fake((f) => f.datatype.number({ min: 1, max: 7 })),
       },
     ],
+    careWorkforcePathwayRoleCategory: {
+      id: fake((f) => f.datatype.number({ min: 1, max: 7 })),
+    },
     qualifications: [
       {
         id: fake((f) => f.datatype.number({ min: 1, max: 97 })),

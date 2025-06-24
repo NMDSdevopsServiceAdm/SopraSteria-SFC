@@ -1,9 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
+import { CareWorkforcePathwayUse, UpdateCareWorkforcePathwayUsePayload } from '@core/model/care-workforce-pathway.model';
 import {
   adminMoveWorkplace,
   CancelOwnerShip,
+  CareWorkforcePathwayWorkplaceAwareness,
   ChangeOwner,
   Establishment,
   LocalIdentifiersRequest,
@@ -63,6 +65,20 @@ interface CQCLocationChangeRequest {
   mainServiceOther?: string;
   postalCode: string;
   townCity: string;
+}
+
+interface UpdateCareWorkforcePathwayUseResponse {
+  id: number;
+  uid: string;
+  name: string;
+  careWorkforcePathwayUse: CareWorkforcePathwayUse;
+}
+
+interface UpdateCareWorkforcePathwayWorkplaceAwarenessResponse {
+  id: number;
+  uid: string;
+  name: string;
+  careWorkforcePathwayWorkforceAwareness: CareWorkforcePathwayWorkplaceAwareness;
 }
 
 @Injectable({
@@ -192,6 +208,16 @@ export class EstablishmentService {
   public setReturnTo(returnTo: URLStructure): void {
     localStorage.setItem('returnTo', JSON.stringify(returnTo));
     this.returnTo$.next(returnTo);
+  }
+
+  public returnIsSetToHomePage(): boolean {
+    return (
+      this.returnTo &&
+      Array.isArray(this.returnTo.url) &&
+      this.returnTo.url.length === 1 &&
+      this.returnTo.url[0] === '/dashboard' &&
+      this.returnTo.fragment === 'home'
+    );
   }
 
   public get checkCQCDetailsBanner$(): Observable<boolean> {
@@ -333,6 +359,13 @@ export class EstablishmentService {
     );
   }
 
+  updateCareWorkforcePathwayAwareness(establishmentId: string, data: any): Observable<any> {
+    return this.http.post<UpdateCareWorkforcePathwayWorkplaceAwarenessResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/careWorkforcePathway/careWorkforcePathwayAwareness`,
+      data,
+    );
+  }
+
   public deleteWorkplace(workplaceUid: string): Observable<any> {
     return this.http.delete<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}`);
   }
@@ -464,5 +497,12 @@ export class EstablishmentService {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/missingCqcProviderLocations`, {
       params,
     });
+  }
+
+  public updateCareWorkforcePathwayUse(establishmentUid: string, payload: UpdateCareWorkforcePathwayUsePayload) {
+    return this.http.post<UpdateCareWorkforcePathwayUseResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/careWorkforcePathway/careWorkforcePathwayUse`,
+      payload,
+    );
   }
 }

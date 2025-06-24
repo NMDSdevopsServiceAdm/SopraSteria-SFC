@@ -5,14 +5,16 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { PermissionType } from '@core/model/permissions.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
+import { MockCareWorkforcePathwayService, MockCWPUseReasons } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
-  establishmentWithShareWith,
+  establishmentBuilder,
   MockEstablishmentService,
   MockEstablishmentServiceWithNoCapacities,
 } from '@core/test-utils/MockEstablishmentService';
@@ -24,11 +26,23 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
 describe('NewWorkplaceSummaryComponent', () => {
-  const setup = async (
-    shareWith = null,
-    permissions = ['canEditEstablishment'] as PermissionType[],
-    hasQuestions = true,
-  ) => {
+  const setup = async (overrides: any = {}) => {
+    const shareWith = overrides?.shareWith ?? null;
+    const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
+    const hasServiceCapacity = overrides?.hasServiceCapacity ?? true;
+
+    const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? null;
+    const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
+
+    const mockWorkplace = establishmentBuilder({
+      overrides: {
+        shareWith,
+        careWorkforcePathwayWorkplaceAwareness,
+        careWorkforcePathwayUse,
+        otherService: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
+      },
+    }) as Establishment;
+
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -39,7 +53,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useClass: hasQuestions ? MockEstablishmentService : MockEstablishmentServiceWithNoCapacities,
+          useClass: hasServiceCapacity ? MockEstablishmentService : MockEstablishmentServiceWithNoCapacities,
         },
         {
           provide: CqcStatusChangeService,
@@ -49,10 +63,16 @@ describe('NewWorkplaceSummaryComponent', () => {
           provide: VacanciesAndTurnoverService,
           useClass: MockVacanciesAndTurnoverService,
         },
+        {
+          provide: CareWorkforcePathwayService,
+          useFactory: MockCareWorkforcePathwayService.factory({
+            isAwareOfCareWorkforcePathway: () => overrides?.workplaceIsAwareOfCareWorkforcePathway ?? true,
+          }),
+        },
         provideRouter([]),
       ],
       componentProperties: {
-        workplace: establishmentWithShareWith(shareWith) as Establishment,
+        workplace: mockWorkplace,
         navigateToTab(event) {
           event.preventDefault();
         },
@@ -154,7 +174,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Number of staff', () => {
       it('should render the number of staff and a Change link without conditional classes', async () => {
-        const { component, fixture } = await setup(null);
+        const { component, fixture } = await setup();
 
         component.canEditEstablishment = true;
         component.workplace.numberOfStaff = 4;
@@ -243,7 +263,9 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should render correct warning message, with View staff records link and conditional classes if no of staff is more than no of staff records and more than 8 weeks since first login', async () => {
-        const { component, fixture, getByTestId } = await setup(null, ['canEditEstablishment', 'canViewListOfWorkers']);
+        const { component, fixture, getByTestId } = await setup({
+          permissions: ['canEditEstablishment', 'canViewListOfWorkers'],
+        });
 
         const date = new Date();
         date.setDate(date.getDate() - 1);
@@ -284,7 +306,9 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should render correct warning message, with link that navigates if the number of staff is less than the number of staff records and it had been more than 8 weeks since first login', async () => {
-        const { component, fixture, getByTestId } = await setup(null, ['canEditEstablishment', 'canViewListOfWorkers']);
+        const { component, fixture, getByTestId } = await setup({
+          permissions: ['canEditEstablishment', 'canViewListOfWorkers'],
+        });
 
         const date = new Date();
         date.setDate(date.getDate() - 1);
@@ -570,7 +594,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     describe('Service capacity', () => {
       it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is false', async () => {
-        const { component, fixture, queryByTestId } = await setup(null, ['canEditEstablishment'], false);
+        const { component, fixture, queryByTestId } = await setup({ hasServiceCapacity: false });
 
         component.workplace.showAddWorkplaceDetailsBanner = false;
 
@@ -582,7 +606,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is true', async () => {
-        const { component, fixture, queryByTestId } = await setup(null, ['canEditEstablishment'], false);
+        const { component, fixture, queryByTestId } = await setup({ hasServiceCapacity: false });
 
         component.workplace.showAddWorkplaceDetailsBanner = true;
 
@@ -1232,6 +1256,105 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
     });
 
+    describe('Care workforce pathway aware', () => {
+      it('should show dash and have Add information button when is set to null (not answered)', async () => {
+        const overrides = { careWorkforcePathwayWorkplaceAwareness: null, canEditEstablishment: true };
+
+        const { component } = await setup(overrides);
+
+        const careWorkforcePathwayAwarenessRow = within(document.body).queryByTestId(
+          'care-workforce-pathway-awareness',
+        );
+        const link = within(careWorkforcePathwayAwarenessRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/care-workforce-pathway-awareness`,
+        );
+        expect(within(careWorkforcePathwayAwarenessRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button when there is a value (answered)', async () => {
+        const overrides = {
+          careWorkforcePathwayWorkplaceAwareness: {
+            id: 4,
+            title: 'Not aware of the care workforce pathway',
+          },
+          canEditEstablishment: true,
+        };
+        const { component } = await setup(overrides);
+
+        const careWorkforcePathwayAwarenessRow = within(document.body).queryByTestId(
+          'care-workforce-pathway-awareness',
+        );
+        const link = within(careWorkforcePathwayAwarenessRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/care-workforce-pathway-awareness`,
+        );
+        expect(within(careWorkforcePathwayAwarenessRow).getByText('Not aware')).toBeTruthy();
+      });
+    });
+
+    describe('Using the care workforce pathway', () => {
+      it('should show a row of "Using the care workforce pathway" if workplace is aware of CWP', async () => {
+        const { queryByTestId } = await setup({ workplaceIsAwareOfCareWorkforcePathway: true });
+        const cwpUseRow = queryByTestId('care-workforce-pathway-use');
+        expect(within(cwpUseRow).queryByText('Using the care workforce pathway')).toBeTruthy();
+      });
+
+      it('should not show a row of "Using the care workforce pathway" if workplace is not aware of CWP', async () => {
+        const { queryByTestId } = await setup({ workplaceIsAwareOfCareWorkforcePathway: false });
+        const cwpUseRow = queryByTestId('care-workforce-pathway-use');
+        expect(cwpUseRow).toBeFalsy();
+      });
+
+      it('should show a dash "-" and "Add" button if not yet answered the CWP use question', async () => {
+        const careWorkforcePathwayUse = null;
+        const { component, getByTestId } = await setup({ careWorkforcePathwayUse });
+
+        const cwpUseRow = getByTestId('care-workforce-pathway-use');
+        const link = within(cwpUseRow).getByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(within(cwpUseRow).getByText('-')).toBeTruthy();
+      });
+
+      it('should show the answer and "Change" button if already answered the CWP use question', async () => {
+        const careWorkforcePathwayUse = { use: "Don't know", reasons: null };
+        const { component, getByTestId } = await setup({ careWorkforcePathwayUse });
+
+        const cwpUseRow = getByTestId('care-workforce-pathway-use');
+        const link = within(cwpUseRow).getByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(within(cwpUseRow).getByText('Not known')).toBeTruthy();
+      });
+
+      it('should show a list of the reasons if user answered "Yes" and chose some reasons', async () => {
+        const mockReasons = [
+          MockCWPUseReasons[0],
+          MockCWPUseReasons[1],
+          { ...MockCWPUseReasons[2], other: 'some free text' },
+        ];
+        const careWorkforcePathwayUse = { use: 'Yes', reasons: mockReasons };
+
+        const { component, getByTestId } = await setup({ careWorkforcePathwayUse });
+
+        const cwpUseRow = getByTestId('care-workforce-pathway-use');
+        const link = within(cwpUseRow).getByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(within(cwpUseRow).getByText(MockCWPUseReasons[0].text)).toBeTruthy();
+        expect(within(cwpUseRow).getByText(MockCWPUseReasons[1].text)).toBeTruthy();
+        expect(within(cwpUseRow).getByText('some free text')).toBeTruthy();
+      });
+    });
+
     describe('Cash loyalty bonus', () => {
       it('should show dash and have Add information button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
@@ -1381,7 +1504,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Local authorities and have Change button on Data sharing when localAuthorities set to true', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: true });
+        const { component, fixture } = await setup({ shareWith: { cqc: null, localAuthorities: true } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1395,7 +1518,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show CQC and have Change button on Data sharing when cqc set to true', async () => {
-        const { component, fixture } = await setup({ cqc: true, localAuthorities: false });
+        const { component, fixture } = await setup({ shareWith: { cqc: true, localAuthorities: false } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1407,7 +1530,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc and localAuthorities are set to false', async () => {
-        const { component, fixture } = await setup({ cqc: false, localAuthorities: false });
+        const { component, fixture } = await setup({ shareWith: { cqc: false, localAuthorities: false } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1419,7 +1542,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc is set to false and localAuthorities is null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: false, localAuthorities: null });
+        const { component, fixture } = await setup({ shareWith: { cqc: false, localAuthorities: null } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1431,7 +1554,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when localAuthorities is set to false and cqc is null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: false });
+        const { component, fixture } = await setup({ shareWith: { cqc: null, localAuthorities: false } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1443,7 +1566,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       it('should not show Not sharing when one of cqc and localAuthorities is false and one is true', async () => {
-        const { component, fixture } = await setup({ cqc: true, localAuthorities: false });
+        const { component, fixture } = await setup({ shareWith: { cqc: true, localAuthorities: false } });
 
         component.canEditEstablishment = true;
         fixture.detectChanges();

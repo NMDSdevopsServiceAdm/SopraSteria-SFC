@@ -14,9 +14,20 @@ const s3 = require('./s3');
 const NEWLINE = '\r\n';
 
 const establishmentCsv = async (establishments, responseSend) => {
-  responseSend(WorkplaceCSVValidator.headers());
+  const cwpAwarenessMappings = await models.careWorkforcePathwayWorkplaceAwareness.findAll({
+    attributes: ['id', 'bulkUploadCode'],
+  });
 
-  establishments.map((establishment) => responseSend(NEWLINE + WorkplaceCSVValidator.toCSV(establishment)));
+  const mappings = {
+    cwpAwareness: cwpAwarenessMappings,
+  };
+
+  const headerRow = WorkplaceCSVValidator.headers();
+  const dataRows = establishments.map((establishment) => WorkplaceCSVValidator.toCSV(establishment, mappings));
+
+  const fullCsvContent = [headerRow, ...dataRows].join(NEWLINE);
+
+  responseSend(fullCsvContent);
 };
 
 const workerCsv = async (establishments, responseSend, downloadType) => {
@@ -88,7 +99,7 @@ const downloadGet = async (req, res) => {
       switch (downloadType) {
         case 'establishments': {
           const establishments = await models.establishment.downloadEstablishments(primaryEstablishmentId);
-          establishmentCsv(establishments, responseSend);
+          await establishmentCsv(establishments, responseSend);
           break;
         }
         case 'workersSanitise':

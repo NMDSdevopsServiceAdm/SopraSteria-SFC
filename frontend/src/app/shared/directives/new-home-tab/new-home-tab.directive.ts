@@ -99,7 +99,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public article: Article;
   public noOfWorkersWhoRequireInternationalRecruitment: number;
   public noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
-  public cwpQuestionsFlag: boolean;
   public workplacesNeedAttention: boolean;
 
   constructor(
@@ -128,8 +127,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
 
     this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered =
       this.route.snapshot.data.noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer?.noOfWorkersWhoRequireAnswers;
-
-    this.cwpQuestionsFlag = this.route.snapshot.data?.featureFlags?.cwpQuestions ?? false;
 
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;

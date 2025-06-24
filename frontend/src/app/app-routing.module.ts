@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
@@ -17,7 +15,6 @@ import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
@@ -199,7 +196,6 @@ const routes: Routes = [
             GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
           noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer:
             GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
-          featureFlags: FeatureFlagsResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },

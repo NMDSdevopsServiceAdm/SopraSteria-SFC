@@ -48,7 +48,7 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     this.setupForm();
     this.setPreviousRoute();
     this.prefill();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.skipRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness'];
   }
 
   private setPreviousRoute(): void {
@@ -95,7 +95,7 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-awareness'];
   }
 
   ngOnDestroy(): void {
