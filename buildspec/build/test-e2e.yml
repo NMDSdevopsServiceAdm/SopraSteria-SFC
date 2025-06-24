@@ -19,3 +19,8 @@ phases:
   build:
     commands:
       - make test-e2e-inside-docker
+reports:
+  junit:
+    files:
+      - 'frontend/cypress/results/*'
+    file-format: JUNITXML
