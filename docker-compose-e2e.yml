@@ -57,7 +57,8 @@ services:
         condition: service_healthy
     volumes:
       - ./frontend:/frontend
-    entrypoint: ["cypress", "run"]
+    entrypoint: ["cypress", "run", "--reporter", "junit", "--reporter-options",
+      "mochaFile=cypress/results/test-output-[hash].xml,toConsole=true"]
     env_file:
       - .env
     environment:
@@ -67,3 +68,4 @@ services:
       DB_TEST_PASS: ${POSTGRES_PASSWORD}
       DB_TEST_NAME: ${POSTGRES_DB}
       DB_TEST_PORT: 5432
+      NO_COLOR: 1
