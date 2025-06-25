@@ -94,7 +94,6 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { HelpAndTipsButtonComponent } from './features/help-and-tips-button/help-and-tips-button.component';
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
@@ -119,7 +118,6 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
     SatisfactionSurveyComponent,
-    StaffMismatchBannerComponent,
     SelectMainServiceComponent,
     StandAloneAccountComponent,
     SubsidiaryAccountComponent,
