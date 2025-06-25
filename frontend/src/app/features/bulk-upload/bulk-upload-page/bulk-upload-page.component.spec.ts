@@ -15,7 +15,6 @@ import { MockDataChangeService } from '@core/test-utils/MockDataChangesService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -74,7 +73,6 @@ describe('BulkUploadPageComponent', () => {
         AdminSkipService,
       ],
       declarations: [
-        HomeTabComponent,
         DragAndDropFilesUploadComponent,
         BulkUploadDownloadCurrentDataComponent,
         CodesAndGuidanceComponent,
