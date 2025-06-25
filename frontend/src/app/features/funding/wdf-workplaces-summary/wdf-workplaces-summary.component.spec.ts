@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router } from '@angular/router';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -56,7 +55,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfWorkplacesSummaryComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
+      imports: [HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -69,6 +68,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
             : MockPermissionsService.factory(['canEditEstablishment']),
           deps: [HttpClient, Router, UserService],
         },
+        provideRouter([]),
       ],
       componentProperties: {
         workplaces: mockWorkplaces(),
@@ -199,7 +199,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
         expect(getByText('Check your workplace data', { exact: true })).toBeTruthy();
       });
 
-      it("should display orange flag and 'New staff records' message when the workplace has qualified for funding but staff records are ineligible", async () => {
+      it("should display orange flag and 'Check staff records' message when the workplace has qualified for funding but staff records are ineligible", async () => {
         const workplaces = [
           {
             name: 'Workplace name',
@@ -214,7 +214,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
         const { getByText } = await setup({ workplaces });
 
         expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-        expect(getByText('New staff records', { exact: true })).toBeTruthy();
+        expect(getByText('Check staff records', { exact: true })).toBeTruthy();
       });
     });
 
