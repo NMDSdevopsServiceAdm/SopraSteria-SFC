@@ -7,6 +7,7 @@ import { CannotCreateAccountComponent } from '@core/components/error/cannot-crea
 import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { QuestionsAndAnswersResolver } from '@core/resolvers/help/questions-and-answers/questions-and-answers.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -19,7 +20,6 @@ import { AlertComponent } from '@shared/components/alert/alert.component';
 import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/check-cqc-details.component';
 import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
-import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
 import { SanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
 
@@ -46,6 +46,7 @@ import { ErrorSummaryComponent } from './components/error-summary/error-summary.
 import { FundingRequirementsStateComponent } from './components/funding-requirements-state/funding-requirements-state.component';
 import { HelpContentComponent } from './components/help-content/help-content.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
+import { JobRoleNumbersTableComponent } from './components/job-role-numbers-table/job-role-numbers-table.component';
 import { LinkToParentCancelDialogComponent } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
@@ -119,12 +120,16 @@ import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-bu
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
+import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
+import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pathway-role-category.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
 import { DontKnowPipe } from './pipes/dont-know.pipe';
 import { FirstErrorPipe } from './pipes/first-error.pipe';
 import { FormatAmpersandPipe } from './pipes/format-ampersand.pipe';
+import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
 import { FormatStartersLeaversVacanciesPipe } from './pipes/format-starters-leavers-vacancies.pipe';
+import { HasValuePipe } from './pipes/has-value.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NewDataViewPermissionsPipe } from './pipes/new-data-view-permissions.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
@@ -138,12 +143,6 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { JobRoleNumbersTableComponent } from './components/job-role-numbers-table/job-role-numbers-table.component';
-import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pathway-role-category.pipe';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
-import { HasValuePipe } from './pipes/has-value.pipe';
-import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
-import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -198,7 +197,6 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceTabComponent,
     OrderOtherPipe,
     LongDatePipe,
     RejectRequestDialogComponent,
@@ -336,7 +334,6 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceTabComponent,
     OrderOtherPipe,
     TrainingLinkPanelComponent,
     LongDatePipe,
