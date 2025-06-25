@@ -1,14 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -20,14 +18,7 @@ describe('DataSharingComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       DataSharingComponent,
       {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
         providers: [
           ErrorSummaryService,
           BackService,
