@@ -58,7 +58,6 @@ import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
 import { SelectMainServiceComponent } from '@features/create-account/workplace/select-main-service/select-main-service.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
-import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-username-or-password/forgot-your-password/confirmation/confirmation.component';
 import { ForgotYourPasswordEditComponent } from '@features/forgot-your-username-or-password/forgot-your-password/edit/edit.component';
@@ -106,7 +105,6 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
   declarations: [
     AppComponent,
     AscWdsCertificateComponent,
-    DashboardHeaderComponent,
     FooterComponent,
     ForgotYourPasswordComponent,
     ForgotYourPasswordConfirmationComponent,
