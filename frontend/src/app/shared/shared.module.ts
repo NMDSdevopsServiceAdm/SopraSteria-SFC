@@ -99,7 +99,6 @@ import { TotalStaffComponent } from './components/total-staff/total-staff.compon
 import { TrainingAndQualificationsCategoriesComponent } from './components/training-and-qualifications-categories/training-and-qualifications-categories.component';
 import { ViewTrainingComponent } from './components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 import { TrainingAndQualificationsSummaryComponent } from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
-import { TrainingAndQualificationsTabComponent } from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { TrainingSelectViewPanelComponent } from './components/training-select-view-panel/training-select-view-panel.component';
@@ -200,7 +199,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
     TrainingAndQualificationsCategoriesComponent,
-    TrainingAndQualificationsTabComponent,
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
     LinkToParentDialogComponent,
@@ -337,7 +335,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
     TrainingAndQualificationsCategoriesComponent,
-    TrainingAndQualificationsTabComponent,
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
     LinkToParentDialogComponent,
