@@ -84,7 +84,6 @@ import { PersonalDetailsComponent } from './components/staff-record-summary/pers
 import { QualificationsAndTrainingComponent } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
 import { WdfWarningMessageComponent } from './components/staff-record-summary/wdf-warning-message/wdf-warning-message.component';
-import { StaffRecordsTabComponent } from './components/staff-records-tab/staff-records-tab.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
@@ -180,7 +179,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PhaseBannerComponent,
     ProgressComponent,
     QualificationsAndTrainingComponent,
-    StaffRecordsTabComponent,
     StaffRecordSummaryComponent,
     StaffSummaryComponent,
     StatusComponent,
@@ -319,7 +317,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PhaseBannerComponent,
     ProgressComponent,
     QualificationsAndTrainingComponent,
-    StaffRecordsTabComponent,
     StaffRecordSummaryComponent,
     StaffSummaryComponent,
     StatusComponent,
