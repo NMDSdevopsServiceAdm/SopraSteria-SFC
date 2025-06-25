@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { UpdateCareWorkforcePathwayUsePayload } from '@core/model/care-workforce-pathway.model';
 import { environment } from 'src/environments/environment';
 
 import { EstablishmentService } from './establishment.service';
@@ -7,6 +8,7 @@ import { EstablishmentService } from './establishment.service';
 describe('EstablishmentService', () => {
   let service: EstablishmentService;
   let http: HttpTestingController;
+  const mockWorkplaceUid = 'mockWorkplaceUid';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -58,7 +60,6 @@ describe('EstablishmentService', () => {
   });
 
   describe('updateJobs', () => {
-    const mockWorkplaceUid = 'mockWorkplaceUid';
     const payload = {
       vacancies: [
         { jobId: 10, total: 2 },
@@ -121,6 +122,61 @@ describe('EstablishmentService', () => {
       expect(setStateSpy).not.toHaveBeenCalled();
       expect(onSuccessSpy).not.toHaveBeenCalled();
       expect(onErrorSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('updateCareWorkforcePathwayAwareness', () => {
+    const updateCareWorkforcePathwayAwarenessEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/careWorkforcePathway/careWorkforcePathwayAwareness`;
+
+    it('should make call to updateCareWorkforcePathwayAwarenessEndpoint', async () => {
+      const requestBody = { careWorkforcePathwayWorkplaceAwareness: { id: 1 } };
+      service.updateCareWorkforcePathwayAwareness(mockWorkplaceUid, requestBody).subscribe();
+
+      const updateCareWorkforcePathwayAwareness = http.expectOne(updateCareWorkforcePathwayAwarenessEndpoint);
+      expect(updateCareWorkforcePathwayAwareness.request.method).toBe('POST');
+      expect(updateCareWorkforcePathwayAwareness.request.body).toEqual(requestBody);
+    });
+  });
+
+  describe('updateCareWorkforcePathwayUse', () => {
+    const mockWorkplaceUid = 'mockWorkplaceUid';
+    const payload = {
+      use: 'Yes',
+      reasons: [{ id: 1 }, { id: 2 }, { id: 10, other: 'some free text' }],
+    } as UpdateCareWorkforcePathwayUsePayload;
+
+    const endpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/careWorkforcePathway/careWorkforcePathwayUse`;
+
+    it('should make call to expected backend endpoint', async () => {
+      service.updateCareWorkforcePathwayUse(mockWorkplaceUid, payload).subscribe();
+
+      const expectedRequest = http.expectOne(endpoint);
+
+      expect(expectedRequest.request.method).toBe('POST');
+      expect(expectedRequest.request.body).toEqual(payload);
+    });
+  });
+
+  describe('returnIsSetToHomePage', () => {
+    it('should return true when returnTo is dashboard with fragment as home', () => {
+      const returnTo = { url: ['/dashboard'], fragment: 'home' };
+      service.setReturnTo(returnTo);
+
+      expect(service.returnIsSetToHomePage()).toBe(true);
+    });
+
+    it('should return false if url is not dashboard', () => {
+      const returnTo = { url: ['/workplace/abc123'], fragment: 'home' };
+      service.setReturnTo(returnTo);
+
+      expect(service.returnIsSetToHomePage()).toBe(false);
+    });
+
+    it('should return false if fragment is not home', () => {
+      const returnTo = { url: ['/dashboard'], fragment: 'workplace' };
+      service.setReturnTo(returnTo);
+
+      expect(service.returnIsSetToHomePage()).toBe(false);
     });
   });
 });

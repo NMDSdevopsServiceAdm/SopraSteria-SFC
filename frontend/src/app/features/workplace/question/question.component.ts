@@ -68,7 +68,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  setBackLink() {
+  protected setBackLink(): void {
     this.back = this.return ? this.return : { url: this.previousRoute };
     this.backService.setBackLink(this.back);
   }
@@ -86,7 +86,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected navigate(): void {
+  protected navigate(): Promise<boolean> {
     const action = this.submitAction.action;
 
     if (!action) {
@@ -95,24 +95,18 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
     switch (action) {
       case 'continue':
-        this.router.navigate(this.nextRoute);
-        break;
-
+        return this.router.navigate(this.nextRoute);
       case 'summary':
-        this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
-        break;
-
+        return this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
       case 'skip':
-        this.router.navigate(this.skipRoute);
-        break;
-
+        return this.router.navigate(this.skipRoute);
       case 'exit':
-        this.router.navigate(['/dashboard'], { fragment: 'workplace' });
-        break;
-
+        return this.router.navigate(['/dashboard'], { fragment: 'workplace' });
       case 'return':
-        this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
-        break;
+        return this.router.navigate(this.return.url, {
+          fragment: this.return.fragment,
+          queryParams: this.return.queryParams,
+        });
     }
   }
 
@@ -176,11 +170,15 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
   protected createDynamicErrorMessaging(): void {}
   protected addErrorLinkFunctionality(): void {}
+  protected addAlert(): void {}
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
     this.onSuccess();
-    this.navigate();
+
+    this.navigate().then(() => {
+      this.addAlert();
+    });
   }
 
   protected onError(error) {

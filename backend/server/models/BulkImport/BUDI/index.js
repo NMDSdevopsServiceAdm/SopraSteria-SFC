@@ -11,6 +11,7 @@ const { mappings } = require('../../../../reference/BUDIMappings');
 let ALL_CSSRS = null;
 let ALL_CAPACITIES = null;
 let ALL_UTILISATIONS = null;
+let ALL_CAREWORKFORCEPATHWAYCATEGORIES = null;
 
 class BUDI {
   static async initialize() {
@@ -51,6 +52,19 @@ class BUDI {
             serviceId: thisCapacity.serviceId,
           };
         });
+    }
+
+    const careWorkforcePathwayCategoryFetch = await dbmodels.careWorkforcePathwayRoleCategory.findAll({
+      order: [['id', 'ASC']],
+    });
+
+    if (Array.isArray(careWorkforcePathwayCategoryFetch)) {
+      ALL_CAREWORKFORCEPATHWAYCATEGORIES = careWorkforcePathwayCategoryFetch.map((thisCareWorkforcePathwayCategory) => {
+        return {
+          ASC: thisCareWorkforcePathwayCategory.id,
+          BUDI: thisCareWorkforcePathwayCategory.bulkUploadCode,
+        };
+      });
     }
   }
 
@@ -304,6 +318,17 @@ class BUDI {
       }
     }
 
+    return null;
+  }
+
+  static careWorkforcePathwayRoleCategory(direction, code) {
+    if (direction === BUDI.FROM_ASC) {
+      const found = ALL_CAREWORKFORCEPATHWAYCATEGORIES.find((thisCWPCategory) => thisCWPCategory.ASC === code);
+      return found ? found.BUDI : null;
+    } else if (direction === BUDI.TO_ASC) {
+      const found = ALL_CAREWORKFORCEPATHWAYCATEGORIES.find((thisCWPCategory) => thisCWPCategory.ASC === code);
+      return found ? found.ASC : null;
+    }
     return null;
   }
 }

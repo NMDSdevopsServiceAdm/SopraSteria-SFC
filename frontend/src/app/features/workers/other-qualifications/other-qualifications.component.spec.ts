@@ -2,17 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { WorkerEditResponse } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { of } from 'rxjs';
-import { delay } from 'rxjs/operators';
 
 import { WorkersModule } from '../workers.module';
 import { OtherQualificationsComponent } from './other-qualifications.component';
@@ -22,7 +17,6 @@ describe('OtherQualificationsComponent', () => {
   async function setup(overrides: any = {}) {
     const insideFlow = overrides.insideFlow ?? false;
     const workerOverrides = overrides.worker ?? { otherQualification: null };
-    const cwpQuestions = overrides.cwpQuestionsFlag ?? false;
 
     const setupTools = await render(OtherQualificationsComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
@@ -49,7 +43,6 @@ describe('OtherQualificationsComponent', () => {
           useFactory: MockWorkerServiceWithOverrides.factory({ worker: workerOverrides }),
           deps: [HttpClient],
         },
-        { provide: FeatureFlagsService, useFactory: MockFeatureFlagsService.factory({ cwpQuestions }) },
         WindowRef,
         AlertService,
       ],
@@ -115,7 +108,7 @@ describe('OtherQualificationsComponent', () => {
 
     describe('Add worker details flow', () => {
       it(`should navigate to 'care-workforce-pathway' url when 'Skip this question' is clicked`, async () => {
-        const overrides = { cwpQuestionsFlag: false, insideFlow: true };
+        const overrides = { insideFlow: true };
 
         const { component, getByText, routerSpy } = await setup(overrides);
 
@@ -165,110 +158,6 @@ describe('OtherQualificationsComponent', () => {
             'care-workforce-pathway',
           ]);
         });
-
-        // it(`should add "Staff record details added" alert when '${answer}' is selected`, async () => {
-        //   const { getByText, alertSpy } = await setup({ insideFlow: true });
-
-        //   if (!userClicksSaveWithoutSelecting) {
-        //     const button = getByText(answer);
-        //     fireEvent.click(button);
-        //   }
-
-        //   fireEvent.click(getByText('Save and continue'));
-
-        //   expect(alertSpy).toHaveBeenCalledWith({
-        //     type: 'success',
-        //     message: 'Staff record details saved',
-        //   });
-        // });
-      });
-    });
-
-    it('should not add alert if user chose yes and pressed save button', async () => {
-      const { component, fixture, routerSpy, getByText, alertSpy, workerService } = await setup({ insideFlow: true });
-
-      // Simulate actual backend call that take time to resolve. This affects the execution order of _onSuccess()
-      spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '1' } as WorkerEditResponse).pipe(delay(200)));
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      fireEvent.click(getByText('Yes'));
-      fireEvent.click(getByText('Save and continue'));
-
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'other-qualifications-level',
-      ]);
-
-      expect(alertSpy).not.toHaveBeenCalled();
-    });
-
-    it('should navigate to staff-summary-page page when pressing save and not know is entered', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup({ cwpQuestionsFlag: true, insideFlow: false });
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      const radioButton = getByText('I do not know');
-      fireEvent.click(radioButton);
-
-      const link = getByText('Save');
-      fireEvent.click(link);
-
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'staff-record-summary',
-      ]);
-    });
-
-    it('should navigate to staff-summary-page page when pressing save and No is entered', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup({ cwpQuestionsFlag: true, insideFlow: false });
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      const radioButton = getByText('No');
-      fireEvent.click(radioButton);
-
-      const link = getByText('Save');
-      fireEvent.click(link);
-
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'staff-record-summary',
-      ]);
-    });
-
-    ['No', 'I do not know'].forEach((answer) => {
-      it(`should not add Staff record added alert when '${answer}' is selected but not in flow`, async () => {
-        const { getByText, alertSpy } = await setup({ insideFlow: false });
-
-        const button = getByText(answer);
-        fireEvent.click(button);
-
-        fireEvent.click(getByText('Save'));
-
-        expect(alertSpy).not.toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Staff record details saved',
-        });
       });
     });
 
@@ -299,7 +188,7 @@ describe('OtherQualificationsComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
-      const { component, routerSpy, getByText } = await setup({ cwpQuestionsFlag: true, insideFlow: false });
+      const { component, routerSpy, getByText } = await setup({ insideFlow: false });
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
@@ -318,7 +207,6 @@ describe('OtherQualificationsComponent', () => {
 
     it('should navigate to funding staff-summary-page page when pressing save and not know is entered in funding version of page', async () => {
       const { component, fixture, routerSpy, getByText, router } = await setup({
-        cwpQuestionsFlag: true,
         insideFlow: false,
       });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
@@ -340,7 +228,6 @@ describe('OtherQualificationsComponent', () => {
 
     it('should navigate to funding staff-summary-page page when pressing save and No is entered in funding version of page', async () => {
       const { component, fixture, routerSpy, getByText, router } = await setup({
-        cwpQuestionsFlag: true,
         insideFlow: false,
       });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
@@ -381,7 +268,6 @@ describe('OtherQualificationsComponent', () => {
 
     it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
       const { component, routerSpy, getByText, fixture, router } = await setup({
-        cwpQuestionsFlag: true,
         insideFlow: false,
       });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');

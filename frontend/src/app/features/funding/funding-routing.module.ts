@@ -13,6 +13,7 @@ import { ApprenticeshipTrainingComponent } from '@features/workers/apprenticeshi
 import { AverageWeeklyHoursComponent } from '@features/workers/average-weekly-hours/average-weekly-hours.component';
 import { BritishCitizenshipComponent } from '@features/workers/british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from '@features/workers/care-certificate/care-certificate.component';
+import { CareWorkforcePathwayRoleComponent } from '@features/workers/care-workforce-pathway/care-workforce-pathway.component';
 import { ContractWithZeroHoursComponent } from '@features/workers/contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from '@features/workers/country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from '@features/workers/date-of-birth/date-of-birth.component';
@@ -47,8 +48,6 @@ import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
-import { CareWorkforcePathwayRoleComponent } from '@features/workers/care-workforce-pathway/care-workforce-pathway.component';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 
 const routes: Routes = [
   {
@@ -95,7 +94,7 @@ const routes: Routes = [
                 path: '',
                 component: WdfStaffRecordComponent,
                 data: { title: 'Funding Staff Record' },
-                resolve: { report: FundingReportResolver, featureFlags: FeatureFlagsResolver },
+                resolve: { report: FundingReportResolver },
               },
               {
                 path: 'staff-details',
@@ -303,7 +302,7 @@ const routes: Routes = [
         path: '',
         component: WdfStaffRecordComponent,
         data: { title: 'Funding Staff Record' },
-        resolve: { report: FundingReportResolver, featureFlags: FeatureFlagsResolver },
+        resolve: { report: FundingReportResolver },
       },
       {
         path: 'staff-details',

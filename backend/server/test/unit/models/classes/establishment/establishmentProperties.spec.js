@@ -13,7 +13,7 @@ describe('EstablishmentPropertyManager', () => {
     'ServiceUsersProperty',
     'CapacityProperty',
     'ShareWithProperty',
-    'ShareWithLAProperty',
+    // 'ShareWithLAProperty',    // seems to be not using anymore
     'VacanciesProperty',
     'StartersProperty',
     'LeaversProperty',
@@ -26,10 +26,13 @@ describe('EstablishmentPropertyManager', () => {
     'CountyProperty',
     'PostcodeProperty',
     'IsRegulatedProperty',
+    'CareWorkforcePathwayWorkplaceAwarenessProperty',
+    'CareWorkforcePathwayUseProperty',
   ];
   it('should have the correct property types', () => {
     const establishmentProperties = new EstablishmentPropertyManager();
-    expect(establishmentProperties._thisManager._propertyTypes.length).to.deep.equal(20);
+    expect(establishmentProperties._thisManager._propertyTypes.length).to.deep.equal(properties.length);
+
     establishmentProperties._thisManager._propertyTypes.forEach((propertyType) => {
       expect(typeof propertyType).to.deep.equal('function');
       expect(properties).to.include(propertyType.name);

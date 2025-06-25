@@ -6,7 +6,5 @@ RUN apt-get update \
         postgresql-13-postgis \
     && rm -rf /var/lib/apt/lists/*
 
-COPY 001.sql /docker-entrypoint-initdb.d/
-COPY 002.sql /docker-entrypoint-initdb.d/
-COPY cqc_backup.sql /docker-entrypoint-initdb.d/
+COPY sfc-e2e-test-db.sql /docker-entrypoint-initdb.d/
 COPY install-extensions.sh /docker-entrypoint-initdb.d/

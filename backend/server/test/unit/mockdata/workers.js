@@ -104,6 +104,9 @@ exports.data = [
     nationality: {
       value: 'British',
     },
+    careWorkforcePathwayRoleCategory: {
+      id: 1,
+    },
     qualifications: [
       {
         year: 2019,
@@ -172,6 +175,7 @@ exports.knownHeaders = [
   'AMHP',
   'SCQUAL',
   'NONSCQUAL',
+  'CWPCATEGORY',
   'QUALACH01',
   'QUALACH01NOTES',
   'QUALACH02',

@@ -8,6 +8,7 @@ const { QUALIFICATION_LEVELS } = require('./qualificationLevels');
 const { QUALIFICATIONS } = require('./qualifications');
 const { RECRUITMENT } = require('./recruitment');
 const { TRAINING_CATEGORY } = require('./trainingCategory');
+const { CWP_CATEGORY } = require('./cwpCategory');
 
 exports.mappings = {
   CONTRACT_TYPE,
@@ -20,4 +21,5 @@ exports.mappings = {
   QUALIFICATIONS,
   RECRUITMENT,
   TRAINING_CATEGORY,
+  CWP_CATEGORY,
 };

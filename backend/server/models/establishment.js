@@ -749,6 +749,58 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CssrID"',
       },
+      careWorkforcePathwayWorkplaceAwarenessFK: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessFK"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessSavedAt"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessChangedAt"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessSavedBy"',
+      },
+      careWorkforcePathwayWorkplaceAwarenessChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"CareWorkforcePathwayWorkplaceAwarenessChangedBy"',
+      },
+      CWPAwarenessQuestionViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'CWPAwarenessQuestionViewed',
+      },
+      careWorkforcePathwayUse: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'CareWorkforcePathwayUseValue',
+      },
+      CareWorkforcePathwayUseSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      CareWorkforcePathwayUseChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       defaultScope: {
@@ -828,6 +880,11 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'mainService',
     });
+    Establishment.belongsTo(models.careWorkforcePathwayWorkplaceAwareness, {
+      foreignKey: 'careWorkforcePathwayWorkplaceAwarenessFK',
+      targetKey: 'id',
+      as: 'careWorkforcePathwayWorkplaceAwareness',
+    });
     Establishment.belongsToMany(models.services, {
       through: 'establishmentServices',
       foreignKey: 'establishmentId',
@@ -883,6 +940,14 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentFK',
       sourceKey: 'id',
       as: 'MandatoryTraining',
+    });
+
+    Establishment.belongsToMany(models.CareWorkforcePathwayReasons, {
+      through: 'EstablishmentCWPReasons',
+      attributes: ['other'],
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'CareWorkforcePathwayReasons',
     });
   };
 
@@ -1358,6 +1423,7 @@ module.exports = function (sequelize, DataTypes) {
         'careWorkersCashLoyaltyForFirstTwoYears',
         'sickPay',
         'pensionContribution',
+        'careWorkforcePathwayUse',
       ],
       where: {
         [Op.or]: [
@@ -1419,6 +1485,16 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.establishmentJobs,
           attributes: ['jobId', 'type', 'total'],
           as: 'jobs',
+        },
+        {
+          model: sequelize.models.CareWorkforcePathwayReasons,
+          attributes: ['id', 'bulkUploadCode', 'isOther'],
+          as: 'CareWorkforcePathwayReasons',
+        },
+        {
+          model: sequelize.models.careWorkforcePathwayWorkplaceAwareness,
+          attributes: ['id', 'bulkUploadCode'],
+          as: 'careWorkforcePathwayWorkplaceAwareness',
         },
       ],
     });
@@ -1487,6 +1563,7 @@ module.exports = function (sequelize, DataTypes) {
             'OtherQualificationsValue',
             'Level2CareCertificateValue',
             'Level2CareCertificateYear',
+            'CareWorkforcePathwayRoleCategoryFK',
           ],
           as: 'workers',
           where: {
@@ -1532,6 +1609,10 @@ module.exports = function (sequelize, DataTypes) {
                 model: sequelize.models.workerAvailableQualifications,
                 as: 'qualification',
               },
+            },
+            {
+              model: sequelize.models.careWorkforcePathwayRoleCategory,
+              as: 'careWorkforcePathwayRoleCategory',
             },
           ],
         },
@@ -2114,6 +2195,8 @@ module.exports = function (sequelize, DataTypes) {
       WHEN "VacanciesValue" IS NULL THEN true
       -- Add workplace details banner showing
       WHEN "ShowAddWorkplaceDetailsBanner" = true THEN true
+      -- CWP awareness flag showing
+      WHEN "CareWorkforcePathwayWorkplaceAwarenessFK" IS NULL AND "CWPAwarenessQuestionViewed" != true THEN true
       -- Number of staff does not equal worker count
       WHEN (
         SELECT (COUNT(w."ID") != "NumberOfStaffValue") AND "eightWeeksFromFirstLogin" < now()::timestamp
@@ -2157,6 +2240,8 @@ module.exports = function (sequelize, DataTypes) {
                 AND ((w."NationalityValue" = 'Other' AND (w."BritishCitizenshipValue" IN ('No', 'Don''t know') OR w."BritishCitizenshipValue" IS NULL))
                   OR (w."NationalityValue" = 'Don''t know' AND w."BritishCitizenshipValue" = 'No'))
             )
+          -- CWP role category not answered
+            OR (w."CareWorkforcePathwayRoleCategoryFK" IS NULL)
           )
         		LIMIT 1
         	) IS NOT NULL THEN true
