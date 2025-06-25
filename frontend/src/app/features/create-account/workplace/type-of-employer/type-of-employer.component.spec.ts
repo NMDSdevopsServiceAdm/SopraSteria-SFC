@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -15,18 +14,11 @@ import userEvent from '@testing-library/user-event';
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
 describe('TypeOfEmployerComponent', () => {
-  async function setup(registrationFlow = true) {
+  async function setup(overrides: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
       TypeOfEmployerComponent,
       {
-        imports: [
-          SharedModule,
-          RegistrationModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RegistrationModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
         providers: [
           BackService,
           {
@@ -40,7 +32,7 @@ describe('TypeOfEmployerComponent', () => {
                 parent: {
                   url: [
                     {
-                      path: registrationFlow ? 'registration' : 'confirm-details',
+                      path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
                     },
                   ],
                 },
@@ -96,7 +88,7 @@ describe('TypeOfEmployerComponent', () => {
   });
 
   it('should not render the progress bars when accessed from outside the flow', async () => {
-    const { queryByTestId } = await setup(false);
+    const { queryByTestId } = await setup({ registrationFlow: false });
 
     expect(queryByTestId('progress-bar-1')).toBeFalsy();
     expect(queryByTestId('progress-bar-2')).toBeFalsy();
@@ -183,7 +175,7 @@ describe('TypeOfEmployerComponent', () => {
     });
 
     it('should navigate to confirm-details when the Local authority (adult services) radio button is selected and the continue button clicked when not in the flow', async () => {
-      const { fixture, component, getByText, getByLabelText, routerSpy } = await setup(false);
+      const { fixture, component, getByText, getByLabelText, routerSpy } = await setup({ registrationFlow: false });
 
       component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
       const radioButton = getByLabelText('Local authority (adult services)');

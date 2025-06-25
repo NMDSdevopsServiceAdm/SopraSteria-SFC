@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
@@ -15,12 +14,11 @@ import { BehaviorSubject } from 'rxjs';
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address.component';
 
 describe('CouldNotFindWorkplaceAddressComponent', () => {
-  async function setup(registrationFlow = true) {
-    const { fixture, getByText, getByTestId, queryByTestId } = await render(CouldNotFindWorkplaceAddressComponent, {
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(CouldNotFindWorkplaceAddressComponent, {
       imports: [
         SharedModule,
         RouterModule,
-        RouterTestingModule,
         HttpClientTestingModule,
         RegistrationModule,
         FormsModule,
@@ -40,7 +38,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
               parent: {
                 url: [
                   {
-                    path: registrationFlow ? 'registration' : 'confirm-details',
+                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -56,14 +54,11 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     return {
+      ...setupTools,
       component,
-      fixture,
       spy,
-      getByText,
-      getByTestId,
-      queryByTestId,
     };
   }
 
@@ -80,7 +75,7 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
   });
 
   it('should not render the progress bars when accessed from outside the flow', async () => {
-    const { queryByTestId } = await setup(false);
+    const { queryByTestId } = await setup({ registrationFlow: false });
 
     expect(queryByTestId('progress-bar-1')).toBeFalsy();
     expect(queryByTestId('progress-bar-2')).toBeFalsy();
