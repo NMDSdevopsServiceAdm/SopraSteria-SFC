@@ -15,7 +15,6 @@ import { RankingContentComponent } from '../benchmark-metric/ranking-content/ran
 import { BenchmarkTileComponent } from '../benchmark-tile/benchmark-tile.component';
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
 import { BenchmarksRoutingModule } from './benchmarks-routing.module';
-import { ComparisonGroupHeaderComponent } from './comparison-group-header/comparison-group-header.component';
 import { BenchmarksMetricComponent } from './metric/metric.component';
 import { BenchmarksRankingsComponent } from './rankings/rankings.component';
 
@@ -26,7 +25,6 @@ import { BenchmarksRankingsComponent } from './rankings/rankings.component';
     BenchmarksMetricComponent,
     BenchmarksRankingsComponent,
     BenchmarkTileComponent,
-    ComparisonGroupHeaderComponent,
     GaugeComponent,
     BarchartComponent,
     RankingContentComponent,
@@ -40,7 +38,6 @@ import { BenchmarksRankingsComponent } from './rankings/rankings.component';
     BenchmarksMetricComponent,
     BenchmarksRankingsComponent,
     BenchmarkTileComponent,
-    ComparisonGroupHeaderComponent,
     GaugeComponent,
     BarchartComponent,
     RankingContentComponent,
