@@ -27,6 +27,10 @@ describe('server/routes/establishments/careWorkforcePathway/CareWorkforcePathway
   const awareAnswers = [1, 2, 3];
   const notAwareAnswers = [4, 5];
 
+  const mockCWPUseValue = (useValue) => {
+    establishmentRecord._careWorkforcePathwayUse = useValue ?? null;
+  };
+
   beforeEach(() => {
     establishmentRecord = sinon.createStubInstance(Establishment.Establishment);
     sinon.stub(Establishment, 'Establishment').callsFake(() => establishmentRecord);
@@ -52,40 +56,73 @@ describe('server/routes/establishments/careWorkforcePathway/CareWorkforcePathway
     expect(res.statusCode).to.equal(200);
   });
 
-  awareAnswers.forEach((awareAnswer) => {
-    it(`should not call the load function with careWorkforcePathwayUse when the value is ${awareAnswer}`, async () => {
-      setupMockRequest(awareAnswer);
+  describe('When careWorkforcePathwayUse is null, it should not change careWorkforcePathwayUse', () => {
+    beforeEach(() => {
+      mockCWPUseValue(null);
+    });
 
-      establishmentRecord.restore = sinon.stub().resolves(true);
-      establishmentRecord.load = sinon.stub().resolves(true);
-      establishmentRecord.save = sinon.stub().resolves(true);
+    [...awareAnswers, ...notAwareAnswers].forEach((awarenessAnswer) => {
+      it(`awareness answer: ${awarenessAnswer}`, async () => {
+        setupMockRequest(awarenessAnswer);
 
-      const req = httpMocks.createRequest(mockRequest);
-      const res = httpMocks.createResponse();
-      await updateCareWorkforcePathwayAwareness(req, res);
+        establishmentRecord.restore = sinon.stub().resolves(true);
+        establishmentRecord.load = sinon.stub().resolves(true);
+        establishmentRecord.save = sinon.stub().resolves(true);
 
-      expect(establishmentRecord.load).to.have.been.calledWith(mockRequest.body);
-      expect(res.statusCode).to.equal(200);
+        const req = httpMocks.createRequest(mockRequest);
+        const res = httpMocks.createResponse();
+        await updateCareWorkforcePathwayAwareness(req, res);
+
+        expect(establishmentRecord.load).to.have.been.calledWith({
+          careWorkforcePathwayWorkplaceAwareness: { id: awarenessAnswer },
+        });
+        expect(res.statusCode).to.equal(200);
+      });
     });
   });
 
-  notAwareAnswers.forEach((awareAnswer) => {
-    it(`should call the load function with careWorkforcePathwayUse when the value is ${awareAnswer}`, async () => {
-      setupMockRequest(awareAnswer);
+  describe('When careWorkforcePathwayUse is not null, it should set careWorkforcePathwayUse to null only when awareness is falsy', () => {
+    beforeEach(() => {
+      mockCWPUseValue('Yes');
+    });
 
-      establishmentRecord.restore = sinon.stub().resolves(true);
-      establishmentRecord.load = sinon.stub().resolves(true);
-      establishmentRecord.save = sinon.stub().resolves(true);
+    awareAnswers.forEach((awarenessAnswer) => {
+      it(`awareness answer: ${awarenessAnswer}, should not change careWorkforcePathwayUse`, async () => {
+        setupMockRequest(awarenessAnswer);
 
-      const req = httpMocks.createRequest(mockRequest);
-      const res = httpMocks.createResponse();
-      await updateCareWorkforcePathwayAwareness(req, res);
+        establishmentRecord.restore = sinon.stub().resolves(true);
+        establishmentRecord.load = sinon.stub().resolves(true);
+        establishmentRecord.save = sinon.stub().resolves(true);
 
-      expect(establishmentRecord.load).to.have.been.calledWith({
-        careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer },
-        careWorkforcePathwayUse: { use: null, reasons: [] },
+        const req = httpMocks.createRequest(mockRequest);
+        const res = httpMocks.createResponse();
+        await updateCareWorkforcePathwayAwareness(req, res);
+
+        expect(establishmentRecord.load).to.have.been.calledWith({
+          careWorkforcePathwayWorkplaceAwareness: { id: awarenessAnswer },
+        });
+        expect(res.statusCode).to.equal(200);
       });
-      expect(res.statusCode).to.equal(200);
+    });
+
+    notAwareAnswers.forEach((awarenessAnswer) => {
+      it(`awareness answer: ${awarenessAnswer}, should change careWorkforcePathwayUse to null`, async () => {
+        setupMockRequest(awarenessAnswer);
+
+        establishmentRecord.restore = sinon.stub().resolves(true);
+        establishmentRecord.load = sinon.stub().resolves(true);
+        establishmentRecord.save = sinon.stub().resolves(true);
+
+        const req = httpMocks.createRequest(mockRequest);
+        const res = httpMocks.createResponse();
+        await updateCareWorkforcePathwayAwareness(req, res);
+
+        expect(establishmentRecord.load).to.have.been.calledWith({
+          careWorkforcePathwayWorkplaceAwareness: { id: awarenessAnswer },
+          careWorkforcePathwayUse: { use: null, reasons: [] },
+        });
+        expect(res.statusCode).to.equal(200);
+      });
     });
   });
 

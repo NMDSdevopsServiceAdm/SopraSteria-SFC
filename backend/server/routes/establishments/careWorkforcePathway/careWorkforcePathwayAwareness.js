@@ -16,9 +16,12 @@ const updateCareWorkforcePathwayAwareness = async (req, res) => {
     let filteredProperties = ['Name', 'careWorkforcePathwayWorkplaceAwareness'];
 
     const notAwareAnswers = [4, 5];
+    const workplaceIsNotAwareOfCWP = notAwareAnswers.includes(careWorkforcePathwayWorkplaceAwareness?.id);
+    const cwpUseHasValue = thisEstablishment._careWorkforcePathwayUse !== null;
+
     let isValidEstablishment;
 
-    if (notAwareAnswers.includes(careWorkforcePathwayWorkplaceAwareness?.id)) {
+    if (workplaceIsNotAwareOfCWP && cwpUseHasValue) {
       isValidEstablishment = await thisEstablishment.load({
         careWorkforcePathwayWorkplaceAwareness,
         careWorkforcePathwayUse: { use: null, reasons: [] },
