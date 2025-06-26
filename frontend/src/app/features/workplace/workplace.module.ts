@@ -58,7 +58,6 @@ import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
 import { UserAccountEditDetailsComponent } from './user-account-edit-details/user-account-edit-details.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UsersComponent } from './users/users.component';
@@ -96,7 +95,6 @@ import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/res
     ServiceUsersComponent,
     StartComponent,
     TypeOfEmployerComponent,
-    UserAccountDeleteDialogComponent,
     UserAccountEditPermissionsComponent,
     UserAccountSavedComponent,
     UserAccountViewComponent,
