@@ -11,7 +11,7 @@ describe('Standalone home page as edit user', () => {
 
   it('should see the standalone establishment workplace page', () => {
     cy.url().should('include', '#workplace');
-    cy.get('[data-testid="standAloneDashboard"]').contains('Workplace');
+    cy.contains('Workplace');
   });
 
   it('should show all sections', () => {

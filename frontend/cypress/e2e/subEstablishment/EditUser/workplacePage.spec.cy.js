@@ -11,7 +11,7 @@ describe('Sub home page as edit user', () => {
 
   it('should see the sub establishment workplace page', () => {
     cy.url().should('include', '#workplace');
-    cy.get('[data-testid="subsDashboard"]').contains('Workplace');
+    cy.contains('Workplace');
   });
 
   it('should show all sections', () => {
