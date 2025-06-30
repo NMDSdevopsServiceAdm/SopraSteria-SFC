@@ -4,9 +4,7 @@
   <div>
     <ng-container
       *ngIf="
-        (standAloneAccount && !isAdminSection) ||
-          (parentAccount && newHomeDesignParentFlag && !isAdminSection) ||
-          (subsAccount && newHomeDesignParentFlag && !isAdminSection);
+        !isAdminSection && (standAloneAccount || parentAccount || subsAccount);
         else otherView
       "
     >
