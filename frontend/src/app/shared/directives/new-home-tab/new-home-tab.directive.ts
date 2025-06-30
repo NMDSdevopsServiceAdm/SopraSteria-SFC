@@ -17,9 +17,6 @@ import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { isAdminRole } from '@core/utils/check-role-util';
-import {
-  BecomeAParentCancelDialogComponent,
-} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import {
   CancelDataOwnerDialogComponent,
@@ -272,17 +269,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
       if (confirmToClose) {
         this.canLinkToParent = false;
         this.parentStatusRequested = true;
-      }
-    });
-  }
-
-  public cancelBecomeAParent($event: Event): void {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(BecomeAParentCancelDialogComponent, null);
-    dialog.afterClosed.subscribe((confirmToClose) => {
-      if (confirmToClose) {
-        this.canLinkToParent = true;
-        this.parentStatusRequested = false;
       }
     });
   }
