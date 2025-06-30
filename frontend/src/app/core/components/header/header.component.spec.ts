@@ -178,7 +178,6 @@ describe('HeaderComponent', () => {
     it('should not show the notifications link when logged in, in a stand alone account but not on admin screen', async () => {
       const { component, fixture, queryByText } = await setup(false, 0, true);
 
-      component.newHomeDesignFlag = true;
       component.isOnAdminScreen = true;
       fixture.detectChanges();
 
@@ -189,7 +188,6 @@ describe('HeaderComponent', () => {
       const { component, fixture, getByTestId } = await setup(false, 0, true);
 
       spyOnProperty(component, 'numberOfNewNotifications', 'get').and.returnValue(1);
-      component.newHomeDesignFlag = true;
       fixture.detectChanges();
 
       expect(getByTestId('new-notifications')).toBeTruthy();
@@ -199,7 +197,6 @@ describe('HeaderComponent', () => {
       const { component, fixture, queryByTestId } = await setup(false, 0, true);
 
       spyOnProperty(component, 'numberOfNewNotifications', 'get').and.returnValue(0);
-      component.newHomeDesignFlag = true;
       fixture.detectChanges();
 
       expect(queryByTestId('new-notifications')).toBeFalsy();
