@@ -210,376 +210,107 @@ describe('NewHomeTabComponent', () => {
     });
 
     describe('Link to my parent organisation', () => {
-      describe('without parent home tab feature flag', () => {
-        it('should show Link to my parent organisation pending when trying to link to a parent', async () => {
-          const { component, fixture, queryByText } = await setup();
+      it('should not show Link to a parent workplace pending before requesting', async () => {
+        const { component, fixture, queryByText } = await setup();
 
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.linkToParentRequestedStatus = true;
+        component.workplace.isParent = false;
+        component.canLinkToParent = true;
+        component.canBecomeAParent = true;
+        component.linkToParentRequestedStatus = false;
+        component.parentStatusRequested = false;
 
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          const expectedMessage = 'Link to my parent organisation pending';
-          expect(queryByText(expectedMessage)).toBeTruthy();
-          expect(queryByText('Link to my parent organisation')).toBeFalsy();
-          expect(queryByText('Become a parent organisation')).toBeFalsy();
-        });
-
-        it('should not show Link to my parent organisation pending before requesting', async () => {
-          const { component, fixture, queryByText } = await setup();
-
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = false;
-
-          fixture.detectChanges();
-
-          const expectedMessage = 'Link to my parent organisation pending';
-          expect(queryByText(expectedMessage)).toBeFalsy();
-          expect(queryByText('Link to my parent organisation')).toBeTruthy();
-          expect(queryByText('Become a parent organisation')).toBeTruthy();
-        });
-
-        it('should show a dialog to confirm that you want become link to a parent organisation', async () => {
-          const { component, fixture, getByText } = await setup();
-
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          fixture.detectChanges();
-
-          const linkToParentLink = getByText('Link to my parent organisation');
-          const dialogMessage = 'Send a request to link to your parent organisation';
-
-          fireEvent.click(linkToParentLink);
-          fixture.detectChanges();
-
-          const dialog = await within(document.body).findByRole('dialog');
-
-          expect(dialog).toBeTruthy();
-          expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
-        });
-
-        it('should show a dialog to confirm you want to cancel parent request when clicking on link after requesting', async () => {
-          const { component, fixture, getByText } = await setup();
-
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.linkToParentRequestedStatus = true;
-          fixture.detectChanges();
-
-          const pendingLink = getByText('Link to my parent organisation pending');
-
-          fireEvent.click(pendingLink);
-          fixture.detectChanges();
-
-          const dialog = await within(document.body).findByRole('dialog');
-          const dialogMessage = 'Your request to link to your parent organisation is pending';
-
-          expect(dialog).toBeTruthy();
-          expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
-        });
-
-        it('should call cancelRequestToParent() in the establishmentService and set success alert when successful', async () => {
-          const { component, fixture, getByText, queryByText, alertServiceSpy } = await setup();
-
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.linkToParentRequestedStatus = true;
-          fixture.detectChanges();
-
-          const returnedEstablishment = {
-            requstedParentName: 'Parent name',
-          };
-          const establishmentService = TestBed.inject(EstablishmentService);
-          const cancelBecomeAParentSpy = spyOn(establishmentService, 'cancelRequestToParentForLink').and.returnValue(
-            of([returnedEstablishment]) as Establishment,
-          );
-
-          const linkToParentPendingLink = getByText('Link to my parent organisation pending');
-
-          expect(linkToParentPendingLink).toBeTruthy();
-          fireEvent.click(linkToParentPendingLink);
-          fixture.detectChanges();
-
-          const dialog = await within(document.body).findByRole('dialog');
-          const cancelRequestButton = await within(dialog).getByText('Cancel request');
-
-          fireEvent.click(cancelRequestButton);
-          fixture.detectChanges();
-
-          const becomeAParentLink = queryByText('Become a parent organisation');
-          const linkToParentLink = queryByText('Link to my parent organisation');
-
-          expect(cancelBecomeAParentSpy).toHaveBeenCalled();
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: `Request to link to ${returnedEstablishment.requstedParentName} has been cancelled.`,
-          });
-          expect(becomeAParentLink).toBeTruthy();
-          expect(linkToParentLink).toBeTruthy();
-        });
+        const expectedMessage = 'Link to a parent workplace (request pending)';
+        expect(queryByText(expectedMessage)).toBeFalsy();
+        expect(queryByText('Link to a parent workplace')).toBeTruthy();
+        expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeTruthy();
       });
 
-      describe('with parent home tab feature flag', () => {
-        it('should not show Link to a parent workplace pending before requesting', async () => {
-          const { component, fixture, queryByText } = await setup();
+      it('should show the link to parent link with the correct href', async () => {
+        const { component, fixture, getByText } = await setup();
 
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = false;
-          component.newHomeDesignParentFlag = true;
+        component.workplace.isParent = false;
+        component.canLinkToParent = true;
+        component.canBecomeAParent = true;
+        component.linkToParentRequestedStatus = false;
+        component.parentStatusRequested = false;
 
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          const expectedMessage = 'Link to a parent workplace (request pending)';
-          expect(queryByText(expectedMessage)).toBeFalsy();
-          expect(queryByText('Link to a parent workplace')).toBeTruthy();
-          expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeTruthy();
-        });
+        const linkToParentLink = getByText('Link to a parent workplace');
+        expect(linkToParentLink).toBeTruthy();
+        expect(linkToParentLink.getAttribute('href')).toEqual('/link-to-parent');
+      });
 
-        it('should show the link to parent link with the correct href', async () => {
-          const { component, fixture, getByText } = await setup();
+      it('should show Link to a parent workplace pending after requesting', async () => {
+        const { component, fixture, queryByText } = await setup();
 
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = false;
-          component.newHomeDesignParentFlag = true;
+        component.workplace.isParent = false;
+        component.canLinkToParent = true;
+        component.linkToParentRequestedStatus = true;
 
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          const linkToParentLink = getByText('Link to a parent workplace');
-          expect(linkToParentLink).toBeTruthy();
-          expect(linkToParentLink.getAttribute('href')).toEqual('/link-to-parent');
-        });
+        const linkToParentPendingLink = queryByText('Link to a parent workplace (request pending)');
+        expect(linkToParentPendingLink).toBeTruthy();
+        expect(linkToParentPendingLink.getAttribute('href')).toEqual('/link-to-parent');
 
-        it('should show Link to a parent workplace pending after requesting', async () => {
-          const { component, fixture, queryByText } = await setup();
-
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.linkToParentRequestedStatus = true;
-          component.newHomeDesignParentFlag = true;
-
-          fixture.detectChanges();
-
-          const linkToParentPendingLink = queryByText('Link to a parent workplace (request pending)');
-          expect(linkToParentPendingLink).toBeTruthy();
-          expect(linkToParentPendingLink.getAttribute('href')).toEqual('/link-to-parent');
-
-          expect(queryByText('Link to a parent workplace')).toBeFalsy();
-          expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeFalsy();
-        });
+        expect(queryByText('Link to a parent workplace')).toBeFalsy();
+        expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeFalsy();
       });
     });
 
     describe('Become a parent organisation', () => {
-      describe('without parent home tab feature flag', () => {
-        it('should show Parent request pending when trying to become a parent', async () => {
-          const { component, fixture, queryByText } = await setup();
+      it('should show become a parent and manage link and not show Link to a parent workplace pending before requesting', async () => {
+        const { component, fixture, queryByText } = await setup();
 
-          component.workplace.isParent = false;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = true;
-          fixture.detectChanges();
+        component.workplace.isParent = false;
+        component.canLinkToParent = true;
+        component.canBecomeAParent = true;
+        component.linkToParentRequestedStatus = false;
+        component.parentStatusRequested = false;
 
-          const expectedMessage = 'Parent request pending';
-          expect(queryByText(expectedMessage)).toBeTruthy();
-          expect(queryByText('Link to my parent organisation')).toBeFalsy();
-          expect(queryByText('Become a parent organisation')).toBeFalsy();
-        });
+        fixture.detectChanges();
 
-        it('should not show Parent request pending before requesting', async () => {
-          const { component, fixture, queryByText } = await setup();
-
-          component.workplace.isParent = false;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = false;
-          component.canLinkToParent = true;
-          fixture.detectChanges();
-
-          const expectedMessage = 'Parent request pending';
-          expect(queryByText(expectedMessage)).toBeFalsy();
-          expect(queryByText('Link to my parent organisation')).toBeTruthy();
-          expect(queryByText('Become a parent organisation')).toBeTruthy();
-        });
-
-        it('should show a dialog to confirm that you want become a parent organisation', async () => {
-          const { component, fixture, getByText } = await setup();
-
-          component.workplace.isParent = false;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = false;
-          component.canLinkToParent = true;
-
-          fixture.detectChanges();
-
-          const becomeAParentLink = getByText('Become a parent organisation');
-          const dialogMessage = 'Become a parent organisation';
-
-          fireEvent.click(becomeAParentLink);
-          fixture.detectChanges();
-
-          const dialog = await within(document.body).findByRole('dialog');
-
-          expect(dialog).toBeTruthy();
-          expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
-        });
-
-        it('should call becomeAParent() in the parentRequestsService and set success alert when successful', async () => {
-          const { component, fixture, getByText, queryByText, alertServiceSpy, parentsRequestService } = await setup();
-
-          component.workplace.isParent = false;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = false;
-          component.canLinkToParent = true;
-          fixture.detectChanges();
-
-          const becomeAParentSpy = spyOn(parentsRequestService, 'becomeParent').and.returnValue(of({}));
-
-          const becomeAParentLink = getByText('Become a parent organisation');
-
-          fireEvent.click(becomeAParentLink);
-          fixture.detectChanges();
-
-          const dialog = await within(document.body).findByRole('dialog');
-          const sendRequestButton = await within(dialog).getByText('Send request');
-
-          fireEvent.click(sendRequestButton);
-          fixture.detectChanges();
-
-          const pendingLink = queryByText('Parent request pending');
-          const linkToParentLink = queryByText('Link to my parent organisation');
-
-          expect(becomeAParentSpy).toHaveBeenCalled();
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Your request to become a parent organisation has been sent.',
-          });
-          expect(pendingLink).toBeTruthy();
-          expect(linkToParentLink).toBeFalsy();
-        });
-
-        it('should show a dialog to confirm you want to cancel parent request when clicking on link after requesting', async () => {
-          const { component, fixture, getByText } = await setup();
-
-          component.workplace.isParent = false;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = true;
-          fixture.detectChanges();
-
-          const pendingLink = getByText('Parent request pending');
-
-          fireEvent.click(pendingLink);
-          fixture.detectChanges();
-
-          const dialog = await within(document.body).findByRole('dialog');
-          const dialogMessage = 'Your request to become a parent organisation is pending';
-
-          expect(dialog).toBeTruthy();
-          expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
-        });
-
-        it('should call cancelBecomeAParent() in the parentRequestsService and set success alert when successful', async () => {
-          const { component, fixture, getByText, queryByText, alertServiceSpy, parentsRequestService } = await setup();
-
-          component.workplace.isParent = false;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = true;
-          fixture.detectChanges();
-
-          const cancelBecomeAParentSpy = spyOn(parentsRequestService, 'cancelBecomeAParent').and.returnValue(of({}));
-
-          const parentPendingLink = getByText('Parent request pending');
-
-          fireEvent.click(parentPendingLink);
-          fixture.detectChanges();
-
-          const dialog = await within(document.body).findByRole('dialog');
-          const cancelRequestButton = await within(dialog).getByText('Cancel request');
-
-          fireEvent.click(cancelRequestButton);
-          fixture.detectChanges();
-
-          const becomeAParentLink = queryByText('Become a parent organisation');
-          const linkToParentLink = queryByText('Link to my parent organisation');
-
-          expect(cancelBecomeAParentSpy).toHaveBeenCalled();
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Request to become a parent organisation has been cancelled.',
-          });
-          expect(becomeAParentLink).toBeTruthy();
-          expect(linkToParentLink).toBeTruthy();
-        });
+        const expectedMessage = 'Link to my parent organisation pending';
+        expect(queryByText(expectedMessage)).toBeFalsy();
+        expect(queryByText('Link to a parent workplace')).toBeTruthy();
+        expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeTruthy();
       });
 
-      describe('with parent home tab feature flag', () => {
-        it('should show become a parent and manage link and not show Link to a parent workplace pending before requesting', async () => {
-          const { component, fixture, queryByText } = await setup();
+      it('should show the become a parent link with the correct href', async () => {
+        const { component, fixture, getByText } = await setup();
 
-          component.newHomeDesignParentFlag = true;
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = false;
+        component.workplace.isParent = false;
+        component.canLinkToParent = true;
+        component.canBecomeAParent = true;
+        component.linkToParentRequestedStatus = false;
+        component.parentStatusRequested = false;
 
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          const expectedMessage = 'Link to my parent organisation pending';
-          expect(queryByText(expectedMessage)).toBeFalsy();
-          expect(queryByText('Link to a parent workplace')).toBeTruthy();
-          expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeTruthy();
-        });
+        const becomeAParentlink = getByText(`Become a parent and manage other workplaces' data`);
+        expect(becomeAParentlink).toBeTruthy();
+        expect(becomeAParentlink.getAttribute('href')).toEqual('/become-a-parent');
+      });
 
-        it('should show the become a parent link with the correct href', async () => {
-          const { component, fixture, getByText } = await setup();
+      it('should show the become a parent pending request link with the correct href', async () => {
+        const { component, fixture, getByText, queryByText } = await setup();
 
-          component.newHomeDesignParentFlag = true;
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = false;
+        component.workplace.isParent = false;
+        component.canBecomeAParent = true;
+        component.linkToParentRequestedStatus = false;
+        component.parentStatusRequested = true;
 
-          fixture.detectChanges();
+        fixture.detectChanges();
 
-          const becomeAParentlink = getByText(`Become a parent and manage other workplaces' data`);
-          expect(becomeAParentlink).toBeTruthy();
-          expect(becomeAParentlink.getAttribute('href')).toEqual('/become-a-parent');
-        });
-
-        it('should show the become a parent pending request link with the correct href', async () => {
-          const { component, fixture, getByText, queryByText } = await setup();
-
-          component.newHomeDesignParentFlag = true;
-          component.workplace.isParent = false;
-          component.canBecomeAParent = true;
-          component.linkToParentRequestedStatus = false;
-          component.parentStatusRequested = true;
-
-          fixture.detectChanges();
-
-          const becomeAParentPendinglink = getByText(
-            `Become a parent and manage other workplaces' data (request pending)`,
-          );
-          expect(becomeAParentPendinglink).toBeTruthy();
-          expect(queryByText('Link to my parent organisation')).toBeFalsy();
-          expect(becomeAParentPendinglink.getAttribute('href')).toEqual('/become-a-parent');
-        });
+        const becomeAParentPendinglink = getByText(
+          `Become a parent and manage other workplaces' data (request pending)`,
+        );
+        expect(becomeAParentPendinglink).toBeTruthy();
+        expect(queryByText('Link to my parent organisation')).toBeFalsy();
+        expect(becomeAParentPendinglink.getAttribute('href')).toEqual('/become-a-parent');
       });
     });
 
@@ -604,11 +335,10 @@ describe('NewHomeTabComponent', () => {
           expect(getByText('Change data owner')).toBeTruthy();
         });
 
-        it('should show change data owner with the correct href when newHomeDesignParentFlag is true', async () => {
+        it('should show change data owner with the correct href', async () => {
           const { component, fixture, getByText } = await setup();
 
           component.isOwnershipRequested = false;
-          component.newHomeDesignParentFlag = true;
           fixture.detectChanges();
 
           const changeDataOwnerLink = getByText('Change data owner');
@@ -617,31 +347,6 @@ describe('NewHomeTabComponent', () => {
           fixture.detectChanges();
 
           expect(changeDataOwnerLink.getAttribute('href')).toEqual('/workplace/change-data-owner');
-        });
-
-        it('should show a change data owner dialog when newHomeDesignParentFlag is false', async () => {
-          const { component, fixture, getByText } = await setup();
-
-          component.isOwnershipRequested = false;
-          component.newHomeDesignParentFlag = false;
-          fixture.detectChanges();
-
-          const changeDataOwnerLink = getByText('Change data owner');
-
-          fireEvent.click(changeDataOwnerLink);
-          fixture.detectChanges();
-
-          const dialog = await within(document.body).findByRole('dialog');
-          const dialogMessage = 'Send a request to change ownership of data';
-          const requestDataOwnershipChangeButton = within(dialog).getByText('Save and return');
-          const cancelLink = within(dialog).getByText('Cancel');
-
-          expect(dialog).toBeTruthy();
-          expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
-          expect(requestDataOwnershipChangeButton).toBeTruthy();
-          expect(cancelLink).toBeTruthy();
-
-          fireEvent.click(cancelLink);
         });
       });
 
