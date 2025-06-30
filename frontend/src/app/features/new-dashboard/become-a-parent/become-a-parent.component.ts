@@ -20,7 +20,6 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public workplace: Establishment;
   public isBecomeParentRequestPending: boolean;
-  public newHomeDesignParentFlag: boolean;
   public canBecomeAParent: boolean;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;

@@ -1,20 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
-import { DialogService } from '@core/services/dialog.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
-import { queryByTestId, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { Workplace } from '../../../core/model/my-workplaces.model';
 import { EstablishmentService } from '../../../core/services/establishment.service';
@@ -23,7 +24,7 @@ import { workplaceBuilder } from '../../../core/test-utils/MockUserService';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel.component';
 
 describe('workplace-info-panel', () => {
-  const setup = async (overrides?) => {
+  const setup = async (overrides: any = {}) => {
     const isAdmin = overrides?.isAdmin ? true : false;
     const establishment = workplaceBuilder() as Workplace;
 
@@ -35,16 +36,12 @@ describe('workplace-info-panel', () => {
           useClass: WindowRef,
         },
         {
-          provide: DialogService,
-          useClass: DialogService,
-        },
-        {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useFactory: MockEstablishmentServiceWithOverrides.factory({ primaryWorkplace: overrides.primaryWorkplace }),
         },
         {
           provide: PermissionsService,
-          useClass: MockPermissionsService,
+          useFactory: MockPermissionsService.factory(overrides.permissions ?? ['canViewEstablishment']),
         },
         {
           provide: UserService,
@@ -75,9 +72,14 @@ describe('workplace-info-panel', () => {
 
     const component = setupTools.fixture.componentInstance;
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       ...setupTools,
       component,
+      routerSpy,
     };
   };
 
@@ -195,6 +197,42 @@ describe('workplace-info-panel', () => {
       expect(getByText('Move workplace')).toBeTruthy();
       expect(queryByTestId('red-flag')).toBeTruthy();
       expect(getByText('Check this workplace'));
+    });
+  });
+
+  describe('Data permissions links', () => {
+    it('should display Data request pending message if dataOwnershipRequested is true', async () => {
+      const { getByText } = await setup({
+        primaryWorkplace: { isParent: true },
+        workplace: {
+          dataOwnershipRequested: true,
+          dataOwner: 'Workplace',
+        },
+        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+      });
+
+      const dataRequestPendingLink = getByText('Data request pending');
+
+      expect(dataRequestPendingLink).toBeTruthy();
+    });
+
+    it('should display Change data owner link if workplace is data owner and parent has permission to change permissions for sub', async () => {
+      const workplace = {
+        dataOwner: 'Workplace',
+        uid: 'abc123456',
+      };
+      const { getByText, routerSpy } = await setup({
+        primaryWorkplace: { isParent: true },
+        workplace,
+        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+      });
+
+      const changeDataOwnerLink = getByText('Change data owner');
+      userEvent.click(changeDataOwnerLink);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace/change-data-owner'], {
+        queryParams: { changeDataOwnerFrom: workplace.uid },
+      });
     });
   });
 });

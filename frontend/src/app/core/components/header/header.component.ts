@@ -21,7 +21,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public user: UserDetails;
   public showDropdown = false;
   public workplaceId: string;
-  public newHomeDesignFlag: boolean;
 
   constructor(
     private authService: AuthService,

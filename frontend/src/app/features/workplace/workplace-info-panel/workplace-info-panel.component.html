@@ -84,12 +84,7 @@
             </ng-container>
             <ng-template #workplaceIsDataOwner>
               <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                <ng-container *ngIf="newHomeDesignParentFlag; else dialogChangeDataOwner">
-                  <a (click)="navigateToChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
-                </ng-container>
-                <ng-template #dialogChangeDataOwner>
-                  <a (click)="onChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
-                </ng-template>
+                <a (click)="navigateToChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
               </ng-container>
               <ng-template #notParent>
                 <a href="#" class="govuk-link">Data permissions</a>
