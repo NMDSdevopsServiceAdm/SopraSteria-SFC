@@ -77,7 +77,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public hasBenchmarkComparisonData: boolean;
   public isParent: boolean;
   public certificateYears: string;
-  public newHomeDesignParentFlag: boolean;
   public isParentApprovedBannerViewed: boolean;
   public isOwnershipRequested = false;
   public canAddWorker: boolean;
@@ -125,9 +124,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.setPermissionLinks();
 
     this.isParent = this.workplace?.isParent;
-
-    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
-
     this.article = this.route.snapshot.data.articleList?.data[0];
 
     if (this.workplace) {
