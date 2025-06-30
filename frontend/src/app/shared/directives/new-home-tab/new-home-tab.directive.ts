@@ -17,7 +17,6 @@ import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { isAdminRole } from '@core/utils/check-role-util';
-import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import {
   CancelDataOwnerDialogComponent,
 } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
@@ -260,17 +259,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     }
     this.canBecomeAParent =
       this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.linkToParentRequestedStatus;
-  }
-
-  public becomeAParent($event: Event): void {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(BecomeAParentDialogComponent, null);
-    dialog.afterClosed.subscribe((confirmToClose) => {
-      if (confirmToClose) {
-        this.canLinkToParent = false;
-        this.parentStatusRequested = true;
-      }
-    });
   }
 
   public downloadLocalAuthorityReport(event: Event) {

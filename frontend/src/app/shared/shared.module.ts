@@ -46,7 +46,6 @@ import {
 import { AddNoteComponent } from './components/add-note/add-note.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
-import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { CardComponent } from './components/card/card.component';
@@ -260,7 +259,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
     LinkToParentRemoveDialogComponent,
-    BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     DeleteWorkplaceDialogComponent,
     // ParentConfirmationDialogComponent,
@@ -394,7 +392,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
     LinkToParentRemoveDialogComponent,
-    BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     DeleteWorkplaceDialogComponent,
     // ParentConfirmationDialogComponent,
