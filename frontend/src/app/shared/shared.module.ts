@@ -70,7 +70,6 @@ import { JobRoleNumbersTableComponent } from './components/job-role-numbers-tabl
 import {
   LinkToParentRemoveDialogComponent,
 } from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
-import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { LinkWithArrowComponent } from './components/link-with-arrow/link-with-arrow.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
@@ -260,7 +259,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TrainingAndQualificationsCategoriesComponent,
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
-    LinkToParentDialogComponent,
     LinkToParentRemoveDialogComponent,
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
@@ -395,7 +393,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TrainingAndQualificationsCategoriesComponent,
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
-    LinkToParentDialogComponent,
     LinkToParentRemoveDialogComponent,
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,

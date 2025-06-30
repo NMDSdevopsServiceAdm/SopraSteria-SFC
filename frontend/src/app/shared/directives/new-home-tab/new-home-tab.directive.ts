@@ -27,7 +27,6 @@ import {
 import {
   ChangeDataOwnerDialogComponent,
 } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import {
   OwnershipChangeMessageDialogComponent,
 } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
@@ -264,22 +263,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     }
     this.canBecomeAParent =
       this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.linkToParentRequestedStatus;
-  }
-
-  /**
-   * Function used to open modal box for link a workplace to parent organisation
-   * @param {event} triggered event
-   * @return {void}
-   */
-  public linkToParent($event: Event): void {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(LinkToParentDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe((confirmToClose) => {
-      if (confirmToClose) {
-        this.linkToParentRequestedStatus = true;
-        this.canBecomeAParent = false;
-      }
-    });
   }
 
   public becomeAParent($event: Event): void {
