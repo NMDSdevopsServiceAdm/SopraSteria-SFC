@@ -27,9 +27,6 @@ import {
 import {
   ChangeDataOwnerDialogComponent,
 } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import {
-  LinkToParentCancelDialogComponent,
-} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import {
   OwnershipChangeMessageDialogComponent,
@@ -281,22 +278,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
       if (confirmToClose) {
         this.linkToParentRequestedStatus = true;
         this.canBecomeAParent = false;
-      }
-    });
-  }
-
-  /**
-   * Function used to open modal box for link a workplace to parent organisation
-   * @param {event} triggered event
-   * @return {void}
-   */
-  public cancelLinkToParent($event: Event): void {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(LinkToParentCancelDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe((confirmToClose) => {
-      if (confirmToClose) {
-        this.linkToParentRequestedStatus = false;
-        this.canBecomeAParent = true;
       }
     });
   }

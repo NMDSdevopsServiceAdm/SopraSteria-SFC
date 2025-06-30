@@ -4,7 +4,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
-import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
+import {
+  PageNoLongerAvailableComponent,
+} from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
@@ -13,9 +15,15 @@ import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
-import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
-import { MissingMandatoryTrainingComponent } from '@features/training-and-qualifications/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
+import {
+  NewTrainingLinkPanelComponent,
+} from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
+import {
+  MissingMandatoryTrainingComponent,
+} from '@features/training-and-qualifications/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
+import {
+  DeleteWorkplaceDialogComponent,
+} from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/check-cqc-details.component';
 import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
@@ -23,10 +31,18 @@ import { SummaryRecordValueComponent } from '@shared/components/summary-record-v
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
 import { SanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
 
-import { AccordionGroupComponent } from './components/accordions/generic-accordion/accordion-group/accordion-group.component';
-import { AccordionSectionComponent } from './components/accordions/generic-accordion/accordion-section/accordion-section.component';
-import { GroupedRadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import { RadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/radio-button-accordion.component';
+import {
+  AccordionGroupComponent,
+} from './components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import {
+  AccordionSectionComponent,
+} from './components/accordions/generic-accordion/accordion-section/accordion-section.component';
+import {
+  GroupedRadioButtonAccordionComponent,
+} from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import {
+  RadioButtonAccordionComponent,
+} from './components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { AddNoteComponent } from './components/add-note/add-note.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
@@ -40,50 +56,73 @@ import { CharacterCountComponent } from './components/character-count/character-
 import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-data-link/about-the-data-link.component';
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { DetailsComponent } from './components/details/details.component';
-import { ValidationErrorMessageComponent } from './components/drag-and-drop/validation-error-message/validation-error-message.component';
+import {
+  ValidationErrorMessageComponent,
+} from './components/drag-and-drop/validation-error-message/validation-error-message.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
-import { FundingRequirementsStateComponent } from './components/funding-requirements-state/funding-requirements-state.component';
+import {
+  FundingRequirementsStateComponent,
+} from './components/funding-requirements-state/funding-requirements-state.component';
 import { HelpContentComponent } from './components/help-content/help-content.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
 import { JobRoleNumbersTableComponent } from './components/job-role-numbers-table/job-role-numbers-table.component';
-import { LinkToParentCancelDialogComponent } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
-import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import {
+  LinkToParentRemoveDialogComponent,
+} from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { LinkWithArrowComponent } from './components/link-with-arrow/link-with-arrow.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
-import { NavigateToWorkplaceDropdownComponent } from './components/navigate-to-workplace-dropdown/navigate-to-workplace-dropdown.component';
+import {
+  NavigateToWorkplaceDropdownComponent,
+} from './components/navigate-to-workplace-dropdown/navigate-to-workplace-dropdown.component';
 import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
 import { NewTabsComponent } from './components/new-tabs/new-tabs.component';
 import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-summary/wdf-workplace-summary.component';
 import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/workplace-summary.component';
 import { NumberInputWithButtonsComponent } from './components/number-input-with-buttons/number-input-with-buttons.component';
 import { OtherLinksComponent } from './components/other-links/other-links.component';
-import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { ProgressComponent } from './components/progress/progress.component';
-import { RegistrationSubmitButtonsComponent } from './components/registration-submit-buttons/registration-submit-buttons.component';
+import {
+  RegistrationSubmitButtonsComponent,
+} from './components/registration-submit-buttons/registration-submit-buttons.component';
 import { RejectRequestDialogComponent } from './components/reject-request-dialog/reject-request-dialog.component';
-import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
+import {
+  RemoveParentConfirmationComponent,
+} from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
-import { SelectUploadCertificateComponent } from './components/select-upload-certificate/select-upload-certificate.component';
+import {
+  SelectUploadCertificateComponent,
+} from './components/select-upload-certificate/select-upload-certificate.component';
 import { SelectUploadFileComponent } from './components/select-upload-file/select-upload-file.component';
 import { SelectViewPanelComponent } from './components/select-view-panel/select-view-panel.component';
-import { SelectWorkplaceDropdownFormComponent } from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
-import { SelectWorkplaceRadioButtonFormComponent } from './components/select-workplace-radio-button-form/select-workplace-radio-button-form.component';
+import {
+  SelectWorkplaceDropdownFormComponent,
+} from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
+import {
+  SelectWorkplaceRadioButtonFormComponent,
+} from './components/select-workplace-radio-button-form/select-workplace-radio-button-form.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
 import { PersonalDetailsComponent } from './components/staff-record-summary/personal-details/personal-details.component';
-import { QualificationsAndTrainingComponent } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
+import {
+  QualificationsAndTrainingComponent,
+} from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
-import { WdfWarningMessageComponent } from './components/staff-record-summary/wdf-warning-message/wdf-warning-message.component';
+import {
+  WdfWarningMessageComponent,
+} from './components/staff-record-summary/wdf-warning-message/wdf-warning-message.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
@@ -96,23 +135,43 @@ import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
 import { TotalStaffComponent } from './components/total-staff/total-staff.component';
-import { TrainingAndQualificationsCategoriesComponent } from './components/training-and-qualifications-categories/training-and-qualifications-categories.component';
-import { ViewTrainingComponent } from './components/training-and-qualifications-categories/view-trainings/view-trainings.component';
-import { TrainingAndQualificationsSummaryComponent } from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
+import {
+  TrainingAndQualificationsCategoriesComponent,
+} from './components/training-and-qualifications-categories/training-and-qualifications-categories.component';
+import {
+  ViewTrainingComponent,
+} from './components/training-and-qualifications-categories/view-trainings/view-trainings.component';
+import {
+  TrainingAndQualificationsSummaryComponent,
+} from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
-import { TrainingSelectViewPanelComponent } from './components/training-select-view-panel/training-select-view-panel.component';
-import { SelectJobRolesToAddComponent } from './components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
-import { UpdateLeaversComponent } from './components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
-import { UpdateStartersComponent } from './components/update-starters-leavers-vacancies/update-starters/update-starters.component';
-import { UpdateVacanciesComponent } from './components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
+import {
+  TrainingSelectViewPanelComponent,
+} from './components/training-select-view-panel/training-select-view-panel.component';
+import {
+  SelectJobRolesToAddComponent,
+} from './components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
+import {
+  UpdateLeaversComponent,
+} from './components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import {
+  UpdateStartersComponent,
+} from './components/update-starters-leavers-vacancies/update-starters/update-starters.component';
+import {
+  UpdateVacanciesComponent,
+} from './components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { UserFormComponent } from './components/user-form/user-form.component';
 import { UserTableComponent } from './components/users-table/user.table.component';
 import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
-import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
+import {
+  WdfStaffMismatchMessageComponent,
+} from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
-import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
+import {
+  WorkplaceContinueCancelButtonComponent,
+} from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
@@ -202,7 +261,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
     LinkToParentDialogComponent,
-    LinkToParentCancelDialogComponent,
     LinkToParentRemoveDialogComponent,
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
@@ -338,7 +396,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
     LinkToParentDialogComponent,
-    LinkToParentCancelDialogComponent,
     LinkToParentRemoveDialogComponent,
     BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
