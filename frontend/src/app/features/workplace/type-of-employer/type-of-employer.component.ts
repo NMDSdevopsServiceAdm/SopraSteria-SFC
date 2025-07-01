@@ -106,8 +106,9 @@ export class TypeOfEmployerComponent extends Question {
   }
 
   updateEstablishment(props): void {
+    const data = { property: 'EmployerType', objectToUpdate: props };
     this.subscriptions.add(
-      this.establishmentService.updateTypeOfEmployer(this.establishment.uid, props).subscribe(
+      this.establishmentService.updateEstablishmentFieldWithAudit(this.establishment.uid, data).subscribe(
         (data) => this._onSuccess(data),
         (error) => this.onError(error),
       ),
