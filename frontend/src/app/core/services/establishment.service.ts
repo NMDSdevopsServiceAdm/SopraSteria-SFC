@@ -20,29 +20,11 @@ import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-
-import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
 
 interface EstablishmentApiResponse {
   id: number;
   name: string;
-}
-
-interface EmployerTypeResponse {
-  id: number;
-  name: string;
-  employerType: {
-    value: string;
-    other?: string;
-  };
-}
-
-interface EmployerTypeRequest {
-  employerType: {
-    value: string;
-    other?: string;
-  };
 }
 
 interface MainServiceRequest {
@@ -292,13 +274,6 @@ export class EstablishmentService {
   updateMainService(establishmentId: string, data: MainServiceRequest) {
     return this.http.post<MainServiceRequest>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mainService`,
-      data,
-    );
-  }
-
-  updateDataSharing(establishmentId, data: ShareWithRequest): Observable<any> {
-    return this.http.post<Establishment>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/share`,
       data,
     );
   }
