@@ -1,8 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithNoEmployerType } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
@@ -12,31 +11,32 @@ import userEvent from '@testing-library/user-event';
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
 describe('TypeOfEmployerComponent', () => {
-  async function setup(employerTypeHasValue = true, owner: string = 'Workplace') {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(TypeOfEmployerComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(TypeOfEmployerComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
+        provideRouter([]),
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceWithNoEmployerType.factory(employerTypeHasValue, owner),
+          useFactory: MockEstablishmentServiceWithNoEmployerType.factory(
+            overrides.employerTypeHasValue ?? true,
+            overrides.owner ?? 'Workplace',
+          ),
         },
       ],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateTypeOfEmployer').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByLabelText,
+      ...setupTools,
       establishmentServiceSpy,
       establishmentService,
       routerSpy,
@@ -72,7 +72,8 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Local Authority (adult services)' },
+      property: 'EmployerType',
+      objectToUpdate: { employerType: { value: 'Local Authority (adult services)' } },
     });
   });
 
@@ -88,7 +89,10 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Local Authority (generic/other)' },
+      property: 'EmployerType',
+      objectToUpdate: {
+        employerType: { value: 'Local Authority (generic/other)' },
+      },
     });
   });
 
@@ -104,7 +108,8 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Private Sector' },
+      property: 'EmployerType',
+      objectToUpdate: { employerType: { value: 'Private Sector' } },
     });
   });
 
@@ -120,7 +125,8 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Voluntary / Charity' },
+      property: 'EmployerType',
+      objectToUpdate: { employerType: { value: 'Voluntary / Charity' } },
     });
   });
 
@@ -136,7 +142,8 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Other', other: null },
+      property: 'EmployerType',
+      objectToUpdate: { employerType: { value: 'Other', other: null } },
     });
   });
 
@@ -156,7 +163,8 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Other', other: 'some employer type' },
+      property: 'EmployerType',
+      objectToUpdate: { employerType: { value: 'Other', other: 'some employer type' } },
     });
   });
 
@@ -193,9 +201,10 @@ describe('TypeOfEmployerComponent', () => {
   });
 
   it('should navigate back to dashboard when navigated to from login', async () => {
-    const { fixture, getByText, getByLabelText, routerSpy, component } = await setup(false);
+    const { fixture, getByText, getByLabelText, routerSpy, component, establishmentService } = await setup({
+      employerTypeHasValue: false,
+    });
 
-    const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
     spyOn(establishmentService, 'getEstablishment').and.callThrough();
 
     const radioButton = getByLabelText('Voluntary, charity, not for profit');
@@ -209,9 +218,9 @@ describe('TypeOfEmployerComponent', () => {
   });
 
   it('should navigate back to dashboard when navigated to sub from employer type question', async () => {
-    const { fixture, getByText, getByLabelText, routerSpy, component } = await setup(false, 'parent');
+    const overrides = { employerTypeHasValue: false, owner: 'parent' };
+    const { fixture, getByText, getByLabelText, routerSpy, component, establishmentService } = await setup(overrides);
 
-    const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
     spyOn(establishmentService, 'getEstablishment').and.callThrough();
 
     const radioButton = getByLabelText('Private sector');

@@ -271,12 +271,6 @@ export class EstablishmentService {
     );
   }
 
-  getEmployerType() {
-    return this.http.get<EmployerTypeResponse>(
-      `${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/employerType`,
-    );
-  }
-
   public updateWorkplace(workplaceUid: string, data): Observable<any> {
     return this.http.put<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}`, data);
   }
@@ -284,13 +278,6 @@ export class EstablishmentService {
   updateServiceUsers(establishmentId, data) {
     return this.http.post<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/serviceUsers`,
-      data,
-    );
-  }
-
-  updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest) {
-    return this.http.post<EmployerTypeResponse>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/employerType`,
       data,
     );
   }

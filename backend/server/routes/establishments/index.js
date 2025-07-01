@@ -12,7 +12,6 @@ const {
 
 const Name = require('./name');
 const MainService = require('./mainService');
-const EmployerType = require('./employerType');
 const Services = require('./services');
 const ServiceUsers = require('./serviceUsers');
 const Capacity = require('./capacity');
@@ -45,7 +44,6 @@ const EstablishmentField = require('./establishmentField.js');
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
 router.use('/:id/name', Name);
 router.use('/:id/mainService', MainService);
-router.use('/:id/employerType', EmployerType);
 router.use('/:id/services', Services);
 router.use('/:id/serviceUsers', ServiceUsers);
 router.use('/:id/capacity', Capacity);
