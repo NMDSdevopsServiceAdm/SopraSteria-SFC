@@ -316,6 +316,13 @@ export class EstablishmentService {
     );
   }
 
+  updateEstablishmentFieldWithAudit(establishmentId: string, data: any) {
+    return this.http.post<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField`,
+      data,
+    );
+  }
+
   updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
     return this.http.post<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/updateSingleEstablishmentField`,
