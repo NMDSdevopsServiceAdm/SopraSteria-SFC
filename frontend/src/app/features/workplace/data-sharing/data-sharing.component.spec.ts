@@ -3,12 +3,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -16,25 +14,21 @@ import { of } from 'rxjs';
 import { DataSharingComponent } from './data-sharing.component';
 
 describe('DataSharingComponent', () => {
-  async function setup(shareWith = { cqc: null, localAuthorities: null }, returnUrl = true) {
+  async function setup(overrides: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       DataSharingComponent,
       {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
         providers: [
           ErrorSummaryService,
           BackService,
           UntypedFormBuilder,
           {
             provide: EstablishmentService,
-            useFactory: MockEstablishmentService.factory(shareWith, returnUrl),
+            useFactory: MockEstablishmentService.factory(
+              overrides.shareWith ?? { cqc: null, localAuthorities: null },
+              overrides.returnUrl ?? true,
+            ),
             deps: [HttpClient],
           },
         ],
@@ -48,7 +42,9 @@ describe('DataSharingComponent', () => {
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(null);
-    const updateDataSharingSpy = spyOn(establishmentService, 'updateDataSharing').and.returnValue(of(true));
+    const updateDataSharingSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.returnValue(
+      of(true),
+    );
     const updateSingleEstablishmentFieldSpy = spyOn(
       establishmentService,
       'updateSingleEstablishmentField',
@@ -186,9 +182,12 @@ describe('DataSharingComponent', () => {
       fireEvent.click(returnButton);
 
       expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        shareWith: {
-          cqc: null,
-          localAuthorities: true,
+        property: 'ShareData',
+        objectToUpdate: {
+          shareWith: {
+            cqc: null,
+            localAuthorities: true,
+          },
         },
       });
     });
@@ -203,9 +202,12 @@ describe('DataSharingComponent', () => {
       fireEvent.click(returnButton);
 
       expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        shareWith: {
-          cqc: null,
-          localAuthorities: false,
+        property: 'ShareData',
+        objectToUpdate: {
+          shareWith: {
+            cqc: null,
+            localAuthorities: false,
+          },
         },
       });
     });
@@ -225,9 +227,12 @@ describe('DataSharingComponent', () => {
       fireEvent.click(returnButton);
 
       expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        shareWith: {
-          cqc: true,
-          localAuthorities: null,
+        property: 'ShareData',
+        objectToUpdate: {
+          shareWith: {
+            cqc: true,
+            localAuthorities: null,
+          },
         },
       });
     });
@@ -245,9 +250,12 @@ describe('DataSharingComponent', () => {
       fireEvent.click(returnButton);
 
       expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        shareWith: {
-          cqc: false,
-          localAuthorities: null,
+        property: 'ShareData',
+        objectToUpdate: {
+          shareWith: {
+            cqc: false,
+            localAuthorities: null,
+          },
         },
       });
     });
@@ -255,28 +263,32 @@ describe('DataSharingComponent', () => {
 
   describe('Setting radio buttons when establishment has shareWith data set', async () => {
     it('should set Yes radio button when establishment has shareWith localAuthorities set to true', async () => {
-      const { component } = await setup({ cqc: null, localAuthorities: true });
+      const overrides = { shareWith: { cqc: null, localAuthorities: true } };
+      const { component } = await setup(overrides);
       const shareWithForm = component.form.value.shareWith;
 
       expect(shareWithForm.localAuthorities).toBe(true);
     });
 
     it('should set No radio button when establishment has shareWith localAuthorities set to false', async () => {
-      const { component } = await setup({ cqc: null, localAuthorities: false });
+      const overrides = { shareWith: { cqc: null, localAuthorities: false } };
+      const { component } = await setup(overrides);
       const shareWithForm = component.form.value.shareWith;
 
       expect(shareWithForm.localAuthorities).toBe(false);
     });
 
     it('should set Yes radio button when establishment has shareWith cqc set to true', async () => {
-      const { component } = await setup({ cqc: true, localAuthorities: null });
+      const overrides = { shareWith: { cqc: true, localAuthorities: null } };
+      const { component } = await setup(overrides);
       const shareWithForm = component.form.value.shareWith;
 
       expect(shareWithForm.cqc).toBe(true);
     });
 
     it('should set No radio button when establishment has shareWith cqc set to false', async () => {
-      const { component } = await setup({ cqc: false, localAuthorities: null });
+      const overrides = { shareWith: { cqc: false, localAuthorities: null } };
+      const { component } = await setup(overrides);
       const shareWithForm = component.form.value.shareWith;
 
       expect(shareWithForm.cqc).toBe(false);
@@ -331,14 +343,16 @@ describe('DataSharingComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button and 'Skip this question' link`, async () => {
-      const { getByText } = await setup({ cqc: null, localAuthorities: null }, false);
+      const overrides = { shareWith: { cqc: null, localAuthorities: null }, returnUrl: false };
+      const { getByText } = await setup(overrides);
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it('should navigate to the sharing-data page when skip the question', async () => {
-      const { fixture, getByText, routerSpy, component } = await setup({ cqc: null, localAuthorities: null }, false);
+      const overrides = { shareWith: { cqc: null, localAuthorities: null }, returnUrl: false };
+      const { fixture, getByText, routerSpy, component } = await setup(overrides);
 
       component.return = null;
       fixture.detectChanges();
@@ -350,7 +364,8 @@ describe('DataSharingComponent', () => {
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
-      const { component, fixture, getByText } = await setup({ cqc: null, localAuthorities: null }, false);
+      const overrides = { shareWith: { cqc: null, localAuthorities: null }, returnUrl: false };
+      const { component, fixture, getByText } = await setup(overrides);
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
@@ -362,7 +377,8 @@ describe('DataSharingComponent', () => {
     });
 
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
-      const { component, fixture, getByText } = await setup({ cqc: null, localAuthorities: null }, false);
+      const overrides = { shareWith: { cqc: null, localAuthorities: null }, returnUrl: false };
+      const { component, fixture, getByText } = await setup(overrides);
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction');
 
