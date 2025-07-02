@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
@@ -14,34 +13,28 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { WorkplaceNotFoundComponent } from './workplace-not-found.component';
 
 describe('WorkplaceNotFoundComponent', () => {
-  async function setup(
-    postcodeOrLocationId = '',
-    searchMethod = '',
-    workplaceNotFound = false,
-    useDifferentLocationIdOrPostcode = null,
-    registrationFlow = true,
-  ) {
+  async function setup(overrides: any = {}) {
     const component = await render(WorkplaceNotFoundComponent, {
-      imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RegistrationModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,
           useClass: RegistrationService,
           useValue: {
             postcodeOrLocationId$: {
-              value: postcodeOrLocationId,
+              value: overrides.postcodeOrLocationId ?? '',
             },
             searchMethod$: {
-              value: searchMethod,
+              value: overrides.searchMethod ?? '',
             },
             workplaceNotFound$: {
-              value: workplaceNotFound,
+              value: overrides.workplaceNotFound ?? false,
               next: () => {
                 return true;
               },
             },
             useDifferentLocationIdOrPostcode$: {
-              value: useDifferentLocationIdOrPostcode,
+              value: overrides.useDifferentLocationIdOrPostcode ?? null,
               next: () => {
                 return true;
               },
@@ -64,7 +57,7 @@ describe('WorkplaceNotFoundComponent', () => {
               parent: {
                 url: [
                   {
-                    path: registrationFlow ? 'registration' : 'confirm-details',
+                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -93,7 +86,7 @@ describe('WorkplaceNotFoundComponent', () => {
 
   it('should display the CQC location id or postcode entered in the previous page', async () => {
     const inputtedPostcode = 'SE1 1AA';
-    const { component } = await setup(inputtedPostcode);
+    const { component } = await setup({ postcodeOrLocationId: inputtedPostcode });
 
     expect(component.getByText(inputtedPostcode)).toBeTruthy();
   });
@@ -106,7 +99,7 @@ describe('WorkplaceNotFoundComponent', () => {
   });
 
   it('should not render the progress bars when accessed from outside the flow', async () => {
-    const { component } = await setup('', '', false, null, false);
+    const { component } = await setup({ registrationFlow: false });
 
     expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
     expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
@@ -148,7 +141,7 @@ describe('WorkplaceNotFoundComponent', () => {
     });
 
     it('should navigate to registraions/confirm-details/find-workplace when selecting yes when outside the flow', async () => {
-      const { component, spy } = await setup('', '', false, null, false);
+      const { component, spy } = await setup({ registrationFlow: false });
       const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
       fireEvent.click(yesRadioButton);
 
@@ -170,7 +163,7 @@ describe('WorkplaceNotFoundComponent', () => {
     });
 
     it('should navigate to registration/confirm-details/workplace-name-address when selecting no', async () => {
-      const { component, spy } = await setup('', '', false, null, false);
+      const { component, spy } = await setup({ registrationFlow: false });
       const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
       fireEvent.click(noRadioButton);
 
@@ -200,7 +193,7 @@ describe('WorkplaceNotFoundComponent', () => {
 
   describe('prefillForm()', () => {
     it('should preselect the "Yes" radio button if useDifferentLocationIdOrPostcode has been set to true in the service', async () => {
-      const { component } = await setup('', '', false, true);
+      const { component } = await setup({ useDifferentLocationIdOrPostcode: true });
 
       const form = component.fixture.componentInstance.form;
       expect(form.valid).toBeTruthy();
@@ -208,7 +201,12 @@ describe('WorkplaceNotFoundComponent', () => {
     });
 
     it('should preselect the "No" radio button if useDifferentLocationIdOrPostcode has been set to false in the service', async () => {
-      const { component } = await setup('', '', false, false);
+      const overrides = {
+        workplaceNotFound: false,
+        useDifferentLocationIdOrPostcode: false,
+      };
+
+      const { component } = await setup(overrides);
 
       const form = component.fixture.componentInstance.form;
       expect(form.valid).toBeTruthy();
@@ -216,7 +214,12 @@ describe('WorkplaceNotFoundComponent', () => {
     });
 
     it('should not preselect any radio buttons if useDifferentLocationIdOrPostcode has not been set in the service', async () => {
-      const { component } = await setup('', '', false, null);
+      const overrides = {
+        workplaceNotFound: false,
+        useDifferentLocationIdOrPostcode: null,
+      };
+
+      const { component } = await setup(overrides);
 
       const form = component.fixture.componentInstance.form;
       expect(form.invalid).toBeTruthy();
@@ -227,7 +230,12 @@ describe('WorkplaceNotFoundComponent', () => {
 
   describe('sanitizePostcode', () => {
     it('should only sanitize the postcode if the search method is postcode', async () => {
-      const { component } = await setup('se11aa', 'postcode');
+      const overrides = {
+        postcodeOrLocationId: 'se11aa',
+        searchMethod: 'postcode',
+      };
+
+      const { component } = await setup(overrides);
       const sanitizePostcodeSpy = spyOn(SanitizePostcodeUtil, 'sanitizePostcode');
       component.fixture.componentInstance.sanitizePostcode();
 
@@ -235,7 +243,12 @@ describe('WorkplaceNotFoundComponent', () => {
     });
 
     it('should not sanitize the postcode if the search method is locationID', async () => {
-      const { component } = await setup('se11aa', 'locationID');
+      const overrides = {
+        postcodeOrLocationId: 'se11aa',
+        searchMethod: 'locationID',
+      };
+
+      const { component } = await setup(overrides);
       const sanitizePostcodeSpy = spyOn(SanitizePostcodeUtil, 'sanitizePostcode');
       component.fixture.componentInstance.sanitizePostcode();
 
@@ -243,7 +256,11 @@ describe('WorkplaceNotFoundComponent', () => {
     });
 
     it('should display the sanitized postcode entered in the previous page', async () => {
-      const { component } = await setup('se11aa', 'postcode');
+      const overrides = {
+        postcodeOrLocationId: 'se11aa',
+        searchMethod: 'postcode',
+      };
+      const { component } = await setup(overrides);
       component.fixture.componentInstance.sanitizePostcode();
       component.fixture.detectChanges();
 

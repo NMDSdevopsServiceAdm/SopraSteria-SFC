@@ -11,7 +11,7 @@ import { SelectMainServiceDirective } from '@shared/directives/create-workplace/
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
-  selector: 'app-select-main-service',
+  selector: 'app-select-main-service-create-account',
   templateUrl: '../../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
 })
 export class SelectMainServiceComponent extends SelectMainServiceDirective {

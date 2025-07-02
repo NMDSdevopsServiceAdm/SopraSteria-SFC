@@ -3,7 +3,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({
-  selector: 'app-thank-you',
+  selector: 'app-thank-you-create-account',
   templateUrl: './thank-you.component.html',
 })
 export class ThankYouComponent {
