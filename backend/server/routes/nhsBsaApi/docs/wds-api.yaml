@@ -59,6 +59,8 @@ paths:
                         workplaceName: Example Parent Workplace,
                         workplaceAddress: {
                           firstLine: 1 Parent Lane,
+                          secondLine: Example Building Name,
+                          thirdLine: Example Street Number,
                           town: Example Town Name,
                           postCode: ET1 5NA
                         },
@@ -77,6 +79,8 @@ paths:
                           workplaceName: Example Subsidiary Workplace,
                           workplaceAddress: {
                             firstLine: 18 Subsidiary Lane,
+                            secondLine: Example Building Name,
+                            thirdLine: Example Street Number,
                             town: Example Town Name,
                             postCode: ET1 3AB
                           },
@@ -95,6 +99,8 @@ paths:
                           workplaceName: Example Subsidiary Workplace 2,
                           workplaceAddress: {
                             firstLine: 29 Subsidiary Avenue,
+                            secondLine: Example Building Name,
+                            thirdLine: Example Street Number,
                             town: Other Example Town,
                             postCode: OE12 3TO
                           },
@@ -120,6 +126,8 @@ paths:
                         workplaceName: Example Standalone Workplace,
                         workplaceAddress: {
                           firstLine: 11 Lonely Lane,
+                          secondLine: Example Building Name,
+                          thirdLine: Example Street Number,
                           town: Lonetown,
                           postCode: LT20 9AB
                         },
@@ -142,6 +150,8 @@ paths:
                         workplaceName: Example Subsidiary With Parent,
                         workplaceAddress: {
                           firstLine: 1 Sub Street,
+                          secondLine: Example Building Name,
+                          thirdLine: Example Street Number,
                           town: Suburbia,
                           postCode: SU1 3IA
                         },
@@ -161,6 +171,8 @@ paths:
                           workplaceName: Parent of Sub Example,
                           workplaceAddress: {
                             firstLine: 1 Parent Parade,
+                            secondLine: Example Building Name,
+                            thirdLine: Example Street Number,
                             town: Example Town,
                             postCode: ET1 9WN
                           },
@@ -347,6 +359,12 @@ components:
         firstLine:
           type: string
           description: First line address of the workplace
+        secondLine:
+          type: string
+          description: Second line address of the workplace
+        thirdLine:
+          type: string
+          description: Third line address of the workplace
         town:
           type: string
           description: Town of the workplace
