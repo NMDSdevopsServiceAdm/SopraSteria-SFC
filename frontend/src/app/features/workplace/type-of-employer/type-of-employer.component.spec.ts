@@ -11,6 +11,12 @@ import userEvent from '@testing-library/user-event';
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
 describe('TypeOfEmployerComponent', () => {
+  const optionsWithoutOther = [
+    { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
+    { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
+    { value: 'Private Sector', text: 'Private sector' },
+    { value: 'Voluntary / Charity', text: 'Voluntary, charity, not for profit' },
+  ];
   async function setup(overrides: any = {}) {
     const setupTools = await render(TypeOfEmployerComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -60,73 +66,22 @@ describe('TypeOfEmployerComponent', () => {
     expect(getByText('Save and continue')).toBeTruthy();
   });
 
-  it('should submit the form with the correct value when the Local authority (adult services) radio button is selected and the form is submitted', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
+  optionsWithoutOther.forEach((answer) => {
+    it(`should submit the form with the correct value when the ${answer.text} radio button is selected and the form is submitted`, async () => {
+      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
-    const radioButton = getByLabelText('Local authority (adult services)');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
+      const radioButton = getByLabelText(answer.text);
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
-    const submitButton = getByText('Save and continue');
-    fireEvent.click(submitButton);
-    fixture.detectChanges();
+      const submitButton = getByText('Save and continue');
+      fireEvent.click(submitButton);
+      fixture.detectChanges();
 
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      property: 'EmployerType',
-      objectToUpdate: { employerType: { value: 'Local Authority (adult services)' } },
-    });
-  });
-
-  it('should submit the form with the correct value when the Local authority (generic, other) radio button is selected and the form is submitted', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
-
-    const radioButton = getByLabelText('Local authority (generic, other)');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
-
-    const submitButton = getByText('Save and continue');
-    fireEvent.click(submitButton);
-    fixture.detectChanges();
-
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      property: 'EmployerType',
-      objectToUpdate: {
-        employerType: { value: 'Local Authority (generic/other)' },
-      },
-    });
-  });
-
-  it('should submit the form with the correct value when the Private sector radio button is selected and the form is submitted', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
-
-    const radioButton = getByLabelText('Private sector');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
-
-    const submitButton = getByText('Save and continue');
-    fireEvent.click(submitButton);
-    fixture.detectChanges();
-
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      property: 'EmployerType',
-      objectToUpdate: { employerType: { value: 'Private Sector' } },
-    });
-  });
-
-  it('should submit the form with the correct value when the Voluntary, charity, not for profit radio button is selected and the form is submitted', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
-
-    const radioButton = getByLabelText('Voluntary, charity, not for profit');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
-
-    const submitButton = getByText('Save and continue');
-    fireEvent.click(submitButton);
-    fixture.detectChanges();
-
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      property: 'EmployerType',
-      objectToUpdate: { employerType: { value: 'Voluntary / Charity' } },
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
+        property: 'EmployerType',
+        objectToUpdate: { employerType: { value: answer.value } },
+      });
     });
   });
 
