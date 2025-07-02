@@ -53,6 +53,8 @@ const workplaceObject = async (workplace) => {
     dataOwner: workplace.dataOwner,
     workplaceAddress: {
       firstLine: workplace.address1,
+      secondLine: workplace.address2,
+      thirdLine: workplace.address3,
       town: workplace.town,
       postCode: workplace.postcode,
     },
