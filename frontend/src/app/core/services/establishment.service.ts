@@ -240,16 +240,23 @@ export class EstablishmentService {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/jobs`);
   }
 
-  getStaff(establishmentuid: string) {
-    return this.http
-      .get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/staff`)
-      .pipe(map((res) => res.numberOfStaff));
-  }
-
   postStaff(workplaceUid: string, numberOfStaff: number) {
     return this.http.post<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/staff/${numberOfStaff}`,
       null,
+    );
+  }
+
+  getEstablishmentField(establishmentId: string, property: string) {
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField/${property}`,
+    );
+  }
+
+  updateEstablishmentFieldWithAudit(establishmentId: string, property: string, data: any) {
+    return this.http.post<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField/${property}`,
+      data,
     );
   }
 
@@ -274,13 +281,6 @@ export class EstablishmentService {
   updateMainService(establishmentId: string, data: MainServiceRequest) {
     return this.http.post<MainServiceRequest>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mainService`,
-      data,
-    );
-  }
-
-  updateEstablishmentFieldWithAudit(establishmentId: string, data: any) {
-    return this.http.post<any>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField`,
       data,
     );
   }

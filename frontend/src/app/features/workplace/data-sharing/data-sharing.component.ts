@@ -67,9 +67,9 @@ export class DataSharingComponent extends Question {
 
   protected updateEstablishment(props: ShareWithRequest): void {
     const completeUpdateEstablishment = () => {
-      const data = { property: 'ShareData', objectToUpdate: props };
+      const property = 'ShareData';
       this.subscriptions.add(
-        this.establishmentService.updateEstablishmentFieldWithAudit(this.establishment.uid, data).subscribe(
+        this.establishmentService.updateEstablishmentFieldWithAudit(this.establishment.uid, property, props).subscribe(
           (data) => this._onSuccess(data),
           (error) => this.onError(error),
         ),

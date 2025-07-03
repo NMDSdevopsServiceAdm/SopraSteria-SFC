@@ -8,9 +8,9 @@ let filteredProperties = ['Name']
 
 const getEstablishmentField = async (req, res) => {
   const establishmentId = req.establishmentId;
-  const property = req.query?.property;
+  const property = req.params?.property;
 
-  filteredProperties.push(property)
+  filteredProperties.push(property);
 
   const showHistory =
     req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
@@ -54,10 +54,9 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
-  const property = req.body.property;
-  const objectToUpdate = req.body.objectToUpdate
+  const property = req.params?.property;
 
-  filteredProperties.push(property)
+  filteredProperties.push(property);
 
   try {
     const establishmentFound = await thisEstablishment.restore(establishmentId);
@@ -66,7 +65,7 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
       throw new HttpError('Establishment not found', 404);
     }
 
-    const isValidEstablishment = await thisEstablishment.load(objectToUpdate);
+    const isValidEstablishment = await thisEstablishment.load(req.body);
 
     if (!isValidEstablishment) {
       throw new HttpError('Request is invalid', 400);
@@ -74,8 +73,6 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
 
     await thisEstablishment.save(req.username);
     return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
-
-
   } catch (error) {
     console.error(`Establishment::${property} POST: `, error.message);
     if (error instanceof HttpError) {
@@ -85,8 +82,8 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   }
 };
 
-router.route('/').get(hasPermission('canViewEstablishment'), getEstablishmentField);
-router.route('/').post(hasPermission('canEditEstablishment'), updateEstablishmentFieldWithAudit);
+router.route('/:property').get(hasPermission('canViewEstablishment'), getEstablishmentField);
+router.route('/:property').post(hasPermission('canEditEstablishment'), updateEstablishmentFieldWithAudit);
 
 module.exports = router;
 module.exports.getEstablishmentField = getEstablishmentField;
