@@ -265,7 +265,7 @@ export class MockEstablishmentService extends EstablishmentService {
   }
 
   public updateEstablishmentFieldWithAudit(establishmentId, property: string, data: any): Observable<any> {
-    return of(data.objectToUpdate);
+    return of('');
   }
 
   public getExpiresSoonAlertDates(): Observable<any> {

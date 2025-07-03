@@ -418,6 +418,7 @@ export class MockWorkerService extends WorkerService {
   public _alert;
   public _returnTo;
   public _addStaffRecordInProgress: boolean;
+  public _totalStaffReturn: boolean;
 
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
@@ -444,6 +445,10 @@ export class MockWorkerService extends WorkerService {
 
   public set returnTo(returnUrl) {
     this._returnTo = returnUrl;
+  }
+
+  public setTotalStaffReturn(val) {
+    this._totalStaffReturn = val;
   }
 
   public set addStaffRecordInProgress(value: boolean) {
@@ -599,6 +604,12 @@ export class MockWorkerServiceWithOverrides extends MockWorkerService {
           case 'returnTo': {
             Object.defineProperty(service, 'returnTo', {
               get: () => overrides['returnTo'],
+            });
+            break;
+          }
+          case 'totalStaffReturn': {
+            Object.defineProperty(service, 'totalStaffReturn', {
+              get: () => overrides['totalStaffReturn'],
             });
             break;
           }

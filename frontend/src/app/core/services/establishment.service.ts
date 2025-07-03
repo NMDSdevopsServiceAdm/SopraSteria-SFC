@@ -240,13 +240,6 @@ export class EstablishmentService {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/jobs`);
   }
 
-  postStaff(workplaceUid: string, numberOfStaff: number) {
-    return this.http.post<any>(
-      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/staff/${numberOfStaff}`,
-      null,
-    );
-  }
-
   getEstablishmentField(establishmentId: string, property: string) {
     return this.http.get<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField/${property}`,
