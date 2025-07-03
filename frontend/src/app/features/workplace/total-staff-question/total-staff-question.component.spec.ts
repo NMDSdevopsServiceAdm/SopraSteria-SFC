@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -14,7 +13,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -35,11 +34,11 @@ describe('TotalStaffQuestionComponent', () => {
     },
   });
 
-  async function setup(shareWith: any = null) {
+  async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
 
-    const { fixture, getByText, getByLabelText, getAllByText } = await render(TotalStaffQuestionComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+    const setupTools = await render(TotalStaffQuestionComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       declarations: [],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -64,7 +63,12 @@ describe('TotalStaffQuestionComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory(shareWith),
+          useFactory: MockEstablishmentServiceWithOverrides.factory({
+            establishment: {
+              shareWith: overrides.shareWith ?? null,
+              numberOfStaff: overrides.numberOfStaff ?? null,
+            },
+          }),
           deps: [HttpClient],
         },
         {
@@ -95,14 +99,11 @@ describe('TotalStaffQuestionComponent', () => {
       ],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getByLabelText,
-      getAllByText,
     };
   }
 
