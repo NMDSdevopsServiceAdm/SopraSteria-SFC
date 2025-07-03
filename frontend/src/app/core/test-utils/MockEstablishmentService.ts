@@ -260,8 +260,12 @@ export class MockEstablishmentService extends EstablishmentService {
     this._primaryWorkplace = value;
   }
 
-  public updateEstablishmentFieldWithAudit(establishmentId, data: any): Observable<any> {
-    return of('');
+  public getEstablishmentField(establishmentId: string, property: string) {
+    return of(this.establishmentObj);
+  }
+
+  public updateEstablishmentFieldWithAudit(establishmentId, property: string, data: any): Observable<any> {
+    return of(data.objectToUpdate);
   }
 
   public getExpiresSoonAlertDates(): Observable<any> {

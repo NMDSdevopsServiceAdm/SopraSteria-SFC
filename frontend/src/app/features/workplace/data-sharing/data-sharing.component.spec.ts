@@ -181,13 +181,10 @@ describe('DataSharingComponent', () => {
       const returnButton = getByText('Save and return');
       fireEvent.click(returnButton);
 
-      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        property: 'ShareData',
-        objectToUpdate: {
-          shareWith: {
-            cqc: null,
-            localAuthorities: true,
-          },
+      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, 'ShareData', {
+        shareWith: {
+          cqc: null,
+          localAuthorities: true,
         },
       });
     });
@@ -201,13 +198,10 @@ describe('DataSharingComponent', () => {
       const returnButton = getByText('Save and return');
       fireEvent.click(returnButton);
 
-      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        property: 'ShareData',
-        objectToUpdate: {
-          shareWith: {
-            cqc: null,
-            localAuthorities: false,
-          },
+      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, 'ShareData', {
+        shareWith: {
+          cqc: null,
+          localAuthorities: false,
         },
       });
     });
@@ -226,13 +220,10 @@ describe('DataSharingComponent', () => {
       const returnButton = getByText('Save and return');
       fireEvent.click(returnButton);
 
-      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        property: 'ShareData',
-        objectToUpdate: {
-          shareWith: {
-            cqc: true,
-            localAuthorities: null,
-          },
+      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, 'ShareData', {
+        shareWith: {
+          cqc: true,
+          localAuthorities: null,
         },
       });
     });
@@ -249,13 +240,10 @@ describe('DataSharingComponent', () => {
       const returnButton = getByText('Save and return');
       fireEvent.click(returnButton);
 
-      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        property: 'ShareData',
-        objectToUpdate: {
-          shareWith: {
-            cqc: false,
-            localAuthorities: null,
-          },
+      expect(updateDataSharingSpy).toHaveBeenCalledWith(component.establishment.uid, 'ShareData', {
+        shareWith: {
+          cqc: false,
+          localAuthorities: null,
         },
       });
     });

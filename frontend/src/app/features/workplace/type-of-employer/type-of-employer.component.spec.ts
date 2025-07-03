@@ -78,9 +78,8 @@ describe('TypeOfEmployerComponent', () => {
       fireEvent.click(submitButton);
       fixture.detectChanges();
 
-      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        property: 'EmployerType',
-        objectToUpdate: { employerType: { value: answer.value } },
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'EmployerType', {
+        employerType: { value: answer.value },
       });
     });
   });
@@ -96,9 +95,8 @@ describe('TypeOfEmployerComponent', () => {
     fireEvent.click(submitButton);
     fixture.detectChanges();
 
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      property: 'EmployerType',
-      objectToUpdate: { employerType: { value: 'Other', other: null } },
+    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'EmployerType', {
+      employerType: { value: 'Other', other: null },
     });
   });
 
@@ -117,9 +115,8 @@ describe('TypeOfEmployerComponent', () => {
     fireEvent.click(submitButton);
     fixture.detectChanges();
 
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      property: 'EmployerType',
-      objectToUpdate: { employerType: { value: 'Other', other: 'some employer type' } },
+    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'EmployerType', {
+      employerType: { value: 'Other', other: 'some employer type' },
     });
   });
 
