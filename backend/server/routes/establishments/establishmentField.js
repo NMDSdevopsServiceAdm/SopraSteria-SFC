@@ -33,7 +33,7 @@ const getEstablishmentField = async (req, res) => {
           ),
         );
     } else {
-      return res.status(404).send('Not Found');
+      throw new HttpError('Establishment not found', 404);
     }
   } catch (error) {
     const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
@@ -45,7 +45,12 @@ const getEstablishmentField = async (req, res) => {
       `Failed to retrieve Establishment with id/uid: ${establishmentId}`,
     );
 
-    console.error(`establishment::${property} GET/:eID - failed`, thisError.message);
+    if (error instanceof HttpError) {
+      const safeMessage = error.safe || 'An error occurred.';
+      return res.status(error.statusCode).send(safeMessage);
+    }
+
+    console.error('establishment::%s GET/:eID - failed', property, thisError.message);
     return res.status(500).send(thisError.safe);
   }
 };
@@ -74,11 +79,12 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
     await thisEstablishment.save(req.username);
     return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
   } catch (error) {
-    console.error(`Establishment::${property} POST: `, error.message);
+    console.error('Establishment::%s POST: ', property, error.message);
     if (error instanceof HttpError) {
-      return res.status(error.statusCode).send(error.message);
+      const safeMessage = error.safe || 'An error occurred.';
+      return res.status(error.statusCode).send(safeMessage);
     }
-    return res.status(500).send(`Failed to update ${property} for workplace`);
+    return res.status(500).send('Failed to update %s for workplace', property);
   }
 };
 

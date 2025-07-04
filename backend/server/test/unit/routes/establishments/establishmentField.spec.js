@@ -25,9 +25,10 @@ describe('server/routes/establishments/getEstablishmentField', () => {
   describe('/getEstablishmentField', () => {
     const mockRequest = {
       method: 'GET',
-      url: `/api/establishment/${establishmentId}/getEstablishmentField/${property}`,
+      url: `/api/establishment/${establishmentId}/getEstablishmentField`,
       establishmentId: establishmentId,
       username: 'user',
+      params: { property },
     };
 
     it('should respond with 200 and return the value on the requested property', async () => {
@@ -66,10 +67,11 @@ describe('server/routes/establishments/getEstablishmentField', () => {
   describe('/updateEstablishmentFieldWithAudit', () => {
     const mockRequest = {
       method: 'POST',
-      url: `/api/establishment/${establishmentId}/updateEstablishmentFieldWithAudit/${property}`,
+      url: `/api/establishment/${establishmentId}/updateEstablishmentFieldWithAudit`,
       establishmentId: establishmentId,
       username: 'user',
       body: { employerType: { value: 'Private Sector' } },
+      params: { property },
     };
 
     it('should update the property and return a 200 status', async () => {
