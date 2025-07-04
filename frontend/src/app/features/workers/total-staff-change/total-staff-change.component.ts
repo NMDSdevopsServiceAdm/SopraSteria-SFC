@@ -28,7 +28,7 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
 
   constructor(
     public errorSummaryService: ErrorSummaryService,
-    private route: ActivatedRoute,
+    public route: ActivatedRoute,
     private router: Router,
     private formBuilder: UntypedFormBuilder,
     private backLinkService: BackLinkService,
@@ -79,16 +79,18 @@ export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewIn
 
     const { totalStaff } = this.form.value;
 
+    const property = 'NumberOfStaff';
+    const props = { numberOfStaff: Number(totalStaff) };
     this.subscriptions.add(
-      this.establishmentService.postStaff(this.workplace.uid, totalStaff).subscribe(
-        (data) => this.onSuccess(data.numberOfStaff),
+      this.establishmentService.updateEstablishmentFieldWithAudit(this.workplace.uid, property, props).subscribe(
+        (data) => this.onSuccess(data),
         (error) => this.onError(error),
       ),
     );
   }
 
-  private onSuccess(numberOfStaff) {
-    this.updateWorkplaceSummary(numberOfStaff);
+  private onSuccess(data: { numberOfStaff: number }) {
+    this.updateWorkplaceSummary(data.numberOfStaff);
 
     if (this.returnToDash) {
       this.router.navigate(this.return.url, { fragment: this.return.fragment });
