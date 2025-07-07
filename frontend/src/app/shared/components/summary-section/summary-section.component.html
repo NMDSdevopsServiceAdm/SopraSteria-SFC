@@ -49,7 +49,7 @@
     <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-left-4 govuk-!-margin-right-4" />
     <div class="summary-section" data-testid="workplaces-row">
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body-l summary-section__links">
-        <a class="govuk-link--no-visited-state" [routerLink]="['/workplace/view-all-workplaces']">
+        <a class="govuk-link--no-visited-state" (click)="navigateToYourOtherWorkplaces($event, 'workplaceNameAsc')" href="#" id="otherWorkplacesSectionLinkText">
           {{ otherWorkplacesSection.linkText }}
         </a>
       </div>
@@ -69,7 +69,7 @@
             data-testid="red-flag"
             *ngIf="otherWorkplacesSection.redFlag"
           />
-          <a [routerLink]="['/workplace', 'view-all-workplaces']" href="#"> {{ otherWorkplacesSection.message }}</a>
+          <a (click)="navigateToYourOtherWorkplaces($event, 'workplaceToCheckAsc')" href="#" id="otherWorkplacesSectionMessage"> {{ otherWorkplacesSection.message }}</a>
         </ng-container>
         <ng-template #noWorkplacesLink>
           {{ otherWorkplacesSection.message }}
