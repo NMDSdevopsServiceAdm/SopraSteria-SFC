@@ -17,6 +17,7 @@ export class WorkplaceService extends WorkplaceInterfaceService {
     super(http);
   }
 
+  private _allWorkplaceSortValue: string;
   public addWorkplaceFlow$: BehaviorSubject<string> = new BehaviorSubject(null);
   public addWorkplaceInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public serverErrorsMap: ErrorDefinition[] = [
@@ -27,7 +28,9 @@ export class WorkplaceService extends WorkplaceInterfaceService {
   ];
 
   public getServicesByCategory(isRegulated: boolean): Observable<Array<ServiceGroup>> {
-    return this.http.get<Array<ServiceGroup>>(`${environment.appRunnerEndpoint}/api/services/byCategory?cqc=${isRegulated}`);
+    return this.http.get<Array<ServiceGroup>>(
+      `${environment.appRunnerEndpoint}/api/services/byCategory?cqc=${isRegulated}`,
+    );
   }
 
   public getAllMandatoryTrainings(establishmentId: number): Observable<any> {
@@ -35,7 +38,10 @@ export class WorkplaceService extends WorkplaceInterfaceService {
   }
 
   public addWorkplace(establishmentuid: string, request: AddWorkplaceRequest): Observable<AddWorkplaceResponse> {
-    return this.http.post<AddWorkplaceResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}`, request);
+    return this.http.post<AddWorkplaceResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}`,
+      request,
+    );
   }
 
   public resetService(): void {
@@ -65,5 +71,13 @@ export class WorkplaceService extends WorkplaceInterfaceService {
       totalStaff: WorkplaceTotalStaff,
       typeOfEmployer: employerTypeObject,
     };
+  }
+
+  public setAllWorkplaceSortValue(value: string) {
+    this._allWorkplaceSortValue = value;
+  }
+
+  public getAllWorkplaceSortValue() {
+    return this._allWorkplaceSortValue;
   }
 }

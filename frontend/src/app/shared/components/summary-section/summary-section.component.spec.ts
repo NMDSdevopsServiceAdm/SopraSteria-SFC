@@ -16,6 +16,7 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
+import { WorkplaceService } from '@core/services/workplace.service';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -53,6 +54,7 @@ describe('Summary section', () => {
         noOfWorkersWhoRequireInternationalRecruitment: overrides.noOfWorkersWhoRequireInternationalRecruitment ?? 0,
         noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered:
           overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
+        workplacesNeedAttention: overrides.workplacesNeedAttention ?? false,
       },
     });
 
@@ -68,6 +70,8 @@ describe('Summary section', () => {
       of(null),
     );
     const setReturnToSpy = spyOn(establishmentService, 'setReturnTo');
+    const workplaceService = injector.inject(WorkplaceService) as WorkplaceService;
+    const workplaceServiceSpy = spyOn(workplaceService, 'setAllWorkplaceSortValue').and.callThrough();
 
     return {
       ...setupTools,
@@ -76,6 +80,7 @@ describe('Summary section', () => {
       tabsService,
       updateSingleFieldSpy,
       setReturnToSpy,
+      workplaceServiceSpy,
     };
   };
 
@@ -1147,20 +1152,6 @@ describe('Summary section', () => {
       expect(workplacesRow).toBeTruthy();
     });
 
-    it('should show you other workplaces link', async () => {
-      const establishment = {
-        ...Establishment,
-        isParent: true,
-      };
-      const overrides = { establishment };
-      const { getByText } = await setup(overrides);
-
-      const yourOtherWorkplacesText = getByText('Your other workplaces');
-
-      expect(yourOtherWorkplacesText).toBeTruthy();
-      expect(yourOtherWorkplacesText.getAttribute('href')).toBeTruthy();
-    });
-
     it('should show message if there are no workplaces added', async () => {
       const establishment = {
         ...Establishment,
@@ -1198,7 +1189,7 @@ describe('Summary section', () => {
       const yourOtherWorkplacesSummaryText = getByText('Have you added all of your workplaces?');
 
       expect(yourOtherWorkplacesSummaryText).toBeTruthy();
-      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBe('/workplace/view-all-workplaces');
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBe('#');
       expect(getByTestId('workplaces-orange-flag')).toBeTruthy();
     });
 
@@ -1221,6 +1212,40 @@ describe('Summary section', () => {
       expect(yourOtherWorkplacesSummaryText).toBeTruthy();
       expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBeFalsy();
       expect(queryByTestId('workplaces-orange-flag')).toBeFalsy();
+    });
+
+    describe('navigating to "Your other workplaces"', () => {
+      it('should call setAllWorkplaceSortValue with', async () => {
+        const establishment = {
+          ...Establishment,
+          isParent: true,
+        };
+        const overrides = { establishment };
+        const { getByText, routerSpy, workplaceServiceSpy } = await setup(overrides);
+
+        const yourOtherWorkplacesText = getByText('Your other workplaces');
+
+        fireEvent.click(yourOtherWorkplacesText);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
+        expect(workplaceServiceSpy).toHaveBeenCalledWith('workplaceNameAsc');
+      });
+
+      it('should call setAllWorkplaceSortValue with', async () => {
+        const establishment = {
+          ...Establishment,
+          isParent: true,
+        };
+        const overrides = { establishment, workplacesCount: 1, workplacesNeedAttention: true };
+        const { getByText, routerSpy, workplaceServiceSpy } = await setup(overrides);
+
+        const checkWorkplacesText = getByText('You need to check your other workplaces');
+
+        fireEvent.click(checkWorkplacesText);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
+        expect(workplaceServiceSpy).toHaveBeenCalledWith('workplaceToCheckAsc');
+      });
     });
   });
 });
