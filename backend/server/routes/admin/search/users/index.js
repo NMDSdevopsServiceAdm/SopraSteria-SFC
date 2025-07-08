@@ -12,7 +12,6 @@ const search = async function (req, res) {
     };
 
     const users = await models.user.searchUsers(where);
-    console.log(users);
     const results = await UserTransformer(users);
     return res.status(200).json(results);
   } catch (err) {

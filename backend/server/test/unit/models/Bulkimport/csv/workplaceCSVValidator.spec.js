@@ -319,9 +319,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         establishmentRow.POSTCODE = 'CT11AB';
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
-        console.log(establishment);
         const apiObject = establishment.toAPI();
-        console.log(apiObject);
 
         expect(apiObject.postcode).to.deep.equal('CT11AB');
         expect(apiObject.town).to.deep.equal('Wonderland');

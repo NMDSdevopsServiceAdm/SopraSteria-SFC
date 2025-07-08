@@ -495,8 +495,6 @@ class Training extends EntityValidator {
             attributes: ['uid', 'created', 'updated'],
           };
 
-          console.log('WA DEBUG creation document: ', creationDocument);
-
           // need to create the Training record only
           //  in one transaction
           await models.sequelize.transaction(async (t) => {

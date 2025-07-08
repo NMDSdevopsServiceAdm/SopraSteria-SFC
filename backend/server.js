@@ -139,7 +139,6 @@ app.use(
   proxy(publicDownloadBaseUrl, {
     proxyReqPathResolver: function (req) {
       const updatedPath = publicDownloadBaseUrl + req.url;
-      // console.log('public/download proxy API request to: ', `${updatedPath}`);
       return updatedPath;
     },
   }),

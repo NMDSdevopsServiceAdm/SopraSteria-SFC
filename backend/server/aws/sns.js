@@ -23,7 +23,6 @@ const postToRegistrations = async (registration) => {
 
   try {
     await sns.publish(params).promise();
-    // console.log("postToRegistrations status: ", status)
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
     console.error('postToRegistrations error: ', err);
@@ -43,7 +42,6 @@ const postToFeedback = async (feedback) => {
 
   try {
     await sns.publish(params).promise();
-    // console.log("postToFeedback status: ", status)
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
     console.error('postToFeedback error: ', err);

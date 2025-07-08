@@ -787,8 +787,6 @@ const listNotifications = async (req, res) => {
       params.offset = +req.query.offset;
     }
 
-    console.log('/my/notifications', params);
-
     //return the list
     return res.status(200).send(await notifications.getListByUser(params));
   } catch (e) {

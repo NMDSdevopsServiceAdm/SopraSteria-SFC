@@ -489,7 +489,6 @@ class Worker extends EntityValidator {
           // first training records
           this._trainingEntities = [];
           if (document.training && Array.isArray(document.training)) {
-            // console.log("WA DEBUG - document.training: ", document.training)
             document.training.forEach((thisTraining) => {
               const newTrainingRecord = new Training(null, null);
 
@@ -511,7 +510,6 @@ class Worker extends EntityValidator {
 
           // wait for loading of all training and qualification records
           await Promise.all(promises);
-          // console.log("WA DEBUG - this qualifications/training: ", this._id, this._qualificationsEntities ? this._qualificationsEntities.length : 'undefined', this._trainingEntities ? this._trainingEntities.length : 'undefined');
         }
       }
     } catch (err) {

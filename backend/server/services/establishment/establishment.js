@@ -255,11 +255,9 @@ const deleteEstablishment = async (req, res) => {
 
   try {
     if (await thisEstablishment.restore(establishmentId, false, true, 1)) {
-      console.log('restored about to delete');
       await thisEstablishment.delete(req.username, null, true);
       return res.status(204).send();
     } else {
-      console.log('404 not found that establishment');
       return res.status(404).send('Not Found');
     }
   } catch (err) {
