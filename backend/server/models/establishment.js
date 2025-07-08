@@ -2281,6 +2281,7 @@ module.exports = function (sequelize, DataTypes) {
     searchTerm = '',
     getPendingWorkplaces = false,
     getAttentionFlags = false,
+    sortBy = 'workplaceNameAsc',
   ) {
     const offset = pageIndex * limit;
     let ustatus;
@@ -2297,6 +2298,30 @@ module.exports = function (sequelize, DataTypes) {
         [Op.is]: null,
       };
     }
+
+    const order = {
+      workplaceNameAsc: [
+        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
+        ['NameValue', 'ASC'],
+      ],
+      workplaceNameDesc: [
+        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
+        ['NameValue', 'DESC'],
+      ],
+      workplaceToCheckAsc: [
+        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
+        ['showFlag', 'DESC'],
+        ['NameValue', 'ASC'],
+      ],
+      workplaceToCheckDesc: [
+        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
+        ['showFlag', 'DESC'],
+        ['NameValue', 'DESC'],
+      ],
+    }[sortBy] || [
+      [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
+      ['NameValue', 'ASC'],
+    ];
 
     const data = await this.findAndCountAll({
       attributes: [
@@ -2323,10 +2348,7 @@ module.exports = function (sequelize, DataTypes) {
         ustatus,
         ...(searchTerm ? { NameValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
       },
-      order: [
-        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
-        ['NameValue', 'ASC'],
-      ],
+      order,
       ...(limit ? { limit } : {}),
       offset,
     });
