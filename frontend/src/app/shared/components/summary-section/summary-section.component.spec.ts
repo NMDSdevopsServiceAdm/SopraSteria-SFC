@@ -71,7 +71,7 @@ describe('Summary section', () => {
     );
     const setReturnToSpy = spyOn(establishmentService, 'setReturnTo');
     const workplaceService = injector.inject(WorkplaceService) as WorkplaceService;
-    const workplaceServiceSpy = spyOn(workplaceService, 'setAllWorkplaceSortValue').and.callThrough();
+    const workplaceServiceSpy = spyOn(workplaceService, 'setAllWorkplacesSortValue').and.callThrough();
 
     return {
       ...setupTools,

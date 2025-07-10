@@ -270,7 +270,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   public navigateToYourOtherWorkplaces(event: Event, value: string) {
     event.preventDefault();
-    this.workplaceService.setAllWorkplaceSortValue(value);
+    this.workplaceService.setAllWorkplacesSortValue(value);
     this.router.navigate(['/workplace', 'view-all-workplaces']);
   }
 
