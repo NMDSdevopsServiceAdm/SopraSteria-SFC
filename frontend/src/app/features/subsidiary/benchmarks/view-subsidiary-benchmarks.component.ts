@@ -4,7 +4,6 @@ import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/m
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { DataAreaAboutTheDataComponent } from '@shared/components/data-area-tab/about-the-data/about-the-data.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-view-subsidiary-benchmarks',
@@ -30,18 +29,11 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit {
   public workplace: Establishment;
   public newDashboard: boolean;
   public canSeeNewDataArea: boolean;
-  public newDataAreaFlag: boolean;
   public lastUpdatedDate: string;
 
-  constructor(
-    protected benchmarksService: BenchmarksServiceBase,
-    public route: ActivatedRoute,
-    private featureFlagsService: FeatureFlagsService,
-  ) {}
+  constructor(protected benchmarksService: BenchmarksServiceBase, public route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
-
     this.workplace = this.route.snapshot.data.establishment;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
 
