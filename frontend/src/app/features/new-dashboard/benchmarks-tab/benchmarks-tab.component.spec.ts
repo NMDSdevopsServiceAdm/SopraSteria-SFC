@@ -3,8 +3,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
@@ -26,7 +25,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, queryByTestId, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { NewBenchmarksTabComponent } from './benchmarks-tab.component';
 import { NewComparisonGroupHeaderComponent } from './comparison-group-header/comparison-group-header.component';
@@ -43,8 +42,8 @@ describe('NewBenchmarksTabComponent', () => {
   const setup = async (isAdmin = true, subsidiaries = 0, isParentViewingSubsidiary = false) => {
     const establishment = establishmentBuilder() as Establishment;
     const role = isAdmin ? Roles.Admin : Roles.Edit;
-    const { fixture, getByText, queryByTestId } = await render(NewBenchmarksTabComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+    const setupTools = await render(NewBenchmarksTabComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: FeatureFlagsService,
@@ -82,6 +81,7 @@ describe('NewBenchmarksTabComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        provideRouter([]),
       ],
       declarations: [NewComparisonGroupHeaderComponent],
       schemas: [NO_ERRORS_SCHEMA],
@@ -91,14 +91,13 @@ describe('NewBenchmarksTabComponent', () => {
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const pdfService = TestBed.inject(PdfService);
 
     return {
+      ...setupTools,
       component,
-      queryByTestId,
-      getByText,
       pdfService,
     };
   };
