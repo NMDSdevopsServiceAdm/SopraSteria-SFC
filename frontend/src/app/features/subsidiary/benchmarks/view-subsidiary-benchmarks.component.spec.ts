@@ -22,18 +22,7 @@ import { render } from '@testing-library/angular';
 import { ViewSubsidiaryBenchmarksComponent } from './view-subsidiary-benchmarks.component';
 
 describe('ViewSubsidiaryBenchmarksComponent', () => {
-  const setup = async (newDashboard = true) => {
-    const establishment = establishmentBuilder() as Establishment;
-    const tileData = {
-      meta: {
-        lastUpdated: new Date(),
-        workplaces: 10,
-        staff: 100,
-        localAuthority: 'Test LA',
-        workplacesGoodCqc: 19,
-        staffGoodCqc: 660,
-      },
-    };
+  const setup = async (overrides: any = {}) => {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(ViewSubsidiaryBenchmarksComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -62,17 +51,13 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { establishment },
+              data: { establishment: { ...(establishmentBuilder() as Establishment), ...overrides.establishment } },
             },
           },
         },
       ],
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
-      componentProperties: {
-        newDashboard,
-        tilesData: tileData,
-      },
     });
 
     const component = fixture.componentInstance;
@@ -91,26 +76,21 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('can see new data area', () => {
-    it('should render the new data area tab component', async () => {
-      const { component, fixture, getByTestId, queryByTestId } = await setup();
+  describe('Displaying correct version of tab', () => {
+    [1, 2, 8].forEach((reportingID) => {
+      it(`should render the new data area tab component when reporting ID is ${reportingID}`, async () => {
+        const { queryByTestId } = await setup({
+          establishment: { mainService: { id: 24, name: 'Care home services with nursing', reportingID } },
+        });
 
-      component.canSeeNewDataArea = true;
-      component.newDataAreaFlag = true;
-      fixture.detectChanges();
-
-      expect(queryByTestId('data-area-tab')).toBeTruthy();
+        expect(queryByTestId('data-area-tab')).toBeTruthy();
+      });
     });
-  });
 
-  describe('can not see new data area', () => {
-    it('should render the old benchmarks tab', async () => {
-      const { component, fixture, getByTestId, queryByTestId } = await setup();
-
-      component.canSeeNewDataArea = false;
-      component.newDataAreaFlag = true;
-      component.viewBenchmarksByCategory = true;
-      fixture.detectChanges();
+    it('should render the old benchmarks tab when other reporting ID', async () => {
+      const { queryByTestId } = await setup({
+        establishment: { mainService: { id: 11, name: 'Domestic services and home help', reportingID: 10 } },
+      });
 
       expect(queryByTestId('old-benchmarks-tab')).toBeTruthy();
     });
