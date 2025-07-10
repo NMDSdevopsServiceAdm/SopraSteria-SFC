@@ -168,44 +168,31 @@ describe('NewDashboardComponent', () => {
     });
   });
 
-  xdescribe('Benchmarks tab', () => {
+  describe('Benchmarks tab', () => {
     it('should show the benchmarks tab when it is the selected tab, there is a workplace and there is canViewListOfWorkers permissions', async () => {
       const { getByTestId } = await setup({ selectedTab: 'benchmarks' });
 
       expect(getByTestId('benchmarks-tab')).toBeTruthy();
     });
 
-    it('should render the new data area page rather than benchmark page when the newDataAreaFlag is true', async () => {
-      const { component, fixture, getByTestId, queryByTestId } = await setup({ selectedTab: 'benchmarks' });
+    [1, 2, 8].forEach((reportingID) => {
+      it(`should render the new data area tab component when reporting ID is ${reportingID}`, async () => {
+        const { queryByTestId } = await setup({
+          selectedTab: 'benchmarks',
+          establishment: { mainService: { id: 24, name: 'Care home services with nursing', reportingID } },
+        });
 
-      component.canSeeNewDataArea = true;
-      component.newDataAreaFlag = true;
-      fixture.detectChanges();
-
-      expect(getByTestId('data-area-tab')).toBeTruthy();
-      expect(queryByTestId('benchmarks-tab')).toBeFalsy();
+        expect(queryByTestId('data-area-tab')).toBeTruthy();
+      });
     });
 
-    it('should render the normal benchmarks page when the newDataAreaFlag is false', async () => {
-      const { component, fixture, getByTestId, queryByTestId } = await setup({ selectedTab: 'benchmarks' });
+    it('should render the old benchmarks tab when other reporting ID', async () => {
+      const { queryByTestId } = await setup({
+        selectedTab: 'benchmarks',
+        establishment: { mainService: { id: 11, name: 'Domestic services and home help', reportingID: 10 } },
+      });
 
-      component.canSeeNewDataArea = true;
-      component.newDataAreaFlag = false;
-      fixture.detectChanges();
-
-      expect(getByTestId('benchmarks-tab')).toBeTruthy();
-      expect(queryByTestId('data-area-tab')).toBeFalsy();
-    });
-
-    it('should render the normal benchmarks page when the establishment is non regulated', async () => {
-      const { component, fixture, getByTestId, queryByTestId } = await setup({ selectedTab: 'benchmarks' });
-
-      component.canSeeNewDataArea = false;
-      component.newDataAreaFlag = true;
-      fixture.detectChanges();
-
-      expect(getByTestId('benchmarks-tab')).toBeTruthy();
-      expect(queryByTestId('data-area-tab')).toBeFalsy();
+      expect(queryByTestId('benchmarks-tab')).toBeTruthy();
     });
   });
 });

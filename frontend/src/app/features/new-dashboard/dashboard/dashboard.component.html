@@ -45,7 +45,7 @@
   </ng-container>
 
   <ng-container *ngSwitchCase="'benchmarks'">
-    <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
+    <ng-container *ngIf="canSeeNewDataArea; else benchmarksTab">
       <app-data-area-tab [workplace]="workplace" [newDashboard]="true" data-testid="data-area-tab"></app-data-area-tab>
     </ng-container>
     <ng-template #benchmarksTab>
