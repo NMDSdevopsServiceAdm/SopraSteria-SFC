@@ -25,10 +25,10 @@ describe('WorkplaceService', () => {
   });
 
   it('should set the international recruitment worker answers', () => {
-    const allWorkplaceSortValue = 'workplaceToCheckAsc';
+    const allWorkplacesSortValue = 'workplaceToCheckAsc';
 
-    service.setAllWorkplaceSortValue(allWorkplaceSortValue);
+    service.setAllWorkplacesSortValue(allWorkplacesSortValue);
 
-    expect(service.getAllWorkplaceSortValue()).toBe(allWorkplaceSortValue);
+    expect(service.getAllWorkplacesSortValue()).toBe(allWorkplacesSortValue);
   });
 });
