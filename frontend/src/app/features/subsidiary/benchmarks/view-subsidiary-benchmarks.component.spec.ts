@@ -2,20 +2,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { WindowRef } from '@core/services/window.ref';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -23,30 +11,9 @@ import { ViewSubsidiaryBenchmarksComponent } from './view-subsidiary-benchmarks.
 
 describe('ViewSubsidiaryBenchmarksComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, getByTestId, queryByTestId } = await render(ViewSubsidiaryBenchmarksComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+    const setupTools = await render(ViewSubsidiaryBenchmarksComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
-        WindowRef,
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
-        },
-        {
-          provide: PermissionsService,
-          useClass: MockPermissionsService,
-        },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
-        },
-        {
-          provide: BenchmarksServiceBase,
-          useClass: MockBenchmarksService,
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -56,18 +23,14 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
           },
         },
       ],
-      declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getByTestId,
-      queryByTestId,
     };
   };
 
