@@ -50,7 +50,7 @@ describe('FundingRequirementsStateComponent', () => {
 
   describe('orange warning flag', () => {
     it('should show the input message if orangeFlagMessage is passed in', async () => {
-      const inputMessage = 'New staff record';
+      const inputMessage = 'Check this staff record';
       const overrides = {
         currentWdfEligibility: false,
         overallWdfEligibility: true,
