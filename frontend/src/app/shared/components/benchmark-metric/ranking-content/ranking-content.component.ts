@@ -4,7 +4,7 @@ import { NoData } from '@core/model/benchmarks.model';
 export interface RankingContent {
   stateMessage?: string;
   currentRank?: number;
-  hasValue: boolean;
+  hasValue?: boolean;
   noData: NoData;
   smallText?: boolean;
 }

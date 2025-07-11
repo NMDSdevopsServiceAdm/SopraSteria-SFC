@@ -13,7 +13,6 @@ import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -50,7 +49,6 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
-    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
@@ -93,9 +91,7 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
     this.calculateJourneyType();
     this.breadcrumbService.show(this.journey[this.journeyType]);
 
-    this.tilesData = this.featureFlagsService.newBenchmarksDataArea
-      ? this.benchmarksService.benchmarksData.oldBenchmarks
-      : this.benchmarksService.benchmarksData;
+    this.tilesData = this.benchmarksService.benchmarksData.oldBenchmarks;
     this.rankings = this.benchmarksService.rankingsData;
     this.payContent = { ...this.rankings.pay, smallText: true, noData: MetricsContent.Pay.noData };
     this.turnoverContent = { ...this.rankings.turnover, smallText: true, noData: MetricsContent.Turnover.noData };
