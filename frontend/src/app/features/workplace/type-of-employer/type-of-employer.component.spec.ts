@@ -1,8 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithNoEmployerType } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
@@ -12,31 +11,38 @@ import userEvent from '@testing-library/user-event';
 import { TypeOfEmployerComponent } from './type-of-employer.component';
 
 describe('TypeOfEmployerComponent', () => {
-  async function setup(employerTypeHasValue = true, owner: string = 'Workplace') {
-    const { fixture, getByText, getAllByText, getByLabelText } = await render(TypeOfEmployerComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+  const optionsWithoutOther = [
+    { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
+    { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
+    { value: 'Private Sector', text: 'Private sector' },
+    { value: 'Voluntary / Charity', text: 'Voluntary, charity, not for profit' },
+  ];
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(TypeOfEmployerComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
+        provideRouter([]),
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceWithNoEmployerType.factory(employerTypeHasValue, owner),
+          useFactory: MockEstablishmentServiceWithNoEmployerType.factory(
+            overrides.employerTypeHasValue ?? true,
+            overrides.owner ?? 'Workplace',
+          ),
         },
       ],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateTypeOfEmployer').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByLabelText,
+      ...setupTools,
       establishmentServiceSpy,
       establishmentService,
       routerSpy,
@@ -60,67 +66,21 @@ describe('TypeOfEmployerComponent', () => {
     expect(getByText('Save and continue')).toBeTruthy();
   });
 
-  it('should submit the form with the correct value when the Local authority (adult services) radio button is selected and the form is submitted', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
+  optionsWithoutOther.forEach((answer) => {
+    it(`should submit the form with the correct value when the ${answer.text} radio button is selected and the form is submitted`, async () => {
+      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
 
-    const radioButton = getByLabelText('Local authority (adult services)');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
+      const radioButton = getByLabelText(answer.text);
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
 
-    const submitButton = getByText('Save and continue');
-    fireEvent.click(submitButton);
-    fixture.detectChanges();
+      const submitButton = getByText('Save and continue');
+      fireEvent.click(submitButton);
+      fixture.detectChanges();
 
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Local Authority (adult services)' },
-    });
-  });
-
-  it('should submit the form with the correct value when the Local authority (generic, other) radio button is selected and the form is submitted', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
-
-    const radioButton = getByLabelText('Local authority (generic, other)');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
-
-    const submitButton = getByText('Save and continue');
-    fireEvent.click(submitButton);
-    fixture.detectChanges();
-
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Local Authority (generic/other)' },
-    });
-  });
-
-  it('should submit the form with the correct value when the Private sector radio button is selected and the form is submitted', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
-
-    const radioButton = getByLabelText('Private sector');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
-
-    const submitButton = getByText('Save and continue');
-    fireEvent.click(submitButton);
-    fixture.detectChanges();
-
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Private Sector' },
-    });
-  });
-
-  it('should submit the form with the correct value when the Voluntary, charity, not for profit radio button is selected and the form is submitted', async () => {
-    const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup();
-
-    const radioButton = getByLabelText('Voluntary, charity, not for profit');
-    fireEvent.click(radioButton);
-    fixture.detectChanges();
-
-    const submitButton = getByText('Save and continue');
-    fireEvent.click(submitButton);
-    fixture.detectChanges();
-
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-      employerType: { value: 'Voluntary / Charity' },
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'EmployerType', {
+        employerType: { value: answer.value },
+      });
     });
   });
 
@@ -135,7 +95,7 @@ describe('TypeOfEmployerComponent', () => {
     fireEvent.click(submitButton);
     fixture.detectChanges();
 
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
+    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'EmployerType', {
       employerType: { value: 'Other', other: null },
     });
   });
@@ -155,7 +115,7 @@ describe('TypeOfEmployerComponent', () => {
     fireEvent.click(submitButton);
     fixture.detectChanges();
 
-    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
+    expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'EmployerType', {
       employerType: { value: 'Other', other: 'some employer type' },
     });
   });
@@ -193,9 +153,10 @@ describe('TypeOfEmployerComponent', () => {
   });
 
   it('should navigate back to dashboard when navigated to from login', async () => {
-    const { fixture, getByText, getByLabelText, routerSpy, component } = await setup(false);
+    const { fixture, getByText, getByLabelText, routerSpy, component, establishmentService } = await setup({
+      employerTypeHasValue: false,
+    });
 
-    const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
     spyOn(establishmentService, 'getEstablishment').and.callThrough();
 
     const radioButton = getByLabelText('Voluntary, charity, not for profit');
@@ -209,9 +170,9 @@ describe('TypeOfEmployerComponent', () => {
   });
 
   it('should navigate back to dashboard when navigated to sub from employer type question', async () => {
-    const { fixture, getByText, getByLabelText, routerSpy, component } = await setup(false, 'parent');
+    const overrides = { employerTypeHasValue: false, owner: 'parent' };
+    const { fixture, getByText, getByLabelText, routerSpy, component, establishmentService } = await setup(overrides);
 
-    const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
     spyOn(establishmentService, 'getEstablishment').and.callThrough();
 
     const radioButton = getByLabelText('Private sector');

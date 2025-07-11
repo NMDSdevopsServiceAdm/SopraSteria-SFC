@@ -10,13 +10,6 @@ import { Observable, of } from 'rxjs';
 
 import { subsid1, subsid2, subsid3 } from './MockUserService';
 
-interface EmployerTypeRequest {
-  employerType: {
-    value: string;
-    other?: string;
-  };
-}
-
 export const establishmentBuilder = build('Establishment', {
   fields: {
     id: sequence(),
@@ -267,7 +260,11 @@ export class MockEstablishmentService extends EstablishmentService {
     this._primaryWorkplace = value;
   }
 
-  public updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest): Observable<any> {
+  public getEstablishmentField(establishmentId: string, property: string) {
+    return of(this.establishmentObj);
+  }
+
+  public updateEstablishmentFieldWithAudit(establishmentId, property: string, data: any): Observable<any> {
     return of('');
   }
 

@@ -1,23 +1,38 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { render } from '@testing-library/angular';
 
 import { TotalStaffComponent } from './total-staff.component';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { HttpClient } from '@angular/common/http';
+import { DetailsComponent } from '../details/details.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
 describe('TotalStaffComponent', () => {
-  const setup = async (showHint = true) => {
-    const { fixture, getByTestId, queryByTestId, getByText } = await render(TotalStaffComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(TotalStaffComponent, {
+      schemas: [NO_ERRORS_SCHEMA],
+      declarations: [DetailsComponent],
+      imports: [HttpClientTestingModule],
+      providers: [
+        provideRouter([]),
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceWithOverrides.factory(overrides),
+          deps: [HttpClient],
+        },
+      ],
       componentProperties: {
         establishmentUid: 'mock-uid',
-        showHint,
+        showHint: overrides.showHint ?? true,
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
-    return { component, getByTestId, queryByTestId, getByText };
-  };
+    return { ...setupTools, component };
+  }
 
   it('should create', async () => {
     const component = await setup();
@@ -29,5 +44,15 @@ describe('TotalStaffComponent', () => {
 
     expect(getByTestId('totalStaffRevealTitle')).toBeTruthy();
     expect(getByTestId('totalStaffRevealText')).toBeTruthy();
+  });
+
+  it('should prefill the number of staff', async () => {
+    const staffNumber = 20;
+    const { getByLabelText } = await setup({
+      establishmentObj: { numberOfStaff: staffNumber },
+    });
+
+    const numberInput = getByLabelText('Number of staff') as HTMLInputElement;
+    expect(numberInput.value).toEqual(`${staffNumber}`);
   });
 });
