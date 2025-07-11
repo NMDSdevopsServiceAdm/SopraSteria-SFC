@@ -24,7 +24,7 @@ describe('WorkplaceService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should set the international recruitment worker answers', () => {
+  it('should set the all workplaces sort value answers', () => {
     const allWorkplacesSortValue = 'workplaceToCheckAsc';
 
     service.setAllWorkplacesSortValue(allWorkplacesSortValue);

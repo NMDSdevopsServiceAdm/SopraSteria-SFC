@@ -345,7 +345,7 @@ describe('ViewMyWorkplacesComponent', () => {
       expect(component.sortBySelectedValue).toEqual(component.sortByParamMap[sortKey]);
     });
 
-    it('should call the sortBy function when selecting a different parameter for sorting and emit properties for getting workers', async () => {
+    it('should call the sortBy function when selecting a different parameter for sorting', async () => {
       const { component, getByLabelText, getChildWorkplacesSpy } = await setup();
 
       const handleSortSpy = spyOn(component, 'sortBy').and.callThrough();
