@@ -4,7 +4,9 @@ const Establishment = require('../../models/classes/establishment');
 const { hasPermission } = require('../../utils/security/hasPermission');
 const HttpError = require('../../utils/errors/httpError');
 
-let filteredProperties = ['Name']
+const allowedPropertiesToBeRequested = ['EmployerType', 'Name', 'NumberOfStaff', 'ShareData'];
+
+let filteredProperties = ['Name'];
 
 const getEstablishmentField = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -19,6 +21,8 @@ const getEstablishmentField = async (req, res) => {
 
   const thisEstablishment = new Establishment.Establishment(req.username);
   try {
+    checkIfRequestedPropertyIsAllowed(property);
+
     if (await thisEstablishment.restore(establishmentId, showHistory)) {
       return res
         .status(200)
@@ -64,6 +68,7 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   filteredProperties.push(property);
 
   try {
+    checkIfRequestedPropertyIsAllowed(property);
     const establishmentFound = await thisEstablishment.restore(establishmentId);
 
     if (!establishmentFound) {
@@ -85,6 +90,12 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
       return res.status(error.statusCode).send(safeMessage);
     }
     return res.status(500).send('Failed to update %s for workplace', property);
+  }
+};
+
+const checkIfRequestedPropertyIsAllowed = (property) => {
+  if (!allowedPropertiesToBeRequested.includes(property)) {
+    throw new HttpError('Requested property not allowed', 404);
   }
 };
 
