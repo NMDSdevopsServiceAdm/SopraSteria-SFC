@@ -23,17 +23,21 @@ describe('server/routes/establishments/getEstablishmentField', () => {
   });
 
   describe('/getEstablishmentField', () => {
-    const mockRequest = {
-      method: 'GET',
-      url: `/api/establishment/${establishmentId}/getEstablishmentField`,
-      establishmentId: establishmentId,
-      username: 'user',
-      params: { property },
+    let mockRequest;
+    const setupTests = (propertyToRequest = property) => {
+      mockRequest = {
+        method: 'GET',
+        url: `/api/establishment/${establishmentId}/getEstablishmentField`,
+        establishmentId: establishmentId,
+        username: 'user',
+        params: { property: propertyToRequest },
+      };
     };
 
     it('should respond with 200 and return the value on the requested property', async () => {
       establishmentRecord.restore = sinon.stub().resolves(true);
 
+      setupTests();
       const req = httpMocks.createRequest(mockRequest);
       const res = httpMocks.createResponse();
       await getEstablishmentField(req, res);
@@ -42,9 +46,20 @@ describe('server/routes/establishments/getEstablishmentField', () => {
       expect(res.statusCode).to.equal(200);
     });
 
+    it('should return with 404 if the requested property is not on the allowed list', async () => {
+      setupTests('Capacity');
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+      await getEstablishmentField(req, res);
+
+      expect(establishmentRecord.restore).not.to.have.been.called;
+      expect(res.statusCode).to.equal(404);
+    });
+
     it('should respond with 404 if the establishment is not found', async () => {
       establishmentRecord.restore = sinon.stub().resolves(false);
 
+      setupTests();
       const req = httpMocks.createRequest(mockRequest);
       const res = httpMocks.createResponse();
       await getEstablishmentField(req, res);
@@ -56,6 +71,7 @@ describe('server/routes/establishments/getEstablishmentField', () => {
     it('should respond with 500 when there is an unexpected error', async () => {
       establishmentRecord.restore = sinon.stub().throws();
 
+      setupTests();
       const req = httpMocks.createRequest(mockRequest);
       const res = httpMocks.createResponse();
       await getEstablishmentField(req, res);
@@ -65,13 +81,16 @@ describe('server/routes/establishments/getEstablishmentField', () => {
   });
 
   describe('/updateEstablishmentFieldWithAudit', () => {
-    const mockRequest = {
-      method: 'POST',
-      url: `/api/establishment/${establishmentId}/updateEstablishmentFieldWithAudit`,
-      establishmentId: establishmentId,
-      username: 'user',
-      body: { employerType: { value: 'Private Sector' } },
-      params: { property },
+    let mockRequest;
+    const setupTests = (propertyToRequest = property) => {
+      mockRequest = {
+        method: 'POST',
+        url: `/api/establishment/${establishmentId}/updateEstablishmentFieldWithAudit`,
+        establishmentId: establishmentId,
+        username: 'user',
+        body: { employerType: { value: 'Private Sector' } },
+        params: { property: propertyToRequest },
+      };
     };
 
     it('should update the property and return a 200 status', async () => {
@@ -79,6 +98,7 @@ describe('server/routes/establishments/getEstablishmentField', () => {
       establishmentRecord.load = sinon.stub().resolves(true);
       establishmentRecord.save = sinon.stub().resolves(true);
 
+      setupTests();
       const req = httpMocks.createRequest(mockRequest);
       const res = httpMocks.createResponse();
       await updateEstablishmentFieldWithAudit(req, res);
@@ -89,9 +109,20 @@ describe('server/routes/establishments/getEstablishmentField', () => {
       expect(res.statusCode).to.equal(200);
     });
 
+    it('should return with 404 if the requested property to update is not on the allowed list', async () => {
+      setupTests('Capacity');
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+      await updateEstablishmentFieldWithAudit(req, res);
+
+      expect(establishmentRecord.restore).not.to.have.been.called;
+      expect(res.statusCode).to.equal(404);
+    });
+
     it('should respond with 404 if the establishment is not found', async () => {
       establishmentRecord.restore = sinon.stub().resolves(false);
 
+      setupTests();
       const req = httpMocks.createRequest(mockRequest);
       const res = httpMocks.createResponse();
       await updateEstablishmentFieldWithAudit(req, res);
@@ -106,6 +137,7 @@ describe('server/routes/establishments/getEstablishmentField', () => {
       establishmentRecord.restore = sinon.stub().resolves(true);
       establishmentRecord.load = sinon.stub().resolves(false);
 
+      setupTests();
       const req = httpMocks.createRequest(mockRequest);
       const res = httpMocks.createResponse();
       await updateEstablishmentFieldWithAudit(req, res);
@@ -119,6 +151,7 @@ describe('server/routes/establishments/getEstablishmentField', () => {
     it('should respond with 400 if it failed to update', async () => {
       establishmentRecord.restore = sinon.stub().resolves(false);
 
+      setupTests();
       const req = httpMocks.createRequest(mockRequest);
       const res = httpMocks.createResponse();
       await updateEstablishmentFieldWithAudit(req, res);
@@ -132,6 +165,7 @@ describe('server/routes/establishments/getEstablishmentField', () => {
     it('should respond with 500 when there is an unexpected error', async () => {
       establishmentRecord.restore = sinon.stub().throws();
 
+      setupTests();
       const req = httpMocks.createRequest(mockRequest);
       const res = httpMocks.createResponse();
       await updateEstablishmentFieldWithAudit(req, res);
@@ -140,4 +174,3 @@ describe('server/routes/establishments/getEstablishmentField', () => {
     });
   });
 });
-
