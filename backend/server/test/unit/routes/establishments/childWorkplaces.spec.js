@@ -165,6 +165,16 @@ describe('server/routes/establishments/childWorkplaces', () => {
 
       expect(modelStub.args[0][5]).to.equal(true);
     });
+
+    it('should call getChildWorkplaces on establishment model with sortBy when sortBy in req', async () => {
+      const modelStub = sinon.stub(models.establishment, 'getChildWorkplaces').returns(modelData);
+
+      req.query.sortBy = 'workplaceNameDesc';
+
+      await getChildWorkplaces(req, res);
+
+      expect(modelStub.args[0][6]).to.equal(req.query.sortBy);
+    });
   });
 
   describe('formatChildWorkplaces', () => {
