@@ -145,7 +145,9 @@ BEGIN
     IF CurrentWorker."AnnualHourlyPayValue" IS NOT NULL THEN
       CalculatedPayInterval := CurrentWorker."AnnualHourlyPayValue";
 
-      IF CurrentWorker."AnnualHourlyPayRate" IS NULL OR CurrentWorker."AnnualHourlyPayValue" = 'Don''t know' THEN
+      IF CurrentWorker."AnnualHourlyPayRate" IS NULL AND CurrentWorker."AnnualHourlyPayValue" = 'Don''t know' THEN
+        CalculatedPayRate := 'n/a';
+      ELSIF CurrentWorker."AnnualHourlyPayRate" IS NULL THEN
         CalculatedPayRate := 'Missing';
       ELSE
         CalculatedPayRate := CurrentWorker."AnnualHourlyPayRate";
