@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -44,7 +44,7 @@ describe('DataAreaTabComponent', () => {
           useClass: MockBreadcrumbService,
         },
         {
-          provide: BenchmarksServiceBase,
+          provide: BenchmarksV2Service,
           useClass: MockBenchmarksService,
         },
         {

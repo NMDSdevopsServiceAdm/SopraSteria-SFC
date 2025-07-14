@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -33,7 +33,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private tabsService: TabsService,
-    protected benchmarksService: BenchmarksServiceBase,
+    protected benchmarksService: BenchmarksV2Service,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private authService: AuthService,

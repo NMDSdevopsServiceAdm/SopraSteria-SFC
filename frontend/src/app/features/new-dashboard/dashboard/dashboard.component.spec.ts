@@ -4,7 +4,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PermissionType } from '@core/model/permissions.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -30,7 +30,7 @@ describe('NewDashboardComponent', () => {
           useFactory: MockTabsService.factory(overrides.selectedTab),
         },
         {
-          provide: BenchmarksServiceBase,
+          provide: BenchmarksV2Service,
           useClass: MockBenchmarksService,
         },
         {

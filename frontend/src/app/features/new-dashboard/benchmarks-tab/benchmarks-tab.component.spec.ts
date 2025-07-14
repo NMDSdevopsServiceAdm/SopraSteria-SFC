@@ -8,7 +8,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfService } from '@core/services/pdf.service';
@@ -50,7 +50,7 @@ describe('NewBenchmarksTabComponent', () => {
           useClass: MockFeatureFlagsService,
         },
         {
-          provide: BenchmarksServiceBase,
+          provide: BenchmarksV2Service,
           useClass: MockBenchmarksService,
         },
         {

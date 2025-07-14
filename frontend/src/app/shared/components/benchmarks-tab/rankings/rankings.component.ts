@@ -1,15 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import {
-  AllRankingsResponse,
-  BenchmarksResponse,
-  Metric,
-  MetricsContent,
-  NoData,
-  Tile,
-} from '@core/model/benchmarks.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { AllRankingsResponse, Metric, MetricsContent, NoData, Tile } from '@core/model/benchmarks-v2.model';
+import { BenchmarksResponse } from '@core/model/benchmarks.model';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
@@ -45,7 +39,7 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
   public journeyType: string;
 
   constructor(
-    private benchmarksService: BenchmarksServiceBase,
+    private benchmarksService: BenchmarksV2Service,
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,

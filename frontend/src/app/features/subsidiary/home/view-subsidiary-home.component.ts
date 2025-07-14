@@ -6,7 +6,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { Worker } from '@core/model/worker.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
@@ -74,7 +74,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     private tabsService: TabsService,
     public route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
-    protected benchmarksService: BenchmarksServiceBase,
+    protected benchmarksService: BenchmarksV2Service,
     private serviceNamePipe: ServiceNamePipe,
     private router: Router,
   ) {}

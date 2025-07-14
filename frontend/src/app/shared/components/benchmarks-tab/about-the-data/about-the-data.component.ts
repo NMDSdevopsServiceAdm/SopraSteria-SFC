@@ -3,8 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
-import { URLStructure } from '@core/model/url.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
@@ -24,7 +23,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   constructor(
     protected router: Router,
     protected route: ActivatedRoute,
-    protected benchmarksService: BenchmarksServiceBase,
+    protected benchmarksService: BenchmarksV2Service,
     private breadcrumbService: BreadcrumbService,
     private permissionsService: PermissionsService,
   ) {}
@@ -35,7 +34,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     const canViewBenchmarks = this.permissionsService.can(workplaceUid, 'canViewBenchmarks');
 
     if (canViewBenchmarks) {
-      this.meta = this.benchmarksService.benchmarksData.meta;
+      this.meta = this.benchmarksService.benchmarksData.oldBenchmarks.meta;
     }
 
     if (!this.isParentViewingSubsidiary) {
