@@ -7,7 +7,7 @@ const {
   updateEstablishmentFieldWithAudit,
 } = require('../../../../routes/establishments/establishmentField');
 
-describe('server/routes/establishments/getEstablishmentField', () => {
+describe('server/routes/establishments/establishmentField', () => {
   const establishmentId = 'mock-id';
   let establishmentRecord;
   const property = 'EmployerType';
@@ -22,12 +22,12 @@ describe('server/routes/establishments/getEstablishmentField', () => {
     sinon.restore();
   });
 
-  describe('/getEstablishmentField', () => {
+  describe('getEstablishmentField', () => {
     let mockRequest;
     const setupTests = (propertyToRequest = property) => {
       mockRequest = {
         method: 'GET',
-        url: `/api/establishment/${establishmentId}/getEstablishmentField`,
+        url: `/api/establishment/${establishmentId}/establishmentField`,
         establishmentId: establishmentId,
         username: 'user',
         params: { property: propertyToRequest },
@@ -80,12 +80,12 @@ describe('server/routes/establishments/getEstablishmentField', () => {
     });
   });
 
-  describe('/updateEstablishmentFieldWithAudit', () => {
+  describe('updateEstablishmentFieldWithAudit', () => {
     let mockRequest;
     const setupTests = (propertyToRequest = property) => {
       mockRequest = {
         method: 'POST',
-        url: `/api/establishment/${establishmentId}/updateEstablishmentFieldWithAudit`,
+        url: `/api/establishment/${establishmentId}/establishmentField`,
         establishmentId: establishmentId,
         username: 'user',
         body: { employerType: { value: 'Private Sector' } },

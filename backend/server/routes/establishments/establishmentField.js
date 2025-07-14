@@ -6,13 +6,11 @@ const HttpError = require('../../utils/errors/httpError');
 
 const allowedPropertiesToBeRequested = ['EmployerType', 'Name', 'NumberOfStaff', 'ShareData'];
 
-let filteredProperties = ['Name'];
-
 const getEstablishmentField = async (req, res) => {
   const establishmentId = req.establishmentId;
   const property = req.params?.property;
 
-  filteredProperties.push(property);
+  const filteredProperties = ['Name', property];
 
   const showHistory =
     req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
@@ -50,12 +48,11 @@ const getEstablishmentField = async (req, res) => {
     );
 
     if (error instanceof HttpError) {
-      const safeMessage = error.safe || 'An error occurred.';
-      return res.status(error.statusCode).send(safeMessage);
+      return res.status(error.statusCode).send(error.message);
     }
 
-    console.error('establishment::%s GET/:eID - failed', property, thisError.message);
-    return res.status(500).send(thisError.safe);
+    console.error('establishment::%s GET/:eID - failed', property, error.message);
+    return res.status(500).send(error.message);
   }
 };
 
@@ -65,7 +62,7 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
 
   const property = req.params?.property;
 
-  filteredProperties.push(property);
+  const filteredProperties = ['Name', property];
 
   try {
     checkIfRequestedPropertyIsAllowed(property);
@@ -86,8 +83,7 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   } catch (error) {
     console.error('Establishment::%s POST: ', property, error.message);
     if (error instanceof HttpError) {
-      const safeMessage = error.safe || 'An error occurred.';
-      return res.status(error.statusCode).send(safeMessage);
+      return res.status(error.statusCode).send(error.message);
     }
     return res.status(500).send('Failed to update %s for workplace', property);
   }
