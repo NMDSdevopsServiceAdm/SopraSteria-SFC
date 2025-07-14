@@ -2299,28 +2299,22 @@ module.exports = function (sequelize, DataTypes) {
       };
     }
 
-    const order = {
-      workplaceNameAsc: [
-        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
-        ['NameValue', 'ASC'],
-      ],
-      workplaceNameDesc: [
-        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
-        ['NameValue', 'DESC'],
-      ],
+    const sortOptions = {
+      workplaceNameAsc: [['NameValue', 'ASC']],
+      workplaceNameDesc: [['NameValue', 'DESC']],
       workplaceToCheckAsc: [
-        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
         ['showFlag', 'DESC'],
         ['NameValue', 'ASC'],
       ],
       workplaceToCheckDesc: [
-        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
         ['showFlag', 'DESC'],
         ['NameValue', 'DESC'],
       ],
-    }[sortBy] || [
+    };
+
+    const order = [
       [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
-      ['NameValue', 'ASC'],
+      ...(sortOptions[sortBy] ?? [['NameValue', 'ASC']]),
     ];
 
     const data = await this.findAndCountAll({
@@ -2596,4 +2590,4 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   return Establishment;
-};
+};;
