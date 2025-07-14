@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { LocationService } from '@core/services/location.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
 import { RegistrationModule } from '@features/registration/registration.module';
@@ -13,7 +12,7 @@ import { ThankYouComponent } from './thank-you.component';
 describe('ThankYouComponent', () => {
   async function setup() {
     const component = await render(ThankYouComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
       providers: [
         {
           provide: LocationService,
