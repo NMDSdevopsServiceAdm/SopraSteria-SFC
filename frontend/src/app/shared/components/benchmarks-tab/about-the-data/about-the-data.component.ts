@@ -34,7 +34,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     const canViewBenchmarks = this.permissionsService.can(workplaceUid, 'canViewBenchmarks');
 
     if (canViewBenchmarks) {
-      this.meta = this.benchmarksService.benchmarksData.oldBenchmarks.meta;
+      this.meta = this.benchmarksService.benchmarksData?.oldBenchmarks?.meta;
     }
 
     if (!this.isParentViewingSubsidiary) {
