@@ -108,9 +108,6 @@ export class AppComponent implements OnInit {
       false,
     );
     this.featureFlagsService.newHomeDesignParentFlag = this.newHomeDesignParentFlag;
-
-    this.newDataAreaFlag = await this.featureFlagsService.configCatClient.getValueAsync('newBenchmarksDataArea', false);
-    this.featureFlagsService.newBenchmarksDataArea = this.newDataAreaFlag;
   }
 
   public skip(event: Event) {

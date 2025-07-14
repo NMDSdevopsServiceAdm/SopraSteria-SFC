@@ -6,7 +6,6 @@ export const DefaultFeatureFlagsForLocalTest = {
   wdfNewDesign: false,
   homePageNewDesign: true,
   homePageNewDesignParent: true,
-  newBenchmarksDataArea: true,
   bulkUploadHelp: true,
 };
 
