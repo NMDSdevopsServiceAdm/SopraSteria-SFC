@@ -6,20 +6,19 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { Establishment } from '../../../../mockdata/establishment';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
+
+import { Establishment } from '../../../../mockdata/establishment';
 import { ChangeDataOwnerComponent } from './change-data-owner.component';
 
 const parentValues = {
@@ -92,7 +91,6 @@ describe('ChangeDataOwnerComponent', async () => {
           WindowRef,
           UntypedFormBuilder,
           ErrorSummaryService,
-          { provide: BenchmarksService, useClass: MockBenchmarksService },
           { provide: PermissionsService, useClass: MockPermissionsService },
           {
             provide: BreadcrumbService,
