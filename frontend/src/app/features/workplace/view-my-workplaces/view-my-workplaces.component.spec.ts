@@ -75,7 +75,7 @@ describe('ViewMyWorkplacesComponent', () => {
                   overrides.hasChildWorkplaces ?? true
                     ? {
                         childWorkplaces: [subsid1, subsid2, subsid3],
-                        count: 3,
+                        count: overrides.totalWorkplaceCount ?? 3,
                         activeWorkplaceCount: 2,
                       }
                     : {
@@ -157,11 +157,7 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should call getChildWorkplaces with correct search term if passed', async () => {
-      const { component, fixture, getByLabelText, getChildWorkplacesSpy } = await setup();
-
-      // show search
-      component.totalWorkplaceCount = 13;
-      fixture.detectChanges();
+      const { getByLabelText, getChildWorkplacesSpy } = await setup({ totalWorkplaceCount: 13 });
 
       const searchInput = getByLabelText('Search child workplace records');
       expect(searchInput).toBeTruthy();
@@ -180,10 +176,7 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should reset the pageIndex before calling getChildWorkplaces when handling search', async () => {
-      const { fixture, component, getByLabelText, getChildWorkplacesSpy } = await setup();
-
-      component.totalWorkplaceCount = 13;
-      fixture.detectChanges();
+      const { fixture, getByLabelText, getChildWorkplacesSpy } = await setup({ totalWorkplaceCount: 13 });
 
       fixture.componentInstance.currentPageIndex = 1;
       fixture.detectChanges();
@@ -193,10 +186,7 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should render the no results returned message when 0 workplaces returned from getChildWorkplaces after search', async () => {
-      const { fixture, component, getByLabelText, establishmentService, getByText } = await setup();
-
-      component.totalWorkplaceCount = 13;
-      fixture.detectChanges();
+      const { fixture, getByLabelText, establishmentService, getByText } = await setup({ totalWorkplaceCount: 13 });
 
       sinon.stub(establishmentService, 'getChildWorkplaces').returns(
         of({
@@ -218,10 +208,9 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should not update All workplaces count when search results returned but should set workplaceCount used for pagination', async () => {
-      const { component, fixture, getByLabelText, establishmentService, getByText } = await setup();
-
-      component.totalWorkplaceCount = 13;
-      fixture.detectChanges();
+      const { component, fixture, getByLabelText, establishmentService, getByText } = await setup({
+        totalWorkplaceCount: 13,
+      });
 
       sinon.stub(establishmentService, 'getChildWorkplaces').returns(
         of({
@@ -290,29 +279,19 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should not show if there is 1 workplace', async () => {
-      const { component, queryByTestId, fixture } = await setup({ hasChildWorkplaces: true });
-
-      component.totalWorkplaceCount = 1;
-      fixture.detectChanges();
+      const { queryByTestId } = await setup({ hasChildWorkplaces: true, totalWorkplaceCount: 1 });
 
       expect(queryByTestId('sortBy')).toBeFalsy();
     });
 
     it('should show if there is more than 1 workplace', async () => {
-      const { component, fixture, getByTestId } = await setup({ hasChildWorkplaces: true });
-
-      component.totalWorkplaceCount = 5;
-      fixture.detectChanges();
+      const { getByTestId } = await setup({ hasChildWorkplaces: true, totalWorkplaceCount: 5 });
 
       expect(getByTestId('sortBy')).toBeTruthy();
     });
 
     it('should add the sort-column class when there is search and pagination', async () => {
-      const { component, fixture } = await setup({ hasChildWorkplaces: true });
-
-      component.totalWorkplaceCount = 15;
-
-      fixture.detectChanges();
+      const { fixture } = await setup({ hasChildWorkplaces: true, totalWorkplaceCount: 13 });
 
       const sortByDiv = fixture.nativeElement.querySelector('div[data-testid="sortBy"]');
 
@@ -321,11 +300,7 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should add the govuk-util__float-right class when there is no search and pagination', async () => {
-      const { component, fixture } = await setup({ hasChildWorkplaces: true });
-
-      component.totalWorkplaceCount = 4;
-
-      fixture.detectChanges();
+      const { fixture } = await setup({ hasChildWorkplaces: true, totalWorkplaceCount: 4 });
 
       const sortByDiv = fixture.nativeElement.querySelector('div[data-testid="sortBy"]');
 
