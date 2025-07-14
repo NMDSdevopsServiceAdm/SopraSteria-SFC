@@ -51,8 +51,8 @@ const getEstablishmentField = async (req, res) => {
       return res.status(error.statusCode).send(error.message);
     }
 
-    console.error('establishment::%s GET/:eID - failed', property, error.message);
-    return res.status(500).send(error.message);
+    console.error('establishment::%s GET/:eID - failed', property, thisError.message);
+    return res.status(500).send(thisError.safe);
   }
 };
 
