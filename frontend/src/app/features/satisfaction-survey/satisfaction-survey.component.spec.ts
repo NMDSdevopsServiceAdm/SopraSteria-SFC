@@ -1,10 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { LoginComponent } from '@features/login/login.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -13,21 +11,9 @@ import { of } from 'rxjs';
 import { SatisfactionSurveyComponent } from './satisfaction-survey.component';
 import { environment } from 'src/environments/environment';
 
-
 const getSatisfactionSurveyComponent = async () => {
   return render(SatisfactionSurveyComponent, {
-    imports: [
-      FormsModule,
-      ReactiveFormsModule,
-      HttpClientTestingModule,
-      SharedModule,
-      RouterTestingModule.withRoutes([
-        {
-          path: 'login',
-          component: LoginComponent,
-        },
-      ]),
-    ],
+    imports: [FormsModule, ReactiveFormsModule, HttpClientTestingModule, SharedModule],
     providers: [
       {
         provide: ActivatedRoute,
@@ -44,6 +30,10 @@ describe('SatisfactionSurveyComponent', () => {
     async function setup(fillInSurvey: boolean) {
       const { fixture, getByRole } = await getSatisfactionSurveyComponent();
 
+      const injector = getTestBed();
+      const router = injector.inject(Router);
+      const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
+
       if (fillInSurvey) {
         fireEvent.click(getElementById('#didYouDoEverything-no'));
         userEvent.type(getElementById('#whatStoppedYouDoingAnything'), 'answer');
@@ -52,14 +42,16 @@ describe('SatisfactionSurveyComponent', () => {
 
       const submit = getByRole('button');
       fireEvent.click(submit);
-      const req = TestBed.inject(HttpTestingController).expectOne(`${environment.appRunnerEndpoint}/api/satisfactionSurvey`);
+      const req = TestBed.inject(HttpTestingController).expectOne(
+        `${environment.appRunnerEndpoint}/api/satisfactionSurvey`,
+      );
       req.flush({});
 
       function getElementById(id) {
         return fixture.debugElement.query(By.css(id)).nativeElement;
       }
 
-      return { fixture, req };
+      return { fixture, req, routerSpy };
     }
 
     afterEach(() => {
@@ -79,11 +71,9 @@ describe('SatisfactionSurveyComponent', () => {
     });
 
     it('should navigate to the login page after submitting the survey', async () => {
-      const { fixture } = await setup(false);
+      const { routerSpy } = await setup(false);
 
-      fixture.whenStable().then(() => {
-        expect(TestBed.inject(Router).url).toBe('/login');
-      });
+      expect(routerSpy).toHaveBeenCalledWith(['/login']);
     });
 
     it('should submit survey with the answers', async () => {
