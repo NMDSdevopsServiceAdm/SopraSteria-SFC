@@ -1,10 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import {
-  LocalAuthoritiesReturnService,
-} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
+import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockLocalAuthoritiesReturnService } from '@core/test-utils/MockLocalAuthoritiesReturnService';
@@ -17,7 +14,7 @@ import { MonitorComponent } from './monitor.component';
 describe('MonitorComponent', () => {
   async function setup() {
     const component = await render(MonitorComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: LocalAuthoritiesReturnService, useClass: MockLocalAuthoritiesReturnService },
