@@ -10,7 +10,6 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { WorkplaceService } from '@core/services/workplace.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -35,7 +34,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public providerId: string;
   public showMissingCqcMessage: boolean;
   public missingCqcLocations: any;
-  public sortByValueFromHomePage: string;
+  public sortByValueFromLocalStorage: string;
   public sortBySelectedKey: string;
   public sortBySelectedValue = 'workplaceNameAsc';
   public sortOptions: any;
@@ -53,7 +52,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private alertService: AlertService,
-    private workplaceService: WorkplaceService,
   ) {}
 
   ngOnInit(): void {
@@ -75,11 +73,11 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
     this.sortOptions = SortYourOtherWorkplaces;
 
-    this.sortByValueFromHomePage = this.workplaceService.getAllWorkplacesSortValue();
+    this.sortByValueFromLocalStorage = localStorage.getItem('yourOtherWorkplacesSortValue');
 
-    this.sortBySelectedValue = this.sortByValueFromHomePage ?? this.sortBySelectedValue;
+    this.sortBySelectedValue = this.sortByValueFromLocalStorage ?? this.sortBySelectedValue;
     this.sortBySelectedKey =
-      this.getSortKeyByValue(this.sortByParamMap, this.sortByValueFromHomePage) ?? this.sortBySelectedKey;
+      this.getSortKeyByValue(this.sortByParamMap, this.sortByValueFromLocalStorage) ?? this.sortBySelectedKey;
   }
 
   public getSortKeyByValue(object: any, value: string) {
@@ -139,6 +137,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
   public sortBy(sortType: string): void {
     this.sortBySelectedValue = this.sortByParamMap[sortType];
+    localStorage.setItem('yourOtherWorkplacesSortValue', this.sortBySelectedValue);
     this.currentPageIndex = 0;
 
     this.getChildWorkplaces();

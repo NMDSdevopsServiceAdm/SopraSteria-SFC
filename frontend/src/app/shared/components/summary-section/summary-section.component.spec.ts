@@ -16,7 +16,6 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import { WorkplaceService } from '@core/services/workplace.service';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -70,8 +69,8 @@ describe('Summary section', () => {
       of(null),
     );
     const setReturnToSpy = spyOn(establishmentService, 'setReturnTo');
-    const workplaceService = injector.inject(WorkplaceService) as WorkplaceService;
-    const workplaceServiceSpy = spyOn(workplaceService, 'setAllWorkplacesSortValue').and.callThrough();
+
+    const localStorageSpy = spyOn(localStorage, 'setItem');
 
     return {
       ...setupTools,
@@ -80,7 +79,7 @@ describe('Summary section', () => {
       tabsService,
       updateSingleFieldSpy,
       setReturnToSpy,
-      workplaceServiceSpy,
+      localStorageSpy,
     };
   };
 
@@ -1215,36 +1214,36 @@ describe('Summary section', () => {
     });
 
     describe('navigating to "Your other workplaces"', () => {
-      it('should call setAllWorkplaceSortValue with', async () => {
+      it('should call localstorage with the "workplaceNameAsc" sort value', async () => {
         const establishment = {
           ...Establishment,
           isParent: true,
         };
         const overrides = { establishment };
-        const { getByText, routerSpy, workplaceServiceSpy } = await setup(overrides);
+        const { getByText, routerSpy, localStorageSpy } = await setup(overrides);
 
         const yourOtherWorkplacesText = getByText('Your other workplaces');
 
         fireEvent.click(yourOtherWorkplacesText);
 
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['yourOtherWorkplacesSortValue', 'workplaceNameAsc']);
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
-        expect(workplaceServiceSpy).toHaveBeenCalledWith('workplaceNameAsc');
       });
 
-      it('should call setAllWorkplaceSortValue with', async () => {
+      it('should call localstorage with the "workplaceToCheckAsc" sort value', async () => {
         const establishment = {
           ...Establishment,
           isParent: true,
         };
         const overrides = { establishment, workplacesCount: 1, workplacesNeedAttention: true };
-        const { getByText, routerSpy, workplaceServiceSpy } = await setup(overrides);
+        const { getByText, routerSpy, localStorageSpy } = await setup(overrides);
 
         const checkWorkplacesText = getByText('You need to check your other workplaces');
 
         fireEvent.click(checkWorkplacesText);
 
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['yourOtherWorkplacesSortValue', 'workplaceToCheckAsc']);
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
-        expect(workplaceServiceSpy).toHaveBeenCalledWith('workplaceToCheckAsc');
       });
     });
   });

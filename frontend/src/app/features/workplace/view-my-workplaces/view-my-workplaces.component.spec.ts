@@ -25,8 +25,6 @@ import sinon from 'sinon';
 
 import { WorkplaceInfoPanelComponent } from '../workplace-info-panel/workplace-info-panel.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
-import { WorkplaceService } from '@core/services/workplace.service';
-import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 
 describe('ViewMyWorkplacesComponent', () => {
   async function setup(overrides: any = {}) {
@@ -61,10 +59,6 @@ describe('ViewMyWorkplacesComponent', () => {
         {
           provide: FeatureFlagsService,
           useClass: MockFeatureFlagsService,
-        },
-        {
-          provide: WorkplaceService,
-          useClass: MockWorkplaceService,
         },
         {
           provide: ActivatedRoute,
@@ -103,7 +97,6 @@ describe('ViewMyWorkplacesComponent', () => {
 
     const permissionsService = injector.inject(PermissionsService) as PermissionsService;
     const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
-    const workplaceService = TestBed.inject(WorkplaceService) as WorkplaceService;
 
     const getChildWorkplacesSpy = spyOn(establishmentService, 'getChildWorkplaces').and.callThrough();
 
@@ -112,7 +105,6 @@ describe('ViewMyWorkplacesComponent', () => {
       component,
       getChildWorkplacesSpy,
       establishmentService,
-      workplaceService,
     };
   }
 
@@ -308,15 +300,16 @@ describe('ViewMyWorkplacesComponent', () => {
       expect(sortByDiv.getAttribute('class')).toContain('govuk-util__float-right');
     });
 
-    it('should call set the sort to value set in getAllWorkplacesSortValue', async () => {
-      const { component, workplaceService } = await setup({ hasChildWorkplaces: true });
+    it('should call localStorage to get the sort to value set', async () => {
+      const { component } = await setup({ hasChildWorkplaces: true });
 
       const sortKey = '1_asc';
 
-      workplaceService.setAllWorkplacesSortValue(component.sortByParamMap[sortKey]);
+      const localStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(component.sortByParamMap[sortKey]);
 
       component.ngOnInit();
 
+      expect(localStorageSpy).toHaveBeenCalled();
       expect(component.sortBySelectedValue).toEqual(component.sortByParamMap[sortKey]);
     });
 
@@ -324,6 +317,7 @@ describe('ViewMyWorkplacesComponent', () => {
       const { component, getByLabelText, getChildWorkplacesSpy } = await setup();
 
       const handleSortSpy = spyOn(component, 'sortBy').and.callThrough();
+      const localStorageSpy = spyOn(localStorage, 'setItem');
 
       const sortByObjectKeys = Object.keys(component.sortOptions);
       userEvent.selectOptions(getByLabelText('Sort by'), sortByObjectKeys[1]);
@@ -336,6 +330,7 @@ describe('ViewMyWorkplacesComponent', () => {
         getPendingWorkplaces: true,
         sortBy: sortBySelectedValue,
       });
+      expect(localStorageSpy.calls.all()[0].args).toEqual(['yourOtherWorkplacesSortValue', sortBySelectedValue]);
     });
   });
 });

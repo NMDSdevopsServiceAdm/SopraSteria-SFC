@@ -23,12 +23,4 @@ describe('WorkplaceService', () => {
   it('should create the service', () => {
     expect(service).toBeTruthy();
   });
-
-  it('should set the all workplaces sort value answers', () => {
-    const allWorkplacesSortValue = 'workplaceToCheckAsc';
-
-    service.setAllWorkplacesSortValue(allWorkplacesSortValue);
-
-    expect(service.getAllWorkplacesSortValue()).toBe(allWorkplacesSortValue);
-  });
 });
