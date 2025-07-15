@@ -4,14 +4,12 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -37,7 +35,6 @@ describe('LinkToParentComponent', () => {
           WindowRef,
           UntypedFormBuilder,
           ErrorSummaryService,
-          { provide: BenchmarksService, useClass: MockBenchmarksService },
           { provide: PermissionsService, useClass: MockPermissionsService },
           {
             provide: BreadcrumbService,
@@ -348,10 +345,9 @@ describe('LinkToParentComponent', () => {
     it('should navigate to the home page after the link request has been sent', async () => {
       const { fixture, establishmentService, routerSpy, getByText, getByLabelText, alertServiceSpy } = await setup();
 
-      const sendRequestToParentForLinkSpy = spyOn(
-        establishmentService,
-        'setRequestToParentForLink',
-      ).and.returnValue(of([requestedLinkToParent]) as Establishment);
+      const sendRequestToParentForLinkSpy = spyOn(establishmentService, 'setRequestToParentForLink').and.returnValue(
+        of([requestedLinkToParent]) as Establishment,
+      );
 
       const linkToParentRequestButton = getByText('Send link request');
       const parentNameOrPostCodeInput = getByLabelText("Start to type the parent workplace's name or postcode");
@@ -364,10 +360,10 @@ describe('LinkToParentComponent', () => {
       expect(sendRequestToParentForLinkSpy).toHaveBeenCalled();
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
-          state: {
-            linkToParentRequestedStatus: true,
-          },
-        });
+        state: {
+          linkToParentRequestedStatus: true,
+        },
+      });
 
       fixture.whenStable().then(() => {
         expect(alertServiceSpy).toHaveBeenCalledWith({

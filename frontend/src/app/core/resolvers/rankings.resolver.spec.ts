@@ -2,13 +2,13 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
 import { RankingsResolver } from './rankings.resolver';
 
-xdescribe('RankingsResollver', () => {
+describe('RankingsResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
@@ -24,7 +24,7 @@ xdescribe('RankingsResollver', () => {
     const resolver = TestBed.inject(RankingsResolver);
     const route = TestBed.inject(ActivatedRoute);
 
-    const benchmarksService = TestBed.inject(BenchmarksService);
+    const benchmarksService = TestBed.inject(BenchmarksV2Service);
     const benchmarksSpy = spyOn(benchmarksService, 'getAllRankingData').and.callThrough();
 
     return {

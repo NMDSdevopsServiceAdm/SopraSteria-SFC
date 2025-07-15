@@ -1,20 +1,18 @@
 <app-new-dashboard-header tab="benchmarks" [workplace]="workplace"> </app-new-dashboard-header>
 
-<ng-container>
-  <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
-    <app-data-area-tab
-      [workplace]="workplace"
-      [newDashboard]="true"
-      [showBanner]="false"
-      data-testid="data-area-tab"
-    ></app-data-area-tab>
-  </ng-container>
-  <ng-template #benchmarksTab>
-    <app-new-benchmarks-tab
-      class="asc-benchmarks-tab"
-      [workplace]="workplace"
-      data-testid="old-benchmarks-tab"
-      [isParentViewingSubsidiary]="true"
-    ></app-new-benchmarks-tab>
-  </ng-template>
+<ng-container *ngIf="canSeeNewDataArea; else benchmarksTab">
+  <app-data-area-tab
+    [workplace]="workplace"
+    [newDashboard]="true"
+    [showBanner]="false"
+    data-testid="data-area-tab"
+  ></app-data-area-tab>
 </ng-container>
+<ng-template #benchmarksTab>
+  <app-new-benchmarks-tab
+    class="asc-benchmarks-tab"
+    [workplace]="workplace"
+    data-testid="old-benchmarks-tab"
+    [isParentViewingSubsidiary]="true"
+  ></app-new-benchmarks-tab>
+</ng-template>

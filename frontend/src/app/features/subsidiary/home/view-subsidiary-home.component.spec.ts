@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -66,7 +66,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
             deps: [HttpClient],
           },
           {
-            provide: BenchmarksServiceBase,
+            provide: BenchmarksV2Service,
             useValue: {
               benchmarksData: {
                 newBenchmarks: {

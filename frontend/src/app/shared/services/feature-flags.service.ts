@@ -34,12 +34,4 @@ export class FeatureFlagsService {
   public set newHomeDesignParentFlag(value: boolean) {
     this._newHomeDesignParentFlag = value;
   }
-
-  public get newBenchmarksDataArea(): boolean {
-    return this._newDataAreaFlag;
-  }
-
-  public set newBenchmarksDataArea(value: boolean) {
-    this._newDataAreaFlag = value;
-  }
 }

@@ -6,10 +6,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -18,8 +20,6 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { StandAloneAccountComponent } from './standAloneAccount.component';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 
 describe('StandAloneAccountComponent', () => {
   const homeTab = { title: 'Home', slug: 'home', active: true };
@@ -37,7 +37,7 @@ describe('StandAloneAccountComponent', () => {
       providers: [
         WindowRef,
         {
-          provide: BenchmarksServiceBase,
+          provide: BenchmarksV2Service,
           useClass: MockBenchmarksService,
         },
         {
@@ -62,7 +62,7 @@ describe('StandAloneAccountComponent', () => {
 
     const component = fixture.componentInstance;
 
-    const benchmarksService = TestBed.inject(BenchmarksServiceBase);
+    const benchmarksService = TestBed.inject(BenchmarksV2Service);
     const benchmarksSpy = spyOn(benchmarksService, 'postBenchmarkTabUsage').and.callThrough();
 
     return {
@@ -95,8 +95,7 @@ describe('StandAloneAccountComponent', () => {
   describe('Tabs', () => {
     it('should show all tabs when all permissions are on the establishment', async () => {
       const { component } = await setup();
-       expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab, benchmarksTab]);
-     // expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab]);
+      expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab, benchmarksTab]);
     });
 
     it('should show not show the workplace tab when canViewEstablisment permission is not on the establishment', async () => {
@@ -104,7 +103,6 @@ describe('StandAloneAccountComponent', () => {
       const { component } = await setup(true, permissions);
 
       expect(component.tabs).toEqual([homeTab, staffRecordsTab, tAndQTab, benchmarksTab]);
-     // expect(component.tabs).toEqual([homeTab, staffRecordsTab, tAndQTab]);
     });
 
     it('should show not show the staff-records or tAndQ tabs when canViewListOfWorkers permission is not on the establishment', async () => {
@@ -112,7 +110,6 @@ describe('StandAloneAccountComponent', () => {
       const { component } = await setup(true, permissions);
 
       expect(component.tabs).toEqual([homeTab, workplaceTab, benchmarksTab]);
-     // expect(component.tabs).toEqual([homeTab, workplaceTab]);
     });
   });
 

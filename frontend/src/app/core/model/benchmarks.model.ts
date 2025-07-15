@@ -17,7 +17,7 @@ export interface Tile {
   workplaceValue: BenchmarkValue;
   comparisonGroup: BenchmarkValue;
   goodCqc: BenchmarkValue;
-  lowTurnover: BenchmarkValue;
+  lowTurnover?: BenchmarkValue;
   workplaces?: number;
   staff?: number;
 }

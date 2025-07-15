@@ -3,13 +3,11 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -29,7 +27,6 @@ describe('BecomeAParentComponent', () => {
       providers: [
         AlertService,
         WindowRef,
-        { provide: BenchmarksService, useClass: MockBenchmarksService },
         { provide: PermissionsService, useClass: MockPermissionsService },
         {
           provide: BreadcrumbService,
@@ -80,7 +77,7 @@ describe('BecomeAParentComponent', () => {
       component,
       routerSpy,
       parentRequestsService,
-      alertServiceSpy
+      alertServiceSpy,
     };
   }
   it('should create', async () => {
@@ -154,10 +151,10 @@ describe('BecomeAParentComponent', () => {
       },
     });
 
-   fixture.whenStable().then(() => {
+    fixture.whenStable().then(() => {
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: "You’ve sent a request to become a parent workplace",
+        message: 'You’ve sent a request to become a parent workplace',
       });
     });
   });
