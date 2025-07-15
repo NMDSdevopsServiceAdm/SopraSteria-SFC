@@ -481,7 +481,7 @@
             <protection locked="0" />
         </xf>
         <xf numFmtId="185" fontId="2" fillId="0" borderId="4" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1" applyProtection="1">
-            <alignment vertical="top" wrapText="1" readingOrder="1" />
+            <alignment horizontal="right" vertical="top" wrapText="1" readingOrder="1" />
             <protection locked="0" />
         </xf>
         <xf numFmtId="185" fontId="5" fillId="0" borderId="4" xfId="0" applyNumberFormat="1" applyFont="1" applyBorder="1" applyAlignment="1" applyProtection="1">
