@@ -1,11 +1,11 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { AuthService } from '@core/services/auth.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -31,8 +31,6 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public newDataAreaFlag: boolean;
   public canSeeNewDataArea: boolean;
   public isParent: boolean;
-  @Input() isStandAloneAccount: boolean;
-  @Input() isSubsAccount: boolean;
 
   constructor(
     private route: ActivatedRoute,
