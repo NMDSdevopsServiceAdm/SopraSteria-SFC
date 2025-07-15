@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 import { WindowRef } from '@core/services/window.ref';
 import { AdminModule } from '@features/admin/admin.module';
@@ -15,15 +14,15 @@ import { of } from 'rxjs';
 
 import { DragAndDropUploadComponent } from '../drag-and-drop-upload/drag-and-drop-upload.component';
 import { TargetedEmailsComponent } from './targeted-emails.component';
+import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 describe('TargetedEmailsComponent', () => {
   async function setup() {
     return render(TargetedEmailsComponent, {
-      declarations: [DragAndDropUploadComponent],
+      declarations: [DragAndDropUploadComponent, SendEmailsConfirmationDialogComponent],
       imports: [
         SharedModule,
         HttpClientTestingModule,
-        RouterTestingModule,
         FormsModule,
         ReactiveFormsModule,
         NgxDropzoneModule,

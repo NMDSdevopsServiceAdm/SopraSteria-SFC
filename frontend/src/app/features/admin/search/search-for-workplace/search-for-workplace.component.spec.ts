@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -19,19 +18,13 @@ import { of, throwError } from 'rxjs';
 
 import { WorkplaceDropdownComponent } from '../workplace-dropdown/workplace-dropdown.component';
 import { SearchForWorkplaceComponent } from './search-for-workplace.component';
+import { AdminUnlockConfirmationDialogComponent } from '@shared/components/admin-unlock-confirmation/admin-unlock-confirmation';
 
 describe('SearchForWorkplaceComponent', () => {
   async function setup(searchButtonClicked = false, isLocked = false, isParent = false, hasSubs = false) {
     const { fixture, getByText, getByTestId, queryAllByText, queryByText } = await render(SearchForWorkplaceComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        ReactiveFormsModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-      ],
-      declarations: [WorkplaceDropdownComponent],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule, FormsModule],
+      declarations: [WorkplaceDropdownComponent, AdminUnlockConfirmationDialogComponent],
       providers: [
         {
           provide: FeatureFlagsService,
