@@ -17,7 +17,6 @@ export class WorkplaceService extends WorkplaceInterfaceService {
     super(http);
   }
 
-  private _allWorkplacesSortValue: string;
   public addWorkplaceFlow$: BehaviorSubject<string> = new BehaviorSubject(null);
   public addWorkplaceInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public serverErrorsMap: ErrorDefinition[] = [
@@ -71,13 +70,5 @@ export class WorkplaceService extends WorkplaceInterfaceService {
       totalStaff: WorkplaceTotalStaff,
       typeOfEmployer: employerTypeObject,
     };
-  }
-
-  public setAllWorkplacesSortValue(value: string) {
-    this._allWorkplacesSortValue = value;
-  }
-
-  public getAllWorkplacesSortValue(): string {
-    return this._allWorkplacesSortValue;
   }
 }

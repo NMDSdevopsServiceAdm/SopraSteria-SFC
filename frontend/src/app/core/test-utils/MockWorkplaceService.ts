@@ -94,7 +94,6 @@ export class MockWorkplaceService extends WorkplaceService {
   public postcodeOrLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
   public totalStaff$: BehaviorSubject<any> = new BehaviorSubject(null);
   public typeOfEmployer$: BehaviorSubject<EmployerType> = new BehaviorSubject(null);
-  public allWorkplacesSortValue: string;
 
   public static factory(typeOfEmployer: EmployerType = { value: 'Private Sector' }, manyLocationAddresses = false) {
     return (http: HttpClient) => {
@@ -136,14 +135,6 @@ export class MockWorkplaceService extends WorkplaceService {
 
   public checkIfEstablishmentExists(locationId: string): Observable<EstablishmentExistsResponse> {
     return of({ exists: false });
-  }
-
-  public setAllWorkplacesSortValue(value: string) {
-    this.allWorkplacesSortValue = value;
-  }
-
-  public getAllWorkplacesSortValue(): string {
-    return this.allWorkplacesSortValue;
   }
 }
 
