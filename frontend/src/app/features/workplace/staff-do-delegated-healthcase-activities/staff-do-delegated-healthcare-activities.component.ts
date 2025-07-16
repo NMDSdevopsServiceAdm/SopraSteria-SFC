@@ -15,6 +15,11 @@ import { Question } from '../question/question.component';
 })
 export class StaffDoDelegatedHealthcareActivitiesComponent extends Question implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.SERVICES;
+  public options = [
+    { value: 'Yes', label: 'Yes' },
+    { value: 'No', label: 'No' },
+    { value: "Don't know", label: 'I do not know' },
+  ];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -35,7 +40,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
   setupForm() {
     this.form = this.formBuilder.group(
       {
-        StaffDoDelegatedHealthcareActivities: null,
+        staffDoDelegatedHealthcareActivities: null,
       },
       { updateOn: 'submit' },
     );

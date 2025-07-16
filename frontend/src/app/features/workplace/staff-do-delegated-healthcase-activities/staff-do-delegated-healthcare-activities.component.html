@@ -9,6 +9,25 @@
               Do your non-nursing staff carry out delegated healthcare activities?
             </h1>
           </legend>
+          <div class="govuk-form-group">
+            <div class="govuk-radios govuk-!-margin-bottom-4">
+              <ng-container *ngFor="let option of options; let i = index">
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    id="staffDoDelegatedHealthcareActivities-{{ i }}"
+                    name="staffDoDelegatedHealthcareActivities"
+                    type="radio"
+                    [formControlName]="'staffDoDelegatedHealthcareActivities'"
+                    [value]="option.value"
+                  />
+                  <label class="govuk-label govuk-radios__label" for="staffDoDelegatedHealthcareActivities-{{ i }}">
+                    {{ option.label }}
+                  </label>
+                </div>
+              </ng-container>
+            </div>
+          </div>
         </fieldset>
       </div>
       <app-workplace-submit-button
