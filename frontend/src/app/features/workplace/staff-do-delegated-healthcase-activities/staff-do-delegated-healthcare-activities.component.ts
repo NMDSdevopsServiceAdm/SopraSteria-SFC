@@ -36,7 +36,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
   init() {
     this.setupForm();
     this.setPreviousRoute();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'repeat-training'];
+    this.skipRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
   }
 
   setupForm() {
