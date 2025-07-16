@@ -26,6 +26,8 @@ const careWorkforcePathwayWorkplaceAwarenessProperty =
   require('./properties/careWorkforcePathwayWorkplaceAwarenessProperty').CareWorkforcePathwayWorkplaceAwarenessProperty;
 const careWorkforcePathwayUseProperty =
   require('./properties/careWorkforcePathwayUseProperty').CareWorkforcePathwayUseProperty;
+const staffDoDelegatedHealthcareActivitiesProperty =
+  require('./properties/staffDoDelegatedHealthcareActivitiesProperty').StaffDoDelegatedHealthcareActivitiesProperty;
 
 class EstablishmentPropertyManager {
   constructor() {
@@ -53,6 +55,7 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(isRegulatedProperty);
     this._thisManager.registerProperty(careWorkforcePathwayWorkplaceAwarenessProperty);
     this._thisManager.registerProperty(careWorkforcePathwayUseProperty);
+    this._thisManager.registerProperty(staffDoDelegatedHealthcareActivitiesProperty);
   }
 
   get manager() {
