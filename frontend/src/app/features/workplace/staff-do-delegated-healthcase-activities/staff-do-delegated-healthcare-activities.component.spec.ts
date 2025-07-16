@@ -59,4 +59,14 @@ fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
     expect(getByText(heading)).toBeTruthy();
   });
+
+  describe('Form', () => {
+    it('should show radio buttons for each answer', async () => {
+      const { getByRole } = await setup();
+
+      ['Yes', 'No', 'I do not know'].forEach((label) => {
+        expect(getByRole('radio', { name: label })).toBeTruthy();
+      });
+    });
+  });
 });
