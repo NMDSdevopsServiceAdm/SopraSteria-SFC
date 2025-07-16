@@ -801,6 +801,31 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      staffDoDelegatedHealthcareActivitiesValue: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'StaffDoDelegatedHealthcareActivitiesValue',
+      },
+      staffDoDelegatedHealthcareActivitiesSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'StaffDoDelegatedHealthcareActivitiesSavedAt',
+      },
+      staffDoDelegatedHealthcareActivitiesChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'StaffDoDelegatedHealthcareActivitiesChangedAt',
+      },
+      staffDoDelegatedHealthcareActivitiesSavedBy: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'StaffDoDelegatedHealthcareActivitiesSavedBy',
+      },
+      staffDoDelegatedHealthcareActivitiesChangedBy: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'StaffDoDelegatedHealthcareActivitiesChangedBy',
+      },
     },
     {
       defaultScope: {
