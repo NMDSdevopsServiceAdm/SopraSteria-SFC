@@ -119,12 +119,16 @@ fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       });
     });
 
-    it('should navigate to repeat-training page when user skips the question', async () => {
+    it('should navigate to staff-recruitment-capture-training-requirement page when user skips the question', async () => {
       const { getByText, routerSpy } = await setup(overrides);
 
       userEvent.click(getByText('Skip this question'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'repeat-training']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
     });
   });
 });
