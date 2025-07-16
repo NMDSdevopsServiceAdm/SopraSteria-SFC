@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -27,7 +26,7 @@ import { StaffReferencesComponent } from './staff-references-page.component';
 describe('StaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
     const component = await render(StaffReferencesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -76,6 +75,7 @@ describe('StaffReferencesComponent', () => {
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
+    spyOn(router, 'navigate').and.resolveTo(true);
 
     return {
       component,
