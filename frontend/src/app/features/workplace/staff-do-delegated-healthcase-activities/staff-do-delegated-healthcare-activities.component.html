@@ -35,5 +35,14 @@
         (clicked)="setSubmitAction($event)"
       ></app-workplace-submit-button>
     </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
   </div>
 </form>

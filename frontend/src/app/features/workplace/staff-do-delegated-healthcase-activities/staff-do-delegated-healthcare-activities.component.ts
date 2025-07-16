@@ -35,6 +35,8 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
 
   init() {
     this.setupForm();
+    this.setPreviousRoute();
+    this.skipRoute = ['/workplace', this.establishment.uid, 'repeat-training'];
   }
 
   setupForm() {
@@ -44,6 +46,10 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
       },
       { updateOn: 'submit' },
     );
+  }
+
+  private setPreviousRoute(): void {
+    this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
   }
 
   ngOnDestroy(): void {
