@@ -58,6 +58,9 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
   }
 
   public setIcon(): void {
+    // TODO: this code potentially create a faulty img tag that refer to non-exist "/assets/images/.svg"
+    // we should properly handle the case when this.overallWdfEligibility being undefined or null
+
     if (this.overallWdfEligibility == true) {
       this.icon = 'flag-orange';
       return;
