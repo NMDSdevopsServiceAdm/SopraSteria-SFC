@@ -4,24 +4,34 @@ import { render } from '@testing-library/angular';
 import { TotalStaffComponent } from './total-staff.component';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { HttpClient } from '@angular/common/http';
 
 describe('TotalStaffComponent', () => {
   const formBuilder = new UntypedFormBuilder();
 
-  const setup = async (showHint = true) => {
-    const { fixture, getByTestId, queryByTestId, getByText } = await render(TotalStaffComponent, {
+  const setup = async (overrides: any = {}) => {
+    const setupTools = await render(TotalStaffComponent, {
       imports: [HttpClientTestingModule, SharedModule, ReactiveFormsModule],
+      providers: [
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceWithOverrides.factory(overrides),
+          deps: [HttpClient],
+        },
+      ],
       componentProperties: {
         establishmentUid: 'mock-uid',
-        showHint,
+        showHint: overrides.showHint ?? true,
         form: formBuilder.group({ totalStaff: '' }),
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
-    return { component, getByTestId, queryByTestId, getByText };
-  };
+    return { ...setupTools, component };
+  }
 
   it('should create', async () => {
     const component = await setup();
@@ -33,5 +43,15 @@ describe('TotalStaffComponent', () => {
 
     expect(getByTestId('totalStaffRevealTitle')).toBeTruthy();
     expect(getByTestId('totalStaffRevealText')).toBeTruthy();
+  });
+
+  it('should prefill the number of staff', async () => {
+    const staffNumber = 20;
+    const { getByLabelText } = await setup({
+      establishmentObj: { numberOfStaff: staffNumber },
+    });
+
+    const numberInput = getByLabelText('Number of staff') as HTMLInputElement;
+    expect(numberInput.value).toEqual(`${staffNumber}`);
   });
 });
