@@ -1,0 +1,20 @@
+<div #content>
+  <dl id="pdf-worker-title" class="govuk-summary-list">
+    <div>
+      <dt class="govuk-summary-list__key">Workplace name</dt>
+      <dd class="govuk-summary-list__value">{{ workplace?.name }}</dd>
+    </div>
+    <div>
+      <dt class="govuk-summary-list__key">Staff name</dt>
+      <dd class="govuk-summary-list__value">{{ worker?.nameOrId }}</dd>
+    </div>
+    <div>
+      <dt class="govuk-summary-list__key">Care certificate</dt>
+      <dd class="govuk-summary-list__value">{{ worker?.careCertificate ?? 'Not answered' }}</dd>
+    </div>
+    <div>
+      <dt class="govuk-summary-list__key">Last updated</dt>
+      <dd class="govuk-summary-list__value">{{ lastUpdatedDate | date: 'd MMMM yyyy' }}</dd>
+    </div>
+  </dl>
+</div>
