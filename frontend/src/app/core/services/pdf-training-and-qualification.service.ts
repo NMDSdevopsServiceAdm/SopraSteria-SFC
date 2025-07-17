@@ -2,12 +2,14 @@ import { ComponentRef, ElementRef, Injectable, Type, ViewContainerRef } from '@a
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecordCategory } from '@core/model/training.model';
+import { Worker } from '@core/model/worker.model';
 import { PdfHeaderComponent } from '@features/pdf/header/pdf-header.component';
 import { PdfTraininAndQualificationActionList } from '@features/pdf/training-and-qualification-action-list/training-and-qualification-action-list.component';
 import { PdfTraininAndQualificationTitle } from '@features/pdf/training-and-qualification-title/training-and-qualification-title.component';
 import { PdfWorkplaceTitleComponent } from '@features/pdf/workplace-title/pdf-workplace-title.component';
 import { NewQualificationsComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-qualifications/new-qualifications.component';
 import { NewTrainingAndQualificationsRecordSummaryComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
+import { ActionsListData } from '@core/model/trainingAndQualifications.model';
 import { NewTrainingComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-training/new-training.component';
 
 import { jsPDF } from 'jspdf';
@@ -33,6 +35,7 @@ export class PdfTrainingAndQualificationService {
   public y = 30;
   public ypx = (this.y * this.ptToPx) / this.scale;
   public pageNumber: number;
+  public viewContainerRef: ViewContainerRef;
 
   constructor() {}
 
@@ -54,7 +57,7 @@ export class PdfTrainingAndQualificationService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendWorkplaceTitle(html, workplace): void {
+  private appendWorkplaceTitle(html: HTMLDivElement, workplace: Establishment): void {
     const workplaceTitle = this.resolveComponent(PdfWorkplaceTitleComponent, (c) => {
       c.instance.workplace = workplace;
       c.changeDetectorRef.detectChanges();
@@ -63,7 +66,7 @@ export class PdfTrainingAndQualificationService {
     html.append(workplaceTitle.cloneNode(true));
     html.append(this.createSpacer(this.width, this.spacing));
   }
-  private appendWorker(html, worker, lastUpdatedDate): void {
+  private appendWorker(html: HTMLDivElement, worker: Worker, lastUpdatedDate: Date): void {
     const workerTitle = this.resolveComponent(PdfTraininAndQualificationTitle, (c) => {
       c.instance.worker = worker;
       c.instance.lastUpdatedDate = lastUpdatedDate;
@@ -74,20 +77,18 @@ export class PdfTrainingAndQualificationService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendMandatoryTraining(html, mandatoryTraining): void {
+  private appendMandatoryTraining(html: HTMLDivElement, mandatoryTraining: TrainingRecordCategory[]): void {
     const mandatoryTrainings = this.resolveComponent(NewTrainingComponent, (c) => {
       (c.instance.trainingCategories = mandatoryTraining), (c.instance.isMandatoryTraining = true);
       c.instance.trainingType = 'Mandatory training';
       c.changeDetectorRef.detectChanges();
     });
 
-    const s = mandatoryTrainings;
-
     html.append(mandatoryTrainings.cloneNode(true));
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendNonMandatoryTraining(html, nonMandatoryTraining): void {
+  private appendNonMandatoryTraining(html: HTMLDivElement, nonMandatoryTraining: TrainingRecordCategory[]): void {
     const nonMandatoryTrainings = this.resolveComponent(NewTrainingComponent, (c) => {
       c.instance.trainingCategories = nonMandatoryTraining;
       c.instance.trainingType = 'Non-mandatory training';
@@ -98,7 +99,7 @@ export class PdfTrainingAndQualificationService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendQualification(html, qualificationsByGroup): void {
+  private appendQualification(html: HTMLDivElement, qualificationsByGroup: QualificationsByGroup): void {
     const qualifications = this.resolveComponent(NewQualificationsComponent, (c) => {
       c.instance.qualificationsByGroup = qualificationsByGroup;
       c.changeDetectorRef.detectChanges();
@@ -108,7 +109,12 @@ export class PdfTrainingAndQualificationService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendTandQSummary(html, qualificationsByGroup, nonMandatoryTrainingCount, mandatoryTrainingCount): void {
+  private appendTandQSummary(
+    html: HTMLDivElement,
+    qualificationsByGroup: QualificationsByGroup,
+    nonMandatoryTrainingCount: number,
+    mandatoryTrainingCount: number,
+  ): void {
     const qualificationsAndTrainings = this.resolveComponent(
       NewTrainingAndQualificationsRecordSummaryComponent,
       (c) => {
@@ -122,7 +128,7 @@ export class PdfTrainingAndQualificationService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendActionList(html, actionsListData): void {
+  private appendActionList(html: HTMLDivElement, actionsListData: ActionsListData): void {
     if (actionsListData.length > 0) {
       const actionList = this.resolveComponent(PdfTraininAndQualificationActionList, (c) => {
         c.instance.actionsListData = actionsListData;
@@ -133,10 +139,16 @@ export class PdfTrainingAndQualificationService {
       html.append(this.createSpacer(this.width, this.spacing));
     }
   }
-  private async saveHtmlToPdf(filename, doc: jsPDF, html: HTMLElement, scale, width, save): Promise<void> {
+  private async saveHtmlToPdf(
+    filename: string,
+    doc: jsPDF,
+    html: HTMLElement,
+    scale: number,
+    width: number,
+    save: boolean,
+  ): Promise<void> {
     const widthHtml = width * scale;
     const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
-    let y = 0;
 
     const html2canvas = {
       scale,
@@ -179,7 +191,6 @@ export class PdfTrainingAndQualificationService {
     return spacer;
   }
 
-  public viewContainerRef: ViewContainerRef;
   set setViewContainer(vcr: ViewContainerRef) {
     this.viewContainerRef = vcr;
   }
@@ -203,12 +214,12 @@ export class PdfTrainingAndQualificationService {
     mandatoryTraining: TrainingRecordCategory[],
     nonMandatoryTraining: TrainingRecordCategory[],
     qualificationsByGroup: QualificationsByGroup,
-    nonMandatoryTrainingCount,
-    mandatoryTrainingCount,
-    worker,
-    lastUpdatedDate,
-    actionsListData,
-    fileName,
+    nonMandatoryTrainingCount: number,
+    mandatoryTrainingCount: number,
+    worker: Worker,
+    lastUpdatedDate: Date,
+    actionsListData: ActionsListData,
+    fileName: string,
     save: boolean,
   ): Promise<jsPDF> {
     const { doc, html } = this.getNewDoc();
