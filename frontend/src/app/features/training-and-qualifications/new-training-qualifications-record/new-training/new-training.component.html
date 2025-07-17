@@ -2,18 +2,23 @@
   <div class="govuk-grid-column-full">
     <ng-container *ngIf="trainingCategoryToDisplay.length > 0; else noTraining">
       <h1 class="govuk-heading-l govuk-!-font-size-27">{{ trainingType }}</h1>
-      <div *ngFor="let trainingCategory of trainingCategories" [attr.data-testid]="trainingCategory.category + '-section'">
+      <div
+        *ngFor="let trainingCategory of trainingCategories"
+        [attr.data-testid]="trainingCategory.category + '-section'"
+      >
         <label
           [attr.data-testid]="'category-' + trainingCategory.category"
           class="govuk-!-margin-bottom-2 govuk-heading-m"
-        >{{ trainingCategory.category }}</label>
+          >{{ trainingCategory.category }}</label
+        >
         <span aria-live="polite">
-          <app-validation-error-message *ngIf="certificateErrors?.[trainingCategory.category]" [errorMessage]="certificateErrors?.[trainingCategory.category]" />
+          <app-validation-error-message
+            *ngIf="certificateErrors?.[trainingCategory.category]"
+            [errorMessage]="certificateErrors?.[trainingCategory.category]"
+          ></app-validation-error-message>
         </span>
         <table class="govuk-table asc-training-and-quals-table govuk-!-margin-bottom-7">
-          <caption
-            class="govuk-visually-hidden"
-          >
+          <caption class="govuk-visually-hidden">
             {{
               trainingCategory.category
             }}
@@ -93,29 +98,43 @@
               </td>
               <td class="govuk-table__cell">
                 <ng-container *ngIf="canEditWorker">
-                  <span *ngIf="trainingRecord.trainingCertificates?.length == 1">
+                  <span *ngIf="trainingRecord.trainingCertificates?.length === 1">
                     <a
                       href="#"
                       class="govuk-link govuk-link--no-visited-state"
                       (click)="handleDownloadCertificate($event, trainingRecord)"
                     >
-                      <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
-                        class="govuk-!-margin-left-1"
-                        >Download</span
-                      >
+                      <img
+                        alt=""
+                        src="/assets/images/icon-download.svg"
+                        class="govuk-util__vertical-align-bottom"
+                      /><span class="govuk-!-margin-left-1">Download</span>
                       <span class="govuk-visually-hidden"
                         >the certificate {{ trainingRecord.trainingCertificates[0].filename }}</span
                       >
                     </a>
                   </span>
                   <span *ngIf="trainingRecord.trainingCertificates?.length > 1">
-                    <a [routerLink]="['../training', trainingRecord.uid]" class="govuk-link govuk-link--no-visited-state">
+                    <a
+                      [routerLink]="['../training', trainingRecord.uid]"
+                      class="govuk-link govuk-link--no-visited-state"
+                    >
                       Select a download
                     </a>
                   </span>
                   <span *ngIf="trainingRecord.trainingCertificates?.length === 0">
-                    <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1" (selectFiles)="handleUploadCertificate($event, trainingRecord)" />
+                    <app-select-upload-file
+                      accept=".pdf"
+                      buttonText="Upload file"
+                      buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1"
+                      (selectFiles)="handleUploadCertificate($event, trainingRecord)"
+                    ></app-select-upload-file>
                   </span>
+                </ng-container>
+
+                <ng-container *ngIf="pdfRenderingMode">
+                  <span *ngIf="trainingRecord.trainingCertificates?.length > 0; else notUploaded"> Uploaded </span>
+                  <ng-template #notUploaded> Not uploaded </ng-template>
                 </ng-container>
               </td>
             </tr>
