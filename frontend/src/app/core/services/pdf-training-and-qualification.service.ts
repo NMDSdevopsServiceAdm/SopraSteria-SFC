@@ -30,7 +30,7 @@ export class PdfTrainingAndQualificationService {
   public scale = 0.5;
   public width = 1000;
   public height = 50;
-  public spacing = 50;
+  public spacing = 15;
   public y = 30;
   public ypx = (this.y * this.ptToPx) / this.scale;
   public pageNumber: number;
@@ -77,6 +77,7 @@ export class PdfTrainingAndQualificationService {
     const mandatoryTrainings = this.resolveComponent(NewTrainingComponent, (c) => {
       (c.instance.trainingCategories = mandatoryTraining), (c.instance.isMandatoryTraining = true);
       c.instance.trainingType = 'Mandatory training';
+      c.instance.pdfRenderingMode = true;
       c.changeDetectorRef.detectChanges();
     });
 
@@ -88,6 +89,7 @@ export class PdfTrainingAndQualificationService {
     const nonMandatoryTrainings = this.resolveComponent(NewTrainingComponent, (c) => {
       c.instance.trainingCategories = nonMandatoryTraining;
       c.instance.trainingType = 'Non-mandatory training';
+      c.instance.pdfRenderingMode = true;
       c.changeDetectorRef.detectChanges();
     });
 
@@ -135,6 +137,7 @@ export class PdfTrainingAndQualificationService {
       html.append(this.createSpacer(this.width, this.spacing));
     }
   }
+
   private async saveHtmlToPdf(
     filename: string,
     doc: jsPDF,
@@ -169,7 +172,7 @@ export class PdfTrainingAndQualificationService {
       for (let i = 0; i < doc.getNumberOfPages(); i++) {
         doc
           .setPage(i + 1)
-          .text(`page ${i + 1} of ${doc.getNumberOfPages()}`, doc.internal.pageSize.getWidth() - 100, 20);
+          .text(`Page ${i + 1} of ${doc.getNumberOfPages()}`, doc.internal.pageSize.getWidth() - 100, 20);
       }
     }
 
