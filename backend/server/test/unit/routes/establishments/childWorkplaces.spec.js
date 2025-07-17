@@ -134,7 +134,7 @@ describe('server/routes/establishments/childWorkplaces', () => {
       req.query.getPendingWorkplaces = 'false';
 
       await getChildWorkplaces(req, res);
-      console.log(modelStub.args[0]);
+
       expect(modelStub.args[0][4]).to.equal(false);
     });
 
