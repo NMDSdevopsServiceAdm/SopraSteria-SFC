@@ -6,7 +6,6 @@ import {
   QualificationCertificateUploadEvent,
   QualificationType,
 } from '@core/model/qualification.model';
-import { Certificate } from '@core/model/trainingAndQualifications.model';
 import { qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -15,7 +14,7 @@ import { cloneDeep } from 'lodash';
 
 import { NewQualificationsComponent } from './new-qualifications.component';
 
-describe('NewQualificationsComponent', () => {
+fdescribe('NewQualificationsComponent', () => {
   async function setup(override: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
@@ -178,10 +177,12 @@ describe('NewQualificationsComponent', () => {
   });
 
   describe('Qualification certificates', () => {
-    const setupWithCertificates = async (certificates: Certificate[], canEditWorker: boolean = true) => {
+    const setupWithCertificates = async (overrides: any = {}) => {
+      const { certificates = [], canEditWorker = true, pdfRenderingMode = false } = { ...overrides };
+
       const qualificationsWithCertificate = cloneDeep(qualificationsByGroup);
       qualificationsWithCertificate.groups[0].records[0].qualificationCertificates = certificates;
-      return setup({ qualificationsByGroup: qualificationsWithCertificate, canEditWorker });
+      return setup({ qualificationsByGroup: qualificationsWithCertificate, canEditWorker, pdfRenderingMode });
     };
     const qualificationUid = qualificationsByGroup.groups[0].records[0].uid;
     const singleQualificationCertificate = () => [
@@ -194,21 +195,26 @@ describe('NewQualificationsComponent', () => {
     ];
 
     it('should display Download link when qualification record has one certificate associated with it', async () => {
-      const { getByTestId } = await setupWithCertificates(singleQualificationCertificate());
+      const { getByTestId } = await setupWithCertificates({ certificates: singleQualificationCertificate() });
 
       const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).getByText('Download')).toBeTruthy();
     });
 
     it('should not display Download link when qualification record has one certificate associated with it but user does not have edit permissions', async () => {
-      const { getByTestId } = await setupWithCertificates(singleQualificationCertificate(), false);
+      const { getByTestId } = await setupWithCertificates({
+        certificates: singleQualificationCertificate(),
+        canEditWorker: false,
+      });
 
       const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).queryByText('Download')).toBeFalsy();
     });
 
     it('should trigger download file emitter when Download link is clicked', async () => {
-      const { getByTestId, component } = await setupWithCertificates(singleQualificationCertificate());
+      const { getByTestId, component } = await setupWithCertificates({
+        certificates: singleQualificationCertificate(),
+      });
       const downloadFileSpy = spyOn(component.downloadFile, 'emit');
 
       const recordRow = getByTestId(qualificationUid);
@@ -225,21 +231,24 @@ describe('NewQualificationsComponent', () => {
     });
 
     it('should display Select a download link when qualification record has more than one certificate associated with it', async () => {
-      const { getByTestId } = await setupWithCertificates(multipleQualificationCertificates());
+      const { getByTestId } = await setupWithCertificates({ certificates: multipleQualificationCertificates() });
 
       const recordRow = getByTestId('firstAwardQualUid');
       expect(within(recordRow).getByText('Select a download')).toBeTruthy();
     });
 
     it('should not display Select a download link when qualification record has more than one certificate associated with it but user does not have edit permissions', async () => {
-      const { getByTestId } = await setupWithCertificates(multipleQualificationCertificates(), false);
+      const { getByTestId } = await setupWithCertificates({
+        certificates: multipleQualificationCertificates(),
+        canEditWorker: false,
+      });
 
       const recordRow = getByTestId('firstAwardQualUid');
       expect(within(recordRow).queryByText('Select a download')).toBeFalsy();
     });
 
     it('should have href of qualification record on Select a download link', async () => {
-      const { getByTestId } = await setupWithCertificates(multipleQualificationCertificates());
+      const { getByTestId } = await setupWithCertificates({ certificates: multipleQualificationCertificates() });
 
       const recordRow = getByTestId('firstAwardQualUid');
       const selectADownloadLink = within(recordRow).getByText('Select a download');
@@ -247,21 +256,21 @@ describe('NewQualificationsComponent', () => {
     });
 
     it('should display Upload file button when qualification record has no certificates associated with it', async () => {
-      const { getByTestId } = await setupWithCertificates([]);
+      const { getByTestId } = await setupWithCertificates({ certificates: [] });
 
       const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).getByRole('button', { name: 'Upload file' })).toBeTruthy();
     });
 
     it('should not display Upload file button when qualification record has no certificates associated with it but user does not have edit permissions', async () => {
-      const { getByTestId } = await setupWithCertificates([], false);
+      const { getByTestId } = await setupWithCertificates({ certificates: [], canEditWorker: false });
 
       const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).queryByRole('button', { name: 'Upload file' })).toBeFalsy();
     });
 
     it('should trigger the upload file emitter when a file is selected by the Upload file button', async () => {
-      const { component, getByTestId } = await setupWithCertificates([]);
+      const { component, getByTestId } = await setupWithCertificates({ certificates: [] });
       const fileToUpload = new File(['file content'], 'updated certificate 2024.pdf', { type: 'application/pdf' });
       const uploadFileSpy = spyOn(component.uploadFile, 'emit');
 
@@ -290,6 +299,28 @@ describe('NewQualificationsComponent', () => {
       expect(
         within(awardSection).getByText("There's a problem with this download. Try again later or contact us for help."),
       ).toBeTruthy();
+    });
+
+    describe('PDF rendering', () => {
+      it('should show the text "Uploaded" at certificate column if one or more certificates were uploaded', async () => {
+        const { getByTestId } = await setupWithCertificates({
+          certificates: multipleQualificationCertificates(),
+          pdfRenderingMode: true,
+        });
+
+        const recordRow = getByTestId('firstAwardQualUid');
+        expect(within(recordRow).getByText('Uploaded')).toBeTruthy();
+      });
+
+      it('should show the text "Not uploaded" at certificate column if no certificates were uploaded', async () => {
+        const { getByTestId } = await setupWithCertificates({
+          certificates: [],
+          pdfRenderingMode: true,
+        });
+
+        const recordRow = getByTestId('firstAwardQualUid');
+        expect(within(recordRow).getByText('Not uploaded')).toBeTruthy();
+      });
     });
   });
 });

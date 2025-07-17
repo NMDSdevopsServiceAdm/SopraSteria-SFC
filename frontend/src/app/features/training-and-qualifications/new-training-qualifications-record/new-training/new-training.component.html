@@ -133,7 +133,9 @@
                 </ng-container>
 
                 <ng-container *ngIf="pdfRenderingMode">
-                  <span *ngIf="trainingRecord.trainingCertificates?.length > 0; else notUploaded"> Uploaded </span>
+                  <ng-container *ngIf="trainingRecord.trainingCertificates?.length > 0; else notUploaded">
+                    Uploaded
+                  </ng-container>
                   <ng-template #notUploaded> Not uploaded </ng-template>
                 </ng-container>
               </td>

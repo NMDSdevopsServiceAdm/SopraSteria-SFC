@@ -100,6 +100,7 @@ export class PdfTrainingAndQualificationService {
   private appendQualification(html: HTMLDivElement, qualificationsByGroup: QualificationsByGroup): void {
     const qualifications = this.resolveComponent(NewQualificationsComponent, (c) => {
       c.instance.qualificationsByGroup = qualificationsByGroup;
+      c.instance.pdfRenderingMode = true;
       c.changeDetectorRef.detectChanges();
     });
 
