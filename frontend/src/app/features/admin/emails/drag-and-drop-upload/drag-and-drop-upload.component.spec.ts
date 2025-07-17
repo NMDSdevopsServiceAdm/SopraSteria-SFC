@@ -1,8 +1,7 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { UntypedFormBuilder } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { BrowserModule, By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { NgxDropzoneModule } from 'ngx-dropzone';
@@ -12,7 +11,7 @@ import { DragAndDropUploadComponent } from './drag-and-drop-upload.component';
 describe('DragAndDropUploadComponent', () => {
   const getDragAndDropFilesUploadComponent = async () => {
     return await render(DragAndDropUploadComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, NgxDropzoneModule],
+      imports: [HttpClientTestingModule, BrowserModule, SharedModule, NgxDropzoneModule, ReactiveFormsModule],
       providers: [UntypedFormBuilder],
       declarations: [DragAndDropUploadComponent],
     });

@@ -12,7 +12,6 @@ export class LogoutComponent {
 
   constructor(private idleService: IdleService, private authService: AuthService) {
     if (this.authService.token) {
-      console.log('Checking token in logged out page');
       if (this.jwt.isTokenExpired(this.authService.token)) {
         this.authService.logout();
       }

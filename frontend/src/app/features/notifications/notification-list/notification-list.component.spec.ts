@@ -1,8 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
@@ -20,18 +19,10 @@ describe('NotificationListComponent', () => {
     const { fixture, getByText, queryByTestId, queryByText, getByLabelText, getByTestId } = await render(
       NotificationListComponent,
       {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          ReactiveFormsModule,
-          FormsModule,
-        ],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule, FormsModule],
         declarations: [NotificationTypePipe],
         providers: [
           FormBuilder,
-
           {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,
@@ -44,6 +35,7 @@ describe('NotificationListComponent', () => {
             provide: BreadcrumbService,
             useClass: MockBreadcrumbService,
           },
+          provideRouter([]),
         ],
       },
     );

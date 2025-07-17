@@ -3,7 +3,6 @@ import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -13,7 +12,6 @@ import { WindowRef } from '@core/services/window.ref';
 import { buildMockAdminSearchWorkplace } from '@core/test-utils/admin/MockSearchService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
-import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -21,19 +19,13 @@ import { of, throwError } from 'rxjs';
 
 import { WorkplaceDropdownComponent } from '../workplace-dropdown/workplace-dropdown.component';
 import { SearchForGroupComponent } from './search-for-group.component';
+import { AdminUnlockConfirmationDialogComponent } from '@shared/components/admin-unlock-confirmation/admin-unlock-confirmation';
 
 describe('SearchForGroupComponent', () => {
   async function setup(searchButtonClicked = false, isLocked = false, isParent = false, hasSubs = false) {
     const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(SearchForGroupComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
-      declarations: [WorkplaceDropdownComponent],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      declarations: [WorkplaceDropdownComponent, AdminUnlockConfirmationDialogComponent],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {

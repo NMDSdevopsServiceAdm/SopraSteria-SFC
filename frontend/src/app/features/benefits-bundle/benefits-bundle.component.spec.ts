@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
@@ -17,7 +17,7 @@ describe('BenefitsBundleComponent', () => {
     const workplaceName = 'Test Workplace Name';
 
     const setupTools = await render(BenefitsBundleComponent, {
-      imports: [SharedModule, HttpClientTestingModule],
+      imports: [SharedModule, HttpClientTestingModule, RouterModule],
       declarations: [BenefitAccordionComponent],
       providers: [
         {

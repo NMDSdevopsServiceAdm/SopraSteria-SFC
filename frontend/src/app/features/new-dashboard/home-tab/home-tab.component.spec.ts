@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -22,6 +21,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
 import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -51,7 +51,7 @@ describe('NewHomeTabComponent', () => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId, getByRole, getByLabelText } = await render(
       NewHomeTabComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule],
         providers: [
           WindowRef,
           AlertService,
@@ -101,6 +101,7 @@ describe('NewHomeTabComponent', () => {
           NewArticleListComponent,
           SummarySectionComponent,
           OwnershipChangeMessageDialogComponent,
+          BecomeAParentCancelDialogComponent,
         ],
         componentProperties: {
           workplace: establishment,
