@@ -12,7 +12,7 @@ export class PdfWorkerTitleComponent implements PdfComponent {
   @ViewChild('content') public content: ElementRef;
   @Input() workplace: Establishment;
   @Input() worker: Worker;
-  @Input() lastUpdatedDate: Date;
+  @Input() lastUpdatedDate: Date | string;
 
   constructor() {}
 }

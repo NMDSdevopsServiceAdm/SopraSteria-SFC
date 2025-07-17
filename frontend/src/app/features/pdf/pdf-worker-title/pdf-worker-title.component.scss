@@ -1,18 +1,18 @@
-dl {
-  display: grid;
-  min-width: 60vw;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  gap: 1em 1em;
+// dl#asc-pdf-worker-title {
+//   display: grid;
+//   grid-template-columns: 1fr 1fr;
+//   grid-template-rows: 1fr 1fr;
+//   gap: 1em 1em;
 
-  div {
-    display: flex;
-    flex-direction: column;
-  }
+//   div {
+//     display: flex;
+//     flex-direction: column;
+//   }
 
-  dt,
-  dd {
-    width: 100%;
-    padding: 0;
-  }
-}
+//   dt,
+//   dd {
+//     display: block;
+//     width: 100%;
+//     padding: 0;
+//   }
+// }

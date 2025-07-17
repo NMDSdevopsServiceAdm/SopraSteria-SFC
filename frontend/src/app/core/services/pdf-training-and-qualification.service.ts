@@ -5,8 +5,7 @@ import { TrainingRecordCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { PdfHeaderComponent } from '@features/pdf/header/pdf-header.component';
 import { PdfTraininAndQualificationActionList } from '@features/pdf/training-and-qualification-action-list/training-and-qualification-action-list.component';
-import { PdfTraininAndQualificationTitle } from '@features/pdf/training-and-qualification-title/training-and-qualification-title.component';
-import { PdfWorkplaceTitleComponent } from '@features/pdf/workplace-title/pdf-workplace-title.component';
+import { PdfWorkerTitleComponent } from '@features/pdf/pdf-worker-title/pdf-worker-title.component';
 import { NewQualificationsComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-qualifications/new-qualifications.component';
 import { NewTrainingAndQualificationsRecordSummaryComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
 import { ActionsListData } from '@core/model/trainingAndQualifications.model';
@@ -57,18 +56,15 @@ export class PdfTrainingAndQualificationService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendWorkplaceTitle(html: HTMLDivElement, workplace: Establishment): void {
-    const workplaceTitle = this.resolveComponent(PdfWorkplaceTitleComponent, (c) => {
-      c.instance.workplace = workplace;
-      c.changeDetectorRef.detectChanges();
-    });
-
-    html.append(workplaceTitle.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.spacing));
-  }
-  private appendWorker(html: HTMLDivElement, worker: Worker, lastUpdatedDate: Date): void {
-    const workerTitle = this.resolveComponent(PdfTraininAndQualificationTitle, (c) => {
+  private appendWorkerTitle(
+    html: HTMLDivElement,
+    worker: Worker,
+    workplace: Establishment,
+    lastUpdatedDate: Date | string,
+  ): void {
+    const workerTitle = this.resolveComponent(PdfWorkerTitleComponent, (c) => {
       c.instance.worker = worker;
+      c.instance.workplace = workplace;
       c.instance.lastUpdatedDate = lastUpdatedDate;
       c.changeDetectorRef.detectChanges();
     });
@@ -217,7 +213,7 @@ export class PdfTrainingAndQualificationService {
     nonMandatoryTrainingCount: number,
     mandatoryTrainingCount: number,
     worker: Worker,
-    lastUpdatedDate: Date,
+    lastUpdatedDate: string | Date,
     actionsListData: ActionsListData,
     fileName: string,
     save: boolean,
@@ -225,8 +221,7 @@ export class PdfTrainingAndQualificationService {
     const { doc, html } = this.getNewDoc();
 
     this.appendHeader(html);
-    this.appendWorkplaceTitle(html, workplace);
-    this.appendWorker(html, worker, lastUpdatedDate);
+    this.appendWorkerTitle(html, worker, workplace, lastUpdatedDate);
     this.appendTandQSummary(html, qualificationsByGroup, nonMandatoryTrainingCount, mandatoryTrainingCount);
     this.appendActionList(html, actionsListData);
     this.appendMandatoryTraining(html, mandatoryTraining);
