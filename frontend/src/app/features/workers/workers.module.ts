@@ -78,7 +78,6 @@ import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workp
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { PdfWorkerTitleComponent } from '@features/pdf/pdf-worker-title/pdf-worker-title.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -141,7 +140,6 @@ import { PdfWorkerTitleComponent } from '@features/pdf/pdf-worker-title/pdf-work
     UpdateTotalNumberOfStaffComponent,
     CareWorkforcePathwayRoleComponent,
     CareWorkforcePathwayWorkersSummaryComponent,
-    PdfWorkerTitleComponent,
   ],
   providers: [
     DialogService,

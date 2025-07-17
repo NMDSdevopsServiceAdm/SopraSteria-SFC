@@ -6,7 +6,6 @@ import { PdfComponent } from '@core/services/pdf.service';
 @Component({
   selector: 'app-pdf-worker-title',
   templateUrl: './pdf-worker-title.component.html',
-  styleUrls: ['./pdf-worker-title.component.scss'],
 })
 export class PdfWorkerTitleComponent implements PdfComponent {
   @ViewChild('content') public content: ElementRef;
