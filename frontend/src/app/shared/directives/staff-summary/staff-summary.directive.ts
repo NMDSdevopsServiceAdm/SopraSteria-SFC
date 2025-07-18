@@ -33,6 +33,9 @@ export class StaffSummaryDirective implements OnInit {
     '1_dsc': 'jobRoleDesc',
     '2_meeting': 'wdfMeeting',
     '2_not_meeting': 'wdfNotMeeting',
+    '3_last_update_newest': 'lastUpdateNewest',
+    '3_last_update_oldest': 'lastUpdateOldest',
+    '4_add_more_details': 'addMoreDetails',
   };
   public searchLabel = 'Search by name or ID number';
 
