@@ -30,7 +30,7 @@ export class PdfTrainingAndQualificationService {
   public scale = 0.5;
   public width = 1000;
   public height = 50;
-  public spacing = 15;
+  public spacing = 5;
   public y = 30;
   public ypx = (this.y * this.ptToPx) / this.scale;
   public pageNumber: number;
@@ -50,8 +50,8 @@ export class PdfTrainingAndQualificationService {
 
   private appendHeader(html: HTMLDivElement): void {
     const header = this.resolveComponent(PdfHeaderComponent);
+    header.classList.add('asc-pdf-header__extend-bottom-border');
 
-    html.append(this.createSpacer(this.width, 20));
     html.append(header.cloneNode(true));
     html.append(this.createSpacer(this.width, this.spacing));
   }

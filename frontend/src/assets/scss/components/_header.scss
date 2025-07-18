@@ -88,3 +88,9 @@ $govuk-header-nav-item-border-color: #2e3133;
     }
   }
 }
+
+.asc-pdf-header__extend-bottom-border {
+  margin-left: -100px;
+  padding-left: 100px;
+  width: calc(100vw + 200px);
+}
