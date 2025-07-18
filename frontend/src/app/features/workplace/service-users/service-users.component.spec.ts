@@ -133,13 +133,74 @@ describe('ServiceUsersComponent', () => {
       expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
     });
 
-    it('should navigate to the next page when skip the question', async () => {
-      const { getByText, routerSpy } = await setup({ returnToUrl: null });
+    describe('Navigating to next page', () => {
+      const overridesWithCannotDoDHA = {
+        returnToUrl: null,
+        establishment: {
+          mainService: {
+            canDoDelegatedHealthcareActivities: null,
+            id: 11,
+            name: 'Domestic services and home help',
+            reportingID: 10,
+          },
+        },
+      };
 
-      const link = getByText('Skip this question');
-      fireEvent.click(link);
+      const overridesWithCanDoDHA = {
+        returnToUrl: null,
+        establishment: {
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+        },
+      };
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+      it('should navigate to do-you-have-vacancies page when user skips and establishment has main service which cannot do delegated healthcare activities', async () => {
+        const { getByText, routerSpy } = await setup(overridesWithCannotDoDHA);
+
+        const link = getByText('Skip this question');
+        fireEvent.click(link);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+      });
+
+      it('should navigate to do-you-have-vacancies page when user submits and establishment has main service which cannot do delegated healthcare activities', async () => {
+        const { getByText, routerSpy } = await setup(overridesWithCannotDoDHA);
+
+        const link = getByText('Save and continue');
+        fireEvent.click(link);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+      });
+
+      it('should navigate to staff-do-delegated-healthcare-activities page when user skips and establishment has main service which can do delegated healthcare activities', async () => {
+        const { getByText, routerSpy } = await setup(overridesWithCanDoDHA);
+
+        const link = getByText('Skip this question');
+        fireEvent.click(link);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'staff-do-delegated-healthcare-activities',
+        ]);
+      });
+
+      it('should navigate to staff-do-delegated-healthcare-activities page when user submits and establishment has main service which can do delegated healthcare activities', async () => {
+        const { getByText, routerSpy } = await setup(overridesWithCanDoDHA);
+
+        const link = getByText('Save and continue');
+        fireEvent.click(link);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'staff-do-delegated-healthcare-activities',
+        ]);
+      });
     });
   });
 });
