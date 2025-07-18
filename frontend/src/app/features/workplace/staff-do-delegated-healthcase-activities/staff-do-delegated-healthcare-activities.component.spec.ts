@@ -87,6 +87,20 @@ fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
         expect(getByRole('radio', { name: label })).toBeTruthy();
       });
     });
+
+    it('should prefill when there is a previously saved answer', async () => {
+      const { getByLabelText } = await setup({
+        establishmentService: {
+          establishment: {
+            staffDoDelegatedHealthcareActivities: 'Yes',
+          },
+        },
+      });
+
+      const radioButton = getByLabelText('Yes') as HTMLInputElement;
+
+      expect(radioButton.checked).toBeTruthy();
+    });
   });
 
   describe('When in new workplace workflow', async () => {
