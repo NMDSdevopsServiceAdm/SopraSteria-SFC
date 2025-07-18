@@ -87,10 +87,11 @@ describe('StaffSummaryComponent', () => {
   it('should render the add more details link with the correct routing', async () => {
     const overrides = { permissions: ['canEditWorker'] };
 
-    const { component, workers, getAllByText } = await setup(overrides);
+    const { component, workers, getAllByText, getByTestId } = await setup(overrides);
 
     const workplace = component.workplace;
-    const addMoreDetailsLinks = getAllByText('Add more details');
+    const staffTableTestId = getByTestId('staff-table');
+    const addMoreDetailsLinks = within(staffTableTestId).getAllByText('Add more details');
 
     workers.map((worker, index) => {
       expect(addMoreDetailsLinks[index].getAttribute('href')).toEqual(
@@ -125,6 +126,33 @@ describe('StaffSummaryComponent', () => {
         });
       }
     });
+
+    describe('not in wdf view', () => {
+      const sortByOptions = [
+        ['0_asc', 'staffNameAsc', 'Staff name (A to Z)'],
+        ['0_dsc', 'staffNameDesc', 'Staff name (Z to A)'],
+        ['1_asc', 'jobRoleAsc', 'Job role (A to Z)'],
+        ['1_dsc', 'jobRoleDesc', 'Job role (Z to A)'],
+        ['3_last_update_newest', 'lastUpdateNewest', 'Last update (newest)'],
+        ['3_last_update_oldest', 'lastUpdateOldest', 'Last update (oldest)'],
+        ['4_add_more_details', 'addMoreDetails', 'Add more details'],
+      ];
+
+      for (const option of sortByOptions) {
+        it(`should call getAllWorkers with sortBy set to ${option[1]} when sorting by ${option[2]}`, async () => {
+          const { component, getAllWorkersSpy, getByLabelText } = await setup({ isWdf: false });
+
+          const select = getByLabelText('Sort by', { exact: false });
+          fireEvent.change(select, { target: { value: option[0] } });
+
+          const establishmentUid = component.workplace.uid;
+          const paginationEmission = { pageIndex: 0, itemsPerPage: 15, sortBy: option[1] };
+
+          expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
+          expect(getAllWorkersSpy.calls.mostRecent().args[1]).toEqual(paginationEmission);
+        });
+      }
+    });
   });
 
   describe('Calling getAllWorkers when using search', () => {
@@ -134,6 +162,7 @@ describe('StaffSummaryComponent', () => {
       const searchInput = queryByLabelText('Search staff training records');
       expect(searchInput).toBeNull();
     });
+
     it('should call getAllWorkers with correct search term if passed and workerCount is greater than itemsPerPage', async () => {
       const overrides = { workerCount: 16 };
 
