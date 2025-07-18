@@ -4,10 +4,10 @@ import { Worker } from '@core/model/worker.model';
 import { PdfComponent } from '@core/services/pdf.service';
 
 @Component({
-  selector: 'app-pdf-worker-title',
-  templateUrl: './pdf-worker-title.component.html',
+  selector: 'app-training-and-qualification-title',
+  templateUrl: './pdf-training-and-qualification-title.component.html',
 })
-export class PdfWorkerTitleComponent implements PdfComponent {
+export class PdfTrainingAndQualificationTitleComponent implements PdfComponent {
   @ViewChild('content') public content: ElementRef;
   @Input() workplace: Establishment;
   @Input() worker: Worker;

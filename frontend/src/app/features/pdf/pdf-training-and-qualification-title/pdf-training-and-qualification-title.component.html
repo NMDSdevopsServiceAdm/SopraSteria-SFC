@@ -1,11 +1,12 @@
 <div class="govuk-grid-row" #content>
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-l govuk-!-margin-top-4">Training and qualifications</h1>
+    <!-- an &nbsp; is added to address jsPDF's bug of incorrectly truncating whitespaces -->
+    <h1 class="govuk-heading-l govuk-!-margin-top-4">{{ 'Training &nbsp;and qualifications' }}</h1>
     <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
   </div>
 
   <div class="govuk-grid-column-two-thirds">
-    <dl id="asc-pdf-worker-title" class="govuk-summary-list">
+    <dl id="asc-pdf-worker-info" class="govuk-summary-list">
       <div>
         <dt class="govuk-summary-list__key">Workplace name</dt>
         <dd class="govuk-summary-list__value">{{ workplace?.name }}</dd>
@@ -23,6 +24,5 @@
         <dd class="govuk-summary-list__value">{{ lastUpdatedDate | date: 'd MMMM yyyy' }}</dd>
       </div>
     </dl>
-    <div class="govuk-grid-column-two-thirds" #content></div>
   </div>
 </div>

@@ -13,7 +13,7 @@ import { TrainingAndQualificationsRoutingModule } from './training-and-qualifica
 import { PdfTraininAndQualificationActionList } from '@features/pdf/training-and-qualification-action-list/training-and-qualification-action-list.component';
 import { SelectTrainingCategoryComponent } from './add-edit-training/select-training-category/select-training-category.component';
 import { SelectQualificationTypeComponent } from './add-edit-qualification/select-qualification-type/select-qualification-type.component';
-import { PdfWorkerTitleComponent } from '@features/pdf/pdf-worker-title/pdf-worker-title.component';
+import { PdfTrainingAndQualificationTitleComponent } from '@features/pdf/pdf-training-and-qualification-title/pdf-training-and-qualification-title.component';
 
 @NgModule({
   imports: [
@@ -31,7 +31,7 @@ import { PdfWorkerTitleComponent } from '@features/pdf/pdf-worker-title/pdf-work
     PdfTraininAndQualificationActionList,
     SelectTrainingCategoryComponent,
     SelectQualificationTypeComponent,
-    PdfWorkerTitleComponent,
+    PdfTrainingAndQualificationTitleComponent,
   ],
   providers: [GetTrainingByStatusResolver, MissingMandatoryTrainingResolver],
 })

@@ -1,4 +1,4 @@
-import { PdfWorkerTitleComponent } from './pdf-worker-title.component';
+import { PdfTrainingAndQualificationTitleComponent } from './pdf-training-and-qualification-title.component';
 import { render } from '@testing-library/angular';
 import { SharedModule } from '@shared/shared.module';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
@@ -8,7 +8,7 @@ import { Worker } from '@core/model/worker.model';
 
 fdescribe('PdfWorkerTitleComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const setupTools = await render(PdfWorkerTitleComponent, {
+    const setupTools = await render(PdfTrainingAndQualificationTitleComponent, {
       imports: [SharedModule],
       providers: [],
       componentProperties: {

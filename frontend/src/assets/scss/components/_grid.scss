@@ -89,9 +89,9 @@
   padding: 0 15px;
 }
 
-dl#asc-pdf-worker-title {
+dl#asc-pdf-worker-info {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(22em, 1fr) 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 1em 1em;
 

@@ -5,7 +5,7 @@ import { TrainingRecordCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { PdfHeaderComponent } from '@features/pdf/header/pdf-header.component';
 import { PdfTraininAndQualificationActionList } from '@features/pdf/training-and-qualification-action-list/training-and-qualification-action-list.component';
-import { PdfWorkerTitleComponent } from '@features/pdf/pdf-worker-title/pdf-worker-title.component';
+import { PdfTrainingAndQualificationTitleComponent } from '@features/pdf/pdf-training-and-qualification-title/pdf-training-and-qualification-title.component';
 import { NewQualificationsComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-qualifications/new-qualifications.component';
 import { NewTrainingAndQualificationsRecordSummaryComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
 import { ActionsListData } from '@core/model/trainingAndQualifications.model';
@@ -39,7 +39,7 @@ export class PdfTrainingAndQualificationService {
   constructor() {}
 
   private getNewDoc() {
-    const doc = new jsPDF('p', 'pt', 'a4');
+    const doc = new jsPDF('portrait', 'pt', 'a4');
     const html = document.createElement('div');
 
     html.style.width = `${this.width}px`;
@@ -62,7 +62,7 @@ export class PdfTrainingAndQualificationService {
     workplace: Establishment,
     lastUpdatedDate: Date | string,
   ): void {
-    const workerTitle = this.resolveComponent(PdfWorkerTitleComponent, (c) => {
+    const workerTitle = this.resolveComponent(PdfTrainingAndQualificationTitleComponent, (c) => {
       c.instance.worker = worker;
       c.instance.workplace = workplace;
       c.instance.lastUpdatedDate = lastUpdatedDate;
@@ -164,9 +164,6 @@ export class PdfTrainingAndQualificationService {
       margin: [25, x, 10, 50],
       autoPaging: 'text',
       html2canvas,
-      callback: function (doc) {
-        return doc;
-      },
     });
 
     if (doc.getNumberOfPages()) {
