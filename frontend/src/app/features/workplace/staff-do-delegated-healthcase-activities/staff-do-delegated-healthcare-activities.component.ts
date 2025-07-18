@@ -37,6 +37,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     this.setupForm();
     this.setPreviousRoute();
     this.skipRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
+    this.nextRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
     this.prefill();
   }
 
@@ -60,6 +61,28 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
 
   private setPreviousRoute(): void {
     this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
+  }
+
+  protected generateUpdateProps(): any {
+    const { staffDoDelegatedHealthcareActivities } = this.form.value;
+    if (!staffDoDelegatedHealthcareActivities) {
+      return null;
+    }
+
+    return { staffDoDelegatedHealthcareActivities };
+  }
+
+  protected updateEstablishment(props: any): void {
+    if (!props) {
+      return;
+    }
+
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
+    );
   }
 
   ngOnDestroy(): void {

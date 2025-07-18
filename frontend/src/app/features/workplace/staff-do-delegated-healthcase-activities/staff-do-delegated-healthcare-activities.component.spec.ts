@@ -80,10 +80,13 @@ fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   });
 
   describe('Form', () => {
+    const labels = ['Yes', 'No', 'I do not know'];
+    const values = ['Yes', 'No', "Don't know"];
+
     it('should show radio buttons for each answer', async () => {
       const { getByRole } = await setup();
 
-      ['Yes', 'No', 'I do not know'].forEach((label) => {
+      labels.forEach((label) => {
         expect(getByRole('radio', { name: label })).toBeTruthy();
       });
     });
@@ -101,6 +104,24 @@ fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
       expect(radioButton.checked).toBeTruthy();
     });
+
+    for (let i = 0; i < labels.length; i++) {
+      it(`should call updateSingleEstablishmentField with expected payload on submit (${values[i]})`, async () => {
+        const { getByLabelText, getByText, establishmentServiceSpy } = await setup({
+          establishmentService: { returnTo: null },
+        });
+
+        userEvent.click(getByLabelText(labels[i]));
+
+        userEvent.click(getByText('Save and continue'));
+
+        const expectedPayload = {
+          staffDoDelegatedHealthcareActivities: values[i],
+        };
+
+        expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', expectedPayload);
+      });
+    }
   });
 
   describe('When in new workplace workflow', async () => {
@@ -143,6 +164,25 @@ fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
         'mocked-uid',
         'staff-recruitment-capture-training-requirement',
       ]);
+    });
+
+    it('should navigate to staff-recruitment-capture-training-requirement page after submit', async () => {
+      const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+
+      userEvent.click(getByText('Save and continue'));
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should render the progress bar', async () => {
+      const { getByTestId } = await setup(overrides);
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
     });
   });
 });
