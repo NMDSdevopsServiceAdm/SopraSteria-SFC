@@ -48,7 +48,7 @@ export class PdfTrainingAndQualificationService {
     return { doc, html };
   }
 
-  private appendHeader(html: HTMLElement): void {
+  private appendHeader(html: HTMLDivElement): void {
     const header = this.resolveComponent(PdfHeaderComponent);
 
     html.append(this.createSpacer(this.width, 20));
@@ -56,20 +56,20 @@ export class PdfTrainingAndQualificationService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendWorkerTitle(
+  private appendTitle(
     html: HTMLDivElement,
     worker: Worker,
     workplace: Establishment,
     lastUpdatedDate: Date | string,
   ): void {
-    const workerTitle = this.resolveComponent(PdfTrainingAndQualificationTitleComponent, (c) => {
+    const title = this.resolveComponent(PdfTrainingAndQualificationTitleComponent, (c) => {
       c.instance.worker = worker;
       c.instance.workplace = workplace;
       c.instance.lastUpdatedDate = lastUpdatedDate;
       c.changeDetectorRef.detectChanges();
     });
 
-    html.append(workerTitle.cloneNode(true));
+    html.append(title.cloneNode(true));
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
@@ -222,7 +222,7 @@ export class PdfTrainingAndQualificationService {
     const { doc, html } = this.getNewDoc();
 
     this.appendHeader(html);
-    this.appendWorkerTitle(html, worker, workplace, lastUpdatedDate);
+    this.appendTitle(html, worker, workplace, lastUpdatedDate);
     this.appendTandQSummary(html, qualificationsByGroup, nonMandatoryTrainingCount, mandatoryTrainingCount);
     this.appendActionList(html, actionsListData);
     this.appendMandatoryTraining(html, mandatoryTraining);
