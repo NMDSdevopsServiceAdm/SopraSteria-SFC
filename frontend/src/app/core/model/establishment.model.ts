@@ -9,6 +9,7 @@ export interface MainService {
   other?: boolean;
   otherName?: string;
   reportingID?: number;
+  canDoDelegatedHealthcareActivities?: boolean;
 }
 
 export interface EmployerType {

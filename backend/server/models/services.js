@@ -37,6 +37,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      canDoDelegatedHealthcareActivities: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'CanDoDelegatedHealthcareActivities',
+      },
     },
     {
       tableName: 'services',
