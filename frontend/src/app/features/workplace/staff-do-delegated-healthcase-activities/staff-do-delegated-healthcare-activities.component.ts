@@ -37,6 +37,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     this.setupForm();
     this.setPreviousRoute();
     this.skipRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
+    this.prefill();
   }
 
   setupForm() {
@@ -46,6 +47,15 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
       },
       { updateOn: 'submit' },
     );
+  }
+
+  private prefill(): void {
+    const staffDoDelegatedHealthcareActivities = this.establishment.staffDoDelegatedHealthcareActivities;
+    if (!staffDoDelegatedHealthcareActivities) return;
+
+    this.form.patchValue({
+      staffDoDelegatedHealthcareActivities,
+    });
   }
 
   private setPreviousRoute(): void {

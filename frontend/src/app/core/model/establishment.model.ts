@@ -175,6 +175,7 @@ export interface Establishment {
   careWorkforcePathwayWorkplaceAwareness: CareWorkforcePathwayWorkplaceAwareness;
   careWorkforcePathwayUse: CareWorkforcePathwayUse;
   CWPAwarenessQuestionViewed?: boolean;
+  staffDoDelegatedHealthcareActivities?: string;
 }
 
 export interface UpdateJobsRequest {
