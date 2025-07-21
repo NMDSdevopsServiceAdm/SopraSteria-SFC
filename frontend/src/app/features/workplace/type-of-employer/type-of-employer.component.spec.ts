@@ -28,7 +28,7 @@ describe('TypeOfEmployerComponent', () => {
         provideRouter([]),
         {
           provide: EstablishmentService,
-          useFactory: overrides.mockEstablishment
+          useFactory: overrides.establishment
             ? MockEstablishmentServiceWithOverrides.factory(overrides.establishment)
             : MockEstablishmentServiceWithNoEmployerType.factory(
                 overrides.employerTypeHasValue ?? true,
@@ -219,7 +219,7 @@ describe('TypeOfEmployerComponent', () => {
     });
 
     it('should show when "Other" was the previously saved answer', async () => {
-      const overrides = { mockEstablishment: true, establishment: { value: 'Other', other: 'some employer type' } };
+      const overrides = { establishment: { employerType: { value: 'Other', other: 'some employer type' } } };
       const { getByTestId, establishmentService } = await setup(overrides);
       spyOn(establishmentService, 'getEstablishment').and.callThrough();
 
