@@ -5,7 +5,7 @@ const Authorization = require('../../utils/security/isAuthenticated');
 
 const getChildWorkplaces = async (req, res) => {
   try {
-    const { itemsPerPage, pageIndex, searchTerm, getPendingWorkplaces } = req.query;
+    const { itemsPerPage, pageIndex, searchTerm, getPendingWorkplaces, sortBy } = req.query;
 
     const childWorkplaces = await models.establishment.getChildWorkplaces(
       req.params.id,
@@ -14,6 +14,7 @@ const getChildWorkplaces = async (req, res) => {
       searchTerm,
       convertToBoolean(getPendingWorkplaces),
       true,
+      sortBy,
     );
 
     const activeWorkplaceCount = childWorkplaces.count - childWorkplaces.pendingCount;
