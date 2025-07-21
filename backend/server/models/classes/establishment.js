@@ -101,6 +101,7 @@ class Establishment extends EntityValidator {
     this._careWorkforcePathwayWorkplaceAwareness = null;
     this._careWorkforcePathwayUse = null;
     this._CWPAwarenessQuestionViewed = null;
+    this._staffDoDelegatedHealthcareActivities = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -409,6 +410,10 @@ class Establishment extends EntityValidator {
     return this._CWPAwarenessQuestionViewed;
   }
 
+  get staffDoDelegatedHealthcareActivities() {
+    return this._staffDoDelegatedHealthcareActivities;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -629,6 +634,10 @@ class Establishment extends EntityValidator {
 
         if ('CWPAwarenessQuestionViewed' in document) {
           this._CWPAwarenessQuestionViewed = document.CWPAwarenessQuestionViewed;
+        }
+
+        if ('staffDoDelegatedHealthcareActivities' in document) {
+          this._staffDoDelegatedHealthcareActivities = document.staffDoDelegatedHealthcareActivities;
         }
       }
 
@@ -856,6 +865,7 @@ class Establishment extends EntityValidator {
           primaryAuthorityCssr: this._primaryAuthorityCssr,
           careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
           CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
+          staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1088,6 +1098,7 @@ class Establishment extends EntityValidator {
             primaryAuthorityCssr: this._primaryAuthorityCssr,
             careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
             CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
+            staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1405,6 +1416,7 @@ class Establishment extends EntityValidator {
         this._primaryAuthorityCssr = this.primaryAuthorityCssr;
         this._CWPAwarenessQuestionViewed = fetchResults.CWPAwarenessQuestionViewed;
         this._careWorkforcePathwayUse = fetchResults.careWorkforcePathwayUse;
+        this._staffDoDelegatedHealthcareActivities = fetchResults.staffDoDelegatedHealthcareActivities;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1863,6 +1875,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.isParentApprovedBannerViewed = this.isParentApprovedBannerViewed;
         myDefaultJSON.CWPAwarenessQuestionViewed = this.CWPAwarenessQuestionViewed;
+        myDefaultJSON.staffDoDelegatedHealthcareActivities = this.staffDoDelegatedHealthcareActivities;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

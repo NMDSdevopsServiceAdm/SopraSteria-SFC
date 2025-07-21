@@ -8,7 +8,9 @@ const localformatService = (thisService, showCategory = true, showCQC = true, sh
     //key: thisService.name.replace(/\W/g, '_').toUpperCase(),  // any non-alphanumeric to underscore
     name: thisService.name,
     other: thisService.other ? thisService.other : undefined,
-    canDoDelegatedHealthcareActivities: thisService.canDoDelegatedHealthcareActivities,
+    ...(thisService.canDoDelegatedHealthcareActivities
+      ? { canDoDelegatedHealthcareActivities: thisService.canDoDelegatedHealthcareActivities }
+      : {}),
   };
 
   if (showCategory) {

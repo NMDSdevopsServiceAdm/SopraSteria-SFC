@@ -23,7 +23,7 @@ exports.StaffDoDelegatedHealthcareActivitiesProperty = class StaffDoDelegatedHea
   }
 
   restorePropertyFromSequelize(document) {
-    return document.StaffDoDelegatedHealthcareActivitiesValue;
+    return document.staffDoDelegatedHealthcareActivities;
   }
 
   savePropertyToSequelize() {

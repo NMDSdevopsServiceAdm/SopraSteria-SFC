@@ -801,30 +801,26 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-      staffDoDelegatedHealthcareActivitiesValue: {
+      staffDoDelegatedHealthcareActivities: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'StaffDoDelegatedHealthcareActivitiesValue',
       },
-      staffDoDelegatedHealthcareActivitiesSavedAt: {
+      StaffDoDelegatedHealthcareActivitiesSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'StaffDoDelegatedHealthcareActivitiesSavedAt',
       },
-      staffDoDelegatedHealthcareActivitiesChangedAt: {
+      StaffDoDelegatedHealthcareActivitiesChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'StaffDoDelegatedHealthcareActivitiesChangedAt',
       },
-      staffDoDelegatedHealthcareActivitiesSavedBy: {
+      StaffDoDelegatedHealthcareActivitiesSavedBy: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'StaffDoDelegatedHealthcareActivitiesSavedBy',
       },
-      staffDoDelegatedHealthcareActivitiesChangedBy: {
+      StaffDoDelegatedHealthcareActivitiesChangedBy: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'StaffDoDelegatedHealthcareActivitiesChangedBy',
       },
     },
     {

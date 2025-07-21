@@ -34,7 +34,7 @@ describe('staffDoDelegatedHealthcareActivitiesProperty', () => {
       it(`should return value if valid - ${value}`, () => {
         const staffDoDelegatedHealthcareActivitiesProperty = new propertyClass();
         const document = {
-          StaffDoDelegatedHealthcareActivitiesValue: value,
+          staffDoDelegatedHealthcareActivities: value,
         };
 
         const returned = staffDoDelegatedHealthcareActivitiesProperty.restorePropertyFromSequelize(document);
