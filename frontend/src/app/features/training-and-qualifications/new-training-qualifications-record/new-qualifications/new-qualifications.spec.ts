@@ -14,7 +14,7 @@ import { cloneDeep } from 'lodash';
 
 import { NewQualificationsComponent } from './new-qualifications.component';
 
-fdescribe('NewQualificationsComponent', () => {
+describe('NewQualificationsComponent', () => {
   async function setup(override: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],

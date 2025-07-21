@@ -8,7 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { NewTrainingComponent } from './new-training.component';
 import { provideRouter, RouterModule } from '@angular/router';
 
-fdescribe('NewTrainingComponent', async () => {
+describe('NewTrainingComponent', async () => {
   const trainingCategories = [
     {
       category: 'Autism',

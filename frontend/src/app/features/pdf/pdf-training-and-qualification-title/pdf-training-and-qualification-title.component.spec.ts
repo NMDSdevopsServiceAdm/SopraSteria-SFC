@@ -6,7 +6,7 @@ import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService'
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 
-fdescribe('PdfWorkerTitleComponent', () => {
+describe('PdfWorkerTitleComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(PdfTrainingAndQualificationTitleComponent, {
       imports: [SharedModule],
