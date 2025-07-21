@@ -78,10 +78,12 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     }
 
     this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, props).subscribe(
-        (data) => this._onSuccess(data),
-        (error) => this.onError(error),
-      ),
+      this.establishmentService
+        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'staffDoDelegatedHealthcareActivities', props)
+        .subscribe(
+          (data) => this._onSuccess(data),
+          (error) => this.onError(error),
+        ),
     );
   }
 

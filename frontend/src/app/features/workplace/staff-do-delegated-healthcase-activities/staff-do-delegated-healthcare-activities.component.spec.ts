@@ -13,7 +13,7 @@ import { of } from 'rxjs';
 
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcare-activities.component';
 
-fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
+describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   async function setup(overrides: any = {}) {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
@@ -51,7 +51,7 @@ fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService);
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.returnValue(
       of({ ...establishmentService.establishment }),
     );
 
@@ -106,7 +106,7 @@ fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     });
 
     for (let i = 0; i < labels.length; i++) {
-      it(`should call updateSingleEstablishmentField with expected payload on submit (${values[i]})`, async () => {
+      it(`should call updateEstablishmentFieldWithAudit with expected payload on submit (${values[i]})`, async () => {
         const { getByLabelText, getByText, establishmentServiceSpy } = await setup({
           establishmentService: { returnTo: null },
         });
@@ -119,7 +119,11 @@ fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
           staffDoDelegatedHealthcareActivities: values[i],
         };
 
-        expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', expectedPayload);
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(
+          'mocked-uid',
+          'staffDoDelegatedHealthcareActivities',
+          expectedPayload,
+        );
       });
     }
   });
