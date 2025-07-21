@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
-fdescribe('StaffRecruitmentCaptureTrainingRequirement', () => {
+describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(StaffRecruitmentCaptureTrainingRequirementComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -262,10 +262,40 @@ fdescribe('StaffRecruitmentCaptureTrainingRequirement', () => {
   });
 
   describe('Back button', () => {
-    it('should set the back link to how-many-leavers page', async () => {
-      const { component } = await setup(false);
+    it('should set the back link to how-many-leavers page when main service cannot do delegated healthcare activities', async () => {
+      const { component } = await setup({
+        returnTo: null,
+        establishment: {
+          mainService: {
+            canDoDelegatedHealthcareActivities: null,
+            id: 11,
+            name: 'Domestic services and home help',
+            reportingID: 10,
+          },
+        },
+      });
 
       expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
+    });
+
+    it('should set the back link to staff-do-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
+      const { component } = await setup({
+        returnToUrl: null,
+        establishment: {
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+        },
+      });
+
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        component.establishment.uid,
+        'staff-do-delegated-healthcare-activities',
+      ]);
     });
   });
 });
