@@ -8,7 +8,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { CouldNotFindWorkplaceAddressDirective } from '@shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.directive';
 
 @Component({
-  selector: 'app-could-not-find-workplace-address',
+  selector: 'app-could-not-find-workplace-address-create-account',
   templateUrl:
     '../../../../shared/directives/create-workplace/could-not-find-workplace-address/could-not-find-workplace-address.component.html',
 })
