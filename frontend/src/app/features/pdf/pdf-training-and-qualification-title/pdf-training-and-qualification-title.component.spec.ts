@@ -52,7 +52,7 @@ describe('PdfWorkerTitleComponent', () => {
     expect(getByText('Yes, completed')).toBeTruthy;
   });
 
-  it('should show whether Care certificate as "Not answered" if got no value for that worker', async () => {
+  it('should show Care certificate as "Not answered" if the question is not answered yet for that worker', async () => {
     const worker = { ...mockWorker, careCertificate: null };
     const { getByText } = await setup({ worker, workplace: mockWorkplace });
 
