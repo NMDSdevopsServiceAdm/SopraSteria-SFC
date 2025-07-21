@@ -30,7 +30,7 @@ export class PdfTrainingAndQualificationService {
   public scale = 0.5;
   public width = 1000;
   public height = 50;
-  public spacing = 5;
+  public spacing = 10;
   public y = 30;
   public ypx = (this.y * this.ptToPx) / this.scale;
   public pageNumber: number;
@@ -82,7 +82,6 @@ export class PdfTrainingAndQualificationService {
     });
 
     html.append(mandatoryTrainings.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.spacing));
   }
 
   private appendNonMandatoryTraining(html: HTMLDivElement, nonMandatoryTraining: TrainingRecordCategory[]): void {
@@ -94,7 +93,6 @@ export class PdfTrainingAndQualificationService {
     });
 
     html.append(nonMandatoryTrainings.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.spacing));
   }
 
   private appendQualification(html: HTMLDivElement, qualificationsByGroup: QualificationsByGroup): void {
@@ -105,7 +103,6 @@ export class PdfTrainingAndQualificationService {
     });
 
     html.append(qualifications.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.spacing));
   }
 
   private appendTandQSummary(
