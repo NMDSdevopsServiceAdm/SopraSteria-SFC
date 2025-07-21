@@ -67,15 +67,14 @@ export class DataSharingComponent extends Question {
 
   protected updateEstablishment(props: ShareWithRequest): void {
     const completeUpdateEstablishment = () => {
+      const property = 'ShareData';
       this.subscriptions.add(
-        this.establishmentService.updateDataSharing(this.establishment.uid, props).subscribe(
-          (data) => {
-            this._onSuccess(data);
-          },
+        this.establishmentService.updateEstablishmentFieldWithAudit(this.establishment.uid, property, props).subscribe(
+          (data) => this._onSuccess(data),
           (error) => this.onError(error),
         ),
       );
-    };
+    };;
 
     this.establishment.showSharingPermissionsBanner
       ? this.removeSharingPermissionsBanner(completeUpdateEstablishment)

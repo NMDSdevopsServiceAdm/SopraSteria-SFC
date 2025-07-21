@@ -62,8 +62,8 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
 
   private prefill(): void {
     this.subscriptions.add(
-      this.establishmentService.getStaff(this.workplace.uid).subscribe((staff) => {
-        this.form.patchValue({ totalStaff: staff });
+      this.establishmentService.getEstablishmentField(this.workplace.uid, 'NumberOfStaff').subscribe((data) => {
+        this.form.patchValue({ totalStaff: data.numberOfStaff });
       }),
     );
   }
@@ -79,8 +79,10 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
 
     const totalStaffNumber = this.form.get('totalStaff').value;
 
+    const property = 'NumberOfStaff';
+    const props = { numberOfStaff: totalStaffNumber };
     this.subscriptions.add(
-      this.establishmentService.postStaff(this.workplace.uid, totalStaffNumber).subscribe(
+      this.establishmentService.updateEstablishmentFieldWithAudit(this.workplace.uid, property, props).subscribe(
         (data) => this.onSuccess(data),
         (error) => this.onError(error),
       ),

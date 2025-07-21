@@ -20,29 +20,11 @@ import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-
-import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
 
 interface EstablishmentApiResponse {
   id: number;
   name: string;
-}
-
-interface EmployerTypeResponse {
-  id: number;
-  name: string;
-  employerType: {
-    value: string;
-    other?: string;
-  };
-}
-
-interface EmployerTypeRequest {
-  employerType: {
-    value: string;
-    other?: string;
-  };
 }
 
 interface MainServiceRequest {
@@ -258,22 +240,16 @@ export class EstablishmentService {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/jobs`);
   }
 
-  getStaff(establishmentuid: string) {
-    return this.http
-      .get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/staff`)
-      .pipe(map((res) => res.numberOfStaff));
-  }
-
-  postStaff(workplaceUid: string, numberOfStaff: number) {
-    return this.http.post<any>(
-      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/staff/${numberOfStaff}`,
-      null,
+  getEstablishmentField(establishmentId: string, property: string) {
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField/${property}`,
     );
   }
 
-  getEmployerType() {
-    return this.http.get<EmployerTypeResponse>(
-      `${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/employerType`,
+  updateEstablishmentFieldWithAudit(establishmentId: string, property: string, data: any) {
+    return this.http.post<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/establishmentField/${property}`,
+      data,
     );
   }
 
@@ -288,13 +264,6 @@ export class EstablishmentService {
     );
   }
 
-  updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest) {
-    return this.http.post<EmployerTypeResponse>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/employerType`,
-      data,
-    );
-  }
-
   updateOtherServices(establishmentId, data: PostServicesModel) {
     return this.http.post<PostServicesModel>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/services`,
@@ -305,13 +274,6 @@ export class EstablishmentService {
   updateMainService(establishmentId: string, data: MainServiceRequest) {
     return this.http.post<MainServiceRequest>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mainService`,
-      data,
-    );
-  }
-
-  updateDataSharing(establishmentId, data: ShareWithRequest): Observable<any> {
-    return this.http.post<Establishment>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/share`,
       data,
     );
   }

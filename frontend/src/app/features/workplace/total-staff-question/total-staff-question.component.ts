@@ -52,13 +52,14 @@ export class TotalStaffQuestionComponent extends Question {
 
   protected generateUpdateProps() {
     return {
-      totalStaff: this.form.value.totalStaff,
+      numberOfStaff: this.form.value.totalStaff,
     };
   }
 
   protected updateEstablishment(props): void {
+    const property = 'NumberOfStaff';
     this.subscriptions.add(
-      this.establishmentService.postStaff(this.establishment.uid, props.totalStaff).subscribe(
+      this.establishmentService.updateEstablishmentFieldWithAudit(this.establishment.uid, property, props).subscribe(
         (data) => this._onSuccess(data),
         (error) => this.onError(error),
       ),

@@ -34,10 +34,10 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
           useValue: {
             primaryWorkplace: { isParent: true, parentName: null },
             standAloneAccount: false,
-            getStaff() {
-              return of(numberOfStaff);
+            getEstablishmentField() {
+              return of({ numberOfStaff });
             },
-            postStaff() {},
+            updateEstablishmentFieldWithAudit() {},
             setState() {},
           },
         },
@@ -67,7 +67,10 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
-    const postStaffSpy = spyOn(establishmentService, 'postStaff').and.callFake((_uid, numberOfStaff) => {
+    const updateEstablishmentFieldWithAuditSpy = spyOn(
+      establishmentService,
+      'updateEstablishmentFieldWithAudit',
+    ).and.callFake((_uid, _property, { numberOfStaff }) => {
       return of({ ...mockEstablishment, numberOfStaff });
     });
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
@@ -75,7 +78,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
     return {
       ...setupTools,
       component,
-      postStaffSpy,
+      updateEstablishmentFieldWithAuditSpy,
       routerSpy,
       mockEstablishment,
       establishmentService,
@@ -161,13 +164,15 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
   });
 
   describe('on submit', () => {
-    it('should call establishment service postStaff() with the updated number of staff', async () => {
-      const { fixture, postStaffSpy, mockEstablishment } = await setup({ numberOfStaff: 20 });
+    it('should call establishment service updateEstablishmentFieldWithAudit() with the updated number of staff', async () => {
+      const { fixture, updateEstablishmentFieldWithAuditSpy, mockEstablishment } = await setup({ numberOfStaff: 20 });
 
       await fillInNumberAndSubmitForm('10');
       fixture.detectChanges();
 
-      expect(postStaffSpy).toHaveBeenCalledWith(mockEstablishment.uid, 10);
+      expect(updateEstablishmentFieldWithAuditSpy).toHaveBeenCalledWith(mockEstablishment.uid, 'NumberOfStaff', {
+        numberOfStaff: 10,
+      });
     });
 
     it('should add total staff page to submittedPages in vacanciesAndTurnoverService when successful', async () => {
@@ -190,9 +195,11 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
     });
 
     it('should show an error if failed to update total staff number', async () => {
-      const { fixture, postStaffSpy, establishmentService } = await setup({ numberOfStaff: 20 });
+      const { fixture, updateEstablishmentFieldWithAuditSpy, establishmentService } = await setup({
+        numberOfStaff: 20,
+      });
 
-      postStaffSpy.and.callFake((_uid, _numberOfStaff) => {
+      updateEstablishmentFieldWithAuditSpy.and.callFake((_uid, _numberOfStaff) => {
         return throwError(new HttpErrorResponse({ error: 'Internal server error', status: 500 }));
       });
       const setStateSpy = spyOn(establishmentService, 'setState');
@@ -205,7 +212,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
     });
 
     it('should show an error when user input is empty', async () => {
-      const { fixture, postStaffSpy, getByRole } = await setup();
+      const { fixture, updateEstablishmentFieldWithAuditSpy, getByRole } = await setup();
 
       await fillInNumberAndSubmitForm('');
       userEvent.click(getByRole('button', { name: 'Save and return' }));
@@ -213,47 +220,47 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
       fixture.detectChanges();
 
       expectErrorMessageAppears('Enter how many members of staff the workplace has');
-      expect(postStaffSpy).not.toHaveBeenCalled();
+      expect(updateEstablishmentFieldWithAuditSpy).not.toHaveBeenCalled();
     });
 
     it('should show an error when user input is not a valid number', async () => {
-      const { fixture, postStaffSpy } = await setup();
+      const { fixture, updateEstablishmentFieldWithAuditSpy } = await setup();
 
       await fillInNumberAndSubmitForm('banana');
       fixture.detectChanges();
 
       expectErrorMessageAppears('Enter the number of staff as a digit, like 7');
-      expect(postStaffSpy).not.toHaveBeenCalled();
+      expect(updateEstablishmentFieldWithAuditSpy).not.toHaveBeenCalled();
     });
 
     it('should show an error when user input is out of allowed range', async () => {
-      const { fixture, postStaffSpy } = await setup();
+      const { fixture, updateEstablishmentFieldWithAuditSpy } = await setup();
 
       await fillInNumberAndSubmitForm('-1');
       fixture.detectChanges();
 
       expectErrorMessageAppears('Number of staff must be a whole number between 0 and 999');
-      expect(postStaffSpy).not.toHaveBeenCalled();
+      expect(updateEstablishmentFieldWithAuditSpy).not.toHaveBeenCalled();
     });
 
     it('should return to the previous page after updating staff record', async () => {
-      const { component, fixture, postStaffSpy, routerSpy } = await setup();
+      const { component, fixture, updateEstablishmentFieldWithAuditSpy, routerSpy } = await setup();
 
       await fillInNumberAndSubmitForm('10');
       fixture.detectChanges();
 
-      expect(postStaffSpy).toHaveBeenCalled();
+      expect(updateEstablishmentFieldWithAuditSpy).toHaveBeenCalled();
       // @ts-expect-error: TS2341: Property 'route' is private
       expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
     });
 
     it('should return to the previous page without changing staff number if cancel link is clicked', async () => {
-      const { component, fixture, getByText, routerSpy, postStaffSpy } = await setup();
+      const { component, fixture, getByText, routerSpy, updateEstablishmentFieldWithAuditSpy } = await setup();
 
       userEvent.click(getByText('Cancel'));
       fixture.detectChanges();
 
-      expect(postStaffSpy).not.toHaveBeenCalled();
+      expect(updateEstablishmentFieldWithAuditSpy).not.toHaveBeenCalled();
       // @ts-expect-error: TS2341: Property 'route' is private
       expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
     });
