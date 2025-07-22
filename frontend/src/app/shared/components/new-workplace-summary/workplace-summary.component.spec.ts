@@ -25,7 +25,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
-fdescribe('NewWorkplaceSummaryComponent', () => {
+describe('NewWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const shareWith = overrides?.shareWith ?? null;
     const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
@@ -33,15 +33,14 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
 
     const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? null;
     const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
-    const staffDoDelegatedHealthcareActivities = overrides?.staffDoDelegatedHealthcareActivities ?? null;
 
     const mockWorkplace = establishmentBuilder({
       overrides: {
         shareWith,
         careWorkforcePathwayWorkplaceAwareness,
         careWorkforcePathwayUse,
-        staffDoDelegatedHealthcareActivities,
         otherService: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
+        ...overrides.establishment,
       },
     }) as Establishment;
 
@@ -773,9 +772,18 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
     });
 
     describe('Carry out delegated healthcare activities', () => {
+      const workplaceWhichCanDoDHA = {
+        mainService: {
+          canDoDelegatedHealthcareActivities: true,
+          id: 9,
+          name: 'Day care and day services',
+          reportingID: 6,
+        },
+      };
+
       it('should show dash and have Add information button when is set to null (not answered)', async () => {
         const { component, queryByTestId } = await setup({
-          staffDoDelegatedHealthcareActivities: null,
+          establishment: { ...workplaceWhichCanDoDHA, staffDoDelegatedHealthcareActivities: null },
           canEditEstablishment: true,
         });
 
@@ -791,7 +799,7 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
 
       it('should show Change button when there is a value (answered)', async () => {
         const { component, queryByTestId } = await setup({
-          staffDoDelegatedHealthcareActivities: 'Yes',
+          establishment: { ...workplaceWhichCanDoDHA, staffDoDelegatedHealthcareActivities: 'Yes' },
           canEditEstablishment: true,
         });
 
@@ -803,6 +811,24 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
           `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
         );
         expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Yes')).toBeTruthy();
+      });
+
+      it('should not display row when main service cannot do DHA', async () => {
+        const { queryByTestId } = await setup({
+          establishment: {
+            mainService: {
+              canDoDelegatedHealthcareActivities: null,
+              id: 11,
+              name: 'Domestic services and home help',
+              reportingID: 10,
+            },
+          },
+          canEditEstablishment: true,
+        });
+
+        const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+
+        expect(staffDoDelegatedHealthcareActivitiesRow).toBeFalsy();
       });
     });
   });

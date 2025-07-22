@@ -346,7 +346,7 @@
     </div>
 
     <div
-      *ngIf="!workplace.showAddWorkplaceDetailsBanner"
+      *ngIf="!workplace.showAddWorkplaceDetailsBanner && workplace.mainService?.canDoDelegatedHealthcareActivities"
       class="govuk-summary-list__row"
       data-testid="carryOutDelegatedHealthcareActivities"
     >

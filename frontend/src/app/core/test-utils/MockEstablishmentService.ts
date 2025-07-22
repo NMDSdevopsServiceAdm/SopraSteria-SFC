@@ -65,6 +65,7 @@ export const establishmentBuilder = build('Establishment', {
       use: 'Yes',
       reasons: [{ id: 1 }, { id: 10, other: 'some specific reason' }],
     },
+    staffDoDelegatedHealthcareActivities: null,
   },
 });
 
