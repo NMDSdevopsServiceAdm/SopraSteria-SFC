@@ -1,7 +1,7 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-form-group" class="govuk-!-padding-bottom-5">
+      <div class="govuk-form-group govuk-!-padding-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
@@ -9,13 +9,13 @@
               Do your non-nursing staff carry out delegated healthcare activities?
             </h1>
           </legend>
-          <div class="govuk-inset-text thin-border govuk-!-padding-right-0">
+          <div class="govuk-inset-text thin-border govuk-!-padding-right-0" style="margin-right: -20px">
             Delegated healthcare activities are actions and services that support the prevention, diagnosis and
             treatment of physical and mental illness. These activities are delegated by registered healthcare
             professionals, such as nurses, occupational therapists and speech and language therapists.
           </div>
           <div class="govuk-form-group">
-            <div class="govuk-radios govuk-!-margin-bottom-4">
+            <div class="govuk-radios govuk-!-margin-top-3">
               <ng-container *ngFor="let option of options; let i = index">
                 <div class="govuk-radios__item">
                   <input
