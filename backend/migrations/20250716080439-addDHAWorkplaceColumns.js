@@ -15,7 +15,7 @@ module.exports = {
           {
             type: Sequelize.DataTypes.ENUM,
             allowNull: true,
-            values: ['Yes', 'No', "Don''t know"],
+            values: ['Yes', 'No', "Don't know"],
           },
           { transaction },
         ),
