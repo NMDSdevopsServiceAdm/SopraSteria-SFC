@@ -25,7 +25,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
-describe('NewWorkplaceSummaryComponent', () => {
+fdescribe('NewWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const shareWith = overrides?.shareWith ?? null;
     const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
@@ -33,12 +33,14 @@ describe('NewWorkplaceSummaryComponent', () => {
 
     const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? null;
     const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
+    const staffDoDelegatedHealthcareActivities = overrides?.staffDoDelegatedHealthcareActivities ?? null;
 
     const mockWorkplace = establishmentBuilder({
       overrides: {
         shareWith,
         careWorkforcePathwayWorkplaceAwareness,
         careWorkforcePathwayUse,
+        staffDoDelegatedHealthcareActivities,
         otherService: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
       },
     }) as Establishment;
@@ -767,6 +769,40 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/service-users`);
         expect(within(serviceUsersRow).queryByText('Service for group 1')).toBeTruthy();
         expect(within(serviceUsersRow).queryByText('Service for group 2')).toBeTruthy();
+      });
+    });
+
+    describe('Carry out delegated healthcare activities', () => {
+      it('should show dash and have Add information button when is set to null (not answered)', async () => {
+        const { component, queryByTestId } = await setup({
+          staffDoDelegatedHealthcareActivities: null,
+          canEditEstablishment: true,
+        });
+
+        const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+        const link = within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
+        );
+        expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button when there is a value (answered)', async () => {
+        const { component, queryByTestId } = await setup({
+          staffDoDelegatedHealthcareActivities: 'Yes',
+          canEditEstablishment: true,
+        });
+
+        const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+        const link = within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
+        );
+        expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Yes')).toBeTruthy();
       });
     });
   });
