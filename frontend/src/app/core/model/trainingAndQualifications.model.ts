@@ -3,7 +3,12 @@ import {
   QualificationCertificateDownloadEvent,
   QualificationCertificateUploadEvent,
 } from './qualification.model';
-import { TrainingRecords, TrainingCertificateDownloadEvent, TrainingCertificateUploadEvent } from './training.model';
+import {
+  TrainingRecords,
+  TrainingCertificateDownloadEvent,
+  TrainingCertificateUploadEvent,
+  TrainingRecord,
+} from './training.model';
 
 export interface TrainingAndQualificationRecords {
   qualifications: QualificationsByGroup;
@@ -59,3 +64,6 @@ export interface FileInfoWithETag {
 export interface ConfirmUploadRequest {
   files: { filename: string; fileId: string; etag: string }[];
 }
+
+export type ActionsListItem = TrainingRecord & { typeOfTraining: string };
+export type ActionsListData = Array<ActionsListItem>;

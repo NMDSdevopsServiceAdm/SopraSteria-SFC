@@ -2,15 +2,16 @@ import { ComponentRef, ElementRef, Injectable, Type, ViewContainerRef } from '@a
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecordCategory } from '@core/model/training.model';
+import { Worker } from '@core/model/worker.model';
 import { PdfHeaderComponent } from '@features/pdf/header/pdf-header.component';
 import { PdfTraininAndQualificationActionList } from '@features/pdf/training-and-qualification-action-list/training-and-qualification-action-list.component';
-import { PdfTraininAndQualificationTitle } from '@features/pdf/training-and-qualification-title/training-and-qualification-title.component';
-import { PdfWorkplaceTitleComponent } from '@features/pdf/workplace-title/pdf-workplace-title.component';
+import { PdfTrainingAndQualificationTitleComponent } from '@features/pdf/pdf-training-and-qualification-title/pdf-training-and-qualification-title.component';
 import { NewQualificationsComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-qualifications/new-qualifications.component';
 import { NewTrainingAndQualificationsRecordSummaryComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
+import { ActionsListData } from '@core/model/trainingAndQualifications.model';
 import { NewTrainingComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-training/new-training.component';
 
-import { jsPDF } from 'jspdf';
+import { jsPDF, jsPDFOptions } from 'jspdf';
 
 export interface PdfComponent {
   content: ElementRef;
@@ -29,86 +30,87 @@ export class PdfTrainingAndQualificationService {
   public scale = 0.5;
   public width = 1000;
   public height = 50;
-  public spacing = 50;
+  public spacing = 10;
   public y = 30;
   public ypx = (this.y * this.ptToPx) / this.scale;
   public pageNumber: number;
+  public viewContainerRef: ViewContainerRef;
 
   constructor() {}
 
-  private getNewDoc() {
-    const doc = new jsPDF('p', 'pt', 'a4');
-    const html = document.createElement('div');
-
-    html.style.width = `${this.width}px`;
-    html.style.display = 'block';
-
-    return { doc, html };
+  private getNewPdfDoc() {
+    const pdfOptions: jsPDFOptions = {
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4',
+    };
+    return new jsPDF(pdfOptions);
   }
 
-  private appendHeader(html: HTMLElement): void {
+  private appendHeader(html: HTMLDivElement): void {
     const header = this.resolveComponent(PdfHeaderComponent);
+    header.classList.add('asc-pdf-header__extend-bottom-border');
+    header.classList.add('asc-pdf-header__reduce-top-spacing');
 
-    html.append(this.createSpacer(this.width, 20));
     html.append(header.cloneNode(true));
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendWorkplaceTitle(html, workplace): void {
-    const workplaceTitle = this.resolveComponent(PdfWorkplaceTitleComponent, (c) => {
-      c.instance.workplace = workplace;
-      c.changeDetectorRef.detectChanges();
-    });
-
-    html.append(workplaceTitle.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.spacing));
-  }
-  private appendWorker(html, worker, lastUpdatedDate): void {
-    const workerTitle = this.resolveComponent(PdfTraininAndQualificationTitle, (c) => {
+  private appendTitle(
+    html: HTMLDivElement,
+    worker: Worker,
+    workplace: Establishment,
+    lastUpdatedDate: Date | string,
+  ): void {
+    const title = this.resolveComponent(PdfTrainingAndQualificationTitleComponent, (c) => {
       c.instance.worker = worker;
+      c.instance.workplace = workplace;
       c.instance.lastUpdatedDate = lastUpdatedDate;
       c.changeDetectorRef.detectChanges();
     });
 
-    html.append(workerTitle.cloneNode(true));
+    html.append(title.cloneNode(true));
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendMandatoryTraining(html, mandatoryTraining): void {
+  private appendMandatoryTraining(html: HTMLDivElement, mandatoryTraining: TrainingRecordCategory[]): void {
     const mandatoryTrainings = this.resolveComponent(NewTrainingComponent, (c) => {
       (c.instance.trainingCategories = mandatoryTraining), (c.instance.isMandatoryTraining = true);
       c.instance.trainingType = 'Mandatory training';
+      c.instance.pdfRenderingMode = true;
       c.changeDetectorRef.detectChanges();
     });
 
-    const s = mandatoryTrainings;
-
     html.append(mandatoryTrainings.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendNonMandatoryTraining(html, nonMandatoryTraining): void {
+  private appendNonMandatoryTraining(html: HTMLDivElement, nonMandatoryTraining: TrainingRecordCategory[]): void {
     const nonMandatoryTrainings = this.resolveComponent(NewTrainingComponent, (c) => {
       c.instance.trainingCategories = nonMandatoryTraining;
       c.instance.trainingType = 'Non-mandatory training';
+      c.instance.pdfRenderingMode = true;
       c.changeDetectorRef.detectChanges();
     });
 
     html.append(nonMandatoryTrainings.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendQualification(html, qualificationsByGroup): void {
+  private appendQualification(html: HTMLDivElement, qualificationsByGroup: QualificationsByGroup): void {
     const qualifications = this.resolveComponent(NewQualificationsComponent, (c) => {
       c.instance.qualificationsByGroup = qualificationsByGroup;
+      c.instance.pdfRenderingMode = true;
       c.changeDetectorRef.detectChanges();
     });
 
     html.append(qualifications.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendTandQSummary(html, qualificationsByGroup, nonMandatoryTrainingCount, mandatoryTrainingCount): void {
+  private appendTandQSummary(
+    html: HTMLDivElement,
+    qualificationsByGroup: QualificationsByGroup,
+    nonMandatoryTrainingCount: number,
+    mandatoryTrainingCount: number,
+  ): void {
     const qualificationsAndTrainings = this.resolveComponent(
       NewTrainingAndQualificationsRecordSummaryComponent,
       (c) => {
@@ -122,7 +124,7 @@ export class PdfTrainingAndQualificationService {
     html.append(this.createSpacer(this.width, this.spacing));
   }
 
-  private appendActionList(html, actionsListData): void {
+  private appendActionList(html: HTMLDivElement, actionsListData: ActionsListData): void {
     if (actionsListData.length > 0) {
       const actionList = this.resolveComponent(PdfTraininAndQualificationActionList, (c) => {
         c.instance.actionsListData = actionsListData;
@@ -133,15 +135,15 @@ export class PdfTrainingAndQualificationService {
       html.append(this.createSpacer(this.width, this.spacing));
     }
   }
-  private async saveHtmlToPdf(filename, doc: jsPDF, html: HTMLElement, scale, width, save): Promise<void> {
-    const widthHtml = width * scale;
+
+  private async renderHtmlToPdfDoc(doc: jsPDF, html: HTMLElement): Promise<jsPDF> {
+    const widthHtml = this.width * this.scale;
     const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
-    let y = 0;
 
     const html2canvas = {
-      scale,
-      width,
-      windowWidth: width,
+      scale: this.scale,
+      width: this.width,
+      windowWidth: this.width,
       ignoreElements: (element: HTMLElement) => {
         // ignore svg as jspdf does not support svg in html and will cause other contents to render incorrectly
         return element.tagName.toLowerCase() === 'img' && element.getAttribute('src')?.endsWith('.svg');
@@ -149,25 +151,48 @@ export class PdfTrainingAndQualificationService {
     };
 
     await doc.html(html, {
-      margin: [25, x, 10, 50],
+      margin: [45, x, 10, 50],
       autoPaging: 'text',
       html2canvas,
-      callback: function (doc) {
-        return doc;
-      },
     });
 
-    if (doc.getNumberOfPages()) {
-      for (let i = 0; i < doc.getNumberOfPages(); i++) {
-        doc
-          .setPage(i + 1)
-          .text(`page ${i + 1} of ${doc.getNumberOfPages()}`, doc.internal.pageSize.getWidth() - 100, 20);
-      }
+    return doc;
+  }
+
+  private async precheckNumberOfPages(html: HTMLElement): Promise<number> {
+    const throwAwayDoc = this.getNewPdfDoc();
+    await this.renderHtmlToPdfDoc(throwAwayDoc, html);
+    return throwAwayDoc.getNumberOfPages();
+  }
+
+  private async addPageNumbers(doc: jsPDF): Promise<jsPDF> {
+    const numberOfPages = doc.getNumberOfPages();
+    for (let i = 0; i < numberOfPages; i++) {
+      doc.setPage(i + 1).text(`Page ${i + 1} of ${numberOfPages}`, doc.internal.pageSize.getWidth() - 100, 20);
+    }
+    return doc;
+  }
+
+  private async saveHtmlToPdf(filename: string, html: HTMLElement, save: boolean): Promise<jsPDF> {
+    // a workaround to the compatibility issue with Adobe reader, from jsPDF github issue #3428
+    // generate the pdf once, count the total page number,
+    // throw that pdf away, then create a fresh one, with each page manually created by doc.addPage()
+
+    const numberOfPages = await this.precheckNumberOfPages(html);
+
+    const pdfDoc = this.getNewPdfDoc();
+
+    for (let i = 0; i < numberOfPages - 1; i++) {
+      pdfDoc.addPage();
     }
 
+    await this.renderHtmlToPdfDoc(pdfDoc, html);
+    await this.addPageNumbers(pdfDoc);
+
     if (save) {
-      doc.save(filename);
+      pdfDoc.save(filename);
     }
+    return pdfDoc;
   }
 
   private createSpacer(width: number, space: number): HTMLDivElement {
@@ -179,7 +204,6 @@ export class PdfTrainingAndQualificationService {
     return spacer;
   }
 
-  public viewContainerRef: ViewContainerRef;
   set setViewContainer(vcr: ViewContainerRef) {
     this.viewContainerRef = vcr;
   }
@@ -203,27 +227,26 @@ export class PdfTrainingAndQualificationService {
     mandatoryTraining: TrainingRecordCategory[],
     nonMandatoryTraining: TrainingRecordCategory[],
     qualificationsByGroup: QualificationsByGroup,
-    nonMandatoryTrainingCount,
-    mandatoryTrainingCount,
-    worker,
-    lastUpdatedDate,
-    actionsListData,
-    fileName,
+    nonMandatoryTrainingCount: number,
+    mandatoryTrainingCount: number,
+    worker: Worker,
+    lastUpdatedDate: string | Date,
+    actionsListData: ActionsListData,
+    fileName: string,
     save: boolean,
   ): Promise<jsPDF> {
-    const { doc, html } = this.getNewDoc();
+    const html = document.createElement('div');
+    html.style.width = `${this.width}px`;
+    html.style.display = 'block';
 
     this.appendHeader(html);
-    this.appendWorkplaceTitle(html, workplace);
-    this.appendWorker(html, worker, lastUpdatedDate);
+    this.appendTitle(html, worker, workplace, lastUpdatedDate);
     this.appendTandQSummary(html, qualificationsByGroup, nonMandatoryTrainingCount, mandatoryTrainingCount);
     this.appendActionList(html, actionsListData);
     this.appendMandatoryTraining(html, mandatoryTraining);
     this.appendNonMandatoryTraining(html, nonMandatoryTraining);
     this.appendQualification(html, qualificationsByGroup);
 
-    await this.saveHtmlToPdf(fileName, doc, html, this.scale, this.width, save);
-
-    return doc;
+    return this.saveHtmlToPdf(fileName, html, save);
   }
 }

@@ -67,7 +67,7 @@ export class PdfService {
     this.appendWorkplaceTitle(html, workplace);
     this.appendElRef(html, elRef);
 
-    let footerPosition = this.calcFooterPosition(doc, html, 380, page);
+    let footerPosition = this.calcFooterPosition(doc, html, 180, page);
     this.appendFooter(html, footerPosition, page);
 
     html.append(this.createSpacer(this.width, this.ypx * 2));
