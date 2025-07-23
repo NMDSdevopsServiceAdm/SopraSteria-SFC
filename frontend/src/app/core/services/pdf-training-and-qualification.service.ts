@@ -51,6 +51,7 @@ export class PdfTrainingAndQualificationService {
   private appendHeader(html: HTMLDivElement): void {
     const header = this.resolveComponent(PdfHeaderComponent);
     header.classList.add('asc-pdf-header__extend-bottom-border');
+    header.classList.add('asc-pdf-header__reduce-top-spacing');
 
     html.append(header.cloneNode(true));
     html.append(this.createSpacer(this.width, this.spacing));
@@ -158,7 +159,7 @@ export class PdfTrainingAndQualificationService {
     };
 
     await doc.html(html, {
-      margin: [25, x, 10, 50],
+      margin: [45, x, 10, 50],
       autoPaging: 'text',
       html2canvas,
     });
