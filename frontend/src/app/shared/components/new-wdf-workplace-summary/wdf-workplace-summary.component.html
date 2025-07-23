@@ -301,6 +301,32 @@
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="serviceUsersWdfWarning"
     ></app-wdf-warning-message>
+
+    <div
+      *ngIf="workplace.mainService?.canDoDelegatedHealthcareActivities"
+      class="govuk-summary-list__row"
+      data-testid="carryOutDelegatedHealthcareActivities"
+    >
+      <dt class="govuk-summary-list__key">Carry out delegated healthcare activities</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value>
+          <ng-container *ngIf="!workplace.staffDoDelegatedHealthcareActivities; else staffDoDHAAnswered">
+            -
+          </ng-container>
+          <ng-template #staffDoDHAAnswered>
+            {{ workplace.staffDoDelegatedHealthcareActivities | dontKnow }}
+          </ng-template>
+        </app-summary-record-value>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' delegated healthcare activities'"
+          [link]="['/workplace', workplace.uid, 'staff-do-delegated-healthcare-activities']"
+          [hasData]="workplace.staffDoDelegatedHealthcareActivities"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
   </ng-container>
 
   <ng-container>
