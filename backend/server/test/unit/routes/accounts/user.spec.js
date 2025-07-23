@@ -6,15 +6,17 @@ const httpMocks = require('node-mocks-http');
 const {
   addUser,
   meetsMaxUserLimit,
-  partAddUser,
   listAdminUsers,
-  updateUser,
   updateLastViewedVacanciesAndTurnoverMessage,
+  partAddNormalUser,
+  partAddAdminUser,
+  updateNormalUser,
+  updateAdminUser,
 } = require('../../../../routes/accounts/user');
 const User = require('../../../../models/classes/user').User;
 const models = require('../../../../models');
 
-describe('user.js', () => {
+describe.only('user.js', () => {
   let req;
   let res;
 
@@ -135,43 +137,120 @@ describe('user.js', () => {
     });
   });
 
-  describe('partAddUser()', () => {
-    describe('/api/add/admin', () => {
-      const newAdmin = {
-        fullname: 'admin user',
-        jobTitle: 'administrator',
-        email: 'admin@email.com',
-        phone: '01234567890',
-        role: 'Admin',
-      };
+  describe('partAddUser', () => {
+    const newAdmin = {
+      fullname: 'admin user',
+      jobTitle: 'administrator',
+      email: 'admin@email.com',
+      phone: '01234567890',
+      role: 'Admin',
+    };
 
-      const adminToJSON = {
-        uid: 'mocked-uid',
-        username: null,
-        created: '01/02/2022',
-        updated: '01/02/20220',
-        updatedBy: 'mocked-username',
-        isPrimary: false,
-        lastLoggedIn: null,
-        establishmentId: null,
-        agreedUpdatedTerms: false,
-        migratedUserFirstLogon: false,
-        migratedUser: false,
-        registrationSurveyCompleted: null,
-        fullname: 'admin user',
-        jobTitle: 'administrator',
-        email: 'admin@email.com',
-        phone: '01234567890',
-        role: 'Admin',
-      };
+    const newEditUser = {
+      fullname: 'edit user',
+      jobTitle: 'manager',
+      email: 'test@example.com',
+      phone: '01234567890',
+      role: 'Edit',
+    };
 
+    const adminToJSON = {
+      uid: 'mocked-uid',
+      username: null,
+      created: '01/02/2022',
+      updated: '01/02/20220',
+      updatedBy: 'mocked-username',
+      isPrimary: false,
+      lastLoggedIn: null,
+      establishmentId: null,
+      agreedUpdatedTerms: false,
+      migratedUserFirstLogon: false,
+      migratedUser: false,
+      registrationSurveyCompleted: null,
+      fullname: 'admin user',
+      jobTitle: 'administrator',
+      email: 'admin@email.com',
+      phone: '01234567890',
+      role: 'Admin',
+    };
+
+    const defaultReq = {
+      establishmentId: 123,
+      establishment: { id: 123 },
+      role: 'Edit',
+      body: newEditUser,
+      username: 'mocked-username',
+      get() {
+        return 'localhost';
+      },
+    };
+
+    describe('partAddNormalUser(), POST /api/user/add/:establishmentId', () => {
+      beforeEach(() => {
+        sinon.stub(User.prototype, 'load').returns(true);
+        sinon.stub(User.prototype, 'save').returns();
+        sinon.stub(User.prototype, 'toJSON').resolves({});
+      });
+
+      it('should return a 200 status if adding a normal user', async () => {
+        const req = {
+          ...defaultReq,
+          body: newEditUser,
+        };
+
+        res = httpMocks.createResponse();
+
+        await partAddNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(User.prototype.save).to.have.been.called;
+      });
+
+      const adminUserTypes = ['Admin', 'AdminManager'];
+
+      adminUserTypes.forEach((adminType) => {
+        it(`should return a 401 error if normal user attempt to add an ${adminType} user`, async () => {
+          const req = {
+            ...defaultReq,
+            body: { ...newAdmin, role: adminType },
+          };
+
+          res = httpMocks.createResponse();
+
+          await partAddNormalUser(req, res);
+
+          expect(res.statusCode).to.equal(401);
+          expect(User.prototype.save).not.to.have.been.called;
+        });
+      });
+
+      it('should return a 400 error if request body contains username / password, which should not be present at this stage', async () => {
+        const req = {
+          ...defaultReq,
+          body: {
+            ...newEditUser,
+            password: 'Some very secure password e.g. Password!1',
+            username: 'someVeryUniqueUsername',
+          },
+        };
+
+        res = httpMocks.createResponse();
+
+        await partAddNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(400);
+        expect(User.prototype.save).not.to.have.been.called;
+      });
+    });
+
+    describe('partAddAdminUser(), POST /api/user/add/admin', () => {
       beforeEach(() => {
         sinon.stub(User.prototype, 'load').returns(true);
         sinon.stub(User.prototype, 'save').returns();
 
         req = {
           ...req,
-          body: newAdmin,
+          body: newEditUser,
           role: 'Admin',
           establishmentId: null,
         };
@@ -181,54 +260,60 @@ describe('user.js', () => {
 
       it('should return a status of 200 and the new admin when successfully creating an admin', async () => {
         sinon.stub(User.prototype, 'toJSON').returns(adminToJSON);
-        await partAddUser(req, res);
+        await partAddAdminUser(req, res);
 
         const returnedAdmin = { ...adminToJSON, trackingUUID: null };
         expect(res.statusCode).to.equal(200);
         expect(res._getJSONData()).to.deep.equal(returnedAdmin);
+        expect(User.prototype.save).to.have.been.called;
       });
 
       it('should return a status of 200 and the new admin manager when successfully creating an admin manager', async () => {
         req = { ...req, role: 'AdminManager' };
         sinon.stub(User.prototype, 'toJSON').returns({ ...adminToJSON, role: 'AdminManager' });
-        await partAddUser(req, res);
+        await partAddAdminUser(req, res);
 
         const returnedAdmin = { ...adminToJSON, role: 'AdminManager', trackingUUID: null };
         expect(res.statusCode).to.equal(200);
         expect(res._getJSONData()).to.deep.equal(returnedAdmin);
+        expect(User.prototype.save).to.have.been.called;
       });
-    });
 
-    it('should return 401 status if user attempting to add is Read user', async () => {
-      req.role = 'Read';
+      it('should return 401 status if user attempting to add is Read user', async () => {
+        req.role = 'Read';
 
-      await partAddUser(req, res);
+        await partAddAdminUser(req, res);
 
-      expect(res.statusCode).to.equal(401);
-    });
+        expect(res.statusCode).to.equal(401);
+        expect(User.prototype.save).not.to.have.been.called;
+      });
 
-    it('should return 401 status if user attempting to add is None user', async () => {
-      req.role = 'None';
+      it('should return 401 status if user attempting to add is None user', async () => {
+        req.role = 'None';
 
-      await partAddUser(req, res);
+        await partAddAdminUser(req, res);
 
-      expect(res.statusCode).to.equal(401);
-    });
+        expect(res.statusCode).to.equal(401);
+        expect(User.prototype.save).not.to.have.been.called;
+      });
 
-    it('should return 401 status if user attempting to add has no role', async () => {
-      req.role = null;
+      it('should return 401 status if user attempting to add has no role', async () => {
+        req.role = null;
 
-      await partAddUser(req, res);
+        await partAddAdminUser(req, res);
 
-      expect(res.statusCode).to.equal(401);
-    });
+        expect(res.statusCode).to.equal(401);
+        expect(User.prototype.save).not.to.have.been.called;
+      });
 
-    it('should return 403 status if new user is not a valid role', async () => {
-      req.body.role = 'Hello';
+      it('should return 403 status if new user is not a valid role', async () => {
+        req.body.role = 'Hello';
 
-      await partAddUser(req, res);
+        await partAddAdminUser(req, res);
 
-      expect(res.statusCode).to.equal(403);
+        expect(res.statusCode).to.equal(403);
+        expect(User.prototype.save).not.to.have.been.called;
+      });
     });
   });
 
@@ -287,6 +372,7 @@ describe('user.js', () => {
     });
 
     it('should throw an error if there is a problem retrieving admin users', async () => {
+      sinon.stub(console, 'error'); // suppress error in test log
       sinon.stub(User, 'fetchAdminUsers').throws(() => new Error());
       await listAdminUsers(req, res);
 
@@ -296,35 +382,89 @@ describe('user.js', () => {
   });
 
   describe('updateUser', () => {
-    describe('/api/user/admin/:userId', () => {
-      const updatedAdmin = {
-        fullname: 'admin manager',
-        jobTitle: 'administrator manager',
-        email: 'adminmanager@email.com',
-        phone: '09876543210',
-        role: 'AdminManager',
-      };
+    const admin = {
+      fullname: 'admin manager',
+      jobTitle: 'administrator manager',
+      email: 'adminmanager@email.com',
+      phone: '09876543210',
+      role: 'AdminManager',
+    };
 
-      const restoredAdmin = {
-        uid: 'mocked-uid',
-        username: null,
-        created: '01/02/2022',
-        updated: '01/02/20220',
-        updatedBy: 'mocked-username',
-        isPrimary: false,
-        lastLoggedIn: null,
-        establishmentId: null,
-        agreedUpdatedTerms: false,
-        migratedUserFirstLogon: false,
-        migratedUser: false,
-        registrationSurveyCompleted: null,
-        fullname: 'admin user',
-        jobTitle: 'administrator',
-        email: 'admin@email.com',
-        phone: '01234567890',
-        role: 'Admin',
-      };
+    const normalUser = {
+      fullname: 'user A',
+      jobTitle: 'manager',
+      email: 'test@example.com',
+      phone: '09876543210',
+      role: 'Edit',
+    };
 
+    const restoredAdmin = {
+      uid: 'mocked-uid',
+      username: null,
+      created: '01/02/2022',
+      updated: '01/02/20220',
+      updatedBy: 'mocked-username',
+      isPrimary: false,
+      lastLoggedIn: null,
+      establishmentId: null,
+      agreedUpdatedTerms: false,
+      migratedUserFirstLogon: false,
+      migratedUser: false,
+      registrationSurveyCompleted: null,
+      fullname: 'admin user',
+      jobTitle: 'administrator',
+      email: 'admin@email.com',
+      phone: '01234567890',
+      role: 'Admin',
+    };
+
+    const restoredNormalUser = { ...restoredAdmin, ...normalUser };
+
+    const defaultReq = {
+      establishmentId: 123,
+      establishment: { id: 123 },
+      role: 'Edit',
+      body: normalUser,
+      params: { userId: 'mock-user-id' },
+      get() {
+        return 'localhost';
+      },
+    };
+
+    describe('updateNormalUser  PUT /api/user/establishment/:id/:userId', () => {
+      beforeEach(() => {
+        sinon.stub(User.prototype, 'restore').returns(restoredNormalUser);
+        sinon.stub(User.prototype, 'load').returns(true);
+        sinon.stub(User.prototype, 'save').returns();
+        sinon.stub(User.prototype, 'toJSON').returns({});
+      });
+
+      it('should return a status of 200 and a success message when successfully updating a user', async () => {
+        const req = { ...defaultReq };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(User.prototype.save).to.have.been.called;
+      });
+
+      const adminUserTypes = ['Admin', 'AdminManager'];
+
+      adminUserTypes.forEach((adminType) => {
+        it(`should return 401 error if attempt to change a user's role to ${adminType} with this endpoint`, async () => {
+          const req = { ...defaultReq, body: { ...admin, role: adminType } };
+          const res = httpMocks.createResponse();
+
+          await updateNormalUser(req, res);
+
+          expect(res.statusCode).to.equal(401);
+          expect(User.prototype.save).not.to.have.been.called;
+        });
+      });
+    });
+
+    describe('updateAdminUser  PUT /api/user/admin/:userId', () => {
       beforeEach(() => {
         sinon.stub(User.prototype, 'restore').returns(restoredAdmin);
         sinon.stub(User.prototype, 'load').returns(true);
@@ -332,7 +472,7 @@ describe('user.js', () => {
 
         req = {
           ...req,
-          body: updatedAdmin,
+          body: admin,
           role: 'AdminManager',
           establishmentId: null,
           params: { userId: 'mocked-uid' },
@@ -341,13 +481,14 @@ describe('user.js', () => {
         res = httpMocks.createResponse();
       });
 
-      it('should return a status of 200 and a success message when successfully creating an admin', async () => {
-        const adminToJSON = { ...restoredAdmin, ...updatedAdmin };
+      it('should return a status of 200 and a success message when successfully updating an admin', async () => {
+        const adminToJSON = { ...restoredAdmin, ...admin };
         sinon.stub(User.prototype, 'toJSON').returns(adminToJSON);
-        await updateUser(req, res);
+        await updateAdminUser(req, res);
 
         expect(res.statusCode).to.equal(200);
         expect(res._getJSONData()).to.deep.equal(adminToJSON);
+        expect(User.prototype.save).to.have.been.called;
       });
     });
   });
