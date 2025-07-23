@@ -11,7 +11,7 @@ import { NewTrainingAndQualificationsRecordSummaryComponent } from '@features/tr
 import { ActionsListData } from '@core/model/trainingAndQualifications.model';
 import { NewTrainingComponent } from '@features/training-and-qualifications/new-training-qualifications-record/new-training/new-training.component';
 
-import { jsPDF } from 'jspdf';
+import { jsPDF, jsPDFOptions } from 'jspdf';
 
 export interface PdfComponent {
   content: ElementRef;
@@ -38,14 +38,13 @@ export class PdfTrainingAndQualificationService {
 
   constructor() {}
 
-  private getNewDoc() {
-    const doc = new jsPDF('portrait', 'pt', 'a4');
-    const html = document.createElement('div');
-
-    html.style.width = `${this.width}px`;
-    html.style.display = 'block';
-
-    return { doc, html };
+  private getNewPdfDoc() {
+    const pdfOptions: jsPDFOptions = {
+      orientation: 'portrait',
+      unit: 'pt',
+      format: 'a4',
+    };
+    return new jsPDF(pdfOptions);
   }
 
   private appendHeader(html: HTMLDivElement): void {
@@ -137,21 +136,14 @@ export class PdfTrainingAndQualificationService {
     }
   }
 
-  private async saveHtmlToPdf(
-    filename: string,
-    doc: jsPDF,
-    html: HTMLElement,
-    scale: number,
-    width: number,
-    save: boolean,
-  ): Promise<void> {
-    const widthHtml = width * scale;
+  private async renderHtmlToPdfDoc(doc: jsPDF, html: HTMLElement): Promise<jsPDF> {
+    const widthHtml = this.width * this.scale;
     const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
 
     const html2canvas = {
-      scale,
-      width,
-      windowWidth: width,
+      scale: this.scale,
+      width: this.width,
+      windowWidth: this.width,
       ignoreElements: (element: HTMLElement) => {
         // ignore svg as jspdf does not support svg in html and will cause other contents to render incorrectly
         return element.tagName.toLowerCase() === 'img' && element.getAttribute('src')?.endsWith('.svg');
@@ -164,17 +156,43 @@ export class PdfTrainingAndQualificationService {
       html2canvas,
     });
 
-    if (doc.getNumberOfPages()) {
-      for (let i = 0; i < doc.getNumberOfPages(); i++) {
-        doc
-          .setPage(i + 1)
-          .text(`Page ${i + 1} of ${doc.getNumberOfPages()}`, doc.internal.pageSize.getWidth() - 100, 20);
-      }
+    return doc;
+  }
+
+  private async precheckNumberOfPages(html: HTMLElement): Promise<number> {
+    const throwAwayDoc = this.getNewPdfDoc();
+    await this.renderHtmlToPdfDoc(throwAwayDoc, html);
+    return throwAwayDoc.getNumberOfPages();
+  }
+
+  private async addPageNumbers(doc: jsPDF): Promise<jsPDF> {
+    const numberOfPages = doc.getNumberOfPages();
+    for (let i = 0; i < numberOfPages; i++) {
+      doc.setPage(i + 1).text(`Page ${i + 1} of ${numberOfPages}`, doc.internal.pageSize.getWidth() - 100, 20);
+    }
+    return doc;
+  }
+
+  private async saveHtmlToPdf(filename: string, html: HTMLElement, save: boolean): Promise<jsPDF> {
+    // a workaround to the compatibility issue with Adobe reader, from jsPDF github issue #3428
+    // generate the pdf once, count the total page number,
+    // throw that pdf away, then create a fresh one, with each page manually created by doc.addPage()
+
+    const numberOfPages = await this.precheckNumberOfPages(html);
+
+    const pdfDoc = this.getNewPdfDoc();
+
+    for (let i = 0; i < numberOfPages - 1; i++) {
+      pdfDoc.addPage();
     }
 
+    await this.renderHtmlToPdfDoc(pdfDoc, html);
+    await this.addPageNumbers(pdfDoc);
+
     if (save) {
-      doc.save(filename);
+      pdfDoc.save(filename);
     }
+    return pdfDoc;
   }
 
   private createSpacer(width: number, space: number): HTMLDivElement {
@@ -217,7 +235,9 @@ export class PdfTrainingAndQualificationService {
     fileName: string,
     save: boolean,
   ): Promise<jsPDF> {
-    const { doc, html } = this.getNewDoc();
+    const html = document.createElement('div');
+    html.style.width = `${this.width}px`;
+    html.style.display = 'block';
 
     this.appendHeader(html);
     this.appendTitle(html, worker, workplace, lastUpdatedDate);
@@ -227,8 +247,6 @@ export class PdfTrainingAndQualificationService {
     this.appendNonMandatoryTraining(html, nonMandatoryTraining);
     this.appendQualification(html, qualificationsByGroup);
 
-    await this.saveHtmlToPdf(fileName, doc, html, this.scale, this.width, save);
-
-    return doc;
+    return this.saveHtmlToPdf(fileName, html, save);
   }
 }
