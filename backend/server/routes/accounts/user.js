@@ -130,7 +130,7 @@ const updateAdminUser = async (req, res) => updateUser(req, res);
 const updateNormalUser = async (req, res) => {
   const allowUserTypes = [...normalUserRoles];
   if (!allowUserTypes.includes(req?.body?.role)) {
-    console.error(`POST /user/establishment/:id/:userId - trying to change user to a role which is not allowed`);
+    console.error(`PUT /user/establishment/:id/:userId - trying to change user to a role which is not allowed`);
     return res.status(401).send();
   }
 
