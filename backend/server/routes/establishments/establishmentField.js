@@ -9,7 +9,7 @@ const allowedPropertiesToBeRequested = [
   'Name',
   'NumberOfStaff',
   'ShareData',
-  'staffDoDelegatedHealthcareActivities',
+  'StaffDoDelegatedHealthcareActivities',
 ];
 
 const getEstablishmentField = async (req, res) => {

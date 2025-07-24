@@ -121,7 +121,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
         expect(establishmentServiceSpy).toHaveBeenCalledWith(
           'mocked-uid',
-          'staffDoDelegatedHealthcareActivities',
+          'StaffDoDelegatedHealthcareActivities',
           expectedPayload,
         );
       });

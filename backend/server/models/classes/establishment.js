@@ -411,7 +411,9 @@ class Establishment extends EntityValidator {
   }
 
   get staffDoDelegatedHealthcareActivities() {
-    return this._staffDoDelegatedHealthcareActivities;
+    return this._properties.get('StaffDoDelegatedHealthcareActivities')
+      ? this._properties.get('StaffDoDelegatedHealthcareActivities').property
+      : null;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment

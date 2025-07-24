@@ -79,7 +79,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
 
     this.subscriptions.add(
       this.establishmentService
-        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'staffDoDelegatedHealthcareActivities', props)
+        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'StaffDoDelegatedHealthcareActivities', props)
         .subscribe(
           (data) => this._onSuccess(data),
           (error) => this.onError(error),
