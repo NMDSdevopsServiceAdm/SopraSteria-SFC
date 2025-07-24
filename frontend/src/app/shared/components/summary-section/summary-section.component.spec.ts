@@ -296,7 +296,7 @@ describe('Summary section', () => {
       });
     });
 
-    fdescribe('Staff carry out delegated healthcare activities question', () => {
+    describe('Staff carry out delegated healthcare activities question', () => {
       const establishmentWhichShouldSeeMessage = () => {
         return {
           ...Establishment,
@@ -375,9 +375,7 @@ describe('Summary section', () => {
         });
 
         const workplaceRow = getByTestId('workplace-row');
-        expect(
-          within(workplaceRow).queryByText('Do your staff carry out delegated healthcare activities?'),
-        ).toBeFalsy();
+        expect(within(workplaceRow).queryByText(questionMessage)).toBeFalsy();
       });
 
       it('should not show the DHA question if main service can do DHA but staffDoDelegatedHealthcareActivities is answered', async () => {
@@ -396,9 +394,7 @@ describe('Summary section', () => {
         });
 
         const workplaceRow = getByTestId('workplace-row');
-        expect(
-          within(workplaceRow).queryByText('Do your staff carry out delegated healthcare activities?'),
-        ).toBeFalsy();
+        expect(within(workplaceRow).queryByText(questionMessage)).toBeFalsy();
       });
     });
 
