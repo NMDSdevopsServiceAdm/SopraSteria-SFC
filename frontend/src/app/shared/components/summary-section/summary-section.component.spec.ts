@@ -345,6 +345,20 @@ describe('Summary section', () => {
         expect(setReturnToSpy).toHaveBeenCalled();
       });
 
+      it('should show question with no link if no edit permission for establishment', async () => {
+        const { getByTestId, getByText } = await setup({
+          canEditEstablishment: false,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const dhaMessage = within(workplaceRow).queryByText(questionMessage);
+        expect(dhaMessage.tagName).not.toBe('A');
+
+        const workplaceLink = getByText('Workplace');
+        expect(workplaceLink.tagName).toBe('A');
+      });
+
       it('should not show the DHA question if staffDoDelegatedHealthcareActivities null but main service cannot do DHA', async () => {
         const { getByTestId } = await setup({
           establishment: {

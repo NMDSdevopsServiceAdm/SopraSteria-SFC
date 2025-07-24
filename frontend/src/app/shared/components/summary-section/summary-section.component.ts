@@ -118,6 +118,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[0].message = 'Do your staff carry out delegated healthcare activities?';
       this.sections[0].route = ['/workplace', this.workplace.uid, 'staff-do-delegated-healthcare-activities'];
       this.setReturn = true;
+      this.sections[0].showMessageAsText = !this.canEditEstablishment;
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
