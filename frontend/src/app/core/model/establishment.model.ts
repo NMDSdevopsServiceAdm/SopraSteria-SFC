@@ -9,6 +9,7 @@ export interface MainService {
   other?: boolean;
   otherName?: string;
   reportingID?: number;
+  canDoDelegatedHealthcareActivities?: boolean;
 }
 
 export interface EmployerType {
@@ -174,6 +175,7 @@ export interface Establishment {
   careWorkforcePathwayWorkplaceAwareness: CareWorkforcePathwayWorkplaceAwareness;
   careWorkforcePathwayUse: CareWorkforcePathwayUse;
   CWPAwarenessQuestionViewed?: boolean;
+  staffDoDelegatedHealthcareActivities?: string;
 }
 
 export interface UpdateJobsRequest {

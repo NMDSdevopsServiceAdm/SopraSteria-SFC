@@ -28,7 +28,9 @@ describe('EstablishmentPropertyManager', () => {
     'IsRegulatedProperty',
     'CareWorkforcePathwayWorkplaceAwarenessProperty',
     'CareWorkforcePathwayUseProperty',
+    'StaffDoDelegatedHealthcareActivitiesProperty',
   ];
+
   it('should have the correct property types', () => {
     const establishmentProperties = new EstablishmentPropertyManager();
     expect(establishmentProperties._thisManager._propertyTypes.length).to.deep.equal(properties.length);
@@ -38,20 +40,24 @@ describe('EstablishmentPropertyManager', () => {
       expect(properties).to.include(propertyType.name);
     });
   });
+
   it('should not have any properties', () => {
     const establishmentProperties = new EstablishmentPropertyManager();
     expect(establishmentProperties._thisManager.properties.length).to.deep.equal(0);
     expect(establishmentProperties._thisManager.properties).to.deep.equal([]);
   });
+
   it('should not have any modified properties', () => {
     const establishmentProperties = new EstablishmentPropertyManager();
     expect(establishmentProperties._thisManager._modifiedProperties.length).to.deep.equal(0);
     expect(establishmentProperties._thisManager._modifiedProperties).to.deep.equal([]);
   });
+
   it('should not have any audit events', () => {
     const establishmentProperties = new EstablishmentPropertyManager();
     expect(establishmentProperties._thisManager._auditEvents).to.deep.equal(null);
   });
+
   it('should not have any additional models', () => {
     const establishmentProperties = new EstablishmentPropertyManager();
     expect(establishmentProperties._thisManager._additionalModels).to.deep.equal(null);
