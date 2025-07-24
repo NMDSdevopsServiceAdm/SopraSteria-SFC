@@ -802,8 +802,9 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
       },
       staffDoDelegatedHealthcareActivities: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.ENUM,
         allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
         field: 'StaffDoDelegatedHealthcareActivitiesValue',
       },
       StaffDoDelegatedHealthcareActivitiesSavedAt: {
@@ -815,11 +816,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
       },
       StaffDoDelegatedHealthcareActivitiesSavedBy: {
-        type: DataTypes.DATE,
+        type: DataTypes.TEXT,
         allowNull: true,
       },
       StaffDoDelegatedHealthcareActivitiesChangedBy: {
-        type: DataTypes.DATE,
+        type: DataTypes.TEXT,
         allowNull: true,
       },
     },
