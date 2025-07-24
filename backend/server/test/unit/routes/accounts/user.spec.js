@@ -16,7 +16,7 @@ const {
 const User = require('../../../../models/classes/user').User;
 const models = require('../../../../models');
 
-describe.only('user.js', () => {
+describe('user.js', () => {
   let req;
   let res;
 
