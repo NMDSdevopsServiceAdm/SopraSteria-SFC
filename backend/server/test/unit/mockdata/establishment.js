@@ -114,6 +114,7 @@ exports.data = [
       },
     ],
     reasonsForLeaving: 'Better Pay:1|Better Hours:1',
+    staffDoDelegatedHealthcareActivities: null,
   },
 ];
 
@@ -140,6 +141,7 @@ exports.knownHeaders = [
   'SERVICEDESC',
   'SERVICEUSERS',
   'OTHERUSERDESC',
+  'DHA',
   'TOTALPERMTEMP',
   'ALLJOBROLES',
   'STARTERS',
