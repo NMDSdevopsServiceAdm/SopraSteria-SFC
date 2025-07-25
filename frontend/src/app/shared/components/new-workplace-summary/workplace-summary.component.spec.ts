@@ -40,6 +40,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         careWorkforcePathwayWorkplaceAwareness,
         careWorkforcePathwayUse,
         otherService: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
+        ...overrides.establishment,
       },
     }) as Establishment;
 
@@ -767,6 +768,72 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/service-users`);
         expect(within(serviceUsersRow).queryByText('Service for group 1')).toBeTruthy();
         expect(within(serviceUsersRow).queryByText('Service for group 2')).toBeTruthy();
+      });
+    });
+
+    describe('Carry out delegated healthcare activities', () => {
+      const workplaceWhichCanDoDHA = {
+        mainService: {
+          canDoDelegatedHealthcareActivities: true,
+          id: 9,
+          name: 'Day care and day services',
+          reportingID: 6,
+        },
+      };
+
+      it('should show dash and have Add information button when is set to null (not answered)', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: { ...workplaceWhichCanDoDHA, staffDoDelegatedHealthcareActivities: null },
+          canEditEstablishment: true,
+        });
+
+        const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+        const link = within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
+        );
+        expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText('-')).toBeTruthy();
+      });
+
+      const summaryAnswers = ['Yes', 'No', 'Not known'];
+      const databaseValues = ['Yes', 'No', "Don't know"];
+
+      for (let i = 0; i < summaryAnswers.length; i++) {
+        it(`should show Change button and '${summaryAnswers[i]}' when there is '${databaseValues[i]}' value in database`, async () => {
+          const { component, queryByTestId } = await setup({
+            establishment: { ...workplaceWhichCanDoDHA, staffDoDelegatedHealthcareActivities: databaseValues[i] },
+            canEditEstablishment: true,
+          });
+
+          const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+          const link = within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Change');
+
+          expect(link).toBeTruthy();
+          expect(link.getAttribute('href')).toEqual(
+            `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
+          );
+          expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText(summaryAnswers[i])).toBeTruthy();
+        });
+      }
+
+      it('should not display row when main service cannot do DHA', async () => {
+        const { queryByTestId } = await setup({
+          establishment: {
+            mainService: {
+              canDoDelegatedHealthcareActivities: null,
+              id: 11,
+              name: 'Domestic services and home help',
+              reportingID: 10,
+            },
+          },
+          canEditEstablishment: true,
+        });
+
+        const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+
+        expect(staffDoDelegatedHealthcareActivitiesRow).toBeFalsy();
       });
     });
   });

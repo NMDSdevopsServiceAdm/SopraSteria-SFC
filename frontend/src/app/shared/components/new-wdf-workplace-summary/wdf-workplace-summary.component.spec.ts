@@ -4,13 +4,14 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
-import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import { MockCareWorkforcePathwayService, MockCWPUseReasons } from '@core/test-utils/MockCareWorkforcePathwayService';
+import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentWithShareWith,
   establishmentWithWdfBuilder,
@@ -22,9 +23,8 @@ import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
-import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { WdfStaffMismatchMessageComponent } from '../wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
+import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 
 describe('WDFWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -34,9 +34,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
     const workplace = establishmentWithWdfBuilder({
       careWorkforcePathwayWorkplaceAwareness,
       careWorkforcePathwayUse,
+      ...overrides.establishment,
     }) as Establishment;
 
-    const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WDFWorkplaceSummaryComponent, {
+    const setupTools = await render(WDFWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, FundingModule],
       declarations: [WdfStaffMismatchMessageComponent],
       providers: [
@@ -77,12 +78,12 @@ describe('WDFWorkplaceSummaryComponent', () => {
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
     const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
 
-    return { component, fixture, getByText, getByTestId, queryByTestId, rerender, clearAllSelectedJobRolesSpy };
+    return { ...setupTools, component, clearAllSelectedJobRolesSpy };
   };
 
   it('should render a WorkplaceSummaryComponent', async () => {
@@ -570,6 +571,72 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/service-users`);
         expect(within(serviceUsersRow).queryByText('Service for group 1')).toBeTruthy();
         expect(within(serviceUsersRow).queryByText('Service for group 2')).toBeTruthy();
+      });
+    });
+
+    describe('Carry out delegated healthcare activities', () => {
+      const workplaceWhichCanDoDHA = {
+        mainService: {
+          canDoDelegatedHealthcareActivities: true,
+          id: 9,
+          name: 'Day care and day services',
+          reportingID: 6,
+        },
+      };
+
+      it('should show dash and have Add information button when is set to null (not answered)', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: { ...workplaceWhichCanDoDHA, staffDoDelegatedHealthcareActivities: null },
+          canEditEstablishment: true,
+        });
+
+        const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+        const link = within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
+        );
+        expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText('-')).toBeTruthy();
+      });
+
+      const summaryAnswers = ['Yes', 'No', 'Not known'];
+      const databaseValues = ['Yes', 'No', "Don't know"];
+
+      for (let i = 0; i < summaryAnswers.length; i++) {
+        it(`should show Change button and '${summaryAnswers[i]}' when there is '${databaseValues[i]}' value in database`, async () => {
+          const { component, queryByTestId } = await setup({
+            establishment: { ...workplaceWhichCanDoDHA, staffDoDelegatedHealthcareActivities: databaseValues[i] },
+            canEditEstablishment: true,
+          });
+
+          const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+          const link = within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Change');
+
+          expect(link).toBeTruthy();
+          expect(link.getAttribute('href')).toEqual(
+            `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
+          );
+          expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText(summaryAnswers[i])).toBeTruthy();
+        });
+      }
+
+      it('should not display row when main service cannot do DHA', async () => {
+        const { queryByTestId } = await setup({
+          establishment: {
+            mainService: {
+              canDoDelegatedHealthcareActivities: null,
+              id: 11,
+              name: 'Domestic services and home help',
+              reportingID: 10,
+            },
+          },
+          canEditEstablishment: true,
+        });
+
+        const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+
+        expect(staffDoDelegatedHealthcareActivitiesRow).toBeFalsy();
       });
     });
   });
