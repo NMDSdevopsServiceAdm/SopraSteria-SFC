@@ -1039,6 +1039,37 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
+    describe('DHA', () => {
+      ['', '1', '2', '999'].forEach((allowedInput) => {
+        it(`should pass with no validation warnings if DHA set to ${allowedInput}`, async () => {
+          establishmentRow.DHA = allowedInput;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([]);
+        });
+      });
+
+      ['asdf', '23'].forEach((invalidInput) => {
+        it(`should return warning if input is invalid (${invalidInput})`, async () => {
+          establishmentRow.DHA = invalidInput;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2510,
+              warnType: 'DHA_WARNING',
+              warning: 'The code you have entered for DHA is incorrect and will be ignored',
+              source: invalidInput,
+              column: 'DHA',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+      });
+    });
+
     it('should validate ALLSERVICES if MAINSERVICE is not included ', async () => {
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '12;13';

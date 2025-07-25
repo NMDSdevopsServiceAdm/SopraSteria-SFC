@@ -278,6 +278,10 @@ class WorkplaceCSVValidator {
     return 2500;
   }
 
+  static get DHA_WARNING() {
+    return 2510;
+  }
+
   get id() {
     if (this._id === null) {
       const est = this._allCurrentEstablishments.find((currentEstablishment) => currentEstablishment.key === this._key);
@@ -1377,6 +1381,24 @@ class WorkplaceCSVValidator {
     }
     return listOfEntities;
   }
+
+  _validateDelegatedHealthcareActivities() {
+    const ALLOWED_VALUES = ['', '1', '2', '999'];
+
+    if (!ALLOWED_VALUES.includes(this._currentLine.DHA)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: WorkplaceCSVValidator.DHA_WARNING,
+        warnType: 'DHA_WARNING',
+        warning: 'The code you have entered for DHA is incorrect and will be ignored',
+        source: this._currentLine.DHA,
+        column: 'DHA',
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
+    }
+  }
+
   _validateCapacitiesAndUtilisations() {
     // capacities/utilisations are a semi colon delimited list of integers
     let listOfCapacities = this._currentLine.CAPACITY.split(';');
@@ -2856,6 +2878,7 @@ class WorkplaceCSVValidator {
 
       this._validateAllServices();
       this._validateServiceUsers();
+      this._validateDelegatedHealthcareActivities();
       this._validateCapacitiesAndUtilisations();
 
       this._validateTotalPermTemp();
