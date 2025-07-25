@@ -34,7 +34,7 @@ function isPerm(worker) {
 const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
-  'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
+  'SERVICEUSERS,OTHERUSERDESC,DHA,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
   'REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,CWPUSEDESC,BENEFITS,SICKPAY,PENSION,HOLIDAY';
 
 class WorkplaceCSVValidator {
@@ -3160,8 +3160,22 @@ class WorkplaceCSVValidator {
   }
 
   // takes the given establishment entity and writes it out to CSV string (one line)
-  static toCSV(entity, mappings) {
-    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
+  static toCSV(entity) {
+    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","DHA","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
+
+    const defaultYesNoDontKnowMapping = (valueFromDatabase) => {
+      switch (valueFromDatabase) {
+        case 'Yes':
+          return '1';
+        case 'No':
+          return '2';
+        case "Don't know":
+          return '999';
+        default:
+          return '';
+      }
+    };
+
     const columns = [];
     columns.push(csvQuote(entity.LocalIdentifierValue));
     columns.push('UNCHECKED');
@@ -3239,6 +3253,9 @@ class WorkplaceCSVValidator {
         )
         .join(';'),
     );
+
+    // DHA
+    columns.push(defaultYesNoDontKnowMapping(entity.staffDoDelegatedHealthcareActivities));
 
     // total perm/temp staff
     columns.push(entity.NumberOfStaffValue ? entity.NumberOfStaffValue : 0);
@@ -3327,20 +3344,7 @@ class WorkplaceCSVValidator {
     columns.push(cwpAwarenessBUCode);
 
     // CWP use
-    const cwpUseMapping = (valueFromDatabase) => {
-      switch (valueFromDatabase) {
-        case 'Yes':
-          return '1';
-        case 'No':
-          return '2';
-        case "Don't know":
-          return '999';
-        default:
-          return '';
-      }
-    };
-
-    const cwpUse = cwpUseMapping(entity.careWorkforcePathwayUse);
+    const cwpUse = defaultYesNoDontKnowMapping(entity.careWorkforcePathwayUse);
     let reasonsCode = [];
     if (entity.careWorkforcePathwayUse === 'Yes' && entity.CareWorkforcePathwayReasons?.length > 0) {
       reasonsCode = entity.CareWorkforcePathwayReasons.map((reason) => reason.bulkUploadCode);
