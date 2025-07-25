@@ -2219,6 +2219,12 @@ module.exports = function (sequelize, DataTypes) {
       WHEN "ShowAddWorkplaceDetailsBanner" = true THEN true
       -- CWP awareness flag showing
       WHEN "CareWorkforcePathwayWorkplaceAwarenessFK" IS NULL AND "CWPAwarenessQuestionViewed" != true THEN true
+      -- DHA question flag showing
+      WHEN (
+        SELECT "StaffDoDelegatedHealthcareActivitiesValue" IS NULL AND s."CanDoDelegatedHealthcareActivities" = true
+        FROM cqc."services" s
+        WHERE s."id" = "MainServiceFKValue"
+      ) THEN true
       -- Number of staff does not equal worker count
       WHEN (
         SELECT (COUNT(w."ID") != "NumberOfStaffValue") AND "eightWeeksFromFirstLogin" < now()::timestamp
