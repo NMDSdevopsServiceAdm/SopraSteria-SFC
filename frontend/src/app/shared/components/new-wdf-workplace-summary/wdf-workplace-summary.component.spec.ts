@@ -600,21 +600,26 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText('-')).toBeTruthy();
       });
 
-      it('should show Change button when there is a value (answered)', async () => {
-        const { component, queryByTestId } = await setup({
-          establishment: { ...workplaceWhichCanDoDHA, staffDoDelegatedHealthcareActivities: 'Yes' },
-          canEditEstablishment: true,
+      const summaryAnswers = ['Yes', 'No', 'Not known'];
+      const databaseValues = ['Yes', 'No', "Don't know"];
+
+      for (let i = 0; i < summaryAnswers.length; i++) {
+        it(`should show Change button and '${summaryAnswers[i]}' when there is '${databaseValues[i]}' value in database`, async () => {
+          const { component, queryByTestId } = await setup({
+            establishment: { ...workplaceWhichCanDoDHA, staffDoDelegatedHealthcareActivities: databaseValues[i] },
+            canEditEstablishment: true,
+          });
+
+          const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
+          const link = within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Change');
+
+          expect(link).toBeTruthy();
+          expect(link.getAttribute('href')).toEqual(
+            `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
+          );
+          expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText(summaryAnswers[i])).toBeTruthy();
         });
-
-        const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
-        const link = within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
-        );
-        expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText('Yes')).toBeTruthy();
-      });
+      }
 
       it('should not display row when main service cannot do DHA', async () => {
         const { queryByTestId } = await setup({

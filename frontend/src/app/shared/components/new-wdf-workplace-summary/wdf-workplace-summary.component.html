@@ -310,12 +310,7 @@
       <dt class="govuk-summary-list__key">Carry out delegated healthcare activities</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value>
-          <ng-container *ngIf="!workplace.staffDoDelegatedHealthcareActivities; else staffDoDHAAnswered">
-            -
-          </ng-container>
-          <ng-template #staffDoDHAAnswered>
-            {{ workplace.staffDoDelegatedHealthcareActivities | dontKnow }}
-          </ng-template>
+          {{ workplace.staffDoDelegatedHealthcareActivities | closedEndedAnswer }}
         </app-summary-record-value>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
