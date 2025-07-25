@@ -972,7 +972,7 @@ class Worker extends EntityValidator {
           {
             model: models.job,
             as: 'mainJob',
-            attributes: ['id', 'title'],
+            attributes: ['id', 'title', 'canDoDelegatedHealthcareActivities'],
           },
           {
             model: models.ethnicity,
