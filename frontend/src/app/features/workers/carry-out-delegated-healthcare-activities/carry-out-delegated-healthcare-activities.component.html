@@ -1,0 +1,22 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h1 class="govuk-fieldset__heading" style="width: 90%">
+          <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+          {{ heading }}
+        </h1>
+      </legend>
+    </fieldset>
+  </div>
+
+  <div class="govuk-grid-column-one-third">
+    <div class="govuk-!-margin-left-8">
+      <app-progress-bar
+        data-testid="progress-bar"
+        [sections]="staffRecordSections"
+        [currentSection]="section"
+      ></app-progress-bar>
+    </div>
+  </div>
+</div>
