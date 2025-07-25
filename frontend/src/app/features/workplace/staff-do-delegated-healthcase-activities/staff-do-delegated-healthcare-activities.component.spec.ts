@@ -2,18 +2,23 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcare-activities.component';
 
 describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
+  const labels = ['Yes', 'No', 'I do not know'];
+  const values = ['Yes', 'No', "Don't know"];
+
   async function setup(overrides: any = {}) {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
@@ -44,6 +49,8 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
             navigate: routerSpy,
           }),
         },
+        AlertService,
+        WindowRef,
       ],
     });
 
@@ -55,12 +62,16 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       of({ ...establishmentService.establishment }),
     );
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
       ...setupTools,
       component,
       routerSpy,
       establishmentServiceSpy,
       backServiceSpy,
+      alertSpy,
     };
   }
 
@@ -80,9 +91,6 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   });
 
   describe('Form', () => {
-    const labels = ['Yes', 'No', 'I do not know'];
-    const values = ['Yes', 'No', "Don't know"];
-
     it('should show radio buttons for each answer', async () => {
       const { getByRole } = await setup();
 
@@ -126,6 +134,65 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
         );
       });
     }
+  });
+
+  describe('Dipslaying banner', () => {
+    it('should display banner when user submits and return is to home page', async () => {
+      const workplaceName = 'Test workplace name';
+      const { fixture, getByText, getByLabelText, alertSpy } = await setup({
+        establishmentService: {
+          returnTo: { url: ['/dashboard'], fragment: 'home' },
+          establishment: { name: workplaceName },
+        },
+      });
+
+      const radioButton = getByLabelText(labels[0]);
+      fireEvent.click(radioButton);
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
+      await fixture.whenStable();
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `Delegated healthcare activity information saved in '${workplaceName}'`,
+      });
+    });
+
+    it('should not display banner when user submits but return is not to home page', async () => {
+      const { fixture, getByText, getByLabelText, alertSpy } = await setup({
+        establishmentService: {
+          returnTo: {
+            url: ['/dashboard'],
+            fragment: 'workplace',
+          },
+        },
+      });
+
+      const radioButton = getByLabelText(labels[0]);
+      fireEvent.click(radioButton);
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
+      await fixture.whenStable();
+
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not display banner when user submits in new workplace flow', async () => {
+      const { fixture, getByText, getByLabelText, alertSpy } = await setup({
+        establishmentService: { returnTo: null },
+      });
+
+      const radioButton = getByLabelText(labels[0]);
+      fireEvent.click(radioButton);
+
+      const saveButton = getByText('Save and continue');
+      fireEvent.click(saveButton);
+      await fixture.whenStable();
+
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('When in new workplace workflow', async () => {
