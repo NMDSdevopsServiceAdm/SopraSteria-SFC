@@ -421,6 +421,11 @@ const routes: Routes = [
         data: { title: 'Adult Social Care Started' },
       },
       {
+        path: 'carry-out-delegated-healthcare-activities',
+        component: CarryOutDelegatedHealthcareActivitiesComponent,
+        data: { title: 'Carry out Delegated Healthcare Activities' },
+      },
+      {
         path: 'days-of-sickness',
         component: DaysOfSicknessComponent,
         data: { title: 'Days of Sickness' },
