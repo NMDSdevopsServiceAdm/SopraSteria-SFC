@@ -55,6 +55,7 @@ const validateAPIObject = (establishmentRow) => {
     mainService: 8,
     services: { value: 'Yes', services: [{ id: 8 }, { id: 13 }] },
     serviceUsers: [],
+    staffDoDelegatedHealthcareActivities: null,
     numberOfStaff: 1,
     vacancies: [999, 333, 1],
     starters: [0, 0, 0],
@@ -361,6 +362,37 @@ describe('Bulk Upload - Establishment CSV', () => {
         const expectedShareWith = { cqc: null, localAuthorities: null };
 
         expect(apiObject.shareWith).to.deep.equal(expectedShareWith);
+      });
+    });
+
+    describe('DHA', () => {
+      [
+        {
+          bulkUploadInput: '1',
+          expectedValue: 'Yes',
+        },
+        {
+          bulkUploadInput: '2',
+          expectedValue: 'No',
+        },
+        {
+          bulkUploadInput: '999',
+          expectedValue: "Don't know",
+        },
+        {
+          bulkUploadInput: '',
+          expectedValue: null,
+        },
+      ].forEach(({ bulkUploadInput, expectedValue }) => {
+        it(`should set staffDoDelegatedHealthcareActivities as '${expectedValue}' when bulk upload input is ${bulkUploadInput}`, async () => {
+          establishmentRow.DHA = bulkUploadInput;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+          const apiObject = establishment.toAPI();
+
+          expect(apiObject.staffDoDelegatedHealthcareActivities).to.equal(expectedValue);
+        });
       });
     });
 
@@ -786,6 +818,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         mainService: 8,
         allServices: [{ id: 8 }, { id: 13 }],
         serviceUsers: undefined,
+        staffDoDelegatedHealthcareActivities: null,
         capacities: [0, 0],
         utilisations: [0, 0],
         totalPermTemp: 1,

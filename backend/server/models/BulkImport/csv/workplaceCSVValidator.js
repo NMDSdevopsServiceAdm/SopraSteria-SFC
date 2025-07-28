@@ -91,6 +91,7 @@ class WorkplaceCSVValidator {
     this._careWorkforcePathwayAwareness = null;
     this._careWorkforcePathwayUse = null;
     this._careWorkforcePathwayUseDescription = null;
+    this._staffDoDelegatedHealthcareActivities = null;
 
     this._id = null;
     this._ignore = false;
@@ -451,14 +452,18 @@ class WorkplaceCSVValidator {
     return this._careWorkforcePathwayUse;
   }
 
-  _convertYesNoDontKnow(value) {
+  get staffDoDelegatedHealthcareActivities() {
+    return this._staffDoDelegatedHealthcareActivities;
+  }
+
+  _convertYesNoDontKnow(value, defaultValue = '') {
     const mappings = {
       1: 'Yes',
       2: 'No',
       999: "Don't know",
     };
 
-    return mappings[value] || '';
+    return mappings[value] || defaultValue;
   }
 
   _generateWarning(warning, columnName, warnType = null) {
@@ -1384,13 +1389,16 @@ class WorkplaceCSVValidator {
 
   _validateDelegatedHealthcareActivities() {
     const ALLOWED_VALUES = ['', '1', '2', '999'];
-
-    if (!ALLOWED_VALUES.includes(this._currentLine.DHA)) {
+    const dhaAnswer = this._currentLine.DHA;
+    if (!ALLOWED_VALUES.includes(dhaAnswer)) {
       this._validationErrors.push(
         this._generateWarning('The code you have entered for DHA is incorrect and will be ignored', 'DHA'),
       );
       return false;
     }
+
+    this._staffDoDelegatedHealthcareActivities = this._convertYesNoDontKnow(dhaAnswer, null);
+    return true;
   }
 
   _validateCapacitiesAndUtilisations() {
@@ -3029,6 +3037,7 @@ class WorkplaceCSVValidator {
       capacities: this._capacities,
       utilisations: this._utilisations,
       totalPermTemp: this._totalPermTemp,
+      staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
 
       allJobs: this._alljobs,
       counts: {
@@ -3098,6 +3107,7 @@ class WorkplaceCSVValidator {
             return returnThis;
           })
         : [],
+      staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
       numberOfStaff: this._totalPermTemp,
       vacancies: this._vacancies,
       starters: this._starters,
