@@ -25,6 +25,7 @@ export const workerBuilder = build('Worker', {
       jobRoleName: fake((f) => f.lorem.sentence()),
       title: fake((f) => f.lorem.sentence()),
       other: null,
+      canDoDelegatedHealthActivities: oneOf(true, false),
     },
     contract: oneOf('Permanent', 'Temporary', 'Pool or Bank', 'Agency', 'Other'),
     localIdentifier: fake((f) => f.name.findName()),
