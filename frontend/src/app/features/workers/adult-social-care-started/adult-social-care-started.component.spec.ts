@@ -12,11 +12,11 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { AdultSocialCareStartedComponent } from './adult-social-care-started.component';
 
-fdescribe('AdultSocialCareStartedComponent', () => {
+describe('AdultSocialCareStartedComponent', () => {
   async function setup(overrides: any = {}) {
     const insideFlow = overrides?.insideFlow ?? true;
     const contractType = overrides?.contractType ?? Contracts.Permanent;
-    const staffDoDelegatedHealthcareActivities = overrides?.staffDoDelegatedHealthcareActivities ?? 'No';
+    const staffDoDelegatedHealthcareActivities = overrides?.staffDoDelegatedHealthcareActivities ?? 'Yes';
     const workerMainJobOverride = overrides?.workerMainJob ? { mainJob: overrides?.workerMainJob } : {};
 
     const mockWorker = workerBuilder({
@@ -92,7 +92,7 @@ fdescribe('AdultSocialCareStartedComponent', () => {
   });
 
   describe('when inside add new worker workflow', () => {
-    function runTestForSkippingDHAQuestion(overrides) {
+    function runTestsForSkippingDHAQuestion(overrides) {
       it(`should call submit data and navigate with the  'days-of-sickness' url when 'Save and continue' is clicked and contract type is permanent pr temporary`, async () => {
         const { component, getByText, routerSpy } = await setup({
           insideFlow: true,
@@ -209,24 +209,9 @@ fdescribe('AdultSocialCareStartedComponent', () => {
     };
 
     describe('when the workplace has answered "Yes" to "canDoDelegatedHealthActivities" question', () => {
-      const overrides = {
-        staffDoDelegatedHealthcareActivities: 'Yes',
-      };
-
-      runTestForSkippingDHAQuestion(overrides);
-    });
-
-    describe('when the workplace has not answered the "canDoDelegatedHealthActivities" question', () => {
-      const overrides = {
-        staffDoDelegatedHealthcareActivities: 'Yes',
-      };
-      runTestForSkippingDHAQuestion(overrides);
-    });
-
-    describe('when the workplace has answered "No" to "canDoDelegatedHealthActivities" question', () => {
       describe("when worker's job role cannot carry out delegated healthcare activities", () => {
         const overrides = {
-          staffDoDelegatedHealthcareActivities: 'No',
+          staffDoDelegatedHealthcareActivities: 'Yes',
           workerMainJob: {
             id: 36,
             title: 'IT manager',
@@ -234,12 +219,12 @@ fdescribe('AdultSocialCareStartedComponent', () => {
           },
         };
 
-        runTestForSkippingDHAQuestion(overrides);
+        runTestsForSkippingDHAQuestion(overrides);
       });
 
       describe("when worker's job role can carry out delegated healthcare activities", () => {
         const overrides = {
-          staffDoDelegatedHealthcareActivities: 'No',
+          staffDoDelegatedHealthcareActivities: 'Yes',
           workerMainJob: {
             id: 10,
             title: 'Care worker',
@@ -249,6 +234,42 @@ fdescribe('AdultSocialCareStartedComponent', () => {
 
         runTestsForNavigatingToDHAQuestion(overrides);
       });
+    });
+
+    describe('when the workplace has not answered the "canDoDelegatedHealthActivities" question', () => {
+      describe("when worker's job role cannot carry out delegated healthcare activities", () => {
+        const overrides = {
+          staffDoDelegatedHealthcareActivities: null,
+          workerMainJob: {
+            id: 36,
+            title: 'IT manager',
+            canDoDelegatedHealthcareActivities: false,
+          },
+        };
+
+        runTestsForSkippingDHAQuestion(overrides);
+      });
+
+      describe("when worker's job role can carry out delegated healthcare activities", () => {
+        const overrides = {
+          staffDoDelegatedHealthcareActivities: null,
+          workerMainJob: {
+            id: 10,
+            title: 'Care worker',
+            canDoDelegatedHealthcareActivities: true,
+          },
+        };
+
+        runTestsForNavigatingToDHAQuestion(overrides);
+      });
+    });
+
+    describe('when the workplace has answered "No" to "canDoDelegatedHealthActivities" question', () => {
+      const overrides = {
+        staffDoDelegatedHealthcareActivities: 'No',
+      };
+
+      runTestsForSkippingDHAQuestion(overrides);
     });
 
     it(`should navigate to 'staff-summary-page' page when clicking 'View this staff record' link `, async () => {

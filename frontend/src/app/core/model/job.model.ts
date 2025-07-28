@@ -21,6 +21,7 @@ export interface JobRole {
   jobRoleName?: string;
   title?: string;
   other?: string;
+  canDoDelegatedHealthcareActivities?: boolean;
 }
 
 export interface GetJobsResponse {

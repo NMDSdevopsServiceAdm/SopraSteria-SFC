@@ -63,7 +63,18 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
       });
     }
 
-    this.next = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
+    this.next = this.determineConditionalRouting();
+  }
+
+  private determineConditionalRouting() {
+    const workplaceNotDoingDHA = this.workplace.staffDoDelegatedHealthcareActivities === 'No';
+    const workerJobRoleCanDoDHA = this.worker?.mainJob?.canDoDelegatedHealthcareActivities;
+
+    if (!workplaceNotDoingDHA && workerJobRoleCanDoDHA) {
+      return this.getRoutePath('carry-out-delegated-healthcare-activities');
+    }
+
+    return [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
       ? this.getRoutePath('days-of-sickness')
       : this.getRoutePath('contract-with-zero-hours');
   }
