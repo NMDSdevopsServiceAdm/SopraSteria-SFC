@@ -262,6 +262,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       UTILISATION: '0;0',
       SERVICEDESC: '1;1',
       SERVICEUSERS: '',
+      DHA: '',
       OTHERUSERDESC: '',
       TOTALPERMTEMP: '1',
       ALLJOBROLES: '',

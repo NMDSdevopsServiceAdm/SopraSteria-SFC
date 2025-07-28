@@ -1386,15 +1386,9 @@ class WorkplaceCSVValidator {
     const ALLOWED_VALUES = ['', '1', '2', '999'];
 
     if (!ALLOWED_VALUES.includes(this._currentLine.DHA)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        warnCode: WorkplaceCSVValidator.DHA_WARNING,
-        warnType: 'DHA_WARNING',
-        warning: 'The code you have entered for DHA is incorrect and will be ignored',
-        source: this._currentLine.DHA,
-        column: 'DHA',
-        name: this._currentLine.LOCALESTID,
-      });
+      this._validationErrors.push(
+        this._generateWarning('The code you have entered for DHA is incorrect and will be ignored', 'DHA'),
+      );
       return false;
     }
   }
