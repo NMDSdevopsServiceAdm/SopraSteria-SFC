@@ -14,7 +14,7 @@ import { getTestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { Contracts } from '@core/model/contracts.enum';
 
-fdescribe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
+describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
   const setup = async (overrides: any = {}) => {
     const workerServiceOverrides = lodash.pick(overrides, 'worker', 'returnTo');
 
