@@ -3,94 +3,66 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
-import { build, fake } from '@jackfranklin/test-data-bot';
+import { MockWorkerServiceWithoutReturnUrl, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { AdultSocialCareStartedComponent } from './adult-social-care-started.component';
+import { Contracts } from '@core/model/contracts.enum';
 
-const workerBuilder = build('Worker', {
-  fields: {
-    uid: fake((f) => f.datatype.uuid()),
-    contract: 'Permanent',
-  },
-});
+fdescribe('AdultSocialCareStartedComponent', () => {
+  async function setup(overrides: any = {}) {
+    const insideFlow = overrides?.insideFlow ?? true;
+    const contractType = overrides?.contractType ?? Contracts.Permanent;
 
-const noPermanentContract = () =>
-  workerBuilder({
-    overrides: {
-      contract: 'Other',
-    },
-  });
+    const mockWorker = workerBuilder({
+      overrides: {
+        contract: contractType,
+      },
+    }) as Worker;
 
-describe('AdultSocialCareStartedComponent', () => {
-  async function setup(insideFlow = true, contractType = 'permanent') {
-    let contract;
-
-    if (contractType === 'permanent') {
-      contract = workerBuilder();
-    } else if (contractType === 'other') {
-      contract = noPermanentContract();
-    }
-
-    contractType === 'permanent' ? workerBuilder : noPermanentContract;
-    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
-      AdultSocialCareStartedComponent,
-      {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule.withRoutes([]),
-          HttpClientTestingModule,
-          ReactiveFormsModule,
-        ],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              parent: {
-                snapshot: {
-                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
-                  data: {
-                    establishment: { uid: 'mocked-uid' },
-                    primaryWorkplace: {},
-                  },
+    const setupTools = await render(AdultSocialCareStartedComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
+              snapshot: {
+                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
+                data: {
+                  establishment: { uid: 'mocked-uid' },
+                  primaryWorkplace: {},
                 },
               },
-              snapshot: {
-                params: {},
-              },
+            },
+            snapshot: {
+              params: {},
             },
           },
-          {
-            provide: WorkerService,
-            useFactory: MockWorkerServiceWithoutReturnUrl.factory(contract),
-            deps: [HttpClient],
-          },
-        ],
-      },
-    );
+        },
+        {
+          provide: WorkerService,
+          useFactory: MockWorkerServiceWithoutReturnUrl.factory(mockWorker),
+          deps: [HttpClient],
+        },
+      ],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByLabelText,
       router,
       routerSpy,
-      getByTestId,
-      queryByTestId,
     };
   }
 
@@ -109,7 +81,7 @@ describe('AdultSocialCareStartedComponent', () => {
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup({ insideFlow: false });
 
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -117,7 +89,7 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   it(`should call submit data and navigate with the  'days-of-sickness' url when 'Save and continue' is clicked and contract type is permanent pr temporary`, async () => {
-    const { component, getByText, routerSpy } = await setup(true, 'permanent');
+    const { component, getByText, routerSpy } = await setup({ insideFlow: true, contractType: Contracts.Permanent });
 
     const button = getByText('Save and continue');
     fireEvent.click(button);
@@ -132,7 +104,7 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   it(`should call submit data and navigate with the 'contract-with-zero-hours' url when 'Save and continue' is clicked and the contract typs is not permanent or temporary`, async () => {
-    const { component, getByText, routerSpy } = await setup(true, 'other');
+    const { component, getByText, routerSpy } = await setup({ insideFlow: true, contractType: Contracts.Other });
 
     const button = getByText('Save and continue');
     fireEvent.click(button);
@@ -147,7 +119,7 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   it(`should call submit data and navigate with the  'days-of-sickness' url when 'Skip this question' is clicked and contract type is permanent pr temporary`, async () => {
-    const { component, getByText, routerSpy } = await setup(true, 'permanent');
+    const { component, getByText, routerSpy } = await setup({ insideFlow: true, contractType: Contracts.Permanent });
 
     const button = getByText('Skip this question');
     fireEvent.click(button);
@@ -162,7 +134,7 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   it(`should call submit data and navigate with the 'contract-with-zero-hours' url when 'Skip this question' is clicked and the contract typs is not permanent or temporary`, async () => {
-    const { component, getByText, routerSpy } = await setup(true, 'other');
+    const { component, getByText, routerSpy } = await setup({ insideFlow: true, contractType: Contracts.Other });
 
     const button = getByText('Skip this question');
     fireEvent.click(button);
@@ -195,7 +167,7 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   it('should navigate to staff-summary-page page when pressing save and return', async () => {
-    const { component, routerSpy, getByText } = await setup(false);
+    const { component, routerSpy, getByText } = await setup({ insideFlow: false });
 
     const workerId = component.worker.uid;
     const workplaceId = component.workplace.uid;
@@ -213,7 +185,7 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   it('should navigate to staff-summary-page page when pressing cancel', async () => {
-    const { component, routerSpy, getByText } = await setup(false);
+    const { component, routerSpy, getByText } = await setup({ insideFlow: false });
 
     const workerId = component.worker.uid;
     const workplaceId = component.workplace.uid;
@@ -231,7 +203,10 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   it('should navigate to funding staff-summary-page page when pressing save and return in funding page version', async () => {
-    const { component, router, fixture, routerSpy, getByText } = await setup(false, 'permanent');
+    const { component, router, fixture, routerSpy, getByText } = await setup({
+      insideFlow: false,
+      contractType: 'permanent',
+    });
     spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
     component.returnUrl = undefined;
     component.ngOnInit();
@@ -245,7 +220,10 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   it('should navigate to funding staff-summary-page page when pressing cancel in funding page version', async () => {
-    const { component, router, routerSpy, getByText, fixture } = await setup(false, 'permanent');
+    const { component, router, routerSpy, getByText, fixture } = await setup({
+      insideFlow: false,
+      contractType: 'permanent',
+    });
     spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
     component.returnUrl = undefined;
     component.ngOnInit();
@@ -260,13 +238,13 @@ describe('AdultSocialCareStartedComponent', () => {
 
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup({ insideFlow: true });
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
 
     it('should not render the progress bar when outside the flow', async () => {
-      const { queryByTestId } = await setup(false);
+      const { queryByTestId } = await setup({ insideFlow: false });
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
