@@ -7,6 +7,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { shouldSeeDHAWorkerQuestion } from '@core/utils/worker-util';
 import dayjs from 'dayjs';
 
 import { QuestionComponent } from '../question/question.component';
@@ -67,10 +68,9 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
   }
 
   private determineConditionalRouting() {
-    const workplaceNotDoingDHA = this.workplace.staffDoDelegatedHealthcareActivities === 'No';
-    const workerJobRoleCanDoDHA = this.worker?.mainJob?.canDoDelegatedHealthcareActivities;
+    const shouldSeeWorkerDHAQuestion = shouldSeeDHAWorkerQuestion(this.workplace, this.worker);
 
-    if (!workplaceNotDoingDHA && workerJobRoleCanDoDHA) {
+    if (shouldSeeWorkerDHAQuestion) {
       return this.getRoutePath('carry-out-delegated-healthcare-activities');
     }
 

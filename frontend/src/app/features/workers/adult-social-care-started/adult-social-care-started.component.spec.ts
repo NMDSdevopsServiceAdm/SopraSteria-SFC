@@ -13,11 +13,25 @@ import { fireEvent, render } from '@testing-library/angular';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started.component';
 
 describe('AdultSocialCareStartedComponent', () => {
+  const mainServiceWithDHA = {
+    canDoDelegatedHealthcareActivities: true,
+    id: 9,
+    name: 'Day care and day services',
+    reportingID: 6,
+  };
+  const mainServiceWithoutDHA = {
+    canDoDelegatedHealthcareActivities: null,
+    id: 11,
+    name: 'Domestic services and home help',
+    reportingID: 10,
+  };
+
   async function setup(overrides: any = {}) {
     const insideFlow = overrides?.insideFlow ?? true;
     const contractType = overrides?.contractType ?? Contracts.Permanent;
     const staffDoDelegatedHealthcareActivities = overrides?.staffDoDelegatedHealthcareActivities ?? 'Yes';
     const workerMainJobOverride = overrides?.workerMainJob ? { mainJob: overrides?.workerMainJob } : {};
+    const workplaceMainService = overrides?.workplaceMainService ?? mainServiceWithDHA;
 
     const mockWorker = workerBuilder({
       overrides: {
@@ -37,7 +51,11 @@ describe('AdultSocialCareStartedComponent', () => {
               snapshot: {
                 url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
                 data: {
-                  establishment: { uid: 'mocked-uid', staffDoDelegatedHealthcareActivities },
+                  establishment: {
+                    uid: 'mocked-uid',
+                    staffDoDelegatedHealthcareActivities,
+                    mainService: workplaceMainService,
+                  },
                   primaryWorkplace: {},
                 },
               },
@@ -237,8 +255,23 @@ describe('AdultSocialCareStartedComponent', () => {
     });
 
     describe('when the workplace has not answered the "canDoDelegatedHealthActivities" question', () => {
-      describe("when worker's job role cannot carry out delegated healthcare activities", () => {
+      describe('when workplace main service does not do delegated healthcare activities', () => {
         const overrides = {
+          workplaceMainService: mainServiceWithoutDHA,
+          staffDoDelegatedHealthcareActivities: null,
+          workerMainJob: {
+            id: 10,
+            title: 'Care worker',
+            canDoDelegatedHealthcareActivities: true,
+          },
+        };
+
+        runTestsForSkippingDHAQuestion(overrides);
+      });
+
+      describe("when workplace main service have DHA but worker's job role cannot carry out delegated healthcare activities", () => {
+        const overrides = {
+          workplaceMainService: mainServiceWithDHA,
           staffDoDelegatedHealthcareActivities: null,
           workerMainJob: {
             id: 36,
@@ -250,8 +283,9 @@ describe('AdultSocialCareStartedComponent', () => {
         runTestsForSkippingDHAQuestion(overrides);
       });
 
-      describe("when worker's job role can carry out delegated healthcare activities", () => {
+      describe("when workplace main service have DHA and worker's job role can carry out delegated healthcare activities", () => {
         const overrides = {
+          workplaceMainService: mainServiceWithDHA,
           staffDoDelegatedHealthcareActivities: null,
           workerMainJob: {
             id: 10,
