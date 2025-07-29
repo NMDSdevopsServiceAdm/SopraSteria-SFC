@@ -3,7 +3,7 @@ const sinon = require('sinon');
 
 const { unsetDHAAnswerOnJobRoleChange } = require('../../../../models/hooks/workerHooks');
 
-describe.only('Worker sequelize hooks', () => {
+describe('Worker sequelize hooks', () => {
   describe('beforeSave: unsetDHAAnswerOnJobRoleChange', () => {
     afterEach(() => {
       sinon.restore();
