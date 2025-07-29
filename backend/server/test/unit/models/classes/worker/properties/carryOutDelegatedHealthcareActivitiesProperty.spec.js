@@ -62,7 +62,7 @@ describe('carryOutDelegatedHealthcareActivitiesProperty', () => {
         carryOutDelegatedHealthcareActivitiesProperty.property = value;
 
         const saved = carryOutDelegatedHealthcareActivitiesProperty.savePropertyToSequelize();
-        expect(saved.CarryOutDelegatedHealthcareActivitiesValue).to.equal(value);
+        expect(saved.carryOutDelegatedHealthcareActivities).to.equal(value);
       });
     });
   });
