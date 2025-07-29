@@ -177,7 +177,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       expect(alertSpy).not.toHaveBeenCalled();
     });
 
-    it('should not display banner when user submits in new workplace flow', async () => {
+    it('should not display banner when user submits in workplace flow', async () => {
       const { fixture, getByText, getByLabelText, alertSpy } = await setup({
         establishmentService: { returnTo: null },
       });
