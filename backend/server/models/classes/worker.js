@@ -363,6 +363,12 @@ class Worker extends EntityValidator {
       : null;
   }
 
+  get carryOutDelegatedHealthcareActivities() {
+    return this._properties.get('CarryOutDelegatedHealthcareActivities')
+      ? this._properties.get('CarryOutDelegatedHealthcareActivities').property
+      : null;
+  }
+
   // takes the given JSON document and creates a Worker's set of extendable properties
   // Returns true if the resulting Worker is valid; otherwise false
   async load(document, associatedEntities = false, bulkUploadCompletion = false) {
