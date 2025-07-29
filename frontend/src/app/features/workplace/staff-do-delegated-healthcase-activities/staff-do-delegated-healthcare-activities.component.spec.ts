@@ -138,11 +138,9 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
   describe('Dipslaying banner', () => {
     it('should display banner when user submits and return is to home page', async () => {
-      const workplaceName = 'Test workplace name';
       const { fixture, getByText, getByLabelText, alertSpy } = await setup({
         establishmentService: {
           returnTo: { url: ['/dashboard'], fragment: 'home' },
-          establishment: { name: workplaceName },
         },
       });
 
@@ -155,7 +153,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: `Delegated healthcare activity information saved in '${workplaceName}'`,
+        message: 'Delegated healthcare activity information saved',
       });
     });
 

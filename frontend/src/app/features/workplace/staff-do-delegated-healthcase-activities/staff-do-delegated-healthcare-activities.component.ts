@@ -96,7 +96,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     if (this.returnIsSetToHomePage) {
       this.alertService.addAlert({
         type: 'success',
-        message: `Delegated healthcare activity information saved in '${this.establishment.name}'`,
+        message: 'Delegated healthcare activity information saved',
       });
     }
   }
