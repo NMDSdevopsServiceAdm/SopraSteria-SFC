@@ -38,6 +38,7 @@ const workplaceMappings = {
     // reliant on services mappings in BUDI/index file
     { id: 1, canDoDelegatedHealthcareActivities: null }, // { ASC: 1, BUDI: 13 },
     { id: 2, canDoDelegatedHealthcareActivities: true }, // { ASC: 2, BUDI: 15 },
+    { id: 20, canDoDelegatedHealthcareActivities: true }, // { ASC: 20, BUDI: 8 },
   ],
 };
 
@@ -1077,7 +1078,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe.only('DHA', () => {
+    describe('DHA', () => {
       ['', '1', '2', '999'].forEach((allowedInput) => {
         it(`should pass with no validation warnings if DHA set to ${allowedInput}`, async () => {
           establishmentRow.DHA = allowedInput;
@@ -1107,13 +1108,21 @@ describe('Bulk Upload - Establishment CSV', () => {
         });
       });
 
-      it('should add DHA_MAIN_SERVICE_WARNING if DHA answered but main service cannot do DHA', async () => {
+      const updateEstablishmentToHaveMainService = (establishmentRow, mainServiceId) => {
         establishmentRow.DHA = '1';
-        establishmentRow.MAINSERVICE = '10'; // BUDI mapping for id 11 (cannot do DHA)
-        establishmentRow.ALLSERVICES = '10';
+        establishmentRow.MAINSERVICE = mainServiceId;
+        establishmentRow.ALLSERVICES = mainServiceId;
         establishmentRow.SERVICEDESC = '';
         establishmentRow.UTILISATION = '';
         establishmentRow.CAPACITY = '';
+        establishmentRow.REGTYPE = '0';
+        establishmentRow.PROVNUM = '';
+        establishmentRow.LOCATIONID = '';
+        establishmentRow.VACANCIES = '0;0;0';
+      };
+
+      it('should add DHA_MAIN_SERVICE_WARNING if DHA answered but main service cannot do DHA', async () => {
+        updateEstablishmentToHaveMainService(establishmentRow, '10'); // 10 is BUDI mapping for id 11 (cannot do DHA)
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
         establishment.transform();
@@ -1133,12 +1142,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should not add DHA_MAIN_SERVICE_WARNING if DHA answered and main service can do DHA', async () => {
-        establishmentRow.DHA = '1';
-        establishmentRow.MAINSERVICE = '15'; // BUDI mapping for id 2 (can do DHA)
-        establishmentRow.ALLSERVICES = '15';
-        establishmentRow.SERVICEDESC = '';
-        establishmentRow.UTILISATION = '';
-        establishmentRow.CAPACITY = '';
+        updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
         establishment.transform();
