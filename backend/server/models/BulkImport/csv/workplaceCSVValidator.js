@@ -2403,21 +2403,6 @@ class WorkplaceCSVValidator {
           id: mappedService,
           other: mainServiceOther || undefined,
         };
-
-        if (
-          !this._serviceCanDoDelegatedHealthcareActivities(this._mainService.id) &&
-          this._staffDoDelegatedHealthcareActivities
-        ) {
-          this._validationErrors.push(
-            this._generateWarning(
-              'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
-              'DHA',
-              'DHA_MAIN_SERVICE_WARNING',
-            ),
-          );
-
-          this._staffDoDelegatedHealthcareActivities = null;
-        }
       } else {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
@@ -2429,6 +2414,24 @@ class WorkplaceCSVValidator {
           name: this._currentLine.LOCALESTID,
         });
       }
+    }
+  }
+
+  _addMainServiceDHAWarningIfMismatch() {
+    if (
+      this._mainService?.id &&
+      !this._serviceCanDoDelegatedHealthcareActivities(this._mainService.id) &&
+      this._staffDoDelegatedHealthcareActivities
+    ) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
+          'DHA',
+          'DHA_MAIN_SERVICE_WARNING',
+        ),
+      );
+
+      this._staffDoDelegatedHealthcareActivities = null;
     }
   }
 
@@ -2995,6 +2998,7 @@ class WorkplaceCSVValidator {
       let status = true;
 
       status = !this._transformMainService() ? false : status;
+      this._addMainServiceDHAWarningIfMismatch();
       status = !this._transformEstablishmentType() ? false : status;
       status = !this._transformAllServices() ? false : status;
       status = !this._transformServiceUsers() ? false : status;
