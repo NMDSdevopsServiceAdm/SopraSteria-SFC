@@ -23,18 +23,25 @@ const jobIdsToExclude = jobRolesThatCannotDoDHA.map((job) => job.JobID);
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
-    return queryInterface.sequelize.query(`
+    return Promise.all([
+      queryInterface.sequelize.query(`
       UPDATE cqc."Job"
       SET "CanDoDelegatedHealthcareActivities" = TRUE
-      WHERE "JobID" NOT IN (${jobIdsToExclude.join(', ')})
-    `);
+      WHERE "JobID" NOT IN (${jobIdsToExclude.join(', ')}) AND "DeletedAt" IS NULL;
+    `),
+      queryInterface.sequelize.query(`
+      UPDATE cqc."Job"
+      SET "CanDoDelegatedHealthcareActivities" = FALSE
+      WHERE "JobID" IN (${jobIdsToExclude.join(', ')}) AND "DeletedAt" IS NULL;
+    `),
+    ]);
   },
 
   async down(queryInterface) {
     return queryInterface.sequelize.query(`
       UPDATE cqc."Job"
       SET "CanDoDelegatedHealthcareActivities" = NULL
-      WHERE "JobID" NOT IN (${jobIdsToExclude.join(', ')})
+      WHERE "DeletedAt" IS NULL;
     `);
   },
 };
