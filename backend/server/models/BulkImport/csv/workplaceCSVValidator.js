@@ -283,6 +283,10 @@ class WorkplaceCSVValidator {
     return 2510;
   }
 
+  static get DHA_MAIN_SERVICE_WARNING() {
+    return 2520;
+  }
+
   get id() {
     if (this._id === null) {
       const est = this._allCurrentEstablishments.find((currentEstablishment) => currentEstablishment.key === this._key);
@@ -2399,6 +2403,21 @@ class WorkplaceCSVValidator {
           id: mappedService,
           other: mainServiceOther || undefined,
         };
+
+        if (
+          !this._serviceCanDoDelegatedHealthcareActivities(this._mainService.id) &&
+          this._staffDoDelegatedHealthcareActivities
+        ) {
+          this._validationErrors.push(
+            this._generateWarning(
+              'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
+              'DHA',
+              'DHA_MAIN_SERVICE_WARNING',
+            ),
+          );
+
+          this._staffDoDelegatedHealthcareActivities = null;
+        }
       } else {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
@@ -2411,6 +2430,11 @@ class WorkplaceCSVValidator {
         });
       }
     }
+  }
+
+  _serviceCanDoDelegatedHealthcareActivities(serviceId) {
+    const service = this.mappings.services?.find((service) => service.id === serviceId);
+    return service?.canDoDelegatedHealthcareActivities;
   }
 
   _transformAllServices() {

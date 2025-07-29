@@ -20,9 +20,14 @@ const validateEstablishmentCsv = async (
     attributes: ['id', 'bulkUploadCode'],
   });
 
+  const serviceDHAMappings = await models.services.findAll({
+    attributes: ['id', 'canDoDelegatedHealthcareActivities'],
+  });
+
   const mappings = {
     cwpAwareness: cwpAwarenessMappings,
     cwpUseReason: cwpUseReasonMappings,
+    services: serviceDHAMappings,
   };
 
   const lineValidator = new WorkplaceCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments, mappings);
