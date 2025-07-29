@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -20,6 +21,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     { value: 'No', label: 'No' },
     { value: "Don't know", label: 'I do not know' },
   ];
+  private returnIsSetToHomePage: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -29,6 +31,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     protected establishmentService: EstablishmentService,
     protected careWorkforcePathwayService: CareWorkforcePathwayService,
     protected route: ActivatedRoute,
+    private alertService: AlertService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -39,6 +42,8 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     this.skipRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
     this.nextRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
     this.prefill();
+
+    this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 
   setupForm() {
@@ -85,6 +90,15 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
           (error) => this.onError(error),
         ),
     );
+  }
+
+  protected addAlert(): void {
+    if (this.returnIsSetToHomePage) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Delegated healthcare activity information saved',
+      });
+    }
   }
 
   ngOnDestroy(): void {

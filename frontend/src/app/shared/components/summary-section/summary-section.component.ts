@@ -54,6 +54,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   public isParent: boolean;
   private careWorkforcePathwayLinkDisplaying: boolean;
+  private setReturn: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -75,6 +76,9 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     event.preventDefault();
     if (this.careWorkforcePathwayLinkDisplaying && fragment == 'workplace') {
       this.setCwpAwarenessQuestionViewed();
+    }
+
+    if (this.setReturn) {
       this.establishmentService.setReturnTo({ url: ['/dashboard'], fragment: 'home' });
     }
 
@@ -105,6 +109,15 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[0].message = 'How aware of the CWP is your workplace?';
       this.sections[0].route = ['/workplace', this.workplace.uid, 'care-workforce-pathway-awareness'];
       this.careWorkforcePathwayLinkDisplaying = true;
+      this.setReturn = true;
+      this.sections[0].showMessageAsText = !this.canEditEstablishment;
+    } else if (
+      !this.workplace.staffDoDelegatedHealthcareActivities &&
+      this.workplace.mainService.canDoDelegatedHealthcareActivities
+    ) {
+      this.sections[0].message = 'Do your staff carry out delegated healthcare activities?';
+      this.sections[0].route = ['/workplace', this.workplace.uid, 'staff-do-delegated-healthcare-activities'];
+      this.setReturn = true;
       this.sections[0].showMessageAsText = !this.canEditEstablishment;
     } else if (this.establishmentService.checkCQCDetailsBanner) {
       this.sections[0].message = 'You need to check your CQC details';
