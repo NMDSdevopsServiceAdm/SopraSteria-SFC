@@ -1,5 +1,6 @@
 const dayjs = require('dayjs');
 const { Op } = require('sequelize');
+const { unsetDHAAnswerOnJobRoleChange } = require('./hooks/workerHooks');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -1515,6 +1516,8 @@ module.exports = function (sequelize, DataTypes) {
 
     return { count, workers };
   };
+
+  Worker.addHook('beforeSave', unsetDHAAnswerOnJobRoleChange);
 
   return Worker;
 };
