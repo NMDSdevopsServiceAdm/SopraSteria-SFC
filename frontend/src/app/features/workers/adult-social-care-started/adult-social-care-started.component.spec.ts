@@ -228,6 +228,7 @@ describe('AdultSocialCareStartedComponent', () => {
 
     describe('when the workplace has answered "Yes" to "canDoDelegatedHealthActivities" question', () => {
       describe("when worker's job role cannot carry out delegated healthcare activities", () => {
+        // should NOT see worker DHA question
         const overrides = {
           staffDoDelegatedHealthcareActivities: 'Yes',
           workerMainJob: {
@@ -241,6 +242,7 @@ describe('AdultSocialCareStartedComponent', () => {
       });
 
       describe("when worker's job role can carry out delegated healthcare activities", () => {
+        // should see worker DHA question
         const overrides = {
           staffDoDelegatedHealthcareActivities: 'Yes',
           workerMainJob: {
@@ -254,8 +256,18 @@ describe('AdultSocialCareStartedComponent', () => {
       });
     });
 
+    describe('when the workplace has answered "No" to "canDoDelegatedHealthActivities" question', () => {
+      // should NOT see worker DHA question
+      const overrides = {
+        staffDoDelegatedHealthcareActivities: 'No',
+      };
+
+      runTestsForSkippingDHAQuestion(overrides);
+    });
+
     describe('when the workplace has not answered the "canDoDelegatedHealthActivities" question', () => {
-      describe('when workplace main service does not do delegated healthcare activities', () => {
+      describe('if workplace main service cannot do delegated healthcare activities', () => {
+        // should NOT see worker DHA question
         const overrides = {
           workplaceMainService: mainServiceWithoutDHA,
           staffDoDelegatedHealthcareActivities: null,
@@ -269,7 +281,8 @@ describe('AdultSocialCareStartedComponent', () => {
         runTestsForSkippingDHAQuestion(overrides);
       });
 
-      describe("when workplace main service have DHA but worker's job role cannot carry out delegated healthcare activities", () => {
+      describe("when workplace main service can do DHA but worker's job role cannot", () => {
+        // should NOT see worker DHA question
         const overrides = {
           workplaceMainService: mainServiceWithDHA,
           staffDoDelegatedHealthcareActivities: null,
@@ -283,7 +296,8 @@ describe('AdultSocialCareStartedComponent', () => {
         runTestsForSkippingDHAQuestion(overrides);
       });
 
-      describe("when workplace main service have DHA and worker's job role can carry out delegated healthcare activities", () => {
+      describe("when both workplace main service and worker's job role can do DHA", () => {
+        // should see worker DHA question
         const overrides = {
           workplaceMainService: mainServiceWithDHA,
           staffDoDelegatedHealthcareActivities: null,
@@ -296,14 +310,6 @@ describe('AdultSocialCareStartedComponent', () => {
 
         runTestsForNavigatingToDHAQuestion(overrides);
       });
-    });
-
-    describe('when the workplace has answered "No" to "canDoDelegatedHealthActivities" question', () => {
-      const overrides = {
-        staffDoDelegatedHealthcareActivities: 'No',
-      };
-
-      runTestsForSkippingDHAQuestion(overrides);
     });
 
     it(`should navigate to 'staff-summary-page' page when clicking 'View this staff record' link `, async () => {
