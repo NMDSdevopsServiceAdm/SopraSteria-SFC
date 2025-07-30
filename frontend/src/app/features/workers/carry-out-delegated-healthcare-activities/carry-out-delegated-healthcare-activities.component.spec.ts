@@ -65,7 +65,7 @@ describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render a heading and caption', async () => {
+  it('should show a heading and caption', async () => {
     const { getByRole, getByTestId } = await setup();
 
     expect(getByRole('heading', { level: 1 }).textContent).toContain(
@@ -76,6 +76,14 @@ describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
 
     expect(sectionHeading).toBeTruthy();
     expect(sectionHeading.textContent).toEqual('Employment details');
+  });
+
+  it('should show a reveal for examples of DHA', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('See delegated healthcare activities that your staff might carry out');
+
+    expect(reveal).toBeTruthy();
   });
 
   describe('Form', () => {
