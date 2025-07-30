@@ -110,7 +110,7 @@ describe('AdultSocialCareStartedComponent', () => {
   });
 
   describe('when inside add new worker workflow', () => {
-    function runTestsForSkippingDHAQuestion(overrides) {
+    function shouldSkipWorkerDHAQuestion(overrides) {
       it(`should call submit data and navigate with the  'days-of-sickness' url when 'Save and continue' is clicked and contract type is permanent pr temporary`, async () => {
         const { component, getByText, routerSpy } = await setup({
           insideFlow: true,
@@ -188,7 +188,7 @@ describe('AdultSocialCareStartedComponent', () => {
       });
     }
 
-    const runTestsForNavigatingToDHAQuestion = (overrides) => {
+    function shouldNavigateToWorkerDHAQuestion(overrides) {
       it("should navigate to 'carry-out-delegated-healthcare-activities' question on submit", async () => {
         const { component, getByText, routerSpy } = await setup({
           insideFlow: true,
@@ -224,11 +224,10 @@ describe('AdultSocialCareStartedComponent', () => {
           'carry-out-delegated-healthcare-activities',
         ]);
       });
-    };
+    }
 
     describe('when the workplace has answered "Yes" to "canDoDelegatedHealthActivities" question', () => {
       describe("when worker's job role cannot carry out delegated healthcare activities", () => {
-        // should NOT see worker DHA question
         const overrides = {
           staffDoDelegatedHealthcareActivities: 'Yes',
           workerMainJob: {
@@ -238,11 +237,10 @@ describe('AdultSocialCareStartedComponent', () => {
           },
         };
 
-        runTestsForSkippingDHAQuestion(overrides);
+        shouldSkipWorkerDHAQuestion(overrides);
       });
 
       describe("when worker's job role can carry out delegated healthcare activities", () => {
-        // should see worker DHA question
         const overrides = {
           staffDoDelegatedHealthcareActivities: 'Yes',
           workerMainJob: {
@@ -252,22 +250,20 @@ describe('AdultSocialCareStartedComponent', () => {
           },
         };
 
-        runTestsForNavigatingToDHAQuestion(overrides);
+        shouldNavigateToWorkerDHAQuestion(overrides);
       });
     });
 
     describe('when the workplace has answered "No" to "canDoDelegatedHealthActivities" question', () => {
-      // should NOT see worker DHA question
       const overrides = {
         staffDoDelegatedHealthcareActivities: 'No',
       };
 
-      runTestsForSkippingDHAQuestion(overrides);
+      shouldSkipWorkerDHAQuestion(overrides);
     });
 
     describe('when the workplace has not answered the "canDoDelegatedHealthActivities" question', () => {
       describe('if workplace main service cannot do delegated healthcare activities', () => {
-        // should NOT see worker DHA question
         const overrides = {
           workplaceMainService: mainServiceWithoutDHA,
           staffDoDelegatedHealthcareActivities: null,
@@ -278,11 +274,10 @@ describe('AdultSocialCareStartedComponent', () => {
           },
         };
 
-        runTestsForSkippingDHAQuestion(overrides);
+        shouldSkipWorkerDHAQuestion(overrides);
       });
 
       describe("when workplace main service can do DHA but worker's job role cannot", () => {
-        // should NOT see worker DHA question
         const overrides = {
           workplaceMainService: mainServiceWithDHA,
           staffDoDelegatedHealthcareActivities: null,
@@ -293,11 +288,10 @@ describe('AdultSocialCareStartedComponent', () => {
           },
         };
 
-        runTestsForSkippingDHAQuestion(overrides);
+        shouldSkipWorkerDHAQuestion(overrides);
       });
 
       describe("when both workplace main service and worker's job role can do DHA", () => {
-        // should see worker DHA question
         const overrides = {
           workplaceMainService: mainServiceWithDHA,
           staffDoDelegatedHealthcareActivities: null,
@@ -308,7 +302,7 @@ describe('AdultSocialCareStartedComponent', () => {
           },
         };
 
-        runTestsForNavigatingToDHAQuestion(overrides);
+        shouldNavigateToWorkerDHAQuestion(overrides);
       });
     });
 
