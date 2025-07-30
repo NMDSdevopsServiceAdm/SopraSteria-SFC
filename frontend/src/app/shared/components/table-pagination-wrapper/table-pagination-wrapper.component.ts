@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
   templateUrl: './table-pagination-wrapper.component.html',
 })
 export class TablePaginationWrapperComponent implements OnInit {
+  @Input() isSearchMaintained: string;
+  @Input() maintainedPageIndex: number;
   @Input() totalCount: number;
   @Input() count: number;
   @Input() sortByParamMap: Record<string, string>;
@@ -31,6 +33,9 @@ export class TablePaginationWrapperComponent implements OnInit {
 
   ngOnInit(): void {
     this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
+    if (this.maintainedPageIndex && this.maintainedPageIndex !== this.currentPageIndex) {
+      this.currentPageIndex = this.maintainedPageIndex;
+    }
   }
 
   private checkForFragment(): void {
