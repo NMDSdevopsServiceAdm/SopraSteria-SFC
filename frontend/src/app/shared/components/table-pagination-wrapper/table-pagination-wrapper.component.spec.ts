@@ -30,6 +30,9 @@ describe('TablePaginationWrapperCompnent', () => {
         },
         sortOptions: SortStaffOptions,
         searchTerm: '',
+        currentPageIndex: overrides.currentPageIndex ?? 0,
+        isSearchMaintained: overrides.isSearchMaintained ?? false,
+        maintainedPageIndex: overrides.maintainedPageIndex ?? null,
       },
     });
 
@@ -63,6 +66,16 @@ describe('TablePaginationWrapperCompnent', () => {
   describe('Search', () => {
     it('should display the search box if the total worker count is greater than the items per page', async () => {
       const { getByTestId } = await setup();
+      expect(getByTestId('search')).toBeTruthy();
+    });
+
+    it('should display the search box if isSearchMaintained is true', async () => {
+      const { getByTestId } = await setup({ isSearchMaintained: true });
+      expect(getByTestId('search')).toBeTruthy();
+    });
+
+    it('should display the search box if isSearchMaintained is true but if the total worker count is less than the items per page', async () => {
+      const { getByTestId } = await setup({ isSearchMaintained: true, totalCount: 4 });
       expect(getByTestId('search')).toBeTruthy();
     });
 
@@ -183,6 +196,20 @@ describe('TablePaginationWrapperCompnent', () => {
       expect(handlePageUpdateSpy).toHaveBeenCalledWith(2);
       const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
       expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
+    });
+  });
+
+  describe('page index', () => {
+    it('should use the value from maintainedPageIndex', async () => {
+      const { component } = await setup({ maintainedPageIndex: 1, currentPageIndex: 0 });
+
+      expect(component.currentPageIndex).toEqual(1);
+    });
+
+    it('should use the currentPageIndex value ', async () => {
+      const { component } = await setup({ currentPageIndex: 0 });
+
+      expect(component.currentPageIndex).toEqual(0);
     });
   });
 });

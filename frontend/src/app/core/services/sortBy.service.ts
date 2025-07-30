@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {  NavigationStart, Router } from '@angular/router';
-import {  filter, } from 'rxjs/operators';
+import { NavigationStart, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { TabsService } from './tabs.service';
 
 @Injectable({
@@ -8,13 +8,13 @@ import { TabsService } from './tabs.service';
 })
 export class SortByService {
   public navUrl: string;
-  private _totalWorkerCount: number
+  private _totalWorkerCount: number;
 
   constructor(private router: Router, private tabsService: TabsService) {
     this.navUrl;
 
     this.router.events.pipe(filter((event) => event instanceof NavigationStart)).subscribe((event: NavigationStart) => {
-      console.log(event)
+      console.log(event);
 
       const destinationUrl = event.url;
 
@@ -38,10 +38,10 @@ export class SortByService {
   }
 
   public setInitialTotalWorkerCount(totalWorkerCount: number) {
-    this._totalWorkerCount = totalWorkerCount
+    this._totalWorkerCount = totalWorkerCount;
   }
 
   public getInitialTotalWorkerCount() {
-    return this._totalWorkerCount
+    return this._totalWorkerCount;
   }
 }
