@@ -9,7 +9,7 @@ describe('Worker sequelize hooks', () => {
       sinon.restore();
     });
 
-    const defaultWorkerInstance = {
+    const mockWorkerSequelizeInstance = {
       changed: (fieldName) => {
         return ['MainJobFkValue', 'updated'].includes(fieldName);
       },
@@ -20,7 +20,7 @@ describe('Worker sequelize hooks', () => {
     };
 
     it('should set carryOutDelegatedHealthcareActivities to null if new job role cannot do DHA', async () => {
-      const mockWorker = { ...defaultWorkerInstance };
+      const mockWorker = { ...mockWorkerSequelizeInstance };
       await unsetDHAAnswerOnJobRoleChange(mockWorker);
 
       expect(mockWorker.carryOutDelegatedHealthcareActivities).to.equal(null);
@@ -28,7 +28,7 @@ describe('Worker sequelize hooks', () => {
 
     it('should keep carryOutDelegatedHealthcareActivities unchanged if new job role can do DHA', async () => {
       const mockWorker = {
-        ...defaultWorkerInstance,
+        ...mockWorkerSequelizeInstance,
         getMainJob() {
           return Promise.resolve({ id: 10, title: 'Care worker', canDoDelegatedHealthcareActivities: true });
         },
@@ -36,12 +36,12 @@ describe('Worker sequelize hooks', () => {
 
       await unsetDHAAnswerOnJobRoleChange(mockWorker);
 
-      expect(mockWorker.carryOutDelegatedHealthcareActivities).to.equal('Yes');
+      expect(mockWorker.carryOutDelegatedHealthcareActivities).to.deep.equal('Yes');
     });
 
     it('should do nothing if not changing the main job', async () => {
       const mockWorker = {
-        ...defaultWorkerInstance,
+        ...mockWorkerSequelizeInstance,
         changed: () => {
           return false;
         },
@@ -51,6 +51,7 @@ describe('Worker sequelize hooks', () => {
       await unsetDHAAnswerOnJobRoleChange(mockWorker);
 
       expect(mockWorker.getMainJob).not.to.have.been.called;
+      expect(mockWorker.carryOutDelegatedHealthcareActivities).to.deep.equal('Yes');
     });
   });
 });
