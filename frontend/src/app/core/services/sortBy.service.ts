@@ -16,21 +16,30 @@ export class SortByService {
       const destinationUrl = event.url;
 
       if (!destinationUrl.includes('staff-record')) {
-        this.clearLocalStorage();
+        this.clearLocalStorageForSort();
       }
     });
 
     this.tabsService.selectedTab$.subscribe((newTab) => {
       if (newTab && newTab !== 'staff-records') {
-        this.clearLocalStorage();
+        this.clearLocalStorageForSort();
       }
     });
   }
 
-  public clearLocalStorage() {
+  public clearLocalStorageForSort() {
     localStorage.removeItem('staffSummarySortValue');
     localStorage.removeItem('staffSummarySearchTerm');
     localStorage.removeItem('staffSummaryIndex');
     localStorage.removeItem('isSearchMaintained');
+  }
+
+  public returnLocalStorageForSort(): any {
+    return {
+      staffSummarySortValue: localStorage.getItem('staffSummarySortValue') ?? null,
+      staffSummarySearchTerm: localStorage.getItem('staffSummarySearchTerm') ?? null,
+      staffSummaryIndex: localStorage.getItem('staffSummaryIndex') ?? null,
+      isSearchMaintained: localStorage.getItem('isSearchMaintained') ?? null,
+    };
   }
 }

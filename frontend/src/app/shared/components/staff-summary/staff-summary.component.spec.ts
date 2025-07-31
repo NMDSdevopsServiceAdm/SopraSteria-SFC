@@ -18,6 +18,7 @@ import { PaginationComponent } from '../pagination/pagination.component';
 import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/table-pagination-wrapper.component';
 import { StaffSummaryComponent } from './staff-summary.component';
 import { PermissionType } from '@core/model/permissions.model';
+import { SortByService } from '@core/services/sortBy.service';
 
 describe('StaffSummaryComponent', () => {
   async function setup(overrides: any = {}) {
@@ -27,6 +28,26 @@ describe('StaffSummaryComponent', () => {
       imports: [SharedModule, RouterModule, HttpClientTestingModule],
       declarations: [PaginationComponent, TablePaginationWrapperComponent],
       providers: [
+        {
+          provide: SortByService,
+          useValue: {
+            returnLocalStorageForSort() {
+              return overrides.useLocalStorageValuesForSort
+                ? {
+                    staffSummarySortValue: 'addMoreDetails',
+                    staffSummarySearchTerm: 'Ma',
+                    staffSummaryIndex: '0',
+                    isSearchMaintained: 'true',
+                  }
+                : {
+                    staffSummarySortValue: null,
+                    staffSummarySearchTerm: null,
+                    staffSummaryIndex: null,
+                    isSearchMaintained: null,
+                  };
+            },
+          },
+        },
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(overrides.permissions as PermissionType[]),
@@ -51,6 +72,9 @@ describe('StaffSummaryComponent', () => {
       of({ workers: [...workers, ...workers, ...workers, ...workers, ...workers, ...workers], workerCount: 18 }),
     );
 
+    const localStorageSetSpy = spyOn(localStorage, 'setItem');
+    const localStorageGetSpy = spyOn(localStorage, 'getItem');
+
     const component = setupTools.fixture.componentInstance;
 
     return {
@@ -59,8 +83,14 @@ describe('StaffSummaryComponent', () => {
       component,
       workers,
       getAllWorkersSpy,
+      localStorageSetSpy,
+      localStorageGetSpy,
     };
   }
+
+  beforeEach(() => {
+    localStorage.clear();
+  });
 
   it('should render a StaffSummaryComponent', async () => {
     const { component } = await setup();
@@ -214,6 +244,52 @@ describe('StaffSummaryComponent', () => {
         worker.uid,
         'staff-record-summary',
       ]);
+    });
+  });
+
+  describe('selected sort by values', () => {
+    beforeEach(() => {
+      localStorage.removeItem('staffSummarySortValue');
+      localStorage.removeItem('staffSummarySearchTerm');
+      localStorage.removeItem('staffSummaryIndex');
+      localStorage.removeItem('isSearchMaintained');
+    });
+
+    it('localStorage should not be called if isWdf is true', async () => {
+      const overrides = { isWdf: true };
+      const { component, getByLabelText, localStorageSetSpy } = await setup(overrides);
+
+      const sortByObjectKeys = Object.keys(component.sortStaffOptions);
+      userEvent.selectOptions(getByLabelText('Sort by'), sortByObjectKeys[2]);
+
+      expect(localStorageSetSpy).not.toHaveBeenCalled();
+    });
+
+    it('localStorage should be called if isWdf is false', async () => {
+      const overrides = { isWdf: false };
+      const { component, getByLabelText, localStorageSetSpy } = await setup(overrides);
+
+      const sortByObjectKeys = Object.keys(component.sortStaffOptions);
+      userEvent.selectOptions(getByLabelText('Sort by'), sortByObjectKeys[2]);
+      expect(localStorageSetSpy).toHaveBeenCalledTimes(4);
+      expect(localStorageSetSpy.calls.all()[0].args).toEqual(['staffSummarySortValue', component.sortByValue]);
+      expect(localStorageSetSpy.calls.all()[1].args).toEqual(['staffSummarySearchTerm', '']);
+      expect(localStorageSetSpy.calls.all()[2].args).toEqual(['staffSummaryIndex', '0']);
+      expect(localStorageSetSpy.calls.all()[3].args).toEqual(['isSearchMaintained', 'true']);
+    });
+
+    it('should use the values from returnLocalStorageForSort when its not the wdf view', async () => {
+      const overrides = {
+        isWdf: false,
+        useLocalStorageValuesForSort: true,
+      };
+
+      const { component } = await setup(overrides);
+
+      expect(component.sortByValue).toEqual('addMoreDetails');
+      expect(component.searchTerm).toEqual('Ma');
+      expect(component.pageIndex).toEqual(0);
+      expect(component.isSearchMaintained).toEqual(true);
     });
   });
 });
