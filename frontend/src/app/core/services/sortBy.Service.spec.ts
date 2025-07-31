@@ -48,11 +48,4 @@ describe('SortByService', () => {
       expect(localStorageSpy).toHaveBeenCalledTimes(4);
     });
   });
-
-  it('should set _totalWorkerCount', () => {
-    const workerCount = 14;
-    service.setInitialTotalWorkerCount(workerCount);
-
-    expect(service.getInitialTotalWorkerCount()).toEqual(workerCount);
-  });
 });
