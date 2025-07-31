@@ -24,7 +24,7 @@ describe('SortByService', () => {
 
   describe('clearLocalStorage', () => {
     it('should not be called when the url includes "staff-record"', () => {
-      const clearLocalStorageSpy = spyOn(service, 'clearLocalStorage');
+      const clearLocalStorageSpy = spyOn(service, 'clearLocalStorageForSort');
 
       const routerEvent$ = router.events as BehaviorSubject<any>;
       routerEvent$.next(new NavigationStart(2, '/workplace/staff-uid/staff-record/url'));
@@ -33,7 +33,7 @@ describe('SortByService', () => {
     });
 
     it('should be called when the url does not include "staff-record"', () => {
-      const clearLocalStorageSpy = spyOn(service, 'clearLocalStorage');
+      const clearLocalStorageSpy = spyOn(service, 'clearLocalStorageForSort');
 
       const routerEvent$ = router.events as BehaviorSubject<any>;
       routerEvent$.next(new NavigationStart(2, '/workplace/uid/url'));
@@ -44,7 +44,15 @@ describe('SortByService', () => {
     it('should call localStorage', () => {
       const localStorageSpy = spyOn(localStorage, 'removeItem');
 
-      service.clearLocalStorage();
+      service.clearLocalStorageForSort();
+      expect(localStorageSpy).toHaveBeenCalledTimes(4);
+    });
+
+    it('should return the values from localStorage', () => {
+      const localStorageSpy = spyOn(localStorage, 'getItem');
+
+      service.returnLocalStorageForSort();
+
       expect(localStorageSpy).toHaveBeenCalledTimes(4);
     });
   });
