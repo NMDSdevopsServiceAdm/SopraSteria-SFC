@@ -22,6 +22,9 @@ const { authLimiter } = require('../../utils/middleware/rateLimiting');
 const User = require('../../models/classes/user');
 const notifications = require('../../data/notifications');
 
+const normalUserRoles = ['None', 'Read', 'Edit'];
+const adminUserRoles = ['Admin', 'AdminManager'];
+
 // default route
 const return200 = async (req, res) => {
   res.status(200).send();
@@ -122,8 +125,17 @@ const getMe = async (req, res) => {
   getUser(req, res);
 };
 
-// gets requested user id or username - using the establishment id extracted for authorised token
-// optional parameter - "history" must equal 1
+const updateAdminUser = async (req, res) => updateUser(req, res);
+
+const updateNormalUser = async (req, res) => {
+  const allowUserTypes = [...normalUserRoles];
+  if (!allowUserTypes.includes(req?.body?.role)) {
+    console.error(`PUT /user/establishment/:id/:userId - trying to change user to a role which is not allowed`);
+    return res.status(401).send();
+  }
+
+  return updateUser(req, res);
+};
 
 // updates a user with given uid or username
 const updateUser = async (req, res) => {
@@ -425,13 +437,33 @@ const meetsMaxUserLimit = async (establishmentId, req) => {
   return false;
 };
 
+const partAddAdminUser = async (req, res) => partAddUser(req, res);
+
+const partAddNormalUser = async (req, res) => {
+  const allowUserTypes = [...normalUserRoles];
+
+  if (!allowUserTypes.includes(req?.body?.role)) {
+    console.error(`POST /user/add/establishment/:id - trying to add user type which is not allowed`);
+    return res.status(401).send();
+  }
+
+  if (req?.body?.password || req?.body?.username) {
+    console.error(
+      'POST /user/add/establishment/:id - Invalid request: request body should not contain password / username',
+    );
+    return res.status(400).send();
+  }
+
+  return partAddUser(req, res);
+};
+
 // registers (part add) a new user
 const partAddUser = async (req, res) => {
   // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
   const establishmentId = req.establishmentId;
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl) * 1000 : 2 * 60 * 60 * 24 * 1000; // 2 days
 
-  const errorMessage = isAdminRole(req.role) ? 'add/admin' : 'add/establishment/:id';
+  const errorMessage = isAdminRole(req.role) ? 'POST /api/user/add/admin' : 'POST /api/user/add/establishment/:id';
   // ensure only a user having the role of Edit can register a new user
   if (notPermittedToRegisterNewUser(req.role)) {
     console.error(`${errorMessage} - given user does not have sufficient permission`);
@@ -927,11 +959,17 @@ const updateLastViewedVacanciesAndTurnoverMessage = async (req, res) => {
 };
 
 router.route('/').get(return200);
+
+// Admin only endpoints
 router.route('/admin').get(Authorization.isAdmin, listAdminUsers);
 router.route('/admin/:userId').get(Authorization.isAdmin, getUser);
-router.route('/admin/:userId').put(Authorization.isAdminManager, updateUser);
-router.route('/admin/me/:userId').put(Authorization.isAdmin, updateUser);
+router.route('/admin/:userId').put(Authorization.isAdminManager, updateAdminUser);
+router.route('/admin/me/:userId').put(Authorization.isAdmin, updateAdminUser);
 router.route('/admin/:userid').delete(Authorization.isAdminManager, deleteUser);
+router.route('/add/admin').post(Authorization.isAdminManager, partAddAdminUser);
+router.route('/:uid/resend-activation-admin').post(Authorization.isAdminManager, resendActivationLink);
+
+// normal user endpoints
 router
   .route('/establishment/:id')
   .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewListOfUsers'), listAllUsers);
@@ -940,24 +978,21 @@ router
   .get(Authorization.hasAuthorisedEstablishment, hasPermission('canViewUser'), getUser);
 router
   .route('/establishment/:id/:userId')
-  .put(Authorization.hasAuthorisedEstablishmentAllowAllRoles, hasPermission('canEditUser'), updateUser);
+  .put(Authorization.hasAuthorisedEstablishmentAllowAllRoles, hasPermission('canEditUser'), updateNormalUser);
 router
   .route('/establishment/:id/:userid')
   .delete(Authorization.hasAuthorisedEstablishment, hasPermission('canDeleteUser'), deleteUser);
 router.route('/me').get(Authorization.isAuthorised, getMe);
 router.route('/resetPassword').post(Authorization.isAuthorisedPasswdReset, resetPassword);
 router.route('/changePassword').post(Authorization.isAuthorised, changePassword);
-router.route('/add/admin').post(Authorization.isAdminManager, partAddUser);
 router
   .route('/add/establishment/:id')
-  .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddUser);
+  .post(Authorization.hasAuthorisedEstablishment, hasPermission('canAddUser'), partAddNormalUser);
 router.route('/:uid/resend-activation').post(Authorization.isAuthorised, resendActivationLink);
-router.route('/:uid/resend-activation-admin').post(Authorization.isAdminManager, resendActivationLink);
 router.route('/validateAddUser').post(finishAddUser);
 router.route('/add').post(Authorization.isAuthorisedAddUser, addUser);
 router.route('/my/establishments').get(Authorization.isAuthorised, listEstablishments);
 
-router.route('/admin/:userId').get(Authorization.isAuthorised, getUser);
 router.use('/my/notifications', Authorization.isAuthorised);
 router.route('/my/notifications').get(listNotifications);
 router
@@ -970,8 +1005,10 @@ router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablis
 module.exports = router;
 
 module.exports.meetsMaxUserLimit = meetsMaxUserLimit;
-module.exports.partAddUser = partAddUser;
+module.exports.partAddNormalUser = partAddNormalUser;
+module.exports.partAddAdminUser = partAddAdminUser;
 module.exports.listAdminUsers = listAdminUsers;
-module.exports.updateUser = updateUser;
+module.exports.updateAdminUser = updateAdminUser;
+module.exports.updateNormalUser = updateNormalUser;
 module.exports.updateLastViewedVacanciesAndTurnoverMessage = updateLastViewedVacanciesAndTurnoverMessage;
 module.exports.addUser = addUser;
