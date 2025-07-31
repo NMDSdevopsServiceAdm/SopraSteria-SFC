@@ -19,6 +19,14 @@ describe('Sub home page as read only user', () => {
 
   it('should show funding data link', () => {
     cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
+    cy.contains('Does your data meet funding requirements?').click();
+    cy.get('h1').should('contain', 'Does your data meet funding requirements');
+  });
+
+  it('should show Benchmarks link', () => {
+    cy.get('[data-cy="cards-and-links"]').should('contain', 'See how you compare against other workplaces');
+    cy.contains('See how you compare against other workplaces').click();
+    cy.get('h1').should('contain', 'Benchmarks');
   });
 
   it('should not show bulk upload link', () => {

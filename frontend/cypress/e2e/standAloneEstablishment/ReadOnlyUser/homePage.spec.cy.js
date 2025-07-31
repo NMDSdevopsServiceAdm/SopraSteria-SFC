@@ -22,6 +22,14 @@ describe('Standalone home page as read only user', () => {
 
   it('should show funding requirements link', () => {
     cy.get('[data-testid="home-tab"]').should('contain', 'Does your data meet funding requirements?');
+    cy.contains('Does your data meet funding requirements?').click();
+    cy.get('h1').should('contain', 'Does your data meet funding requirements');
+  });
+
+  it('should show Benchmarks link', () => {
+    cy.get('[data-testid="home-tab"]').should('contain', 'See how you compare against other workplaces');
+    cy.contains('See how you compare against other workplaces').click();
+    cy.get('h1').should('contain', 'Benchmarks');
   });
 
   it('should not show parent organisation links', () => {
