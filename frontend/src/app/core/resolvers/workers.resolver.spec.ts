@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -13,13 +12,34 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 
 import { WorkersResolver } from './workers.resolver';
+import { PreviousRouteService } from '@core/services/previous-route.service';
+import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
+import { SortByService } from '@core/services/sortBy.service';
 
 describe('WorkersResolver', () => {
-  function setup(idInParams = null, permissions = ['canViewListOfWorkers'], workerPagination = true) {
+  function setup(overrides: any = {}) {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [HttpClientTestingModule],
       providers: [
         WorkersResolver,
+        {
+          provide: SortByService,
+          useValue: {
+            returnLocalStorageForSort() {
+              return overrides.useLocalStorageValuesForSort
+                ? {
+                    staffSummarySortValue: 'lastUpdateNewest',
+                    staffSummarySearchTerm: 'Ma',
+                    staffSummaryIndex: '0',
+                  }
+                : {
+                    staffSummarySortValue: null,
+                    staffSummarySearchTerm: null,
+                    staffSummaryIndex: null,
+                  };
+            },
+          },
+        },
         {
           provide: WorkerService,
           useClass: MockWorkerService,
@@ -29,14 +49,22 @@ describe('WorkersResolver', () => {
           useClass: MockEstablishmentService,
         },
         {
+          provide: PreviousRouteService,
+          useFactory: MockPreviousRouteService.factory(overrides.previousUrl),
+          deps: [Router],
+        },
+        {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
+          useFactory: MockPermissionsService.factory(overrides.permissions ?? ['canViewListOfWorkers']),
           deps: [HttpClient, Router, UserService],
         },
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { paramMap: convertToParamMap({ establishmentuid: idInParams }), data: { workerPagination } },
+            snapshot: {
+              paramMap: convertToParamMap({ establishmentuid: overrides.idInParams ?? null }),
+              data: { workerPagination: overrides.workerPagination ?? true },
+            },
           },
         },
       ],
@@ -48,12 +76,23 @@ describe('WorkersResolver', () => {
     const workerService = TestBed.inject(WorkerService);
     spyOn(workerService, 'getAllWorkers').and.callThrough();
 
+    const sortByService = TestBed.inject(SortByService) as SortByService;
+    const sortByServiceSpy = spyOn(sortByService, 'returnLocalStorageForSort').and.callThrough();
+
     return {
       resolver,
       route,
       workerService,
+      sortByServiceSpy,
     };
   }
+
+  beforeEach(() => {
+    localStorage.removeItem('staffSummarySortValue');
+    localStorage.removeItem('staffSummarySearchTerm');
+    localStorage.removeItem('staffSummaryIndex');
+    localStorage.removeItem('isSearchMaintained');
+  });
 
   it('should create', () => {
     const { resolver } = setup();
@@ -65,7 +104,7 @@ describe('WorkersResolver', () => {
     const { resolver, route, workerService } = setup();
 
     const idFromEstablishmentService = '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
-    const queryParams = { pageIndex: 0, itemsPerPage: 15 };
+    const queryParams = { pageIndex: 0, itemsPerPage: 15, sortBy: null };
 
     resolver.resolve(route.snapshot);
 
@@ -73,7 +112,9 @@ describe('WorkersResolver', () => {
   });
 
   it('should call getAllWorkers with id from establishmentService and empty object when workerPagination is false and no uid in params', () => {
-    const { resolver, route, workerService } = setup(null, ['canViewListOfWorkers'], false);
+    const overrides = { idInParams: null, permissions: ['canViewListOfWorkers'], workerPagination: false };
+
+    const { resolver, route, workerService } = setup(overrides);
 
     const idFromEstablishmentService = '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
 
@@ -83,16 +124,19 @@ describe('WorkersResolver', () => {
   });
 
   it('should call getAllWorkers with id from params and workerPagination params when when id exists and workerPagination true', () => {
-    const { resolver, route, workerService } = setup('paramUid');
+    const overrides = { idInParams: 'paramUid' };
+    const { resolver, route, workerService } = setup(overrides);
 
-    const queryParams = { pageIndex: 0, itemsPerPage: 15 };
+    const queryParams = { pageIndex: 0, itemsPerPage: 15, sortBy: null };
     resolver.resolve(route.snapshot);
 
     expect(workerService.getAllWorkers).toHaveBeenCalledWith('paramUid', queryParams);
   });
 
   it('should call getAllWorkers with id from params and empty object when when id exists and workerPagination false', () => {
-    const { resolver, route, workerService } = setup('paramUid', ['canViewListOfWorkers'], false);
+    const overrides = { idInParams: 'paramUid', permissions: ['canViewListOfWorkers'], workerPagination: false };
+
+    const { resolver, route, workerService } = setup(overrides);
 
     resolver.resolve(route.snapshot);
 
@@ -100,7 +144,8 @@ describe('WorkersResolver', () => {
   });
 
   it('should not call getAllWorkers when workplace does not have canViewListOfWorkers permission', () => {
-    const { resolver, route, workerService } = setup('paramUid', []);
+    const overrides = { idInParams: 'paramUid', permissions: [] };
+    const { resolver, route, workerService } = setup(overrides);
 
     resolver.resolve(route.snapshot);
 
@@ -108,7 +153,9 @@ describe('WorkersResolver', () => {
   });
 
   it('should return the training last updated value when it is greater than the qualifications last updated value', () => {
-    const { resolver } = setup('paramUid');
+    const overrides = { idInParams: 'paramUid' };
+
+    const { resolver } = setup(overrides);
 
     const training = new Date('2020/04/10').toISOString();
     const qualifications = new Date('2019/02/25').toISOString();
@@ -119,7 +166,9 @@ describe('WorkersResolver', () => {
   });
 
   it('should return the qualification last updated value when it is greater than the training last updated value', () => {
-    const { resolver } = setup('paramUid');
+    const overrides = { idInParams: 'paramUid' };
+
+    const { resolver } = setup(overrides);
 
     const qualifications = new Date('2020/04/10').toISOString();
     const training = new Date('2019/02/25').toISOString();
@@ -130,7 +179,9 @@ describe('WorkersResolver', () => {
   });
 
   it('should return nothing when there is not a qualification or training last updated value', () => {
-    const { resolver } = setup('paramUid');
+    const overrides = { idInParams: 'paramUid' };
+
+    const { resolver } = setup(overrides);
 
     const training = null;
     const qualifications = null;
@@ -138,5 +189,39 @@ describe('WorkersResolver', () => {
     const result = resolver.getLastUpdatedTrainingOrQualifications(training, qualifications);
 
     expect(result).toBeFalsy();
+  });
+
+  it('should get all workers with the sort value from returnLocalStorageForSort if there is a value ', async () => {
+    const overrides = {
+      idInParams: 'paramUid',
+      previousUrl: '/workplace/workplace-uid/staff-record/staff-uid/staff-record-summary',
+      useLocalStorageValuesForSort: true,
+    };
+
+    const { resolver, route, workerService, sortByServiceSpy } = setup(overrides);
+    const sortByValue = 'lastUpdateNewest';
+    const queryParams = { pageIndex: 0, itemsPerPage: 15, sortBy: sortByValue, searchTerm: 'Ma' };
+
+    resolver.resolve(route.snapshot);
+
+    expect(sortByServiceSpy).toHaveBeenCalled();
+
+    expect(workerService.getAllWorkers).toHaveBeenCalledWith('paramUid', queryParams);
+  });
+
+  it('should get all workers with the sort value as null if there is no values from returnLocalStorageForSort', async () => {
+    const overrides = {
+      idInParams: 'paramUid',
+      previousUrl: '/workplace/workplace-uid/training-and-qualifications-record/staff-uid/training',
+    };
+
+    const { resolver, route, workerService, sortByServiceSpy } = setup(overrides);
+
+    const queryParams = { pageIndex: 0, itemsPerPage: 15, sortBy: null };
+
+    resolver.resolve(route.snapshot);
+
+    expect(sortByServiceSpy).toHaveBeenCalled();
+    expect(workerService.getAllWorkers).toHaveBeenCalledWith('paramUid', queryParams);
   });
 });

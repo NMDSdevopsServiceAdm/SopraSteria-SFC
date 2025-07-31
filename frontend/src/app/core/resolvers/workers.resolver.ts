@@ -3,17 +3,19 @@ import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { WorkersResponse } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { SortByService } from '@core/services/sortBy.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 
 @Injectable()
-export class WorkersResolver  {
+export class WorkersResolver {
   constructor(
     private router: Router,
     private workerService: WorkerService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
+    private sortByService: SortByService,
   ) {}
 
   getLastUpdatedTrainingOrQualifications(training: string, qualifications: string): string {
@@ -44,7 +46,19 @@ export class WorkersResolver  {
     const workersNotCompleted = [];
     const workersCreatedDate = [];
 
-    const paginationParams = route.data.workerPagination ? { pageIndex: 0, itemsPerPage: 15 } : {};
+    const { staffSummarySortValue, staffSummarySearchTerm, staffSummaryIndex } =
+      this.sortByService.returnLocalStorageForSort();
+
+    const pageIndexInteger = Number(staffSummaryIndex);
+
+    let pageIndex = Number.isInteger(pageIndexInteger) ? pageIndexInteger : 0;
+
+    const sortByValue = staffSummarySortValue ?? null;
+    const searchTerm = staffSummarySearchTerm ?? null;
+
+    const paginationParams = route.data.workerPagination
+      ? { pageIndex, itemsPerPage: 15, sortBy: sortByValue, ...(searchTerm ? { searchTerm } : {}) }
+      : {};
 
     return this.workerService
       .getAllWorkers(workplaceUid, paginationParams)
