@@ -78,6 +78,7 @@ import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-af
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
 
 const routes: Routes = [
   {
@@ -385,6 +386,11 @@ const routes: Routes = [
             data: { title: 'Adult Social Care Started' },
           },
           {
+            path: 'carry-out-delegated-healthcare-activities',
+            component: CarryOutDelegatedHealthcareActivitiesComponent,
+            data: { title: 'Carry out Delegated Healthcare Activities' },
+          },
+          {
             path: 'days-of-sickness',
             component: DaysOfSicknessComponent,
             data: { title: 'Days of Sickness' },
@@ -676,6 +682,11 @@ const routes: Routes = [
         path: 'adult-social-care-started',
         component: AdultSocialCareStartedComponent,
         data: { title: 'Adult Social Care Started' },
+      },
+      {
+        path: 'carry-out-delegated-healthcare-activities',
+        component: CarryOutDelegatedHealthcareActivitiesComponent,
+        data: { title: 'Carry out Delegated Healthcare Activities' },
       },
       {
         path: 'days-of-sickness',

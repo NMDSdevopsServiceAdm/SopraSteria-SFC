@@ -1,5 +1,6 @@
 const dayjs = require('dayjs');
 const { Op } = require('sequelize');
+const { unsetDHAAnswerOnJobRoleChange } = require('./hooks/workerHooks');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -1085,6 +1086,30 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareWorkforcePathwayRoleCategoryChangedBy"',
       },
+
+      carryOutDelegatedHealthcareActivities: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"CarryOutDelegatedHealthcareActivitiesValue"',
+      },
+      CarryOutDelegatedHealthcareActivitiesSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CarryOutDelegatedHealthcareActivitiesChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CarryOutDelegatedHealthcareActivitiesSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      CarryOutDelegatedHealthcareActivitiesChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
       created: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -1491,6 +1516,8 @@ module.exports = function (sequelize, DataTypes) {
 
     return { count, workers };
   };
+
+  Worker.addHook('beforeSave', unsetDHAAnswerOnJobRoleChange);
 
   return Worker;
 };

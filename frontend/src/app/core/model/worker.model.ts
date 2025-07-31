@@ -56,6 +56,7 @@ export interface Worker {
     value: string;
     year: number;
   };
+  carryOutDelegatedHealthcareActivities?: string;
   daysSick?: WorkerDays;
   zeroHoursContract: string;
   weeklyHoursAverage: {

@@ -3,6 +3,7 @@ export interface Job {
   title?: string;
   other?: boolean;
   jobRoleGroup?: string;
+  canDoDelegatedHealthcareActivities?: boolean;
 }
 
 export interface JobGroup {
@@ -20,6 +21,7 @@ export interface JobRole {
   jobRoleName?: string;
   title?: string;
   other?: string;
+  canDoDelegatedHealthcareActivities?: boolean;
 }
 
 export interface GetJobsResponse {
