@@ -19,10 +19,20 @@ describe('Sub home page as edit user', () => {
 
   it('should show link to funding requirements', () => {
     cy.get('[data-testid="home-tab"]').should('contain', 'Does your data meet funding requirements?');
+    cy.contains('Does your data meet funding requirements?').click();
+    cy.get('h1').should('contain', 'Does your data meet funding requirements');
+  });
+
+  it('should show Benchmarks link', () => {
+    cy.get('[data-testid="home-tab"]').should('contain', 'See how you compare against other workplaces');
+    cy.contains('See how you compare against other workplaces').click();
+    cy.get('h1').should('contain', 'Benchmarks');
   });
 
   it('should show bulk upload link', () => {
     cy.get('[data-cy="home-other-links"]').should('contain', 'Bulk upload your data');
+    cy.contains('Bulk upload your data').click();
+    cy.get('h1').should('contain', 'Bulk upload');
   });
 
   it('should show remove link to parent organisation', () => {
