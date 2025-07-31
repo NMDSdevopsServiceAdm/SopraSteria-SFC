@@ -67,8 +67,4 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
       carryOutDelegatedHealthcareActivities,
     };
   }
-
-  onSuccess(): void {
-    // this.next = this.determineConditionalRouting();
-  }
 }
