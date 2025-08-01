@@ -8,7 +8,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { NewRegulatedByCqcDirective } from '@shared/directives/create-workplace/new-regulated-by-cqc/new-regulated-by-cqc.directive';
 
 @Component({
-  selector: 'app-regulated-by-cqc',
+  selector: 'app-regulated-by-cqc-create-account',
   templateUrl: '../../../../shared/directives/create-workplace/new-regulated-by-cqc/regulated-by-cqc.component.html',
 })
 export class RegulatedByCqcComponent extends NewRegulatedByCqcDirective {

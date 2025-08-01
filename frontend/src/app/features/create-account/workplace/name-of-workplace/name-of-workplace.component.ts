@@ -9,7 +9,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { NameOfWorkplaceDirective } from '@shared/directives/create-workplace/name-of-workplace/name-of-workplace.directive';
 
 @Component({
-  selector: 'app-name-of-workplace',
+  selector: 'app-name-of-workplace-create-account',
   templateUrl: '../../../../shared/directives/create-workplace/name-of-workplace/name-of-workplace.component.html',
 })
 export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
