@@ -13,12 +13,20 @@ const getContentFromCms = async (req, res) => {
   const { env, ...queryParams } = req.query;
   const path = req.params.path;
 
-  if (!path) return res.status(400).json({ error: 'Missing path' });
-  if (!env) return res.status(400).json({ error: 'Missing env' });
+  if (!path || typeof path !== 'string') return res.status(400).json({ error: 'Missing or invalid path' });
+  if (!env || typeof env !== 'string' || !CMS_URIS[env]) {
+    return res.status(400).json({ error: 'Missing or invalid env' });
+  }
+
+  if (!/^[a-zA-Z0-9/_-]+$/.test(path)) {
+    return res.status(400).json({ error: 'Invalid characters in path' });
+  }
+
+  if (path.includes('..') || decodeURIComponent(path).includes('..')) {
+    return res.status(400).json({ error: 'Path traversal is not allowed' });
+  }
 
   const baseUrl = CMS_URIS[env];
-
-  if (!baseUrl) return res.status(400).json({ error: 'Invalid environment specified' });
 
   try {
     const cmsResponse = await axios.get(`${baseUrl}/${path}`, {

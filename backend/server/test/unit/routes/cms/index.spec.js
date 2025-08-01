@@ -6,10 +6,12 @@ const { getContentFromCms, CMS_URIS } = require('../../../../routes/cms');
 
 describe('getContentFromCms', () => {
   let cmsGetCallMock;
+  let res;
 
   beforeEach(() => {
     cmsGetCallMock = sinon.stub(axios, 'get');
     CMS_URIS.dev = 'https://cms.dev.example.com';
+    res = httpMocks.createResponse();
   });
 
   afterEach(() => {
@@ -33,8 +35,6 @@ describe('getContentFromCms', () => {
         path: 'items/pages',
       },
     });
-
-    const res = httpMocks.createResponse();
 
     await getContentFromCms(req, res);
 
@@ -62,22 +62,7 @@ describe('getContentFromCms', () => {
     await getContentFromCms(req, res);
 
     expect(res.statusCode).to.equal(400);
-    expect(res._getJSONData()).to.deep.equal({ error: 'Missing env' });
-  });
-
-  it('should return 400 if path is missing', async () => {
-    const req = httpMocks.createRequest({
-      method: 'GET',
-      query: { env: 'dev' },
-      params: {},
-    });
-
-    const res = httpMocks.createResponse();
-
-    await getContentFromCms(req, res);
-
-    expect(res.statusCode).to.equal(400);
-    expect(res._getJSONData()).to.deep.equal({ error: 'Missing path' });
+    expect(res._getJSONData()).to.deep.equal({ error: 'Missing or invalid env' });
   });
 
   it('should return 400 if env is invalid', async () => {
@@ -92,7 +77,75 @@ describe('getContentFromCms', () => {
     await getContentFromCms(req, res);
 
     expect(res.statusCode).to.equal(400);
-    expect(res._getJSONData()).to.deep.equal({ error: 'Invalid environment specified' });
+    expect(res._getJSONData()).to.deep.equal({ error: 'Missing or invalid env' });
+  });
+
+  describe('Path sanitisation', () => {
+    it('should return 400 if path is missing', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        query: { env: 'dev' },
+        params: {},
+      });
+
+      const res = httpMocks.createResponse();
+
+      await getContentFromCms(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getJSONData()).to.deep.equal({ error: 'Missing or invalid path' });
+    });
+
+    it('should return 400 if path contains invalid characters', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        query: { env: 'dev' },
+        params: {
+          path: 'items/pa<>ges',
+        },
+      });
+
+      await getContentFromCms(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getJSONData()).to.deep.equal({
+        error: 'Invalid characters in path',
+      });
+    });
+
+    it('should return 400 if path contains literal ".." for traversal', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        query: { env: 'dev' },
+        params: {
+          path: 'items/../../admin',
+        },
+      });
+
+      await getContentFromCms(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getJSONData()).to.deep.equal({
+        error: 'Invalid characters in path',
+      });
+    });
+
+    it('should return 400 if path contains encoded ".." for traversal', async () => {
+      const req = httpMocks.createRequest({
+        method: 'GET',
+        query: { env: 'dev' },
+        params: {
+          path: 'items/%2e%2e/admin',
+        },
+      });
+
+      await getContentFromCms(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getJSONData()).to.deep.equal({
+        error: 'Invalid characters in path',
+      });
+    });
   });
 
   it('should return 500 if CMS fetch fails', async () => {
@@ -108,8 +161,6 @@ describe('getContentFromCms', () => {
         path: 'items/pages',
       },
     });
-
-    const res = httpMocks.createResponse();
 
     await getContentFromCms(req, res);
 
