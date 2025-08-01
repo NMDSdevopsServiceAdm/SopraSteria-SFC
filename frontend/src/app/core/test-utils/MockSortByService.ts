@@ -5,7 +5,6 @@ import { TabsService } from '@core/services/tabs.service';
 
 @Injectable()
 export class MockSortByService extends SortByService {
-  public useLocalStorageValuesForSort = false;
   public localStorageValuesForSort = {
     staffSummarySortValue: null,
     staffSummarySearchTerm: null,
