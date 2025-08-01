@@ -53,6 +53,7 @@ describe('Summary section', () => {
         noOfWorkersWhoRequireInternationalRecruitment: overrides.noOfWorkersWhoRequireInternationalRecruitment ?? 0,
         noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered:
           overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
+        workplacesNeedAttention: overrides.workplacesNeedAttention ?? false,
       },
     });
 
@@ -69,6 +70,8 @@ describe('Summary section', () => {
     );
     const setReturnToSpy = spyOn(establishmentService, 'setReturnTo');
 
+    const localStorageSpy = spyOn(localStorage, 'setItem');
+
     return {
       ...setupTools,
       component,
@@ -76,6 +79,7 @@ describe('Summary section', () => {
       tabsService,
       updateSingleFieldSpy,
       setReturnToSpy,
+      localStorageSpy,
     };
   };
 
@@ -1147,20 +1151,6 @@ describe('Summary section', () => {
       expect(workplacesRow).toBeTruthy();
     });
 
-    it('should show you other workplaces link', async () => {
-      const establishment = {
-        ...Establishment,
-        isParent: true,
-      };
-      const overrides = { establishment };
-      const { getByText } = await setup(overrides);
-
-      const yourOtherWorkplacesText = getByText('Your other workplaces');
-
-      expect(yourOtherWorkplacesText).toBeTruthy();
-      expect(yourOtherWorkplacesText.getAttribute('href')).toBeTruthy();
-    });
-
     it('should show message if there are no workplaces added', async () => {
       const establishment = {
         ...Establishment,
@@ -1198,7 +1188,7 @@ describe('Summary section', () => {
       const yourOtherWorkplacesSummaryText = getByText('Have you added all of your workplaces?');
 
       expect(yourOtherWorkplacesSummaryText).toBeTruthy();
-      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBe('/workplace/view-all-workplaces');
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBe('#');
       expect(getByTestId('workplaces-orange-flag')).toBeTruthy();
     });
 
@@ -1221,6 +1211,40 @@ describe('Summary section', () => {
       expect(yourOtherWorkplacesSummaryText).toBeTruthy();
       expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBeFalsy();
       expect(queryByTestId('workplaces-orange-flag')).toBeFalsy();
+    });
+
+    describe('navigating to "Your other workplaces"', () => {
+      it('should call localstorage with the "workplaceNameAsc" sort value', async () => {
+        const establishment = {
+          ...Establishment,
+          isParent: true,
+        };
+        const overrides = { establishment };
+        const { getByText, routerSpy, localStorageSpy } = await setup(overrides);
+
+        const yourOtherWorkplacesText = getByText('Your other workplaces');
+
+        fireEvent.click(yourOtherWorkplacesText);
+
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['yourOtherWorkplacesSortValue', 'workplaceNameAsc']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
+      });
+
+      it('should call localstorage with the "workplaceToCheckAsc" sort value', async () => {
+        const establishment = {
+          ...Establishment,
+          isParent: true,
+        };
+        const overrides = { establishment, workplacesCount: 1, workplacesNeedAttention: true };
+        const { getByText, routerSpy, localStorageSpy } = await setup(overrides);
+
+        const checkWorkplacesText = getByText('You need to check your other workplaces');
+
+        fireEvent.click(checkWorkplacesText);
+
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['yourOtherWorkplacesSortValue', 'workplaceToCheckAsc']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
+      });
     });
   });
 });
