@@ -19,6 +19,8 @@ import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/tab
 import { StaffSummaryComponent } from './staff-summary.component';
 import { PermissionType } from '@core/model/permissions.model';
 import { SortByService } from '@core/services/sortBy.service';
+import { MockSortByService } from '@core/test-utils/MockSortByService';
+import { TabsService } from '@core/services/tabs.service';
 
 describe('StaffSummaryComponent', () => {
   async function setup(overrides: any = {}) {
@@ -30,23 +32,8 @@ describe('StaffSummaryComponent', () => {
       providers: [
         {
           provide: SortByService,
-          useValue: {
-            returnLocalStorageForSort() {
-              return overrides.useLocalStorageValuesForSort
-                ? {
-                    staffSummarySortValue: 'addMoreDetails',
-                    staffSummarySearchTerm: 'Ma',
-                    staffSummaryIndex: '0',
-                    isSearchMaintained: 'true',
-                  }
-                : {
-                    staffSummarySortValue: null,
-                    staffSummarySearchTerm: null,
-                    staffSummaryIndex: null,
-                    isSearchMaintained: null,
-                  };
-            },
-          },
+          useFactory: MockSortByService.factory(overrides),
+          deps: [Router, TabsService],
         },
         {
           provide: PermissionsService,
@@ -249,10 +236,7 @@ describe('StaffSummaryComponent', () => {
 
   describe('selected sort by values', () => {
     beforeEach(() => {
-      localStorage.removeItem('staffSummarySortValue');
-      localStorage.removeItem('staffSummarySearchTerm');
-      localStorage.removeItem('staffSummaryIndex');
-      localStorage.removeItem('isSearchMaintained');
+      localStorage.clear();
     });
 
     it('localStorage should not be called if isWdf is true', async () => {
@@ -286,7 +270,7 @@ describe('StaffSummaryComponent', () => {
 
       const { component } = await setup(overrides);
 
-      expect(component.sortByValue).toEqual('addMoreDetails');
+      expect(component.sortByValue).toEqual('lastUpdateNewest');
       expect(component.searchTerm).toEqual('Ma');
       expect(component.pageIndex).toEqual(0);
       expect(component.isSearchMaintained).toEqual(true);
