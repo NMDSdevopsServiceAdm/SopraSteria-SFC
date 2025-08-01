@@ -13,28 +13,31 @@ export class ArticlesService {
   constructor(private http: HttpClient) {}
 
   public getArticle(articleSlug: string): Observable<Articles> {
-    let params = new HttpParams();
     const slugFilter = {
       slug: { _eq: articleSlug },
     };
-    params = params.set('filter', JSON.stringify(slugFilter));
-    params = params.set('limit', '1');
-    params = params.set('fields', 'content,title,slug');
 
-    return this.http.get<Articles>(`${environment.cmsUri}/items/${this.path}`, { params });
+    const params = new HttpParams()
+      .set('filter', JSON.stringify(slugFilter))
+      .set('limit', '1')
+      .set('fields', 'content,title,slug')
+      .set('env', environment.environmentName);
+
+    return this.http.get<Articles>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
 
   public getThreeLatestArticles(): Observable<Articles> {
-    let params = new HttpParams();
-
     const statusFilter = {
       status: { _eq: 'published' },
     };
-    params = params.set('sort', '-publish_date');
-    params = params.set('limit', '3');
-    params = params.set('fields', 'title,slug');
-    params = params.set('filter', JSON.stringify(statusFilter));
 
-    return this.http.get<Articles>(`${environment.cmsUri}/items/${this.path}`, { params });
+    const params = new HttpParams()
+      .set('sort', '-publish_date')
+      .set('limit', '3')
+      .set('fields', 'title,slug')
+      .set('filter', JSON.stringify(statusFilter))
+      .set('env', environment.environmentName);
+
+    return this.http.get<Articles>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
 }

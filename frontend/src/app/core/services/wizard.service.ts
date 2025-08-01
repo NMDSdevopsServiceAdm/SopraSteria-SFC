@@ -13,17 +13,18 @@ export class WizardService {
   constructor(private http: HttpClient) {}
 
   public getWizardPage(canViewBenchmarks: boolean): Observable<Wizard> {
-    let params = new HttpParams();
-
     const benchmarkFilter = {
       benchmarks_flag: {
         _in: [false, canViewBenchmarks],
       },
     };
-    params = params.set('sort', 'order');
-    params = params.set('fields', 'content,title,image,video');
-    params = params.set('_filter', JSON.stringify(benchmarkFilter));
 
-    return this.http.get<Wizard>(`${environment.cmsUri}/items/${this.path}`, { params });
+    const params = new HttpParams()
+      .set('sort', 'order')
+      .set('fields', 'content,title,image,video')
+      .set('_filter', JSON.stringify(benchmarkFilter))
+      .set('env', environment.environmentName);
+
+    return this.http.get<Wizard>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
 }

@@ -13,19 +13,24 @@ export class DataChangeService {
   constructor(private http: HttpClient) {}
 
   public getDataChange(): Observable<DataChange> {
-    let params = new HttpParams();
+    const params = new HttpParams()
+      .set('limit', '1')
+      .set('fields', 'content,title,last_updated')
+      .set('env', environment.environmentName);
 
-    params = params.set('limit', '1');
-    params = params.set('fields', 'content,title,last_updated');
-
-    return this.http.get<DataChange>(`${environment.cmsUri}/items/${this.path}`, { params });
+    return this.http.get<DataChange>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
 
   public updateBUDataChangeLastUpdated(establishmentId: string, lastUpdated: Date): Observable<DataChange> {
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkUpload/dataChange`, { lastUpdated });
+    return this.http.post<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkUpload/dataChange`,
+      { lastUpdated },
+    );
   }
 
   public getDataChangesLastUpdate(establishmentId: string): Observable<DataChange> {
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkUpload/dataChange`);
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkUpload/dataChange`,
+    );
   }
 }

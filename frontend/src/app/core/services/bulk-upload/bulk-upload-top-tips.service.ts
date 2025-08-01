@@ -23,24 +23,22 @@ export class BulkUploadTopTipsService {
   }
 
   public getTopTipsTitles(): Observable<BulkUploadTopTips> {
-    let params = new HttpParams();
+    const params = new HttpParams().set('fields', 'title,slug,link_title').set('env', environment.environmentName);
 
-    params = params.set('fields', 'title,slug,link_title');
-
-    return this.http.get<BulkUploadTopTips>(`${environment.cmsUri}/items/${this.path}`, { params });
+    return this.http.get<BulkUploadTopTips>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
 
   public getTopTip(topTipSlug: string): Observable<BulkUploadTopTips> {
-    let params = new HttpParams();
-
     const slugFilter = {
       slug: { _eq: topTipSlug },
     };
 
-    params = params.set('filter', JSON.stringify(slugFilter));
-    params = params.set('limit', '1');
-    params = params.set('fields', 'content,title,slug');
+    const params = new HttpParams()
+      .set('filter', JSON.stringify(slugFilter))
+      .set('limit', '1')
+      .set('fields', 'content,title,slug')
+      .set('env', environment.environmentName);
 
-    return this.http.get<BulkUploadTopTips>(`${environment.cmsUri}/items/${this.path}`, { params });
+    return this.http.get<BulkUploadTopTips>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
 }

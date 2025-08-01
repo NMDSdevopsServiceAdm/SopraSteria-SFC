@@ -1,6 +1,5 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 
 import { PagesService } from './pages.service';
@@ -8,11 +7,11 @@ import { PagesService } from './pages.service';
 describe('PagesService', () => {
   let service: PagesService;
   let http: HttpTestingController;
-  let path = 'pages';
+  const path = 'pages';
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [HttpClientTestingModule],
       providers: [PagesService],
     });
     service = TestBed.inject(PagesService);
@@ -23,16 +22,16 @@ describe('PagesService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should call the cms endpoint for pages', async () => {
+  it('should call the cms endpoint for pages with slug passed in', async () => {
     const slug = 'mock-uid';
     const filter = { slug: { _eq: slug }, status: { _eq: 'published' } };
 
     service.getPage(slug).subscribe();
 
     const req = http.expectOne(
-      `${environment.cmsUri}/items/${path}?filter=${encodeURI(
+      `${environment.appRunnerEndpoint}/api/cms/items/${path}?filter=${encodeURI(
         JSON.stringify(filter),
-      )}&limit=1&fields=content,title,status`,
+      )}&limit=1&fields=content,title,status&env=${environment.environmentName}`,
     );
     expect(req.request.method).toBe('GET');
   });
