@@ -4,7 +4,7 @@ import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/mode
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { SortByService } from '@core/services/sortBy.service';
+import { SortByService } from '@core/services/sort-by.service';
 import { TabsService } from '@core/services/tabs.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';

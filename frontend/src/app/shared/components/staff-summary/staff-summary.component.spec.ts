@@ -18,7 +18,7 @@ import { PaginationComponent } from '../pagination/pagination.component';
 import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/table-pagination-wrapper.component';
 import { StaffSummaryComponent } from './staff-summary.component';
 import { PermissionType } from '@core/model/permissions.model';
-import { SortByService } from '@core/services/sortBy.service';
+import { SortByService } from '@core/services/sort-by.service';
 import { MockSortByService } from '@core/test-utils/MockSortByService';
 import { TabsService } from '@core/services/tabs.service';
 
@@ -265,7 +265,12 @@ describe('StaffSummaryComponent', () => {
     it('should use the values from returnLocalStorageForSort when its not the wdf view', async () => {
       const overrides = {
         isWdf: false,
-        useLocalStorageValuesForSort: true,
+        localStorageValuesForSort: {
+          staffSummarySortValue: 'lastUpdateNewest',
+          staffSummarySearchTerm: 'Ma',
+          staffSummaryIndex: '0',
+          isSearchMaintained: 'true',
+        },
       };
 
       const { component } = await setup(overrides);
