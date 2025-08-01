@@ -57,8 +57,6 @@ describe('getContentFromCms', () => {
       params: { path: 'items/pages' },
     });
 
-    const res = httpMocks.createResponse();
-
     await getContentFromCms(req, res);
 
     expect(res.statusCode).to.equal(400);
@@ -71,8 +69,6 @@ describe('getContentFromCms', () => {
       query: { env: 'invalid' },
       params: { path: 'items/pages' },
     });
-
-    const res = httpMocks.createResponse();
 
     await getContentFromCms(req, res);
 
@@ -87,8 +83,6 @@ describe('getContentFromCms', () => {
         query: { env: 'dev' },
         params: {},
       });
-
-      const res = httpMocks.createResponse();
 
       await getContentFromCms(req, res);
 
