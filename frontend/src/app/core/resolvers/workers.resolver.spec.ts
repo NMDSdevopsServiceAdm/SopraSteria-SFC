@@ -12,9 +12,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 
 import { WorkersResolver } from './workers.resolver';
-import { PreviousRouteService } from '@core/services/previous-route.service';
-import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
-import { SortByService } from '@core/services/sortBy.service';
+import { SortByService } from '@core/services/sort-by.service';
 import { MockSortByService } from '@core/test-utils/MockSortByService';
 import { TabsService } from '@core/services/tabs.service';
 
@@ -176,7 +174,11 @@ describe('WorkersResolver', () => {
     const overrides = {
       idInParams: 'paramUid',
       previousUrl: '/workplace/workplace-uid/staff-record/staff-uid/staff-record-summary',
-      useLocalStorageValuesForSort: true,
+      localStorageValuesForSort: {
+        staffSummarySortValue: 'lastUpdateNewest',
+        staffSummarySearchTerm: 'Ma',
+        staffSummaryIndex: '0',
+      },
     };
 
     const { resolver, route, workerService, sortByServiceSpy } = setup(overrides);

@@ -7,10 +7,8 @@ import { TabsService } from './tabs.service';
   providedIn: 'root',
 })
 export class SortByService {
-  public navUrl: string;
 
   constructor(private router: Router, private tabsService: TabsService) {
-    this.navUrl;
 
     this.router.events.pipe(filter((event) => event instanceof NavigationStart)).subscribe((event: NavigationStart) => {
       const destinationUrl = event.url;

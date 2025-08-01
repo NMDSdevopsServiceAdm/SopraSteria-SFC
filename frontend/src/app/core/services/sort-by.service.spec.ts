@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SortByService } from './sortBy.service';
+import { SortByService } from './sort-by.service';
 import { NavigationStart, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { TabsService } from './tabs.service';
