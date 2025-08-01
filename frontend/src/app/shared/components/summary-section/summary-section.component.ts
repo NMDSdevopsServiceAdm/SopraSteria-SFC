@@ -32,14 +32,31 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() workplacesNeedAttention: boolean;
 
   public sections: Section[] = [
-    { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
-    { linkText: 'Staff records', fragment: 'staff-records', message: '', route: undefined, redFlag: false, link: true },
+    {
+      linkText: 'Workplace',
+      fragment: 'workplace',
+      message: '',
+      route: undefined,
+      redFlag: false,
+      orangeFlag: false,
+      link: true,
+    },
+    {
+      linkText: 'Staff records',
+      fragment: 'staff-records',
+      message: '',
+      route: undefined,
+      redFlag: false,
+      orangeFlag: false,
+      link: true,
+    },
     {
       linkText: 'Training and qualifications',
       fragment: 'training-and-qualifications',
       message: '',
       route: undefined,
       redFlag: false,
+      orangeFlag: false,
       link: true,
     },
   ];
@@ -159,6 +176,15 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
         'staff-record',
         'care-workforce-pathway-workers-summary',
       ];
+      this.sections[1].showMessageAsText = !this.canEditWorker;
+    } else if (
+      this.workplace.staffDoDelegatedHealthcareActivities !== 'No' &&
+      this.workplace.mainService.canDoDelegatedHealthcareActivities
+    ) {
+      this.sections[1].message = 'Who carries out delegated healthcare activities?';
+      this.sections[1].orangeFlag = true;
+      this.sections[1].route = ['/workplace', this.workplace.uid, 'staff-do-delegated-healthcare-activities'];
+      this.setReturn = true;
       this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
@@ -290,6 +316,7 @@ interface Section {
   message: string;
   route: string[];
   redFlag: boolean;
+  orangeFlag: boolean;
   link: boolean;
   skipTabSwitch?: boolean;
   showMessageAsText?: boolean;
