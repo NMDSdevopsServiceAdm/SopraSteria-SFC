@@ -15,6 +15,8 @@ import { WorkersResolver } from './workers.resolver';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 import { SortByService } from '@core/services/sortBy.service';
+import { MockSortByService } from '@core/test-utils/MockSortByService';
+import { TabsService } from '@core/services/tabs.service';
 
 describe('WorkersResolver', () => {
   function setup(overrides: any = {}) {
@@ -24,21 +26,8 @@ describe('WorkersResolver', () => {
         WorkersResolver,
         {
           provide: SortByService,
-          useValue: {
-            returnLocalStorageForSort() {
-              return overrides.useLocalStorageValuesForSort
-                ? {
-                    staffSummarySortValue: 'lastUpdateNewest',
-                    staffSummarySearchTerm: 'Ma',
-                    staffSummaryIndex: '0',
-                  }
-                : {
-                    staffSummarySortValue: null,
-                    staffSummarySearchTerm: null,
-                    staffSummaryIndex: null,
-                  };
-            },
-          },
+          useFactory: MockSortByService.factory(overrides),
+          deps: [Router, TabsService],
         },
         {
           provide: WorkerService,
@@ -47,11 +36,6 @@ describe('WorkersResolver', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
-        },
-        {
-          provide: PreviousRouteService,
-          useFactory: MockPreviousRouteService.factory(overrides.previousUrl),
-          deps: [Router],
         },
         {
           provide: PermissionsService,
@@ -88,10 +72,7 @@ describe('WorkersResolver', () => {
   }
 
   beforeEach(() => {
-    localStorage.removeItem('staffSummarySortValue');
-    localStorage.removeItem('staffSummarySearchTerm');
-    localStorage.removeItem('staffSummaryIndex');
-    localStorage.removeItem('isSearchMaintained');
+    localStorage.clear();
   });
 
   it('should create', () => {
