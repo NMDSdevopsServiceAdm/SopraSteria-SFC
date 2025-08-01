@@ -1,18 +1,21 @@
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities.component';
-import { render } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
+import lodash from 'lodash';
+import { of } from 'rxjs';
+
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { WorkersModule } from '../workers.module';
+import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Contracts } from '@core/model/contracts.enum';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
-import { HttpClient } from '@angular/common/http';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import lodash from 'lodash';
-import { getTestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { Contracts } from '@core/model/contracts.enum';
+
+import { WorkersModule } from '../workers.module';
+import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities.component';
+import { MockRouter } from '@core/test-utils/MockRouter';
 
 describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -43,6 +46,10 @@ describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
           provide: WorkerService,
           useFactory: MockWorkerServiceWithOverrides.factory(workerServiceOverrides),
           deps: [HttpClient],
+        },
+        {
+          provide: Router,
+          useFactory: MockRouter.factory({ url: overrides?.routerUrl ?? '/' }),
         },
       ],
     });
@@ -231,6 +238,82 @@ describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
           'worker-uid',
           'staff-record-summary',
         ]);
+      });
+    });
+  });
+
+  describe('when editing worker', () => {
+    it('should not show a progress bar', async () => {
+      const { queryByTestId } = await setup({ insideFlow: false });
+
+      expect(queryByTestId('progress-bar')).toBeFalsy();
+    });
+
+    it('should navigate to staff-record-summary page when pressing "Save and return"', async () => {
+      const { getByText, routerSpy, getByLabelText, workerServiceSpy } = await setup({
+        insideFlow: false,
+        worker: { uid: 'worker-uid' },
+      });
+
+      userEvent.click(getByLabelText('Yes'));
+      userEvent.click(getByText('Save and return'));
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        'worker-uid',
+        'staff-record-summary',
+      ]);
+      expect(workerServiceSpy).toHaveBeenCalled();
+    });
+
+    it('should navigate to staff-record-summary page when pressing "Cancel"', async () => {
+      const { getByText, routerSpy, getByLabelText, workerServiceSpy } = await setup({
+        insideFlow: false,
+        worker: { uid: 'worker-uid' },
+      });
+
+      userEvent.click(getByLabelText('Yes'));
+      userEvent.click(getByText('Cancel'));
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-record',
+        'worker-uid',
+        'staff-record-summary',
+      ]);
+      expect(workerServiceSpy).not.toHaveBeenCalled();
+    });
+
+    describe('when visited from funding page', () => {
+      it('should navigate to funding staff-record-summary page when pressing "Save and return" in funding page version', async () => {
+        const { getByText, routerSpy, getByLabelText, workerServiceSpy } = await setup({
+          insideFlow: false,
+          worker: { uid: 'worker-uid' },
+          routerUrl: '/funding/staff-record/worker-uid/carry-out-delegated-healthcare-activities',
+        });
+
+        userEvent.click(getByLabelText('Yes'));
+        userEvent.click(getByText('Save and return'));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', 'worker-uid']);
+        expect(workerServiceSpy).toHaveBeenCalled();
+      });
+
+      it('should navigate to funding staff-record-summary page when pressing "Cancel" in funding page version', async () => {
+        const { getByText, routerSpy, getByLabelText, workerServiceSpy } = await setup({
+          insideFlow: false,
+          worker: { uid: 'worker-uid' },
+          routerUrl: '/funding/staff-record/worker-uid/carry-out-delegated-healthcare-activities',
+        });
+
+        userEvent.click(getByLabelText('Yes'));
+        userEvent.click(getByText('Cancel'));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', 'worker-uid']);
+        expect(workerServiceSpy).not.toHaveBeenCalled();
       });
     });
   });
