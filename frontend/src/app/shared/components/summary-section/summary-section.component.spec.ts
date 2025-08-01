@@ -718,6 +718,46 @@ describe('Summary section', () => {
       });
     });
 
+    describe('Who carries out delegated healthcare activities', () => {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+          staffDoDelegatedHealthcareActivities: null,
+        };
+      };
+
+      const questionMessage = 'Who carries out delegated healthcare activities?';
+
+      it('should show the DHA staff question if staffDoDelegatedHealthcareActivities null and main service can do DHA', async () => {
+        const { getByTestId } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const staffRow = getByTestId('staff-records-row');
+        expect(within(staffRow).getByText(questionMessage)).toBeTruthy();
+        expect(within(staffRow).getByTestId('orange-flag')).toBeTruthy();
+      });
+
+      it('should navigate to who-carry-out-delegated-healthcare-activities when question link clicked', async () => {
+        const { getByTestId, routerSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const staffRow = getByTestId('staff-records-row');
+        const link = within(staffRow).getByText(questionMessage);
+
+        fireEvent.click(link);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          Establishment.uid,
+          'staff-do-delegated-healthcare-activities',
+        ]);
+      });
+    });
+
     it('should show staff record does not match message when the number of staff is more than the staff record', async () => {
       const establishment = {
         ...Establishment,
