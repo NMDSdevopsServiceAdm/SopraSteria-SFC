@@ -20,6 +20,7 @@ const buildWorkerCsv = build('WorkerCSV', {
     DISABLED: '0',
     DISPLAYID: 'Aaron Russell',
     DOB: '10/12/1982',
+    DHA: '1',
     EMPLSTATUS: '1',
     ETHNICITY: '41',
     GENDER: '1',
@@ -69,7 +70,7 @@ const buildWorkerRecord = build('WorkerRecord', {
   },
 });
 
-describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
+describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
   describe('validations', () => {
     describe('days sick', () => {
       it('should emit a warning when days sick not already changed today', async () => {
@@ -221,6 +222,61 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             column: 'STARTINSECT',
           },
         ]);
+      });
+    });
+
+    describe('_validateCarryOutDelegatedHealthcareActivities', () => {
+      const validInputs = ['1', '2', '999', ''];
+      const databaseValues = ['Yes', 'No', "Don't know", null];
+
+      validInputs.forEach((bulkUploadValue, i) => {
+        it(`should not add a warning for valid input ${bulkUploadValue}`, async () => {
+          const validator = new WorkerCsvValidator(
+            buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                DHA: bulkUploadValue,
+              },
+            }),
+            2,
+            null,
+            mappings,
+          );
+
+          validator.validate();
+          expect(validator._validationErrors).to.deep.equal([]);
+
+          expect(validator._carryOutDelegatedHealthcareActivities).to.deep.equal(databaseValues[i]);
+        });
+      });
+
+      it('should add a warning for invalid input', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              DHA: '100',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        validator.validate();
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: 5660,
+            warnType: 'DHA_WARNING',
+            warning: 'The code for DHA is incorrect and will be ignored',
+            source: '100',
+            column: 'DHA',
+          },
+        ]);
+        // expect(validator._carryOutDelegatedHealthcareActivities).to.deep.equal();
       });
     });
 

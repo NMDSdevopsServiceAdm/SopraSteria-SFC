@@ -409,6 +409,10 @@ class WorkerCsvValidator {
     return 5650;
   }
 
+  static get DHA_WARNING() {
+    return 5660;
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -1568,6 +1572,24 @@ class WorkerCsvValidator {
       this._startInsect = myStartInsectNumber;
       return true;
     }
+  }
+
+  _validateCarryOutDelegatedHealthcareActivities() {
+    const allowedValues = [1, 2, 999];
+
+    if (!this._currentLine.DHA?.length) {
+      this._carryOutDelegatedHealthcareActivities = null;
+      return true;
+    }
+
+    const parsedValue = parseInt(this._currentLine.DHA);
+    if (allowedValues.includes(parseInt(this._currentLine.DHA))) {
+      this._carryOutDelegatedHealthcareActivities = this._convertYesNoDontKnow(parsedValue);
+      return true;
+    }
+
+    this._validationErrors.push(this._generateWarning('The code for DHA is incorrect and will be ignored', 'DHA'));
+    return false;
   }
 
   _validateApprentice() {
@@ -2990,6 +3012,7 @@ class WorkerCsvValidator {
       status = !this._validateRecSource() ? false : status;
       status = !this._validateStartDate() ? false : status;
       status = !this._validateStartInsect() ? false : status;
+      status = !this._validateCarryOutDelegatedHealthcareActivities() ? false : status;
       status = !this._validateApprentice() ? false : status;
       status = !this._validateZeroHourContract() ? false : status;
       status = !this._validateDaysSick() ? false : status;
