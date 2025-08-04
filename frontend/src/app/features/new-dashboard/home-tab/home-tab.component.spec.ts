@@ -982,6 +982,17 @@ fdescribe('NewHomeTabComponent', () => {
 
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Sub' });
       });
+
+      it(`should push 'Standalone' when role is ${role} and there is no parentUid and isParent false`, async () => {
+        const overrides = {
+          userRole: role,
+        };
+        const establishment = { ...Establishment, parentUid: null, isParent: false };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Standalone' });
+      });
     });
   });
 });
