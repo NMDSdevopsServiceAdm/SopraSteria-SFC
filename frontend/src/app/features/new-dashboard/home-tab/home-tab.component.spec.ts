@@ -971,6 +971,17 @@ fdescribe('NewHomeTabComponent', () => {
 
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Parent' });
       });
+
+      it(`should push 'Sub' when role is ${role} and there is parentUid`, async () => {
+        const overrides = {
+          userRole: role,
+        };
+        const establishment = { ...Establishment, parentUid: 'parent-uid' };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Sub' });
+      });
     });
   });
 });

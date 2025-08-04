@@ -495,6 +495,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   private getUserType(): string {
     if (isAdminRole(this.user.role)) return 'Admin';
     if (this.workplace.isParent) return 'Parent';
+    if (this.workplace.parentUid) return 'Sub';
   }
 
   ngOnDestroy(): void {
