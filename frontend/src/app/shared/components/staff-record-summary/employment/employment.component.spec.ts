@@ -377,13 +377,15 @@ describe('EmploymentComponent', () => {
       canDoDelegatedHealthcareActivities: false,
     };
 
-    const overridesForDHA = {
-      worker: { mainJob: mainJobThatCanDoDHA },
+    const defaultOveridesForDHA = {
+      worker: { mainJob: mainJobThatCanDoDHA, carryOutDelegatedHealthcareActivities: null },
       workplace: { mainService: mainServiceWithDHA, staffDoDelegatedHealthcareActivities: 'Yes' },
     };
 
+    const setupWithDHA = async (overrides: any = {}) => setup(lodash.merge({}, defaultOveridesForDHA, overrides));
+
     it('should display a row for "Carries out delegated healthcare activities"', async () => {
-      const { getByTestId } = await setup(overridesForDHA);
+      const { getByTestId } = await setupWithDHA();
 
       const carryOutDHASection = within(getByTestId('carry-out-delegated-healthcare-activities-section'));
 
@@ -395,10 +397,9 @@ describe('EmploymentComponent', () => {
 
     lodash.zip(values, expectedTexts).forEach(([value, expectedText]) => {
       it(`should display ${expectedText} and a Change link when the answer is ${value}`, async () => {
-        const { component, fixture, getByTestId } = await setup(overridesForDHA);
-
-        component.worker.carryOutDelegatedHealthcareActivities = value;
-        fixture.detectChanges();
+        const { component, getByTestId } = await setupWithDHA({
+          worker: { carryOutDelegatedHealthcareActivities: value },
+        });
 
         const carryOutDHASection = within(getByTestId('carry-out-delegated-healthcare-activities-section'));
         expect(carryOutDHASection.getByText(expectedText)).toBeTruthy();
@@ -412,7 +413,7 @@ describe('EmploymentComponent', () => {
     });
 
     it('should display a dash "-" and an "Add" link when the answer is null', async () => {
-      const { component, getByTestId } = await setup(overridesForDHA);
+      const { component, getByTestId } = await setup(defaultOveridesForDHA);
 
       const carryOutDHASection = within(getByTestId('carry-out-delegated-healthcare-activities-section'));
       expect(carryOutDHASection.getByText('-')).toBeTruthy();
@@ -425,28 +426,23 @@ describe('EmploymentComponent', () => {
     });
 
     it('should not show the row when workplace staffDoDelegatedHealthcareActivities is "No"', async () => {
-      const { component, fixture, queryByText } = await setup(overridesForDHA);
-
-      component.workplace.staffDoDelegatedHealthcareActivities = 'No';
-      fixture.detectChanges();
+      const { queryByText } = await setupWithDHA({
+        workplace: { staffDoDelegatedHealthcareActivities: 'No' },
+      });
 
       expect(queryByText('Carries out delegated healthcare activities')).toBeFalsy();
     });
 
     it("should not show the row when the workplace's main service does not do DHA", async () => {
-      const { component, fixture, queryByText } = await setup(overridesForDHA);
-
-      component.workplace.mainService = mainServiceWithoutDHA;
-      fixture.detectChanges();
+      const { queryByText } = await setupWithDHA({
+        workplace: { mainService: mainServiceWithoutDHA },
+      });
 
       expect(queryByText('Carries out delegated healthcare activities')).toBeFalsy();
     });
 
     it("should not show the row when the worker's main job role cannot do DHA", async () => {
-      const { component, fixture, queryByText } = await setup(overridesForDHA);
-
-      component.worker.mainJob = mainJobThatCannotDoDHA;
-      fixture.detectChanges();
+      const { queryByText } = await setupWithDHA({ worker: { mainJob: mainJobThatCannotDoDHA } });
 
       expect(queryByText('Carries out delegated healthcare activities')).toBeFalsy();
     });
