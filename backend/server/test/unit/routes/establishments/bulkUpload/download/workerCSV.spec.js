@@ -19,7 +19,7 @@ const establishment = {
   LocalIdentifierValue: 'Test McTestface',
 };
 
-describe('workerCSV', () => {
+describe.only('workerCSV', () => {
   describe('toCSV', () => {
     beforeEach(() => {
       sandbox.stub(BUDI, 'ethnicity').callsFake((method, value) => value);
@@ -420,6 +420,28 @@ describe('workerCSV', () => {
             const csvAsArray = csv.split(',');
 
             expect(csvAsArray[getWorkerColumnIndex('STARTINSECT')]).to.equal('');
+          });
+        });
+
+        describe('carryOutDelegatedHealthcareActivities', () => {
+          yesNoDontKnow.forEach(({ value, code }) => {
+            it(`should return the correct code for carryOutDelegatedHealthcareActivities, ${value}`, () => {
+              worker.carryOutDelegatedHealthcareActivities = value;
+
+              const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+              const csvAsArray = csv.split(',');
+
+              expect(csvAsArray[getWorkerColumnIndex('DHA')]).to.equal(code);
+            });
+          });
+
+          it('should return empty string if the carryOutDelegatedHealthcareActivities is null (question not answered)', async () => {
+            worker.carryOutDelegatedHealthcareActivities = null;
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('DHA')]).to.equal('');
           });
         });
 

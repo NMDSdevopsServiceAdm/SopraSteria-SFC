@@ -1587,6 +1587,7 @@ module.exports = function (sequelize, DataTypes) {
             'Level2CareCertificateValue',
             'Level2CareCertificateYear',
             'CareWorkforcePathwayRoleCategoryFK',
+            'carryOutDelegatedHealthcareActivities',
           ],
           as: 'workers',
           where: {
