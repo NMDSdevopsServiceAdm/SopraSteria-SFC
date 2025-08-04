@@ -66,7 +66,7 @@ fdescribe('NewHomeTabComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(1, Roles.Admin),
+          useFactory: MockUserService.factory(1, overrides.userRole ?? Roles.Edit),
           deps: [HttpClient],
         },
         {
@@ -917,6 +917,42 @@ fdescribe('NewHomeTabComponent', () => {
         fireEvent.click(trainingAndQualificationsLink);
 
         expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+      });
+    });
+  });
+
+  describe('Pushing userType to dataLayer', () => {
+    [Roles.Admin, Roles.AdminManager].forEach((adminRole) => {
+      it(`should push admin when role is ${adminRole}`, async () => {
+        const overrides = {
+          userRole: adminRole,
+        };
+
+        const { dataLayerPushSpy } = await setup(false, Establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ isAdmin: true });
+      });
+
+      it(`should push admin when role is ${adminRole} even if isParent is true`, async () => {
+        const overrides = {
+          userRole: adminRole,
+        };
+        const establishment = { ...Establishment, isParent: true };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ isAdmin: true });
+      });
+
+      it(`should push admin when role is ${adminRole} even if there is parentUid`, async () => {
+        const overrides = {
+          userRole: adminRole,
+        };
+        const establishment = { ...Establishment, parentUid: 'parent-uid' };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ isAdmin: true });
       });
     });
   });
