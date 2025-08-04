@@ -40,7 +40,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('ParentHomeTabComponent', () => {
+describe('ParentHomeTabComponent', () => {
   const articleList = MockArticlesService.articleListFactory();
   const articles = MockArticlesService.articlesFactory();
 
@@ -470,6 +470,34 @@ fdescribe('ParentHomeTabComponent', () => {
       const alertBanner = queryByTestId('parentApprovedBanner');
 
       expect(alertBanner).toBeFalsy();
+    });
+  });
+
+  describe('Pushing userType to dataLayer', () => {
+    [Roles.Admin, Roles.AdminManager].forEach((adminRole) => {
+      it(`should push admin when role is ${adminRole} even if isParent is true`, async () => {
+        const overrides = {
+          userRole: adminRole,
+        };
+        const establishment = { ...Establishment, isParent: true };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, [], true, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
+      });
+    });
+
+    [Roles.Edit, Roles.Read].forEach((role) => {
+      it(`should push 'Parent' when role is ${role} and isParent is true`, async () => {
+        const overrides = {
+          userRole: role,
+        };
+        const establishment = { ...Establishment, isParent: true };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, [], true, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Parent' });
+      });
     });
   });
 });

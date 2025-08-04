@@ -36,7 +36,7 @@ import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
 
-fdescribe('NewHomeTabComponent', () => {
+describe('NewHomeTabComponent', () => {
   const setup = async (
     checkCqcDetails = false,
     establishment = Establishment,
