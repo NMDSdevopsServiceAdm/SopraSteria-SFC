@@ -959,5 +959,18 @@ fdescribe('NewHomeTabComponent', () => {
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
       });
     });
+
+    [Roles.Edit, Roles.Read].forEach((role) => {
+      it(`should push 'Parent' when role is ${role} and isParent is true`, async () => {
+        const overrides = {
+          userRole: role,
+        };
+        const establishment = { ...Establishment, isParent: true };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Parent' });
+      });
+    });
   });
 });
