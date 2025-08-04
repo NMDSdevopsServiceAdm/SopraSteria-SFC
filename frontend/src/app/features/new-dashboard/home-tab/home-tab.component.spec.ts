@@ -20,8 +20,8 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -32,15 +32,7 @@ import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
 
-const MockWindow = {
-  dataLayer: {
-    push: () => {
-      return;
-    },
-  },
-};
-
-describe('NewHomeTabComponent', () => {
+fdescribe('NewHomeTabComponent', () => {
   const setup = async (
     checkCqcDetails = false,
     establishment = Establishment,
@@ -48,72 +40,76 @@ describe('NewHomeTabComponent', () => {
     noOfWorkplaces = 9,
     overrides: any = {},
   ) => {
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId, getByRole, getByLabelText } = await render(
-      NewHomeTabComponent,
-      {
-        imports: [SharedModule, RouterModule, HttpClientTestingModule],
-        providers: [
-          WindowRef,
-          AlertService,
-          DialogService,
-          {
-            provide: FeatureFlagsService,
-            useClass: MockFeatureFlagsService,
-          },
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(
-              overrides?.permissions ?? ['canViewEstablishment', 'canViewListOfWorkers'],
-            ),
-            deps: [HttpClient, Router, UserService],
-          },
-          {
-            provide: UserService,
-            useFactory: MockUserService.factory(1, Roles.Admin),
-            deps: [HttpClient],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                data: {
-                  workers: {
-                    workersCreatedDate: [],
-                    workerCount: 0,
-                    trainingCounts: {} as TrainingCounts,
-                    workersNotCompleted: [],
-                  },
+    const dataLayerPushSpy = jasmine.createSpy();
+    const MockWindow = {
+      dataLayer: {
+        push: dataLayerPushSpy,
+      },
+    };
+
+    const setupTools = await render(NewHomeTabComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      providers: [
+        WindowRef,
+        AlertService,
+        DialogService,
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(
+            overrides?.permissions ?? ['canViewEstablishment', 'canViewListOfWorkers'],
+          ),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(1, Roles.Admin),
+          deps: [HttpClient],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                workers: {
+                  workersCreatedDate: [],
+                  workerCount: 0,
+                  trainingCounts: {} as TrainingCounts,
+                  workersNotCompleted: [],
                 },
               },
-              queryParams: of({ view: null }),
-              url: of(null),
             },
+            queryParams: of({ view: null }),
+            url: of(null),
           },
-          {
-            provide: EstablishmentService,
-            useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
-            deps: [HttpClient],
-          },
-          { provide: WindowToken, useValue: MockWindow },
-        ],
-        declarations: [
-          NewDashboardHeaderComponent,
-          NewArticleListComponent,
-          SummarySectionComponent,
-          OwnershipChangeMessageDialogComponent,
-          BecomeAParentCancelDialogComponent,
-        ],
-        componentProperties: {
-          workplace: establishment,
-          meta: comparisonDataAvailable
-            ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
-            : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
         },
-        schemas: [NO_ERRORS_SCHEMA],
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
+          deps: [HttpClient],
+        },
+        { provide: WindowToken, useValue: MockWindow },
+      ],
+      declarations: [
+        NewDashboardHeaderComponent,
+        NewArticleListComponent,
+        SummarySectionComponent,
+        OwnershipChangeMessageDialogComponent,
+        BecomeAParentCancelDialogComponent,
+      ],
+      componentProperties: {
+        workplace: establishment,
+        meta: comparisonDataAvailable
+          ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
+          : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
       },
-    );
+      schemas: [NO_ERRORS_SCHEMA],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const alertService = TestBed.inject(AlertService);
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -128,18 +124,13 @@ describe('NewHomeTabComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      queryByText,
-      getByTestId,
-      queryByTestId,
       alertServiceSpy,
       parentsRequestService,
       tabsServiceSpy,
-      getByRole,
-      getByLabelText,
       routerSpy,
+      dataLayerPushSpy,
     };
   };
 
