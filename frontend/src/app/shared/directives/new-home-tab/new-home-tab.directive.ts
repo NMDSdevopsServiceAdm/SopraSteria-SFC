@@ -156,7 +156,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     }
 
     this.window.dataLayer.push({
-      isAdmin: isAdminRole(this.user.role),
+      userType: isAdminRole(this.user.role) ? 'Admin' : null,
     });
 
     if (this.addWorkplaceDetailsBanner) {

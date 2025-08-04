@@ -20,8 +20,12 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
-import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import {
+  BecomeAParentCancelDialogComponent,
+} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -930,7 +934,7 @@ fdescribe('NewHomeTabComponent', () => {
 
         const { dataLayerPushSpy } = await setup(false, Establishment, true, 9, overrides);
 
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ isAdmin: true });
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
       });
 
       it(`should push admin when role is ${adminRole} even if isParent is true`, async () => {
@@ -941,7 +945,7 @@ fdescribe('NewHomeTabComponent', () => {
 
         const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
 
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ isAdmin: true });
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
       });
 
       it(`should push admin when role is ${adminRole} even if there is parentUid`, async () => {
@@ -952,7 +956,7 @@ fdescribe('NewHomeTabComponent', () => {
 
         const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
 
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ isAdmin: true });
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
       });
     });
   });
