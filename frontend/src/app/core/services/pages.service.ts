@@ -13,17 +13,17 @@ export class PagesService {
   constructor(private http: HttpClient) {}
 
   public getPage(slug: string): Observable<Pages> {
-    let params = new HttpParams();
-
     const filter = {
       slug: { _eq: slug },
       status: { _eq: 'published' },
     };
 
-    params = params.set('filter', JSON.stringify(filter));
-    params = params.set('limit', '1');
-    params = params.set('fields', 'content,title,status');
+    const params = new HttpParams()
+      .set('filter', JSON.stringify(filter))
+      .set('limit', '1')
+      .set('fields', 'content,title,status')
+      .set('env', environment.environmentName);
 
-    return this.http.get<Pages>(`${environment.cmsUri}/items/${this.path}`, { params });
+    return this.http.get<Pages>(`${environment.appRunnerEndpoint}/api/cms/items/${this.path}`, { params });
   }
 }
