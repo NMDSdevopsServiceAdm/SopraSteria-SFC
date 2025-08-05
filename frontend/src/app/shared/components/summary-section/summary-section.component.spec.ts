@@ -148,6 +148,18 @@ describe('Summary section', () => {
       expect(workplaceText.getAttribute('href')).toBeTruthy();
     });
 
+    it('should not show no permissions to view data message but show default message', async () => {
+      const overrides = {
+        canViewListOfWorkers: false,
+        canViewEstablishment: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).getByText('Remember to check and update this data often')).toBeTruthy();
+      expect(within(workplaceRow).queryByText('You do not have permission to view this data')).toBeFalsy();
+    });
+
     it('should show default summary message when no data needs to be adding or updating', async () => {
       const { getByTestId } = await setup();
 
@@ -507,12 +519,28 @@ describe('Summary section', () => {
       expect(staffRecordsLinkText.getAttribute('href')).toBeFalsy();
     });
 
-    it('should show default message if no permission to view staff records', async () => {
+    it('should show no permissions to view data message if no permission to view staff records', async () => {
       const overrides = {
         checkCqcDetails: false,
         establishment: Establishment,
         workerCount: 0,
         canViewListOfWorkers: false,
+      };
+
+      const { fixture, getByTestId } = await setup(overrides);
+
+      fixture.detectChanges();
+
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).getByText('You do not have permission to view this data')).toBeTruthy();
+    });
+
+    it('should show default message if there is no message', async () => {
+      const overrides = {
+        checkCqcDetails: false,
+        establishment: Establishment,
+        workerCount: 1,
+        canViewListOfWorkers: true,
       };
 
       const { fixture, getByTestId } = await setup(overrides);
@@ -953,6 +981,17 @@ describe('Summary section', () => {
       const trainingAndQualificationsLinkText = getByText('Training and qualifications');
 
       expect(trainingAndQualificationsLinkText.getAttribute('href')).toBeTruthy();
+    });
+
+    it('should show no permissions to view data message if no permission to view train and quals', async () => {
+      const overrides = {
+        canViewListOfWorkers: false,
+        canViewEstablishment: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+      const tAndQRow = getByTestId('training-and-qualifications-row');
+      expect(within(tAndQRow).getByText('You do not have permission to view this data')).toBeTruthy();
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
