@@ -10,6 +10,7 @@ const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker
   const isCqcRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
 
   _crossValidateMainJobRole(csvWorkerSchemaErrors, isCqcRegulated, JSONWorker);
+  crossValidateDelegateHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
 };
 
 const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWorker) => {
@@ -218,6 +219,13 @@ const _buildWorkplaceDictWithOtherWorkers = (otherWorkers) => {
     )
     .mapValues((workerRefs) => new Set(workerRefs.flat()))
     .value();
+};
+
+const crossValidateDelegateHealthcareActivities = (csvWorkerSchemaErrors, myEstablishments, JSONWorker) => {
+  console.log('=========== inside cross validate ============');
+  console.log(myEstablishments[0].mainService);
+  console.log(JSON.stringify(myEstablishments));
+  console.log(JSON.stringify(JSONWorker));
 };
 
 module.exports = {

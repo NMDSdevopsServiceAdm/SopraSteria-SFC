@@ -558,4 +558,14 @@ describe('crossValidate', () => {
       expect(csvWorkerSchemaErrors).to.be.empty;
     });
   });
+
+  describe('crossValidateDelegateHealthcareActivities', async () => {
+    it('should add a warning if main job role cannot do DHA but answered CarryOutDelegateHealthcareActivities for worker', () => {});
+    it(
+      'should add a warning if workplace answered "No" for staffDoDHA but answered CarryOutDelegateHealthcareActivities for worker',
+    );
+    it(
+      'should add a warning if workplace main service does not do DHA but answered CarryOutDelegateHealthcareActivities for worker',
+    );
+  });
 });
