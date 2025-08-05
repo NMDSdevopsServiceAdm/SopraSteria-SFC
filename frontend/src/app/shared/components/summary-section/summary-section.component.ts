@@ -38,7 +38,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       message: '',
       route: undefined,
       redFlag: false,
-      orangeFlag: false,
       link: true,
     },
     {
@@ -47,7 +46,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       message: '',
       route: undefined,
       redFlag: false,
-      orangeFlag: false,
       link: true,
     },
     {
@@ -56,7 +54,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       message: '',
       route: undefined,
       redFlag: false,
-      orangeFlag: false,
       link: true,
     },
   ];
@@ -182,7 +179,6 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.workplace.mainService.canDoDelegatedHealthcareActivities
     ) {
       this.sections[1].message = 'Who carries out delegated healthcare activities?';
-      this.sections[1].orangeFlag = true;
       this.sections[1].route = ['/workplace', this.workplace.uid, 'staff-do-delegated-healthcare-activities'];
       this.setReturn = true;
       this.sections[1].showMessageAsText = !this.canEditWorker;
@@ -316,7 +312,6 @@ interface Section {
   message: string;
   route: string[];
   redFlag: boolean;
-  orangeFlag: boolean;
   link: boolean;
   skipTabSwitch?: boolean;
   showMessageAsText?: boolean;
