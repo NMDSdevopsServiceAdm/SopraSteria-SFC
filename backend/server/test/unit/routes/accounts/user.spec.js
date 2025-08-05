@@ -449,6 +449,16 @@ describe('user.js', () => {
         expect(User.prototype.save).to.have.been.called;
       });
 
+      it('should return a status of 200 when the request payload does not specify a role', async () => {
+        const req = { ...defaultReq, body: { fullname: 'updated name', email: 'new email' } };
+        const res = httpMocks.createResponse();
+
+        await updateNormalUser(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(User.prototype.save).to.have.been.called;
+      });
+
       const adminUserTypes = ['Admin', 'AdminManager'];
 
       adminUserTypes.forEach((adminType) => {
