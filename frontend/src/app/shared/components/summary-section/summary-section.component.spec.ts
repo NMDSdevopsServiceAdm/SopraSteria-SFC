@@ -718,7 +718,7 @@ describe('Summary section', () => {
       });
     });
 
-    fdescribe('Who carries out delegated healthcare activities', () => {
+    describe('Who carries out delegated healthcare activities', () => {
       const establishmentWhichShouldSeeMessage = () => {
         return {
           ...Establishment,
