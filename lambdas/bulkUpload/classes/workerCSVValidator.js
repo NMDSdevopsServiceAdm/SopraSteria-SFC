@@ -41,6 +41,7 @@ class WorkerCsvValidator {
     this._recSource = null;
     this._startDate = null;
     this._startInsect = null;
+    this._carryOutDelegatedHealthcareActivities = null;
 
     this._apprentice = null;
     this._zeroHourContract = null;
@@ -511,6 +512,10 @@ class WorkerCsvValidator {
 
   get startInsect() {
     return this._startInsect;
+  }
+
+  get carryOutDelegatedHealthcareActivities() {
+    return this._carryOutDelegatedHealthcareActivities;
   }
 
   get apprentice() {
@@ -3106,6 +3111,7 @@ class WorkerCsvValidator {
       recruitmentSource: this._recSource ? this._recSource : undefined,
       startDate: this._startDate ? this._startDate.format('DD/MM/YYYY') : undefined,
       startedInSector: this._startInsect ? this._startInsect : undefined,
+      carryOutDelegatedHealthcareActivities: this.carryOutDelegatedHealthcareActivities ?? undefined,
       apprenticeship: this._apprentice ? this._apprentice : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
       daysSick: this._daysSick ? this._daysSick : undefined,
@@ -3220,6 +3226,10 @@ class WorkerCsvValidator {
           year: this._startInsect,
         };
       }
+    }
+
+    if (this.carryOutDelegatedHealthcareActivities) {
+      changeProperties.carryOutDelegatedHealthcareActivities = this.carryOutDelegatedHealthcareActivities;
     }
 
     if (this._nationality) {
