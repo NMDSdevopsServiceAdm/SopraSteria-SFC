@@ -80,6 +80,7 @@ import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activites/staff-what-kind-of-delegated-healthcare-activites.component';
+import { DelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -477,6 +478,7 @@ const routes: Routes = [
         path: 'staff-what-kind-of-delegated-healthcare-activities',
         component: StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { delegatedHealthcareActivities: DelegatedHealthcareActivitiesResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff what kind of delegated healthcare activities',

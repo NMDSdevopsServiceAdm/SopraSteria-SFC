@@ -74,6 +74,7 @@ import { WorkplaceNameAddressComponent } from './workplace-name-address/workplac
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activites/staff-what-kind-of-delegated-healthcare-activites.component';
+import { DelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities.resolver';
 
 @NgModule({
   imports: [
@@ -155,6 +156,7 @@ import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-w
     GetMissingCqcLocationsResolver,
     CareWorkforcePathwayUseReasonsResolver,
     CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
+    DelegatedHealthcareActivitiesResolver,
   ],
 })
 export class WorkplaceModule {}
