@@ -19,10 +19,10 @@
           </div>
           <app-details [title]="'See delegated healthcare activities that your staff might carry out'">
             <ng-container *ngFor="let delegatedHealthcareActivity of delegatedHealthcareActivities">
-              <p class="govuk-!-font-weight-bold">
+              <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">
                 {{ delegatedHealthcareActivity.title }}
               </p>
-              <p>
+              <p class="govuk-!-margin-top-0">
                 {{ delegatedHealthcareActivity.description }}
               </p>
             </ng-container>
