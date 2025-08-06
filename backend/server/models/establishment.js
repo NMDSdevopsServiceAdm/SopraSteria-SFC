@@ -1852,6 +1852,12 @@ module.exports = function (sequelize, DataTypes) {
         [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
         ['workers', 'NameOrIdValue', 'ASC'],
       ],
+      lastUpdateNewest: [[sequelize.literal('"workers.updated"'), 'DESC']],
+      lastUpdateOldest: [[sequelize.literal('"workers.updated"'), 'ASC']],
+      addMoreDetails: [
+        [sequelize.literal('"workers.CompletedValue"'), 'ASC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
     }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
 
     return this.findAndCountAll({
