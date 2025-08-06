@@ -19,7 +19,7 @@ const establishment = {
   LocalIdentifierValue: 'Test McTestface',
 };
 
-describe.only('workerCSV', () => {
+describe('workerCSV', () => {
   describe('toCSV', () => {
     beforeEach(() => {
       sandbox.stub(BUDI, 'ethnicity').callsFake((method, value) => value);
