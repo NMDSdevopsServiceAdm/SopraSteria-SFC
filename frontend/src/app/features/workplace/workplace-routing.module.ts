@@ -11,6 +11,7 @@ import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/res
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
@@ -467,6 +468,7 @@ const routes: Routes = [
         path: 'staff-do-delegated-healthcare-activities',
         component: StaffDoDelegatedHealthcareActivitiesComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff do delegated healthcare activities',
