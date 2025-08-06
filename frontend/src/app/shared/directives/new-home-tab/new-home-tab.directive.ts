@@ -156,7 +156,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     }
 
     this.window.dataLayer.push({
-      isAdmin: isAdminRole(this.user.role),
+      userType: this.getUserType(),
     });
 
     if (this.addWorkplaceDetailsBanner) {
@@ -490,6 +490,13 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
         }
       });
     }
+  }
+
+  private getUserType(): string {
+    if (isAdminRole(this.user.role)) return 'Admin';
+    if (this.workplace.isParent) return 'Parent';
+    if (this.workplace.parentUid) return 'Sub';
+    return 'Standalone';
   }
 
   ngOnDestroy(): void {
