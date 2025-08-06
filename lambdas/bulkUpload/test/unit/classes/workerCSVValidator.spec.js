@@ -226,8 +226,8 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
     });
 
     describe('_validateCarryOutDelegatedHealthcareActivities', () => {
-      const validInputs = ['1', '2', '999', ''];
-      const databaseValues = ['Yes', 'No', "Don't know", null];
+      const validInputs = ['1', '2', '999'];
+      const databaseValues = ['Yes', 'No', "Don't know"];
 
       validInputs.forEach((bulkUploadValue, i) => {
         it(`should not add a warning for valid input ${bulkUploadValue}`, async () => {
@@ -248,6 +248,25 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
           expect(validator._carryOutDelegatedHealthcareActivities).to.deep.equal(databaseValues[i]);
         });
+      });
+
+      it(`should not add a warning when the input is an empty string`, async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              DHA: '',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        validator.validate();
+        expect(validator._validationErrors).to.deep.equal([]);
+
+        expect(validator._carryOutDelegatedHealthcareActivities).to.deep.equal(null);
       });
 
       it('should add a warning for invalid input', async () => {
@@ -276,7 +295,7 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             column: 'DHA',
           },
         ]);
-        // expect(validator._carryOutDelegatedHealthcareActivities).to.deep.equal();
+        expect(validator._carryOutDelegatedHealthcareActivities).to.deep.equal(null);
       });
     });
 
