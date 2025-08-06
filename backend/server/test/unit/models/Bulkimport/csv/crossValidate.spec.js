@@ -695,7 +695,7 @@ describe('crossValidate', () => {
       it('should add a warning if workplace answered "No" for staffDoDHA', async () => {
         stubWorkplaceFromDatabase.resolves({
           staffDoDelegatedHealthcareActivities: 'No',
-          'mainService.canDoDelegatedHealthcareActivities': true,
+          mainService: { canDoDelegatedHealthcareActivities: true },
         });
 
         const csvWorkerSchemaErrors = [];
@@ -712,7 +712,7 @@ describe('crossValidate', () => {
       it('should add a warning if workplace main service does not do DHA', async () => {
         stubWorkplaceFromDatabase.resolves({
           staffDoDelegatedHealthcareActivities: 'Yes',
-          'mainService.canDoDelegatedHealthcareActivities': false,
+          mainService: { canDoDelegatedHealthcareActivities: false },
         });
 
         const csvWorkerSchemaErrors = [];
@@ -729,7 +729,7 @@ describe('crossValidate', () => {
       it('should give no warnings if worker main job role, workplace main service and staffDoDHA answer are all compatible with DHA', async () => {
         stubWorkplaceFromDatabase.resolves({
           staffDoDelegatedHealthcareActivities: 'Yes',
-          'mainService.canDoDelegatedHealthcareActivities': true,
+          mainService: { canDoDelegatedHealthcareActivities: true },
         });
 
         const csvWorkerSchemaErrors = [];
@@ -744,7 +744,7 @@ describe('crossValidate', () => {
         stubWorkerMainJob.resolves({ canDoDelegatedHealthcareActivities: false });
         stubWorkplaceFromDatabase.resolves({
           staffDoDelegatedHealthcareActivities: 'No',
-          'mainService.canDoDelegatedHealthcareActivities': false,
+          mainService: { canDoDelegatedHealthcareActivities: false },
         });
 
         const csvWorkerSchemaErrors = [];

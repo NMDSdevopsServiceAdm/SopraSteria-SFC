@@ -276,7 +276,6 @@ const _crossValidateDHAWithWorkplaceFromDatabase = async (csvWorkerSchemaErrors,
         attributes: ['canDoDelegatedHealthcareActivities'],
       },
     ],
-    raw: true,
   });
 
   if (!workplace) {
@@ -287,7 +286,7 @@ const _crossValidateDHAWithWorkplaceFromDatabase = async (csvWorkerSchemaErrors,
     addCrossValidateError(csvWorkerSchemaErrors, WORKER_DHA_WARNINGS.WorkplaceAnsweredNoForStaffDoDHA, JSONWorker);
   }
 
-  const mainServiceCanDoDHA = workplace['mainService.canDoDelegatedHealthcareActivities'];
+  const mainServiceCanDoDHA = workplace?.mainService?.canDoDelegatedHealthcareActivities;
   if (!mainServiceCanDoDHA) {
     addCrossValidateError(csvWorkerSchemaErrors, WORKER_DHA_WARNINGS.WorkplaceMainServiceCannotDoDHA, JSONWorker);
   }
