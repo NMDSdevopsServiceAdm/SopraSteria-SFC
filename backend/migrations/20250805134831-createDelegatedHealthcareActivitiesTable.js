@@ -67,14 +67,6 @@ const dhaRows = [
     AnalysisFileCode: 8,
     BulkUploadCode: 998,
   },
-  {
-    ID: 100,
-    Seq: 1000,
-    Title: 'I do not know',
-    Description: null,
-    AnalysisFileCode: -2,
-    BulkUploadCode: 999,
-  },
 ];
 
 const dhaOptionsAsSqlStatements = dhaRows.map((row) => {
