@@ -30,7 +30,7 @@ const workerHeadersWithoutCHGUNIQUEWRKID =
   'NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,CWPCATEGORY,QUALACH01,QUALACH01NOTES,' +
   'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
 
-describe.only('server/routes/establishments/bulkUpload/validate/headers/worker', () => {
+describe('server/routes/establishments/bulkUpload/validate/headers/worker', () => {
   describe('validateWorkerHeaders()', () => {
     it('should return true when headings match with CHGUNIQUEWRKID', async () => {
       expect(validateWorkerHeaders(workerHeadersWithCHGUNIQUEWRKID)).to.deep.equal(true);
