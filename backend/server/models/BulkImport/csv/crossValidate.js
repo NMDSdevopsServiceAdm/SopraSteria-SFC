@@ -1,6 +1,11 @@
 const { chain } = require('lodash');
 const models = require('../../../models');
-const { addCrossValidateError, MAIN_JOB_ERRORS, TRANSFER_STAFF_RECORD_ERRORS } = require('./crossValidateErrors');
+const {
+  addCrossValidateError,
+  MAIN_JOB_ERRORS,
+  TRANSFER_STAFF_RECORD_ERRORS,
+  WORKER_DHA_WARNINGS,
+} = require('./crossValidateErrors');
 
 const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker) => {
   if (workerNotChanged(JSONWorker)) {
@@ -10,7 +15,7 @@ const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker
   const isCqcRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
 
   _crossValidateMainJobRole(csvWorkerSchemaErrors, isCqcRegulated, JSONWorker);
-  crossValidateDelegateHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+  await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
 };
 
 const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWorker) => {
@@ -23,15 +28,16 @@ const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWo
   }
 };
 
-const _isCQCRegulated = async (myEstablishments, JSONWorker) => {
-  let workerEstablishmentKey;
-  if (isMovingToNewWorkplace(JSONWorker)) {
-    workerEstablishmentKey = JSONWorker.transferStaffRecord.replace(/\s/g, '');
-  } else {
-    workerEstablishmentKey = JSONWorker.establishmentKey;
-  }
+const _findWorkerEstablishment = (myEstablishments, JSONWorker) => {
+  const workerEstablishmentKey = isMovingToNewWorkplace(JSONWorker)
+    ? JSONWorker.transferStaffRecord.replace(/\s/g, '')
+    : JSONWorker.establishmentKey;
 
-  const workerEstablishment = myEstablishments.find((establishment) => workerEstablishmentKey === establishment.key);
+  return myEstablishments.find((establishment) => workerEstablishmentKey === establishment.key);
+};
+
+const _isCQCRegulated = async (myEstablishments, JSONWorker) => {
+  const workerEstablishment = _findWorkerEstablishment(myEstablishments, JSONWorker);
 
   if (workerEstablishment) {
     switch (workerEstablishment.status) {
@@ -221,16 +227,76 @@ const _buildWorkplaceDictWithOtherWorkers = (otherWorkers) => {
     .value();
 };
 
-const crossValidateDelegateHealthcareActivities = (csvWorkerSchemaErrors, myEstablishments, JSONWorker) => {
-  console.log('=========== inside cross validate ============');
-  console.log(myEstablishments[0].mainService);
-  console.log(JSON.stringify(myEstablishments));
-  console.log(JSON.stringify(JSONWorker));
+const crossValidateDelegatedHealthcareActivities = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker) => {
+  if (!JSONWorker.carryOutDelegatedHealthcareActivities) {
+    return;
+  }
+
+  if (JSONWorker.mainJob?.role) {
+    const mainJob = await models.job.findByPk(JSONWorker.mainJob?.role, { raw: true });
+    if (mainJob && !mainJob.canDoDelegatedHealthcareActivities) {
+      addCrossValidateError(csvWorkerSchemaErrors, WORKER_DHA_WARNINGS.MainJobCannotDoDHA, JSONWorker);
+    }
+  }
+
+  const workerEstablishment = _findWorkerEstablishment(myEstablishments, JSONWorker);
+  if (workerEstablishment) {
+    switch (workerEstablishment.status) {
+      case 'NEW':
+      case 'UPDATE':
+        await _crossValidateDHAWithWorkplaceFromCSV(csvWorkerSchemaErrors, workerEstablishment, JSONWorker);
+        break;
+      case 'UNCHECKED':
+      case 'NOCHANGE':
+        await _crossValidateDHAWithWorkplaceFromDatabase(csvWorkerSchemaErrors, workerEstablishment, JSONWorker);
+        break;
+    }
+  }
+};
+
+const _crossValidateDHAWithWorkplaceFromCSV = async (csvWorkerSchemaErrors, workerEstablishment, JSONWorker) => {
+  if (workerEstablishment.staffDoDelegatedHealthcareActivities === 'No') {
+    addCrossValidateError(csvWorkerSchemaErrors, WORKER_DHA_WARNINGS.WorkplaceAnsweredNoForStaffDoDHA, JSONWorker);
+  }
+
+  const mainServiceId = workerEstablishment.mainService.id;
+  const mainService = await models.services.findByPk(mainServiceId, { raw: true });
+  if (mainService && !mainService.canDoDelegatedHealthcareActivities) {
+    addCrossValidateError(csvWorkerSchemaErrors, WORKER_DHA_WARNINGS.WorkplaceMainServiceCannotDoDHA, JSONWorker);
+  }
+};
+
+const _crossValidateDHAWithWorkplaceFromDatabase = async (csvWorkerSchemaErrors, workerEstablishment, JSONWorker) => {
+  const workplace = await models.establishment.findByPk(workerEstablishment.id, {
+    attributes: ['staffDoDelegatedHealthcareActivities'],
+    include: [
+      {
+        model: models.services,
+        as: 'mainService',
+        attributes: ['canDoDelegatedHealthcareActivities'],
+      },
+    ],
+    raw: true,
+  });
+
+  if (!workplace) {
+    return;
+  }
+
+  if (workplace.staffDoDelegatedHealthcareActivities === 'No') {
+    addCrossValidateError(csvWorkerSchemaErrors, WORKER_DHA_WARNINGS.WorkplaceAnsweredNoForStaffDoDHA, JSONWorker);
+  }
+
+  const mainServiceCanDoDHA = workplace['mainService.canDoDelegatedHealthcareActivities'];
+  if (!mainServiceCanDoDHA) {
+    addCrossValidateError(csvWorkerSchemaErrors, WORKER_DHA_WARNINGS.WorkplaceMainServiceCannotDoDHA, JSONWorker);
+  }
 };
 
 module.exports = {
   crossValidate,
   _crossValidateMainJobRole,
   crossValidateTransferStaffRecord,
+  crossValidateDelegatedHealthcareActivities,
   _isCQCRegulated,
 };

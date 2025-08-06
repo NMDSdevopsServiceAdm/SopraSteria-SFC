@@ -10,6 +10,7 @@ const {
   _crossValidateMainJobRole,
   _isCQCRegulated,
   crossValidateTransferStaffRecord,
+  crossValidateDelegatedHealthcareActivities,
 } = require('../../../../../models/BulkImport/csv/crossValidate');
 const models = require('../../../../../models');
 const { Establishment } = require('../../../../../models/classes/establishment.js');
@@ -559,13 +560,200 @@ describe('crossValidate', () => {
     });
   });
 
-  describe('crossValidateDelegateHealthcareActivities', async () => {
-    it('should add a warning if main job role cannot do DHA but answered CarryOutDelegateHealthcareActivities for worker', () => {});
-    it(
-      'should add a warning if workplace answered "No" for staffDoDHA but answered CarryOutDelegateHealthcareActivities for worker',
-    );
-    it(
-      'should add a warning if workplace main service does not do DHA but answered CarryOutDelegateHealthcareActivities for worker',
-    );
+  describe('crossValidateDelegatedHealthcareActivities', () => {
+    let stubWorkerMainJob;
+    let stubWorkplaceMainService;
+    let stubWorkplaceFromDatabase;
+
+    beforeEach(() => {
+      stubWorkerMainJob = sinon.stub(models.job, 'findByPk');
+      stubWorkplaceMainService = sinon.stub(models.services, 'findByPk');
+      stubWorkplaceFromDatabase = sinon.stub(models.establishment, 'findByPk');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const createMockEstablishments = (overrides = {}) => {
+      const establishment = {
+        id: 1,
+        status: 'UNCHECKED',
+        key: 'workplaceKey',
+        staffDoDelegatedHealthcareActivities: 'Yes',
+        mainService: { id: 10 },
+      };
+      Object.assign(establishment, overrides);
+      return [establishment];
+    };
+
+    const createJSONWorker = (overrides = {}) => {
+      const worker = new WorkerCsvValidator(null, 2, null, mappings);
+      const JSONWorker = worker.toJSON();
+      Object.assign(JSONWorker, {
+        uniqueWorkerId: 'worker ref id',
+        localId: 'establishment ref id',
+        lineNumber: 2,
+        status: 'NEW',
+        carryOutDelegatedHealthcareActivities: 'Yes',
+        establishmentKey: 'workplaceKey',
+        mainJob: { role: 36 },
+        ...overrides,
+      });
+
+      return JSONWorker;
+    };
+
+    it('should add a warning if main job role cannot do DHA', async () => {
+      stubWorkerMainJob.resolves({ canDoDelegatedHealthcareActivities: false });
+
+      const csvWorkerSchemaErrors = [];
+      const myEstablishments = createMockEstablishments();
+      const JSONWorker = createJSONWorker({ carryOutDelegatedHealthcareActivities: 'Yes' });
+
+      await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+      expect(csvWorkerSchemaErrors.length).to.equal(1);
+      expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
+        "Value entered for DHA will be ignored as worker's MAINJOBROLE cannot carry out delegated healthcare activities",
+      );
+    });
+
+    describe('when workplace status is NEW or UPDATE', () => {
+      beforeEach(() => {
+        stubWorkerMainJob.resolves({ canDoDelegatedHealthcareActivities: true });
+      });
+
+      it('should add a warning if workplace answered "No" for staffDoDHA', async () => {
+        const csvWorkerSchemaErrors = [];
+        const myEstablishments = createMockEstablishments({
+          status: 'NEW',
+          staffDoDelegatedHealthcareActivities: 'No',
+        });
+        const JSONWorker = createJSONWorker();
+
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        expect(csvWorkerSchemaErrors.length).to.equal(1);
+        expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
+          "Value entered for DHA will be ignored as worker's workplace has answered No for DHA",
+        );
+      });
+
+      it('should add a warning if workplace main service does not do DHA', async () => {
+        stubWorkplaceMainService.resolves({ canDoDelegatedHealthcareActivities: false });
+
+        const csvWorkerSchemaErrors = [];
+        const myEstablishments = createMockEstablishments({
+          status: 'NEW',
+          mainService: { id: 16 },
+        });
+        const JSONWorker = createJSONWorker();
+
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        expect(csvWorkerSchemaErrors.length).to.equal(1);
+        expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
+          "Value entered for DHA will be ignored as MAINSERVICE of worker's workplace cannot do delegated healthcare activities",
+        );
+      });
+
+      it('should give no warnings if worker main job role, workplace main service and staffDoDHA answer are all compatible with DHA', async () => {
+        stubWorkplaceMainService.resolves({ canDoDelegatedHealthcareActivities: true });
+
+        const csvWorkerSchemaErrors = [];
+        const myEstablishments = createMockEstablishments({
+          status: 'NEW',
+          mainService: { id: 6 },
+          staffDoDelegatedHealthcareActivities: 'Yes',
+        });
+        const JSONWorker = createJSONWorker();
+
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        expect(csvWorkerSchemaErrors).to.deep.equal([]);
+      });
+
+      it('should give no warnings if did not answer CarryOutDelegatedHealthcareActivities for worker, even if all other values not compatible with DHA', async () => {
+        stubWorkerMainJob.resolves({ canDoDelegatedHealthcareActivities: false });
+        stubWorkplaceMainService.resolves({ canDoDelegatedHealthcareActivities: false });
+
+        const csvWorkerSchemaErrors = [];
+        const myEstablishments = createMockEstablishments({
+          status: 'NEW',
+          mainService: { id: 16 },
+          staffDoDelegatedHealthcareActivities: 'No',
+        });
+        const JSONWorker = createJSONWorker({ carryOutDelegatedHealthcareActivities: null });
+
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        expect(csvWorkerSchemaErrors).to.deep.equal([]);
+      });
+    });
+
+    describe('when workplace status is UNCHECKED or NOCHANGE', () => {
+      beforeEach(() => {
+        stubWorkerMainJob.resolves({ canDoDelegatedHealthcareActivities: true });
+      });
+
+      it('should add a warning if workplace answered "No" for staffDoDHA', async () => {
+        stubWorkplaceFromDatabase.resolves({
+          staffDoDelegatedHealthcareActivities: 'No',
+          'mainService.canDoDelegatedHealthcareActivities': true,
+        });
+
+        const csvWorkerSchemaErrors = [];
+        const myEstablishments = createMockEstablishments({ status: 'UNCHECKED' });
+        const JSONWorker = createJSONWorker();
+
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        expect(csvWorkerSchemaErrors.length).to.equal(1);
+        expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
+          "Value entered for DHA will be ignored as worker's workplace has answered No for DHA",
+        );
+      });
+
+      it('should add a warning if workplace main service does not do DHA', async () => {
+        stubWorkplaceFromDatabase.resolves({
+          staffDoDelegatedHealthcareActivities: 'Yes',
+          'mainService.canDoDelegatedHealthcareActivities': false,
+        });
+
+        const csvWorkerSchemaErrors = [];
+        const myEstablishments = createMockEstablishments({ status: 'UNCHECKED' });
+        const JSONWorker = createJSONWorker();
+
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        expect(csvWorkerSchemaErrors.length).to.equal(1);
+        expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
+          "Value entered for DHA will be ignored as MAINSERVICE of worker's workplace cannot do delegated healthcare activities",
+        );
+      });
+
+      it('should give no warnings if worker main job role, workplace main service and staffDoDHA answer are all compatible with DHA', async () => {
+        stubWorkplaceFromDatabase.resolves({
+          staffDoDelegatedHealthcareActivities: 'Yes',
+          'mainService.canDoDelegatedHealthcareActivities': true,
+        });
+
+        const csvWorkerSchemaErrors = [];
+        const myEstablishments = createMockEstablishments({ status: 'UNCHECKED' });
+        const JSONWorker = createJSONWorker();
+
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        expect(csvWorkerSchemaErrors).to.deep.equal([]);
+      });
+
+      it('should give no warnings if did not answer CarryOutDelegatedHealthcareActivities for worker, even if all other values not compatible with DHA', async () => {
+        stubWorkerMainJob.resolves({ canDoDelegatedHealthcareActivities: false });
+        stubWorkplaceFromDatabase.resolves({
+          staffDoDelegatedHealthcareActivities: 'No',
+          'mainService.canDoDelegatedHealthcareActivities': false,
+        });
+
+        const csvWorkerSchemaErrors = [];
+        const myEstablishments = createMockEstablishments({ status: 'UNCHECKED' });
+        const JSONWorker = createJSONWorker({ carryOutDelegatedHealthcareActivities: null });
+
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        expect(csvWorkerSchemaErrors).to.deep.equal([]);
+      });
+    });
   });
 });
