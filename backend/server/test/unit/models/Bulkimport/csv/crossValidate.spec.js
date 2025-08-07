@@ -14,8 +14,9 @@ const {
 } = require('../../../../../models/BulkImport/csv/crossValidate');
 const models = require('../../../../../models');
 const { Establishment } = require('../../../../../models/classes/establishment.js');
+const { Worker } = require('../../../../../models/classes/worker.js');
 
-describe('crossValidate', () => {
+describe.only('crossValidate', () => {
   describe('_crossValidateMainJobRole', () => {
     it('should add error to csvWorkerSchemaErrors if establishment not CQC regulated and main role ID is 4', () => {
       const csvWorkerSchemaErrors = [];
@@ -564,11 +565,21 @@ describe('crossValidate', () => {
     let stubWorkerMainJob;
     let stubWorkplaceMainService;
     let stubWorkplaceFromDatabase;
+    let myAPIEstablishments;
+    let mockWorkerEntity;
 
     beforeEach(() => {
       stubWorkerMainJob = sinon.stub(models.job, 'findByPk');
       stubWorkplaceMainService = sinon.stub(models.services, 'findByPk');
       stubWorkplaceFromDatabase = sinon.stub(models.establishment, 'findByPk');
+
+      myAPIEstablishments = {
+        workplaceA: new Establishment(),
+      };
+      mockWorkerEntity = new Worker();
+      sinon.stub(mockWorkerEntity).patchPropertyValue;
+
+      myAPIEstablishments.workplaceA.associateWorker('workerrefid', mockWorkerEntity);
     });
 
     afterEach(() => {
@@ -592,7 +603,7 @@ describe('crossValidate', () => {
       const JSONWorker = worker.toJSON();
       Object.assign(JSONWorker, {
         uniqueWorkerId: 'worker ref id',
-        localId: 'establishment ref id',
+        localId: 'workplace A',
         lineNumber: 2,
         status: 'NEW',
         carryOutDelegatedHealthcareActivities: 'Yes',
@@ -611,10 +622,16 @@ describe('crossValidate', () => {
       const myEstablishments = createMockEstablishments();
       const JSONWorker = createJSONWorker({ carryOutDelegatedHealthcareActivities: 'Yes' });
 
-      await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+      await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+        JSONWorker,
+      ]);
       expect(csvWorkerSchemaErrors.length).to.equal(1);
       expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
         "Value entered for DHA will be ignored as worker's MAINJOBROLE cannot carry out delegated healthcare activities",
+      );
+      expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
+        'CarryOutDelegatedHealthcareActivities',
+        null,
       );
     });
 
@@ -631,10 +648,16 @@ describe('crossValidate', () => {
         });
         const JSONWorker = createJSONWorker();
 
-        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+          JSONWorker,
+        ]);
         expect(csvWorkerSchemaErrors.length).to.equal(1);
         expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
           "Value entered for DHA will be ignored as worker's workplace has answered No for DHA",
+        );
+        expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
+          'CarryOutDelegatedHealthcareActivities',
+          null,
         );
       });
 
@@ -648,10 +671,16 @@ describe('crossValidate', () => {
         });
         const JSONWorker = createJSONWorker();
 
-        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+          JSONWorker,
+        ]);
         expect(csvWorkerSchemaErrors.length).to.equal(1);
         expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
           "Value entered for DHA will be ignored as MAINSERVICE of worker's workplace cannot do delegated healthcare activities",
+        );
+        expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
+          'CarryOutDelegatedHealthcareActivities',
+          null,
         );
       });
 
@@ -666,8 +695,11 @@ describe('crossValidate', () => {
         });
         const JSONWorker = createJSONWorker();
 
-        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+          JSONWorker,
+        ]);
         expect(csvWorkerSchemaErrors).to.deep.equal([]);
+        expect(mockWorkerEntity.patchPropertyValue).not.to.have.been.called;
       });
 
       it('should give no warnings if did not answer CarryOutDelegatedHealthcareActivities for worker, even if all other values not compatible with DHA', async () => {
@@ -682,8 +714,11 @@ describe('crossValidate', () => {
         });
         const JSONWorker = createJSONWorker({ carryOutDelegatedHealthcareActivities: null });
 
-        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+          JSONWorker,
+        ]);
         expect(csvWorkerSchemaErrors).to.deep.equal([]);
+        expect(mockWorkerEntity.patchPropertyValue).not.to.have.been.called;
       });
     });
 
@@ -702,10 +737,16 @@ describe('crossValidate', () => {
         const myEstablishments = createMockEstablishments({ status: 'UNCHECKED' });
         const JSONWorker = createJSONWorker();
 
-        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+          JSONWorker,
+        ]);
         expect(csvWorkerSchemaErrors.length).to.equal(1);
         expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
           "Value entered for DHA will be ignored as worker's workplace has answered No for DHA",
+        );
+        expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
+          'CarryOutDelegatedHealthcareActivities',
+          null,
         );
       });
 
@@ -719,10 +760,16 @@ describe('crossValidate', () => {
         const myEstablishments = createMockEstablishments({ status: 'UNCHECKED' });
         const JSONWorker = createJSONWorker();
 
-        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+          JSONWorker,
+        ]);
         expect(csvWorkerSchemaErrors.length).to.equal(1);
         expect(csvWorkerSchemaErrors[0].warning).to.deep.equal(
           "Value entered for DHA will be ignored as MAINSERVICE of worker's workplace cannot do delegated healthcare activities",
+        );
+        expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
+          'CarryOutDelegatedHealthcareActivities',
+          null,
         );
       });
 
@@ -736,8 +783,11 @@ describe('crossValidate', () => {
         const myEstablishments = createMockEstablishments({ status: 'UNCHECKED' });
         const JSONWorker = createJSONWorker();
 
-        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+          JSONWorker,
+        ]);
         expect(csvWorkerSchemaErrors).to.deep.equal([]);
+        expect(mockWorkerEntity.patchPropertyValue).not.to.have.been.called;
       });
 
       it('should give no warnings if did not answer CarryOutDelegatedHealthcareActivities for worker, even if all other values not compatible with DHA', async () => {
@@ -751,8 +801,11 @@ describe('crossValidate', () => {
         const myEstablishments = createMockEstablishments({ status: 'UNCHECKED' });
         const JSONWorker = createJSONWorker({ carryOutDelegatedHealthcareActivities: null });
 
-        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myEstablishments, JSONWorker);
+        await crossValidateDelegatedHealthcareActivities(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+          JSONWorker,
+        ]);
         expect(csvWorkerSchemaErrors).to.deep.equal([]);
+        expect(mockWorkerEntity.patchPropertyValue).not.to.have.been.called;
       });
     });
   });
