@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
-import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
+import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
@@ -24,6 +24,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
   ];
   private returnIsSetToHomePage: boolean;
   public delegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
+  public dhaDefinition: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -31,7 +32,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    protected careWorkforcePathwayService: CareWorkforcePathwayService,
+    protected delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
     protected route: ActivatedRoute,
     private alertService: AlertService,
   ) {
@@ -44,6 +45,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     this.skipRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
     this.nextRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
     this.prefill();
+    this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
     this.delegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
 
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();

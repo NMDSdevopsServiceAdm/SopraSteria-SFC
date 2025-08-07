@@ -13,9 +13,7 @@
             class="govuk-inset-text thin-border govuk-!-padding-right-0 govuk-!-margin-top-0 govuk-!-margin-bottom-7"
             style="margin-right: -20px"
           >
-            Delegated healthcare activities are actions and services that support the prevention, diagnosis and
-            treatment of physical and mental illness. These activities are delegated by registered healthcare
-            professionals, such as nurses, occupational therapists and speech and language therapists.
+            {{ dhaDefinition }}
           </div>
           <app-details [title]="'See delegated healthcare activities that your staff might carry out'">
             <ng-container *ngFor="let delegatedHealthcareActivity of delegatedHealthcareActivities">

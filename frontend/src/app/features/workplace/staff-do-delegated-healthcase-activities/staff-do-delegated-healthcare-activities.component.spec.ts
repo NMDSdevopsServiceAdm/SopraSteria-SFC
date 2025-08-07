@@ -4,8 +4,13 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
+import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
+import {
+  MockDelegatedHealthcareActivitiesService,
+  mockDHADefinition,
+} from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
@@ -64,6 +69,10 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
             navigate: routerSpy,
           }),
         },
+        {
+          provide: DelegatedHealthcareActivitiesService,
+          useClass: MockDelegatedHealthcareActivitiesService,
+        },
         AlertService,
         WindowRef,
       ],
@@ -103,6 +112,12 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
     expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
     expect(getByText(heading)).toBeTruthy();
+  });
+
+  it('should show the DHA definition', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText(mockDHADefinition)).toBeTruthy();
   });
 
   it('should display the reveal with DHAs in route data', async () => {
