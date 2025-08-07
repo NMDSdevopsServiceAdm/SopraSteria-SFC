@@ -1,6 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
@@ -9,7 +8,7 @@ import { ChildWorkplacesResolver } from './child-workplaces.resolver';
 describe('ChildWorkplacesResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [HttpClientTestingModule],
       providers: [
         ChildWorkplacesResolver,
         {
@@ -40,10 +39,26 @@ describe('ChildWorkplacesResolver', () => {
     const { resolver, establishmentService } = setup();
 
     const primaryWorkplaceUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
-    const queryParams = { pageIndex: 0, itemsPerPage: 12, getPendingWorkplaces: true };
+    const queryParams = { pageIndex: 0, itemsPerPage: 12, getPendingWorkplaces: true, sortBy: null };
 
     resolver.resolve();
 
+    expect(establishmentService.getChildWorkplaces).toHaveBeenCalledWith(primaryWorkplaceUid, queryParams);
+  });
+
+  it('should call getChildWorkplaces with id from establishmentService, initial pagination params and sort value', () => {
+    const { resolver, establishmentService } = setup();
+
+    const sortKey = 'workplaceToCheckAsc';
+
+    const localStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(sortKey);
+
+    const primaryWorkplaceUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
+    const queryParams = { pageIndex: 0, itemsPerPage: 12, getPendingWorkplaces: true, sortBy: sortKey };
+
+    resolver.resolve();
+
+    expect(localStorageSpy).toHaveBeenCalled();
     expect(establishmentService.getChildWorkplaces).toHaveBeenCalledWith(primaryWorkplaceUid, queryParams);
   });
 });

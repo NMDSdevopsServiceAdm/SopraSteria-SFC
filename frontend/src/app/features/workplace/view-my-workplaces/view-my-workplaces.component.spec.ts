@@ -27,49 +27,49 @@ import { WorkplaceInfoPanelComponent } from '../workplace-info-panel/workplace-i
 import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
 describe('ViewMyWorkplacesComponent', () => {
-  async function setup(hasChildWorkplaces = true) {
-    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText, queryByTestId } =
-      await render(ViewMyWorkplacesComponent, {
-        imports: [SharedModule, RouterModule, HttpClientTestingModule],
-        declarations: [WorkplaceInfoPanelComponent],
-        providers: [
-          AlertService,
-          WindowRef,
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(['canAddEstablishment']),
-            deps: [HttpClient, Router, UserService],
-          },
-          {
-            provide: AuthService,
-            useClass: MockAuthService,
-          },
-          {
-            provide: UserService,
-            useClass: MockUserService,
-            deps: [HttpClient],
-          },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: BreadcrumbService,
-            useClass: MockBreadcrumbService,
-          },
-          {
-            provide: FeatureFlagsService,
-            useClass: MockFeatureFlagsService,
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                data: {
-                  childWorkplaces: hasChildWorkplaces
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(ViewMyWorkplacesComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      declarations: [WorkplaceInfoPanelComponent],
+      providers: [
+        AlertService,
+        WindowRef,
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(['canAddEstablishment']),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: AuthService,
+          useClass: MockAuthService,
+        },
+        {
+          provide: UserService,
+          useClass: MockUserService,
+          deps: [HttpClient],
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                childWorkplaces:
+                  overrides.hasChildWorkplaces ?? true
                     ? {
                         childWorkplaces: [subsid1, subsid2, subsid3],
-                        count: 3,
+                        count: overrides.totalWorkplaceCount ?? 3,
                         activeWorkplaceCount: 2,
                       }
                     : {
@@ -77,21 +77,22 @@ describe('ViewMyWorkplacesComponent', () => {
                         count: 0,
                         activeWorkplaceCount: 0,
                       },
-                  cqcLocations: hasChildWorkplaces
+                cqcLocations:
+                  overrides.hasChildWorkplaces ?? true
                     ? {
                         showMissingCqcMessage: true,
                       }
                     : {
                         showMissingCqcMessage: false,
                       },
-                },
               },
             },
           },
-        ],
-      });
+        },
+      ],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
     const permissionsService = injector.inject(PermissionsService) as PermissionsService;
@@ -100,15 +101,8 @@ describe('ViewMyWorkplacesComponent', () => {
     const getChildWorkplacesSpy = spyOn(establishmentService, 'getChildWorkplaces').and.callThrough();
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      permissionsService,
-      getByText,
-      getByTestId,
-      queryByText,
-      getByLabelText,
-      queryByLabelText,
-      queryByTestId,
       getChildWorkplacesSpy,
       establishmentService,
     };
@@ -142,7 +136,7 @@ describe('ViewMyWorkplacesComponent', () => {
   });
 
   it('should display no workplaces message when workplace has no child workplaces', async () => {
-    const { getByTestId } = await setup(false);
+    const { getByTestId } = await setup({ hasChildWorkplaces: false });
     expect(getByTestId('noWorkplacesMessage')).toBeTruthy();
   });
 
@@ -155,11 +149,7 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should call getChildWorkplaces with correct search term if passed', async () => {
-      const { component, fixture, getByLabelText, getChildWorkplacesSpy } = await setup();
-
-      // show search
-      component.totalWorkplaceCount = 13;
-      fixture.detectChanges();
+      const { getByLabelText, getChildWorkplacesSpy } = await setup({ totalWorkplaceCount: 13 });
 
       const searchInput = getByLabelText('Search child workplace records');
       expect(searchInput).toBeTruthy();
@@ -171,16 +161,14 @@ describe('ViewMyWorkplacesComponent', () => {
         itemsPerPage: 12,
         searchTerm: 'search term here',
         getPendingWorkplaces: true,
+        sortBy: 'workplaceNameAsc',
       };
 
       expect(getChildWorkplacesSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
     });
 
     it('should reset the pageIndex before calling getChildWorkplaces when handling search', async () => {
-      const { fixture, component, getByLabelText, getChildWorkplacesSpy } = await setup();
-
-      component.totalWorkplaceCount = 13;
-      fixture.detectChanges();
+      const { fixture, getByLabelText, getChildWorkplacesSpy } = await setup({ totalWorkplaceCount: 13 });
 
       fixture.componentInstance.currentPageIndex = 1;
       fixture.detectChanges();
@@ -190,10 +178,7 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should render the no results returned message when 0 workplaces returned from getChildWorkplaces after search', async () => {
-      const { fixture, component, getByLabelText, establishmentService, getByText } = await setup();
-
-      component.totalWorkplaceCount = 13;
-      fixture.detectChanges();
+      const { fixture, getByLabelText, establishmentService, getByText } = await setup({ totalWorkplaceCount: 13 });
 
       sinon.stub(establishmentService, 'getChildWorkplaces').returns(
         of({
@@ -215,10 +200,9 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should not update All workplaces count when search results returned but should set workplaceCount used for pagination', async () => {
-      const { component, fixture, getByLabelText, establishmentService, getByText } = await setup();
-
-      component.totalWorkplaceCount = 13;
-      fixture.detectChanges();
+      const { component, fixture, getByLabelText, establishmentService, getByText } = await setup({
+        totalWorkplaceCount: 13,
+      });
 
       sinon.stub(establishmentService, 'getChildWorkplaces').returns(
         of({
@@ -242,19 +226,19 @@ describe('ViewMyWorkplacesComponent', () => {
 
   describe('missing cqc workplaces message', () => {
     it('should not show if missingCqcWorkplaces is false ', async () => {
-      const { queryByTestId } = await setup(false);
+      const { queryByTestId } = await setup({ hasChildWorkplaces: false });
 
       expect(queryByTestId('missingCqcWorkplaces')).toBeFalsy();
     });
 
     it('should not show if missingCqcWorkplaces is true', async () => {
-      const { queryByTestId } = await setup(true);
+      const { queryByTestId } = await setup({ hasChildWorkplaces: true });
 
       expect(queryByTestId('missingCqcWorkplaces')).toBeTruthy();
     });
 
     it('should show the primary workplace name, if missingCqcWorkplaces is true', async () => {
-      const { component, getByTestId } = await setup(true);
+      const { component, getByTestId } = await setup({ hasChildWorkplaces: true });
 
       const missingCqcWorkplacesMessage = getByTestId('missingCqcWorkplaces');
 
@@ -262,7 +246,7 @@ describe('ViewMyWorkplacesComponent', () => {
     });
 
     it('should show link to CQC provider page with provider ID in url', async () => {
-      const { component, getByText } = await setup(true);
+      const { component, getByText } = await setup({ hasChildWorkplaces: true });
 
       const cqcLink = getByText('Please check your CQC workplaces');
 
@@ -277,5 +261,76 @@ describe('ViewMyWorkplacesComponent', () => {
 
     expect(linkText).toBeTruthy();
     expect(linkText.getAttribute('href')).toEqual('/workplace/about-parents');
+  });
+
+  describe('sort by', () => {
+    it('should not show if there are no workplaces', async () => {
+      const { queryByTestId } = await setup({ hasChildWorkplaces: false });
+
+      expect(queryByTestId('sortBy')).toBeFalsy();
+    });
+
+    it('should not show if there is 1 workplace', async () => {
+      const { queryByTestId } = await setup({ hasChildWorkplaces: true, totalWorkplaceCount: 1 });
+
+      expect(queryByTestId('sortBy')).toBeFalsy();
+    });
+
+    it('should show if there is more than 1 workplace', async () => {
+      const { getByTestId } = await setup({ hasChildWorkplaces: true, totalWorkplaceCount: 5 });
+
+      expect(getByTestId('sortBy')).toBeTruthy();
+    });
+
+    it('should add the sort-column class when there is search and pagination', async () => {
+      const { fixture } = await setup({ hasChildWorkplaces: true, totalWorkplaceCount: 13 });
+
+      const sortByDiv = fixture.nativeElement.querySelector('div[data-testid="sortBy"]');
+
+      expect(sortByDiv.getAttribute('class')).toContain('sort-column');
+      expect(sortByDiv.getAttribute('class')).not.toContain('govuk-util__float-right');
+    });
+
+    it('should add the govuk-util__float-right class when there is no search and pagination', async () => {
+      const { fixture } = await setup({ hasChildWorkplaces: true, totalWorkplaceCount: 4 });
+
+      const sortByDiv = fixture.nativeElement.querySelector('div[data-testid="sortBy"]');
+
+      expect(sortByDiv.getAttribute('class')).not.toContain('sort-column');
+      expect(sortByDiv.getAttribute('class')).toContain('govuk-util__float-right');
+    });
+
+    it('should call localStorage to get the sort to value set', async () => {
+      const { component } = await setup({ hasChildWorkplaces: true });
+
+      const sortKey = '1_asc';
+
+      const localStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(component.sortByParamMap[sortKey]);
+
+      component.ngOnInit();
+
+      expect(localStorageSpy).toHaveBeenCalled();
+      expect(component.sortBySelectedValue).toEqual(component.sortByParamMap[sortKey]);
+    });
+
+    it('should call the sortBy function when selecting a different parameter for sorting', async () => {
+      const { component, getByLabelText, getChildWorkplacesSpy } = await setup();
+
+      const handleSortSpy = spyOn(component, 'sortBy').and.callThrough();
+      const localStorageSpy = spyOn(localStorage, 'setItem');
+
+      const sortByObjectKeys = Object.keys(component.sortOptions);
+      userEvent.selectOptions(getByLabelText('Sort by'), sortByObjectKeys[1]);
+
+      expect(handleSortSpy).toHaveBeenCalledWith(sortByObjectKeys[1]);
+      const { primaryWorkplace, currentPageIndex, itemsPerPage, sortBySelectedValue } = component;
+      expect(getChildWorkplacesSpy).toHaveBeenCalledWith(primaryWorkplace.uid, {
+        pageIndex: currentPageIndex,
+        itemsPerPage,
+        getPendingWorkplaces: true,
+        sortBy: sortBySelectedValue,
+      });
+      expect(localStorageSpy.calls.all()[0].args).toEqual(['yourOtherWorkplacesSortValue', sortBySelectedValue]);
+    });
   });
 });

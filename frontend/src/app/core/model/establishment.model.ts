@@ -306,8 +306,16 @@ export enum SortTrainingAndQualsOptionsCat {
   '3_category' = 'Category',
 }
 
+export enum SortYourOtherWorkplaces {
+  '0_asc' = 'Workplace name (A to Z)',
+  '0_dsc' = 'Workplace name (Z to A)',
+  '1_asc' = 'Workplaces to check (A to Z)',
+  '1_dsc' = 'Workplaces to check (Z to A)',
+}
+
 export enum FilterTrainingAndQualsOptions {
   '0_showall' = 'Show all',
   '1_expired' = 'Expired',
   '2_expires_soon' = 'Expires soon',
 }
+
