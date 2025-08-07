@@ -5,5 +5,5 @@ export interface GetDelegatedHealthcareActivitiesResponse {
 export interface DelegatedHealthcareActivity {
   id: number;
   title: string;
-  description: boolean;
+  description: string;
 }
