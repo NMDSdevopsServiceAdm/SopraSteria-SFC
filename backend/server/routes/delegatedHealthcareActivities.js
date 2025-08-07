@@ -6,6 +6,7 @@ const router = express.Router();
 const getAllDelegatedHealthcareActivities = async (_req, res) => {
   try {
     const allDHAs = await models.delegatedHealthcareActivities.findAll({
+      attributes: ['id', 'title', 'description'],
       order: [['seq', 'ASC']],
       raw: true,
     });

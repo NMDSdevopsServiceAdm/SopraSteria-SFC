@@ -19,6 +19,19 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   const labels = ['Yes', 'No', 'I do not know'];
   const values = ['Yes', 'No', "Don't know"];
 
+  const mockDelegatedHealthcareActivities = [
+    {
+      id: 1,
+      title: 'Vital signs monitoring',
+      description: 'Like monitoring heart rate as part of the treatment of a condition.',
+    },
+    {
+      id: 2,
+      title: 'Specialised medication administration',
+      description: 'Like administering warfarin.',
+    },
+  ];
+
   async function setup(overrides: any = {}) {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
@@ -39,7 +52,9 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: {},
+              data: {
+                delegatedHealthcareActivities: mockDelegatedHealthcareActivities,
+              },
             },
           },
         },
@@ -88,6 +103,18 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
     expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
     expect(getByText(heading)).toBeTruthy();
+  });
+
+  it('should display the reveal with DHAs in route data', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('See delegated healthcare activities that your staff might carry out');
+
+    expect(reveal).toBeTruthy();
+    mockDelegatedHealthcareActivities.forEach((activity) => {
+      expect(getByText(activity.title)).toBeTruthy();
+      expect(getByText(activity.description)).toBeTruthy();
+    });
   });
 
   describe('Form', () => {

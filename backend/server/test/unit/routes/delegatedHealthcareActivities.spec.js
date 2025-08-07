@@ -13,20 +13,14 @@ describe('/delegatedHealthcareActivities', () => {
 
     const mockDHAs = [
       {
-        ID: 1,
-        Seq: 10,
-        Title: 'Vital signs monitoring',
-        Description: 'Like monitoring heart rate as part of the treatment of a condition.',
-        AnalysisFileCode: 1,
-        BulkUploadCode: 1,
+        id: 1,
+        title: 'Vital signs monitoring',
+        description: 'Like monitoring heart rate as part of the treatment of a condition.',
       },
       {
-        ID: 2,
-        Seq: 20,
-        Title: 'Specialised medication administration',
-        Description: 'Like administering warfarin.',
-        AnalysisFileCode: 2,
-        BulkUploadCode: 2,
+        id: 2,
+        title: 'Specialised medication administration',
+        description: 'Like administering warfarin.',
       },
     ];
 

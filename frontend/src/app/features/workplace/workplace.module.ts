@@ -6,6 +6,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
+import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
@@ -153,6 +154,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     GetMissingCqcLocationsResolver,
     CareWorkforcePathwayUseReasonsResolver,
     CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
+    GetDelegatedHealthcareActivitiesResolver,
   ],
 })
 export class WorkplaceModule {}
