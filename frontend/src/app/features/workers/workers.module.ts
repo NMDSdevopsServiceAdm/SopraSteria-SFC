@@ -79,6 +79,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
+import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -142,6 +143,7 @@ import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-dele
     CareWorkforcePathwayRoleComponent,
     CareWorkforcePathwayWorkersSummaryComponent,
     CarryOutDelegatedHealthcareActivitiesComponent,
+    WhoCarryOutDelegatedHealthcareActivitiesComponent,
   ],
   providers: [
     DialogService,

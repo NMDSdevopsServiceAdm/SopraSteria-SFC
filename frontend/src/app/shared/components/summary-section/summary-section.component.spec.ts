@@ -753,7 +753,8 @@ describe('Summary section', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           Establishment.uid,
-          'staff-do-delegated-healthcare-activities',
+          'staff-record',
+          'who-carry-out-delegated-healthcare-activities',
         ]);
       });
 

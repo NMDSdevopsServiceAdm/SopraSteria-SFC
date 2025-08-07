@@ -179,7 +179,12 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.workplace.mainService.canDoDelegatedHealthcareActivities
     ) {
       this.sections[1].message = 'Who carries out delegated healthcare activities?';
-      this.sections[1].route = ['/workplace', this.workplace.uid, 'staff-do-delegated-healthcare-activities'];
+      this.sections[1].route = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        'who-carry-out-delegated-healthcare-activities',
+      ];
       this.setReturn = true;
       this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
