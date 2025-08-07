@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
-import { QuestionComponent } from '../question/question.component';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackLinkService } from '@core/services/backLink.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { WorkerService } from '@core/services/worker.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { Contracts } from '@core/model/contracts.enum';
+import { BackLinkService } from '@core/services/backLink.service';
+import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-carry-out-delegated-healthcare-activities',
@@ -20,6 +22,7 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
     { label: 'No', value: 'No' },
     { label: 'I do not know', value: `Don't know` },
   ];
+  public dhaDefinition: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -29,6 +32,7 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
+    private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
@@ -38,6 +42,7 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
   }
 
   init(): void {
+    this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
     this.prefill();
     this.next = this.determineConditionalRouting();
   }

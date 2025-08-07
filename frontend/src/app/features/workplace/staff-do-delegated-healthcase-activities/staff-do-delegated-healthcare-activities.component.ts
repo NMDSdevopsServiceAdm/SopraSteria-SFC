@@ -32,8 +32,8 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    protected delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
     protected route: ActivatedRoute,
+    private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
     private alertService: AlertService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
