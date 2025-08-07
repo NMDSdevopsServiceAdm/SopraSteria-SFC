@@ -16,7 +16,7 @@ const models = require('../../../../../models');
 const { Establishment } = require('../../../../../models/classes/establishment.js');
 const { Worker } = require('../../../../../models/classes/worker.js');
 
-describe.only('crossValidate', () => {
+describe('crossValidate', () => {
   describe('_crossValidateMainJobRole', () => {
     it('should add error to csvWorkerSchemaErrors if establishment not CQC regulated and main role ID is 4', () => {
       const csvWorkerSchemaErrors = [];
