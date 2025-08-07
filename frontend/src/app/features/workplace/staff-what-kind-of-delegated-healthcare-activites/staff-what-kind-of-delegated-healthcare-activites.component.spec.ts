@@ -13,9 +13,25 @@ import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-w
 import { BackService } from '@core/services/back.service';
 import userEvent from '@testing-library/user-event';
 
-describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
+fdescribe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
+  const mockDelegatedHealthcareActivities = [
+    {
+      description: 'Like monitoring heart rate as part of the treatment of a condition.',
+      id: 1,
+      seq: 10,
+      title: 'Vital signs monitoring',
+    },
+    {
+      description: 'Like administering warfarin.',
+      id: 2,
+      seq: 20,
+      title: 'Specialised medication administration',
+    },
+  ];
+
   async function setup(overrides: any = {}) {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+
     const setupTools = await render(StaffWhatKindOfDelegatedHealthcareActivitiesComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -32,7 +48,9 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: {},
+              data: {
+                delegatedHealthcareActivities: mockDelegatedHealthcareActivities,
+              },
             },
           },
         },
@@ -79,6 +97,20 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
 
     expect(within(caption).getByText('Services')).toBeTruthy();
     expect(heading).toBeTruthy();
+  });
+
+  it('should show the hint before the checkbox options', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Select all that apply.')).toBeTruthy();
+  });
+
+  it('should show the checkboxes', async () => {
+    const { getByLabelText } = await setup();
+
+    mockDelegatedHealthcareActivities.forEach((delegatedHealthcareActivity) => {
+      expect(getByLabelText(delegatedHealthcareActivity.title)).toBeTruthy();
+    });
   });
 
   describe('workplace workflow', async () => {

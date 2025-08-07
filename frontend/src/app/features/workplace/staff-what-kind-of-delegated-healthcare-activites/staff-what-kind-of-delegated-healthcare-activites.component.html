@@ -9,6 +9,25 @@
               What kind of delegated healthcare activities do your non-nursing staff carry out?
             </h1>
           </legend>
+          <div id="dha-hint" class="govuk-hint">Select all that apply.</div>
+          <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+            <ng-container *ngFor="let delegateHealthcareActivity of delegatedHealthCareActivities; index as i">
+            <div class="govuk-checkboxes__item">
+              <input
+                class="govuk-checkboxes__input"
+                id="staffWhatKindOfDelegatedHealthcareActivities"
+                name="staffWhatKindOfDelegatedHealthcareActivities"
+                type="checkbox"
+                value="delegateHealthcareActivity.title"
+                aria-describedby="delegateHealthcareActivity-item-hint"
+              />
+              <label class="govuk-label govuk-checkboxes__label" for="staffWhatKindOfDelegatedHealthcareActivities"> {{delegateHealthcareActivity.title}} </label>
+              <div id="delegateHealthcareActivity-item-hint" class="govuk-hint govuk-checkboxes__hint">
+               {{ delegateHealthcareActivity.description}}
+              </div>
+            </div>
+            </ng-container>
+          </div>
         </fieldset>
       </div>
       <app-workplace-submit-button

@@ -1,10 +1,8 @@
 export interface DelegatedHealthcareActivity {
   id: number;
   seq: number;
-  title: string
-  description: string
-  analysisFileCode: number;
-  bulkUploadCode: number;
+  title: string;
+  description: string;
 }
 
 export interface DelegatedHealthcareActivitiesResponse {

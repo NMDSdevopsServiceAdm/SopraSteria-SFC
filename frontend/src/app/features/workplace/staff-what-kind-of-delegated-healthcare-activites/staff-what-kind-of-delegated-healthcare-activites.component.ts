@@ -9,40 +9,42 @@ import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathw
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activites.model';
 
 @Component({
   selector: 'app-staff-what-kind-of-delegated-healthcare-activites',
   templateUrl: './staff-what-kind-of-delegated-healthcare-activites.component.html',
 })
-export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Question implements OnInit  {
+export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Question implements OnInit {
   public section = WorkplaceFlowSections.SERVICES;
+  public delegatedHealthCareActivities: DelegatedHealthcareActivity[];
 
-   constructor(
-      protected formBuilder: UntypedFormBuilder,
-      protected router: Router,
-      protected backService: BackService,
-      protected errorSummaryService: ErrorSummaryService,
-      protected establishmentService: EstablishmentService,
-      protected careWorkforcePathwayService: CareWorkforcePathwayService,
-      protected route: ActivatedRoute,
-      private alertService: AlertService,
-    ) {
-      super(formBuilder, router, backService, errorSummaryService, establishmentService);
-    }
-
+  constructor(
+    protected formBuilder: UntypedFormBuilder,
+    protected router: Router,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    protected careWorkforcePathwayService: CareWorkforcePathwayService,
+    protected route: ActivatedRoute,
+    private alertService: AlertService,
+  ) {
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
+  }
 
   init(): void {
+    this.delegatedHealthCareActivities = this.route.snapshot.data.delegatedHealthcareActivities;
     this.setupForm();
     this.skipRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
     this.nextRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
-    this.setPreviousRoute()
+    this.setPreviousRoute();
   }
 
   private setPreviousRoute(): void {
     this.previousRoute = ['/workplace', this.establishment.uid, 'staff-do-delegated-healthcare-activities'];
   }
 
-   setupForm() {
+  setupForm() {
     this.form = this.formBuilder.group(
       {
         staffWhatKindOfDelegatedHealthcareActivities: null,
@@ -67,7 +69,11 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
 
     this.subscriptions.add(
       this.establishmentService
-        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'staffWhatKindOfDelegatedHealthcareActivities', props)
+        .updateEstablishmentFieldWithAudit(
+          this.establishment.uid,
+          'staffWhatKindOfDelegatedHealthcareActivities',
+          props,
+        )
         .subscribe(
           (data) => this._onSuccess(data),
           (error) => this.onError(error),
