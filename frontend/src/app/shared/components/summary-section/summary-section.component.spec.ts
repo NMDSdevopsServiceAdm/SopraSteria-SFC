@@ -424,6 +424,25 @@ describe('Summary section', () => {
       expect(within(workplaceRow).queryByTestId('orange-flag')).toBeFalsy();
     });
 
+    it('should not show the staff total does not match staff records warning if canViewListOfWorkers is false', async () => {
+      const establishment = {
+        ...Establishment,
+        eightWeeksFromFirstLogin: dayjs(new Date()).subtract(1, 'day').toString(),
+      };
+
+      const overrides = {
+        checkCqcDetails: false,
+        establishment,
+        workerCount: 102,
+        canViewListOfWorkers: false,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).queryByText('Staff total does not match staff records added')).toBeFalsy();
+    });
+
     it('should show a warning saying that vacancy and turnover data has not been added if they have not been added', async () => {
       const establishment = { ...Establishment, leavers: null, vacancies: null, starters: null };
 
