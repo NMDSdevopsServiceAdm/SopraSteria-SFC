@@ -272,12 +272,12 @@ const _crossValidateDHAForSingleWorker = async (
       }
       case 'UNCHECKED':
       case 'NOCHANGE': {
-        const gotWarning = await _crossValidateDHAWithWorkplaceFromDatabase(
+        const newWarning = await _crossValidateDHAWithWorkplaceFromDatabase(
           csvWorkerSchemaErrors,
           workerEstablishment,
           JSONWorker,
         );
-        workerHasDHAWarning = workerHasDHAWarning || gotWarning;
+        workerHasDHAWarning = workerHasDHAWarning || newWarning;
         break;
       }
     }
@@ -335,7 +335,6 @@ const _crossValidateDHAWithWorkplaceFromDatabase = async (csvWorkerSchemaErrors,
 };
 
 const _patchWorkerProperty = (myAPIEstablishments, JSONWorker, changes) => {
-  console.log(`patching property for worker: ${JSONWorker.uniqueWorkerId}`);
   const workplaceKey = JSONWorker.localId.replace(/\s/g, '');
   const workerEntityKey = JSONWorker.uniqueWorkerId.replace(/\s/g, '');
 
