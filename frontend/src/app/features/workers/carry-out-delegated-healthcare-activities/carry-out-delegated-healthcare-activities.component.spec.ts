@@ -1,21 +1,25 @@
-import lodash from 'lodash';
-import { of } from 'rxjs';
-
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
+import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { WorkerService } from '@core/services/worker.service';
+import {
+  MockDelegatedHealthcareActivitiesService,
+  mockDHADefinition,
+} from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
+import { MockRouter } from '@core/test-utils/MockRouter';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import lodash from 'lodash';
+import { of } from 'rxjs';
 
 import { WorkersModule } from '../workers.module';
 import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities.component';
-import { MockRouter } from '@core/test-utils/MockRouter';
 
 describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -51,6 +55,10 @@ describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
           provide: Router,
           useFactory: MockRouter.factory({ url: overrides?.routerUrl ?? '/' }),
         },
+        {
+          provide: DelegatedHealthcareActivitiesService,
+          useClass: MockDelegatedHealthcareActivitiesService,
+        },
       ],
     });
     const component = setupTools.fixture.componentInstance;
@@ -83,6 +91,12 @@ describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
 
     expect(sectionHeading).toBeTruthy();
     expect(sectionHeading.textContent).toEqual('Employment details');
+  });
+
+  it('should show the DHA definition', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText(mockDHADefinition)).toBeTruthy();
   });
 
   it('should show a reveal for examples of DHA', async () => {

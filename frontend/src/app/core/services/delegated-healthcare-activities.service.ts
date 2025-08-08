@@ -12,7 +12,14 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class DelegatedHealthcareActivitiesService {
+  private readonly _dhaDefinition: string =
+    "We're using the term delegated healthcare to describe activities, usually (but not exclusively) of a clinical nature, that a regulated healthcare professional delegates to a paid care or support worker. Delegated healthcare activities are sometimes called 'tasks' or 'interventions'.";
+
   constructor(private http: HttpClient) {}
+
+  get dhaDefinition(): string {
+    return this._dhaDefinition;
+  }
 
   getDelegatedHealthcareActivities(): Observable<DelegatedHealthcareActivity[]> {
     return this.http
