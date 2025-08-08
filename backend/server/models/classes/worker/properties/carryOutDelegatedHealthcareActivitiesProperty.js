@@ -16,7 +16,7 @@ exports.CarryOutDelegatedHealthcareActivitiesProperty = class CarryOutDelegatedH
   }
 
   async restoreFromJson(document) {
-    if ([...CARRY_OUT_DHA_TYPE, null].includes(document.carryOutDelegatedHealthcareActivities)) {
+    if ([...CARRY_OUT_DHA_TYPE].includes(document.carryOutDelegatedHealthcareActivities)) {
       this.property = document.carryOutDelegatedHealthcareActivities;
       return;
     }

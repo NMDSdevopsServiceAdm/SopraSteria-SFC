@@ -283,7 +283,7 @@ const _crossValidateDHAForSingleWorker = async (
     }
 
     if (workerHasDHAWarning) {
-      _patchWorkerProperty(myAPIEstablishments, JSONWorker, { CarryOutDelegatedHealthcareActivities: null });
+      _patchWorkerProperty(myAPIEstablishments, JSONWorker, { CarryOutDelegatedHealthcareActivities: undefined });
     }
   }
 };

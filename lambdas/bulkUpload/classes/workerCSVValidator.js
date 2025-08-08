@@ -3111,7 +3111,9 @@ class WorkerCsvValidator {
       recruitmentSource: this._recSource ? this._recSource : undefined,
       startDate: this._startDate ? this._startDate.format('DD/MM/YYYY') : undefined,
       startedInSector: this._startInsect ? this._startInsect : undefined,
-      carryOutDelegatedHealthcareActivities: this.carryOutDelegatedHealthcareActivities ?? undefined,
+      carryOutDelegatedHealthcareActivities: this.carryOutDelegatedHealthcareActivities
+        ? this.carryOutDelegatedHealthcareActivities
+        : undefined,
       apprenticeship: this._apprentice ? this._apprentice : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
       daysSick: this._daysSick ? this._daysSick : undefined,

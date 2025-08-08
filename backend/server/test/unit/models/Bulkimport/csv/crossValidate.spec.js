@@ -631,7 +631,7 @@ describe('crossValidate', () => {
       );
       expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
         'CarryOutDelegatedHealthcareActivities',
-        null,
+        undefined,
       );
     });
 
@@ -657,7 +657,7 @@ describe('crossValidate', () => {
         );
         expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
           'CarryOutDelegatedHealthcareActivities',
-          null,
+          undefined,
         );
       });
 
@@ -680,7 +680,7 @@ describe('crossValidate', () => {
         );
         expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
           'CarryOutDelegatedHealthcareActivities',
-          null,
+          undefined,
         );
       });
 
@@ -746,7 +746,7 @@ describe('crossValidate', () => {
         );
         expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
           'CarryOutDelegatedHealthcareActivities',
-          null,
+          undefined,
         );
       });
 
@@ -769,7 +769,7 @@ describe('crossValidate', () => {
         );
         expect(mockWorkerEntity.patchPropertyValue).to.have.been.calledWith(
           'CarryOutDelegatedHealthcareActivities',
-          null,
+          undefined,
         );
       });
 
