@@ -372,7 +372,7 @@ class Worker extends EntityValidator {
   patchPropertyValue(propertyName, newValue) {
     const propertyObject = this._properties.get(propertyName);
     if (!propertyObject) {
-      console.error(`failed to patch non existing property: ${propertyName}`);
+      console.error(`failed to patch non existing property: "${propertyName}"`);
       return;
     }
 
