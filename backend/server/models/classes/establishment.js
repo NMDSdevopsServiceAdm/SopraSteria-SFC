@@ -1133,6 +1133,7 @@ class Establishment extends EntityValidator {
             },
             attributes: ['id', 'updated'],
             transaction: thisTransaction,
+            savedBy: savedBy.toLowerCase(),
           });
 
           if (updatedRecordCount === 1) {

@@ -1517,7 +1517,53 @@ module.exports = function (sequelize, DataTypes) {
     return { count, workers };
   };
 
-  Worker.addHook('beforeSave', unsetDHAAnswerOnJobRoleChange);
+  Worker.clearDHAAnswerForAllWorkersInWorkplace = async function (establishmentId, options) {
+    if (!establishmentId) {
+      return;
+    }
+
+    const timestamp = new Date();
+    const username = options?.saveBy ?? '';
+    const transaction = options.transaction;
+
+    const [updatedRecordCount, updatedRows] = await this.update(
+      {
+        carryOutDelegatedHealthcareActivities: null,
+        CarryOutDelegatedHealthcareActivitiesSavedAt: timestamp,
+        CarryOutDelegatedHealthcareActivitiesChangedAt: timestamp,
+        CarryOutDelegatedHealthcareActivitiesSavedBy: username,
+        CarryOutDelegatedHealthcareActivitiesChangedBy: username,
+      },
+      {
+        where: {
+          carryOutDelegatedHealthcareActivities: { [Op.ne]: null },
+          archived: false,
+          establishmentFk: establishmentId,
+        },
+        returning: true,
+        transaction,
+      },
+    );
+
+    if (updatedRecordCount === 0) {
+      return;
+    }
+
+    const workerIds = updatedRows.map((workerRow) => workerRow.dataValues.ID);
+    const auditEvents = workerIds.map((id) => {
+      return {
+        workerFk: id,
+        username,
+        type: 'changed',
+        property: 'CarryOutDelegatedHealthcareActivities',
+        event: { new: null },
+      };
+    });
+
+    await sequelize.models.workerAudit.bulkCreate(auditEvents, transaction);
+  };
+
+  Worker.addHook('beforeSave', 'unsetDHAAnswerOnJobRoleChange', unsetDHAAnswerOnJobRoleChange);
 
   return Worker;
 };
