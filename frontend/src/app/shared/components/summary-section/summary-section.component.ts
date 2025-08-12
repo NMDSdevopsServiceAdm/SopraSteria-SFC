@@ -266,6 +266,12 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     );
   }
 
+  public navigateToYourOtherWorkplaces(event: Event, yourOtherWorkplacesSortValue: string) {
+    event.preventDefault();
+    localStorage.setItem('yourOtherWorkplacesSortValue', yourOtherWorkplacesSortValue);
+    this.router.navigate(['/workplace', 'view-all-workplaces']);
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
