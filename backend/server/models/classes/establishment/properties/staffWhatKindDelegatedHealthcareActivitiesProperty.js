@@ -93,17 +93,15 @@ exports.StaffWhatKindDelegatedHealthcareActivitiesProperty = class StaffWhatKind
       };
     }
 
-    const establishmentDHActivities = activities.map((activity) => {
+    const dHActivities = activities.map((activity) => {
       return {
         delegatedHealthcareActivitiesID: activity.id,
       };
     });
 
-    console.log("establishmentDHActivities:", establishmentDHActivities)
-
     return {
       staffWhatKindDelegatedHealthcareActivities: whatDelegateHealthcareActivities,
-      additionalModels: { EstablishmentDHActivities: establishmentDHActivities },
+      additionalModels: { EstablishmentDHActivities: dHActivities },
     };
   }
 
@@ -162,21 +160,20 @@ exports.StaffWhatKindDelegatedHealthcareActivitiesProperty = class StaffWhatKind
   }
 
   restorePropertyFromSequelize(document) {
-    const dhaActivities = document.staffWhatKindDelegatedHealthcareActivities
+    const staffWhatKindDHA = document.staffWhatKindDelegatedHealthcareActivities;
 
-    if(dhaActivities?.whatDelegateHealthcareActivities === YES){
+    if (staffWhatKindDHA === YES) {
       return {
-        whatDelegateHealthcareActivities: "Yes",
-        activities: dhaActivities.activities?.length ? dhaActivities.activities : null
-      }
-    } else if(dhaActivities?.whatDelegateHealthcareActivities === DONT_KNOW){
+        whatDelegateHealthcareActivities: 'Yes',
+        activities: document.delegatedHealthcareActivities?.length ? document.delegatedHealthcareActivities : null,
+      };
+    } else if (staffWhatKindDHA === DONT_KNOW) {
       return {
         whatDelegateHealthcareActivities: "Don't know",
-        activities: null
-      }
-    }
-    else if(!dhaActivities){
-      return null
+        activities: null,
+      };
+    } else if (!staffWhatKindDHA) {
+      return null;
     }
   }
 };

@@ -1463,6 +1463,11 @@ class Establishment extends EntityValidator {
           raw: true,
         });
 
+        const delegatedHealthcareActivities = await fetchResults.getDelegatedHealthcareActivities({
+          attributes: ['id', 'title', 'description'],
+          raw: true,
+        });
+
         const [otherServices, mainService, serviceUsers, capacity, jobs] = await Promise.all([
           ServiceCache.allMyOtherServices(establishmentServices.map((x) => x)),
           models.services.findOne({
@@ -1540,6 +1545,8 @@ class Establishment extends EntityValidator {
         });
 
         fetchResults.careWorkforcePathwayReasons = careWorkforcePathwayReasons;
+
+        fetchResults.delegatedHealthcareActivities = delegatedHealthcareActivities;
 
         fetchResults.capacity = capacity;
 

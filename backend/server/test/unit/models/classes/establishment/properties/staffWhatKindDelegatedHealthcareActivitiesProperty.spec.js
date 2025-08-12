@@ -200,13 +200,13 @@ describe('staffKindDelegatedHealthcareActivitesProperty', () => {
 
     it('should restore in correct format', async () => {
       const document = {
-        staffWhatKindDelegatedHealthcareActivities: mockActivitiesValues.yes_with_activities,
+        staffWhatKindDelegatedHealthcareActivities: 'Yes',
+        delegatedHealthcareActivities: mockActivitiesValues.yes_with_activities.activities
       };
 
       const staffKindDHAProperty = new propertyClass();
 
       const expectedResult = mockActivitiesValues.yes_with_activities;
-
 
       const restoredProperty = staffKindDHAProperty.restorePropertyFromSequelize(document);
 

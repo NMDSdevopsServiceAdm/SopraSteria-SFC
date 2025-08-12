@@ -46,7 +46,7 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     EstablishmentDHActivities.belongsTo(models.delegatedHealthcareActivities, {
-      foreignKey: 'DelegatedHealthcareActivitiesID',
+      foreignKey: 'delegatedHealthcareActivitiesID',
       targetKey: 'id',
     });
   };
