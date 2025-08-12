@@ -28,4 +28,14 @@ describe('DelegatedHealthcareActivitiesService', () => {
     const req = http.expectOne(`${environment.appRunnerEndpoint}/api/delegatedHealthcareActivities`);
     expect(req.request.method).toBe('GET');
   });
+
+  it('should call the expected endpoint when checkIfAnyWorkerHasDHAAnswered() called', () => {
+    const mockEstablishmentUid = 'mock-uid';
+    service.checkIfAnyWorkerHasDHAAnswered(mockEstablishmentUid).subscribe();
+
+    const req = http.expectOne(
+      `${environment.appRunnerEndpoint}/api/establishment/${mockEstablishmentUid}/delegatedHealthcareActivities/checkIfAnyWorkerHasDHAAnswered`,
+    );
+    expect(req.request.method).toBe('GET');
+  });
 });
