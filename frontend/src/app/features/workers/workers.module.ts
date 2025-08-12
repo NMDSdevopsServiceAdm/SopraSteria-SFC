@@ -43,9 +43,7 @@ import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.com
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
-import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
 import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
-import { DeleteTrainingDialogComponent } from './delete-training-dialog/delete-training-dialog.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
@@ -96,8 +94,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DateOfBirthComponent,
     DaysOfSicknessComponent,
     DeleteAnotherStaffRecordComponent,
-    DeleteQualificationDialogComponent,
-    DeleteTrainingDialogComponent,
     DeleteRecordComponent,
     DisabilityComponent,
     EditWorkerComponent,
