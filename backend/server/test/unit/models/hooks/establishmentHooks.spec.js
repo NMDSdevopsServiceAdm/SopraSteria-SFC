@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const { clearDHAWorkerAnswersOnWorkplaceChange } = require('../../../../models/hooks/establishmentHooks');
 
-describe.only('Establishment sequelize hooks', () => {
+describe('Establishment sequelize hooks', () => {
   describe('beforeSave: clearDHAWorkerAnswersOnWorkplaceChange', () => {
     let mockWorkerModel = { clearDHAAnswerForAllWorkersInWorkplace: () => {} };
 
