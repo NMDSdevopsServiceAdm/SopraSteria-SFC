@@ -1517,6 +1517,19 @@ module.exports = function (sequelize, DataTypes) {
     return { count, workers };
   };
 
+  Worker.checkIfAnyWorkerHasDHAAnswered = async function (establishmentId) {
+    const workerWithDHAAnswered = await this.findOne({
+      attributes: ['id', 'carryOutDelegatedHealthcareActivities'],
+      where: {
+        carryOutDelegatedHealthcareActivities: { [Op.ne]: null },
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+    });
+
+    return !!workerWithDHAAnswered;
+  };
+
   Worker.clearDHAAnswerForAllWorkersInWorkplace = async function (establishmentId, options) {
     if (!establishmentId) {
       return;
