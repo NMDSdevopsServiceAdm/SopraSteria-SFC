@@ -35,7 +35,7 @@ module.exports = {
       const addColumnsToEstablishmentTable = [
         queryInterface.addColumn(
           establishmentTable,
-          'DelegatedHealthcareActivitiesKindValue',
+          'StaffWhatKindDelegatedHealthcareActivitiesValue',
           {
             type: Sequelize.DataTypes.ENUM,
             allowNull: true,
@@ -46,7 +46,7 @@ module.exports = {
         ['SavedAt', 'ChangedAt'].map((suffix) => {
           return queryInterface.addColumn(
             establishmentTable,
-            `DelegatedHealthcareActivitiesKind${suffix}`,
+            `StaffWhatKindDelegatedHealthcareActivities${suffix}`,
             {
               type: Sequelize.DataTypes.DATE,
               allowNull: true,
@@ -57,9 +57,9 @@ module.exports = {
         ['SavedBy', 'ChangedBy'].map((suffix) => {
           return queryInterface.addColumn(
             establishmentTable,
-            `DelegatedHealthcareActivitiesKind${suffix}`,
+            `StaffWhatKindDelegatedHealthcareActivities${suffix}`,
             {
-              type: Sequelize.DataTypes.DATE,
+              type: Sequelize.DataTypes.TEXT,
               allowNull: true,
             },
             { transaction },
@@ -73,11 +73,21 @@ module.exports = {
   async down(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.dropTable(junctionTable, { transaction });
-      await queryInterface.removeColumn(establishmentTable, 'DelegatedHealthcareActivitiesKindValue', { transaction });
-      await queryInterface.removeColumn(establishmentTable, 'DelegatedHealthcareActivitiesKindSavedAt', { transaction });
-      await queryInterface.removeColumn(establishmentTable, 'DelegatedHealthcareActivitiesKindChangedAt', { transaction });
-      await queryInterface.removeColumn(establishmentTable, 'DelegatedHealthcareActivitiesKindSavedBy', { transaction });
-      await queryInterface.removeColumn(establishmentTable, 'DelegatedHealthcareActivitiesKindChangedBy', { transaction });
+      await queryInterface.removeColumn(establishmentTable, 'StaffWhatKindDelegatedHealthcareActivitiesValue', {
+        transaction,
+      });
+      await queryInterface.removeColumn(establishmentTable, 'StaffWhatKindDelegatedHealthcareActivitiesSavedAt', {
+        transaction,
+      });
+      await queryInterface.removeColumn(establishmentTable, 'StaffWhatKindDelegatedHealthcareActivitiesChangedAt', {
+        transaction,
+      });
+      await queryInterface.removeColumn(establishmentTable, 'StaffWhatKindDelegatedHealthcareActivitiesSavedBy', {
+        transaction,
+      });
+      await queryInterface.removeColumn(establishmentTable, 'StaffWhatKindDelegatedHealthcareActivitiesChangedBy', {
+        transaction,
+      });
     });
   },
 };

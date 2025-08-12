@@ -28,40 +28,43 @@ const careWorkforcePathwayUseProperty =
   require('./properties/careWorkforcePathwayUseProperty').CareWorkforcePathwayUseProperty;
 const staffDoDelegatedHealthcareActivitiesProperty =
   require('./properties/staffDoDelegatedHealthcareActivitiesProperty').StaffDoDelegatedHealthcareActivitiesProperty;
+  const staffWhatKindDelegatedHealthcareActivitiesProperty =
+    require('./properties/staffWhatKindDelegatedHealthcareActivitiesProperty').StaffWhatKindDelegatedHealthcareActivitiesProperty;
 
-class EstablishmentPropertyManager {
-  constructor() {
-    this._thisManager = new Manager.PropertyManager();
+  class EstablishmentPropertyManager {
+    constructor() {
+      this._thisManager = new Manager.PropertyManager();
 
-    this._thisManager.registerProperty(nameProperty);
-    this._thisManager.registerProperty(mainServiceProperty);
-    this._thisManager.registerProperty(employerTypeProperty);
-    this._thisManager.registerProperty(staffProperty);
-    this._thisManager.registerProperty(otherServicesProperty);
-    this._thisManager.registerProperty(serviceUsersProperty);
-    this._thisManager.registerProperty(capacityServicesProperty);
-    this._thisManager.registerProperty(shareWithProperty);
-    this._thisManager.registerProperty(vacanciesProperty);
-    this._thisManager.registerProperty(startersProperty);
-    this._thisManager.registerProperty(leaversProperty);
-    this._thisManager.registerProperty(localIdentifierProperty);
-    this._thisManager.registerProperty(locationIdProperty);
-    this._thisManager.registerProperty(address1Property);
-    this._thisManager.registerProperty(address2Property);
-    this._thisManager.registerProperty(address3Property);
-    this._thisManager.registerProperty(townProperty);
-    this._thisManager.registerProperty(countyProperty);
-    this._thisManager.registerProperty(postcodeProperty);
-    this._thisManager.registerProperty(isRegulatedProperty);
-    this._thisManager.registerProperty(careWorkforcePathwayWorkplaceAwarenessProperty);
-    this._thisManager.registerProperty(careWorkforcePathwayUseProperty);
-    this._thisManager.registerProperty(staffDoDelegatedHealthcareActivitiesProperty);
+      this._thisManager.registerProperty(nameProperty);
+      this._thisManager.registerProperty(mainServiceProperty);
+      this._thisManager.registerProperty(employerTypeProperty);
+      this._thisManager.registerProperty(staffProperty);
+      this._thisManager.registerProperty(otherServicesProperty);
+      this._thisManager.registerProperty(serviceUsersProperty);
+      this._thisManager.registerProperty(capacityServicesProperty);
+      this._thisManager.registerProperty(shareWithProperty);
+      this._thisManager.registerProperty(vacanciesProperty);
+      this._thisManager.registerProperty(startersProperty);
+      this._thisManager.registerProperty(leaversProperty);
+      this._thisManager.registerProperty(localIdentifierProperty);
+      this._thisManager.registerProperty(locationIdProperty);
+      this._thisManager.registerProperty(address1Property);
+      this._thisManager.registerProperty(address2Property);
+      this._thisManager.registerProperty(address3Property);
+      this._thisManager.registerProperty(townProperty);
+      this._thisManager.registerProperty(countyProperty);
+      this._thisManager.registerProperty(postcodeProperty);
+      this._thisManager.registerProperty(isRegulatedProperty);
+      this._thisManager.registerProperty(careWorkforcePathwayWorkplaceAwarenessProperty);
+      this._thisManager.registerProperty(careWorkforcePathwayUseProperty);
+      this._thisManager.registerProperty(staffDoDelegatedHealthcareActivitiesProperty);
+      this._thisManager.registerProperty(staffWhatKindDelegatedHealthcareActivitiesProperty);
+    }
+
+    get manager() {
+      return this._thisManager;
+    }
   }
-
-  get manager() {
-    return this._thisManager;
-  }
-}
 
 exports.EstablishmentPropertyManager = EstablishmentPropertyManager;
 exports.SEQUELIZE_DOCUMENT = Manager.PropertyManager.SEQUELIZE_DOCUMENT;

@@ -102,6 +102,7 @@ class Establishment extends EntityValidator {
     this._careWorkforcePathwayUse = null;
     this._CWPAwarenessQuestionViewed = null;
     this._staffDoDelegatedHealthcareActivities = null;
+    this._staffWhatKindDelegatedHealthcareActivities = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -413,6 +414,12 @@ class Establishment extends EntityValidator {
   get staffDoDelegatedHealthcareActivities() {
     return this._properties.get('StaffDoDelegatedHealthcareActivities')
       ? this._properties.get('StaffDoDelegatedHealthcareActivities').property
+      : null;
+  }
+
+  get staffWhatKindDelegatedHealthcareActivities() {
+    return this._properties.get('StaffWhatKindDelegatedHealthcareActivities')
+      ? this._properties.get('StaffWhatKindDelegatedHealthcareActivities').property
       : null;
   }
 

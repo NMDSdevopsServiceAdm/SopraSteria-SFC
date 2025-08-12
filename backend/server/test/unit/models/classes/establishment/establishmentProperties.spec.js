@@ -29,6 +29,7 @@ describe('EstablishmentPropertyManager', () => {
     'CareWorkforcePathwayWorkplaceAwarenessProperty',
     'CareWorkforcePathwayUseProperty',
     'StaffDoDelegatedHealthcareActivitiesProperty',
+    'StaffWhatKindDelegatedHealthcareActivitiesProperty',
   ];
 
   it('should have the correct property types', () => {

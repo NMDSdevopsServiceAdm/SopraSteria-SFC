@@ -44,5 +44,14 @@ module.exports = function (sequelize, DataTypes) {
       updatedAt: false,
     },
   );
+
+  delegatedHealthcareActivities.associate = (models) => {
+    delegatedHealthcareActivities.belongsToMany(models.establishment, {
+      through: 'EstablishmentDHActivities',
+      foreignKey: 'delegatedHealthcareActivitiesID',
+      sourceKey: 'id',
+    });
+  };
+
   return delegatedHealthcareActivities;
 };

@@ -823,6 +823,28 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      staffWhatKindDelegatedHealthcareActivities: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', "Don't know"],
+        field: 'StaffWhatKindDelegatedHealthcareActivitiesValue',
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       defaultScope: {
@@ -970,6 +992,13 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
       as: 'CareWorkforcePathwayReasons',
+    });
+
+    Establishment.belongsToMany(models.delegatedHealthcareActivities, {
+      through: 'EstablishmentDHActivities',
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'delegatedHealthcareActivities',
     });
   };
 
