@@ -40,6 +40,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   async function setup(overrides: any = {}) {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const workerHasDHAAnswered = overrides.someWorkersHasDHAAnswered ?? true;
 
     const setupTools = await render(StaffDoDelegatedHealthcareActivitiesComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -71,7 +72,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
         },
         {
           provide: DelegatedHealthcareActivitiesService,
-          useClass: MockDelegatedHealthcareActivitiesService,
+          useFactory: MockDelegatedHealthcareActivitiesService.factory({ workerHasDHAAnswered }),
         },
         AlertService,
         WindowRef,
@@ -325,6 +326,76 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
         expect(establishmentServiceSpy).toHaveBeenCalled();
       });
+    });
+
+    it('should not display warning message about selecting "No"', async () => {
+      const { queryByTestId } = await setup(overrides);
+
+      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
+    });
+  });
+
+  describe('warning message about selecting "No"', () => {
+    ['Yes', "Don't know", null].forEach((previousAnswer) => {
+      it(`should display a warning message about selecting "No" will remove workers DHA answers if previous answer is ${previousAnswer}`, async () => {
+        const { getByTestId } = await setup({
+          establishmentService: {
+            establishment: {
+              staffDoDelegatedHealthcareActivities: previousAnswer,
+            },
+            returnTo: {
+              url: ['/dashboard'],
+              fragment: 'workplace',
+            },
+          },
+        });
+
+        const warningMessage = getByTestId('warning-on-dha-data-removal');
+        expect(warningMessage).toBeTruthy();
+        expect(warningMessage.textContent).toContain(
+          'If you select No, all delegated healthcare activity data will be removed from your staff records.',
+        );
+      });
+    });
+
+    it('should not display the warning message if already answered as "No"', async () => {
+      const { queryByTestId } = await setup({
+        establishmentService: {
+          establishment: {
+            staffDoDelegatedHealthcareActivities: 'No',
+          },
+          returnTo: {
+            url: ['/dashboard'],
+            fragment: 'workplace',
+          },
+        },
+      });
+
+      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
+    });
+
+    it('should not display the warning message if none of the workers have DHA question answered', async () => {
+      const { queryByTestId } = await setup({
+        establishmentService: {
+          returnTo: {
+            url: ['/dashboard'],
+            fragment: 'workplace',
+          },
+        },
+        someWorkersHasDHAAnswered: false,
+      });
+
+      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
+    });
+
+    it('should not display the warning message if we are in new workplace flow', async () => {
+      const { queryByTestId } = await setup({
+        establishmentService: {
+          returnTo: null,
+        },
+      });
+
+      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
     });
   });
 });
