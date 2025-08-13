@@ -80,6 +80,7 @@ import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
 import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
+import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -164,6 +165,7 @@ import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-o
     WorkerReasonsForLeavingResolver,
     CareWorkforcePathwayWorkersSummaryComponent,
     GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+    GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
   ],
 })
 export class WorkersModule {}

@@ -80,6 +80,8 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
 import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
+import { RequireWhoCarriesDHAAnswerForSomeWorkersGuard } from '@core/guards/require-answer-who-carries-out-delegated-healthcare-activities/require-answer-who-carries-out-delegated-healthcare-activities.guard';
+import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
 
 const routes: Routes = [
   {
@@ -248,6 +250,8 @@ const routes: Routes = [
   {
     path: 'who-carry-out-delegated-healthcare-activities',
     component: WhoCarryOutDelegatedHealthcareActivitiesComponent,
+
+    resolve: { workerWhoRequireDHAAnswer: GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver },
     data: {
       title: 'Who Carry out Delegated Healthcare Activities',
     },
