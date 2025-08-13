@@ -6,14 +6,14 @@ import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { Establishment } from '../../../../mockdata/establishment';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activites.component';
 import { BackService } from '@core/services/back.service';
-import userEvent from '@testing-library/user-event';
 
-fdescribe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
+describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
   const mockDelegatedHealthcareActivities = [
     {
       description: 'Like monitoring heart rate as part of the treatment of a condition.',
@@ -105,12 +105,33 @@ fdescribe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
     expect(getByText('Select all that apply.')).toBeTruthy();
   });
 
-  it('should show the checkboxes', async () => {
+  it('should show the checkboxes mockDelegatedHealthcareActivities', async () => {
     const { getByLabelText } = await setup();
 
     mockDelegatedHealthcareActivities.forEach((delegatedHealthcareActivity) => {
       expect(getByLabelText(delegatedHealthcareActivity.title)).toBeTruthy();
     });
+  });
+
+  it('should show the "I do not know" checkbox', async () => {
+    const { getByLabelText } = await setup();
+
+    expect(getByLabelText('I do not know')).toBeTruthy();
+  });
+
+  it('should prefill the previously saved data', async () => {
+    const establishment = {
+      isParent: true,
+      staffWhatKindDelegatedHealthcareActivities: {
+        whatDelegateHealthcareActivities: 'Yes',
+        activities: [{ id: mockDelegatedHealthcareActivities[0].id }],
+      },
+    };
+    const { getByLabelText } = await setup({ establishmentService: { establishment } });
+
+    const dhaActivity = getByLabelText(mockDelegatedHealthcareActivities[0].title) as HTMLInputElement;
+
+    expect(dhaActivity.checked).toBeTruthy();
   });
 
   describe('workplace workflow', async () => {
@@ -146,7 +167,7 @@ fdescribe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
     it('should navigate to staff-recruitment-capture-training-requirement page when user skips the question', async () => {
       const { getByText, routerSpy } = await setup(overrides);
 
-      userEvent.click(getByText('Skip this question'));
+      fireEvent.click(getByText('Skip this question'));
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -158,7 +179,8 @@ fdescribe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
     it('should navigate to staff-recruitment-capture-training-requirement page after submit', async () => {
       const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
-      userEvent.click(getByText('Save and continue'));
+      fireEvent.click(getByText(mockDelegatedHealthcareActivities[0].title));
+      fireEvent.click(getByText('Save and continue'));
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -167,11 +189,42 @@ fdescribe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
       ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
+  });
 
-    it('should render the progress bar', async () => {
-      const { getByTestId } = await setup(overrides);
+  describe('checkboxes', () => {
+    it('should unselect activities if "I do not know" is ticked', async () => {
+      const { fixture, getByLabelText } = await setup();
 
-      expect(getByTestId('progress-bar')).toBeTruthy();
+      const doNotKnowText = 'I do not know';
+
+      fireEvent.click(getByLabelText(mockDelegatedHealthcareActivities[0].title));
+      fireEvent.click(getByLabelText(doNotKnowText));
+
+      fixture.detectChanges();
+
+      const checkboxOne = getByLabelText(mockDelegatedHealthcareActivities[0].title) as HTMLInputElement;
+      const checkboxTwo = getByLabelText(mockDelegatedHealthcareActivities[1].title) as HTMLInputElement;
+      const doNotKnow = getByLabelText(doNotKnowText) as HTMLInputElement;
+      expect(checkboxOne.checked).toBeFalsy();
+      expect(checkboxTwo.checked).toBeFalsy();
+      expect(doNotKnow.checked).toBeTruthy();
+    });
+
+    it('should unselect "I do not know" if an activity is ticked', async () => {
+      const { getByLabelText } = await setup();
+
+      const doNotKnowText = 'I do not know';
+
+      fireEvent.click(getByLabelText(doNotKnowText));
+      fireEvent.click(getByLabelText(mockDelegatedHealthcareActivities[0].title));
+
+      const checkboxOne = getByLabelText(mockDelegatedHealthcareActivities[0].title) as HTMLInputElement;
+      const checkboxTwo = getByLabelText(mockDelegatedHealthcareActivities[1].title) as HTMLInputElement;
+      const doNotKnow = getByLabelText(doNotKnowText) as HTMLInputElement;
+
+      expect(checkboxOne.checked).toBeTruthy();
+      expect(checkboxTwo.checked).toBeFalsy();
+      expect(doNotKnow.checked).toBeFalsy();
     });
   });
 });
