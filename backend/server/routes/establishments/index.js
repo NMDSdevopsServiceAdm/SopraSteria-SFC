@@ -36,6 +36,7 @@ const InternationalRecruitment = require('./internationalRecruitment');
 const HasTrainingCertificates = require('./hasTrainingCertificates.js');
 const CareWorkforcePathway = require('./careWorkforcePathway.js');
 const EstablishmentField = require('./establishmentField.js');
+const DelegatedHealthcareActivities = require('./delegatedHealthcareActivities.js');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -65,6 +66,7 @@ router.use('/:id/internationalRecruitment', InternationalRecruitment);
 router.use('/:id/hasTrainingCertificates', HasTrainingCertificates);
 router.use('/:id/careWorkforcePathway', CareWorkforcePathway);
 router.use('/:id/establishmentField', EstablishmentField);
+router.use('/:id/delegatedHealthcareActivities', DelegatedHealthcareActivities);
 
 router.route('/:id').get(getEstablishment);
 router.route('/:id').post(hasPermission('canAddEstablishment'), addEstablishment);
