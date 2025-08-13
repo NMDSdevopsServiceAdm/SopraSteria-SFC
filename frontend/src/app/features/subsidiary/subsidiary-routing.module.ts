@@ -369,12 +369,12 @@ const routes: Routes = [
         },
       },
       {
-        path: 'staff-what-kind-of-delegated-healthcare-activities',
+        path: 'what-kind-of-delegated-healthcare-activities',
         component: StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Staff what kind of delegated healthcare activities',
+          title: 'What kind of delegated healthcare activities',
         },
       },
       {

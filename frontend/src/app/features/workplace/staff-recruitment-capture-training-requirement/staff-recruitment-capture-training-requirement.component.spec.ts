@@ -278,7 +278,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
     });
 
-    it('should set the back link to staff-do-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
+    it('should set the back link to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
       const { component } = await setup({
         returnToUrl: null,
         establishment: {
@@ -294,7 +294,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       expect(component.previousRoute).toEqual([
         '/workplace',
         component.establishment.uid,
-        'staff-do-delegated-healthcare-activities',
+        'what-kind-of-delegated-healthcare-activities',
       ]);
     });
   });
