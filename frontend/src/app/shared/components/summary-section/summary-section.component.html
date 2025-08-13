@@ -37,7 +37,14 @@
           </ng-template>
         </ng-container>
         <ng-template #noMessage>
+          <ng-container *ngIf="!canViewListOfWorkers && section.fragment !== 'workplace'; else defaultMessage">
+            <span>
+              You do not have permission to view this data
+            </span>
+          </ng-container>
+          <ng-template #defaultMessage>
           <span>Remember to check and update this data often</span>
+          </ng-template>
         </ng-template>
       </div>
     </div>
