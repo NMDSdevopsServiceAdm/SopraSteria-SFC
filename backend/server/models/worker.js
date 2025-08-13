@@ -1536,7 +1536,7 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     const timestamp = new Date();
-    const username = options?.saveBy ?? '';
+    const username = options?.savedBy ?? '';
     const transaction = options.transaction;
 
     const [updatedRecordCount, updatedRows] = await this.update(
