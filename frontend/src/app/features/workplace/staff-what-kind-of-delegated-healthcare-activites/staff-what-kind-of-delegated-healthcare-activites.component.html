@@ -15,11 +15,11 @@
             [formArrayName]="'selectedDelegatedHealthcareActivities'"
             data-module="govuk-checkboxes"
           >
-            <ng-container *ngFor="let delegateHealthcareActivity of delegatedHealthCareActivities; let i = index">
+            <ng-container *ngFor="let delegateHealthcareActivity of delegatedHealthcareActivities; let i = index">
               <div class="govuk-checkboxes__item">
                 <input
                   class="govuk-checkboxes__input"
-                  id="delegatedHealthCareActivities-{{ i }}"
+                  id="delegatedHealthcareActivities-{{ i }}"
                   [formControlName]="i"
                   type="checkbox"
                   [value]="delegateHealthcareActivity.id"
@@ -27,7 +27,7 @@
                   (click)="onCheckboxClick($event.target)"
                   [checked]="!isDoNotKnowChecked &&  this.selectedCheckboxes.includes(delegateHealthcareActivity.id)"
                 />
-                <label class="govuk-label govuk-checkboxes__label" for="delegatedHealthCareActivities-{{ i }}">
+                <label class="govuk-label govuk-checkboxes__label" for="delegatedHealthcareActivities-{{ i }}">
                   {{ delegateHealthcareActivity.title }}
                 </label>
                 <div id="delegateHealthcareActivity-item-hint" class="govuk-hint govuk-checkboxes__hint">
@@ -43,8 +43,8 @@
             <div class="govuk-checkboxes__item">
               <input
                 class="govuk-checkboxes__input"
-                id="delegatedHealthCareActivities-{{ delegatedHealthCareActivities }}"
-                [formControlName]="delegatedHealthCareActivitiesLength"
+                id="delegatedHealthcareActivities-{{ delegatedHealthcareActivities }}"
+                [formControlName]="delegatedHealthcareActivitiesLength"
                 type="checkbox"
                 data-behaviour="exclusive"
                 [value]="doNotKnowOption.id"
@@ -53,7 +53,7 @@
               />
               <label
                 class="govuk-label govuk-checkboxes__label"
-                for="delegatedHealthCareActivities-{{ delegatedHealthCareActivities }}"
+                for="delegatedHealthcareActivities-{{ delegatedHealthcareActivities }}"
               >
                 {{ doNotKnowOption.title }}
               </label>

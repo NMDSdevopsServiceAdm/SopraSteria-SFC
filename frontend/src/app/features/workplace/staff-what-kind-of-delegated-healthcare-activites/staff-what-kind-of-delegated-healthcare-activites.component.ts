@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Question } from '../question/question.component';
-import { UntypedFormBuilder } from '@angular/forms';
+import { FormArray, UntypedFormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -16,11 +16,11 @@ import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-ac
 })
 export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Question implements OnInit {
   public section = WorkplaceFlowSections.SERVICES;
-  public delegatedHealthCareActivities: DelegatedHealthcareActivity[];
+  public delegatedHealthcareActivities: DelegatedHealthcareActivity[];
   public doNotKnowOption = { id: 99, seq: 900, title: 'I do not know' };
-  public allDelegatedHealthCareActivitiesOptions: any[];
+  public allDelegatedHealthcareActivitiesOptions: any[];
   public isDoNotKnowChecked: boolean = false;
-  public delegatedHealthCareActivitiesLength: number;
+  public delegatedHealthcareActivitiesLength: number;
 
   public check_box_type = {
     0: 'ACTIVITY',
@@ -47,10 +47,10 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
   }
 
   init(): void {
-    this.delegatedHealthCareActivities = this.route.snapshot.data.delegatedHealthcareActivities;
-    this.delegatedHealthCareActivitiesLength = this.delegatedHealthCareActivities.length;
-    this.doNotKnowOption = { id: this.delegatedHealthCareActivitiesLength + 1, seq: 900, title: 'I do not know' };
-    this.allDelegatedHealthCareActivitiesOptions = [...this.delegatedHealthCareActivities, this.doNotKnowOption];
+    this.delegatedHealthcareActivities = this.route.snapshot.data.delegatedHealthcareActivities;
+    this.delegatedHealthcareActivitiesLength = this.delegatedHealthcareActivities.length;
+    this.doNotKnowOption = { id: this.delegatedHealthcareActivitiesLength + 1, seq: 900, title: 'I do not know' };
+    this.allDelegatedHealthcareActivitiesOptions = [...this.delegatedHealthcareActivities, this.doNotKnowOption];
     this.setupForm();
     this.prefill();
     this.skipRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
@@ -65,7 +65,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     this.form = this.formBuilder.group(
       {
         selectedDelegatedHealthcareActivities: this.formBuilder.array(
-          this.allDelegatedHealthCareActivitiesOptions.map(() => null),
+          this.allDelegatedHealthcareActivitiesOptions.map(() => null),
         ),
       },
       { updateOn: 'submit' },
@@ -96,7 +96,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
   private prefillCheckboxes(previouslySavedOptions) {
     const selectedIds = previouslySavedOptions.map((previouslySavedOption) => previouslySavedOption.id);
 
-    const checkboxesValue = this.allDelegatedHealthCareActivitiesOptions.map((activity) =>
+    const checkboxesValue = this.allDelegatedHealthcareActivitiesOptions.map((activity) =>
       selectedIds.includes(activity.id),
     );
 
@@ -121,26 +121,39 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     if (clickedId === this.doNotKnowOption.id) {
       this.isDoNotKnowChecked = true;
       this.selectedCheckboxes = [];
+
+      (this.form.get('selectedDelegatedHealthcareActivities') as FormArray)
+        .at(this.delegatedHealthcareActivitiesLength - 1)
+        .patchValue(true);
+
+      this.delegatedHealthcareActivities.forEach((activity, index) => {
+        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(index).patchValue(false);
+      });
     } else {
       this.isDoNotKnowChecked = false;
       this.checkOptionsClicked(Number(target.value));
+
+      (this.form.get('selectedDelegatedHealthcareActivities') as FormArray)
+        .at(this.delegatedHealthcareActivitiesLength - 1)
+        .patchValue(false);
     }
   }
 
   protected generateUpdateProps(): any {
     const { selectedDelegatedHealthcareActivities } = this.form.value;
+
     if (!selectedDelegatedHealthcareActivities) {
       return null;
     }
 
     let whatDelegateHealthcareActivities: string;
 
-    const activities = this.allDelegatedHealthCareActivitiesOptions
+    const activities = this.allDelegatedHealthcareActivitiesOptions
       .filter((_answer, index) => selectedDelegatedHealthcareActivities[index])
       .map((selectedActivity) => {
         if (selectedActivity.id === this.doNotKnowOption.id) {
           whatDelegateHealthcareActivities = "Don't know";
-        } else if (this.delegatedHealthCareActivities.includes(selectedActivity)) {
+        } else if (this.delegatedHealthcareActivities.includes(selectedActivity)) {
           whatDelegateHealthcareActivities = 'Yes';
         }
         return { id: selectedActivity.id };
