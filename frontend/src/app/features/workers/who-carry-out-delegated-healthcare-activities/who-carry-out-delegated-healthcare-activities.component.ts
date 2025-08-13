@@ -13,6 +13,7 @@ import {
   DHAGetAllWorkersResponse,
 } from '@core/services/delegated-healthcare-activities.service';
 import { take } from 'rxjs/operators';
+import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
 
 @Component({
   selector: 'app-who-carry-out-delegated-healthcare-activities',
@@ -37,6 +38,7 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
     { tag: 'I do not know', value: `Don't know` },
   ];
   public dhaDefinition: string;
+  public delegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
 
   public form: FormGroup;
 
@@ -47,7 +49,6 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
     private backLinkService: BackLinkService,
     private router: Router,
     private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
-
     private route: ActivatedRoute,
   ) {
     this.form = this.formBuilder.group({
@@ -61,6 +62,7 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
     this.handleGetWorkersResponse(this.route.snapshot.data.workerWhoRequireDHAAnswer);
     this.initialiseForm();
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
+    this.delegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
   }
 
   private getWorkers(): void {

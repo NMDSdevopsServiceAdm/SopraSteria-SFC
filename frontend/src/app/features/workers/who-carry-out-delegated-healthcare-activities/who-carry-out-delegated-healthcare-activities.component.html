@@ -11,17 +11,22 @@
           </h1>
         </legend>
         <div
-          class="govuk-inset-text thin-border govuk-!-padding-right-0 govuk-!-margin-top-0 asc__negative-margin-right-4"
+          class="govuk-inset-text thin-border govuk-!-padding-right-0 govuk-!-margin-top-0 govuk-!-margin-bottom-7"
+            style="margin-right: -20px"
         >
           {{ dhaDefinition }}
         </div>
 
-        <app-details
-          [title]="'See delegated healthcare activities that your staff might carry out'"
-          data-testid="reveal-dha-examples"
-        >
-          <!-- to add examples of DHA here when the contents are confirmed -->
-        </app-details>
+      <app-details [title]="'See delegated healthcare activities that your staff might carry out'">
+            <ng-container *ngFor="let delegatedHealthcareActivity of delegatedHealthcareActivities">
+              <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">
+                {{ delegatedHealthcareActivity.title }}
+              </p>
+              <p class="govuk-!-margin-top-0">
+                {{ delegatedHealthcareActivity.description }}
+              </p>
+            </ng-container>
+          </app-details>
       </div>
     </div>
     <div class="govuk-grid-row">
