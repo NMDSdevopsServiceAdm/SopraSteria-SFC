@@ -159,6 +159,7 @@ exports.knownHeaders = [
   'INOUTUK',
   'STARTDATE',
   'STARTINSECT',
+  'DHA',
   'APPRENTICE',
   'EMPLSTATUS',
   'ZEROHRCONT',

@@ -25,7 +25,7 @@
                   [value]="delegateHealthcareActivity.id"
                   aria-describedby="delegateHealthcareActivity-item-hint"
                   (click)="onCheckboxClick($event.target)"
-                  [checked]="!isDoNotKnowChecked &&  this.selectedCheckboxes.includes(delegateHealthcareActivity.id)"
+                  [checked]="!isDoNotKnowChecked &&  this.selectedActivitiesCheckboxes.includes(delegateHealthcareActivity.id)"
                 />
                 <label class="govuk-label govuk-checkboxes__label" for="delegatedHealthcareActivities-{{ i }}">
                   {{ delegateHealthcareActivity.title }}

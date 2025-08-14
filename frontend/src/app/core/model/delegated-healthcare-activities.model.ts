@@ -1,12 +1,11 @@
-export interface DelegatedHealthcareActivity {
-  id: number;
-  seq: number;
-  title: string;
-  description: string;
+export interface GetDelegatedHealthcareActivitiesResponse {
+  allDHAs: DelegatedHealthcareActivity[];
 }
 
-export interface DelegatedHealthcareActivitiesResponse {
-  allDHAs: DelegatedHealthcareActivity[];
+export interface DelegatedHealthcareActivity {
+  id: number;
+  title: string;
+  description: string;
 }
 
 export interface StaffKindDelegatedHealthcareActivity {

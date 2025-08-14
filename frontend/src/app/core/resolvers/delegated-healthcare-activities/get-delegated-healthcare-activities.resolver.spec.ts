@@ -1,19 +1,20 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { DelegatedHealthcareActivitiesResolver } from './delegated-healthcare-activities.resolver';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
+import { of } from 'rxjs';
 
-describe('getCareWorkforcePathwayWorkplaceAwarenessAnswersResolver', () => {
+import { GetDelegatedHealthcareActivitiesResolver } from './get-delegated-healthcare-activities.resolver';
+
+describe('GetDelegatedHealthcareActivitiesResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [DelegatedHealthcareActivitiesResolver, DelegatedHealthcareActivitiesService],
+      providers: [GetDelegatedHealthcareActivitiesResolver],
     });
 
-    const resolver = TestBed.inject(DelegatedHealthcareActivitiesResolver);
-    const delegatedHealthcareActivitiesService = TestBed.inject(DelegatedHealthcareActivitiesService);
+    const resolver = TestBed.inject(GetDelegatedHealthcareActivitiesResolver);
 
+    const delegatedHealthcareActivitiesService = TestBed.inject(DelegatedHealthcareActivitiesService);
     const getDelegatedHealthcareActivitiesSpy = spyOn(
       delegatedHealthcareActivitiesService,
       'getDelegatedHealthcareActivities',
@@ -21,17 +22,17 @@ describe('getCareWorkforcePathwayWorkplaceAwarenessAnswersResolver', () => {
 
     return {
       resolver,
-      delegatedHealthcareActivitiesService,
       getDelegatedHealthcareActivitiesSpy,
     };
   }
 
   it('should create', () => {
     const { resolver } = setup();
+
     expect(resolver).toBeTruthy();
   });
 
-  it('should call getDelegatedHealthcareActivities', () => {
+  it('should call getDelegatedHealthcareActivities in service', () => {
     const { resolver, getDelegatedHealthcareActivitiesSpy } = setup();
 
     resolver.resolve();

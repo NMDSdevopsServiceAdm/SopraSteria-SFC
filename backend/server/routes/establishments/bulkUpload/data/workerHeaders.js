@@ -20,6 +20,7 @@ const workerHeaders = [
   'INOUTUK',
   'STARTDATE',
   'STARTINSECT',
+  'DHA',
   'APPRENTICE',
   'EMPLSTATUS',
   'ZEROHRCONT',

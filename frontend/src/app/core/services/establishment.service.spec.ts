@@ -4,7 +4,7 @@ import { UpdateCareWorkforcePathwayUsePayload } from '@core/model/care-workforce
 import { environment } from 'src/environments/environment';
 
 import { EstablishmentService } from './establishment.service';
-import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activites.model';
+import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
 describe('EstablishmentService', () => {
   let service: EstablishmentService;
   let http: HttpTestingController;

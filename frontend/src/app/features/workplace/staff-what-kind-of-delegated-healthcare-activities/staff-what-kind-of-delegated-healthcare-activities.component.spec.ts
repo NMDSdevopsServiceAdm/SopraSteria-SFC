@@ -6,11 +6,10 @@ import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
-import { Establishment } from '../../../../mockdata/establishment';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
-import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activites.component';
+import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities.component';
 import { BackService } from '@core/services/back.service';
 
 describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {

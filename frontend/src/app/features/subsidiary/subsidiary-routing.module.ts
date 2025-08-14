@@ -13,6 +13,7 @@ import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/res
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
@@ -85,7 +86,7 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
-import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from '@features/workplace/staff-what-kind-of-delegated-healthcare-activites/staff-what-kind-of-delegated-healthcare-activites.component';
+import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from '@features/workplace/staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
 import { WorkplaceStaffDoDHAGuard } from '@core/guards/workplace-staff-do-dha/workplace-staff-do-dha.guard';
 
 // eslint-disable-next-line max-len
@@ -364,6 +365,7 @@ const routes: Routes = [
         path: 'staff-do-delegated-healthcare-activities',
         component: StaffDoDelegatedHealthcareActivitiesComponent,
         canActivate: [CheckPermissionsGuard],
+        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff do delegated healthcare activities',
@@ -373,6 +375,7 @@ const routes: Routes = [
         path: 'what-kind-of-delegated-healthcare-activities',
         component: StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
         canActivate: [CheckPermissionsGuard, WorkplaceStaffDoDHAGuard],
+        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'What kind of delegated healthcare activities',

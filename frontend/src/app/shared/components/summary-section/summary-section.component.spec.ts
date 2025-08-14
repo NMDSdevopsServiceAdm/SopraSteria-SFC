@@ -718,6 +718,107 @@ describe('Summary section', () => {
       });
     });
 
+    describe('Who carries out delegated healthcare activities', () => {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+          staffDoDelegatedHealthcareActivities: null,
+        };
+      };
+
+      const questionMessage = 'Who carries out delegated healthcare activities?';
+
+      it('should show the DHA staff question if staffDoDelegatedHealthcareActivities null and main service can do DHA', async () => {
+        const { getByTestId } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const staffRow = getByTestId('staff-records-row');
+        expect(within(staffRow).getByText(questionMessage)).toBeTruthy();
+        expect(within(staffRow).getByTestId('orange-flag')).toBeTruthy();
+      });
+
+      it('should navigate to who-carry-out-delegated-healthcare-activities when question link clicked', async () => {
+        const { getByTestId, routerSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const staffRow = getByTestId('staff-records-row');
+        const link = within(staffRow).getByText(questionMessage);
+
+        fireEvent.click(link);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          Establishment.uid,
+          'staff-do-delegated-healthcare-activities',
+        ]);
+      });
+
+      it('should set return in establishment service when question link clicked', async () => {
+        const { getByTestId, setReturnToSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const staffRow = getByTestId('staff-records-row');
+        const link = within(staffRow).getByText(questionMessage);
+
+        fireEvent.click(link);
+        expect(setReturnToSpy).toHaveBeenCalled();
+      });
+
+      it('should show question with no link if no edit permission for establishment', async () => {
+        const { getByTestId, getByText } = await setup({
+          canEditWorker: false,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const staffRow = getByTestId('staff-records-row');
+        const dhaStaffMessage = within(staffRow).queryByText(questionMessage);
+
+        expect(dhaStaffMessage.tagName).not.toBe('A');
+
+        const staffLink = getByText('Staff records');
+        expect(staffLink.tagName).toBe('A');
+      });
+
+      it('should not show the who carries out DHA activities question if staffDoDelegatedHealthcareActivities null but main service cannot do DHA', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            ...Establishment,
+            staffDoDelegatedHealthcareActivities: null,
+            mainService: {
+              canDoDelegatedHealthcareActivities: null,
+              id: 11,
+              name: 'Domestic services and home help',
+              reportingID: 10,
+            },
+          },
+        });
+
+        const staffRow = getByTestId('staff-records-row');
+        expect(within(staffRow).queryByText(questionMessage)).toBeFalsy();
+      });
+
+      it('should not show the who carries out DHA activities question question if main service can do DHA but staffDoDelegatedHealthcareActivities is answered', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            ...Establishment,
+            staffDoDelegatedHealthcareActivities: 'No',
+            mainService: {
+              canDoDelegatedHealthcareActivities: true,
+              id: 9,
+              name: 'Day care and day services',
+              reportingID: 6,
+            },
+          },
+        });
+
+        const staffRow = getByTestId('staff-records-row');
+        expect(within(staffRow).queryByText(questionMessage)).toBeFalsy();
+      });
+    });
+
     it('should show staff record does not match message when the number of staff is more than the staff record', async () => {
       const establishment = {
         ...Establishment,

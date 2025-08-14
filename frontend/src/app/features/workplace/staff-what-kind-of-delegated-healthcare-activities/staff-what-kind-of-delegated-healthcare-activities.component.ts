@@ -8,30 +8,20 @@ import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathw
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activites.model';
+import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
 
 @Component({
-  selector: 'app-staff-what-kind-of-delegated-healthcare-activites',
-  templateUrl: './staff-what-kind-of-delegated-healthcare-activites.component.html',
+  selector: 'app-staff-what-kind-of-delegated-healthcare-activities',
+  templateUrl: './staff-what-kind-of-delegated-healthcare-activities.component.html',
 })
 export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Question implements OnInit {
   public section = WorkplaceFlowSections.SERVICES;
   public delegatedHealthcareActivities: DelegatedHealthcareActivity[];
-  public doNotKnowOption = { id: 99, seq: 900, title: 'I do not know' };
+  public doNotKnowOption: any = {};
   public allDelegatedHealthcareActivitiesOptions: any[];
   public isDoNotKnowChecked: boolean = false;
   public delegatedHealthcareActivitiesLength: number;
-
-  public check_box_type = {
-    0: 'ACTIVITY',
-    1: 'DONT_KNOW',
-    2: 'NONE',
-    ACTIVITY: 0,
-    DONT_KNOW: 1,
-    NONE: 2,
-  };
-  public currentlyChecked: number;
-  public selectedCheckboxes: any = [];
+  public selectedActivitiesCheckboxes: any = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -100,16 +90,18 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
       selectedIds.includes(activity.id),
     );
 
-    this.selectedCheckboxes = selectedIds;
+    this.selectedActivitiesCheckboxes = selectedIds.filter((id) => {
+      id !== this.doNotKnowOption.id;
+    });
 
     this.form.patchValue({ selectedDelegatedHealthcareActivities: checkboxesValue });
   }
 
   checkOptionsClicked(clickedCheckbox: number) {
-    if (!this.selectedCheckboxes.includes(clickedCheckbox)) {
-      this.selectedCheckboxes.push(clickedCheckbox);
+    if (!this.selectedActivitiesCheckboxes.includes(clickedCheckbox)) {
+      this.selectedActivitiesCheckboxes.push(clickedCheckbox);
     } else {
-      this.selectedCheckboxes = this.selectedCheckboxes.filter((selected) => {
+      this.selectedActivitiesCheckboxes = this.selectedActivitiesCheckboxes.filter((selected) => {
         return selected !== clickedCheckbox;
       });
     }
@@ -120,23 +112,41 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
 
     if (clickedId === this.doNotKnowOption.id) {
       this.isDoNotKnowChecked = true;
-      this.selectedCheckboxes = [];
+      this.selectedActivitiesCheckboxes = [];
 
-      (this.form.get('selectedDelegatedHealthcareActivities') as FormArray)
-        .at(this.delegatedHealthcareActivitiesLength - 1)
-        .patchValue(true);
+      if (
+        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(
+          this.delegatedHealthcareActivitiesLength,
+        ).value
+      ) {
+        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray)
+          .at(this.delegatedHealthcareActivitiesLength)
+          .patchValue(false);
+      } else {
+        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray)
+          .at(this.delegatedHealthcareActivitiesLength)
+          .patchValue(true);
+      }
 
       this.delegatedHealthcareActivities.forEach((activity, index) => {
         (this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(index).patchValue(false);
       });
     } else {
       this.isDoNotKnowChecked = false;
-      this.checkOptionsClicked(Number(target.value));
+      this.checkOptionsClicked(clickedId);
+
+      if ((this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(clickedId - 1).value) {
+        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(clickedId - 1).patchValue(false);
+      } else {
+        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(clickedId - 1).patchValue(true);
+      }
 
       (this.form.get('selectedDelegatedHealthcareActivities') as FormArray)
-        .at(this.delegatedHealthcareActivitiesLength - 1)
+        .at(this.delegatedHealthcareActivitiesLength)
         .patchValue(false);
     }
+
+    console.log(this.form.value.selectedDelegatedHealthcareActivities);
   }
 
   protected generateUpdateProps(): any {
@@ -166,6 +176,8 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     if (!props && !props.whatDelegateHealthcareActivities) {
       return;
     }
+
+    console.log(props);
 
     this.subscriptions.add(
       this.establishmentService.updateStaffKindDelegatedHealthcareActivities(this.establishment.uid, props).subscribe(

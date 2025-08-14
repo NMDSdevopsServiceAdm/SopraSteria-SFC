@@ -22,10 +22,10 @@ describe('DelegatedHealthcareActivitiesService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should call the /api/getAllDelegatedHealthcareActivities endpoint to get the delegatedHealthcareActivities', () => {
-      service.getAllDelegatedHealthcareActivities().subscribe();
+  it('should call the api/delegatedHealthcareActivities endpoint when getDelegatedHealthcareActivities called', () => {
+    service.getDelegatedHealthcareActivities().subscribe();
 
-      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/delegatedHealthcareActivities`);
-      expect(req.request.method).toBe('GET');
-    });
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/delegatedHealthcareActivities`);
+    expect(req.request.method).toBe('GET');
+  });
 });

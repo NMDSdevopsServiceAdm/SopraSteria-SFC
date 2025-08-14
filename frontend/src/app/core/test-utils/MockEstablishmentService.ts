@@ -9,7 +9,7 @@ import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
 
 import { subsid1, subsid2, subsid3 } from './MockUserService';
-import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activites.model';
+import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
 
 export const establishmentBuilder = build('Establishment', {
   fields: {

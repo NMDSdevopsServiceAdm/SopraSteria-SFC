@@ -1,0 +1,31 @@
+import { Injectable } from '@angular/core';
+import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
+import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
+import { Observable, of } from 'rxjs';
+
+const mockDHAs = [
+  {
+    id: 1,
+    title: 'Vital signs monitoring',
+    description: 'Like monitoring heart rate as part of the treatment of a condition.',
+  },
+  {
+    id: 2,
+    title: 'Specialised medication administration',
+    description: 'Like administering warfarin.',
+  },
+];
+
+export const mockDHADefinition =
+  "We're using the term delegated healthcare to describe activities, usually (but not exclusively) of a clinical nature, that a regulated healthcare professional delegates to a paid care or support worker. Delegated healthcare activities are sometimes called 'tasks' or 'interventions'.";
+
+@Injectable()
+export class MockDelegatedHealthcareActivitiesService extends DelegatedHealthcareActivitiesService {
+  getDelegatedHealthcareActivities(): Observable<DelegatedHealthcareActivity[]> {
+    return of(mockDHAs);
+  }
+
+  public get dhaDefinition(): string {
+    return mockDHADefinition;
+  }
+}

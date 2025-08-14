@@ -17,7 +17,7 @@ const mockActivitiesValues = {
   yes_with_activities: { whatDelegateHealthcareActivities: 'Yes', activities: [mockActivities[0]] },
 };
 
-describe('staffKindDelegatedHealthcareActivitesProperty', () => {
+describe('staffKindDelegatedHealthcareActivitiesProperty', () => {
   describe('restoreFromJson()', () => {
     beforeEach(() => {
       sinon.stub(models.delegatedHealthcareActivities, 'findAll').callsFake((queryOption) => {
@@ -52,7 +52,7 @@ describe('staffKindDelegatedHealthcareActivitesProperty', () => {
       });
     });
 
-    it('should restore the property from a JSON object when whatDelegateHealthcareActivities is "YES" and there are activites', async () => {
+    it('should restore the property from a JSON object when whatDelegateHealthcareActivities is "YES" and there are activities', async () => {
       const staffKindDHAProperty = new propertyClass();
 
       const document = {
@@ -201,7 +201,7 @@ describe('staffKindDelegatedHealthcareActivitesProperty', () => {
     it('should restore in correct format', async () => {
       const document = {
         staffWhatKindDelegatedHealthcareActivities: 'Yes',
-        delegatedHealthcareActivities: mockActivitiesValues.yes_with_activities.activities
+        delegatedHealthcareActivities: mockActivitiesValues.yes_with_activities.activities,
       };
 
       const staffKindDHAProperty = new propertyClass();
