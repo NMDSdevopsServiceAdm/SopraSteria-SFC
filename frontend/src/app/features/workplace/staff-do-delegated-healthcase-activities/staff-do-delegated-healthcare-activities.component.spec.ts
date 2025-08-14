@@ -136,7 +136,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     }
   });
 
-  describe('Dipslaying banner', () => {
+  describe('Displaying banner', () => {
     it('should display banner when user submits and return is to home page', async () => {
       const { fixture, getByText, getByLabelText, alertSpy } = await setup({
         establishmentService: {
@@ -147,7 +147,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       const radioButton = getByLabelText(labels[0]);
       fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save and return');
+      const saveButton = getByText('Save');
       fireEvent.click(saveButton);
       await fixture.whenStable();
 
@@ -170,7 +170,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       const radioButton = getByLabelText(labels[0]);
       fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save and return');
+      const saveButton = getByText('Save');
       fireEvent.click(saveButton);
       await fixture.whenStable();
 
@@ -252,6 +252,43 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       const { getByTestId } = await setup(overrides);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+  });
+
+  describe('from workplace summary', () => {
+    const overrides = { establishmentService: { returnTo: { url: ['/dashboard'], fragment: 'workplace' } } };
+
+    it('should navigate to staff-recruitment-capture-training-requirement page when user skips the question', async () => {
+      const { getByText, routerSpy } = await setup(overrides);
+
+      userEvent.click(getByText('Cancel'));
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+    });
+
+    it('should navigate to what-kind-of-delegated-healthcare-activities after submitting "Yes" as an answer', async () => {
+      const { getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+
+      userEvent.click(getByLabelText('Yes'));
+      userEvent.click(getByText('Save'));
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'what-kind-of-delegated-healthcare-activities',
+      ]);
+      expect(establishmentServiceSpy).toHaveBeenCalled();
+    });
+
+    ['No', 'I do not know'].forEach((answer) => {
+      it(`should navigate to staff-recruitment-capture-training-requirement page after submitting '${answer}' as an answer`, async () => {
+        const { getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+
+        userEvent.click(getByLabelText(answer));
+        userEvent.click(getByText('Save'));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+        expect(establishmentServiceSpy).toHaveBeenCalled();
+      });
     });
   });
 });

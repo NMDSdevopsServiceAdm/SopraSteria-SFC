@@ -101,6 +101,17 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     }
   }
 
+  protected onSuccess(): void {
+    const { staffDoDelegatedHealthcareActivities } = this.form.value;
+
+    if (staffDoDelegatedHealthcareActivities === 'Yes') {
+      this.nextRoute = ['/workplace', this.establishment.uid, 'what-kind-of-delegated-healthcare-activities'];
+      this.submitAction = { action: 'continue', save: true };
+    } else {
+      this.nextRoute = this.skipRoute;
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
