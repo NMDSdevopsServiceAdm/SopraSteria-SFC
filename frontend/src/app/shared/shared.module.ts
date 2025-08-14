@@ -144,6 +144,7 @@ import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { HasValuePipe } from './pipes/has-value.pipe';
 import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
 import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
+import { DetailsDhaExamplesComponent } from './components/details-dha-examples/details-dha-examples.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -288,6 +289,7 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     HasValuePipe,
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
+    DetailsDhaExamplesComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -423,6 +425,7 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     HasValuePipe,
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
+    DetailsDhaExamplesComponent,
   ],
   providers: [
     DialogService,

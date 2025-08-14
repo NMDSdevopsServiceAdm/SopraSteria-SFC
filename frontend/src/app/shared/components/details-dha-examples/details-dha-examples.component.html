@@ -1,0 +1,21 @@
+<app-details [title]="title">
+  <ng-container *ngIf="shouldShowSelectedActivities; else showAllExamples">
+    <p class="govuk-!-margin-bottom-1">You've said that staff in your workplace currently carry out:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li *ngFor="let delegatedHealthcareActivity of selectedActivities">
+        {{ delegatedHealthcareActivity.title }}
+      </li>
+    </ul>
+  </ng-container>
+
+  <ng-template #showAllExamples>
+    <ng-container *ngFor="let delegatedHealthcareActivity of allDHAs" #showAllExamples>
+      <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">
+        {{ delegatedHealthcareActivity.title }}
+      </p>
+      <p class="govuk-!-margin-top-0">
+        {{ delegatedHealthcareActivity.description }}
+      </p>
+    </ng-container>
+  </ng-template>
+</app-details>
