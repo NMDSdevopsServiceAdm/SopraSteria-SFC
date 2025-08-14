@@ -20,7 +20,7 @@ import { of } from 'rxjs';
 
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcare-activities.component';
 
-describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
+fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   const labels = ['Yes', 'No', 'I do not know'];
   const values = ['Yes', 'No', "Don't know"];
 

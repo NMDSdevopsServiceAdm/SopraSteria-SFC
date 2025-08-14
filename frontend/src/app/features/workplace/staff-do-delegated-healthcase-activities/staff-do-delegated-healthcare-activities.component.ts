@@ -23,9 +23,10 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     { value: "Don't know", label: 'I do not know' },
   ];
   private returnIsSetToHomePage: boolean;
-  public delegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
+  public allDelegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
   public dhaDefinition: string;
   public shouldDisplayWarningMessage: boolean = false;
+  public staffWhatKindDelegatedHealthcareActivities: any;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -47,8 +48,10 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     this.nextRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
     this.prefill();
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
-    this.delegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
     this.checkWhetherShouldDisplayWarning();
+    this.allDelegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
+    // this.staffWhatKindDelegatedHealthcareActivities = { activities: [{ id: 1 }, { id: 2 }] };
+    this.staffWhatKindDelegatedHealthcareActivities = null;
 
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
