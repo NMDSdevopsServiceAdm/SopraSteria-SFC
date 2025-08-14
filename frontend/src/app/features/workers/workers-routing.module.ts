@@ -250,7 +250,7 @@ const routes: Routes = [
   {
     path: 'who-carry-out-delegated-healthcare-activities',
     component: WhoCarryOutDelegatedHealthcareActivitiesComponent,
-
+    canActivate: [RequireWhoCarriesDHAAnswerForSomeWorkersGuard],
     resolve: { workerWhoRequireDHAAnswer: GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver },
     data: {
       title: 'Who Carry out Delegated Healthcare Activities',

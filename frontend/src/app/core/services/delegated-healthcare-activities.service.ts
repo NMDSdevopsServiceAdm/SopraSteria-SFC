@@ -36,7 +36,7 @@ export class DelegatedHealthcareActivitiesService {
   ): Observable<DHAGetNumberOfWorkersResponse> {
     return this.http
       .get<DHAGetNumberOfWorkersResponse>(
-        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/delegatedHealthcareActivities/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer`,
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/delegatedHealthcareActivities/NoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer`,
       )
       .pipe(map((res) => res));
   }
