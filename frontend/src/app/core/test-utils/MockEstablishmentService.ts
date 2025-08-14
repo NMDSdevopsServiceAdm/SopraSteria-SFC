@@ -358,7 +358,7 @@ export class MockEstablishmentService extends EstablishmentService {
     workplaceUid: string,
     payload: UpdateStaffKindDelegatedHealthcareActivitiesPayload,
   ) {
-    return of(this.establishmentObj);
+    return of();
   }
 }
 

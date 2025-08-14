@@ -3,7 +3,7 @@ import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-ac
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { Observable, of } from 'rxjs';
 
-const mockDHAs = [
+export const mockDHAs = [
   {
     id: 1,
     title: 'Vital signs monitoring',

@@ -11,23 +11,11 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities.component';
 import { BackService } from '@core/services/back.service';
+import { mockDHADefinition, mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
+import { HttpClient } from '@angular/common/http';
 
 describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
-  const mockDelegatedHealthcareActivities = [
-    {
-      description: 'Like monitoring heart rate as part of the treatment of a condition.',
-      id: 1,
-      seq: 10,
-      title: 'Vital signs monitoring',
-    },
-    {
-      description: 'Like administering warfarin.',
-      id: 2,
-      seq: 20,
-      title: 'Specialised medication administration',
-    },
-  ];
-
+  const doNotKnowText = 'I do not know';
   async function setup(overrides: any = {}) {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
 
@@ -42,13 +30,14 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides.establishmentService ?? {}),
+          deps: [HttpClient],
         },
         {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
               data: {
-                delegatedHealthcareActivities: mockDelegatedHealthcareActivities,
+                delegatedHealthcareActivities: mockDHAs,
               },
             },
           },
@@ -63,9 +52,10 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService);
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.returnValue(
-      of({ ...establishmentService.establishment }),
-    );
+    const establishmentServiceSpy = spyOn(
+      establishmentService,
+      'updateStaffKindDelegatedHealthcareActivities',
+    ).and.returnValue(of({ ...establishmentService.establishment }));
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -98,39 +88,114 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
     expect(heading).toBeTruthy();
   });
 
-  it('should show the hint before the checkbox options', async () => {
+  it('should show the reveal title with the DHA definition', async () => {
     const { getByText } = await setup();
 
-    expect(getByText('Select all that apply.')).toBeTruthy();
+    expect(getByText('What are delegated healthcare activities')).toBeTruthy();
+    expect(getByText(mockDHADefinition)).toBeTruthy();
   });
 
-  it('should show the checkboxes mockDelegatedHealthcareActivities', async () => {
-    const { getByLabelText } = await setup();
+  describe('form', () => {
+    it('should show the hint before the checkbox options', async () => {
+      const { getByText } = await setup();
 
-    mockDelegatedHealthcareActivities.forEach((delegatedHealthcareActivity) => {
-      expect(getByLabelText(delegatedHealthcareActivity.title)).toBeTruthy();
+      expect(getByText('Select all that apply.')).toBeTruthy();
     });
-  });
 
-  it('should show the "I do not know" checkbox', async () => {
-    const { getByLabelText } = await setup();
+    describe('checkboxes', () => {
+      it('should show the title and description of the activities', async () => {
+        const { getByLabelText, getByText } = await setup();
 
-    expect(getByLabelText('I do not know')).toBeTruthy();
-  });
+        mockDHAs.forEach((delegatedHealthcareActivity) => {
+          expect(getByLabelText(delegatedHealthcareActivity.title)).toBeTruthy();
+          expect(getByText(delegatedHealthcareActivity.description)).toBeTruthy();
+        });
+      });
 
-  it('should prefill the previously saved data', async () => {
-    const establishment = {
-      isParent: true,
-      staffWhatKindDelegatedHealthcareActivities: {
-        whatDelegateHealthcareActivities: 'Yes',
-        activities: [{ id: mockDelegatedHealthcareActivities[0].id }],
-      },
-    };
-    const { getByLabelText } = await setup({ establishmentService: { establishment } });
+      it('should show the "I do not know" checkbox', async () => {
+        const { getByLabelText } = await setup();
 
-    const dhaActivity = getByLabelText(mockDelegatedHealthcareActivities[0].title) as HTMLInputElement;
+        expect(getByLabelText(doNotKnowText)).toBeTruthy();
+      });
 
-    expect(dhaActivity.checked).toBeTruthy();
+      it('should prefill the previously saved data', async () => {
+        const establishment = {
+          staffWhatKindDelegatedHealthcareActivities: {
+            whatDelegateHealthcareActivities: 'Yes',
+            activities: [{ id: mockDHAs[0].id }],
+          },
+        };
+        const { getByLabelText } = await setup({ establishmentService: { establishment } });
+
+        const dhaActivity = getByLabelText(mockDHAs[0].title) as HTMLInputElement;
+
+        expect(dhaActivity.checked).toBeTruthy();
+      });
+
+      it('should unselect "I do not know" if an activity is ticked', async () => {
+        const { getByLabelText } = await setup();
+
+        fireEvent.click(getByLabelText(doNotKnowText));
+        fireEvent.click(getByLabelText(mockDHAs[0].title));
+
+        const checkboxOne = getByLabelText(mockDHAs[0].title) as HTMLInputElement;
+        const checkboxTwo = getByLabelText(mockDHAs[1].title) as HTMLInputElement;
+        const doNotKnow = getByLabelText(doNotKnowText) as HTMLInputElement;
+
+        expect(checkboxOne.checked).toBeTruthy();
+        expect(checkboxTwo.checked).toBeFalsy();
+        expect(doNotKnow.checked).toBeFalsy();
+      });
+
+      it('should unselect activities if "I do not know" is ticked', async () => {
+        const { fixture, getByLabelText } = await setup();
+
+        fireEvent.click(getByLabelText(mockDHAs[0].title));
+        fireEvent.click(getByLabelText(doNotKnowText));
+
+        fixture.detectChanges();
+
+        const checkboxOne = getByLabelText(mockDHAs[0].title) as HTMLInputElement;
+        const checkboxTwo = getByLabelText(mockDHAs[1].title) as HTMLInputElement;
+        const doNotKnow = getByLabelText(doNotKnowText) as HTMLInputElement;
+        expect(checkboxOne.checked).toBeFalsy();
+        expect(checkboxTwo.checked).toBeFalsy();
+        expect(doNotKnow.checked).toBeTruthy();
+      });
+
+      describe('submit', () => {
+        it('should submit in the correct format when activities are ticked', async () => {
+          const { component, fixture, getByLabelText, getByText, establishmentServiceSpy } = await setup();
+
+          fireEvent.click(getByLabelText(mockDHAs[0].title));
+          fireEvent.click(getByLabelText(mockDHAs[1].title));
+
+          fireEvent.click(getByText('Save and return'));
+
+          fixture.detectChanges();
+
+          expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
+            whatDelegateHealthcareActivities: 'Yes',
+            activities: [{ id: mockDHAs[0].id }, { id: mockDHAs[1].id }],
+          });
+        });
+
+        it('should submit in the correct format when "I do not know" is ticked', async () => {
+          const { component, fixture, getByLabelText, getByText, establishmentServiceSpy } = await setup();
+
+          fireEvent.click(getByLabelText(doNotKnowText));
+
+          fireEvent.click(getByText('Save and return'));
+
+          fixture.detectChanges();
+
+          expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
+            whatDelegateHealthcareActivities: "Don't know",
+            activities: null,
+          });
+        });
+      });
+    });
   });
 
   describe('workplace workflow', async () => {
@@ -178,7 +243,6 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
     it('should navigate to staff-recruitment-capture-training-requirement page after submit', async () => {
       const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
-      fireEvent.click(getByText(mockDelegatedHealthcareActivities[0].title));
       fireEvent.click(getByText('Save and continue'));
 
       expect(routerSpy).toHaveBeenCalledWith([
@@ -187,43 +251,6 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
         'staff-recruitment-capture-training-requirement',
       ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('checkboxes', () => {
-    it('should unselect activities if "I do not know" is ticked', async () => {
-      const { fixture, getByLabelText } = await setup();
-
-      const doNotKnowText = 'I do not know';
-
-      fireEvent.click(getByLabelText(mockDelegatedHealthcareActivities[0].title));
-      fireEvent.click(getByLabelText(doNotKnowText));
-
-      fixture.detectChanges();
-
-      const checkboxOne = getByLabelText(mockDelegatedHealthcareActivities[0].title) as HTMLInputElement;
-      const checkboxTwo = getByLabelText(mockDelegatedHealthcareActivities[1].title) as HTMLInputElement;
-      const doNotKnow = getByLabelText(doNotKnowText) as HTMLInputElement;
-      expect(checkboxOne.checked).toBeFalsy();
-      expect(checkboxTwo.checked).toBeFalsy();
-      expect(doNotKnow.checked).toBeTruthy();
-    });
-
-    it('should unselect "I do not know" if an activity is ticked', async () => {
-      const { getByLabelText } = await setup();
-
-      const doNotKnowText = 'I do not know';
-
-      fireEvent.click(getByLabelText(doNotKnowText));
-      fireEvent.click(getByLabelText(mockDelegatedHealthcareActivities[0].title));
-
-      const checkboxOne = getByLabelText(mockDelegatedHealthcareActivities[0].title) as HTMLInputElement;
-      const checkboxTwo = getByLabelText(mockDelegatedHealthcareActivities[1].title) as HTMLInputElement;
-      const doNotKnow = getByLabelText(doNotKnowText) as HTMLInputElement;
-
-      expect(checkboxOne.checked).toBeTruthy();
-      expect(checkboxTwo.checked).toBeFalsy();
-      expect(doNotKnow.checked).toBeFalsy();
     });
   });
 });

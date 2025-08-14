@@ -13,7 +13,7 @@ export interface StaffKindDelegatedHealthcareActivity {
 }
 
 export type StaffWhatKindDelegatedHealthcareActivities = YES | DONT_KNOW | null;
-export type UpdateStaffKindDelegatedHealthcareActivitiesPayload = YES | DONT_KNOW;
+export type UpdateStaffKindDelegatedHealthcareActivitiesPayload = YES | DONT_KNOW | null;
 
 type YES = {
   whatDelegateHealthcareActivities: 'Yes';

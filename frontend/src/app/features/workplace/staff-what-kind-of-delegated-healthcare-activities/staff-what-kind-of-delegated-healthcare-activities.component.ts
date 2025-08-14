@@ -9,6 +9,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
+import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 
 @Component({
   selector: 'app-staff-what-kind-of-delegated-healthcare-activities',
@@ -22,6 +23,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
   public isDoNotKnowChecked: boolean = false;
   public delegatedHealthcareActivitiesLength: number;
   public selectedActivitiesCheckboxes: any = [];
+  public dhaDefinition: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -32,11 +34,13 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     protected careWorkforcePathwayService: CareWorkforcePathwayService,
     protected route: ActivatedRoute,
     private alertService: AlertService,
+    private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
   init(): void {
+    this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
     this.delegatedHealthcareActivities = this.route.snapshot.data.delegatedHealthcareActivities;
     this.delegatedHealthcareActivitiesLength = this.delegatedHealthcareActivities.length;
     this.doNotKnowOption = { id: this.delegatedHealthcareActivitiesLength + 1, seq: 900, title: 'I do not know' };
@@ -45,6 +49,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     this.prefill();
     this.skipRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
     this.setPreviousRoute();
+    this.nextRoute = this.skipRoute;
   }
 
   private setPreviousRoute(): void {
@@ -90,9 +95,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
       selectedIds.includes(activity.id),
     );
 
-    this.selectedActivitiesCheckboxes = selectedIds.filter((id) => {
-      id !== this.doNotKnowOption.id;
-    });
+    this.selectedActivitiesCheckboxes = selectedIds.filter((selectedId) => selectedId !== this.doNotKnowOption.id);
 
     this.form.patchValue({ selectedDelegatedHealthcareActivities: checkboxesValue });
   }
@@ -109,56 +112,49 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
 
   onCheckboxClick(target: HTMLInputElement): void {
     const clickedId = Number(target.value);
+    const formGroupArray = this.form.get('selectedDelegatedHealthcareActivities') as FormArray;
+
+    const doNotKnowFormIndex = formGroupArray.at(this.delegatedHealthcareActivitiesLength);
 
     if (clickedId === this.doNotKnowOption.id) {
       this.isDoNotKnowChecked = true;
       this.selectedActivitiesCheckboxes = [];
 
-      if (
-        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(
-          this.delegatedHealthcareActivitiesLength,
-        ).value
-      ) {
-        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray)
-          .at(this.delegatedHealthcareActivitiesLength)
-          .patchValue(false);
+      if (doNotKnowFormIndex.value) {
+        doNotKnowFormIndex.patchValue(false);
       } else {
-        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray)
-          .at(this.delegatedHealthcareActivitiesLength)
-          .patchValue(true);
+        doNotKnowFormIndex.patchValue(true);
       }
 
       this.delegatedHealthcareActivities.forEach((activity, index) => {
-        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(index).patchValue(false);
+        formGroupArray.at(index).patchValue(false);
       });
     } else {
       this.isDoNotKnowChecked = false;
       this.checkOptionsClicked(clickedId);
+      const activityIndex = formGroupArray.at(clickedId - 1);
 
-      if ((this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(clickedId - 1).value) {
-        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(clickedId - 1).patchValue(false);
+      if (activityIndex.value) {
+        activityIndex.patchValue(false);
       } else {
-        (this.form.get('selectedDelegatedHealthcareActivities') as FormArray).at(clickedId - 1).patchValue(true);
+        activityIndex.patchValue(true);
       }
 
-      (this.form.get('selectedDelegatedHealthcareActivities') as FormArray)
-        .at(this.delegatedHealthcareActivitiesLength)
-        .patchValue(false);
+      doNotKnowFormIndex.patchValue(false);
     }
-
-    console.log(this.form.value.selectedDelegatedHealthcareActivities);
   }
 
   protected generateUpdateProps(): any {
     const { selectedDelegatedHealthcareActivities } = this.form.value;
+    const isNull = (currentValue) => currentValue === null;
 
-    if (!selectedDelegatedHealthcareActivities) {
+    if (selectedDelegatedHealthcareActivities.every(isNull)) {
       return null;
     }
 
-    let whatDelegateHealthcareActivities: string;
+    let whatDelegateHealthcareActivities = null;
 
-    const activities = this.allDelegatedHealthcareActivitiesOptions
+    let activities = this.allDelegatedHealthcareActivitiesOptions
       .filter((_answer, index) => selectedDelegatedHealthcareActivities[index])
       .map((selectedActivity) => {
         if (selectedActivity.id === this.doNotKnowOption.id) {
@@ -169,15 +165,17 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
         return { id: selectedActivity.id };
       });
 
+    if (whatDelegateHealthcareActivities === "Don't know" || activities.length === 0) {
+      activities = null;
+    }
+
     return { whatDelegateHealthcareActivities, activities };
   }
 
   protected updateEstablishment(props: any): void {
-    if (!props && !props.whatDelegateHealthcareActivities) {
+    if (!props) {
       return;
     }
-
-    console.log(props);
 
     this.subscriptions.add(
       this.establishmentService.updateStaffKindDelegatedHealthcareActivities(this.establishment.uid, props).subscribe(
@@ -187,7 +185,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     );
   }
 
-  protected onSuccess(): void {
-    this.nextRoute = this.skipRoute;
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
