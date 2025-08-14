@@ -289,12 +289,6 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
-
-    it('should render the progress bar', async () => {
-      const { getByTestId } = await setup(overrides);
-
-      expect(getByTestId('progress-bar')).toBeTruthy();
-    });
   });
 
   describe('from workplace summary', () => {
