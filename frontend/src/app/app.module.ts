@@ -137,6 +137,7 @@ import { SatisfactionSurveyComponent } from './features/satisfaction-survey/sati
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
+import { SortByService } from '@core/services/sort-by.service';
 
 @NgModule({
   declarations: [
@@ -227,6 +228,7 @@ import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
     WorkerService,
     InternationalRecruitmentService,
     PreviousRouteService,
+    SortByService,
     { provide: WindowToken, useFactory: windowProvider },
     {
       provide: HTTP_INTERCEPTORS,
