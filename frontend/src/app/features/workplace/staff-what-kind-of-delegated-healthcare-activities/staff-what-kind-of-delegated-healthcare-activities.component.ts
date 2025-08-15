@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Question } from '../question/question.component';
-import { FormArray, UntypedFormBuilder } from '@angular/forms';
+import { FormArray, FormControl, UntypedFormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -98,6 +98,8 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     this.selectedActivitiesCheckboxes = selectedIds.filter((selectedId) => selectedId !== this.doNotKnowOption.id);
 
     this.form.patchValue({ selectedDelegatedHealthcareActivities: checkboxesValue });
+
+    this.isDoNotKnowChecked = selectedIds.includes(this.doNotKnowOption.id);
   }
 
   checkActivitiesOptionsClicked(clickedCheckbox: number) {
@@ -110,7 +112,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     }
   }
 
-  checkIfCheckboxIsAlreadyClicked(formIndex: any) {
+  toggleCheckbox(formIndex: any) {
     if (formIndex.value) {
       formIndex.patchValue(false);
     } else {
@@ -120,27 +122,27 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
 
   onCheckboxClick(target: HTMLInputElement): void {
     const clickedId = Number(target.value);
-    const formGroupArray = this.form.get('selectedDelegatedHealthcareActivities') as FormArray;
+    const formGroupArray = this.form.get('selectedDelegatedHealthcareActivities') as FormArray<FormControl>;
 
     const doNotKnowFormIndex = formGroupArray.at(this.delegatedHealthcareActivitiesLength);
 
     if (clickedId === this.doNotKnowOption.id) {
-      this.isDoNotKnowChecked = true;
       this.selectedActivitiesCheckboxes = [];
 
-      this.checkIfCheckboxIsAlreadyClicked(doNotKnowFormIndex);
+      this.toggleCheckbox(doNotKnowFormIndex);
 
-      this.delegatedHealthcareActivities.forEach((activity, index) => {
+      this.delegatedHealthcareActivities.forEach((_activity, index) => {
         formGroupArray.at(index).patchValue(false);
       });
+      this.isDoNotKnowChecked = doNotKnowFormIndex.value ? true : false;
     } else {
-      this.isDoNotKnowChecked = false;
       this.checkActivitiesOptionsClicked(clickedId);
       const activityIndex = formGroupArray.at(clickedId - 1);
 
-      this.checkIfCheckboxIsAlreadyClicked(activityIndex);
+      this.toggleCheckbox(activityIndex);
 
       doNotKnowFormIndex.patchValue(false);
+      this.isDoNotKnowChecked = false;
     }
   }
 
@@ -152,18 +154,13 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
       return null;
     }
 
-    let knowWhatActivities = null;
-
     let activities = this.allDelegatedHealthcareActivitiesOptions
       .filter((_answer, index) => selectedDelegatedHealthcareActivities[index])
       .map((selectedActivity) => {
-        if (selectedActivity.id === this.doNotKnowOption.id) {
-          knowWhatActivities = "Don't know";
-        } else if (this.delegatedHealthcareActivities.includes(selectedActivity)) {
-          knowWhatActivities = 'Yes';
-        }
         return { id: selectedActivity.id };
       });
+
+    const knowWhatActivities = this.isDoNotKnowChecked ? "Don't know" : activities.length > 0 ? 'Yes' : null;
 
     if (knowWhatActivities === "Don't know" || activities.length === 0) {
       activities = null;
