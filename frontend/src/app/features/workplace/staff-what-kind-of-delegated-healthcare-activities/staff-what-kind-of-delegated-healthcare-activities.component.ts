@@ -74,14 +74,14 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
       return;
     }
 
-    const { whatDelegateHealthcareActivities, activities } = staffWhatKindDelegatedHealthcareActivities;
+    const { carryOutActivities, activities } = staffWhatKindDelegatedHealthcareActivities;
 
     let previouslySaved = [];
 
-    if (whatDelegateHealthcareActivities === "Don't know") {
+    if (carryOutActivities === "Don't know") {
       previouslySaved = [this.doNotKnowOption];
       this.isDoNotKnowChecked = true;
-    } else if (whatDelegateHealthcareActivities === 'Yes' && activities && activities.length > 0) {
+    } else if (carryOutActivities === 'Yes' && activities && activities.length > 0) {
       previouslySaved = activities;
     }
 
@@ -152,24 +152,24 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
       return null;
     }
 
-    let whatDelegateHealthcareActivities = null;
+    let carryOutActivities = null;
 
     let activities = this.allDelegatedHealthcareActivitiesOptions
       .filter((_answer, index) => selectedDelegatedHealthcareActivities[index])
       .map((selectedActivity) => {
         if (selectedActivity.id === this.doNotKnowOption.id) {
-          whatDelegateHealthcareActivities = "Don't know";
+          carryOutActivities = "Don't know";
         } else if (this.delegatedHealthcareActivities.includes(selectedActivity)) {
-          whatDelegateHealthcareActivities = 'Yes';
+          carryOutActivities = 'Yes';
         }
         return { id: selectedActivity.id };
       });
 
-    if (whatDelegateHealthcareActivities === "Don't know" || activities.length === 0) {
+    if (carryOutActivities === "Don't know" || activities.length === 0) {
       activities = null;
     }
 
-    return { whatDelegateHealthcareActivities, activities };
+    return { carryOutActivities, activities };
   }
 
   protected updateEstablishment(props: any): void {

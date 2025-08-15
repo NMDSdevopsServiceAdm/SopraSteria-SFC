@@ -13,7 +13,7 @@ describe('updateStaffKindDelegatedHealthcareActivities', () => {
     url: '/api/establishment/mock-workplace-uid/updateStaffKindDelegatedHealthcareActivities',
     establishmentId: 'mock-workplace-uid',
     body: {
-      whatDelegateHealthcareActivities: 'Yes',
+      carryOutActivities: 'Yes',
       activities: [{ id: 1 }, { id: 2 }],
     },
   };
@@ -41,8 +41,8 @@ describe('updateStaffKindDelegatedHealthcareActivities', () => {
 
     expect(mockEstablishmentInstance.load).to.have.been.calledWith({
       staffWhatKindDelegatedHealthcareActivities: {
-        whatDelegateHealthcareActivities: 'Yes',
-        activities: [{ id: 1 }, { id: 2 }]
+        carryOutActivities: 'Yes',
+        activities: [{ id: 1 }, { id: 2 }],
       },
     });
     expect(mockEstablishmentInstance.save).to.have.been.called;

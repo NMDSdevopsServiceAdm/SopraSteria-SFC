@@ -12,10 +12,10 @@ const updateStaffKindDelegatedHealthcareActivities = async (req, res) => {
       throw new HttpError('Establishment not found', 404);
     }
 
-    const { whatDelegateHealthcareActivities, activities } = req.body;
+    const { carryOutActivities, activities } = req.body;
 
     const isValidUpdate = await thisEstablishment.load({
-      staffWhatKindDelegatedHealthcareActivities: { whatDelegateHealthcareActivities, activities },
+      staffWhatKindDelegatedHealthcareActivities: { carryOutActivities, activities },
     });
 
     if (!isValidUpdate) {

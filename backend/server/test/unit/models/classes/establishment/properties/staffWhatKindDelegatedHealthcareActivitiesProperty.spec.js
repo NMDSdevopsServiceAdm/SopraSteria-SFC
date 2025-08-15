@@ -12,9 +12,9 @@ const [YES, DONT_KNOW, NULL] = ['Yes', "Don't know", null];
 
 const mockActivitiesValues = {
   empty: null,
-  dont_know: { whatDelegateHealthcareActivities: "Don't know", activities: null },
-  yes_without_activities: { whatDelegateHealthcareActivities: 'Yes', activities: null },
-  yes_with_activities: { whatDelegateHealthcareActivities: 'Yes', activities: [mockActivities[0]] },
+  dont_know: { carryOutActivities: "Don't know", activities: null },
+  yes_without_activities: { carryOutActivities: 'Yes', activities: null },
+  yes_with_activities: { carryOutActivities: 'Yes', activities: [mockActivities[0]] },
 };
 
 describe('staffKindDelegatedHealthcareActivitiesProperty', () => {
@@ -31,18 +31,18 @@ describe('staffKindDelegatedHealthcareActivitiesProperty', () => {
     });
 
     ['Yes', "Don't know", null].forEach((value) => {
-      it(`should restore when "whatDelegateHealthcareActivities" is ${value} and there are no activities`, async () => {
+      it(`should restore when "carryOutActivities" is ${value} and there are no activities`, async () => {
         const staffKindDHAProperty = new propertyClass();
 
         const document = {
           staffWhatKindDelegatedHealthcareActivities: {
-            whatDelegateHealthcareActivities: value,
+            carryOutActivities: value,
             activities: [],
           },
         };
 
         const expectedProperty = {
-          whatDelegateHealthcareActivities: value,
+          carryOutActivities: value,
           activities: null,
         };
 
@@ -52,12 +52,12 @@ describe('staffKindDelegatedHealthcareActivitiesProperty', () => {
       });
     });
 
-    it('should restore the property from a JSON object when whatDelegateHealthcareActivities is "YES" and there are activities', async () => {
+    it('should restore the property from a JSON object when carryOutActivities is "YES" and there are activities', async () => {
       const staffKindDHAProperty = new propertyClass();
 
       const document = {
         staffWhatKindDelegatedHealthcareActivities: {
-          whatDelegateHealthcareActivities: YES,
+          carryOutActivities: YES,
           activities: [
             {
               id: 1,
@@ -67,7 +67,7 @@ describe('staffKindDelegatedHealthcareActivitiesProperty', () => {
       };
 
       const expectedProperty = {
-        whatDelegateHealthcareActivities: YES,
+        carryOutActivities: YES,
         activities: [
           {
             description: 'Like monitoring heart rate as part of the treatment of a condition.',
@@ -95,11 +95,11 @@ describe('staffKindDelegatedHealthcareActivitiesProperty', () => {
     });
 
     ['Yes', "Don't know"].forEach((value) => {
-      it(`when whatDelegateHealthcareActivities is ${value} there are no activities`, async () => {
+      it(`when carryOutActivities is ${value} there are no activities`, async () => {
         const staffKindDHAProperty = new propertyClass();
 
         staffKindDHAProperty.property = {
-          whatDelegateHealthcareActivities: value,
+          carryOutActivities: value,
           activities: null,
         };
 
@@ -109,11 +109,11 @@ describe('staffKindDelegatedHealthcareActivitiesProperty', () => {
       });
     });
 
-    it(`when whatDelegateHealthcareActivities is "Yes" and there are activities`, async () => {
+    it(`when carryOutActivities is "Yes" and there are activities`, async () => {
       const staffKindDHAProperty = new propertyClass();
 
       staffKindDHAProperty.property = {
-        whatDelegateHealthcareActivities: YES,
+        carryOutActivities: YES,
         activities: [mockActivities[0], mockActivities[1]],
       };
 
@@ -165,7 +165,7 @@ describe('staffKindDelegatedHealthcareActivitiesProperty', () => {
 
       expect(json).to.deep.equal({
         staffWhatKindDelegatedHealthcareActivities: {
-          whatDelegateHealthcareActivities: 'Yes',
+          carryOutActivities: 'Yes',
           activities: mockActivitiesValues.yes_with_activities.activities,
         },
       });

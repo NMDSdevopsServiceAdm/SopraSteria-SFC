@@ -16,11 +16,11 @@ export type StaffWhatKindDelegatedHealthcareActivities = YES | DONT_KNOW | null;
 export type UpdateStaffKindDelegatedHealthcareActivitiesPayload = YES | DONT_KNOW | null;
 
 type YES = {
-  whatDelegateHealthcareActivities: 'Yes';
+  carryOutActivities: 'Yes';
   activities: Array<StaffKindDelegatedHealthcareActivity> | null;
 };
 
 type DONT_KNOW = {
-  whatDelegateHealthcareActivities: "Don't know";
+  carryOutActivities: "Don't know";
   activities: null;
 };
