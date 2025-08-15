@@ -21,7 +21,7 @@ import { of } from 'rxjs';
 import { WorkersModule } from '../workers.module';
 import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities.component';
 
-describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
+fdescribe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
   const setup = async (overrides: any = {}) => {
     const workerServiceOverrides = lodash.pick(overrides, 'worker', 'returnTo');
 

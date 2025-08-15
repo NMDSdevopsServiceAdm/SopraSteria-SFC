@@ -15,12 +15,10 @@
             {{ dhaDefinition }}
           </div>
 
-          <app-details
-            [title]="'See delegated healthcare activities that your staff might carry out'"
-            data-testid="reveal-dha-examples"
-          >
-            <!-- to add examples of DHA here when the contents are confirmed -->
-          </app-details>
+          <app-details-dha-examples
+            [allDHAs]="allDelegatedHealthcareActivities"
+            [staffWhatKindDelegatedHealthcareActivities]="staffWhatKindDelegatedHealthcareActivities"
+          ></app-details-dha-examples>
 
           <div class="govuk-form-group">
             <div class="govuk-radios govuk-!-margin-top-3">

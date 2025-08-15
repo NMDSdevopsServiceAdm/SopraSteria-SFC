@@ -9,6 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
+import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
 
 @Component({
   selector: 'app-carry-out-delegated-healthcare-activities',
@@ -22,6 +23,8 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
     { label: 'No', value: 'No' },
     { label: 'I do not know', value: `Don't know` },
   ];
+  public allDelegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
+  public staffWhatKindDelegatedHealthcareActivities: any;
   public dhaDefinition: string;
 
   constructor(
@@ -43,6 +46,10 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
 
   init(): void {
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
+    this.allDelegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
+    // this.staffWhatKindDelegatedHealthcareActivities = { activities: [{ id: 1 }, { id: 2 }] };
+    this.staffWhatKindDelegatedHealthcareActivities = null;
+
     this.prefill();
     this.next = this.determineConditionalRouting();
   }
