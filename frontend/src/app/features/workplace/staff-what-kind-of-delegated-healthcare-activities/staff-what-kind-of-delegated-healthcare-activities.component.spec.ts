@@ -121,7 +121,7 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
       it('should prefill the previously saved data', async () => {
         const establishment = {
           staffWhatKindDelegatedHealthcareActivities: {
-            carryOutActivities: 'Yes',
+            knowWhatActivities: 'Yes',
             activities: [{ id: mockDHAs[0].id }],
           },
         };
@@ -175,7 +175,7 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
           fixture.detectChanges();
 
           expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-            carryOutActivities: 'Yes',
+            knowWhatActivities: 'Yes',
             activities: [{ id: mockDHAs[0].id }, { id: mockDHAs[1].id }],
           });
         });
@@ -190,7 +190,7 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
           fixture.detectChanges();
 
           expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-            carryOutActivities: "Don't know",
+            knowWhatActivities: "Don't know",
             activities: null,
           });
         });

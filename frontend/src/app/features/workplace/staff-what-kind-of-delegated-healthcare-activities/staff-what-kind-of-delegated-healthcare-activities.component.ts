@@ -74,14 +74,14 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
       return;
     }
 
-    const { carryOutActivities, activities } = staffWhatKindDelegatedHealthcareActivities;
+    const { knowWhatActivities, activities } = staffWhatKindDelegatedHealthcareActivities;
 
     let previouslySaved = [];
 
-    if (carryOutActivities === "Don't know") {
+    if (knowWhatActivities === "Don't know") {
       previouslySaved = [this.doNotKnowOption];
       this.isDoNotKnowChecked = true;
-    } else if (carryOutActivities === 'Yes' && activities && activities.length > 0) {
+    } else if (knowWhatActivities === 'Yes' && activities && activities.length > 0) {
       previouslySaved = activities;
     }
 
@@ -152,24 +152,24 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
       return null;
     }
 
-    let carryOutActivities = null;
+    let knowWhatActivities = null;
 
     let activities = this.allDelegatedHealthcareActivitiesOptions
       .filter((_answer, index) => selectedDelegatedHealthcareActivities[index])
       .map((selectedActivity) => {
         if (selectedActivity.id === this.doNotKnowOption.id) {
-          carryOutActivities = "Don't know";
+          knowWhatActivities = "Don't know";
         } else if (this.delegatedHealthcareActivities.includes(selectedActivity)) {
-          carryOutActivities = 'Yes';
+          knowWhatActivities = 'Yes';
         }
         return { id: selectedActivity.id };
       });
 
-    if (carryOutActivities === "Don't know" || activities.length === 0) {
+    if (knowWhatActivities === "Don't know" || activities.length === 0) {
       activities = null;
     }
 
-    return { carryOutActivities, activities };
+    return { knowWhatActivities, activities };
   }
 
   protected updateEstablishment(props: any): void {

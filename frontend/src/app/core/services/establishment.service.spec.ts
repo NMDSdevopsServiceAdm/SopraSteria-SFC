@@ -183,7 +183,7 @@ describe('EstablishmentService', () => {
   describe('updateStaffKindDelegatedHealthcareActivities', () => {
     const mockWorkplaceUid = 'mockWorkplaceUid';
     const payload = {
-      carryOutActivities: 'Yes',
+      knowWhatActivities: 'Yes',
       activities: [{ id: 1 }, { id: 2 }],
     } as UpdateStaffKindDelegatedHealthcareActivitiesPayload;
 

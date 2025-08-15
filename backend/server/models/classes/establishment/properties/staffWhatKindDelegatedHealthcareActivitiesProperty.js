@@ -24,17 +24,17 @@ exports.StaffWhatKindDelegatedHealthcareActivitiesProperty = class StaffWhatKind
       return;
     }
 
-    if (propertyInDocument.carryOutActivities === YES) {
+    if (propertyInDocument.knowWhatActivities === YES) {
       const activities = await this._validateActivities(propertyInDocument.activities);
 
       this.property = {
-        carryOutActivities: YES,
+        knowWhatActivities: YES,
         activities,
       };
       return;
-    } else if (propertyInDocument.carryOutActivities === DONT_KNOW || propertyInDocument.carryOutActivities === NULL) {
+    } else if (propertyInDocument.knowWhatActivities === DONT_KNOW || propertyInDocument.knowWhatActivities === NULL) {
       this.property = {
-        carryOutActivities: propertyInDocument.carryOutActivities,
+        knowWhatActivities: propertyInDocument.knowWhatActivities,
         activities: null,
       };
       return;
@@ -81,11 +81,11 @@ exports.StaffWhatKindDelegatedHealthcareActivitiesProperty = class StaffWhatKind
       };
     }
 
-    const { carryOutActivities, activities } = this.property;
+    const { knowWhatActivities, activities } = this.property;
 
-    if (carryOutActivities === DONT_KNOW || !Array.isArray(activities)) {
+    if (knowWhatActivities === DONT_KNOW || !Array.isArray(activities)) {
       return {
-        staffWhatKindDelegatedHealthcareActivities: carryOutActivities,
+        staffWhatKindDelegatedHealthcareActivities: knowWhatActivities,
         additionalModels: { EstablishmentDHActivities: [] },
       };
     }
@@ -97,23 +97,23 @@ exports.StaffWhatKindDelegatedHealthcareActivitiesProperty = class StaffWhatKind
     });
 
     return {
-      staffWhatKindDelegatedHealthcareActivities: carryOutActivities,
+      staffWhatKindDelegatedHealthcareActivities: knowWhatActivities,
       additionalModels: { EstablishmentDHActivities: dHActivities },
     };
   }
 
   isEqual(currentValue, newValue) {
-    if (!currentValue?.carryOutActivities || !newValue?.carryOutActivities) {
+    if (!currentValue?.knowWhatActivities || !newValue?.knowWhatActivities) {
       return currentValue === newValue;
     }
 
-    switch (currentValue.carryOutActivities) {
+    switch (currentValue.knowWhatActivities) {
       case DONT_KNOW: {
-        return currentValue.carryOutActivities === newValue.carryOutActivities;
+        return currentValue.knowWhatActivities === newValue.knowWhatActivities;
       }
 
       case YES: {
-        if (currentValue.carryOutActivities !== newValue.carryOutActivities) {
+        if (currentValue.knowWhatActivities !== newValue.knowWhatActivities) {
           return false;
         }
 
@@ -161,12 +161,12 @@ exports.StaffWhatKindDelegatedHealthcareActivitiesProperty = class StaffWhatKind
 
     if (staffWhatKindDHA === YES) {
       return {
-        carryOutActivities: 'Yes',
+        knowWhatActivities: 'Yes',
         activities: document.delegatedHealthcareActivities?.length ? document.delegatedHealthcareActivities : null,
       };
     } else if (staffWhatKindDHA === DONT_KNOW) {
       return {
-        carryOutActivities: "Don't know",
+        knowWhatActivities: "Don't know",
         activities: null,
       };
     } else if (!staffWhatKindDHA) {
