@@ -60,6 +60,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
             snapshot: {
               data: {
                 delegatedHealthcareActivities: mockDelegatedHealthcareActivities,
+                workerHasDHAAnswered,
               },
             },
           },
@@ -72,7 +73,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
         },
         {
           provide: DelegatedHealthcareActivitiesService,
-          useFactory: MockDelegatedHealthcareActivitiesService.factory({ workerHasDHAAnswered }),
+          useClass: MockDelegatedHealthcareActivitiesService,
         },
         AlertService,
         WindowRef,
