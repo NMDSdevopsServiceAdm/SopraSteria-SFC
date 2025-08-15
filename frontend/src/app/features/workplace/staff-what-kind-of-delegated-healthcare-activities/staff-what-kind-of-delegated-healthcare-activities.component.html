@@ -1,0 +1,82 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group govuk-!-padding-bottom-4">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              What kind of delegated healthcare activities do your non-nursing staff carry out?
+            </h1>
+          </legend>
+          <app-details [title]="'What are delegated healthcare activities'">
+            {{ dhaDefinition }}
+          </app-details>
+          <div id="dha-hint" class="govuk-hint">Select all that apply.</div>
+          <div
+            class="govuk-checkboxes"
+            [formArrayName]="'selectedDelegatedHealthcareActivities'"
+            data-module="govuk-checkboxes"
+          >
+            <ng-container *ngFor="let delegateHealthcareActivity of delegatedHealthcareActivities; let i = index">
+              <div class="govuk-checkboxes__item">
+                <input
+                  class="govuk-checkboxes__input"
+                  id="delegatedHealthcareActivities-{{ i }}"
+                  [formControlName]="i"
+                  type="checkbox"
+                  [value]="delegateHealthcareActivity.id"
+                  aria-describedby="delegateHealthcareActivity-item-hint"
+                  (click)="onCheckboxClick($event.target)"
+                  [checked]="!isDoNotKnowChecked && this.selectedActivitiesCheckboxes.includes(delegateHealthcareActivity.id)"
+                />
+                <label class="govuk-label govuk-checkboxes__label" for="delegatedHealthcareActivities-{{ i }}">
+                  {{ delegateHealthcareActivity.title }}
+                </label>
+                <div id="delegateHealthcareActivity-item-hint" class="govuk-hint govuk-checkboxes__hint">
+                  {{ delegateHealthcareActivity.description }}
+                </div>
+              </div>
+            </ng-container>
+            <div class="govuk-checkboxes__divider" style="width: 100%">
+              <hr
+                class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-6 govuk-!-margin-bottom-6"
+              />
+            </div>
+            <div class="govuk-checkboxes__item">
+              <input
+                class="govuk-checkboxes__input"
+                id="delegatedHealthcareActivities-{{ delegatedHealthcareActivities }}"
+                [formControlName]="delegatedHealthcareActivitiesLength"
+                type="checkbox"
+                data-behaviour="exclusive"
+                [value]="doNotKnowOption.id"
+                (click)="onCheckboxClick($event.target)"
+                [checked]="isDoNotKnowChecked"
+              />
+              <label
+                class="govuk-label govuk-checkboxes__label"
+                for="delegatedHealthcareActivities-{{ delegatedHealthcareActivities }}"
+              >
+                {{ doNotKnowOption.title }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+</form>

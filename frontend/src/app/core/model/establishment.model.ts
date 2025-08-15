@@ -1,4 +1,5 @@
 import { CareWorkforcePathwayUse } from './care-workforce-pathway.model';
+import { StaffWhatKindDelegatedHealthcareActivities } from './delegated-healthcare-activities.model';
 import { DataPermissions, WorkplaceDataOwner } from './my-workplaces.model';
 import { WDFValue } from './wdf.model';
 
@@ -176,6 +177,7 @@ export interface Establishment {
   careWorkforcePathwayUse: CareWorkforcePathwayUse;
   CWPAwarenessQuestionViewed?: boolean;
   staffDoDelegatedHealthcareActivities?: string;
+  staffWhatKindDelegatedHealthcareActivities?: StaffWhatKindDelegatedHealthcareActivities;
 }
 
 export interface UpdateJobsRequest {

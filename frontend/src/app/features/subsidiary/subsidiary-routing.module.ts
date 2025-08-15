@@ -86,6 +86,8 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from '@features/workplace/staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
+import { WorkplaceStaffDoDHAGuard } from '@core/guards/workplace-staff-do-dha/workplace-staff-do-dha.guard';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -367,6 +369,16 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff do delegated healthcare activities',
+        },
+      },
+      {
+        path: 'what-kind-of-delegated-healthcare-activities',
+        component: StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
+        canActivate: [CheckPermissionsGuard, WorkplaceStaffDoDHAGuard],
+        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'What kind of delegated healthcare activities',
         },
       },
       {

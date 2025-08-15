@@ -21,6 +21,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { PostServicesModel } from '../model/postServices.model';
+import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -62,6 +63,8 @@ interface UpdateCareWorkforcePathwayWorkplaceAwarenessResponse {
   name: string;
   careWorkforcePathwayWorkforceAwareness: CareWorkforcePathwayWorkplaceAwareness;
 }
+
+interface UpdateStaffKindDelegatedHealthcareActivitiesResponse {}
 
 @Injectable({
   providedIn: 'root',
@@ -464,6 +467,16 @@ export class EstablishmentService {
   public updateCareWorkforcePathwayUse(establishmentUid: string, payload: UpdateCareWorkforcePathwayUsePayload) {
     return this.http.post<UpdateCareWorkforcePathwayUseResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/careWorkforcePathway/careWorkforcePathwayUse`,
+      payload,
+    );
+  }
+
+  public updateStaffKindDelegatedHealthcareActivities(
+    establishmentUid: string,
+    payload: UpdateStaffKindDelegatedHealthcareActivitiesPayload,
+  ) {
+    return this.http.post<UpdateStaffKindDelegatedHealthcareActivitiesResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/updateStaffKindDelegatedHealthcareActivities`,
       payload,
     );
   }

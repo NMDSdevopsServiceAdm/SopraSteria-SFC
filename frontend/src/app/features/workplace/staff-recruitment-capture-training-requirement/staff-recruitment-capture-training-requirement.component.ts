@@ -54,7 +54,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
 
   private setPreviousRoute(): void {
     const previousPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
-      ? 'staff-do-delegated-healthcare-activities'
+      ? 'what-kind-of-delegated-healthcare-activities'
       : 'how-many-leavers';
 
     this.previousRoute = ['/workplace', this.establishment.uid, previousPage];
