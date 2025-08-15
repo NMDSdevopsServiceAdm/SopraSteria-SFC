@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
@@ -21,11 +22,33 @@ export const mockDHADefinition =
 
 @Injectable()
 export class MockDelegatedHealthcareActivitiesService extends DelegatedHealthcareActivitiesService {
+  public _workerHasDHAAnswered: boolean = true;
+
   getDelegatedHealthcareActivities(): Observable<DelegatedHealthcareActivity[]> {
     return of(mockDHAs);
   }
 
+  checkIfAnyWorkerHasDHAAnswered(_establishmentId: string): Observable<boolean> {
+    return of(this._workerHasDHAAnswered);
+  }
+
   public get dhaDefinition(): string {
     return mockDHADefinition;
+  }
+
+  public static factory(overrides: any = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockDelegatedHealthcareActivitiesService(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        if (overrideName === 'workerHasDHAAnswered') {
+          service._workerHasDHAAnswered = overrides[overrideName];
+          return;
+        }
+        service[overrideName] = overrides[overrideName];
+      });
+
+      return service;
+    };
   }
 }

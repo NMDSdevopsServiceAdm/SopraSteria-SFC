@@ -80,6 +80,7 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -468,7 +469,10 @@ const routes: Routes = [
         path: 'staff-do-delegated-healthcare-activities',
         component: StaffDoDelegatedHealthcareActivitiesComponent,
         canActivate: [CheckPermissionsGuard],
-        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
+        resolve: {
+          delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver,
+          workerHasDHAAnswered: CheckIfAnyWorkerHasDHAAnsweredResolver,
+        },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff do delegated healthcare activities',
