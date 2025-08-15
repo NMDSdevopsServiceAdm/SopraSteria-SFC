@@ -36,7 +36,7 @@ export class DelegatedHealthcareActivitiesService {
   ): Observable<DHAGetNumberOfWorkersResponse> {
     return this.http
       .get<DHAGetNumberOfWorkersResponse>(
-        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/delegatedHealthcareActivities/NoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer`,
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/delegatedHealthcareActivities/noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer`,
       )
       .pipe(map((res) => res));
   }
@@ -46,7 +46,7 @@ export class DelegatedHealthcareActivitiesService {
     queryParams: Params = {},
   ): Observable<DHAGetAllWorkersResponse> {
     return this.http.get<DHAGetAllWorkersResponse>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/delegatedHealthcareActivities/WorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer`,
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/delegatedHealthcareActivities/workersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer`,
       { params: queryParams },
     );
   }

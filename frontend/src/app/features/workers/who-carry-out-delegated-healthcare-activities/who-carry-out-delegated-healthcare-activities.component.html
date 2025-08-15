@@ -18,14 +18,7 @@
         </div>
 
       <app-details [title]="'See delegated healthcare activities that your staff might carry out'">
-            <ng-container *ngFor="let delegatedHealthcareActivity of delegatedHealthcareActivities">
-              <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                {{ delegatedHealthcareActivity.title }}
-              </p>
-              <p class="govuk-!-margin-top-0">
-                {{ delegatedHealthcareActivity.description }}
-              </p>
-            </ng-container>
+
           </app-details>
       </div>
     </div>
@@ -52,18 +45,19 @@
               <td class="govuk-table__cell">
                 <div class="govuk-radios govuk-radios--inline asc-inline-radio-buttons">
                   <div
-                    *ngFor="let answer of avaliaAnswers; let j = index"
+                    *ngFor="let answer of avalibleAnswers; let j = index"
                     class="govuk-radios__item govuk-!-margin-left-4 govuk-!-margin-bottom-0"
                   >
                     <input
-                      id="healthAndCareVisa-{{ i }}-{{ j }}"
-                      name="healthAndCareVisa-{{ i }}"
+                      id="delegatedHealthcare-{{ i }}-{{ j }}"
+                      name="delegatedHealthcare-{{ i }}"
                       class="govuk-radios__input"
                       type="radio"
+                        [checked]="worker.value == answer"
                       [value]="answer.value"
                       (change)="radioChange(i, j)"
                     />
-                    <label class="govuk-label govuk-radios__label"> {{ answer.tag }}</label>
+                    <label class="govuk-label govuk-radios__label" for="delegatedHealthcare-{{ i }}-{{ j }} "> {{ answer.tag }}</label>
                   </div>
                 </div>
               </td>
