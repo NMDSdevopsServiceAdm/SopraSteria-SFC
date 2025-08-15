@@ -92,13 +92,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
       return;
     }
 
-    this.subscriptions.add(
-      this.delegatedHealthcareActivitiesService
-        .checkIfAnyWorkerHasDHAAnswered(this.establishment.uid)
-        .subscribe((hasAnswer) => {
-          this.shouldDisplayWarningMessage = hasAnswer;
-        }),
-    );
+    this.shouldDisplayWarningMessage = this.route.snapshot.data?.workerHasDHAAnswered;
   }
 
   protected updateEstablishment(props: any): void {
