@@ -1,10 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { QuestionComponent } from '../question/question.component';
 import { AbstractControl, FormGroup, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { WorkerService } from '@core/services/worker.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { JobRole } from '@core/model/job.model';
@@ -14,6 +12,8 @@ import {
 } from '@core/services/delegated-healthcare-activities.service';
 import { take } from 'rxjs/operators';
 import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-who-carry-out-delegated-healthcare-activities',
@@ -23,36 +23,38 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
   private subscriptions: Subscription = new Subscription();
   private workplaceUid: string;
   public workersToShow: Array<{ uid: string; nameOrId: string; mainJob: JobRole }> = [];
+  public workerAnswers: Array<{ uid: string; carryOutDelegatedHealthcareActivities?: string }> = [];
+  public dhaDefinition: string;
   public workerCount: number;
   public itemsPerPage: number = 15;
   public pageIndex: number = 0;
   public submitted: boolean;
+  public form: FormGroup;
+  public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition> = [];
   @ViewChild('formEl') formEl: ElementRef;
   public section = 'Employment details';
   public heading = 'Who carries out delegated healthcare activities?';
 
-  public avaliaAnswers = [
+  public avalibleAnswers = [
     { tag: 'Yes', value: 'Yes' },
     { tag: 'No', value: 'No' },
     { tag: 'I do not know', value: `Don't know` },
   ];
-  public dhaDefinition: string;
-  public delegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
-
-  public form: FormGroup;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
     private establishmentService: EstablishmentService,
-    private workerService: WorkerService,
     private backLinkService: BackLinkService,
     private router: Router,
+    private errorSummaryService: ErrorSummaryService,
+    private alertService: AlertService,
     private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
     private route: ActivatedRoute,
   ) {
     this.form = this.formBuilder.group({
-      healthAndCareVisaRadioList: this.formBuilder.group({}),
+      delegatedHealthCareRadioList: this.formBuilder.group({}),
     });
   }
 
@@ -60,9 +62,14 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
     this.backLinkService.showBackLink();
     this.workplaceUid = this.establishmentService.establishment.uid;
     this.handleGetWorkersResponse(this.route.snapshot.data.workerWhoRequireDHAAnswer);
-    this.initialiseForm();
+
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
-    this.delegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
+    this.initialiseForm();
+    this.setupServerErrorsMap();
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   private getWorkers(): void {
@@ -80,39 +87,89 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
     if (response?.workers?.length) {
       this.workersToShow = response.workers;
       this.workerCount = response?.workerCount;
-    } else {
-      this.returnToHome();
     }
   }
 
-  get healthAndCareVisaRadioList(): FormGroup {
-    return this.form.get('healthAndCareVisaRadioList') as FormGroup;
+  get delegatedHealthCareRadioList(): FormGroup {
+    return this.form.get('delegatedHealthCareRadioList') as FormGroup;
   }
 
-  get healthAndCareVisaRadioListValues(): AbstractControl[] {
-    return Object.values(this.healthAndCareVisaRadioList.controls);
+  get delegatedHealthCareRadioListValues(): AbstractControl[] {
+    return Object.values(this.delegatedHealthCareRadioList.controls);
   }
 
   initialiseForm(): void {
     for (let i = 0; i < this.workersToShow.length; i++) {
-      this.healthAndCareVisaRadioList.addControl(this.workersToShow[i].uid, this.createFormGroupForWorker());
+      this.delegatedHealthCareRadioList.addControl(this.workersToShow[i].uid, this.createFormGroupForWorker());
     }
   }
 
   private createFormGroupForWorker(): FormGroup {
     return this.formBuilder.group({
-      healthAndCareVisa: null,
+      delegatedHealthcare: null,
     });
   }
 
-  public returnToHome(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'home' });
+  public onSubmit(): void {
+    this.submitted = true;
+
+    this.establishmentService.updateWorkers(this.workplaceUid, this.workerAnswers).subscribe(
+      () => this.onSubmitSuccess(),
+      (error) => this.onSubmitError(error),
+    );
   }
 
-  public onSubmit(): void {}
+  private onSubmitSuccess(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Delegated healthcare activity information saved',
+      });
+    });
+  }
+
+  private setupServerErrorsMap(): void {
+    const serverErrorMessage =
+      'There has been a problem saving your delegated healthcare activities. Please try again.';
+    this.serverErrorsMap = [400, 404, 503].map((errorCode) => {
+      return {
+        name: errorCode,
+        message: serverErrorMessage,
+      };
+    });
+  }
+
+  public radioChange(workerIndex, answerIndex): void {
+    const updatedWorker = this.workersToShow[workerIndex];
+    const updatedWorkerWithAnswer = this.workerAnswers.find((worker) => {
+      return worker.uid === updatedWorker.uid;
+    });
+
+    if (updatedWorkerWithAnswer) {
+      updatedWorkerWithAnswer.carryOutDelegatedHealthcareActivities = this.avalibleAnswers[answerIndex].value;
+    } else {
+      this.workerAnswers.push({
+        uid: updatedWorker.uid,
+        carryOutDelegatedHealthcareActivities: this.avalibleAnswers[answerIndex].value,
+      });
+    }
+  }
+  private onSubmitError(error): void {
+    this.errorSummaryService.scrollToErrorSummary();
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+  }
+
+  public handlePageUpdate(pageIndex: number): void {
+    this.pageIndex = pageIndex;
+    this.getWorkers();
+  }
 
   public onCancel(event: Event): void {
     event.preventDefault();
     this.router.navigate(['/dashboard'], { fragment: 'home' });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
