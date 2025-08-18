@@ -246,6 +246,12 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
 
+    it('should not display warning message about selecting "No"', async () => {
+      const { queryByTestId } = await setup(overrides);
+
+      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
+    });
+
     it('should show a "Save and continue" cta button and "Skip this question" link', async () => {
       const { getByText } = await setup(overrides);
 
@@ -327,12 +333,6 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
         expect(establishmentServiceSpy).toHaveBeenCalled();
       });
-    });
-
-    it('should not display warning message about selecting "No"', async () => {
-      const { queryByTestId } = await setup(overrides);
-
-      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
     });
   });
 
