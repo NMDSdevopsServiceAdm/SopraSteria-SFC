@@ -24,6 +24,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
+import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
 describe('NewWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -834,6 +835,144 @@ describe('NewWorkplaceSummaryComponent', () => {
         const staffDoDelegatedHealthcareActivitiesRow = queryByTestId('carryOutDelegatedHealthcareActivities');
 
         expect(staffDoDelegatedHealthcareActivitiesRow).toBeFalsy();
+      });
+    });
+
+    describe('Know what delegated healthcare activities', () => {
+      describe('staffDoDelegatedHealthcareActivities is not "Yes"', () => {
+        ['No', "Don't know"].forEach((answer) => {
+          it(`should not show row when staffDoDelegatedHealthcareActivities is ${answer}`, async () => {
+            const { queryByTestId } = await setup({
+              establishment: {
+                staffDoDelegatedHealthcareActivities: answer,
+              },
+              permissions: ['canEditEstablishment'],
+            });
+
+            const knowWhatDelegatedHealthcareActivitiesRow = queryByTestId('know-what-delegated-healthcare-activities');
+
+            expect(knowWhatDelegatedHealthcareActivitiesRow).toBeFalsy();
+          });
+        });
+      });
+
+      describe('staffDoDelegatedHealthcareActivities is "Yes"', () => {
+        it('should show "Not known" and a change link when Don`t know is answered', async () => {
+          const { component, getByTestId } = await setup({
+            establishment: {
+              staffDoDelegatedHealthcareActivities: 'Yes',
+              staffWhatKindDelegatedHealthcareActivities: {
+                knowWhatActivities: "Don't know",
+                activities: null,
+              },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          const knowWhatDelegatedHealthcareActivitiesRow = getByTestId('know-what-delegated-healthcare-activities');
+          const link = within(knowWhatDelegatedHealthcareActivitiesRow).queryByText('Change');
+          const answer = within(knowWhatDelegatedHealthcareActivitiesRow).queryByText('Not known');
+
+          expect(answer).toBeTruthy();
+          expect(link).toBeTruthy();
+          expect(link.getAttribute('href')).toEqual(
+            `/workplace/${component.workplace.uid}/what-kind-of-delegated-healthcare-activities`,
+          );
+          expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
+        });
+
+        it('should show a list of activities and a change link"', async () => {
+          const { component, getByTestId } = await setup({
+            establishment: {
+              staffDoDelegatedHealthcareActivities: 'Yes',
+              staffWhatKindDelegatedHealthcareActivities: {
+                knowWhatActivities: 'Yes',
+                activities: mockDHAs,
+              },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          const knowWhatDelegatedHealthcareActivitiesRow = getByTestId('know-what-delegated-healthcare-activities');
+
+          const link = within(knowWhatDelegatedHealthcareActivitiesRow).queryByText('Change');
+
+          mockDHAs.forEach((answer) => {
+            expect(within(knowWhatDelegatedHealthcareActivitiesRow).queryByText(answer.title)).toBeTruthy();
+          });
+          expect(link).toBeTruthy();
+          expect(link.getAttribute('href')).toEqual(
+            `/workplace/${component.workplace.uid}/what-kind-of-delegated-healthcare-activities`,
+          );
+          expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
+        });
+
+        describe('no answer', () => {
+          it('should show "None selected" and a change link when staffWhatKindDelegatedHealthcareActivities is null', async () => {
+            const { component, getByTestId } = await setup({
+              establishment: {
+                staffDoDelegatedHealthcareActivities: 'Yes',
+                staffWhatKindDelegatedHealthcareActivities: null,
+              },
+              permissions: ['canEditEstablishment'],
+            });
+
+            const knowWhatDelegatedHealthcareActivitiesRow = getByTestId('know-what-delegated-healthcare-activities');
+            const link = within(knowWhatDelegatedHealthcareActivitiesRow).queryByText('Change');
+            const answer = within(knowWhatDelegatedHealthcareActivitiesRow).queryByText('None selected');
+
+            expect(answer).toBeTruthy();
+            expect(link).toBeTruthy();
+            expect(link.getAttribute('href')).toEqual(
+              `/workplace/${component.workplace.uid}/what-kind-of-delegated-healthcare-activities`,
+            );
+
+            expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
+          });
+
+          it('should show "None selected" and a change link when staffWhatKindDelegatedHealthcareActivities is null', async () => {
+            const { component, getByTestId } = await setup({
+              establishment: {
+                staffDoDelegatedHealthcareActivities: 'Yes',
+                staffWhatKindDelegatedHealthcareActivities: {
+                  knowWhatActivities: null,
+                  activities: null,
+                },
+              },
+              permissions: ['canEditEstablishment'],
+            });
+
+            const knowWhatDelegatedHealthcareActivitiesRow = getByTestId('know-what-delegated-healthcare-activities');
+            const link = within(knowWhatDelegatedHealthcareActivitiesRow).queryByText('Change');
+            const answer = within(knowWhatDelegatedHealthcareActivitiesRow).queryByText('None selected');
+
+            expect(answer).toBeTruthy();
+            expect(link).toBeTruthy();
+            expect(link.getAttribute('href')).toEqual(
+              `/workplace/${component.workplace.uid}/what-kind-of-delegated-healthcare-activities`,
+            );
+            expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
+          });
+        });
+
+        it('should not show a change link" when canEditEstablishment is false', async () => {
+          const { getByTestId } = await setup({
+            establishment: {
+              staffDoDelegatedHealthcareActivities: 'Yes',
+              staffWhatKindDelegatedHealthcareActivities: {
+                knowWhatActivities: 'Yes',
+                activities: mockDHAs,
+              },
+            },
+            permissions: [],
+          });
+
+          const knowWhatDelegatedHealthcareActivitiesRow = getByTestId('know-what-delegated-healthcare-activities');
+          const link = within(knowWhatDelegatedHealthcareActivitiesRow).queryByText('Change');
+
+          expect(link).toBeFalsy();
+          expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
+        });
       });
     });
   });
