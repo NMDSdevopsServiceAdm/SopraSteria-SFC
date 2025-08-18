@@ -3,7 +3,7 @@ import { render } from '@testing-library/angular';
 
 import { DetailsDhaExamplesComponent } from './details-dha-examples.component';
 
-fdescribe('DetailsDhaExamplesComponent', () => {
+describe('DetailsDhaExamplesComponent', () => {
   const mockDelegatedHealthcareActivities = [
     {
       id: 1,
