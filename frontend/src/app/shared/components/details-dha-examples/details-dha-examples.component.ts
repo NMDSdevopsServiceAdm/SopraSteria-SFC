@@ -1,16 +1,18 @@
-import { Component, Input } from '@angular/core';
-import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
-import { lowerFirst } from 'lodash';
 import lodash from 'lodash';
+
+import { Component, Input } from '@angular/core';
+import {
+  DelegatedHealthcareActivity,
+  StaffWhatKindDelegatedHealthcareActivities,
+} from '@core/model/delegated-healthcare-activities.model';
 
 @Component({
   selector: 'app-details-dha-examples',
   templateUrl: './details-dha-examples.component.html',
-  styleUrl: './details-dha-examples.component.scss',
 })
 export class DetailsDhaExamplesComponent {
   @Input() allDHAs: Array<DelegatedHealthcareActivity>;
-  @Input() staffWhatKindDelegatedHealthcareActivities: any;
+  @Input() staffWhatKindDelegatedHealthcareActivities: StaffWhatKindDelegatedHealthcareActivities;
 
   public title: string;
   public shouldShowSelectedActivities: boolean = false;
@@ -41,5 +43,6 @@ export class DetailsDhaExamplesComponent {
 
   private showAllExampleActivities(): void {
     this.title = 'See delegated healthcare activities that your staff might carry out';
+    this.shouldShowSelectedActivities = false;
   }
 }
