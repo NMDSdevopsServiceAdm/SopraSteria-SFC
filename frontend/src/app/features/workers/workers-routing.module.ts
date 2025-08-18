@@ -79,6 +79,7 @@ import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workp
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
+import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 
 const routes: Routes = [
   {
@@ -388,6 +389,7 @@ const routes: Routes = [
           {
             path: 'carry-out-delegated-healthcare-activities',
             component: CarryOutDelegatedHealthcareActivitiesComponent,
+            resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
             data: { title: 'Carry out Delegated Healthcare Activities' },
           },
           {
@@ -686,6 +688,7 @@ const routes: Routes = [
       {
         path: 'carry-out-delegated-healthcare-activities',
         component: CarryOutDelegatedHealthcareActivitiesComponent,
+        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
         data: { title: 'Carry out Delegated Healthcare Activities' },
       },
       {

@@ -15,6 +15,11 @@ export const mockDHAs = [
     title: 'Specialised medication administration',
     description: 'Like administering warfarin.',
   },
+  {
+    id: 8,
+    title: 'Other delegated healthcare activity',
+    description: 'Something else delegated by a regulated healthcare professional',
+  },
 ];
 
 export const mockDHADefinition =

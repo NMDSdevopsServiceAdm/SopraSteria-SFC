@@ -1,7 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
+import {
+  DelegatedHealthcareActivity,
+  StaffWhatKindDelegatedHealthcareActivities,
+} from '@core/model/delegated-healthcare-activities.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
@@ -23,9 +26,10 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     { value: "Don't know", label: 'I do not know' },
   ];
   private returnIsSetToHomePage: boolean;
-  public delegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
+  public allDelegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
   public dhaDefinition: string;
   public shouldDisplayWarningMessage: boolean = false;
+  public staffWhatKindDelegatedHealthcareActivities: StaffWhatKindDelegatedHealthcareActivities;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -47,8 +51,8 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     this.nextRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
     this.prefill();
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
-    this.delegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
     this.checkWhetherShouldDisplayWarning();
+    this.allDelegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
 
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
