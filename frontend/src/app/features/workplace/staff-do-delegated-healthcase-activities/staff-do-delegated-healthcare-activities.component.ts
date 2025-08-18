@@ -1,7 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
+import {
+  DelegatedHealthcareActivity,
+  StaffWhatKindDelegatedHealthcareActivities,
+} from '@core/model/delegated-healthcare-activities.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
@@ -26,7 +29,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
   public allDelegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
   public dhaDefinition: string;
   public shouldDisplayWarningMessage: boolean = false;
-  public staffWhatKindDelegatedHealthcareActivities: any;
+  public staffWhatKindDelegatedHealthcareActivities: StaffWhatKindDelegatedHealthcareActivities;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
+import {
+  DelegatedHealthcareActivity,
+  StaffWhatKindDelegatedHealthcareActivities,
+} from '@core/model/delegated-healthcare-activities.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -9,7 +13,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
-import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
 
 @Component({
   selector: 'app-carry-out-delegated-healthcare-activities',
@@ -24,7 +27,7 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
     { label: 'I do not know', value: `Don't know` },
   ];
   public allDelegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
-  public staffWhatKindDelegatedHealthcareActivities: any;
+  public staffWhatKindDelegatedHealthcareActivities: StaffWhatKindDelegatedHealthcareActivities;
   public dhaDefinition: string;
 
   constructor(
