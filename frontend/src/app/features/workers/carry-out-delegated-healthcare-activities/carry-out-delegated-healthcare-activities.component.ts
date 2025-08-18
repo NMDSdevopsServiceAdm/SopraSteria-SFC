@@ -47,8 +47,7 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
   init(): void {
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
     this.allDelegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
-    // this.staffWhatKindDelegatedHealthcareActivities = { activities: [{ id: 1 }, { id: 2 }] };
-    this.staffWhatKindDelegatedHealthcareActivities = null;
+    this.staffWhatKindDelegatedHealthcareActivities = this.workplace.staffWhatKindDelegatedHealthcareActivities;
 
     this.prefill();
     this.next = this.determineConditionalRouting();

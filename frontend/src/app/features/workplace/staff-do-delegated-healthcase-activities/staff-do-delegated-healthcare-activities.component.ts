@@ -50,8 +50,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
     this.checkWhetherShouldDisplayWarning();
     this.allDelegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
-    // this.staffWhatKindDelegatedHealthcareActivities = { activities: [{ id: 1 }, { id: 2 }] };
-    this.staffWhatKindDelegatedHealthcareActivities = null;
+    this.staffWhatKindDelegatedHealthcareActivities = this.establishment.staffWhatKindDelegatedHealthcareActivities;
 
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
