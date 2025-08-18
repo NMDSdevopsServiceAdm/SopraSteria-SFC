@@ -25,6 +25,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
   private returnIsSetToHomePage: boolean;
   public delegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
   public dhaDefinition: string;
+  public shouldDisplayWarningMessage: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -47,6 +48,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     this.prefill();
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
     this.delegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
+    this.checkWhetherShouldDisplayWarning();
 
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
@@ -80,6 +82,17 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     }
 
     return { staffDoDelegatedHealthcareActivities };
+  }
+
+  private checkWhetherShouldDisplayWarning(): void {
+    const inNewWorkplaceFlow = !this.return;
+    const alreadyAnsweredNo = this.establishment.staffDoDelegatedHealthcareActivities === 'No';
+
+    if (inNewWorkplaceFlow || alreadyAnsweredNo) {
+      return;
+    }
+
+    this.shouldDisplayWarningMessage = this.route.snapshot.data?.workerHasDHAAnswered;
   }
 
   protected updateEstablishment(props: any): void {
