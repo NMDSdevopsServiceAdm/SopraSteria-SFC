@@ -10,6 +10,7 @@ import { WindowRef } from '@core/services/window.ref';
 import {
   MockDelegatedHealthcareActivitiesService,
   mockDHADefinition,
+  mockDHAs,
 } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
@@ -24,18 +25,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   const labels = ['Yes', 'No', 'I do not know'];
   const values = ['Yes', 'No', "Don't know"];
 
-  const mockDelegatedHealthcareActivities = [
-    {
-      id: 1,
-      title: 'Vital signs monitoring',
-      description: 'Like monitoring heart rate as part of the treatment of a condition.',
-    },
-    {
-      id: 2,
-      title: 'Specialised medication administration',
-      description: 'Like administering warfarin.',
-    },
-  ];
+  const mockDelegatedHealthcareActivities = mockDHAs;
 
   async function setup(overrides: any = {}) {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);

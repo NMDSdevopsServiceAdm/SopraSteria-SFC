@@ -2,20 +2,10 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { DetailsDhaExamplesComponent } from './details-dha-examples.component';
+import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
 describe('DetailsDhaExamplesComponent', () => {
-  const mockDelegatedHealthcareActivities = [
-    {
-      id: 1,
-      title: 'Vital signs monitoring',
-      description: 'Like monitoring heart rate as part of the treatment of a condition.',
-    },
-    {
-      id: 2,
-      title: 'Specialised medication administration',
-      description: 'Like administering warfarin.',
-    },
-  ];
+  const mockDelegatedHealthcareActivities = mockDHAs;
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(DetailsDhaExamplesComponent, {
@@ -53,9 +43,12 @@ describe('DetailsDhaExamplesComponent', () => {
 
   describe('when workplace DHA question 2 is answered', () => {
     it('should show a different reveal title and a list of activities that the staff currently carry out, if the activities are known', async () => {
+      const selectedDHAs = [mockDHAs[0], mockDHAs[2]];
+      const notSelectedDHAs = mockDHAs.filter((activity) => !selectedDHAs.find((x) => x.id === activity.id));
+
       const mockQuestionTwoAnswer = {
-        whatDelegateHealthcareActivities: 'Yes',
-        activities: [{ id: mockDelegatedHealthcareActivities[0].id }, { id: mockDelegatedHealthcareActivities[1].id }],
+        knowWhatActivities: 'Yes',
+        activities: selectedDHAs,
       };
 
       const { getByText, queryByText } = await setup({
@@ -67,16 +60,22 @@ describe('DetailsDhaExamplesComponent', () => {
 
       expect(getByText("You've said that staff in your workplace currently carry out:")).toBeTruthy();
 
-      mockDelegatedHealthcareActivities.forEach((activity) => {
+      selectedDHAs.forEach((activity) => {
         const dhaTitleWithFirstLetterLowerCase = activity.title.charAt(0).toLowerCase() + activity.title.slice(1);
         expect(getByText(dhaTitleWithFirstLetterLowerCase)).toBeTruthy();
+        expect(queryByText(activity.description)).toBeFalsy();
+      });
+
+      notSelectedDHAs.forEach((activity) => {
+        const dhaTitleWithFirstLetterLowerCase = activity.title.charAt(0).toLowerCase() + activity.title.slice(1);
+        expect(queryByText(dhaTitleWithFirstLetterLowerCase)).toBeFalsy();
         expect(queryByText(activity.description)).toBeFalsy();
       });
     });
 
     it('should show all example activities with description if the activities are not known', async () => {
       const mockQuestionTwoAnswer = {
-        whatDelegateHealthcareActivities: "Don't know",
+        knowWhatActivities: "Don't know",
         activities: null,
       };
 
@@ -95,7 +94,7 @@ describe('DetailsDhaExamplesComponent', () => {
 
     it('should show all example activities with description if the answer is Yes but no activities were selected', async () => {
       const mockQuestionTwoAnswer = {
-        whatDelegateHealthcareActivities: 'Yes',
+        knowWhatActivities: 'Yes',
         activities: [],
       };
 
