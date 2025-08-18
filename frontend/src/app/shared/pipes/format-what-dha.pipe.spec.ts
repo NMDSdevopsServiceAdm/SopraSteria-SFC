@@ -6,10 +6,10 @@ describe('FormatWhatDHAPipe', () => {
     expect(pipe).toBeTruthy();
   });
 
-  it('should return "None selected" if the value is null', () => {
+  it('should return "-" if the value is null', () => {
     const pipe = new FormatWhatDhaPipe();
     const actual = pipe.transform(null);
-    const expected = 'None selected';
+    const expected = '-';
 
     expect(actual).toEqual(expected);
   });
