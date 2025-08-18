@@ -7,7 +7,7 @@ import { StaffWhatKindDelegatedHealthcareActivities } from '@core/model/delegate
 export class FormatWhatDhaPipe implements PipeTransform {
   transform(whatDHA: StaffWhatKindDelegatedHealthcareActivities): string | Array<string> {
     if (!whatDHA) {
-      return 'None selected';
+      return '-';
     }
 
     const { knowWhatActivities } = whatDHA;
@@ -17,7 +17,7 @@ export class FormatWhatDhaPipe implements PipeTransform {
         return 'Not known';
 
       default:
-        return 'None selected';
+        return '-';
     }
   }
 }
