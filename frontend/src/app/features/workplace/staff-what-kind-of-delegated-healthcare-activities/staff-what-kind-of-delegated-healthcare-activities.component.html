@@ -12,7 +12,7 @@
           <app-details [title]="'What are delegated healthcare activities'">
             {{ dhaDefinition }}
           </app-details>
-          <div id="dha-hint" class="govuk-hint">Select all that apply.</div>
+          <div id="dha-hint" class="govuk-body-m">Select all that apply.</div>
           <div
             class="govuk-checkboxes"
             [formArrayName]="'selectedDelegatedHealthcareActivities'"
@@ -28,7 +28,9 @@
                   [value]="delegateHealthcareActivity.id"
                   aria-describedby="delegateHealthcareActivity-item-hint"
                   (click)="onCheckboxClick($event.target)"
-                  [checked]="!isDoNotKnowChecked && this.selectedActivitiesCheckboxes.includes(delegateHealthcareActivity.id)"
+                  [checked]="
+                    !isDoNotKnowChecked && this.selectedActivitiesCheckboxes.includes(delegateHealthcareActivity.id)
+                  "
                 />
                 <label class="govuk-label govuk-checkboxes__label" for="delegatedHealthcareActivities-{{ i }}">
                   {{ delegateHealthcareActivity.title }}
