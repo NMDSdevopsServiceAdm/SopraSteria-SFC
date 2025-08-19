@@ -16,4 +16,34 @@ const clearDHAWorkerAnswersOnWorkplaceChange = async (establishment, options) =>
   }
 };
 
-module.exports = { clearDHAWorkerAnswersOnWorkplaceChange };
+const clearDHAWorkplaceAnswerOnChange = async (establishment, options) => {
+  try {
+    const username = options?.savedAt ?? '';
+    const transaction = options?.transaction;
+    const models = establishment.sequelize.models;
+
+    if (establishment.changed('staffDoDelegatedHealthcareActivities')) {
+      const staffDontDoDHAAnymore = establishment.staffDoDelegatedHealthcareActivities !== 'Yes';
+      const gotAnswerForStaffWhatKindActivities = establishment.staffWhatKindDelegatedHealthcareActivities !== null;
+
+      if (staffDontDoDHAAnymore && gotAnswerForStaffWhatKindActivities) {
+        establishment.staffWhatKindDelegatedHealthcareActivities = null;
+
+        const auditEvent = {
+          establishmentFk: establishment.id,
+          username,
+          type: 'changed',
+          property: 'StaffWhatKindDelegatedHealthcareActivities',
+          event: { new: null },
+        };
+
+        await models.establishmentAudit.create(auditEvent, { transaction });
+        return;
+      }
+    }
+  } catch (err) {
+    console.error('error occurred while running sequelize hook', err);
+  }
+};
+
+module.exports = { clearDHAWorkerAnswersOnWorkplaceChange, clearDHAWorkplaceAnswerOnChange };
