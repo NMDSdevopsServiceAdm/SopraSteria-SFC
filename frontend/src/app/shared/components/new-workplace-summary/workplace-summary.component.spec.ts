@@ -838,7 +838,24 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
     });
 
-    describe('Know what delegated healthcare activities', () => {
+    describe('Which delegated healthcare activities', () => {
+      it('should show the row and table cell name', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            staffDoDelegatedHealthcareActivities: 'Yes',
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const knowWhatDelegatedHealthcareActivitiesRow = getByTestId('know-what-delegated-healthcare-activities');
+        const cellName = within(knowWhatDelegatedHealthcareActivitiesRow).queryByText(
+          'Which delegated healthcare activities',
+        );
+
+        expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
+        expect(cellName).toBeTruthy();
+      });
+
       describe('staffDoDelegatedHealthcareActivities is not "Yes"', () => {
         ['No', "Don't know"].forEach((answer) => {
           it(`should not show row when staffDoDelegatedHealthcareActivities is ${answer}`, async () => {
