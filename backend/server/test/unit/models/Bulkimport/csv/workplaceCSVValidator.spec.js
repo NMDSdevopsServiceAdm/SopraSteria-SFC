@@ -2508,6 +2508,20 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
+    describe.only('DHAACTIVITIES', () => {
+      const dhaActivitiesIndex = getColumnIndex('DHAACTIVITIES');
+
+      it('should leave the DHAACTIVITIES column blank if value is null', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.delegatedHealthcareActivities = null;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[dhaActivitiesIndex]).to.equal('');
+      });
+    });
+
     describe('TOTALPERMTEMP', () => {
       const totalPermTempIndex = getColumnIndex('TOTALPERMTEMP');
 
