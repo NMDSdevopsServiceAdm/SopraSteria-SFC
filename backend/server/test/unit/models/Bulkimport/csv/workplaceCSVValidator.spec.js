@@ -2511,14 +2511,26 @@ describe('Bulk Upload - Establishment CSV', () => {
     describe.only('DHAACTIVITIES', () => {
       const dhaActivitiesIndex = getColumnIndex('DHAACTIVITIES');
 
-      it('should leave the DHAACTIVITIES column blank if value is null', async () => {
+      it('should leave the DHAACTIVITIES column blank if staffWhatKindDelegatedHealthcareActivities value is null', async () => {
         const establishment = apiEstablishmentBuilder();
-        establishment.delegatedHealthcareActivities = null;
+        establishment.staffWhatKindDelegatedHealthcareActivities = null;
+        establishment.delegatedHealthcareActivities = [];
 
         const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[dhaActivitiesIndex]).to.equal('');
+      });
+
+      it("should set DHAACTIVITIES column to 999 if value is don't know", async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.staffWhatKindDelegatedHealthcareActivities = "Don't know";
+        establishment.delegatedHealthcareActivities = [];
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[dhaActivitiesIndex]).to.equal('999');
       });
     });
 

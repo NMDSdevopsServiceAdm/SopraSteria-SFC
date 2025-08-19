@@ -1477,6 +1477,7 @@ module.exports = function (sequelize, DataTypes) {
         'pensionContribution',
         'careWorkforcePathwayUse',
         'staffDoDelegatedHealthcareActivities',
+        'staffWhatKindDelegatedHealthcareActivities',
       ],
       where: {
         [Op.or]: [

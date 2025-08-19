@@ -3313,7 +3313,11 @@ class WorkplaceCSVValidator {
     columns.push(defaultYesNoDontKnowMapping(entity.staffDoDelegatedHealthcareActivities));
 
     // DHAACTIVITIES
-    columns.push('');
+    if (entity.staffWhatKindDelegatedHealthcareActivities === "Don't know") {
+      columns.push('999');
+    } else {
+      columns.push('');
+    }
 
     // total perm/temp staff
     columns.push(entity.NumberOfStaffValue ? entity.NumberOfStaffValue : 0);
