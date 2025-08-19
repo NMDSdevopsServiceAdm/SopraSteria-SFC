@@ -2558,6 +2558,18 @@ describe('Bulk Upload - Establishment CSV', () => {
 
         expect(csvAsArray[dhaActivitiesIndex]).to.equal('1;2;3');
       });
+
+      it('should set DHAACTIVITIES to empty string when staffWhatKindDelegatedHealthcareActivities set to Yes but array empty', async () => {
+        // this is an edge case which should not be possible in the database
+        const establishment = apiEstablishmentBuilder();
+        establishment.staffWhatKindDelegatedHealthcareActivities = 'Yes';
+        establishment.delegatedHealthcareActivities = [];
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[dhaActivitiesIndex]).to.equal('');
+      });
     });
 
     describe('TOTALPERMTEMP', () => {
