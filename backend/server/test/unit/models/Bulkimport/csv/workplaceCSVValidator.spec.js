@@ -2532,6 +2532,32 @@ describe('Bulk Upload - Establishment CSV', () => {
 
         expect(csvAsArray[dhaActivitiesIndex]).to.equal('999');
       });
+
+      it('should set DHAACTIVITIES to single bulkUploadCode digit when one activity object in array', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.staffWhatKindDelegatedHealthcareActivities = 'Yes';
+        establishment.delegatedHealthcareActivities = [{ id: 1, bulkUploadCode: 1 }];
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[dhaActivitiesIndex]).to.equal('1');
+      });
+
+      it('should set DHAACTIVITIES to bulkUploadCodes with semi-colons between when several activity objects in array', async () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.staffWhatKindDelegatedHealthcareActivities = 'Yes';
+        establishment.delegatedHealthcareActivities = [
+          { id: 1, bulkUploadCode: 1 },
+          { id: 2, bulkUploadCode: 2 },
+          { id: 3, bulkUploadCode: 3 },
+        ];
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[dhaActivitiesIndex]).to.equal('1;2;3');
+      });
     });
 
     describe('TOTALPERMTEMP', () => {

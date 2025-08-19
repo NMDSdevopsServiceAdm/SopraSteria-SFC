@@ -3315,8 +3315,12 @@ class WorkplaceCSVValidator {
     // DHAACTIVITIES
     if (entity.staffWhatKindDelegatedHealthcareActivities === "Don't know") {
       columns.push('999');
-    } else {
+    } else if (!entity.staffWhatKindDelegatedHealthcareActivities) {
       columns.push('');
+    } else {
+      const activityCodes = entity.delegatedHealthcareActivities.map((activity) => activity.bulkUploadCode);
+      const dhaActivities = activityCodes.join(';');
+      columns.push(dhaActivities);
     }
 
     // total perm/temp staff
