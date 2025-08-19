@@ -12,12 +12,6 @@ export class FormatWhatDhaPipe implements PipeTransform {
 
     const { knowWhatActivities } = whatDHA;
 
-    switch (knowWhatActivities) {
-      case "Don't know":
-        return 'Not known';
-
-      default:
-        return '-';
-    }
+    return knowWhatActivities === "Don't know" ? 'Not known' : '-';
   }
 }
