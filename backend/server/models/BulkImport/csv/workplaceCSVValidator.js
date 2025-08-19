@@ -3313,15 +3313,15 @@ class WorkplaceCSVValidator {
     columns.push(defaultYesNoDontKnowMapping(entity.staffDoDelegatedHealthcareActivities));
 
     // DHAACTIVITIES
-    if (entity.staffWhatKindDelegatedHealthcareActivities === "Don't know") {
-      columns.push('999');
-    } else if (!entity.staffWhatKindDelegatedHealthcareActivities) {
-      columns.push('');
-    } else {
+    const mapDhaActivitiesToCSV = (entity) => {
+      if (!entity.staffWhatKindDelegatedHealthcareActivities) return '';
+      if (entity.staffWhatKindDelegatedHealthcareActivities === "Don't know") return '999';
+
       const activityCodes = entity.delegatedHealthcareActivities.map((activity) => activity.bulkUploadCode);
-      const dhaActivities = activityCodes.join(';');
-      columns.push(dhaActivities);
-    }
+      return activityCodes.join(';');
+    };
+
+    columns.push(mapDhaActivitiesToCSV(entity));
 
     // total perm/temp staff
     columns.push(entity.NumberOfStaffValue ? entity.NumberOfStaffValue : 0);

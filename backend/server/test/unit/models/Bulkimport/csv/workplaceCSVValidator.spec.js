@@ -2508,7 +2508,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe.only('DHAACTIVITIES', () => {
+    describe('DHAACTIVITIES', () => {
       const dhaActivitiesIndex = getColumnIndex('DHAACTIVITIES');
 
       it('should leave the DHAACTIVITIES column blank if staffWhatKindDelegatedHealthcareActivities value is null', async () => {
