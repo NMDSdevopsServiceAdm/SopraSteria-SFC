@@ -6,7 +6,8 @@ const {
 } = require('../../../../models/hooks/establishmentHooks');
 
 describe('Establishment sequelize hooks', () => {
-  const mockOptions = { transaction: {}, savedBy: 'mock-username' };
+  const mockTransaction = {};
+  const mockOptions = { transaction: mockTransaction, savedBy: 'mock-username' };
 
   describe('beforeSave: clearDHAWorkerAnswersOnWorkplaceChange', () => {
     let mockWorkerModel = { clearDHAAnswerForAllWorkersInWorkplace: () => {} };
@@ -69,34 +70,20 @@ describe('Establishment sequelize hooks', () => {
 
   describe('beforeSave: clearDHAWorkplaceAnswerOnChange', () => {
     let mockEstablishmentAuditModel = { create: () => {} };
-
-    beforeEach(() => {
-      sinon.spy(mockEstablishmentAuditModel, 'create');
-    });
-
-    afterEach(() => {
-      sinon.restore();
-    });
-
     const mockEstablishmentSequelizeInstance = {
       id: 'mock-establishment-id',
       changed: (fieldName) => fieldName === 'staffDoDelegatedHealthcareActivities',
       sequelize: { models: { establishmentAudit: mockEstablishmentAuditModel } },
+      setDelegatedHealthcareActivities: () => {},
     };
 
-    it('should clear the answer of staffWhatKindDHA when staffDoDHA change to No', async () => {
-      const mockEstablishment = {
-        ...mockEstablishmentSequelizeInstance,
-        staffDoDelegatedHealthcareActivities: 'No',
-        staffWhatKindDelegatedHealthcareActivities: {
-          knowWhatActivities: 'Yes',
-          activities: [{ id: 1 }],
-        },
-      };
+    beforeEach(() => {
+      sinon.spy(mockEstablishmentAuditModel, 'create');
+      sinon.spy(mockEstablishmentSequelizeInstance, 'setDelegatedHealthcareActivities');
+    });
 
-      await clearDHAWorkplaceAnswerOnChange(mockEstablishment, mockOptions);
-
-      expect(mockEstablishment.staffWhatKindDelegatedHealthcareActivities).to.equal(null);
+    afterEach(() => {
+      sinon.restore();
     });
 
     ['No', "Don't know", null].forEach((staffDoDHANewValue) => {
@@ -113,6 +100,9 @@ describe('Establishment sequelize hooks', () => {
         await clearDHAWorkplaceAnswerOnChange(mockEstablishment, mockOptions);
 
         expect(mockEstablishment.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(null);
+        expect(mockEstablishment.setDelegatedHealthcareActivities).to.have.been.calledWith([], {
+          transaction: mockTransaction,
+        });
       });
     });
 
@@ -136,7 +126,7 @@ describe('Establishment sequelize hooks', () => {
           property: 'StaffWhatKindDelegatedHealthcareActivities',
           event: { new: null },
         },
-        { transaction: mockOptions.transaction },
+        { transaction: mockTransaction },
       );
     });
 
@@ -156,6 +146,7 @@ describe('Establishment sequelize hooks', () => {
         knowWhatActivities: 'Yes',
         activities: [{ id: 1 }],
       });
+      expect(mockEstablishment.setDelegatedHealthcareActivities).not.to.have.been.called;
       expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
     });
 
@@ -176,6 +167,7 @@ describe('Establishment sequelize hooks', () => {
         knowWhatActivities: 'Yes',
         activities: [{ id: 1 }],
       });
+      expect(mockEstablishment.setDelegatedHealthcareActivities).not.to.have.been.called;
       expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
     });
   });
