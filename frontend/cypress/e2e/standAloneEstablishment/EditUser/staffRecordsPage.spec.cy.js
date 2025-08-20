@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+
+import lodash from 'lodash';
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
@@ -349,6 +351,95 @@ describe('Standalone staff records page as edit user', () => {
 
       // staff records tab
       cy.get('a').contains(worker3).should('not.exist');
+    });
+  });
+
+  describe.only('searchbox and sort', () => {
+    const testWorkerNames = lodash.range(1, 31).map((i) => `testSortAndSearch${i}`);
+    const sortOptions = [
+      { value: '0_asc', label: 'Staff name (A to Z)' },
+      { value: '0_dsc', label: 'Staff name (Z to A)' },
+      { value: '1_asc', label: 'Job role (A to Z)' },
+      { value: '1_dsc', label: 'Job role (Z to A)' },
+      { value: '3_last_update_newest', label: 'Last update (newest)' },
+      { value: '3_last_update_oldest', label: 'Last update (oldest)' },
+      { value: '4_add_more_details', label: 'Add more details' },
+    ];
+
+    before(() => {
+      cy.archiveAllWorkersInWorkplace(StandAloneEstablishment.id);
+      testWorkerNames.forEach((workerName) => {
+        cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName });
+      });
+    });
+
+    after(() => {
+      testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
+    });
+
+    it('should show the sort order after visiting a staff record page and then come back', () => {
+      onHomePage.clickTab('Staff records');
+
+      cy.getByLabel('Search by name or ID number').should('be.visible');
+      cy.getByLabel('Sort by').should('have.value', sortOptions[0].value);
+
+      // select Staff name Z to A
+      cy.getByLabel('Sort by').select(1);
+      cy.getByLabel('Sort by').should('have.value', sortOptions[1].value);
+      cy.get('a').contains('testSortAndSearch30').click();
+
+      cy.url().should('include', 'staff-record-summary');
+      cy.get('[data-testid="section-heading"]').should('contain', 'testSortAndSearch30');
+
+      // go back to all staff records tab
+      cy.go('back');
+      cy.url().should('not.include', 'staff-record-summary');
+
+      // sort by option should still be 1 (Staff name Z to A), not 0 (Staff name A to Z)
+      cy.getByLabel('Sort by').should('have.value', sortOptions[1].value);
+    });
+
+    it('should reset the sort order if visit some other tab and then come back', () => {
+      onHomePage.clickTab('Staff records');
+
+      cy.getByLabel('Search by name or ID number').should('be.visible');
+      cy.getByLabel('Sort by').should('have.value', sortOptions[0].value);
+
+      cy.getByLabel('Sort by').select(1);
+      cy.getByLabel('Sort by').should('have.value', sortOptions[1].value);
+
+      onHomePage.clickTab('Training and qualifications');
+
+      cy.get('h1').should('include.text', 'Training and qualifications');
+
+      // go back to all staff records tab
+      onHomePage.clickTab('Staff records');
+      cy.get('h1').should('include.text', 'Staff records');
+
+      // sort by option should be reset to 0 (Staff name A to Z)
+      cy.getByLabel('Sort by').should('have.value', sortOptions[0].value);
+    });
+
+    it('the search function should not cause side effect on total worker number', () => {
+      // this test capture a bug that search box affect the total worker number displayed in staff records tab
+      onHomePage.clickTab('Staff records');
+      cy.get('[data-cy="total-staff-panel"]').should('include.text', '31  staff records added');
+      cy.get('[data-testid="staffAddedNumber"]').should('contain.text', '31');
+
+      cy.getByLabel('Search by name or ID number').type('12');
+      cy.get('button').contains('search').click();
+      cy.get('button').contains('Clear search results').should('exist');
+
+      cy.get('a').contains('testSortAndSearch12').click();
+
+      cy.url().should('include', 'staff-record-summary');
+      cy.get('[data-testid="section-heading"]').should('contain', 'testSortAndSearch12');
+
+      // go back to all staff records tab
+      cy.go('back');
+
+      cy.get('[data-cy="total-staff-panel"]').should('include.text', '31  staff records added');
+      cy.get('[data-testid="staffAddedNumber"]').should('contain.text', '31');
     });
   });
 
