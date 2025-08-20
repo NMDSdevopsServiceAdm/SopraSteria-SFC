@@ -1153,7 +1153,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         });
       });
 
-      describe.only('DHAActivies', () => {
+      describe('DHAActivities', () => {
         const validInputs = [
           ['',''],
           ['2',''],
