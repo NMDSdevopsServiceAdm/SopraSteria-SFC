@@ -46,7 +46,7 @@ class WorkplaceCSVValidator {
 
     this._validationErrors = [];
 
-    // CSV properties
+    // CSV properties - internal representation (cache) of the clean data for the object under validation */
     this._localId = null;
     this._status = null;
     this._key = null;
@@ -92,15 +92,20 @@ class WorkplaceCSVValidator {
     this._careWorkforcePathwayUse = null;
     this._careWorkforcePathwayUseDescription = null;
     this._staffDoDelegatedHealthcareActivities = null;
+    this._chosenDelegatedHealthcareActivities = null; // should be activities? as array
 
     this._id = null;
+    // end csv properties
+
     this._ignore = false;
   }
 
+  /** mapping */
   get CWP_USE_REASON_SOMETHING_ELSE_ID() {
     return '10';
   }
 
+  /** error codes */
   static get EXPECT_JUST_ONE_ERROR() {
     return 950;
   }
@@ -287,6 +292,12 @@ class WorkplaceCSVValidator {
     return 2520;
   }
 
+  static get DHAACTIVITIES_WARNING() {
+    return 2530;
+  }
+/** end error codes */
+
+/** validator properties */
   get id() {
     if (this._id === null) {
       const est = this._allCurrentEstablishments.find((currentEstablishment) => currentEstablishment.key === this._key);
@@ -314,6 +325,9 @@ class WorkplaceCSVValidator {
   get currentLine() {
     return this._currentLine;
   }
+  /** end validator properties */
+
+/** properties - expose internal representation (cache) of the clean data for the object under validation */
 
   get localId() {
     return this._localId;
@@ -460,6 +474,12 @@ class WorkplaceCSVValidator {
     return this._staffDoDelegatedHealthcareActivities;
   }
 
+  get chosenDelegatedHealthcareActivities() {
+    return this._chosenDelegatedHealthcareActivities;
+  }
+/** end properties for clean data cache */
+
+/** helper functions */
   _convertYesNoDontKnow(value, defaultValue = '') {
     const mappings = {
       1: 'Yes',
@@ -489,6 +509,9 @@ class WorkplaceCSVValidator {
     return match?.id ? { id: match.id } : null;
   }
 
+/** end helper functions */
+
+/** validation functions */
   _validateLocalisedId() {
     const myLocalId = this._currentLine.LOCALESTID;
 
@@ -1360,6 +1383,9 @@ class WorkplaceCSVValidator {
 
     return true;
   }
+/** end validation functions */
+
+/** more helper functions */
   _ignoreZerosIfNo(listOfEntities, zeroInService, allServices) {
     if (zeroInService.length > 0 && listOfEntities.length === 2 && allServices.length === 2) {
       const indexOfZero = allServices.indexOf('0');
@@ -1391,6 +1417,9 @@ class WorkplaceCSVValidator {
     return listOfEntities;
   }
 
+ /** end more helper functions */
+
+ /** more validation functions */
   _validateDelegatedHealthcareActivities() {
     const ALLOWED_VALUES = ['', '1', '2', '999'];
     const dhaAnswer = this._currentLine.DHA;
@@ -1402,6 +1431,46 @@ class WorkplaceCSVValidator {
     }
 
     this._staffDoDelegatedHealthcareActivities = this._convertYesNoDontKnow(dhaAnswer, null);
+    return true;
+  }
+
+  _validateDelegatedHealthcareChosenActivities() {
+    const ALLOWED_ACTIVITIES = ['1','2','3','4','5','6','7','8'];
+    // todo look this up model.DelegatedHealthcareActivities.BulkUploadCode
+
+    const dhaActivities = this._currentLine.DHAACTIVITIES;
+
+    if (!dhaActivities || dhaActivities === '999') {
+      // should handle empty etc,
+      // currently handles 999 unknown as empty to match download logic
+      // (doesn't know which activities implied by doesn't know that they do DHA)
+      this._chosenDelegatedHealthcareActivities = [];
+      return true;
+    }
+
+    const activities = dhaActivities.split(';'); // array of bulk upload codes
+    const diallowed = activities.filter((a) => !(ALLOWED_ACTIVITIES.includes(a)));
+
+    if (diallowed.length > 0) {
+      // should this allow valid options and only ignore disallowed ones or ignore all? Business decision TODO
+      this._validationErrors.push(
+        this._generateWarning('The codes you have entered for DHA activities contain invalid values and will be ignored', 'DHAACTIVITIES'),
+      );
+      return false;
+    }
+
+    const dha = this._currentLine.DHA;
+    if (activities.length > 0 && dha !== '1')
+    {
+        this._validationErrors.push(
+        this._generateWarning('Value entered for DHA Activities will be ignored as DHA value is not set to yes', 'DHAACTIVITIES'),
+      );
+      return false;
+    }
+
+    // what now? where do we store? do we remove all rows in model.DelegatedHealthcareActivities before adding new ones?
+    this._chosenDelegatedHealthcareActivities = dhaActivities;
+
     return true;
   }
 
@@ -1579,6 +1648,10 @@ class WorkplaceCSVValidator {
     }
   }
 
+ /** end more validation functions */
+
+
+/** even more helpers */
   getDuplicateLocationError() {
     return {
       origin: 'Establishments',
@@ -1602,6 +1675,10 @@ class WorkplaceCSVValidator {
     return total;
   }
 
+/** end even more helpers */
+
+
+/** cross validation on jobs and training */
   _crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, { employedWorkers = 0, nonEmployedWorkers = 0 }) {
     const vacancies = this.getTotal(this._currentLine.VACANCIES);
     const starters = this.getTotal(this._currentLine.STARTERS);
@@ -2385,6 +2462,9 @@ class WorkplaceCSVValidator {
     }
   }
 
+/** end cross validation on jobs */
+
+/** transforms */
   _transformMainService() {
     if (this._mainService) {
       const mappedService = BUDI.services(BUDI.TO_ASC, this._mainService);
@@ -2794,6 +2874,8 @@ class WorkplaceCSVValidator {
     this._pensionContribution = mapping[pension];
   }
 
+/** end transforms */
+
   preValidate(headers) {
     return this._validateHeaders(headers);
   }
@@ -2820,6 +2902,8 @@ class WorkplaceCSVValidator {
     return true;
   }
 
+
+  /** more error helpers */
   // add a duplicate validation error to the current set
   addDuplicate() {
     return {
@@ -2886,6 +2970,10 @@ class WorkplaceCSVValidator {
     };
   }
 
+/** end more error helpers */
+
+/** main methods */
+
   // returns true on success, false is any attribute of WorkplaceCSVValidator fails
   async validate() {
     this._validateLocalisedId();
@@ -2908,6 +2996,7 @@ class WorkplaceCSVValidator {
       this._validateAllServices();
       this._validateServiceUsers();
       this._validateDelegatedHealthcareActivities();
+      this._validateDelegatedHealthcareChosenActivities();
       this._validateCapacitiesAndUtilisations();
 
       this._validateTotalPermTemp();
@@ -3088,6 +3177,8 @@ class WorkplaceCSVValidator {
   }
 
   // returns an API representation of this WorkplaceCSVValidator
+  // is built from the clean data in the internal properties
+  // which represent a cache of the object under validation
   toAPI() {
     const fixedProperties = {
       address1: this._address1 ? this._address1 : '',
@@ -3479,6 +3570,8 @@ class WorkplaceCSVValidator {
     return WorkplaceCSVValidator.toCSV(entity);
   }
 }
+
+/** end main methods */
 
 module.exports.WorkplaceCSVValidator = WorkplaceCSVValidator;
 module.exports.EstablishmentFileHeaders = _headers_v1;

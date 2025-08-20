@@ -1078,38 +1078,10 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe('DHA', () => {
-      ['', '1', '2', '999'].forEach((allowedInput) => {
-        it(`should pass with no validation warnings if DHA set to ${allowedInput}`, async () => {
-          establishmentRow.DHA = allowedInput;
-
-          const establishment = await generateEstablishmentFromCsv(establishmentRow);
-          expect(establishment.validationErrors).to.deep.equal([]);
-        });
-      });
-
-      ['asdf', '23'].forEach((invalidInput) => {
-        it(`should return warning if input is invalid (${invalidInput})`, async () => {
-          establishmentRow.DHA = invalidInput;
-
-          const establishment = await generateEstablishmentFromCsv(establishmentRow);
-          expect(establishment.validationErrors).to.deep.equal([
-            {
-              origin: 'Establishments',
-              lineNumber: establishment.lineNumber,
-              warnCode: 2510,
-              warnType: 'DHA_WARNING',
-              warning: 'The code you have entered for DHA is incorrect and will be ignored',
-              source: invalidInput,
-              column: 'DHA',
-              name: establishmentRow.LOCALESTID,
-            },
-          ]);
-        });
-      });
-
+    describe ('DHA Fields', () => {
       const updateEstablishmentToHaveMainService = (establishmentRow, mainServiceId) => {
         establishmentRow.DHA = '1';
+        establishmentRow.DHAACTIVITIES = '';
         establishmentRow.MAINSERVICE = mainServiceId;
         establishmentRow.ALLSERVICES = mainServiceId;
         establishmentRow.SERVICEDESC = '';
@@ -1121,33 +1093,184 @@ describe('Bulk Upload - Establishment CSV', () => {
         establishmentRow.VACANCIES = '0;0;0';
       };
 
-      it('should add DHA_MAIN_SERVICE_WARNING if DHA answered but main service cannot do DHA', async () => {
-        updateEstablishmentToHaveMainService(establishmentRow, '10'); // 10 is BUDI mapping for id 11 (cannot do DHA)
+      describe('DHA', () => {
+        ['', '1', '2', '999'].forEach((allowedInput) => {
+          it(`should pass with no validation warnings if DHA set to ${allowedInput}`, async () => {
+            establishmentRow.DHA = allowedInput;
 
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            expect(establishment.validationErrors).to.deep.equal([]);
+          });
+        });
 
-        expect(establishment.validationErrors).to.deep.equal([
-          {
-            origin: 'Establishments',
-            lineNumber: establishment.lineNumber,
-            warnCode: 2520,
-            warnType: 'DHA_MAIN_SERVICE_WARNING',
-            warning: 'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
-            source: '1',
-            column: 'DHA',
-            name: establishmentRow.LOCALESTID,
-          },
-        ]);
+        ['asdf', '23'].forEach((invalidInput) => {
+          it(`should return warning if input is invalid (${invalidInput})`, async () => {
+            establishmentRow.DHA = invalidInput;
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            expect(establishment.validationErrors).to.deep.equal([
+              {
+                origin: 'Establishments',
+                lineNumber: establishment.lineNumber,
+                warnCode: 2510,
+                warnType: 'DHA_WARNING',
+                warning: 'The code you have entered for DHA is incorrect and will be ignored',
+                source: invalidInput,
+                column: 'DHA',
+                name: establishmentRow.LOCALESTID,
+              },
+            ]);
+          });
+        });
+
+        it('should add DHA_MAIN_SERVICE_WARNING if DHA answered but main service cannot do DHA', async () => {
+          updateEstablishmentToHaveMainService(establishmentRow, '10'); // 10 is BUDI mapping for id 11 (cannot do DHA)
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2520,
+              warnType: 'DHA_MAIN_SERVICE_WARNING',
+              warning: 'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
+              source: '1',
+              column: 'DHA',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+
+        it('should not add DHA_MAIN_SERVICE_WARNING if DHA answered and main service can do DHA', async () => {
+          updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.equal([]);
+        });
       });
 
-      it('should not add DHA_MAIN_SERVICE_WARNING if DHA answered and main service can do DHA', async () => {
-        updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
+      describe.only('DHAActivies', () => {
+        const validInputs = [
+          ['',''],
+          ['2',''],
+          ['1','1'],
+          ['1','1;4'],
+          ['1','8'], // 8 is "Other"
+          ['999',''],
+        ];
+        validInputs.forEach((allowedInput) => {
+          it(`should pass with no validation warnings if DHA set to ${allowedInput}`, async () => {
+            updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
+            establishmentRow.DHA = allowedInput[0];
+            establishmentRow.DHAACTIVITIES = allowedInput[1];
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
-        const establishment = await generateEstablishmentFromCsv(establishmentRow);
-        establishment.transform();
 
-        expect(establishment.validationErrors).to.deep.equal([]);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.deep.equal([]);
+          });
+        });
+
+        const invalidInput = [
+          'blah', // no alpha strings
+          'blah;1',
+          '1;blah',
+          ';;', // no separators
+          '1|2', // semicolon is the only valid separator
+          '0', // only valid numbers
+          '-7000',
+          '1000',
+        ];
+        invalidInput.forEach((invalidInput) => {
+          it(`should return warning if input is invalid (${invalidInput})`, async () => {
+            updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
+            establishmentRow.DHAACTIVITIES = invalidInput;
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+
+            establishment.transform();
+            expect(establishment.validationErrors).to.deep.equal([
+              {
+                origin: 'Establishments',
+                lineNumber: establishment.lineNumber,
+                warnCode: 2530,
+                warnType: 'DHAACTIVITIES_WARNING',
+                warning: 'The codes you have entered for DHA activities contain invalid values and will be ignored',
+                source: invalidInput,
+                column: 'DHAACTIVITIES',
+                name: establishmentRow.LOCALESTID,
+              },
+            ]);
+          });
+        });
+
+        // should this be a separate error?
+        ['', '2', '999'].forEach((dha) => {
+          it('should add DHAACTIVITIES_WARNING if DHA Activities answered but DHA answer is missing or no', async () => {
+            updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
+
+            establishmentRow.DHA = dha;
+            establishmentRow.DHAACTIVITIES = '1;2;3';
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.deep.equal([
+              {
+                origin: 'Establishments',
+                lineNumber: establishment.lineNumber,
+                warnCode: 2530,
+                warnType: 'DHAACTIVITIES_WARNING',
+                warning: 'Value entered for DHA Activities will be ignored as DHA value is not set to yes',
+                source: '1;2;3',
+                column: 'DHAACTIVITIES',
+                name: establishmentRow.LOCALESTID,
+              },
+            ]);
+
+          });
+        });
+
+        // is this too much duplication? it could be covered by 'dha answered & incompatible main service'
+        // combined with 'activities listed when dha is not yes'
+        it('should add DHA_MAIN_SERVICE_WARNING if DHA Activities answered but main service cannot do DHA', async () => {
+          updateEstablishmentToHaveMainService(establishmentRow, '10'); // 10 is BUDI mapping for id 11 (cannot do DHA)
+
+          establishmentRow.DHA = '1';
+          establishmentRow.DHAACTIVITIES = '1;2;3';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2520,
+              warnType: 'DHA_MAIN_SERVICE_WARNING',
+              warning: 'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
+              source: '1',
+              column: 'DHA',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+
+        it('should not add DHA_MAIN_SERVICE_WARNING if DHA answered and main service can do DHA', async () => {
+          updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
+
+          establishmentRow.DHA = '1';
+          establishmentRow.DHAACTIVITIES = '1;2;3';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.equal([]);
+        });
       });
     });
 
@@ -2473,6 +2596,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(csvAsArray[21]).to.include(establishment.serviceUsers[0].establishmentServiceUsers.other);
     });
 
+    // 1 = yes, 2 = no, 999 is dk
     describe('DHA', () => {
       const dhaIndex = getColumnIndex('DHA');
 
