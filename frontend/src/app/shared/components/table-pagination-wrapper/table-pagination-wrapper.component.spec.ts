@@ -74,9 +74,9 @@ describe('TablePaginationWrapperCompnent', () => {
       expect(getByTestId('search')).toBeTruthy();
     });
 
-    it('should display the search box if isSearchMaintained is true but if the total worker count is less than the items per page', async () => {
-      const { getByTestId } = await setup({ isSearchMaintained: true, totalCount: 4 });
-      expect(getByTestId('search')).toBeTruthy();
+    it('should not display the search box if isSearchMaintained is true but the total worker count is less than the items per page', async () => {
+      const { queryByTestId } = await setup({ isSearchMaintained: true, totalCount: 4 });
+      expect(queryByTestId('search')).toBeFalsy();
     });
 
     it('should not display the search box if the total worker count is less than the items per page', async () => {
