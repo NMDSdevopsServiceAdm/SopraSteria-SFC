@@ -7,9 +7,7 @@ import { TabsService } from './tabs.service';
   providedIn: 'root',
 })
 export class SortByService {
-
   constructor(private router: Router, private tabsService: TabsService) {
-
     this.router.events.pipe(filter((event) => event instanceof NavigationStart)).subscribe((event: NavigationStart) => {
       const destinationUrl = event.url;
 
@@ -29,7 +27,6 @@ export class SortByService {
     localStorage.removeItem('staffSummarySortValue');
     localStorage.removeItem('staffSummarySearchTerm');
     localStorage.removeItem('staffSummaryIndex');
-    localStorage.removeItem('isSearchMaintained');
   }
 
   public returnLocalStorageForSort(): any {
@@ -37,7 +34,6 @@ export class SortByService {
       staffSummarySortValue: localStorage.getItem('staffSummarySortValue') ?? null,
       staffSummarySearchTerm: localStorage.getItem('staffSummarySearchTerm') ?? null,
       staffSummaryIndex: localStorage.getItem('staffSummaryIndex') ?? null,
-      isSearchMaintained: localStorage.getItem('isSearchMaintained') ?? null,
     };
   }
 }

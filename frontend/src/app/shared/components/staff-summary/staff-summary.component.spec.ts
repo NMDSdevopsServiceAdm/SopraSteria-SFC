@@ -255,11 +255,10 @@ describe('StaffSummaryComponent', () => {
 
       const sortByObjectKeys = Object.keys(component.sortStaffOptions);
       userEvent.selectOptions(getByLabelText('Sort by'), sortByObjectKeys[2]);
-      expect(localStorageSetSpy).toHaveBeenCalledTimes(4);
+      expect(localStorageSetSpy).toHaveBeenCalledTimes(3);
       expect(localStorageSetSpy.calls.all()[0].args).toEqual(['staffSummarySortValue', component.sortByValue]);
       expect(localStorageSetSpy.calls.all()[1].args).toEqual(['staffSummarySearchTerm', '']);
       expect(localStorageSetSpy.calls.all()[2].args).toEqual(['staffSummaryIndex', '0']);
-      expect(localStorageSetSpy.calls.all()[3].args).toEqual(['isSearchMaintained', 'true']);
     });
 
     it('should use the values from returnLocalStorageForSort when its not the wdf view', async () => {
@@ -269,7 +268,6 @@ describe('StaffSummaryComponent', () => {
           staffSummarySortValue: 'lastUpdateNewest',
           staffSummarySearchTerm: 'Ma',
           staffSummaryIndex: '0',
-          isSearchMaintained: 'true',
         },
       };
 
@@ -278,7 +276,6 @@ describe('StaffSummaryComponent', () => {
       expect(component.sortByValue).toEqual('lastUpdateNewest');
       expect(component.searchTerm).toEqual('Ma');
       expect(component.pageIndex).toEqual(0);
-      expect(component.isSearchMaintained).toEqual(true);
     });
   });
 });

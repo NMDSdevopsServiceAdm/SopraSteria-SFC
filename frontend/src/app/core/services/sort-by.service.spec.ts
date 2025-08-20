@@ -41,19 +41,28 @@ describe('SortByService', () => {
       expect(clearLocalStorageSpy).toHaveBeenCalled();
     });
 
-    it('should call localStorage', () => {
-      const localStorageSpy = spyOn(localStorage, 'removeItem');
+    it('should remove localStorage when clearLocalStorageForSort is called', () => {
+      const localStorageRemoveItemSpy = spyOn(localStorage, 'removeItem');
+      const expectedKeys = ['staffSummarySortValue', 'staffSummarySearchTerm', 'staffSummaryIndex'];
 
       service.clearLocalStorageForSort();
-      expect(localStorageSpy).toHaveBeenCalledTimes(4);
+
+      expect(localStorageRemoveItemSpy).toHaveBeenCalledTimes(expectedKeys.length);
+      expectedKeys.forEach((key) => {
+        expect(localStorageRemoveItemSpy).toHaveBeenCalledWith(key);
+      });
     });
 
     it('should return the values from localStorage', () => {
-      const localStorageSpy = spyOn(localStorage, 'getItem');
+      const localStorageGetItemSpy = spyOn(localStorage, 'getItem');
+      const expectedKeys = ['staffSummarySortValue', 'staffSummarySearchTerm', 'staffSummaryIndex'];
 
       service.returnLocalStorageForSort();
 
-      expect(localStorageSpy).toHaveBeenCalledTimes(4);
+      expect(localStorageGetItemSpy).toHaveBeenCalledTimes(expectedKeys.length);
+      expectedKeys.forEach((key) => {
+        expect(localStorageGetItemSpy).toHaveBeenCalledWith(key);
+      });
     });
   });
 });

@@ -8,7 +8,6 @@
   accessibleLabel="for staff records"
   (fetchData)="getPageOfWorkers($event)"
   [label]="searchLabel"
-  [isSearchMaintained]="isSearchMaintained"
   [maintainedPageIndex]="maintainedPageIndex"
 >
   <table *ngIf="workerCount; else noWorkersFound" class="govuk-table">

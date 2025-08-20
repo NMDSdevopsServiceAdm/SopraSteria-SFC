@@ -40,7 +40,6 @@ export class StaffSummaryDirective implements OnInit {
   };
   public searchLabel = 'Search by name or ID number';
   public pageIndex = 0;
-  public isSearchMaintained: boolean;
   public maintainedPageIndex: number;
 
   constructor(
@@ -55,7 +54,7 @@ export class StaffSummaryDirective implements OnInit {
 
   ngOnInit(): void {
     if (!this.wdfView) {
-      const { staffSummarySortValue, staffSummarySearchTerm, staffSummaryIndex, isSearchMaintained } =
+      const { staffSummarySortValue, staffSummarySearchTerm, staffSummaryIndex } =
         this.sortByService.returnLocalStorageForSort();
 
       const staffSummaryIndexInteger = Number(staffSummaryIndex);
@@ -63,7 +62,6 @@ export class StaffSummaryDirective implements OnInit {
       this.sortByValue = staffSummarySortValue ?? 'staffNameAsc';
       this.searchTerm = staffSummarySearchTerm ?? '';
       this.pageIndex = Number.isInteger(staffSummaryIndexInteger) ? staffSummaryIndexInteger : 0;
-      this.isSearchMaintained = isSearchMaintained === 'true' ? true : false;
     }
 
     this.totalWorkerCount = this.workerCount;
@@ -99,13 +97,11 @@ export class StaffSummaryDirective implements OnInit {
     this.sortByValue = sortByValue;
 
     if (!this.wdfView) {
-      this.isSearchMaintained = true;
       this.maintainedPageIndex = index;
 
       localStorage.setItem('staffSummarySortValue', this.sortByValue);
       localStorage.setItem('staffSummarySearchTerm', searchTerm);
       localStorage.setItem('staffSummaryIndex', index.toString());
-      localStorage.setItem('isSearchMaintained', this.isSearchMaintained.toString());
     }
 
     this.workerService
