@@ -1,6 +1,9 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
-const { clearDHAWorkerAnswersOnWorkplaceChange } = require('./hooks/establishmentHooks');
+const {
+  clearDHAWorkerAnswersOnWorkplaceChange,
+  clearDoDHAWorkplaceOnMainServiceChange,
+} = require('./hooks/establishmentHooks');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -2634,6 +2637,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.addHook('beforeSave', 'clearDHAWorkerAnswersOnWorkplaceChange', clearDHAWorkerAnswersOnWorkplaceChange);
+  Establishment.addHook('beforeSave', 'clearDoDHAWorkplaceOnMainServiceChange', clearDoDHAWorkplaceOnMainServiceChange);
 
   return Establishment;
 };
