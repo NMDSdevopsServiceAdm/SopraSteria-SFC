@@ -42,7 +42,6 @@ export class StaffSummaryDirective implements OnInit {
   public pageIndex = 0;
   public isSearchMaintained: boolean;
   public maintainedPageIndex: number;
-  @Output() emitWorkerCount: EventEmitter<number> = new EventEmitter();
 
   constructor(
     protected permissionsService: PermissionsService,

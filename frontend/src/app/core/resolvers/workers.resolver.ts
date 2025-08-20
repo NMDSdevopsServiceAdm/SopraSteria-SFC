@@ -71,6 +71,9 @@ export class WorkersResolver {
       )
       .pipe(
         map(([totalResponse, paginatedResponse]) => {
+          const paginatedWorkerCount = paginatedResponse.workerCount;
+          const workerCount = totalResponse.workerCount;
+
           totalResponse.workers.forEach((worker) => {
             trainingCounts.totalTraining += worker.trainingCount;
             trainingCounts.totalRecords += worker.trainingCount + worker.qualificationCount;
@@ -99,6 +102,8 @@ export class WorkersResolver {
           });
           return {
             ...paginatedResponse,
+            paginatedWorkerCount,
+            workerCount,
             workersCreatedDate,
             trainingCounts,
             tAndQsLastUpdated,
