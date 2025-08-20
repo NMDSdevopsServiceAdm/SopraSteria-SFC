@@ -6,6 +6,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
+import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
@@ -74,6 +75,7 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
 
 @NgModule({
   imports: [
@@ -139,6 +141,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     HowManyLeaversComponent,
     CareWorkforcePathwayUseComponent,
     StaffDoDelegatedHealthcareActivitiesComponent,
+    StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
   ],
   providers: [
     DialogService,
@@ -155,6 +158,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     CareWorkforcePathwayUseReasonsResolver,
     CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
     GetDelegatedHealthcareActivitiesResolver,
+    CheckIfAnyWorkerHasDHAAnsweredResolver,
   ],
 })
 export class WorkplaceModule {}

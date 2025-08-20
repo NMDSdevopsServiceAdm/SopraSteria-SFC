@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+const { clearDHAWorkerAnswersOnWorkplaceChange } = require('./hooks/establishmentHooks');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -823,6 +824,28 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      staffWhatKindDelegatedHealthcareActivities: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', "Don't know"],
+        field: 'StaffWhatKindDelegatedHealthcareActivitiesValue',
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       defaultScope: {
@@ -970,6 +993,13 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
       as: 'CareWorkforcePathwayReasons',
+    });
+
+    Establishment.belongsToMany(models.delegatedHealthcareActivities, {
+      through: 'EstablishmentDHActivities',
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'delegatedHealthcareActivities',
     });
   };
 
@@ -2602,6 +2632,8 @@ module.exports = function (sequelize, DataTypes) {
 
     return !!result;
   };
+
+  Establishment.addHook('beforeSave', 'clearDHAWorkerAnswersOnWorkplaceChange', clearDHAWorkerAnswersOnWorkplaceChange);
 
   return Establishment;
 };

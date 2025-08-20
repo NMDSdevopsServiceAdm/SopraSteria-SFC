@@ -9,6 +9,7 @@ import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
 
 import { subsid1, subsid2, subsid3 } from './MockUserService';
+import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
 
 export const establishmentBuilder = build('Establishment', {
   fields: {
@@ -66,6 +67,7 @@ export const establishmentBuilder = build('Establishment', {
       reasons: [{ id: 1 }, { id: 10, other: 'some specific reason' }],
     },
     staffDoDelegatedHealthcareActivities: null,
+    staffWhatKindDelegatedHealthcareActivities: null,
   },
 });
 
@@ -150,6 +152,7 @@ export class MockEstablishmentService extends EstablishmentService {
       title: 'Aware of how the care workforce pathway works in practice',
     },
     careWorkforcePathwayUse: null,
+    staffWhatKindDelegatedHealthcareActivities: null,
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}, childWorkplaces: any = null) {
@@ -350,6 +353,13 @@ export class MockEstablishmentService extends EstablishmentService {
   public getEstablishment(workplaceUid: string, wdf: boolean = false): Observable<any> {
     return of(this.establishmentObj as Establishment);
   }
+
+  public updateStaffKindDelegatedHealthcareActivities(
+    workplaceUid: string,
+    payload: UpdateStaffKindDelegatedHealthcareActivitiesPayload,
+  ) {
+    return of();
+  }
 }
 
 @Injectable()
@@ -405,6 +415,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     sickPay: 'No',
     pensionContribution: 'No',
     careWorkersLeaveDaysPerYear: '35',
+    staffWhatKindDelegatedHealthcareActivities: null,
   };
 
   public static factory(employerTypeHasValue = true, dataOwner: any = 'Workplace') {

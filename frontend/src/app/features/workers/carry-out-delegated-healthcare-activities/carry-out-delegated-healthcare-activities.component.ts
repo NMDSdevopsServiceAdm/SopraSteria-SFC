@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
+import {
+  DelegatedHealthcareActivity,
+  StaffWhatKindDelegatedHealthcareActivities,
+} from '@core/model/delegated-healthcare-activities.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -22,6 +26,8 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
     { label: 'No', value: 'No' },
     { label: 'I do not know', value: `Don't know` },
   ];
+  public allDelegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
+  public staffWhatKindDelegatedHealthcareActivities: StaffWhatKindDelegatedHealthcareActivities;
   public dhaDefinition: string;
 
   constructor(
@@ -43,6 +49,9 @@ export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComp
 
   init(): void {
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
+    this.allDelegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
+    this.staffWhatKindDelegatedHealthcareActivities = this.workplace.staffWhatKindDelegatedHealthcareActivities;
+
     this.prefill();
     this.next = this.determineConditionalRouting();
   }

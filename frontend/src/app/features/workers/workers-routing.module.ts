@@ -82,6 +82,7 @@ import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-dele
 import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
 import { RequireWhoCarriesDHAAnswerForSomeWorkersGuard } from '@core/guards/require-answer-who-carries-out-delegated-healthcare-activities/require-answer-who-carries-out-delegated-healthcare-activities.guard';
 import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
+import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 
 const routes: Routes = [
   {
@@ -400,6 +401,7 @@ const routes: Routes = [
           {
             path: 'carry-out-delegated-healthcare-activities',
             component: CarryOutDelegatedHealthcareActivitiesComponent,
+            resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
             data: { title: 'Carry out Delegated Healthcare Activities' },
           },
           {
@@ -698,6 +700,7 @@ const routes: Routes = [
       {
         path: 'carry-out-delegated-healthcare-activities',
         component: CarryOutDelegatedHealthcareActivitiesComponent,
+        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
         data: { title: 'Carry out Delegated Healthcare Activities' },
       },
       {

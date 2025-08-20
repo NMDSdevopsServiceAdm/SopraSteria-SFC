@@ -50,6 +50,13 @@ export class DelegatedHealthcareActivitiesService {
       { params: queryParams },
     );
   }
+  checkIfAnyWorkerHasDHAAnswered(establishmentId: string): Observable<boolean> {
+    return this.http
+      .get<{ hasAnswer: boolean }>(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/delegatedHealthcareActivities/checkIfAnyWorkerHasDHAAnswered`,
+      )
+      .pipe(map((res) => res.hasAnswer));
+  }
 }
 
 export type DHAGetNumberOfWorkersResponse = {

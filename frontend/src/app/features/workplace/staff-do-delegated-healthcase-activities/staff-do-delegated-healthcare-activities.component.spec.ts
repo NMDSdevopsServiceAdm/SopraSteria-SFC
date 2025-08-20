@@ -10,6 +10,7 @@ import { WindowRef } from '@core/services/window.ref';
 import {
   MockDelegatedHealthcareActivitiesService,
   mockDHADefinition,
+  mockDHAs,
 } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
@@ -24,22 +25,12 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   const labels = ['Yes', 'No', 'I do not know'];
   const values = ['Yes', 'No', "Don't know"];
 
-  const mockDelegatedHealthcareActivities = [
-    {
-      id: 1,
-      title: 'Vital signs monitoring',
-      description: 'Like monitoring heart rate as part of the treatment of a condition.',
-    },
-    {
-      id: 2,
-      title: 'Specialised medication administration',
-      description: 'Like administering warfarin.',
-    },
-  ];
+  const mockDelegatedHealthcareActivities = mockDHAs;
 
   async function setup(overrides: any = {}) {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const workerHasDHAAnswered = overrides.someWorkersHasDHAAnswered ?? true;
 
     const setupTools = await render(StaffDoDelegatedHealthcareActivitiesComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -59,6 +50,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
             snapshot: {
               data: {
                 delegatedHealthcareActivities: mockDelegatedHealthcareActivities,
+                workerHasDHAAnswered,
               },
             },
           },
@@ -178,7 +170,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     }
   });
 
-  describe('Dipslaying banner', () => {
+  describe('Displaying banner', () => {
     it('should display banner when user submits and return is to home page', async () => {
       const { fixture, getByText, getByLabelText, alertSpy } = await setup({
         establishmentService: {
@@ -189,7 +181,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       const radioButton = getByLabelText(labels[0]);
       fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save and return');
+      const saveButton = getByText('Save');
       fireEvent.click(saveButton);
       await fixture.whenStable();
 
@@ -212,7 +204,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       const radioButton = getByLabelText(labels[0]);
       fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save and return');
+      const saveButton = getByText('Save');
       fireEvent.click(saveButton);
       await fixture.whenStable();
 
@@ -242,6 +234,12 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       const { getByTestId } = await setup(overrides);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not display warning message about selecting "No"', async () => {
+      const { queryByTestId } = await setup(overrides);
+
+      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
     });
 
     it('should show a "Save and continue" cta button and "Skip this question" link', async () => {
@@ -289,11 +287,106 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
+  });
 
-    it('should render the progress bar', async () => {
-      const { getByTestId } = await setup(overrides);
+  describe('from workplace summary', () => {
+    const overrides = { establishmentService: { returnTo: { url: ['/dashboard'], fragment: 'workplace' } } };
 
-      expect(getByTestId('progress-bar')).toBeTruthy();
+    it('should navigate to staff-recruitment-capture-training-requirement page when user skips the question', async () => {
+      const { getByText, routerSpy } = await setup(overrides);
+
+      userEvent.click(getByText('Cancel'));
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+    });
+
+    it('should navigate to what-kind-of-delegated-healthcare-activities after submitting "Yes" as an answer', async () => {
+      const { getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+
+      userEvent.click(getByLabelText('Yes'));
+      userEvent.click(getByText('Save'));
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'what-kind-of-delegated-healthcare-activities',
+      ]);
+      expect(establishmentServiceSpy).toHaveBeenCalled();
+    });
+
+    ['No', 'I do not know'].forEach((answer) => {
+      it(`should navigate to staff-recruitment-capture-training-requirement page after submitting '${answer}' as an answer`, async () => {
+        const { getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+
+        userEvent.click(getByLabelText(answer));
+        userEvent.click(getByText('Save'));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+        expect(establishmentServiceSpy).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('warning message about selecting "No"', () => {
+    ['Yes', "Don't know", null].forEach((previousAnswer) => {
+      it(`should display a warning message about selecting "No" will remove workers DHA answers if previous answer is ${previousAnswer}`, async () => {
+        const { getByTestId } = await setup({
+          establishmentService: {
+            establishment: {
+              staffDoDelegatedHealthcareActivities: previousAnswer,
+            },
+            returnTo: {
+              url: ['/dashboard'],
+              fragment: 'workplace',
+            },
+          },
+        });
+
+        const warningMessage = getByTestId('warning-on-dha-data-removal');
+        expect(warningMessage).toBeTruthy();
+        expect(warningMessage.textContent).toContain(
+          'If you select No, all delegated healthcare activity data will be removed from your staff records.',
+        );
+      });
+    });
+
+    it('should not display the warning message if already answered as "No"', async () => {
+      const { queryByTestId } = await setup({
+        establishmentService: {
+          establishment: {
+            staffDoDelegatedHealthcareActivities: 'No',
+          },
+          returnTo: {
+            url: ['/dashboard'],
+            fragment: 'workplace',
+          },
+        },
+      });
+
+      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
+    });
+
+    it('should not display the warning message if none of the workers have DHA question answered', async () => {
+      const { queryByTestId } = await setup({
+        establishmentService: {
+          returnTo: {
+            url: ['/dashboard'],
+            fragment: 'workplace',
+          },
+        },
+        someWorkersHasDHAAnswered: false,
+      });
+
+      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
+    });
+
+    it('should not display the warning message if we are in new workplace flow', async () => {
+      const { queryByTestId } = await setup({
+        establishmentService: {
+          returnTo: null,
+        },
+      });
+
+      expect(queryByTestId('warning-on-dha-data-removal')).toBeFalsy();
     });
   });
 });

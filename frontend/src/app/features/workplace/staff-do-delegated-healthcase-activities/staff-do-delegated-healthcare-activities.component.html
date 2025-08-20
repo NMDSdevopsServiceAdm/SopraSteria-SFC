@@ -15,16 +15,21 @@
           >
             {{ dhaDefinition }}
           </div>
-          <app-details [title]="'See delegated healthcare activities that your staff might carry out'">
-            <ng-container *ngFor="let delegatedHealthcareActivity of delegatedHealthcareActivities">
-              <p class="govuk-!-font-weight-bold govuk-!-margin-bottom-0">
-                {{ delegatedHealthcareActivity.title }}
-              </p>
-              <p class="govuk-!-margin-top-0">
-                {{ delegatedHealthcareActivity.description }}
-              </p>
-            </ng-container>
-          </app-details>
+
+          <app-details-dha-examples
+            [allDHAs]="allDelegatedHealthcareActivities"
+            [staffWhatKindDelegatedHealthcareActivities]="null"
+          ></app-details-dha-examples>
+
+          <div *ngIf="shouldDisplayWarningMessage" class="govuk-warning-text" data-testid="warning-on-dha-data-removal">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <span class="govuk-warning-text__text" style="font-weight: normal">
+              <span class="govuk-visually-hidden">Warning</span>
+              If you select <strong>No</strong>, all delegated healthcare activity data will be removed from your staff
+              records.
+            </span>
+          </div>
+
           <div class="govuk-form-group">
             <div class="govuk-radios govuk-!-margin-top-3">
               <ng-container *ngFor="let option of options; let i = index">
@@ -49,6 +54,7 @@
       <app-workplace-submit-button
         [return]="!!return"
         (clicked)="setSubmitAction($event)"
+        [hasConditionalRouting]="true"
       ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">

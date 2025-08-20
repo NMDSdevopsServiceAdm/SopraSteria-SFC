@@ -80,6 +80,9 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
+import { WorkplaceStaffDoDHAGuard } from '@core/guards/workplace-staff-do-dha/workplace-staff-do-dha.guard';
+import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -468,10 +471,23 @@ const routes: Routes = [
         path: 'staff-do-delegated-healthcare-activities',
         component: StaffDoDelegatedHealthcareActivitiesComponent,
         canActivate: [CheckPermissionsGuard],
-        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
+        resolve: {
+          delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver,
+          workerHasDHAAnswered: CheckIfAnyWorkerHasDHAAnsweredResolver,
+        },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff do delegated healthcare activities',
+        },
+      },
+      {
+        path: 'what-kind-of-delegated-healthcare-activities',
+        component: StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
+        canActivate: [CheckPermissionsGuard, WorkplaceStaffDoDHAGuard],
+        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'What kind of delegated healthcare activities',
         },
       },
       {
