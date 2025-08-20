@@ -18,7 +18,7 @@ const clearDHAWorkerAnswersOnWorkplaceChange = async (establishment, options) =>
 
 const clearDHAWorkplaceAnswerOnChange = async (establishment, options) => {
   try {
-    const username = options?.savedAt ?? '';
+    const username = options?.savedBy ?? '';
     const transaction = options?.transaction;
     const models = establishment.sequelize.models;
 
