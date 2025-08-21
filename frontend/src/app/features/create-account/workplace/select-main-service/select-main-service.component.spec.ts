@@ -2,12 +2,14 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockRegistrationService, MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
+import {
+  MockRegistrationService,
+  MockRegistrationServiceWithMainService,
+} from '@core/test-utils/MockRegistrationService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
@@ -16,49 +18,40 @@ import { fireEvent, render } from '@testing-library/angular';
 import { SelectMainServiceComponent } from './select-main-service.component';
 
 describe('SelectMainServiceComponent', () => {
-  async function setup(mainServicePrefilled = false, registrationFlow = true) {
-    const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
-      SelectMainServiceComponent,
-      {
-        imports: [
-          SharedModule,
-          RegistrationModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
-        providers: [
-          {
-            provide: RegistrationService,
-            useClass: mainServicePrefilled ? MockRegistrationServiceWithMainService : MockRegistrationService,
-          },
-          {
-            provide: WorkplaceService,
-            useClass: MockWorkplaceService,
-          },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                parent: {
-                  url: [
-                    {
-                      path: registrationFlow ? 'registration' : 'confirm-details',
-                    },
-                  ],
-                },
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(SelectMainServiceComponent, {
+      imports: [SharedModule, RegistrationModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      providers: [
+        {
+          provide: RegistrationService,
+          useClass:
+            overrides.mainServicePrefilled ?? false ? MockRegistrationServiceWithMainService : MockRegistrationService,
+        },
+        {
+          provide: WorkplaceService,
+          useClass: MockWorkplaceService,
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
+                  },
+                ],
               },
             },
           },
-          UntypedFormBuilder,
-        ],
-      },
-    );
+        },
+        UntypedFormBuilder,
+      ],
+    });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -66,18 +59,12 @@ describe('SelectMainServiceComponent', () => {
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
-      fixture,
+      ...setupTools,
       component,
       spy,
-      getAllByText,
-      queryByText,
-      getByText,
-      getByLabelText,
-      getByTestId,
-      queryByTestId,
     };
   }
 
@@ -101,7 +88,7 @@ describe('SelectMainServiceComponent', () => {
   });
 
   it('should not render the progress bars when accessed from outside the flow', async () => {
-    const { queryByTestId } = await setup(false, false);
+    const { queryByTestId } = await setup({ mainServicePrefilled: false, registrationFlow: false });
 
     expect(queryByTestId('progress-bar-1')).toBeFalsy();
     expect(queryByTestId('progress-bar-2')).toBeFalsy();
@@ -191,7 +178,7 @@ describe('SelectMainServiceComponent', () => {
   });
 
   it('should prefill the other input box with the correct value', async () => {
-    const { component, fixture } = await setup(true);
+    const { component, fixture } = await setup({ mainServicePrefilled: true });
 
     component.isParent = false;
     component.isRegulated = true;
