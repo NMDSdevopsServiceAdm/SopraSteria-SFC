@@ -1,9 +1,10 @@
-import { Directive, Input, OnInit } from '@angular/core';
+import { Directive, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { SortByService } from '@core/services/sort-by.service';
 import { TabsService } from '@core/services/tabs.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
@@ -33,8 +34,13 @@ export class StaffSummaryDirective implements OnInit {
     '1_dsc': 'jobRoleDesc',
     '2_meeting': 'wdfMeeting',
     '2_not_meeting': 'wdfNotMeeting',
+    '3_last_update_newest': 'lastUpdateNewest',
+    '3_last_update_oldest': 'lastUpdateOldest',
+    '4_add_more_details': 'addMoreDetails',
   };
   public searchLabel = 'Search by name or ID number';
+  public pageIndex = 0;
+  public maintainedPageIndex: number;
 
   constructor(
     protected permissionsService: PermissionsService,
@@ -43,14 +49,32 @@ export class StaffSummaryDirective implements OnInit {
     protected route: ActivatedRoute,
     protected establishmentService: EstablishmentService,
     protected tabsService: TabsService,
+    protected sortByService: SortByService,
   ) {}
 
   ngOnInit(): void {
+    if (!this.wdfView) {
+      const { staffSummarySortValue, staffSummarySearchTerm, staffSummaryIndex } =
+        this.sortByService.returnLocalStorageForSort();
+
+      const staffSummaryIndexInteger = Number(staffSummaryIndex);
+
+      this.sortByValue = staffSummarySortValue ?? 'staffNameAsc';
+      this.searchTerm = staffSummarySearchTerm ?? '';
+      this.pageIndex = Number.isInteger(staffSummaryIndexInteger) ? staffSummaryIndexInteger : 0;
+    }
+
     this.totalWorkerCount = this.workerCount;
     this.paginatedWorkers = this.workers;
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
+    this.getPageOfWorkers({
+      index: this.pageIndex,
+      itemsPerPage: 15,
+      searchTerm: this.searchTerm,
+      sortByValue: this.sortByValue,
+    });
     this.init();
   }
 
@@ -70,6 +94,16 @@ export class StaffSummaryDirective implements OnInit {
     sortByValue: string;
   }): void {
     const { index, itemsPerPage, searchTerm, sortByValue } = properties;
+    this.sortByValue = sortByValue;
+
+    if (!this.wdfView) {
+      this.maintainedPageIndex = index;
+
+      localStorage.setItem('staffSummarySortValue', this.sortByValue);
+      localStorage.setItem('staffSummarySearchTerm', searchTerm);
+      localStorage.setItem('staffSummaryIndex', index.toString());
+    }
+
     this.workerService
       .getAllWorkers(this.workplace.uid, {
         pageIndex: index,

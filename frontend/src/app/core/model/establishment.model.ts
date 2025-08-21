@@ -263,6 +263,9 @@ export enum SortStaffOptions {
   '0_dsc' = 'Staff name (Z to A)',
   '1_asc' = 'Job role (A to Z)',
   '1_dsc' = 'Job role (Z to A)',
+  '3_last_update_newest' = 'Last update (newest)',
+  '3_last_update_oldest' = 'Last update (oldest)',
+  '4_add_more_details' = 'Add more details',
 }
 
 export enum WdfSortStaffOptions {
