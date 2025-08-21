@@ -55,7 +55,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public hasBenchmarkComparisonData: boolean;
   public isParent: boolean;
   public certificateYears: string;
-  public newHomeDesignParentFlag: boolean;
   public isParentApprovedBannerViewed: boolean;
   public isOwnershipRequested = false;
   public canAddWorker: boolean;
@@ -97,15 +96,12 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
 
     this.subId = this.route.snapshot.data.establishment.uid;
 
-    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
-
     this.bigThreeServices = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);
 
     this.tilesData = this.benchmarksService.benchmarksData?.newBenchmarks;
 
     this.hasBenchmarkComparisonData = !!this.tilesData?.meta.staff && !!this.tilesData?.meta.workplaces;
     this.setBenchmarksCard();
-    this.subscriptions.add();
   }
 
   ngOnChanges(): void {

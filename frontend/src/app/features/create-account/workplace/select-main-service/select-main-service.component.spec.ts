@@ -1,23 +1,18 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import {
-  MockRegistrationService,
-  MockRegistrationServiceWithMainService,
-} from '@core/test-utils/MockRegistrationService';
-
+import { MockRegistrationService, MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+
 import { SelectMainServiceComponent } from './select-main-service.component';
 
 describe('SelectMainServiceComponent', () => {
@@ -45,10 +40,6 @@ describe('SelectMainServiceComponent', () => {
           {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,
-          },
-          {
-            provide: FeatureFlagsService,
-            useClass: MockFeatureFlagsService,
           },
           {
             provide: ActivatedRoute,
@@ -211,43 +202,20 @@ describe('SelectMainServiceComponent', () => {
     expect(form.get('otherWorkplaceService123').value).toEqual('Hello!');
   });
 
-  describe('when newHomeDesignParentFlag is true ', () => {
-    it('should submit and go to the registration/parent-workplace-accounts url when option selected and is not parent', async () => {
-      const { component, fixture, getByText, getByLabelText, spy } = await setup();
+  it('should submit and go to the registration/parent-workplace-accounts url when option selected and is not parent', async () => {
+    const { component, fixture, getByText, getByLabelText, spy } = await setup();
 
-      component.isParent = false;
-      component.isRegulated = false;
-      component.newHomeDesignParentFlag = true;
+    component.isParent = false;
+    component.isRegulated = false;
 
-      fixture.detectChanges();
+    fixture.detectChanges();
 
-      const radioButton = getByLabelText('Head office services');
-      fireEvent.click(radioButton);
+    const radioButton = getByLabelText('Head office services');
+    fireEvent.click(radioButton);
 
-      const continueButton = getByText('Continue');
-      fireEvent.click(continueButton);
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['registration', 'parent-workplace-accounts']);
-    });
-  });
-
-  describe('when newHomeDesignParentFlag is false ', () => {
-    it('should submit and go to the registration/add-total-staff url when option selected and is not parent', async () => {
-      const { component, fixture, getByText, getByLabelText, spy } = await setup();
-
-      component.isParent = false;
-      component.isRegulated = false;
-      component.newHomeDesignParentFlag = false;
-
-      fixture.detectChanges();
-
-      const radioButton = getByLabelText('Head office services');
-      fireEvent.click(radioButton);
-
-      const continueButton = getByText('Continue');
-      fireEvent.click(continueButton);
-
-      expect(spy).toHaveBeenCalledWith(['registration', 'add-total-staff']);
-    });
+    expect(spy).toHaveBeenCalledWith(['registration', 'parent-workplace-accounts']);
   });
 });
