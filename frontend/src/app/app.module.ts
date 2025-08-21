@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -10,7 +10,6 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
 import { SubsidiaryAccountComponent } from '@core/components/subsidiaryAccount/subsidiaryAccount.component';
-import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
@@ -34,7 +33,7 @@ import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { CountryService } from '@core/services/country.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { EthnicityService } from '@core/services/ethnicity.service';
@@ -158,11 +157,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
   providers: [
     AuthGuard,
     AdminSkipService,
-    {
-      provide: BenchmarksServiceBase,
-      useFactory: BenchmarksServiceFactory,
-      deps: [FeatureFlagsService, HttpClient],
-    },
+    BenchmarksV2Service,
     BackService,
     CountryService,
     EstablishmentService,

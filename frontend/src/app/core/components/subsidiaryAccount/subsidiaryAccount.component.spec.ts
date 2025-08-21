@@ -6,7 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -40,7 +40,7 @@ describe('SubsidiaryAccountComponent', () => {
       providers: [
         WindowRef,
         {
-          provide: BenchmarksServiceBase,
+          provide: BenchmarksV2Service,
           useClass: MockBenchmarksService,
         },
         {
@@ -69,7 +69,7 @@ describe('SubsidiaryAccountComponent', () => {
 
     const component = fixture.componentInstance;
 
-    const benchmarksService = TestBed.inject(BenchmarksServiceBase);
+    const benchmarksService = TestBed.inject(BenchmarksV2Service);
     const benchmarksSpy = spyOn(benchmarksService, 'postBenchmarkTabUsage').and.callThrough();
 
     return {
