@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { AbstractControl, FormGroup, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -11,7 +11,10 @@ import {
   DHAGetAllWorkersResponse,
 } from '@core/services/delegated-healthcare-activities.service';
 import { take } from 'rxjs/operators';
-import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
+import {
+  DelegatedHealthcareActivity,
+  StaffWhatKindDelegatedHealthcareActivities,
+} from '@core/model/delegated-healthcare-activities.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { AlertService } from '@core/services/alert.service';
 
@@ -19,7 +22,7 @@ import { AlertService } from '@core/services/alert.service';
   selector: 'app-who-carry-out-delegated-healthcare-activities',
   templateUrl: './who-carry-out-delegated-healthcare-activities.component.html',
 })
-export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit {
+export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private workplaceUid: string;
   public workersToShow: Array<{ uid: string; nameOrId: string; mainJob: JobRole }> = [];
@@ -36,6 +39,8 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
   @ViewChild('formEl') formEl: ElementRef;
   public section = 'Employment details';
   public heading = 'Who carries out delegated healthcare activities?';
+  public allDelegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
+  public staffWhatKindDelegatedHealthcareActivities: StaffWhatKindDelegatedHealthcareActivities;
 
   public avalibleAnswers = [
     { tag: 'Yes', value: 'Yes' },
@@ -64,6 +69,9 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
     this.handleGetWorkersResponse(this.route.snapshot.data.workerWhoRequireDHAAnswer);
 
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
+    this.allDelegatedHealthcareActivities = this.route.snapshot.data?.delegatedHealthcareActivities;
+    this.staffWhatKindDelegatedHealthcareActivities =
+      this.establishmentService.establishment.staffWhatKindDelegatedHealthcareActivities;
     this.initialiseForm();
     this.setupServerErrorsMap();
   }
