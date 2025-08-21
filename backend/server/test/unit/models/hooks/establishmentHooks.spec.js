@@ -1,8 +1,14 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const { clearDHAWorkerAnswersOnWorkplaceChange } = require('../../../../models/hooks/establishmentHooks');
+const {
+  clearDHAWorkerAnswersOnWorkplaceChange,
+  clearDHAWorkplaceAnswerOnChange,
+} = require('../../../../models/hooks/establishmentHooks');
 
 describe('Establishment sequelize hooks', () => {
+  const mockTransaction = {};
+  const mockOptions = { transaction: mockTransaction, savedBy: 'mock-username' };
+
   describe('beforeSave: clearDHAWorkerAnswersOnWorkplaceChange', () => {
     let mockWorkerModel = { clearDHAAnswerForAllWorkersInWorkplace: () => {} };
 
@@ -13,8 +19,6 @@ describe('Establishment sequelize hooks', () => {
     afterEach(() => {
       sinon.restore();
     });
-
-    const mockOptions = { transaction: {}, savedBy: 'username' };
 
     const mockEstablishmentSequelizeInstance = {
       id: 'mock-establishment-id',
@@ -61,6 +65,110 @@ describe('Establishment sequelize hooks', () => {
       await clearDHAWorkerAnswersOnWorkplaceChange(mockEstablishment, mockOptions);
 
       expect(mockWorkerModel.clearDHAAnswerForAllWorkersInWorkplace).not.to.have.been.called;
+    });
+  });
+
+  describe('beforeSave: clearDHAWorkplaceAnswerOnChange', () => {
+    let mockEstablishmentAuditModel = { create: () => {} };
+    const mockEstablishmentSequelizeInstance = {
+      id: 'mock-establishment-id',
+      changed: (fieldName) => fieldName === 'staffDoDelegatedHealthcareActivities',
+      sequelize: { models: { establishmentAudit: mockEstablishmentAuditModel } },
+      setDelegatedHealthcareActivities: () => {},
+    };
+
+    beforeEach(() => {
+      sinon.spy(mockEstablishmentAuditModel, 'create');
+      sinon.spy(mockEstablishmentSequelizeInstance, 'setDelegatedHealthcareActivities');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    ['No', "Don't know", null].forEach((staffDoDHANewValue) => {
+      it(`should clear the answer of staffWhatKindDHA when staffDoDHA change to ${staffDoDHANewValue}`, async () => {
+        const mockEstablishment = {
+          ...mockEstablishmentSequelizeInstance,
+          staffDoDelegatedHealthcareActivities: staffDoDHANewValue,
+          staffWhatKindDelegatedHealthcareActivities: {
+            knowWhatActivities: 'Yes',
+            activities: [{ id: 1 }],
+          },
+        };
+
+        await clearDHAWorkplaceAnswerOnChange(mockEstablishment, mockOptions);
+
+        expect(mockEstablishment.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(null);
+        expect(mockEstablishment.setDelegatedHealthcareActivities).to.have.been.calledWith([], {
+          transaction: mockTransaction,
+        });
+      });
+    });
+
+    it('should create audit record for the change to staffWhatKindDHA', async () => {
+      const mockEstablishment = {
+        ...mockEstablishmentSequelizeInstance,
+        staffDoDelegatedHealthcareActivities: 'No',
+        staffWhatKindDelegatedHealthcareActivities: {
+          knowWhatActivities: 'Yes',
+          activities: [{ id: 1 }],
+        },
+      };
+
+      await clearDHAWorkplaceAnswerOnChange(mockEstablishment, mockOptions);
+
+      expect(mockEstablishmentAuditModel.create).to.have.been.calledWith(
+        {
+          establishmentFk: 'mock-establishment-id',
+          username: 'mock-username',
+          type: 'changed',
+          property: 'StaffWhatKindDelegatedHealthcareActivities',
+          event: { new: null },
+        },
+        { transaction: mockTransaction },
+      );
+    });
+
+    it('should not clear the answer of staffWhatKindDHA if staffDoDHA answer is "Yes"', async () => {
+      const mockEstablishment = {
+        ...mockEstablishmentSequelizeInstance,
+        staffDoDelegatedHealthcareActivities: 'Yes',
+        staffWhatKindDelegatedHealthcareActivities: {
+          knowWhatActivities: 'Yes',
+          activities: [{ id: 1 }],
+        },
+      };
+
+      await clearDHAWorkplaceAnswerOnChange(mockEstablishment, mockOptions);
+
+      expect(mockEstablishment.staffWhatKindDelegatedHealthcareActivities).to.deep.equal({
+        knowWhatActivities: 'Yes',
+        activities: [{ id: 1 }],
+      });
+      expect(mockEstablishment.setDelegatedHealthcareActivities).not.to.have.been.called;
+      expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
+    });
+
+    it('should do nothing if staffDoDelegatedHealthcareActivities is not changed', async () => {
+      const mockEstablishment = {
+        ...mockEstablishmentSequelizeInstance,
+        changed: () => false,
+        staffDoDelegatedHealthcareActivities: 'No',
+        staffWhatKindDelegatedHealthcareActivities: {
+          knowWhatActivities: 'Yes',
+          activities: [{ id: 1 }],
+        },
+      };
+
+      await clearDHAWorkplaceAnswerOnChange(mockEstablishment, mockOptions);
+
+      expect(mockEstablishment.staffWhatKindDelegatedHealthcareActivities).to.deep.equal({
+        knowWhatActivities: 'Yes',
+        activities: [{ id: 1 }],
+      });
+      expect(mockEstablishment.setDelegatedHealthcareActivities).not.to.have.been.called;
+      expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
     });
   });
 });
