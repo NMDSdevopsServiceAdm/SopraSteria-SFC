@@ -145,6 +145,7 @@ import { HasValuePipe } from './pipes/has-value.pipe';
 import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
 import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
 import { DetailsDhaExamplesComponent } from './components/details-dha-examples/details-dha-examples.component';
+import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -290,6 +291,7 @@ import { DetailsDhaExamplesComponent } from './components/details-dha-examples/d
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
     DetailsDhaExamplesComponent,
+    FormatWhatDhaPipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -426,6 +428,7 @@ import { DetailsDhaExamplesComponent } from './components/details-dha-examples/d
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
     DetailsDhaExamplesComponent,
+    FormatWhatDhaPipe,
   ],
   providers: [
     DialogService,
@@ -436,6 +439,7 @@ import { DetailsDhaExamplesComponent } from './components/details-dha-examples/d
     FeatureFlagsResolver,
     HasValuePipe,
     FormatCwpUsePipe,
+    FormatWhatDhaPipe,
   ],
 })
 export class SharedModule {}
