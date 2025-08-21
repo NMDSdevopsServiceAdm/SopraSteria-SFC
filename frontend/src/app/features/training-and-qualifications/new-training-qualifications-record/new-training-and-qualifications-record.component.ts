@@ -3,8 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
+import { TrainingRecord, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import {
+  ActionsListData,
   CertificateDownloadEvent,
   CertificateUploadEvent,
   TrainingAndQualificationRecords,
@@ -33,7 +34,7 @@ import { mergeMap, toArray } from 'rxjs/operators';
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   @ViewChild('tabEl') tabEl;
   private subscriptions: Subscription = new Subscription();
-  public actionsListData = [];
+  public actionsListData: ActionsListData = [];
   public currentFragment: string;
   public filteredToJobRoleMandatoryTraining: mandatoryTraining[];
   public canEditWorker: boolean;
@@ -47,7 +48,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public missingMandatoryTraining: TrainingRecordCategory[] = [];
   public qualificationsByGroup: QualificationsByGroup;
   public lastUpdatedDate: Date;
-  public fragmentsObject: any = {
+  public fragmentsObject: Record<string, string> = {
     allRecords: 'all-records',
     mandatoryTraining: 'mandatory-training',
     nonMandatoryTraining: 'non-mandatory-training',
@@ -260,9 +261,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.actionsListData = [];
   }
 
-  private populateActionsList(trainingCategories: any, typeOfTraining: string): void {
+  private populateActionsList(trainingCategories: TrainingRecordCategory[], typeOfTraining: string): void {
     trainingCategories.forEach((trainingCategory) => {
-      trainingCategory.trainingRecords.forEach((trainingRecord) => {
+      trainingCategory.trainingRecords.forEach((trainingRecord: TrainingRecord) => {
         if (trainingRecord.trainingStatus && trainingRecord.trainingStatus !== 0) {
           this.actionsListData.push({
             ...trainingRecord,

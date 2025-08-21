@@ -1,12 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { TrainingCertificateDownloadEvent, TrainingCertificateUploadEvent } from '@core/model/training.model';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { NewTrainingComponent } from './new-training.component';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('NewTrainingComponent', async () => {
   const trainingCategories = [
@@ -97,8 +97,8 @@ describe('NewTrainingComponent', async () => {
 
   async function setup(override: any = {}) {
     const { fixture, getByTestId, getByLabelText } = await render(NewTrainingComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, SharedModule],
-      providers: [],
+      imports: [HttpClientTestingModule, SharedModule, RouterModule],
+      providers: [provideRouter([])],
       componentProperties: {
         canEditWorker: true,
         trainingCategories: trainingCategories,
@@ -537,6 +537,28 @@ describe('NewTrainingComponent', async () => {
           "There's a problem with this download. Try again later or contact us for help.",
         ),
       ).toBeTruthy();
+    });
+
+    describe('PDF rendering', () => {
+      it('should show the text "Uploaded" at certificate column if one or more certificates were uploaded', async () => {
+        const { component, fixture, getByTestId } = await setup({ pdfRenderingMode: true });
+
+        component.trainingCategories[0].trainingRecords[0].trainingCertificates = multipleTrainingCertificates();
+        fixture.detectChanges();
+
+        const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
+        expect(within(trainingRecordWithCertificateRow).getByText('Uploaded')).toBeTruthy();
+      });
+
+      it('should show the text "Not uploaded" at certificate column if no certificates were uploaded', async () => {
+        const { component, fixture, getByTestId } = await setup({ pdfRenderingMode: true });
+
+        component.trainingCategories[0].trainingRecords[0].trainingCertificates = [];
+        fixture.detectChanges();
+
+        const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
+        expect(within(trainingRecordWithCertificateRow).getByText('Not uploaded')).toBeTruthy();
+      });
     });
   });
 });

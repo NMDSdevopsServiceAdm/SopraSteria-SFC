@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Workplace } from '@core/model/my-workplaces.model';
 import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
@@ -39,7 +38,7 @@ const establishmentBuilder = build('Workplace', {
 describe('MissingWorkplaceReferencesComponent', () => {
   async function setup(references: Workplace[] = []) {
     const component = await render(MissingWorkplaceReferencesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -86,6 +85,7 @@ describe('MissingWorkplaceReferencesComponent', () => {
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
+    spyOn(router, 'navigate').and.resolveTo(true);
 
     return {
       component,

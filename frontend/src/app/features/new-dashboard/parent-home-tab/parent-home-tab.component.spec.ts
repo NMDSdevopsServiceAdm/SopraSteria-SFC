@@ -51,68 +51,73 @@ describe('ParentHomeTabComponent', () => {
     noOfWorkplaces = 9,
     permissions = [],
     canAccessCms = true,
+    overrides: any = {},
   ) => {
-    const { fixture, queryAllByText, getByText, queryByText, getByTestId, queryByTestId } = await render(
-      ParentHomeTabComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-        providers: [
-          WindowRef,
-          {
-            provide: FeatureFlagsService,
-            useClass: MockFeatureFlagsService,
-          },
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(permissions),
-            deps: [HttpClient, Router, UserService],
-          },
-          {
-            provide: UserService,
-            useFactory: MockUserService.factory(1, Roles.Admin),
-            deps: [HttpClient],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                data: {
-                  articleList: canAccessCms ? articleList : null,
-                  articles: canAccessCms ? articles : null,
-                  workers: {
-                    workersCreatedDate: [],
-                    workerCount: 0,
-                    trainingCounts: {} as TrainingCounts,
-                    workersNotCompleted: [],
-                  },
+    const dataLayerPushSpy = jasmine.createSpy();
+    const MockWindow = {
+      dataLayer: {
+        push: dataLayerPushSpy,
+      },
+    };
+
+    const setupTools = await render(ParentHomeTabComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        WindowRef,
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(permissions),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(1, overrides.userRole ?? Roles.Edit),
+          deps: [HttpClient],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                articleList: canAccessCms ? articleList : null,
+                articles: canAccessCms ? articles : null,
+                workers: {
+                  workersCreatedDate: [],
+                  workerCount: 0,
+                  trainingCounts: {} as TrainingCounts,
+                  workersNotCompleted: [],
                 },
               },
-              queryParams: of({ view: null }),
-              url: of(null),
             },
+            queryParams: of({ view: null }),
+            url: of(null),
           },
-          {
-            provide: EstablishmentService,
-            useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
-            deps: [HttpClient],
-          },
-          { provide: ArticlesService, useClass: MockArticlesService },
-          { provide: WindowToken, useValue: MockWindow },
-        ],
-        declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
-        componentProperties: {
-          workplace: establishment,
-          meta: comparisonDataAvailable
-            ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
-            : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
-          canRunLocalAuthorityReport: false,
-          article: { slug: '' },
         },
-        schemas: [NO_ERRORS_SCHEMA],
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
+          deps: [HttpClient],
+        },
+        { provide: ArticlesService, useClass: MockArticlesService },
+        { provide: WindowToken, useValue: MockWindow },
+      ],
+      declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
+      componentProperties: {
+        workplace: establishment,
+        meta: comparisonDataAvailable
+          ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
+          : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
+        canRunLocalAuthorityReport: false,
+        article: { slug: '' },
       },
-    );
+      schemas: [NO_ERRORS_SCHEMA],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const alertService = TestBed.inject(AlertService);
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -123,16 +128,12 @@ describe('ParentHomeTabComponent', () => {
     const tabsServiceSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      queryAllByText,
-      getByText,
-      queryByText,
-      getByTestId,
-      queryByTestId,
       alertServiceSpy,
       parentsRequestService,
       tabsServiceSpy,
+      dataLayerPushSpy,
     };
   };
 
@@ -417,7 +418,6 @@ describe('ParentHomeTabComponent', () => {
 
       component.workplace.isParentApprovedBannerViewed = false;
       component.isParent = true;
-      component.newHomeDesignParentFlag = true;
 
       const message = `Your request to become a parent has been approved`;
 
@@ -435,7 +435,6 @@ describe('ParentHomeTabComponent', () => {
 
       component.isParentApprovedBannerViewed = null;
       component.isParent = true;
-      component.newHomeDesignParentFlag = true;
 
       fixture.detectChanges();
 
@@ -449,7 +448,6 @@ describe('ParentHomeTabComponent', () => {
 
       component.isParentApprovedBannerViewed = false;
       component.isParent = true;
-      component.newHomeDesignParentFlag = true;
 
       fixture.detectChanges();
       const alertBanner = getByTestId('parentApprovedBanner');
@@ -462,13 +460,40 @@ describe('ParentHomeTabComponent', () => {
 
       component.isParentApprovedBannerViewed = true;
       component.isParent = true;
-      component.newHomeDesignParentFlag = true;
 
       fixture.detectChanges();
 
       const alertBanner = queryByTestId('parentApprovedBanner');
 
       expect(alertBanner).toBeFalsy();
+    });
+  });
+
+  describe('Pushing userType to dataLayer', () => {
+    [Roles.Admin, Roles.AdminManager].forEach((adminRole) => {
+      it(`should push admin when role is ${adminRole} even if isParent is true`, async () => {
+        const overrides = {
+          userRole: adminRole,
+        };
+        const establishment = { ...Establishment, isParent: true };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, [], true, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
+      });
+    });
+
+    [Roles.Edit, Roles.Read].forEach((role) => {
+      it(`should push 'Parent' when role is ${role} and isParent is true`, async () => {
+        const overrides = {
+          userRole: role,
+        };
+        const establishment = { ...Establishment, isParent: true };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, [], true, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Parent' });
+      });
     });
   });
 });

@@ -60,6 +60,7 @@ var nhsBsaApiDocumentation = require('./server/routes/nhsBsaApi/apiDocs');
 var careWorkforcePathwayRoleCategories = require('./server/routes/careWorkforcePathwayRoleCategories');
 var careWorkforcePathwayWorkplaceAwarenessAnswers = require('./server/routes/careWorkforcePathwayWorkplaceAwarenessAnswers');
 const { careWorkforcePathwayRouter } = require('./server/routes/careWorkforcePathway');
+const { cmsRouter } = require('./server/routes/cms');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -139,7 +140,6 @@ app.use(
   proxy(publicDownloadBaseUrl, {
     proxyReqPathResolver: function (req) {
       const updatedPath = publicDownloadBaseUrl + req.url;
-      // console.log('public/download proxy API request to: ', `${updatedPath}`);
       return updatedPath;
     },
   }),
@@ -272,6 +272,7 @@ app.use('/api/careWorkforcePathwayWorkplaceAwarenessAnswers', [
   careWorkforcePathwayWorkplaceAwarenessAnswers,
 ]);
 app.use('/api/careWorkforcePathway', [refCacheMiddleware.refcache, careWorkforcePathwayRouter]);
+app.use('/api/cms', [refCacheMiddleware.refcache, cmsRouter]);
 
 // transaction endpoints
 app.use('/api/errors', errors);

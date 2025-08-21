@@ -15,7 +15,6 @@ import { MockDataChangeService } from '@core/test-utils/MockDataChangesService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -27,6 +26,7 @@ import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guida
 import { DragAndDropFilesListComponent } from '../drag-and-drop-files-list/drag-and-drop-files-list.component';
 import { DragAndDropFilesUploadComponent } from '../drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { BulkUploadPageComponent } from './bulk-upload-page.component';
+import { BulkUploadModule } from '../bulk-upload.module';
 
 describe('BulkUploadPageComponent', () => {
   const dataChange = MockDataChangeService.dataChangeFactory();
@@ -34,7 +34,7 @@ describe('BulkUploadPageComponent', () => {
 
   async function setup(role = 'AdminManager') {
     const { fixture, getByTestId, queryByTestId } = await render(BulkUploadPageComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
           provide: WindowRef,
@@ -74,7 +74,6 @@ describe('BulkUploadPageComponent', () => {
         AdminSkipService,
       ],
       declarations: [
-        HomeTabComponent,
         DragAndDropFilesUploadComponent,
         BulkUploadDownloadCurrentDataComponent,
         CodesAndGuidanceComponent,

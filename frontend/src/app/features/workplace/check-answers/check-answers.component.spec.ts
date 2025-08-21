@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Alert } from '@core/model/alert.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
@@ -12,7 +11,6 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -22,13 +20,7 @@ import { CheckAnswersComponent } from './check-answers.component';
 describe('CheckAnswersComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId } = await render(CheckAnswersComponent, {
-      imports: [
-        RouterModule,
-        WorkplaceModule,
-        HttpClientTestingModule,
-        SharedModule,
-        RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
-      ],
+      imports: [RouterModule, WorkplaceModule, HttpClientTestingModule, SharedModule],
       providers: [
         BackService,
         AlertService,

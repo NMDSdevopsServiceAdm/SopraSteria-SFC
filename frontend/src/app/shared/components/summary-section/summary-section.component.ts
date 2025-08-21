@@ -111,7 +111,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.sections[0].redFlag = true;
-    } else if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
+    } else if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin() && this.canViewListOfWorkers) {
       this.sections[0].message = 'Staff total does not match staff records added';
     } else if (!vacancies && !leavers && !starters) {
       this.sections[0].message = `You've not added any vacancy and turnover data`;
@@ -264,6 +264,12 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, cwpData).subscribe(),
     );
+  }
+
+  public navigateToYourOtherWorkplaces(event: Event, yourOtherWorkplacesSortValue: string) {
+    event.preventDefault();
+    localStorage.setItem('yourOtherWorkplacesSortValue', yourOtherWorkplacesSortValue);
+    this.router.navigate(['/workplace', 'view-all-workplaces']);
   }
 
   ngOnDestroy(): void {

@@ -18,19 +18,11 @@ import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { isAdminRole } from '@core/utils/check-role-util';
 import {
-  BecomeAParentCancelDialogComponent,
-} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
-import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import {
   CancelDataOwnerDialogComponent,
 } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import {
   ChangeDataOwnerDialogComponent,
 } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import {
-  LinkToParentCancelDialogComponent,
-} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
-import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import {
   OwnershipChangeMessageDialogComponent,
 } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
@@ -85,7 +77,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public hasBenchmarkComparisonData: boolean;
   public isParent: boolean;
   public certificateYears: string;
-  public newHomeDesignParentFlag: boolean;
   public isParentApprovedBannerViewed: boolean;
   public isOwnershipRequested = false;
   public canAddWorker: boolean;
@@ -133,9 +124,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.setPermissionLinks();
 
     this.isParent = this.workplace?.isParent;
-
-    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
-
     this.article = this.route.snapshot.data.articleList?.data[0];
 
     if (this.workplace) {
@@ -156,7 +144,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     }
 
     this.window.dataLayer.push({
-      isAdmin: isAdminRole(this.user.role),
+      userType: this.getUserType(),
     });
 
     if (this.addWorkplaceDetailsBanner) {
@@ -267,60 +255,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     }
     this.canBecomeAParent =
       this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.linkToParentRequestedStatus;
-  }
-
-  /**
-   * Function used to open modal box for link a workplace to parent organisation
-   * @param {event} triggered event
-   * @return {void}
-   */
-  public linkToParent($event: Event): void {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(LinkToParentDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe((confirmToClose) => {
-      if (confirmToClose) {
-        this.linkToParentRequestedStatus = true;
-        this.canBecomeAParent = false;
-      }
-    });
-  }
-
-  /**
-   * Function used to open modal box for link a workplace to parent organisation
-   * @param {event} triggered event
-   * @return {void}
-   */
-  public cancelLinkToParent($event: Event): void {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(LinkToParentCancelDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe((confirmToClose) => {
-      if (confirmToClose) {
-        this.linkToParentRequestedStatus = false;
-        this.canBecomeAParent = true;
-      }
-    });
-  }
-
-  public becomeAParent($event: Event): void {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(BecomeAParentDialogComponent, null);
-    dialog.afterClosed.subscribe((confirmToClose) => {
-      if (confirmToClose) {
-        this.canLinkToParent = false;
-        this.parentStatusRequested = true;
-      }
-    });
-  }
-
-  public cancelBecomeAParent($event: Event): void {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(BecomeAParentCancelDialogComponent, null);
-    dialog.afterClosed.subscribe((confirmToClose) => {
-      if (confirmToClose) {
-        this.canLinkToParent = true;
-        this.parentStatusRequested = false;
-      }
-    });
   }
 
   public downloadLocalAuthorityReport(event: Event) {
@@ -490,6 +424,13 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
         }
       });
     }
+  }
+
+  private getUserType(): string {
+    if (isAdminRole(this.user.role)) return 'Admin';
+    if (this.workplace.isParent) return 'Parent';
+    if (this.workplace.parentUid) return 'Sub';
+    return 'Standalone';
   }
 
   ngOnDestroy(): void {

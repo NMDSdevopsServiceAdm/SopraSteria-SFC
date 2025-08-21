@@ -1,8 +1,14 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Data } from '@angular/router';
-import { BenchmarksResponse, Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
+import {
+  BenchmarksResponse,
+  CompareGroupsRankingsResponse,
+  Metric,
+  NoData,
+  Tile,
+} from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfService } from '@core/services/pdf.service';
@@ -40,11 +46,11 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
   @ViewChild('gauge') gauge: GaugeComponent;
 
-  public rankings: RankingsResponse;
+  public rankings: CompareGroupsRankingsResponse;
   public rankingContent: RankingContent;
 
   constructor(
-    private benchmarksService: BenchmarksServiceBase,
+    private benchmarksService: BenchmarksV2Service,
     private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -99,7 +105,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     }
   };
 
-  handleRankingsResponse = (rankings: RankingsResponse) => {
+  handleRankingsResponse = (rankings: CompareGroupsRankingsResponse) => {
     this.rankings = rankings;
     this.rankingContent = { ...this.rankings, noData: this.noData };
   };

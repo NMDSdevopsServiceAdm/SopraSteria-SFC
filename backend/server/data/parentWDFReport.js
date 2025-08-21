@@ -47,7 +47,7 @@ SELECT
       "EstablishmentFK" = "Establishment"."EstablishmentID" AND
       ("GenderValue" IS NOT NULL)  AND
       ("DateOfBirthValue" IS NOT NULL)  AND
-      (("NationalityValue" = :British OR "NationalityValue" = :Dont) OR ("NationalityValue" = :Other AND "Nationality"."Nationality" IS NOT NULL)) AND
+      (("NationalityValue" = :British OR "NationalityValue" = :Dont) OR ("NationalityValue" = :Other)) AND
       ("Job"."JobName" IS NOT NULL OR "Job"."JobName" != :emptyValue)  AND
       ("MainJobStartDateValue" IS NOT NULL)  AND
       ("RecruitedFromValue" IS NOT NULL)  AND

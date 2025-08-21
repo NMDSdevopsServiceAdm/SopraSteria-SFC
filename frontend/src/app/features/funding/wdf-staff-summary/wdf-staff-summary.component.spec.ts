@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -31,9 +30,10 @@ describe('WdfStaffSummaryComponent', () => {
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
     const setupTools = await render(WdfStaffSummaryComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, FundingModule, RouterModule],
+      imports: [HttpClientTestingModule, BrowserModule, SharedModule, FundingModule, RouterModule],
       declarations: [PaginationComponent, TablePaginationWrapperComponent, SearchInputComponent],
       providers: [
+        provideRouter([]),
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(['canViewWorker']),
@@ -228,7 +228,7 @@ describe('WdfStaffSummaryComponent', () => {
     const redFlagVisuallyHiddenMessage = 'Red flag';
     const greenTickVisuallyHiddenMessage = 'Green tick';
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
-    const newStaffRecordMessage = 'New staff record';
+    const newStaffRecordMessage = 'Check this staff record';
     const notMeetingMessage = 'Not meeting';
     const meetingMessage = 'Meeting';
 
@@ -250,7 +250,7 @@ describe('WdfStaffSummaryComponent', () => {
       expect(getAllByText(meetingMessage, { exact: true }).length).toBe(3);
     });
 
-    it("should display an orange flag and 'New staff record' on staff record when the user has qualified for WDF but 1 staff record is not eligible (new)", async () => {
+    it("should display an orange flag and 'Check this staff record' on staff record when the user has qualified for WDF but 1 staff record is not eligible (new)", async () => {
       const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
       workers[0].wdfEligible = false;
       workers[1].wdfEligible = true;

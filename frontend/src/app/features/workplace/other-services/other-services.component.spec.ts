@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -13,29 +12,32 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { OtherServicesComponent } from './other-services.component';
+import { provideRouter, Router } from '@angular/router';
+import { getTestBed } from '@angular/core/testing';
 
 describe('OtherServicesComponent', () => {
   const setup = async () => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
-      OtherServicesComponent,
-      {
-        imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
-        providers: [
-          { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          UntypedFormBuilder,
-          ErrorSummaryService,
-          SubmitButtonComponent,
-          QuestionComponent,
-        ],
-      },
-    );
-    const component = fixture.componentInstance;
+    const setupTools = await render(OtherServicesComponent, {
+      imports: [HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      providers: [
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        UntypedFormBuilder,
+        ErrorSummaryService,
+        SubmitButtonComponent,
+        QuestionComponent,
+        provideRouter([]),
+      ],
+    });
+    const component = setupTools.fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId };
+    const router = getTestBed().inject(Router);
+    spyOn(router, 'navigate').and.resolveTo(true);
+
+    return { component, ...setupTools };
   };
 
   it('should render an OtherServicesComponent', async () => {

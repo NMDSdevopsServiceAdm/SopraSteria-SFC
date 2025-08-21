@@ -6,7 +6,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { Worker } from '@core/model/worker.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
@@ -55,7 +55,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public hasBenchmarkComparisonData: boolean;
   public isParent: boolean;
   public certificateYears: string;
-  public newHomeDesignParentFlag: boolean;
   public isParentApprovedBannerViewed: boolean;
   public isOwnershipRequested = false;
   public canAddWorker: boolean;
@@ -74,7 +73,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     private tabsService: TabsService,
     public route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
-    protected benchmarksService: BenchmarksServiceBase,
+    protected benchmarksService: BenchmarksV2Service,
     private serviceNamePipe: ServiceNamePipe,
     private router: Router,
   ) {}
@@ -97,15 +96,12 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
 
     this.subId = this.route.snapshot.data.establishment.uid;
 
-    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
-
     this.bigThreeServices = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);
 
     this.tilesData = this.benchmarksService.benchmarksData?.newBenchmarks;
 
     this.hasBenchmarkComparisonData = !!this.tilesData?.meta.staff && !!this.tilesData?.meta.workplaces;
     this.setBenchmarksCard();
-    this.subscriptions.add();
   }
 
   ngOnChanges(): void {

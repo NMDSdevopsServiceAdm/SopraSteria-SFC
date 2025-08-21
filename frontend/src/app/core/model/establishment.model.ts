@@ -263,6 +263,9 @@ export enum SortStaffOptions {
   '0_dsc' = 'Staff name (Z to A)',
   '1_asc' = 'Job role (A to Z)',
   '1_dsc' = 'Job role (Z to A)',
+  '3_last_update_newest' = 'Last update (newest)',
+  '3_last_update_oldest' = 'Last update (oldest)',
+  '4_add_more_details' = 'Add more details',
 }
 
 export enum WdfSortStaffOptions {
@@ -306,8 +309,16 @@ export enum SortTrainingAndQualsOptionsCat {
   '3_category' = 'Category',
 }
 
+export enum SortYourOtherWorkplaces {
+  '0_asc' = 'Workplace name (A to Z)',
+  '0_dsc' = 'Workplace name (Z to A)',
+  '1_asc' = 'Workplaces to check (A to Z)',
+  '1_dsc' = 'Workplaces to check (Z to A)',
+}
+
 export enum FilterTrainingAndQualsOptions {
   '0_showall' = 'Show all',
   '1_expired' = 'Expired',
   '2_expires_soon' = 'Expires soon',
 }
+

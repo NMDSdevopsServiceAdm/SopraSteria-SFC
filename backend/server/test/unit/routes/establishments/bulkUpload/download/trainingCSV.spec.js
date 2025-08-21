@@ -97,12 +97,14 @@ describe('trainingCSV', () => {
             expect(csvAsArray[6]).to.equal(accredited);
           });
         });
+
         it('should return training notes', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
 
           expect(csvAsArray[7]).to.equal(trainingRecord.notes);
         });
+
         it('should not return training notes', async () => {
           trainingRecord.notes = null;
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
@@ -110,6 +112,39 @@ describe('trainingCSV', () => {
 
           expect(csvAsArray[7]).to.equal('');
         });
+      });
+    });
+
+    describe('Notes edge cases', () => {
+      it('should leave notes as is when unusual characters in original string which are not hexadecimal conversions', () => {
+        const trainingRecord = apiTrainingBuilder();
+        trainingRecord.notes = 'A%b%%c!£$%^&*(';
+
+        const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[7]).to.equal(trainingRecord.notes);
+      });
+
+      it('should convert %20s into spaces', () => {
+        const trainingRecord = apiTrainingBuilder();
+        trainingRecord.notes = 'Fire%20safety%20training';
+
+        const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[7]).to.equal('Fire safety training');
+      });
+
+      it('should convert hexadecimal codes of unusual characters into original characters', () => {
+        const trainingRecord = apiTrainingBuilder();
+        trainingRecord.notes =
+          'A%20very%20important%20note%27s%20hard%20to%20find%20-%20this%20saying%20is%20such%20a%20clich%E9';
+
+        const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[7]).to.equal("A very important note's hard to find - this saying is such a cliché");
       });
     });
   });

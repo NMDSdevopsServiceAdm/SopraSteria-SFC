@@ -195,7 +195,7 @@
     <div class="govuk-summary-list__row" data-testid="otherServices">
       <dt class="govuk-summary-list__key">Other services</dt>
       <dd class="govuk-summary-list__value">
-        <ng-container [ngSwitch]="workplace.otherServices.value">
+        <ng-container [ngSwitch]="workplace.otherServices.value || null">
           <span *ngSwitchCase="null"> - </span>
           <span *ngSwitchCase="'No'"> None </span>
           <div *ngSwitchCase="'Yes'">
@@ -509,46 +509,42 @@
     </div>
 
     <div class="govuk-summary-list__row" data-testid="care-workforce-pathway-awareness">
-        <dt class="govuk-summary-list__key">Care workforce pathway aware</dt>
-        <dd class="govuk-summary-list__value">
-          {{ workplace.careWorkforcePathwayWorkplaceAwareness | formatCWPWorkplaceAwareness }}
-        </dd>
-        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-          <app-summary-record-change
-            [explanationText]="' care workforce pathway aware'"
-            [link]="['/workplace', workplace.uid, 'care-workforce-pathway-awareness']"
-            [hasData]="workplace.careWorkforcePathwayWorkplaceAwareness"
-            (setReturnClicked)="this.setReturn()"
-          ></app-summary-record-change>
-        </dd>
-      </div>
+      <dt class="govuk-summary-list__key">Care workforce pathway aware</dt>
+      <dd class="govuk-summary-list__value">
+        {{ workplace.careWorkforcePathwayWorkplaceAwareness | formatCWPWorkplaceAwareness }}
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' care workforce pathway aware'"
+          [link]="['/workplace', workplace.uid, 'care-workforce-pathway-awareness']"
+          [hasData]="workplace.careWorkforcePathwayWorkplaceAwareness"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
 
-      <div
-        class="govuk-summary-list__row"
-        data-testid="care-workforce-pathway-use"
-        *ngIf="isAwareOfCareWorkforcePathway"
-      >
-        <dt class="govuk-summary-list__key">Using the care workforce pathway</dt>
-        <dd class="govuk-summary-list__value">
-          <ng-container *ngIf="!isArray(workplace.careWorkforcePathwayUse | formatCWPUse); else listReasons">
-            {{ workplace.careWorkforcePathwayUse | formatCWPUse }}
-          </ng-container>
+    <div class="govuk-summary-list__row" data-testid="care-workforce-pathway-use" *ngIf="isAwareOfCareWorkforcePathway">
+      <dt class="govuk-summary-list__key">Using the care workforce pathway</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container *ngIf="!isArray(workplace.careWorkforcePathwayUse | formatCWPUse); else listReasons">
+          {{ workplace.careWorkforcePathwayUse | formatCWPUse }}
+        </ng-container>
 
-          <ng-template #listReasons>
-            <ul class="govuk-list govuk-!-margin-bottom-0">
-              <li *ngFor="let reason of workplace.careWorkforcePathwayUse | formatCWPUse">{{ reason }}</li>
-            </ul>
-          </ng-template>
-        </dd>
-        <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-          <app-summary-record-change
-            [explanationText]="' care workforce pathway use'"
-            [link]="['/workplace', workplace.uid, 'care-workforce-pathway-use']"
-            [hasData]="workplace.careWorkforcePathwayUse"
-            (setReturnClicked)="this.setReturn()"
-          ></app-summary-record-change>
-        </dd>
-      </div>
+        <ng-template #listReasons>
+          <ul class="govuk-list govuk-!-margin-bottom-0">
+            <li *ngFor="let reason of workplace.careWorkforcePathwayUse | formatCWPUse">{{ reason }}</li>
+          </ul>
+        </ng-template>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' care workforce pathway use'"
+          [link]="['/workplace', workplace.uid, 'care-workforce-pathway-use']"
+          [hasData]="workplace.careWorkforcePathwayUse"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
 
     <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
       <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>

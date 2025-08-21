@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { RegistrationModule } from '@features/registration/registration.module';
@@ -46,8 +45,6 @@ describe('TypeOfEmployerComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateTypeOfEmployer').and.callThrough();
 
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
@@ -58,7 +55,6 @@ describe('TypeOfEmployerComponent', () => {
       fixture,
       component,
       routerSpy,
-      establishmentServiceSpy,
       getAllByText,
       queryByText,
       getByText,
