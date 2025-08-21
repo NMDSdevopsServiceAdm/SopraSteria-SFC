@@ -29,6 +29,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
   @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  @Input() noOfWorkersWithDelegatedHealthcareUnanswered: number;
   @Input() workplacesNeedAttention: boolean;
 
   public sections: Section[] = [
@@ -176,7 +177,8 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (
       this.workplace.staffDoDelegatedHealthcareActivities !== 'No' &&
-      this.workplace.mainService.canDoDelegatedHealthcareActivities
+      this.workplace.mainService.canDoDelegatedHealthcareActivities &&
+      this.noOfWorkersWithDelegatedHealthcareUnanswered > 0
     ) {
       this.sections[1].message = 'Who carries out delegated healthcare activities?';
       this.sections[1].skipTabSwitch = true;
