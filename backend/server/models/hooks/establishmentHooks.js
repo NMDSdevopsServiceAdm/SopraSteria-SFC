@@ -71,6 +71,8 @@ const clearDoDHAWorkplaceOnMainServiceChange = async (establishment, options) =>
 
         establishment.staffDoDelegatedHealthcareActivities = null;
 
+        await clearDHAWorkplaceAnswerOnChange(establishment, options);
+
         const establishmentId = establishment.id;
         const username = options?.savedBy ?? '';
         const transaction = options.transaction;
@@ -84,6 +86,7 @@ const clearDoDHAWorkplaceOnMainServiceChange = async (establishment, options) =>
         };
 
         await models.establishmentAudit.create(auditEvent, { transaction });
+
         return;
       }
     }
@@ -92,5 +95,8 @@ const clearDoDHAWorkplaceOnMainServiceChange = async (establishment, options) =>
   }
 };
 
-module.exports = { clearDHAWorkerAnswersOnWorkplaceChange, clearDHAWorkplaceAnswerOnChange, clearDoDHAWorkplaceOnMainServiceChange };
-
+module.exports = {
+  clearDHAWorkerAnswersOnWorkplaceChange,
+  clearDHAWorkplaceAnswerOnChange,
+  clearDoDHAWorkplaceOnMainServiceChange,
+};
