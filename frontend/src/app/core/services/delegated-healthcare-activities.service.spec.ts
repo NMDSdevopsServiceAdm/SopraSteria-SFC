@@ -38,4 +38,41 @@ describe('DelegatedHealthcareActivitiesService', () => {
     );
     expect(req.request.method).toBe('GET');
   });
+
+  it('should call the /api/${establishmentId}/delegatedHealthcareActivities/noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer endpoint', () => {
+    const mockEstablishmentUid = 'mock-uid';
+    service.getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer(mockEstablishmentUid).subscribe();
+
+    const req = http.expectOne(
+      `${environment.appRunnerEndpoint}/api/establishment/${mockEstablishmentUid}/delegatedHealthcareActivities/noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer`,
+    );
+    expect(req.request.method).toBe('GET');
+  });
+
+  describe('workersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer', () => {
+    const endpoint = '/delegatedHealthcareActivities/workersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer';
+    const mockEstablishmentUid = 'mock-uid';
+    it('should call the expected endpoint', () => {
+      service.getWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer(mockEstablishmentUid).subscribe();
+
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/establishment/${mockEstablishmentUid}${endpoint}`,
+      );
+      expect(req.request.method).toBe('GET');
+    });
+
+    it('should call the endpoint with pagination query params if given', async () => {
+      service
+        .getWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer(mockEstablishmentUid, {
+          pageIndex: 1,
+          itemsPerPage: 15,
+        })
+        .subscribe();
+
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/establishment/${mockEstablishmentUid}${endpoint}?pageIndex=1&itemsPerPage=15`,
+      );
+      expect(req.request.method).toBe('GET');
+    });
+  });
 });
