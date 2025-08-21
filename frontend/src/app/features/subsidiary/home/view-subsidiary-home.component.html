@@ -2,9 +2,7 @@
 </app-new-dashboard-header>
 
 <div class="govuk-width-container govuk-!-margin-top-7">
-  <ng-container *ngIf="(newHomeDesignParentFlag && workplace) || newHomeDesignParentFlag">
-    <app-alert></app-alert>
-  </ng-container>
+  <app-alert></app-alert>
   <app-summary-section
     *ngIf="subsidiaryWorkplace"
     [canViewListOfWorkers]="canViewListOfWorkers"

@@ -1,5 +1,7 @@
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+
 import { BenchmarksResponse as OldBenchmarksResponse } from './benchmarks.model';
+
 export interface CombinedResponse {
   oldBenchmarks: OldBenchmarksResponse;
   newBenchmarks: BenchmarksResponse;
@@ -42,7 +44,7 @@ export interface BenchmarkValue {
 export interface RankingsResponse {
   currentRank?: number;
   maxRank?: number;
-  hasValue: boolean;
+  hasValue?: boolean;
   stateMessage?: string;
   allValues?: Array<RankingsValue>;
 }

@@ -8,11 +8,16 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import {
+  CancelDataOwnerDialogComponent,
+} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import {
+  ChangeDataOwnerDialogComponent,
+} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { MoveWorkplaceDialogComponent } from '@shared/components/move-workplace/move-workplace-dialog.component';
-import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import {
+  SetDataPermissionDialogComponent,
+} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
@@ -33,7 +38,6 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public ownershipChangeRequestId: any = [];
   public ownershipChangeRequestCreatedByLoggegInUser: boolean;
   public ownershipChangeRequester: any;
-  public newHomeDesignParentFlag: boolean;
 
   constructor(
     private dialogService: DialogService,
@@ -43,7 +47,6 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private alertService: AlertService,
     private authService: AuthService,
-    private featureFlagsService: FeatureFlagsService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
@@ -60,7 +63,6 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         }
       }),
     );
-    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
   }
 
   private changeOwnershipAndPermissions(): void {
