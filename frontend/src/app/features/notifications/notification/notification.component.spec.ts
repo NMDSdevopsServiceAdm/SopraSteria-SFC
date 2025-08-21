@@ -1,10 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { NotificationTypePipe } from '@shared/pipes/notification-type.pipe';
@@ -13,6 +12,7 @@ import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { NotificationComponent } from './notification.component';
+import { NotificationsModule } from '../notifications.module';
 
 describe('Notification', () => {
   async function setup(notificationType, approvalStatus = 'APPROVED') {
@@ -29,7 +29,7 @@ describe('Notification', () => {
     const { fixture, getByText, queryByTestId, queryByText, getByLabelText, getByTestId } = await render(
       NotificationComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule, NotificationsModule],
         declarations: [NotificationTypePipe],
         providers: [
           {
@@ -65,14 +65,13 @@ describe('Notification', () => {
               },
             },
           },
+          WindowRef,
         ],
         componentProperties: {},
       },
     );
 
     const component = fixture.componentInstance;
-    const injector = getTestBed();
-    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
 
     return {
       component,
@@ -91,48 +90,48 @@ describe('Notification', () => {
   });
 
   it('should render notification-become-a-parent component if notificationType of BECOMEAPARENT', async () => {
-    const { component, getByTestId } = await setup('BECOMEAPARENT');
+    const { getByTestId } = await setup('BECOMEAPARENT');
     expect(getByTestId('BECOMEAPARENT')).toBeTruthy();
   });
 
   it('should render notification-link-to-parent component if notificationType of LINKTOPARENTREQUEST', async () => {
-    const { component, getByTestId } = await setup('LINKTOPARENTREQUEST');
+    const { getByTestId } = await setup('LINKTOPARENTREQUEST');
     expect(getByTestId('LINKTOPARENT')).toBeTruthy();
   });
 
   it('should render notification-link-to-parent component if notificationType of LINKTOPARENTAPPROVED', async () => {
-    const { component, getByTestId } = await setup('LINKTOPARENTAPPROVED');
+    const { getByTestId } = await setup('LINKTOPARENTAPPROVED');
     expect(getByTestId('LINKTOPARENT')).toBeTruthy();
   });
 
   it('should render notification-link-to-parent component if notificationType of LINKTOPARENTREJECTED', async () => {
-    const { component, getByTestId } = await setup('LINKTOPARENTREJECTED');
+    const { getByTestId } = await setup('LINKTOPARENTREJECTED');
     expect(getByTestId('LINKTOPARENT')).toBeTruthy();
   });
 
   it('should render notification-delink-to-parent component if notificationType of DELINKTOPARENT', async () => {
-    const { component, getByTestId } = await setup('DELINKTOPARENT');
+    const { getByTestId } = await setup('DELINKTOPARENT');
     expect(getByTestId('DELINKTOPARENT')).toBeTruthy();
   });
 
   it('should render notification-delink-to-parent component if notificationType of OWNERCHANGE', async () => {
-    const { component, getByTestId } = await setup('OWNERCHANGE');
+    const { getByTestId } = await setup('OWNERCHANGE');
     expect(getByTestId('OWNERCHANGE')).toBeTruthy();
   });
 
   describe('Action Buttons', async () => {
     it('should render when approval status is REQUESTED', async () => {
-      const { component, getByTestId } = await setup('BECOMEAPARENT', 'REQUESTED');
+      const { getByTestId } = await setup('BECOMEAPARENT', 'REQUESTED');
       expect(getByTestId('actionButtons')).toBeTruthy();
     });
 
     it('should render when approval status is CANCELLED', async () => {
-      const { component, getByTestId } = await setup('BECOMEAPARENT', 'CANCELLED');
+      const { getByTestId } = await setup('BECOMEAPARENT', 'CANCELLED');
       expect(getByTestId('actionButtons')).toBeTruthy();
     });
 
     it('should not render when approval status is APPROVED', async () => {
-      const { component, queryByTestId } = await setup('BECOMEAPARENT', 'APPROVED');
+      const { queryByTestId } = await setup('BECOMEAPARENT', 'APPROVED');
 
       const actionButtons = queryByTestId('actionButtons');
 
@@ -140,7 +139,7 @@ describe('Notification', () => {
     });
 
     it('should not render when approval status is REJECTED', async () => {
-      const { component, queryByTestId } = await setup('BECOMEAPARENT', 'REJECTED');
+      const { queryByTestId } = await setup('BECOMEAPARENT', 'REJECTED');
 
       const actionButtons = queryByTestId('actionButtons');
 
@@ -150,14 +149,14 @@ describe('Notification', () => {
 
   describe('Subject', () => {
     it('should show the subejct line', async () => {
-      const { component, queryByTestId } = await setup('OWNERCHANGE');
+      const { queryByTestId } = await setup('OWNERCHANGE');
       const subjectText = queryByTestId('subject');
 
       expect(subjectText).toBeTruthy();
     });
 
     it('should show status when owner change is approved', async () => {
-      const { component, queryByTestId } = await setup('OWNERCHANGE', 'APPROVED');
+      const { queryByTestId } = await setup('OWNERCHANGE', 'APPROVED');
 
       const subjectTestId = queryByTestId('subject');
       const subjectText = 'Subject: Change data owner request: approved';
@@ -166,7 +165,7 @@ describe('Notification', () => {
     });
 
     it('should not show status when owner change is requested', async () => {
-      const { component, queryByTestId } = await setup('OWNERCHANGE', 'REQUESTED');
+      const { queryByTestId } = await setup('OWNERCHANGE', 'REQUESTED');
 
       const subjectTestId = queryByTestId('subject');
       const subjectText = 'Subject: Change data owner request';
@@ -175,7 +174,7 @@ describe('Notification', () => {
     });
 
     it('should show status when become a parent request is approved', async () => {
-      const { component, queryByTestId } = await setup('BECOMEAPARENT', null);
+      const { queryByTestId } = await setup('BECOMEAPARENT', null);
 
       const subjectTestId = queryByTestId('subject');
       const subjectText = 'Subject: Parent request: approved';

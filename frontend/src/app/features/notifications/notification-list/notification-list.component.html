@@ -17,7 +17,7 @@
         class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-margin-bottom-1"
         draggable="false"
         href="javascript:void(0)"
-        data-testid="deleteButton"
+        [attr.data-testid]="'deleteButton'"
         (click)="deleteSelectedNotifications()"
       >
         <img src="/assets/images/bin.svg" alt="" />
@@ -44,7 +44,7 @@
               name="selectAllCheckBoxes"
               type="checkbox"
               [(ngModel)]="allBoxesChecked"
-              data-testid="selectAllCheckBoxes"
+              [attr.data-testid]="'selectAllCheckBoxes'"
               (click)="pushAllNotificationsToDeleteArray()"
             />
             <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="selectAllCheckBoxes"></label>
@@ -72,7 +72,7 @@
                 name="checkbox-{{ i }}"
                 type="checkbox"
                 [checked]="allBoxesChecked"
-                data-testid="checkbox-{{ i }}"
+                [attr.data-testid]="'checkbox-' + i"
                 (click)="pushNotificationToDeleteArray(notification)"
               />
               <label class="govuk-label govuk-checkboxes__label govuk-!-padding-0" for="checkbox-{{ i }}"></label>

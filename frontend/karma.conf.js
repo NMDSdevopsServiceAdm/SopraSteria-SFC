@@ -83,5 +83,10 @@ module.exports = function (config) {
       executors: 2,
       shardStrategy: 'none',
     },
+    proxies: {
+      '/videoUrl': '',
+      '/public/download/certificates/': '',
+      '/assets/images/.svg': '',
+    },
   });
 };

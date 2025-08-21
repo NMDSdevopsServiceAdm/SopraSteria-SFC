@@ -1,15 +1,16 @@
 import { render } from '@testing-library/angular';
 
 import { TrainingInfoPanelComponent } from './training-info-panel.component';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('TrainingInfoPanelComponent', () => {
   async function setup(missing = 0, expired = 0, expiring = 0) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       TrainingInfoPanelComponent,
       {
-        imports: [],
+        imports: [RouterModule],
         declarations: [],
-        providers: [],
+        providers: [provideRouter([])],
         componentProperties: {
           totalExpiredTraining: expired,
           totalExpiringTraining: expiring,

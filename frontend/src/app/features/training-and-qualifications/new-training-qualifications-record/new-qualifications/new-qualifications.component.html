@@ -2,10 +2,16 @@
   <div class="govuk-grid-column-full">
     <ng-container *ngIf="qualificationsByGroup.count > 0; else noQualifications">
       <h1 class="govuk-heading-l govuk-!-font-size-27">Qualifications</h1>
-      <div *ngFor="let qualificationGroup of qualificationsByGroup.groups" [attr.data-testid]="qualificationGroup.group + '-section'">
-        <label class="govuk-!-margin-bottom-2 govuk-heading-m" >{{ qualificationGroup.group }}</label>
+      <div
+        *ngFor="let qualificationGroup of qualificationsByGroup.groups"
+        [attr.data-testid]="qualificationGroup.group + '-section'"
+      >
+        <label class="govuk-!-margin-bottom-2 govuk-heading-m">{{ qualificationGroup.group }}</label>
         <span aria-live="polite">
-          <app-validation-error-message *ngIf="certificateErrors?.[qualificationGroup.group]" [errorMessage]="certificateErrors[qualificationGroup.group]" />
+          <app-validation-error-message
+            *ngIf="certificateErrors?.[qualificationGroup.group]"
+            [errorMessage]="certificateErrors[qualificationGroup.group]"
+          ></app-validation-error-message>
         </span>
         <table class="govuk-table asc-training-and-quals-table">
           <caption class="govuk-visually-hidden">
@@ -23,7 +29,11 @@
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            <tr class="govuk-table__row" [attr.data-testid]="qualificationRecord.uid" *ngFor="let qualificationRecord of qualificationGroup.records">
+            <tr
+              class="govuk-table__row"
+              [attr.data-testid]="qualificationRecord.uid"
+              *ngFor="let qualificationRecord of qualificationGroup.records"
+            >
               <td class="govuk-table__cell">
                 <ng-container *ngIf="canEditWorker; else viewOnly">
                   <a
@@ -42,29 +52,45 @@
               <td class="govuk-table__cell">{{ qualificationRecord?.year ? qualificationRecord.year : '-' }}</td>
               <td class="govuk-table__cell">
                 <ng-container *ngIf="canEditWorker">
-                  <span *ngIf="qualificationRecord.qualificationCertificates?.length == 1">
+                  <span *ngIf="qualificationRecord.qualificationCertificates?.length === 1">
                     <a
                       href="#"
                       class="govuk-link govuk-link--no-visited-state"
                       (click)="handleDownloadCertificate($event, qualificationGroup, qualificationRecord)"
                     >
-                      <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
-                        class="govuk-!-margin-left-1"
-                        >Download</span
-                      >
+                      <img
+                        alt=""
+                        src="/assets/images/icon-download.svg"
+                        class="govuk-util__vertical-align-bottom"
+                      /><span class="govuk-!-margin-left-1">Download</span>
                       <span class="govuk-visually-hidden"
                         >the certificate {{ qualificationRecord.qualificationCertificates[0].filename }}</span
                       >
                     </a>
                   </span>
                   <span *ngIf="qualificationRecord.qualificationCertificates?.length > 1">
-                    <a [routerLink]="['../qualification', qualificationRecord.uid]" class="govuk-link govuk-link--no-visited-state">
+                    <a
+                      [routerLink]="['../qualification', qualificationRecord.uid]"
+                      class="govuk-link govuk-link--no-visited-state"
+                    >
                       Select a download
                     </a>
                   </span>
                   <span *ngIf="qualificationRecord.qualificationCertificates?.length === 0">
-                    <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1" (selectFiles)="handleUploadCertificate($event, qualificationGroup, qualificationRecord)" />
+                    <app-select-upload-file
+                      accept=".pdf"
+                      buttonText="Upload file"
+                      buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1"
+                      (selectFiles)="handleUploadCertificate($event, qualificationGroup, qualificationRecord)"
+                    ></app-select-upload-file>
                   </span>
+                </ng-container>
+
+                <ng-container *ngIf="pdfRenderingMode">
+                  <ng-container *ngIf="qualificationRecord.qualificationCertificates?.length > 0; else notUploaded">
+                    Uploaded
+                  </ng-container>
+                  <ng-template #notUploaded> Not uploaded </ng-template>
                 </ng-container>
               </td>
             </tr>

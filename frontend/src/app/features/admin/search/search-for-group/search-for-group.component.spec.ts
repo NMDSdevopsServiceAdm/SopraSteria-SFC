@@ -19,12 +19,13 @@ import { of, throwError } from 'rxjs';
 
 import { WorkplaceDropdownComponent } from '../workplace-dropdown/workplace-dropdown.component';
 import { SearchForGroupComponent } from './search-for-group.component';
+import { AdminUnlockConfirmationDialogComponent } from '@shared/components/admin-unlock-confirmation/admin-unlock-confirmation';
 
 describe('SearchForGroupComponent', () => {
   async function setup(searchButtonClicked = false, isLocked = false, isParent = false, hasSubs = false) {
     const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(SearchForGroupComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
-      declarations: [WorkplaceDropdownComponent],
+      declarations: [WorkplaceDropdownComponent, AdminUnlockConfirmationDialogComponent],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {

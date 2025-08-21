@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SearchService } from '@core/services/admin/search/search.service';
 import { AlertService } from '@core/services/alert.service';
 import { RegistrationsService } from '@core/services/registrations.service';
@@ -10,6 +9,7 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { WindowRef } from '@core/services/window.ref';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockSwitchWorkplaceService } from '@core/test-utils/MockSwitchWorkplaceService';
+import { AdminUnlockConfirmationDialogComponent } from '@shared/components/admin-unlock-confirmation/admin-unlock-confirmation';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -20,14 +20,7 @@ import { SearchForUserComponent } from './search-for-user.component';
 describe('SearchForUserComponent', () => {
   async function setup(searchButtonClicked = false, isLocked = false) {
     const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(SearchForUserComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -39,6 +32,7 @@ describe('SearchForUserComponent', () => {
         SearchService,
         AlertService,
       ],
+      declarations: [AdminUnlockConfirmationDialogComponent],
     });
 
     const mockSearchResult = {

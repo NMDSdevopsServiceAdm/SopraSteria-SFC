@@ -23,6 +23,7 @@ export class TypeOfEmployerComponent extends Question {
   public showSkipButton = true;
   public callToAction = 'Save and continue';
   public dataOwner: any;
+  public showOtherInputField = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -65,6 +66,10 @@ export class TypeOfEmployerComponent extends Question {
         other: this.establishment.employerType.other,
       });
     }
+
+    if (this.establishment.employerType?.value === 'Other') {
+      this.showOtherInputField = true;
+    }
   }
 
   protected setupFormErrorsMap(): void {
@@ -106,11 +111,16 @@ export class TypeOfEmployerComponent extends Question {
   }
 
   updateEstablishment(props): void {
+    const property = 'EmployerType';
     this.subscriptions.add(
-      this.establishmentService.updateTypeOfEmployer(this.establishment.uid, props).subscribe(
+      this.establishmentService.updateEstablishmentFieldWithAudit(this.establishment.uid, property, props).subscribe(
         (data) => this._onSuccess(data),
         (error) => this.onError(error),
       ),
     );
+  }
+
+  protected onOtherSelect(radioValue: string): void {
+    this.showOtherInputField = radioValue === 'Other';
   }
 }

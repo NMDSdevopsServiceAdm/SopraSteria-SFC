@@ -3,8 +3,7 @@ import 'rxjs/add/observable/from';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
-import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
@@ -23,14 +22,14 @@ import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { MissingStaffReferencesComponent } from './missing-staff-references-page.component';
 
 describe('MissingStaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
     const component = await render(MissingStaffReferencesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -86,8 +85,9 @@ describe('MissingStaffReferencesComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const event = new NavigationEnd(42, '/', '/');
-    (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
+
+    const router = injector.inject(Router);
+    spyOn(router, 'navigate').and.resolveTo(true);
 
     return {
       component,

@@ -6,14 +6,20 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class ChildWorkplacesResolver  {
+export class ChildWorkplacesResolver {
   constructor(private router: Router, private establishmentService: EstablishmentService) {}
 
   resolve(): Observable<GetChildWorkplacesResponse | null> {
     const primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
+    const sortByValueFromHomePage = localStorage.getItem('yourOtherWorkplacesSortValue') ?? null;
 
     return this.establishmentService
-      .getChildWorkplaces(primaryWorkplaceUid, { pageIndex: 0, itemsPerPage: 12, getPendingWorkplaces: true })
+      .getChildWorkplaces(primaryWorkplaceUid, {
+        pageIndex: 0,
+        itemsPerPage: 12,
+        getPendingWorkplaces: true,
+        sortBy: sortByValueFromHomePage,
+      })
       .pipe(
         catchError(() => {
           this.router.navigate(['/problem-with-the-service']);

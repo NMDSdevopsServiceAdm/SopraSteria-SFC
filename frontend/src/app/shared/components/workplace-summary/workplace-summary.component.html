@@ -250,7 +250,7 @@
     <div *ngIf="!workplace.showAddWorkplaceDetailsBanner" class="govuk-summary-list__row" data-testid="otherServices">
       <dt class="govuk-summary-list__key">Other services</dt>
       <dd class="govuk-summary-list__value">
-        <ng-container [ngSwitch]="workplace.otherServices.value">
+        <ng-container [ngSwitch]="workplace.otherServices.value || null">
           <span *ngSwitchCase="null"> - </span>
           <span *ngSwitchCase="'No'"> None </span>
           <div *ngSwitchCase="'Yes'">

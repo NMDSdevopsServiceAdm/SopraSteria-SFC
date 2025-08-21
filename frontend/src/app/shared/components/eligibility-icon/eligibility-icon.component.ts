@@ -18,6 +18,9 @@ export class EligibilityIconComponent implements OnInit {
   }
 
   public displayCorrectIcon(): void {
+    // TODO: this code potentially create a faulty img tag that refer to non-exist "/assets/images/.svg"
+    // we should properly handle the case when this.eligible being true
+
     if (!this.eligible && this.overallEligibility) {
       this.icon = 'flag-orange';
       this.label = 'You need to add this information';

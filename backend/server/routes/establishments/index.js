@@ -10,14 +10,10 @@ const {
   updateEstablishment,
 } = require('../../services/establishment/establishment');
 
-const Name = require('./name');
 const MainService = require('./mainService');
-const EmployerType = require('./employerType');
 const Services = require('./services');
 const ServiceUsers = require('./serviceUsers');
 const Capacity = require('./capacity');
-const ShareData = require('./shareData');
-const Staff = require('./staff');
 const Jobs = require('./jobs');
 const Worker = require('./worker');
 const BulkUpload = require('./bulkUpload');
@@ -39,17 +35,14 @@ const TrainingAndQualifications = require('./trainingSummary');
 const InternationalRecruitment = require('./internationalRecruitment');
 const HasTrainingCertificates = require('./hasTrainingCertificates.js');
 const CareWorkforcePathway = require('./careWorkforcePathway.js');
+const EstablishmentField = require('./establishmentField.js');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
-router.use('/:id/name', Name);
 router.use('/:id/mainService', MainService);
-router.use('/:id/employerType', EmployerType);
 router.use('/:id/services', Services);
 router.use('/:id/serviceUsers', ServiceUsers);
 router.use('/:id/capacity', Capacity);
-router.use('/:id/share', ShareData);
-router.use('/:id/staff', Staff);
 router.use('/:id/jobs', Jobs);
 router.use('/:id/worker', Worker);
 router.use('/:id/bulkupload', BulkUpload);
@@ -71,6 +64,7 @@ router.use('/:id/trainingAndQualifications', TrainingAndQualifications);
 router.use('/:id/internationalRecruitment', InternationalRecruitment);
 router.use('/:id/hasTrainingCertificates', HasTrainingCertificates);
 router.use('/:id/careWorkforcePathway', CareWorkforcePathway);
+router.use('/:id/establishmentField', EstablishmentField);
 
 router.route('/:id').get(getEstablishment);
 router.route('/:id').post(hasPermission('canAddEstablishment'), addEstablishment);

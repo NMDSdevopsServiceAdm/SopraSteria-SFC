@@ -1,4 +1,4 @@
-FROM postgres:13
+FROM public.ecr.aws/docker/library/postgres:13
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \

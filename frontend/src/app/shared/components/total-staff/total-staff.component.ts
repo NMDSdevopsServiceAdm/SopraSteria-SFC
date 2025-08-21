@@ -18,13 +18,15 @@ export class TotalStaffComponent implements OnInit {
   @Input() showHint = true;
 
   private subscriptions: Subscription = new Subscription();
+  public totalStaff: Number;
 
   constructor(protected establishmentService: EstablishmentService) {}
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.establishmentService.getStaff(this.establishmentUid).subscribe((staff) => {
-        this.form.patchValue({ totalStaff: staff });
+      this.establishmentService.getEstablishmentField(this.establishmentUid, 'NumberOfStaff').subscribe((data) => {
+        this.totalStaff = data.numberOfStaff;
+        this.form.patchValue({ totalStaff: this.totalStaff });
       }),
     );
   }

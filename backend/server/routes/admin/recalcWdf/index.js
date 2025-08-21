@@ -5,8 +5,6 @@ const router = express.Router();
 const Establishment = require('../../../models/classes/establishment').Establishment;
 
 router.route('/').post(async function (req, res) {
-  console.log('WA DEBUUG api/admin/recalcWdf: ', req.body.establishments);
-
   const listOfEstablishments =
     req.body.establishments && Array.isArray(req.body.establishments) ? req.body.establishments : [];
   const recalculatedEstablishments = [];
@@ -14,7 +12,6 @@ router.route('/').post(async function (req, res) {
   try {
     const establishmentPromises = [];
     listOfEstablishments.forEach((thisEstablishmentId) => {
-      console.log(`WA - admin recalcWdf establishment - (${thisEstablishmentId})`);
       establishmentPromises.push(Establishment.recalcWdf(req.username, thisEstablishmentId));
       recalculatedEstablishments.push(thisEstablishmentId);
     });

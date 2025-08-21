@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -21,7 +20,12 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import {
+  BecomeAParentCancelDialogComponent,
+} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -32,14 +36,6 @@ import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
 
-const MockWindow = {
-  dataLayer: {
-    push: () => {
-      return;
-    },
-  },
-};
-
 describe('NewHomeTabComponent', () => {
   const setup = async (
     checkCqcDetails = false,
@@ -48,71 +44,76 @@ describe('NewHomeTabComponent', () => {
     noOfWorkplaces = 9,
     overrides: any = {},
   ) => {
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId, getByRole, getByLabelText } = await render(
-      NewHomeTabComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-        providers: [
-          WindowRef,
-          AlertService,
-          DialogService,
-          {
-            provide: FeatureFlagsService,
-            useClass: MockFeatureFlagsService,
-          },
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(
-              overrides?.permissions ?? ['canViewEstablishment', 'canViewListOfWorkers'],
-            ),
-            deps: [HttpClient, Router, UserService],
-          },
-          {
-            provide: UserService,
-            useFactory: MockUserService.factory(1, Roles.Admin),
-            deps: [HttpClient],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                data: {
-                  workers: {
-                    workersCreatedDate: [],
-                    workerCount: 0,
-                    trainingCounts: {} as TrainingCounts,
-                    workersNotCompleted: [],
-                  },
+    const dataLayerPushSpy = jasmine.createSpy();
+    const MockWindow = {
+      dataLayer: {
+        push: dataLayerPushSpy,
+      },
+    };
+
+    const setupTools = await render(NewHomeTabComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      providers: [
+        WindowRef,
+        AlertService,
+        DialogService,
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(
+            overrides?.permissions ?? ['canViewEstablishment', 'canViewListOfWorkers'],
+          ),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(1, overrides.userRole ?? Roles.Edit),
+          deps: [HttpClient],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                workers: {
+                  workersCreatedDate: [],
+                  workerCount: 0,
+                  trainingCounts: {} as TrainingCounts,
+                  workersNotCompleted: [],
                 },
               },
-              queryParams: of({ view: null }),
-              url: of(null),
             },
+            queryParams: of({ view: null }),
+            url: of(null),
           },
-          {
-            provide: EstablishmentService,
-            useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
-            deps: [HttpClient],
-          },
-          { provide: WindowToken, useValue: MockWindow },
-        ],
-        declarations: [
-          NewDashboardHeaderComponent,
-          NewArticleListComponent,
-          SummarySectionComponent,
-          OwnershipChangeMessageDialogComponent,
-        ],
-        componentProperties: {
-          workplace: establishment,
-          meta: comparisonDataAvailable
-            ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
-            : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
         },
-        schemas: [NO_ERRORS_SCHEMA],
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
+          deps: [HttpClient],
+        },
+        { provide: WindowToken, useValue: MockWindow },
+      ],
+      declarations: [
+        NewDashboardHeaderComponent,
+        NewArticleListComponent,
+        SummarySectionComponent,
+        OwnershipChangeMessageDialogComponent,
+        BecomeAParentCancelDialogComponent,
+      ],
+      componentProperties: {
+        workplace: establishment,
+        meta: comparisonDataAvailable
+          ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
+          : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
       },
-    );
+      schemas: [NO_ERRORS_SCHEMA],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const alertService = TestBed.inject(AlertService);
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -127,18 +128,13 @@ describe('NewHomeTabComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      queryByText,
-      getByTestId,
-      queryByTestId,
       alertServiceSpy,
       parentsRequestService,
       tabsServiceSpy,
-      getByRole,
-      getByLabelText,
       routerSpy,
+      dataLayerPushSpy,
     };
   };
 
@@ -925,6 +921,77 @@ describe('NewHomeTabComponent', () => {
         fireEvent.click(trainingAndQualificationsLink);
 
         expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+      });
+    });
+  });
+
+  describe('Pushing userType to dataLayer', () => {
+    [Roles.Admin, Roles.AdminManager].forEach((adminRole) => {
+      it(`should push admin when role is ${adminRole}`, async () => {
+        const overrides = {
+          userRole: adminRole,
+        };
+
+        const { dataLayerPushSpy } = await setup(false, Establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
+      });
+
+      it(`should push admin when role is ${adminRole} even if isParent is true`, async () => {
+        const overrides = {
+          userRole: adminRole,
+        };
+        const establishment = { ...Establishment, isParent: true };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
+      });
+
+      it(`should push admin when role is ${adminRole} even if there is parentUid`, async () => {
+        const overrides = {
+          userRole: adminRole,
+        };
+        const establishment = { ...Establishment, parentUid: 'parent-uid' };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
+      });
+    });
+
+    [Roles.Edit, Roles.Read].forEach((role) => {
+      it(`should push 'Parent' when role is ${role} and isParent is true`, async () => {
+        const overrides = {
+          userRole: role,
+        };
+        const establishment = { ...Establishment, isParent: true };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Parent' });
+      });
+
+      it(`should push 'Sub' when role is ${role} and there is parentUid`, async () => {
+        const overrides = {
+          userRole: role,
+        };
+        const establishment = { ...Establishment, parentUid: 'parent-uid' };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Sub' });
+      });
+
+      it(`should push 'Standalone' when role is ${role} and there is no parentUid and isParent false`, async () => {
+        const overrides = {
+          userRole: role,
+        };
+        const establishment = { ...Establishment, parentUid: null, isParent: false };
+
+        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+
+        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Standalone' });
       });
     });
   });

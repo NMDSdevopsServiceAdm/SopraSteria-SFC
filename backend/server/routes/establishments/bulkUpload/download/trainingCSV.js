@@ -12,7 +12,7 @@ const toCSV = (establishmentId, workerId, entity) => {
     convertDateFormatToDayMonthYearWithSlashes(entity.completed),
     convertDateFormatToDayMonthYearWithSlashes(entity.expires),
     convertAccredited(entity.accredited),
-    entity.notes ? csvQuote(decodeURI(entity.notes)) : '',
+    entity.notes ? csvQuote(unescape(entity.notes)) : '',
   ];
 
   return columns.join(',');

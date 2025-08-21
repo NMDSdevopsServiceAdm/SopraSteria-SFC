@@ -26,6 +26,7 @@ import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guida
 import { DragAndDropFilesListComponent } from '../drag-and-drop-files-list/drag-and-drop-files-list.component';
 import { DragAndDropFilesUploadComponent } from '../drag-and-drop-files-upload/drag-and-drop-files-upload.component';
 import { BulkUploadPageComponent } from './bulk-upload-page.component';
+import { BulkUploadModule } from '../bulk-upload.module';
 
 describe('BulkUploadPageComponent', () => {
   const dataChange = MockDataChangeService.dataChangeFactory();
@@ -33,7 +34,7 @@ describe('BulkUploadPageComponent', () => {
 
   async function setup(role = 'AdminManager') {
     const { fixture, getByTestId, queryByTestId } = await render(BulkUploadPageComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
           provide: WindowRef,

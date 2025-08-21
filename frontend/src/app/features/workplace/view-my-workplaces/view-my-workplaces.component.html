@@ -48,13 +48,41 @@
 </div>
 
 <div *ngIf="totalWorkplaceCount; else noWorkplaces">
-  <div *ngIf="totalWorkplaceCount > itemsPerPage" class="govuk-grid-row govuk-!-margin-bottom-5">
-    <div class="govuk-grid-column-three-quarters">
+  <div class="govuk-grid-row govuk-!-margin-bottom-5">
+    <div
+      *ngIf="totalWorkplaceCount > itemsPerPage"
+      class="govuk-grid-column-three-quarters govuk-!-padding-right-0 search-column"
+    >
       <app-search-input
         accessibleLabel="child workplace records"
         [prevSearch]="searchTerm"
         (emitInput)="handleSearch($event)"
       ></app-search-input>
+    </div>
+
+    <div
+      class="govuk-grid-column-one-quarter govuk-!-padding-top-2 govuk-!-margin-right-0 "
+      data-testid="sortBy"
+      *ngIf="totalWorkplaceCount > 1"
+      style="width: fit-content !important"
+      [ngClass]="{ 'sort-column' : totalWorkplaceCount > itemsPerPage, 'govuk-util__float-right' : totalWorkplaceCount <= itemsPerPage}"
+    >
+      <div class="govuk-form-group">
+        <label class="govuk-label" for="sortBy"> Sort by </label>
+        <select
+          class="govuk-select"
+
+          id="sortBy"
+          name="sortBy"
+          (change)="sortBy($event.target.value)"
+        >
+          <option
+            *ngFor="let option of sortOptions | keyvalue"
+            value="{{ option.key }}"
+            [selected]="option.key === sortBySelectedKey"
+          >{{ option.value }}</option>
+        </select>
+      </div>
     </div>
   </div>
 
