@@ -31,7 +31,6 @@ describe('TablePaginationWrapperCompnent', () => {
         sortOptions: SortStaffOptions,
         searchTerm: '',
         currentPageIndex: overrides.currentPageIndex ?? 0,
-        isSearchMaintained: overrides.isSearchMaintained ?? false,
         maintainedPageIndex: overrides.maintainedPageIndex ?? null,
       },
     });
@@ -66,16 +65,6 @@ describe('TablePaginationWrapperCompnent', () => {
   describe('Search', () => {
     it('should display the search box if the total worker count is greater than the items per page', async () => {
       const { getByTestId } = await setup();
-      expect(getByTestId('search')).toBeTruthy();
-    });
-
-    it('should display the search box if isSearchMaintained is true', async () => {
-      const { getByTestId } = await setup({ isSearchMaintained: true });
-      expect(getByTestId('search')).toBeTruthy();
-    });
-
-    it('should display the search box if isSearchMaintained is true but if the total worker count is less than the items per page', async () => {
-      const { getByTestId } = await setup({ isSearchMaintained: true, totalCount: 4 });
       expect(getByTestId('search')).toBeTruthy();
     });
 

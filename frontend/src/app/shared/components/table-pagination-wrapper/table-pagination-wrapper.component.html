@@ -1,5 +1,5 @@
 <div class="govuk-grid-row govuk-util__vertical-align-center">
-  <div *ngIf="totalCount > itemsPerPage || isSearchMaintained" class="govuk-grid-column-three-quarters" data-testid="search">
+  <div *ngIf="totalCount > itemsPerPage" class="govuk-grid-column-three-quarters" data-testid="search">
     <app-search-input
       ref="search"
       [accessibleLabel]="accessibleLabel"

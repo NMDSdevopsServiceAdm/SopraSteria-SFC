@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
   templateUrl: './table-pagination-wrapper.component.html',
 })
 export class TablePaginationWrapperComponent implements OnInit {
-  @Input() isSearchMaintained: string;
   @Input() maintainedPageIndex: number;
   @Input() totalCount: number;
   @Input() count: number;

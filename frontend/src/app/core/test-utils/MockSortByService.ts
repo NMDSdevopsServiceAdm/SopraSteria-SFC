@@ -9,7 +9,6 @@ export class MockSortByService extends SortByService {
     staffSummarySortValue: null,
     staffSummarySearchTerm: null,
     staffSummaryIndex: null,
-    isSearchMaintained: null,
   };
 
   public static factory(overrides: any = {}) {
