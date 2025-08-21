@@ -62,6 +62,7 @@ const validateAPIObject = (establishmentRow) => {
     services: { value: 'Yes', services: [{ id: 8 }, { id: 13 }] },
     serviceUsers: [],
     staffDoDelegatedHealthcareActivities: null,
+    chosenDelegatedHealthcareActivities: [],
     numberOfStaff: 1,
     vacancies: [999, 333, 1],
     starters: [0, 0, 0],
@@ -399,6 +400,18 @@ describe('Bulk Upload - Establishment CSV', () => {
 
           expect(apiObject.staffDoDelegatedHealthcareActivities).to.equal(expectedValue);
         });
+      });
+    });
+
+    describe('DHA activities', () => {
+      it('should set api value for activities', async () => {
+        establishmentRow.DHAACTIVITIES = '1;2;3';
+
+        const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
+        workplaceValidator.transform();
+        const apiObject = workplaceValidator.toAPI();
+
+        expect(apiObject.chosenDelegatedHealthcareActivities).to.equal(['1','2','3']); // assumed format, might change
       });
     });
 
@@ -1078,10 +1091,10 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe ('DHA Fields', () => {
+    describe.only ('DHA Fields', () => {
       const updateEstablishmentToHaveMainService = (establishmentRow, mainServiceId) => {
         establishmentRow.DHA = '1';
-        establishmentRow.DHAACTIVITIES = '';
+        establishmentRow.DHAACTIVITIES = '1;2';
         establishmentRow.MAINSERVICE = mainServiceId;
         establishmentRow.ALLSERVICES = mainServiceId;
         establishmentRow.SERVICEDESC = '';
@@ -1097,6 +1110,10 @@ describe('Bulk Upload - Establishment CSV', () => {
         ['', '1', '2', '999'].forEach((allowedInput) => {
           it(`should pass with no validation warnings if DHA set to ${allowedInput}`, async () => {
             establishmentRow.DHA = allowedInput;
+
+            if (allowedInput === '1') {
+              establishmentRow.DHAACTIVITIES = '1;2';
+            }
 
             const establishment = await generateEstablishmentFromCsv(establishmentRow);
             expect(establishment.validationErrors).to.deep.equal([]);
@@ -1176,10 +1193,36 @@ describe('Bulk Upload - Establishment CSV', () => {
           });
         });
 
-        const invalidInput = [
-          'blah', // no alpha strings
+        const mixedInput = [
           'blah;1',
           '1;blah',
+        ];
+        mixedInput.forEach((mixedInput) => {
+          it(`should return warning if input is invalid (${mixedInput})`, async () => {
+            updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
+            establishmentRow.DHAACTIVITIES = mixedInput;
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+
+            const valid = establishment.transform();
+            expect(valid).to.equal(true);
+            expect(establishment.validationErrors).to.deep.equal([
+              {
+                origin: 'Establishments',
+                lineNumber: establishment.lineNumber,
+                warnCode: 2530,
+                warnType: 'DHAACTIVITIES_WARNING',
+                warning: 'The codes you have entered for DHA activities contain invalid values; invalid values will be ignored',
+                source: mixedInput,
+                column: 'DHAACTIVITIES',
+                name: establishmentRow.LOCALESTID,
+              },
+            ]);
+          });
+        });
+
+      const invalidInput = [
+          'blah', // no alpha strings
           ';;', // no separators
           '1|2', // semicolon is the only valid separator
           '0', // only valid numbers
@@ -1187,20 +1230,21 @@ describe('Bulk Upload - Establishment CSV', () => {
           '1000',
         ];
         invalidInput.forEach((invalidInput) => {
-          it(`should return warning if input is invalid (${invalidInput})`, async () => {
+          it('should add an error if all activity values are invalid', async () => {
             updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
             establishmentRow.DHAACTIVITIES = invalidInput;
             const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
 
-            establishment.transform();
+            const valid = establishment.transform();
+            expect(valid).to.equal(false);
             expect(establishment.validationErrors).to.deep.equal([
               {
                 origin: 'Establishments',
                 lineNumber: establishment.lineNumber,
                 warnCode: 2530,
                 warnType: 'DHAACTIVITIES_WARNING',
-                warning: 'The codes you have entered for DHA activities contain invalid values and will be ignored',
+                warning: 'The codes you have entered for DHA activities are invalid values and will be ignored',
                 source: invalidInput,
                 column: 'DHAACTIVITIES',
                 name: establishmentRow.LOCALESTID,
@@ -1209,7 +1253,28 @@ describe('Bulk Upload - Establishment CSV', () => {
           });
         });
 
-        // should this be a separate error?
+        it('should add an error if DHA is yes but no activity codes are listed', async ()=> {
+          updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
+
+          establishmentRow.DHA = '1';
+          establishmentRow.DHAACTIVITIES = '';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2530,
+              warnType: 'DHAACTIVITIES_WARNING',
+              warning: 'Missing activities list when DHA is set to yes',
+              source: '',
+              column: 'DHAACTIVITIES',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+
         ['', '2', '999'].forEach((dha) => {
           it('should add DHAACTIVITIES_WARNING if DHA Activities answered but DHA answer is missing or no', async () => {
             updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)

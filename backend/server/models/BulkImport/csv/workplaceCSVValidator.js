@@ -1439,37 +1439,55 @@ class WorkplaceCSVValidator {
     // todo look this up model.DelegatedHealthcareActivities.BulkUploadCode
 
     const dhaActivities = this._currentLine.DHAACTIVITIES;
+    const dha = this._currentLine.DHA;
 
-    if (!dhaActivities || dhaActivities === '999') {
-      // should handle empty etc,
-      // currently handles 999 unknown as empty to match download logic
+    if(!dhaActivities && dha === '1') {
+      this._validationErrors.push(
+        this._generateWarning('Missing activities list when DHA is set to yes', 'DHAACTIVITIES'),
+      );
+      return false;
+    }
+
+    if (!dhaActivities || (dhaActivities === '999' && dha === '999')){
+      // currently handles 999 unknown as empty to match download logic when dha is 999
       // (doesn't know which activities implied by doesn't know that they do DHA)
       this._chosenDelegatedHealthcareActivities = [];
       return true;
     }
 
     const activities = dhaActivities.split(';'); // array of bulk upload codes
-    const diallowed = activities.filter((a) => !(ALLOWED_ACTIVITIES.includes(a)));
-
-    if (diallowed.length > 0) {
-      // should this allow valid options and only ignore disallowed ones or ignore all? Business decision TODO
-      this._validationErrors.push(
-        this._generateWarning('The codes you have entered for DHA activities contain invalid values and will be ignored', 'DHAACTIVITIES'),
-      );
-      return false;
-    }
-
-    const dha = this._currentLine.DHA;
     if (activities.length > 0 && dha !== '1')
     {
-        this._validationErrors.push(
+      this._validationErrors.push(
         this._generateWarning('Value entered for DHA Activities will be ignored as DHA value is not set to yes', 'DHAACTIVITIES'),
       );
       return false;
     }
 
+    const disallowed = activities.filter((a) => !(ALLOWED_ACTIVITIES.includes(a)));
+
+    console.log('activities: ' + activities + ' disallowed: ' + disallowed);
+
+    if (disallowed.length > 0) {
+      if (disallowed.length === activities.length) {
+        // ignore all
+        this._validationErrors.push(
+        this._generateWarning('The codes you have entered for DHA activities are invalid values and will be ignored', 'DHAACTIVITIES'),
+        );
+        return false;
+      } else {
+        // should this allow valid options and only ignore disallowed ones
+        this._validationErrors.push(
+          this._generateWarning('The codes you have entered for DHA activities contain invalid values and will be ignored', 'DHAACTIVITIES'),
+        );
+        const allowed = activities.filter( ( el ) => !disallowed.includes( el ) );
+        this._chosenDelegatedHealthcareActivities = allowed;
+        return true; // valid ones still get stored
+      }
+    }
+
     // what now? where do we store? do we remove all rows in model.DelegatedHealthcareActivities before adding new ones?
-    this._chosenDelegatedHealthcareActivities = dhaActivities;
+    this._chosenDelegatedHealthcareActivities = activities;
 
     return true;
   }
@@ -3080,7 +3098,7 @@ class WorkplaceCSVValidator {
     this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }
 
-  // returns true on success, false is any attribute of WorkplaceCSVValidator fails
+  // returns true on success, false if any attribute of WorkplaceCSVValidator fails
   transform() {
     // if the status is unchecked or deleted, then don't transform
     if (!STOP_VALIDATING_ON.includes(this._status)) {
@@ -3227,6 +3245,7 @@ class WorkplaceCSVValidator {
           })
         : [],
       staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
+      chosenDelegatedHealthcareActivities: this._chosenDelegatedHealthcareActivities,
       numberOfStaff: this._totalPermTemp,
       vacancies: this._vacancies,
       starters: this._starters,
