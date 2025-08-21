@@ -1404,6 +1404,7 @@ class Establishment extends EntityValidator {
         this._isParentApprovedBannerViewed = fetchResults.isParentApprovedBannerViewed;
         this._primaryAuthorityCssr = this.primaryAuthorityCssr;
         this._CWPAwarenessQuestionViewed = fetchResults.CWPAwarenessQuestionViewed;
+        this._careWorkforcePathwayUse = fetchResults.careWorkforcePathwayUse;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)

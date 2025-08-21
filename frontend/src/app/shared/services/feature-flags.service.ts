@@ -5,7 +5,6 @@ import { environment } from 'src/environments/environment';
 
 export class FeatureFlagsService {
   public configCatClient: IConfigCatClient;
-  private _newDataAreaFlag: boolean;
 
   constructor() {}
 
@@ -15,13 +14,5 @@ export class FeatureFlagsService {
     } else {
       this.configCatClient = await configcat.createClientWithManualPoll(environment.configCatKey, {});
     }
-  }
-
-  public get newBenchmarksDataArea(): boolean {
-    return this._newDataAreaFlag;
-  }
-
-  public set newBenchmarksDataArea(value: boolean) {
-    this._newDataAreaFlag = value;
   }
 }

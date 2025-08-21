@@ -98,9 +98,6 @@ export class AppComponent implements OnInit {
     });
 
     await this.featureFlagsService.configCatClient.forceRefreshAsync();
-
-    this.newDataAreaFlag = await this.featureFlagsService.configCatClient.getValueAsync('newBenchmarksDataArea', false);
-    this.featureFlagsService.newBenchmarksDataArea = this.newDataAreaFlag;
   }
 
   public skip(event: Event) {

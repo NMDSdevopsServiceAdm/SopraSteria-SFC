@@ -3,7 +3,6 @@ import { IConfigCatClient, SettingKeyValue } from 'configcat-common/lib/ConfigCa
 
 export const DefaultFeatureFlagsForLocalTest = {
   homePageNewDesignParent: true,
-  newBenchmarksDataArea: true,
 };
 
 export const mockConfigCatClient = {
