@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../../models');
 const { hasPermission } = require('../../utils/security/hasPermission');
+const { checkIfAnyWorkerHasDHAAnswered } = require('./delegatedHealthcareActivities/checkIfAnyWorkerHasDHAAnswered');
 
 const getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer = async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -47,12 +48,14 @@ const getWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer = async 
 
 router.route('/');
 router
-  .route('/NoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer')
+  .route('/noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer')
   .get(hasPermission('canViewWorker'), getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer);
 
 router
-  .route('/WorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer')
+  .route('/workersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer')
   .get(hasPermission('canViewWorker'), getWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer);
+
+router.route('/checkIfAnyWorkerHasDHAAnswered').get(hasPermission('canViewWorker'), checkIfAnyWorkerHasDHAAnswered);
 
 module.exports = router;
 module.exports.getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer =
