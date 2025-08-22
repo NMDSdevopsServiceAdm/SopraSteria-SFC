@@ -97,6 +97,16 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Services.getCanDoDelegatedHealthcareActivities = function (mainServiceId) {
+    return this.findOne({
+      where: {
+        id: mainServiceId,
+      },
+      attributes: ['canDoDelegatedHealthcareActivities'],
+      raw: true,
+    });
+  };
+
   Services.careProvidingStaff = [
     25, // seniorCareWorker,
     10, //careWorker,
