@@ -176,7 +176,7 @@ describe('Establishment sequelize hooks', () => {
   describe('clearDHAWorkplaceAnswersOnMainServiceChange', () => {
     let mockWorkerModel = { clearDHAAnswerForAllWorkersInWorkplace: () => {} };
 
-    let mockServicesModel = {
+    let mockSelectedService = {
       getCanDoDelegatedHealthcareActivities: () => {},
     };
 
@@ -187,7 +187,7 @@ describe('Establishment sequelize hooks', () => {
     beforeEach(() => {
       sinon.spy(mockWorkerModel, 'clearDHAAnswerForAllWorkersInWorkplace');
       getCanDoDelegatedHealthcareActivitiesStub = sinon.stub(
-        mockServicesModel,
+        mockSelectedService,
         'getCanDoDelegatedHealthcareActivities',
       );
       sinon.spy(mockEstablishmentAuditModel, 'create');
@@ -203,7 +203,7 @@ describe('Establishment sequelize hooks', () => {
       MainServiceFKValue: 2,
       sequelize: {
         models: {
-          services: mockServicesModel,
+          services: mockSelectedService,
           worker: mockWorkerModel,
           establishmentAudit: mockEstablishmentAuditModel,
         },
@@ -223,7 +223,7 @@ describe('Establishment sequelize hooks', () => {
       await clearDoDHAWorkplaceOnMainServiceChange(mockEstablishment, mockOptions);
 
       expect(mockWorkerModel.clearDHAAnswerForAllWorkersInWorkplace).not.to.have.been.called;
-      expect(mockServicesModel.getCanDoDelegatedHealthcareActivities).to.have.been.calledWith(
+      expect(mockSelectedService.getCanDoDelegatedHealthcareActivities).to.have.been.calledWith(
         mockEstablishment.MainServiceFKValue,
       );
       expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
@@ -239,14 +239,14 @@ describe('Establishment sequelize hooks', () => {
 
       await clearDoDHAWorkplaceOnMainServiceChange(mockEstablishment, mockOptions);
 
-      expect(mockServicesModel.getCanDoDelegatedHealthcareActivities).not.to.have.been.called;
+      expect(mockSelectedService.getCanDoDelegatedHealthcareActivities).not.to.have.been.called;
       expect(mockWorkerModel.clearDHAAnswerForAllWorkersInWorkplace).not.to.have.been.called;
       expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
       expect(mockEstablishment.staffDoDelegatedHealthcareActivities).to.equal('Yes');
     });
 
     describe('main service is changed to one that can not do DHA', () => {
-      it('should not clear anything if staffDoDelegatedHealthcareActivities is null', async () => {
+      it('should call clearDHAAnswerForAllWorkersInWorkplace but not clear canDoDelegatedHealthcareActivities if staffDoDelegatedHealthcareActivities is null', async () => {
         const mockEstablishment = {
           ...mockEstablishmentSequelizeInstance,
           changed: (fieldName) => fieldName === 'MainServiceFKValue',
@@ -254,10 +254,17 @@ describe('Establishment sequelize hooks', () => {
           staffDoDelegatedHealthcareActivities: null,
         };
 
+        getCanDoDelegatedHealthcareActivitiesStub.resolves({ canDoDelegatedHealthcareActivities: false });
+
         await clearDoDHAWorkplaceOnMainServiceChange(mockEstablishment, mockOptions);
 
-        expect(mockServicesModel.getCanDoDelegatedHealthcareActivities).not.to.have.been.called;
-        expect(mockWorkerModel.clearDHAAnswerForAllWorkersInWorkplace).not.to.have.been.called;
+        expect(mockSelectedService.getCanDoDelegatedHealthcareActivities).to.have.been.calledWith(
+          mockEstablishment.MainServiceFKValue,
+        );
+        expect(mockWorkerModel.clearDHAAnswerForAllWorkersInWorkplace).to.have.been.calledWith(
+          mockEstablishment.id,
+          mockOptions,
+        );
         expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
         expect(mockEstablishment.staffDoDelegatedHealthcareActivities).to.equal(null);
       });
@@ -279,7 +286,7 @@ describe('Establishment sequelize hooks', () => {
             mockEstablishment.id,
             mockOptions,
           );
-          expect(mockServicesModel.getCanDoDelegatedHealthcareActivities).to.have.been.calledWith(
+          expect(mockSelectedService.getCanDoDelegatedHealthcareActivities).to.have.been.calledWith(
             mockEstablishment.MainServiceFKValue,
           );
           expect(mockEstablishmentAuditModel.create).to.have.been.calledWith(
