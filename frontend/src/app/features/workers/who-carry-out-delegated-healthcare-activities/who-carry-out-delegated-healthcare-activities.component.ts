@@ -1,8 +1,7 @@
-import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { AbstractControl, FormGroup, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { JobRole } from '@core/model/job.model';
@@ -15,14 +14,13 @@ import {
   DelegatedHealthcareActivity,
   StaffWhatKindDelegatedHealthcareActivities,
 } from '@core/model/delegated-healthcare-activities.model';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-who-carry-out-delegated-healthcare-activities',
   templateUrl: './who-carry-out-delegated-healthcare-activities.component.html',
 })
-export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit, AfterViewInit, OnDestroy {
+export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private workplaceUid: string;
   public workersToShow: Array<{ uid: string; nameOrId: string; mainJob: JobRole }> = [];
@@ -33,9 +31,6 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
   public pageIndex: number = 0;
   public submitted: boolean;
   public form: FormGroup;
-  public formErrorsMap: Array<ErrorDetails> = [];
-  public serverError: string;
-  public serverErrorsMap: Array<ErrorDefinition> = [];
   @ViewChild('formEl') formEl: ElementRef;
   public allDelegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
   public staffWhatKindDelegatedHealthcareActivities: StaffWhatKindDelegatedHealthcareActivities;
@@ -51,7 +46,6 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
     private establishmentService: EstablishmentService,
     private backLinkService: BackLinkService,
     private router: Router,
-    private errorSummaryService: ErrorSummaryService,
     private alertService: AlertService,
     private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
     private route: ActivatedRoute,
@@ -71,11 +65,6 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
     this.staffWhatKindDelegatedHealthcareActivities =
       this.establishmentService.establishment.staffWhatKindDelegatedHealthcareActivities;
     this.initialiseForm();
-    this.setupServerErrorsMap();
-  }
-
-  ngAfterViewInit(): void {
-    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   private getWorkers(): void {
@@ -119,10 +108,9 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
   public onSubmit(): void {
     this.submitted = true;
 
-    this.establishmentService.updateWorkers(this.workplaceUid, this.workerAnswers).subscribe(
-      () => this.onSubmitSuccess(),
-      (error) => this.onSubmitError(error),
-    );
+    this.establishmentService
+      .updateWorkers(this.workplaceUid, this.workerAnswers)
+      .subscribe(() => this.onSubmitSuccess());
   }
 
   private onSubmitSuccess(): void {
@@ -131,17 +119,6 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
         type: 'success',
         message: 'Delegated healthcare activity information saved',
       });
-    });
-  }
-
-  private setupServerErrorsMap(): void {
-    const serverErrorMessage =
-      'There has been a problem saving your delegated healthcare activities. Please try again.';
-    this.serverErrorsMap = [400, 404, 503].map((errorCode) => {
-      return {
-        name: errorCode,
-        message: serverErrorMessage,
-      };
     });
   }
 
@@ -159,10 +136,6 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
         carryOutDelegatedHealthcareActivities: this.avalibleAnswers[answerIndex].value,
       });
     }
-  }
-  private onSubmitError(error): void {
-    this.errorSummaryService.scrollToErrorSummary();
-    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
   }
 
   public handlePageUpdate(pageIndex: number): void {

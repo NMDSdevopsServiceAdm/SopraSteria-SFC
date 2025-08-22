@@ -1,5 +1,3 @@
-<app-error-summary *ngIf="submitted && serverError" [serverError]="serverError" [form]="form"> </app-error-summary>
-
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="workersToShow?.length">
   <fieldset class="govuk-fieldset">
     <div class="govuk-grid-row">
@@ -67,6 +65,7 @@
             </tbody>
           </table>
         </div>
+
         <app-pagination
           [attr.data-testid]="'pagination'"
           *ngIf="workerCount > itemsPerPage"
