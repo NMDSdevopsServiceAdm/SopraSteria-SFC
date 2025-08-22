@@ -35,9 +35,16 @@ const errorsBuilder = build('Error', {
 
 describe('/server/routes/establishment/bulkUpload.js', () => {
   beforeEach(() => {
-    sinon.stub(models.careWorkforcePathwayWorkplaceAwareness, 'findAll').returns([{ id: 1, bulkUploadCode: '1' }]);
-    sinon.stub(models.CareWorkforcePathwayReasons, 'findAll').returns([{ id: 1, bulkUploadCode: '1' }]);
+    sinon.stub(models.pcodedata, 'findAll').returns([{}]);
+    sinon.stub(models.establishment, 'findAll').returns([{}]);
+
+    sinon.stub(models.careWorkforcePathwayWorkplaceAwareness, 'findAll').returns([{ id: 1, bulkUploadCode: 1 }]);
+    sinon.stub(models.CareWorkforcePathwayReasons, 'findAll').returns([{ id: 1, bulkUploadCode: 1 }]);
     sinon.stub(models.services, 'findAll').returns([{ id: 1, canDoDelegatedHealthcareActivities: true }]);
+    sinon.stub(models.delegatedHealthcareActivities, 'findAll').returns([
+      { id: 1, bulkUploadCode: 1 },
+      { id: 8, bulkUploadCode: 8 },
+    ]);
   });
 
   afterEach(() => {
@@ -548,9 +555,6 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
     });
 
     it('should remove duplicate error codes', async () => {
-      sinon.stub(models.pcodedata, 'findAll').returns([{}]);
-      sinon.stub(models.establishment, 'findAll').returns([{}]);
-
       await validateEstablishmentCsv(
         establishmentLine,
         2,
@@ -583,6 +587,21 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
           name: 'omar3',
         },
       ]);
+    });
+
+    it('should retrieve mappings for DelegatedHealthcareActivities', async () => {
+      await validateEstablishmentCsv(
+        establishmentLine,
+        2,
+        csvEstablishmentSchemaErrors,
+        [],
+        myAPIEstablishments,
+        myCurrentEstablishments,
+      );
+
+      expect(models.delegatedHealthcareActivities.findAll).to.have.been.calledWith({
+        attributes: ['id', 'bulkUploadCode'],
+      });
     });
   });
 

@@ -24,7 +24,11 @@ const validateEstablishmentCsv = async (
     attributes: ['id', 'canDoDelegatedHealthcareActivities'],
   });
 
-// todo add mappings for DHAActivities
+  const delegatedHealthcareActivitiesMappings = await models.delegatedHealthcareActivities.findAll({
+    attributes: ['id', 'bulkUploadCode'],
+  });
+
+  // todo add mappings for DelegatedHealthcareActivities
 
   const mappings = {
     cwpAwareness: cwpAwarenessMappings,
