@@ -7,11 +7,12 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from './no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { of } from 'rxjs';
+
+import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from './no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 
-describe('GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver', () => {
+describe('getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer', () => {
   const establishmentIdInService = '129';
 
   const setup = (overrides: any = {}) => {
@@ -40,6 +41,7 @@ describe('GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver', 
         DelegatedHealthcareActivitiesService,
       ],
     });
+
     const resolver = TestBed.inject(GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver);
     const delegatedHealthcareActivitiesService = TestBed.inject(DelegatedHealthcareActivitiesService);
     const route = TestBed.inject(ActivatedRoute);
@@ -62,9 +64,9 @@ describe('GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver', 
     expect(resolver).toBeTruthy();
   });
 
-  it('should call with the establishmentId', async () => {
+  it('should call getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer with the establishmentId', async () => {
     const establishmentId = '213';
-    const overrides = { establishmentIdInParams: establishmentId, permissions: ['canViewWorker'] };
+    const overrides = { establishmentIdInParams: establishmentId, permissions: ['canEditWorker'] };
     const { resolver, route, getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswerSpy } = await setup(
       overrides,
     );
@@ -76,19 +78,7 @@ describe('GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver', 
     );
   });
 
-  it('should call getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer with uid in establishment service when no uid in params', () => {
-    const { resolver, route, getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswerSpy } = setup({
-      permissions: ['canViewWorker'],
-    });
-
-    resolver.resolve(route.snapshot);
-
-    expect(getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswerSpy).toHaveBeenCalledWith(
-      establishmentIdInService,
-    );
-  });
-
-  it('should not call the backend if user does not have permission', async () => {
+  it('should not make backend call if user does not have canEditWorker permission', async () => {
     const overrides = { permissions: [] };
     const { resolver, route, getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswerSpy } = await setup(
       overrides,
