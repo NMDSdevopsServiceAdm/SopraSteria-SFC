@@ -58,7 +58,7 @@ describe('Create account', () => {
     );
   });
 
-  it.only('should be able to create a new account', () => {
+  it('should be able to create a new account', () => {
     cy.contains('Create an account').click();
     cy.contains('Start now').click();
     cy.get('button').contains('Continue').click();
@@ -158,6 +158,14 @@ describe('Create account', () => {
 
     // Would you accept a Care Certificate...
     cy.getByLabel('No, never').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Care workforce pathway aware
+    cy.getByLabel('Aware of how the care workforce pathway works in practice').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Using the care workforce pathway
+    cy.getByLabel('No, we do not currently use the pathway').check();
     cy.get('button').contains('Save and continue').click();
 
     // Cash loyalty bonus
