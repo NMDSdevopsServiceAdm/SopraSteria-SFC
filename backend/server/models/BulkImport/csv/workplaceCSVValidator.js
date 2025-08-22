@@ -1478,7 +1478,7 @@ class WorkplaceCSVValidator {
       } else {
         // should this allow valid options and only ignore disallowed ones
         this._validationErrors.push(
-          this._generateWarning('The codes you have entered for DHA activities contain invalid values and will be ignored', 'DHAACTIVITIES'),
+          this._generateWarning('The codes you have entered for DHA activities contain invalid values; invalid values will be ignored', 'DHAACTIVITIES'),
         );
         const allowed = activities.filter( ( el ) => !disallowed.includes( el ) );
         this._chosenDelegatedHealthcareActivities = allowed;

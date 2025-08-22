@@ -24,6 +24,8 @@ const validateEstablishmentCsv = async (
     attributes: ['id', 'canDoDelegatedHealthcareActivities'],
   });
 
+// todo add mappings for DHAActivities
+
   const mappings = {
     cwpAwareness: cwpAwarenessMappings,
     cwpUseReason: cwpUseReasonMappings,
