@@ -71,16 +71,22 @@ describe('Establishment sequelize hooks', () => {
 
   describe('beforeSave: clearDHAWorkplaceAnswerOnChange', () => {
     let mockEstablishmentAuditModel = { create: () => {} };
+    let mockEstablishmentDHActivitiesModel = { destroy: () => {} };
+
     const mockEstablishmentSequelizeInstance = {
       id: 'mock-establishment-id',
       changed: (fieldName) => fieldName === 'staffDoDelegatedHealthcareActivities',
-      sequelize: { models: { establishmentAudit: mockEstablishmentAuditModel } },
-      setDelegatedHealthcareActivities: () => {},
+      sequelize: {
+        models: {
+          establishmentAudit: mockEstablishmentAuditModel,
+          EstablishmentDHActivities: mockEstablishmentDHActivitiesModel,
+        },
+      },
     };
 
     beforeEach(() => {
       sinon.spy(mockEstablishmentAuditModel, 'create');
-      sinon.spy(mockEstablishmentSequelizeInstance, 'setDelegatedHealthcareActivities');
+      sinon.spy(mockEstablishmentDHActivitiesModel, 'destroy');
     });
 
     afterEach(() => {
@@ -101,7 +107,8 @@ describe('Establishment sequelize hooks', () => {
         await clearDHAWorkplaceAnswerOnChange(mockEstablishment, mockOptions);
 
         expect(mockEstablishment.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(null);
-        expect(mockEstablishment.setDelegatedHealthcareActivities).to.have.been.calledWith([], {
+        expect(mockEstablishmentDHActivitiesModel.destroy).to.have.been.calledWith({
+          where: { establishmentId: 'mock-establishment-id' },
           transaction: mockTransaction,
         });
       });
@@ -147,7 +154,7 @@ describe('Establishment sequelize hooks', () => {
         knowWhatActivities: 'Yes',
         activities: [{ id: 1 }],
       });
-      expect(mockEstablishment.setDelegatedHealthcareActivities).not.to.have.been.called;
+      expect(mockEstablishmentDHActivitiesModel.destroy).not.to.have.been.called;
       expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
     });
 
@@ -168,7 +175,7 @@ describe('Establishment sequelize hooks', () => {
         knowWhatActivities: 'Yes',
         activities: [{ id: 1 }],
       });
-      expect(mockEstablishment.setDelegatedHealthcareActivities).not.to.have.been.called;
+      expect(mockEstablishmentDHActivitiesModel.destroy).not.to.have.been.called;
       expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
     });
   });
