@@ -13,6 +13,7 @@ import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-w
 import { BackService } from '@core/services/back.service';
 import { mockDHADefinition, mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 import { HttpClient } from '@angular/common/http';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
   const doNotKnowText = 'I do not know';
@@ -31,6 +32,10 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides.establishmentService ?? {}),
           deps: [HttpClient],
+        },
+        {
+          provide: PreviousRouteService,
+          useValue: { getPreviousUrl: () => overrides?.previousUrl, getPreviousPage: () => overrides?.previousPage },
         },
         {
           provide: ActivatedRoute,
@@ -251,6 +256,37 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
         'staff-recruitment-capture-training-requirement',
       ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when coming from workplace summary', () => {
+    const returnTo = {
+      url: ['/dashboard'],
+      fragment: 'workplace',
+    };
+
+    it('should set backlink to returnTo when directly visited from workplace summary', async () => {
+      const { backServiceSpy } = await setup({
+        previousPage: 'workplace',
+        establishmentService: {
+          returnTo,
+        },
+      });
+
+      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith(returnTo);
+    });
+
+    it('should set backlink to staff do DHA question when visited via workplace summary then staff do DHA', async () => {
+      const { backServiceSpy } = await setup({
+        previousPage: 'staff-do-delegated-healthcare-activities',
+        establishmentService: {
+          returnTo,
+        },
+      });
+
+      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+        url: ['/workplace', 'mocked-uid', 'staff-do-delegated-healthcare-activities'],
+      });
     });
   });
 });

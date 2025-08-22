@@ -324,7 +324,7 @@
     </div>
     <div
       class="govuk-summary-list__row"
-      *ngIf="workplace.staffDoDelegatedHealthcareActivities === 'Yes'"
+      *ngIf="workplace.staffDoDelegatedHealthcareActivities === 'Yes'  && workplace.mainService?.canDoDelegatedHealthcareActivities"
       data-testid="know-what-delegated-healthcare-activities"
     >
       <dt class="govuk-summary-list__key">Which delegated healthcare activities</dt>
