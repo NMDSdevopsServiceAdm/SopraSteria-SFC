@@ -28,7 +28,11 @@ const clearDHAWorkplaceAnswerOnChange = async (establishment, options) => {
 
       if (staffDontDoDHAAnymore && gotAnswerForStaffWhatKindActivities) {
         establishment.staffWhatKindDelegatedHealthcareActivities = null;
-        await establishment.setDelegatedHealthcareActivities([], { transaction });
+
+        await models.EstablishmentDHActivities.destroy({
+          where: { establishmentId: establishment.id },
+          transaction,
+        });
 
         const auditEvent = {
           establishmentFk: establishment.id,

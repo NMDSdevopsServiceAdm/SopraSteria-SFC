@@ -5,7 +5,7 @@ const {
   clearDHAWorkplaceAnswerOnChange,
 } = require('../../../../models/hooks/establishmentHooks');
 
-describe.only('Establishment sequelize hooks', () => {
+describe('Establishment sequelize hooks', () => {
   const mockTransaction = {};
   const mockOptions = { transaction: mockTransaction, savedBy: 'mock-username' };
 
