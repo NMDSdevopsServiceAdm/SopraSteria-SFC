@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   TrainingCertificateDownloadEvent,
@@ -12,7 +12,7 @@ import { TrainingStatusService } from '@core/services/trainingStatus.service';
   selector: 'app-new-training',
   templateUrl: './new-training.component.html',
 })
-export class NewTrainingComponent implements OnChanges {
+export class NewTrainingComponent implements OnChanges, OnInit {
   @Input() public trainingCategories: TrainingRecordCategory[];
   @Input() public isMandatoryTraining = false;
   @Input() public trainingType: string;
@@ -20,12 +20,14 @@ export class NewTrainingComponent implements OnChanges {
   @Input() public canEditWorker: boolean;
   @Input() public missingMandatoryTraining = false;
   @Input() public certificateErrors: Record<string, string> = {};
+  @Input() public pdfRenderingMode = false;
+
   @Output() public downloadFile = new EventEmitter<TrainingCertificateDownloadEvent>();
   @Output() public uploadFile = new EventEmitter<TrainingCertificateUploadEvent>();
 
-  public trainingCategoryToDisplay: (TrainingRecordCategory & { error?: string })[];
-
   @ViewChild('content') public content: ElementRef;
+
+  public trainingCategoryToDisplay: (TrainingRecordCategory & { error?: string })[];
   public workplaceUid: string;
 
   constructor(protected trainingStatusService: TrainingStatusService, private route: ActivatedRoute) {}

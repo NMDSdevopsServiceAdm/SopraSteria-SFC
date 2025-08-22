@@ -1616,7 +1616,7 @@ module.exports = function (sequelize, DataTypes) {
       };
     });
 
-    await sequelize.models.workerAudit.bulkCreate(auditEvents, transaction);
+    await sequelize.models.workerAudit.bulkCreate(auditEvents, { transaction });
   };
 
   Worker.addHook('beforeSave', 'unsetDHAAnswerOnJobRoleChange', unsetDHAAnswerOnJobRoleChange);

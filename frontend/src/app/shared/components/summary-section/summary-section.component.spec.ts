@@ -54,6 +54,7 @@ describe('Summary section', () => {
         noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered:
           overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
         noOfWorkersWithDelegatedHealthcareUnanswered: overrides.noOfWorkersWithDelegatedHealthcareUnanswered ?? 0,
+        workplacesNeedAttention: overrides.workplacesNeedAttention ?? false,
       },
     });
 
@@ -70,6 +71,8 @@ describe('Summary section', () => {
     );
     const setReturnToSpy = spyOn(establishmentService, 'setReturnTo');
 
+    const localStorageSpy = spyOn(localStorage, 'setItem');
+
     return {
       ...setupTools,
       component,
@@ -77,6 +80,7 @@ describe('Summary section', () => {
       tabsService,
       updateSingleFieldSpy,
       setReturnToSpy,
+      localStorageSpy,
     };
   };
 
@@ -143,6 +147,18 @@ describe('Summary section', () => {
       const workplaceText = getByText('Workplace');
 
       expect(workplaceText.getAttribute('href')).toBeTruthy();
+    });
+
+    it('should not show no permissions to view data message but show default message', async () => {
+      const overrides = {
+        canViewListOfWorkers: false,
+        canViewEstablishment: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).getByText('Remember to check and update this data often')).toBeTruthy();
+      expect(within(workplaceRow).queryByText('You do not have permission to view this data')).toBeFalsy();
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
@@ -511,6 +527,25 @@ describe('Summary section', () => {
       expect(within(workplaceRow).queryByTestId('orange-flag')).toBeFalsy();
     });
 
+    it('should not show the staff total does not match staff records warning if canViewListOfWorkers is false', async () => {
+      const establishment = {
+        ...Establishment,
+        eightWeeksFromFirstLogin: dayjs(new Date()).subtract(1, 'day').toString(),
+      };
+
+      const overrides = {
+        checkCqcDetails: false,
+        establishment,
+        workerCount: 102,
+        canViewListOfWorkers: false,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const workplaceRow = getByTestId('workplace-row');
+      expect(within(workplaceRow).queryByText('Staff total does not match staff records added')).toBeFalsy();
+    });
+
     it('should show a warning saying that vacancy and turnover data has not been added if they have not been added', async () => {
       const establishment = { ...Establishment, leavers: null, vacancies: null, starters: null };
 
@@ -606,12 +641,28 @@ describe('Summary section', () => {
       expect(staffRecordsLinkText.getAttribute('href')).toBeFalsy();
     });
 
-    it('should show default message if no permission to view staff records', async () => {
+    it('should show no permissions to view data message if no permission to view staff records', async () => {
       const overrides = {
         checkCqcDetails: false,
         establishment: Establishment,
         workerCount: 0,
         canViewListOfWorkers: false,
+      };
+
+      const { fixture, getByTestId } = await setup(overrides);
+
+      fixture.detectChanges();
+
+      const staffRecordsRow = getByTestId('staff-records-row');
+      expect(within(staffRecordsRow).getByText('You do not have permission to view this data')).toBeTruthy();
+    });
+
+    it('should show default message if there is no message', async () => {
+      const overrides = {
+        checkCqcDetails: false,
+        establishment: Establishment,
+        workerCount: 1,
+        canViewListOfWorkers: true,
       };
 
       const { fixture, getByTestId } = await setup(overrides);
@@ -1166,6 +1217,17 @@ describe('Summary section', () => {
       expect(trainingAndQualificationsLinkText.getAttribute('href')).toBeTruthy();
     });
 
+    it('should show no permissions to view data message if no permission to view train and quals', async () => {
+      const overrides = {
+        canViewListOfWorkers: false,
+        canViewEstablishment: true,
+      };
+
+      const { getByTestId } = await setup(overrides);
+      const tAndQRow = getByTestId('training-and-qualifications-row');
+      expect(within(tAndQRow).getByText('You do not have permission to view this data')).toBeTruthy();
+    });
+
     it('should show default summary message when no data needs to be adding or updating', async () => {
       const { getByTestId } = await setup();
       const tAndQRow = getByTestId('training-and-qualifications-row');
@@ -1362,20 +1424,6 @@ describe('Summary section', () => {
       expect(workplacesRow).toBeTruthy();
     });
 
-    it('should show you other workplaces link', async () => {
-      const establishment = {
-        ...Establishment,
-        isParent: true,
-      };
-      const overrides = { establishment };
-      const { getByText } = await setup(overrides);
-
-      const yourOtherWorkplacesText = getByText('Your other workplaces');
-
-      expect(yourOtherWorkplacesText).toBeTruthy();
-      expect(yourOtherWorkplacesText.getAttribute('href')).toBeTruthy();
-    });
-
     it('should show message if there are no workplaces added', async () => {
       const establishment = {
         ...Establishment,
@@ -1413,7 +1461,7 @@ describe('Summary section', () => {
       const yourOtherWorkplacesSummaryText = getByText('Have you added all of your workplaces?');
 
       expect(yourOtherWorkplacesSummaryText).toBeTruthy();
-      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBe('/workplace/view-all-workplaces');
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBe('#');
       expect(getByTestId('workplaces-orange-flag')).toBeTruthy();
     });
 
@@ -1436,6 +1484,40 @@ describe('Summary section', () => {
       expect(yourOtherWorkplacesSummaryText).toBeTruthy();
       expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBeFalsy();
       expect(queryByTestId('workplaces-orange-flag')).toBeFalsy();
+    });
+
+    describe('navigating to "Your other workplaces"', () => {
+      it('should call localstorage with the "workplaceNameAsc" sort value', async () => {
+        const establishment = {
+          ...Establishment,
+          isParent: true,
+        };
+        const overrides = { establishment };
+        const { getByText, routerSpy, localStorageSpy } = await setup(overrides);
+
+        const yourOtherWorkplacesText = getByText('Your other workplaces');
+
+        fireEvent.click(yourOtherWorkplacesText);
+
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['yourOtherWorkplacesSortValue', 'workplaceNameAsc']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
+      });
+
+      it('should call localstorage with the "workplaceToCheckAsc" sort value', async () => {
+        const establishment = {
+          ...Establishment,
+          isParent: true,
+        };
+        const overrides = { establishment, workplacesCount: 1, workplacesNeedAttention: true };
+        const { getByText, routerSpy, localStorageSpy } = await setup(overrides);
+
+        const checkWorkplacesText = getByText('You need to check your other workplaces');
+
+        fireEvent.click(checkWorkplacesText);
+
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['yourOtherWorkplacesSortValue', 'workplaceToCheckAsc']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
+      });
     });
   });
 });

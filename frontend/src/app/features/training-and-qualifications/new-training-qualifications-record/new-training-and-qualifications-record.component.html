@@ -216,38 +216,40 @@
     </li>
   </ul>
 </div>
-<div class="govuk-grid-column-full">
-  <app-new-training
-    *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.mandatoryTraining"
-    [trainingCategories]="mandatoryTraining"
-    [trainingType]="'Mandatory training'"
-    [isMandatoryTraining]="true"
-    [canEditWorker]="canEditWorker"
-    [setReturnRoute]="setReturnRoute"
-    [missingMandatoryTraining]="missingMandatoryTraining.length > 0"
-    (downloadFile)="downloadCertificate($event)"
-    (uploadFile)="uploadCertificate($event)"
-    [certificateErrors]="certificateErrors"
-  >
-  </app-new-training>
-  <app-new-training
-    *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.nonMandatoryTraining"
-    [trainingCategories]="nonMandatoryTraining"
-    [trainingType]="'Non-mandatory training'"
-    [canEditWorker]="canEditWorker"
-    [setReturnRoute]="setReturnRoute"
-    (downloadFile)="downloadCertificate($event)"
-    (uploadFile)="uploadCertificate($event)"
-    [certificateErrors]="certificateErrors"
-  >
-  </app-new-training>
-  <app-new-qualifications
-    *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.qualifications"
-    [canEditWorker]="canEditWorker"
-    [qualificationsByGroup]="qualificationsByGroup"
-    (downloadFile)="downloadCertificate($event)"
-    (uploadFile)="uploadCertificate($event)"
-    [certificateErrors]="certificateErrors"
-  >
-  </app-new-qualifications>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-new-training
+      *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.mandatoryTraining"
+      [trainingCategories]="mandatoryTraining"
+      [trainingType]="'Mandatory training'"
+      [isMandatoryTraining]="true"
+      [canEditWorker]="canEditWorker"
+      [setReturnRoute]="setReturnRoute"
+      [missingMandatoryTraining]="missingMandatoryTraining.length > 0"
+      (downloadFile)="downloadCertificate($event)"
+      (uploadFile)="uploadCertificate($event)"
+      [certificateErrors]="certificateErrors"
+    >
+    </app-new-training>
+    <app-new-training
+      *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.nonMandatoryTraining"
+      [trainingCategories]="nonMandatoryTraining"
+      [trainingType]="'Non-mandatory training'"
+      [canEditWorker]="canEditWorker"
+      [setReturnRoute]="setReturnRoute"
+      (downloadFile)="downloadCertificate($event)"
+      (uploadFile)="uploadCertificate($event)"
+      [certificateErrors]="certificateErrors"
+    >
+    </app-new-training>
+    <app-new-qualifications
+      *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.qualifications"
+      [canEditWorker]="canEditWorker"
+      [qualificationsByGroup]="qualificationsByGroup"
+      (downloadFile)="downloadCertificate($event)"
+      (uploadFile)="uploadCertificate($event)"
+      [certificateErrors]="certificateErrors"
+    >
+    </app-new-qualifications>
+  </div>
 </div>
