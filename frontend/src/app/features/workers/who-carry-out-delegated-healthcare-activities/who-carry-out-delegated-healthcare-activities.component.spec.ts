@@ -164,6 +164,17 @@ describe('WhoCarryOutDelegatedHealthcareActivitiesComponent', () => {
     });
   });
 
+  describe('onCancel()', () => {
+    it('should navigate to dashboard after clicking Cancel', async () => {
+      const { getByText, routerSpy } = await setup();
+
+      const cancelButton = getByText('Cancel');
+      fireEvent.click(cancelButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+    });
+  });
+
   describe('pagination', () => {
     it('should show pagination links when number of non-answered workers is larger then number of workers per page', async () => {
       const { getByTestId } = await setup({ workerCount: 20 });
