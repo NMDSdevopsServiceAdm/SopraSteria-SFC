@@ -1435,9 +1435,8 @@ class WorkplaceCSVValidator {
   }
 
   _validateDelegatedHealthcareChosenActivities() {
-    const ALLOWED_ACTIVITIES = ['1','2','3','4','5','6','7','8'];
-    // todo look this up model.DelegatedHealthcareActivities.BulkUploadCode
-
+    // bulk uload codes for delegatedHealthcareActivities are integers but we want to compare with strings
+    const ALLOWED_ACTIVITIES = this.mappings.delegatedHealthcareActivities.map((a) => a.bulkUploadCode.toString());
     const dhaActivities = this._currentLine.DHAACTIVITIES;
     const dha = this._currentLine.DHA;
 
@@ -1481,7 +1480,12 @@ class WorkplaceCSVValidator {
           this._generateWarning('The codes you have entered for DHA activities contain invalid values; invalid values will be ignored', 'DHAACTIVITIES'),
         );
         const allowed = activities.filter( ( el ) => !disallowed.includes( el ) );
-        this._chosenDelegatedHealthcareActivities = allowed;
+        const mapped = allowed.map((activity) => {
+          return this.mappings.delegatedHealthcareActivities.find(
+          (dha)=> dha.bulkUploadCode.toString() === activity
+        )});
+        this._chosenDelegatedHealthcareActivities = mapped;
+        console.log(mapped);
         return true; // valid ones still get stored
       }
     }

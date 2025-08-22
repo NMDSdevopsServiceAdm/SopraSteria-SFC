@@ -40,6 +40,16 @@ const workplaceMappings = {
     { id: 2, canDoDelegatedHealthcareActivities: true }, // { ASC: 2, BUDI: 15 },
     { id: 20, canDoDelegatedHealthcareActivities: true }, // { ASC: 20, BUDI: 8 },
   ],
+  delegatedHealthcareActivities: [
+    { id: 1, bulkUploadCode: 1 },
+    { id: 2, bulkUploadCode: 2 },
+    { id: 3, bulkUploadCode: 3 },
+    { id: 4, bulkUploadCode: 4 },
+    { id: 5, bulkUploadCode: 5 },
+    { id: 6, bulkUploadCode: 6 },
+    { id: 7, bulkUploadCode: 7 },
+    { id: 8, bulkUploadCode: 8 },
+  ],
 };
 
 const validateAPIObject = (establishmentRow) => {

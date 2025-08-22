@@ -33,6 +33,7 @@ const validateEstablishmentCsv = async (
   const mappings = {
     cwpAwareness: cwpAwarenessMappings,
     cwpUseReason: cwpUseReasonMappings,
+    delegatedHealthcareActivities: delegatedHealthcareActivitiesMappings,
     services: serviceDHAMappings,
   };
 
