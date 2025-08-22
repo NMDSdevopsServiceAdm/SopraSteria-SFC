@@ -37,8 +37,6 @@ export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
   @ViewChild('formEl') formEl: ElementRef;
-  public section = 'Employment details';
-  public heading = 'Who carries out delegated healthcare activities?';
   public allDelegatedHealthcareActivities: Array<DelegatedHealthcareActivity>;
   public staffWhatKindDelegatedHealthcareActivities: StaffWhatKindDelegatedHealthcareActivities;
 
