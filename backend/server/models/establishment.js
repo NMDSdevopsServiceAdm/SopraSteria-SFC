@@ -1909,6 +1909,12 @@ module.exports = function (sequelize, DataTypes) {
         [sequelize.literal('"workers.missingMandatoryTrainingCount"'), 'DESC'],
         ['workers', 'NameOrIdValue', 'ASC'],
       ],
+      lastUpdateNewest: [[sequelize.literal('"workers.updated"'), 'DESC']],
+      lastUpdateOldest: [[sequelize.literal('"workers.updated"'), 'ASC']],
+      addMoreDetails: [
+        [sequelize.literal('"workers.CompletedValue"'), 'ASC'],
+        ['workers', 'NameOrIdValue', 'ASC'],
+      ],
     }[sortBy] || [['workers', 'NameOrIdValue', 'ASC']];
 
     return this.findAndCountAll({
@@ -2344,6 +2350,7 @@ module.exports = function (sequelize, DataTypes) {
     searchTerm = '',
     getPendingWorkplaces = false,
     getAttentionFlags = false,
+    sortBy = 'workplaceNameAsc',
   ) {
     const offset = pageIndex * limit;
     let ustatus;
@@ -2360,6 +2367,24 @@ module.exports = function (sequelize, DataTypes) {
         [Op.is]: null,
       };
     }
+
+    const sortOptions = {
+      workplaceNameAsc: [['NameValue', 'ASC']],
+      workplaceNameDesc: [['NameValue', 'DESC']],
+      workplaceToCheckAsc: [
+        ['showFlag', 'DESC'],
+        ['NameValue', 'ASC'],
+      ],
+      workplaceToCheckDesc: [
+        ['showFlag', 'DESC'],
+        ['NameValue', 'DESC'],
+      ],
+    };
+
+    const order = [
+      [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
+      ...(sortOptions[sortBy] ?? [['NameValue', 'ASC']]),
+    ];
 
     const data = await this.findAndCountAll({
       attributes: [
@@ -2386,10 +2411,7 @@ module.exports = function (sequelize, DataTypes) {
         ustatus,
         ...(searchTerm ? { NameValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
       },
-      order: [
-        [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
-        ['NameValue', 'ASC'],
-      ],
+      order,
       ...(limit ? { limit } : {}),
       offset,
     });
@@ -2641,4 +2663,4 @@ module.exports = function (sequelize, DataTypes) {
   Establishment.addHook('beforeSave', 'clearDHAWorkplaceAnswerOnChange', clearDHAWorkplaceAnswerOnChange);
 
   return Establishment;
-};
+};;

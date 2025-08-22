@@ -30,6 +30,8 @@ describe('TablePaginationWrapperCompnent', () => {
         },
         sortOptions: SortStaffOptions,
         searchTerm: '',
+        currentPageIndex: overrides.currentPageIndex ?? 0,
+        maintainedPageIndex: overrides.maintainedPageIndex ?? null,
       },
     });
 
@@ -183,6 +185,20 @@ describe('TablePaginationWrapperCompnent', () => {
       expect(handlePageUpdateSpy).toHaveBeenCalledWith(2);
       const { currentPageIndex: index, itemsPerPage, searchTerm, sortByValue } = component;
       expect(emitSpy).toHaveBeenCalledWith({ index, itemsPerPage, searchTerm, sortByValue });
+    });
+  });
+
+  describe('page index', () => {
+    it('should use the value from maintainedPageIndex', async () => {
+      const { component } = await setup({ maintainedPageIndex: 1, currentPageIndex: 0 });
+
+      expect(component.currentPageIndex).toEqual(1);
+    });
+
+    it('should use the currentPageIndex value ', async () => {
+      const { component } = await setup({ currentPageIndex: 0 });
+
+      expect(component.currentPageIndex).toEqual(0);
     });
   });
 });

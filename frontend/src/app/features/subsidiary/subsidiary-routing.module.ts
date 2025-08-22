@@ -161,7 +161,7 @@ const routes: Routes = [
       {
         path: 'staff-records',
         component: ViewSubsidiaryStaffRecordsComponent,
-        data: { title: 'Staff Records' },
+        data: { title: 'Staff Records', workerPagination: true },
       },
       {
         path: 'training-and-qualifications',

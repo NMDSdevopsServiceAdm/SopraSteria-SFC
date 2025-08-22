@@ -61,6 +61,7 @@ var careWorkforcePathwayRoleCategories = require('./server/routes/careWorkforceP
 var careWorkforcePathwayWorkplaceAwarenessAnswers = require('./server/routes/careWorkforcePathwayWorkplaceAwarenessAnswers');
 const { careWorkforcePathwayRouter } = require('./server/routes/careWorkforcePathway');
 const { dhaRouter } = require('./server/routes/delegatedHealthcareActivities');
+const { cmsRouter } = require('./server/routes/cms');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -273,6 +274,7 @@ app.use('/api/careWorkforcePathwayWorkplaceAwarenessAnswers', [
 ]);
 app.use('/api/careWorkforcePathway', [refCacheMiddleware.refcache, careWorkforcePathwayRouter]);
 app.use('/api/delegatedHealthcareActivities', [refCacheMiddleware.refcache, dhaRouter]);
+app.use('/api/cms', [refCacheMiddleware.refcache, cmsRouter]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
