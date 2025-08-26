@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 
 export class WorkplacePage {
+  // legacy stuff
   static testIdsForRows = [
     'vacancies',
     'starters',
@@ -21,6 +22,11 @@ export class WorkplacePage {
     'number-of-days-leave',
     'permissions-section',
   ];
+
+  // store testId for div rows
+  static mainServiceTestId = '';
+  static DHAQuestion1TestId = 'carryOutDelegatedHealthcareActivities';
+  static DHAQuestion2TestId = 'know-what-delegated-healthcare-activities';
 
   allSectionsAreVisible() {
     cy.get('[data-testid="workplace-section"]').should('exist');
@@ -83,6 +89,42 @@ export class WorkplacePage {
         .contains(/Add|Change/)
         .click();
     });
+  };
+
+  answerMainService = (nameOfNewMainService) => {
+    this.clickIntoQuestion('mainService');
+    cy.get('h1').should('contain', 'Is your new main service regulated by the Care Quality Commission (CQC)?');
+    cy.getByLabel('No').click();
+    cy.get('button').contains('Continue').click();
+
+    cy.get('h1').should('contain', 'Select your main service');
+    cy.getByLabel(nameOfNewMainService).click();
+    cy.get('button').contains(/Save/).click();
+  };
+
+  answerDHAQuestion1 = (doStaffCarryOutDHA) => {
+    cy.get('h1').should('contain', 'Do your non-nursing staff carry out delegated healthcare activities?');
+    cy.getByLabel(doStaffCarryOutDHA).click();
+    cy.get('button').contains(/Save/).click();
+  };
+
+  answerDHAQuestion2 = (whatKindOfDHAs) => {
+    cy.get('h1').should('contain', 'What kind of delegated healthcare activities do your non-nursing staff carry out?');
+    whatKindOfDHAs.forEach((activityName) => {
+      cy.getByLabel(activityName).click();
+    });
+    cy.get('button').contains(/Save/).click();
+  };
+
+  answerBothDHAQuestions = (doStaffCarryOutDHA, whatKindOfDHAs) => {
+    this.clickIntoQuestion(WorkplacePage.DHAQuestion1TestId);
+    this.answerDHAQuestion1(doStaffCarryOutDHA);
+
+    if (!Array.isArray(whatKindOfDHAs)) {
+      return;
+    }
+
+    this.answerDHAQuestion2(whatKindOfDHAs);
   };
 }
 
