@@ -39,7 +39,7 @@ import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
-import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
+import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
 import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
 import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
@@ -180,7 +180,7 @@ const routes: Routes = [
       },
       {
         path: 'dashboard',
-        component: DashboardWrapperComponent,
+        component: NewDashboardComponent,
         resolve: {
           articleList: ArticleListResolver,
           users: AllUsersForEstablishmentResolver,

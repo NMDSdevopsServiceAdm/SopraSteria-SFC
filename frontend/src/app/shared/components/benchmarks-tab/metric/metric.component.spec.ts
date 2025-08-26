@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MetricsContent } from '@core/model/benchmarks.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -57,7 +57,7 @@ const getBenchmarksMetricComponent = async () => {
     imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BenchmarksModule],
     providers: [
       {
-        provide: BenchmarksServiceBase,
+        provide: BenchmarksV2Service,
         useClass: MockBenchmarksService,
       },
       {
@@ -87,12 +87,16 @@ const setup = (payTile, payRanking) => {
 
   const httpTestingController = TestBed.inject(HttpTestingController);
 
-  const req = httpTestingController.expectOne(`${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/benchmarks/?tiles=${metric}`);
+  const req = httpTestingController.expectOne(
+    `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/benchmarks/?tiles=${metric}`,
+  );
   req.flush({
     careWorkerPay: payTile,
   });
 
-  const req2 = httpTestingController.expectOne(`${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/benchmarks/rankings/${metric}`);
+  const req2 = httpTestingController.expectOne(
+    `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/benchmarks/rankings/${metric}`,
+  );
   req2.flush(payRanking);
 };
 

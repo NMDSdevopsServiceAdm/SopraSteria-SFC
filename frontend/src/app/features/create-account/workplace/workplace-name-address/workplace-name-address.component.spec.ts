@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { WorkplaceNameAddressComponent } from '@features/create-account/workplace/workplace-name-address/workplace-name-address.component';
@@ -12,41 +11,31 @@ import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject } from 'rxjs';
 
 describe('WorkplaceNameAddressComponent', () => {
-  async function setup(registrationFlow = true) {
-    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
-      WorkplaceNameAddressComponent,
-      {
-        imports: [
-          SharedModule,
-          WorkplaceModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
-        providers: [
-          {
-            provide: RegistrationService,
-            useClass: MockRegistrationService,
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                parent: {
-                  url: [
-                    {
-                      path: registrationFlow ? 'registration' : 'confirm-details',
-                    },
-                  ],
-                },
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(WorkplaceNameAddressComponent, {
+      imports: [SharedModule, WorkplaceModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      providers: [
+        {
+          provide: RegistrationService,
+          useClass: MockRegistrationService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
+                  },
+                ],
               },
             },
           },
-          UntypedFormBuilder,
-        ],
-      },
-    );
+        },
+        UntypedFormBuilder,
+      ],
+    });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -54,17 +43,12 @@ describe('WorkplaceNameAddressComponent', () => {
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
-      fixture,
+      ...setupTools,
       component,
       spy,
-      getAllByText,
-      queryByText,
-      getByText,
-      getByTestId,
-      queryByTestId,
     };
   }
 
@@ -174,7 +158,7 @@ describe('WorkplaceNameAddressComponent', () => {
     });
 
     it('should navigate to confirm-details page on success if returnToConfirmDetails is not null', async () => {
-      const { component, fixture, getByText, spy } = await setup(false);
+      const { component, fixture, getByText, spy } = await setup({ registrationFlow: false });
       const form = component.form;
 
       form.controls['workplaceName'].setValue('Workplace');
@@ -371,7 +355,7 @@ describe('WorkplaceNameAddressComponent', () => {
     });
 
     it('should not render the progress bars when accessed from outside the flow', async () => {
-      const { queryByTestId } = await setup(false);
+      const { queryByTestId } = await setup({ registrationFlow: false });
 
       expect(queryByTestId('progress-bar-1')).toBeFalsy();
       expect(queryByTestId('progress-bar-2')).toBeFalsy();

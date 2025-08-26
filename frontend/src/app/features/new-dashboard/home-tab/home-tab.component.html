@@ -79,53 +79,27 @@
 
           <app-link-with-arrow *ngIf="canLinkToParent && !workplace.isParent">
             <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
-              <ng-container *ngIf="newHomeDesignParentFlag; else dialogLinkParentRequestPending">
-                <a
-                  class="govuk-link"
-                  [routerLink]="['/link-to-parent']"
-                  [state]="{ linkToParentRequested: linkToParentRequestedStatus }"
-                  >Link to a parent workplace (request pending)</a
-                >
-              </ng-container>
-              <ng-template #dialogLinkParentRequestPending>
-                <a class="govuk-link" (click)="cancelLinkToParent($event)" href="#"
-                  >Link to my parent organisation pending</a
-                >
-              </ng-template>
+              <a
+                class="govuk-link"
+                [routerLink]="['/link-to-parent']"
+                [state]="{ linkToParentRequested: linkToParentRequestedStatus }"
+                >Link to a parent workplace (request pending)</a
+              >
             </ng-container>
             <ng-template #requestLinkToParent>
-              <ng-container *ngIf="newHomeDesignParentFlag; else dialogLinkParentRequest">
-                <a class="govuk-link" [routerLink]="['/link-to-parent']">Link to a parent workplace</a>
-              </ng-container>
-              <ng-template #dialogLinkParentRequest>
-                <a class="govuk-link" (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
-              </ng-template>
+              <a class="govuk-link" [routerLink]="['/link-to-parent']">Link to a parent workplace</a>
             </ng-template>
           </app-link-with-arrow>
 
           <app-link-with-arrow *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
             <ng-container *ngIf="parentStatusRequested; else requestBecomeAParent">
-              <ng-container *ngIf="newHomeDesignParentFlag; else dialogParentRequestPending">
-                <a class="govuk-link" [routerLink]="['/become-a-parent']"
-                  >Become a parent and manage other workplaces' data (request pending)</a
-                >
-              </ng-container>
-              <ng-template #dialogParentRequestPending
-                ><a class="govuk-link" (click)="cancelBecomeAParent($event)" href="#"
-                  >Parent request pending</a
-                ></ng-template
+              <a class="govuk-link" [routerLink]="['/become-a-parent']"
+                >Become a parent and manage other workplaces' data (request pending)</a
               >
             </ng-container>
             <ng-template #requestBecomeAParent>
-              <ng-container *ngIf="newHomeDesignParentFlag; else dialogParentRequest">
-                <a class="govuk-link" [routerLink]="['/become-a-parent']"
-                  >Become a parent and manage other workplaces' data</a
-                >
-              </ng-container>
-              <ng-template #dialogParentRequest
-                ><a class="govuk-link" (click)="becomeAParent($event)" href="#"
-                  >Become a parent organisation</a
-                ></ng-template
+              <a class="govuk-link" [routerLink]="['/become-a-parent']"
+                >Become a parent and manage other workplaces' data</a
               >
             </ng-template>
           </app-link-with-arrow>
@@ -135,12 +109,7 @@
               <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
             </ng-container>
             <ng-template #changeDataOwner>
-              <ng-container *ngIf="newHomeDesignParentFlag; else dialogChangeDataOwner">
-                <a class="govuk-link" [routerLink]="['/workplace/change-data-owner']">Change data owner</a>
-              </ng-container>
-              <ng-template #dialogChangeDataOwner
-                ><a (click)="onChangeDataOwner($event)" href="#">Change data owner</a></ng-template
-              >
+              <a class="govuk-link" [routerLink]="['/workplace/change-data-owner']">Change data owner</a>
             </ng-template></app-link-with-arrow
           >
           <app-link-with-arrow *ngIf="canViewDataPermissionsLink">

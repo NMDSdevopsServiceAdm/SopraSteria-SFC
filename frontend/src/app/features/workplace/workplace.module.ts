@@ -65,12 +65,10 @@ import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delega
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
 import { UserAccountEditDetailsComponent } from './user-account-edit-details/user-account-edit-details.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UsersComponent } from './users/users.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
-import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
@@ -100,13 +98,11 @@ import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-w
     ServiceUsersComponent,
     StartComponent,
     TypeOfEmployerComponent,
-    UserAccountDeleteDialogComponent,
     UserAccountEditPermissionsComponent,
     UserAccountSavedComponent,
     UserAccountViewComponent,
     TotalStaffQuestionComponent,
     ViewMyWorkplacesComponent,
-    ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
     SelectMainServiceComponent,
     UserAccountEditDetailsComponent,

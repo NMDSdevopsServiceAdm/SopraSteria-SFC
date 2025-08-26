@@ -5,20 +5,15 @@ import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { WorkplaceIsAwareOfCwpGuard } from '@core/guards/workplace-is-aware-of-cwp/workplace-is-aware-of-cwp.guard';
-import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
-import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
-import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
@@ -30,7 +25,6 @@ import { UserAccountEditDetailsComponent } from '@features/workplace/user-accoun
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
-import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 import {
   JobRoleType,
   SelectJobRolesToAddComponent,
@@ -116,25 +110,6 @@ const routes: Routes = [
     canActivate: [HasPermissionsGuard],
     data: { title: 'Workplace' },
     children: [
-      {
-        path: '',
-        canActivate: [CheckPermissionsGuard],
-        component: ViewWorkplaceComponent,
-        data: {
-          permissions: ['canViewEstablishment'],
-          title: 'View Workplace',
-          workerPagination: true,
-        },
-        resolve: {
-          users: AllUsersForEstablishmentResolver,
-          workers: WorkersResolver,
-          totalStaffRecords: TotalStaffRecordsResolver,
-          benchmarks: BenchmarksResolver,
-          rankings: RankingsResolver,
-          usefulLinksPay: UsefulLinkPayResolver,
-          usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
-        },
-      },
       {
         path: 'users',
         component: UsersComponent,

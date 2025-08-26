@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -10,12 +10,13 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
 import { SubsidiaryAccountComponent } from '@core/components/subsidiaryAccount/subsidiaryAccount.component';
-import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
@@ -32,7 +33,7 @@ import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { CountryService } from '@core/services/country.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { EthnicityService } from '@core/services/ethnicity.service';
@@ -56,9 +57,6 @@ import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
 import { SelectMainServiceComponent } from '@features/create-account/workplace/select-main-service/select-main-service.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
-import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
-import { DashboardComponent } from '@features/dashboard/dashboard.component';
-import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-username-or-password/forgot-your-password/confirmation/confirmation.component';
 import { ForgotYourPasswordEditComponent } from '@features/forgot-your-username-or-password/forgot-your-password/edit/edit.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
@@ -73,7 +71,6 @@ import { LoginComponent } from '@features/login/login.component';
 import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
-import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
 import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
@@ -96,13 +93,10 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { HelpAndTipsButtonComponent } from './features/help-and-tips-button/help-and-tips-button.component';
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { SortByService } from '@core/services/sort-by.service';
 
@@ -110,14 +104,11 @@ import { SortByService } from '@core/services/sort-by.service';
   declarations: [
     AppComponent,
     AscWdsCertificateComponent,
-    DashboardComponent,
-    DashboardHeaderComponent,
     FooterComponent,
     ForgotYourPasswordComponent,
     ForgotYourPasswordConfirmationComponent,
     ForgotYourPasswordEditComponent,
     HeaderComponent,
-    HomeTabComponent,
     ParentHomeTabComponent,
     LoginComponent,
     LogoutComponent,
@@ -128,11 +119,9 @@ import { SortByService } from '@core/services/sort-by.service';
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
     SatisfactionSurveyComponent,
-    StaffMismatchBannerComponent,
     SelectMainServiceComponent,
     StandAloneAccountComponent,
     SubsidiaryAccountComponent,
-    DashboardWrapperComponent,
     NewDashboardComponent,
     NewHomeTabComponent,
     NewWorkplaceTabComponent,
@@ -170,11 +159,7 @@ import { SortByService } from '@core/services/sort-by.service';
   providers: [
     AuthGuard,
     AdminSkipService,
-    {
-      provide: BenchmarksServiceBase,
-      useFactory: BenchmarksServiceFactory,
-      deps: [FeatureFlagsService, HttpClient],
-    },
+    BenchmarksV2Service,
     BackService,
     CountryService,
     EstablishmentService,
