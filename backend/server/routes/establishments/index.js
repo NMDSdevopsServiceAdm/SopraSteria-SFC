@@ -36,8 +36,8 @@ const InternationalRecruitment = require('./internationalRecruitment');
 const HasTrainingCertificates = require('./hasTrainingCertificates.js');
 const CareWorkforcePathway = require('./careWorkforcePathway.js');
 const EstablishmentField = require('./establishmentField.js');
+const DelegatedHealthcareActivities = require('./delegatedHealthcareActivities.js');
 const UpdateStaffKindDelegatedHealthcareActivities = require('./updateStaffKindDelegatedHealthcareActivities.js');
-const DelegatedHealthcareActivities = require('./delegatedHealthcareActivities');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);

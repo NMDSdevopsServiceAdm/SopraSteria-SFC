@@ -29,6 +29,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
   @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  @Input() noOfWorkersWithDelegatedHealthcareUnanswered: number;
   @Input() workplacesNeedAttention: boolean;
 
   public sections: Section[] = [
@@ -176,11 +177,17 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (
       this.workplace.staffDoDelegatedHealthcareActivities !== 'No' &&
-      this.workplace.mainService.canDoDelegatedHealthcareActivities
+      this.workplace.mainService.canDoDelegatedHealthcareActivities &&
+      this.noOfWorkersWithDelegatedHealthcareUnanswered > 0
     ) {
       this.sections[1].message = 'Who carries out delegated healthcare activities?';
-      this.sections[1].route = ['/workplace', this.workplace.uid, 'staff-do-delegated-healthcare-activities'];
-      this.setReturn = true;
+      this.sections[1].skipTabSwitch = true;
+      this.sections[1].route = [
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        'who-carry-out-delegated-healthcare-activities',
+      ];
       this.sections[1].showMessageAsText = !this.canEditWorker;
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';

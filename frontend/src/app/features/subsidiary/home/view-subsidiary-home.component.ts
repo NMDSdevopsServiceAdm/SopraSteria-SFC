@@ -66,6 +66,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public tilesData: BenchmarksResponse;
   public noOfWorkersWhoRequireInternationalRecruitment: number;
   public noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  public noOfWorkersWithDelegatedHealthcareUnanswered: number;
 
   constructor(
     private userService: UserService,
@@ -89,6 +90,8 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
 
     this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered =
       this.route.snapshot.data.noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer?.noOfWorkersWhoRequireAnswers;
+    this.noOfWorkersWithDelegatedHealthcareUnanswered =
+      this.route.snapshot.data.noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer?.noOfWorkersWhoRequiresAnswer;
 
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;

@@ -17,18 +17,11 @@ import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { isAdminRole } from '@core/utils/check-role-util';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import {
-  ChangeDataOwnerDialogComponent,
-} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import {
-  OwnershipChangeMessageDialogComponent,
-} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import {
-  SetDataPermissionDialogComponent,
-} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import saveAs from 'file-saver';
@@ -90,6 +83,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public article: Article;
   public noOfWorkersWhoRequireInternationalRecruitment: number;
   public noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
+  public noOfWorkersWithDelegatedHealthcareUnanswered: number;
   public workplacesNeedAttention: boolean;
 
   constructor(
@@ -118,6 +112,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
 
     this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered =
       this.route.snapshot.data.noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer?.noOfWorkersWhoRequireAnswers;
+    this.noOfWorkersWithDelegatedHealthcareUnanswered =
+      this.route.snapshot.data.noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer?.noOfWorkersWhoRequiresAnswer;
 
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;

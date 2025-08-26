@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Params } from '@angular/router';
 import {
   DelegatedHealthcareActivity,
+  DHAGetAllWorkersResponse,
+  DHAGetNumberOfWorkersResponse,
   GetDelegatedHealthcareActivitiesResponse,
 } from '@core/model/delegated-healthcare-activities.model';
 import { Observable } from 'rxjs';
@@ -29,6 +32,25 @@ export class DelegatedHealthcareActivitiesService {
       .pipe(map((res) => res.allDHAs));
   }
 
+  getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer(
+    establishmentId: string,
+  ): Observable<DHAGetNumberOfWorkersResponse> {
+    return this.http
+      .get<DHAGetNumberOfWorkersResponse>(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/delegatedHealthcareActivities/noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer`,
+      )
+      .pipe(map((res) => res));
+  }
+
+  getWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer(
+    establishmentId: string,
+    queryParams: Params = {},
+  ): Observable<DHAGetAllWorkersResponse> {
+    return this.http.get<DHAGetAllWorkersResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/delegatedHealthcareActivities/workersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer`,
+      { params: queryParams },
+    );
+  }
   checkIfAnyWorkerHasDHAAnswered(establishmentId: string): Observable<boolean> {
     return this.http
       .get<{ hasAnswer: boolean }>(

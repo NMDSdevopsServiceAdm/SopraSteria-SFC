@@ -53,6 +53,7 @@ describe('Summary section', () => {
         noOfWorkersWhoRequireInternationalRecruitment: overrides.noOfWorkersWhoRequireInternationalRecruitment ?? 0,
         noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered:
           overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
+        noOfWorkersWithDelegatedHealthcareUnanswered: overrides.noOfWorkersWithDelegatedHealthcareUnanswered ?? 0,
         workplacesNeedAttention: overrides.workplacesNeedAttention ?? false,
       },
     });
@@ -786,8 +787,11 @@ describe('Summary section', () => {
 
       const questionMessage = 'Who carries out delegated healthcare activities?';
 
-      it('should show the DHA staff question if staffDoDelegatedHealthcareActivities null and main service can do DHA', async () => {
-        const { getByTestId } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+      it('should show the DHA staff question if staffDoDelegatedHealthcareActivities null and main service can do DHA and noOfWorkersWithDelegatedHealthcareUnanswered is greater than 0', async () => {
+        const { getByTestId } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
 
         const staffRow = getByTestId('staff-records-row');
         expect(within(staffRow).getByText(questionMessage)).toBeTruthy();
@@ -795,7 +799,10 @@ describe('Summary section', () => {
       });
 
       it('should navigate to who-carry-out-delegated-healthcare-activities when question link clicked', async () => {
-        const { getByTestId, routerSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+        const { getByTestId, routerSpy } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
 
         const staffRow = getByTestId('staff-records-row');
         const link = within(staffRow).getByText(questionMessage);
@@ -804,12 +811,16 @@ describe('Summary section', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           Establishment.uid,
-          'staff-do-delegated-healthcare-activities',
+          'staff-record',
+          'who-carry-out-delegated-healthcare-activities',
         ]);
       });
 
       it('should set return in establishment service when question link clicked', async () => {
-        const { getByTestId, setReturnToSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+        const { getByTestId, setReturnToSpy } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
 
         const staffRow = getByTestId('staff-records-row');
         const link = within(staffRow).getByText(questionMessage);
@@ -820,6 +831,7 @@ describe('Summary section', () => {
 
       it('should show question with no link if no edit permission for establishment', async () => {
         const { getByTestId, getByText } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
           canEditWorker: false,
           establishment: establishmentWhichShouldSeeMessage(),
         });
@@ -833,7 +845,7 @@ describe('Summary section', () => {
         expect(staffLink.tagName).toBe('A');
       });
 
-      it('should not show the who carries out DHA activities question if staffDoDelegatedHealthcareActivities null but main service cannot do DHA', async () => {
+      it('should not show the who carries out DHA activities question if staffDoDelegatedHealthcareActivities null but main service cannot do DHA and   noOfWorkersWithDelegatedHealthcareUnanswered is 0', async () => {
         const { getByTestId } = await setup({
           establishment: {
             ...Establishment,

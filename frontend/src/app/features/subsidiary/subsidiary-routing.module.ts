@@ -89,6 +89,7 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from '@features/workplace/staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
 import { WorkplaceStaffDoDHAGuard } from '@core/guards/workplace-staff-do-dha/workplace-staff-do-dha.guard';
 import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
+import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -140,6 +141,8 @@ const routes: Routes = [
       noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
       noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer:
         GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+      noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer:
+        GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     },
     children: [
       {
