@@ -17,3 +17,15 @@ export const answerCWPUseQuestion = (use = 'Yes', reasons = [], otherReasonsText
   }
   cy.get('button').contains(/Save/).click();
 };
+
+// export const answerStaffDoDHAQuestion = (answer = 'Yes') => {
+//   cy.get('h1').should('contain', 'Is your workplace using the care workforce pathway?');
+//   cy.getByLabel(use).click();
+//   reasons.forEach((reason) => {
+//     cy.getByLabel(reason.text).click();
+//   });
+//   if (otherReasonsText) {
+//     cy.getByLabel(/Tell us/).type(otherReasonsText);
+//   }
+//   cy.get('button').contains(/Save/).click();
+// };

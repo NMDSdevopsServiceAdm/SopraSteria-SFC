@@ -30,6 +30,7 @@ describe('Standalone home page as edit user', () => {
   before(() => {
     cy.resetStartersLeaversVacancies(establishmentId);
     cy.resetWorkplaceCWPAnswers(establishmentId);
+    cy.resetWorkplaceDHAAnswers(establishmentId);
   });
 
   beforeEach(() => {
@@ -41,6 +42,7 @@ describe('Standalone home page as edit user', () => {
   afterEach(() => {
     cy.resetStartersLeaversVacancies(establishmentId);
     cy.resetWorkplaceCWPAnswers(establishmentId);
+    cy.resetWorkplaceDHAAnswers(establishmentId);
   });
 
   it('should see the standalone establishment workplace page', () => {
@@ -229,6 +231,57 @@ describe('Standalone home page as edit user', () => {
 
       onWorkplacePage.expectRow('care-workforce-pathway-awareness').toHaveValue(CWPAwarenessAnswers[3].textForSummary);
       onWorkplacePage.expectRow('care-workforce-pathway-use').notExist();
+    });
+  });
+
+  describe.only('Delegate healthcare activities', () => {
+    const mainServiceThatAllowsDHA = { id: 9, name: 'Day care and day services' };
+    const mainServiceThatNotAllowDHA = { id: 1, name: 'Carers support' };
+
+    const mockDHAs = ['Vital signs monitoring', 'Complex posture and mobility care', 'Airways and breathing care'];
+
+    beforeEach(() => {
+      cy.setWorkplaceMainService(establishmentId, mainServiceThatAllowsDHA.id);
+      cy.get('[data-cy="tab-list"]').contains('Workplace').click();
+      cy.reload();
+    });
+
+    describe('when main service allows DHA', () => {
+      it('should see the "Carry out delegated healthcare activities" row if the main service is compatible with DHA', () => {
+        cy.url().should('contain', workplaceSummaryPath);
+        cy.get('div').contains('Carry out delegated healthcare activities').should('be.visible');
+        onWorkplacePage.expectRow('carryOutDelegatedHealthcareActivities').toHaveValue('-');
+      });
+
+      it('should be able to add / update the answer to delegated healthcare activities questions', () => {
+        cy.url().should('contain', workplaceSummaryPath);
+
+        onWorkplacePage.clickIntoQuestion('carryOutDelegatedHealthcareActivities');
+
+        cy.get('h1').should('contain', 'Do your non-nursing staff carry out delegated healthcare activities?');
+        cy.getByLabel('Yes').click();
+        cy.get('button').contains(/Save/).click();
+
+        // should be redirected to DHA workplace question 2
+        cy.get('h1').should(
+          'contain',
+          'What kind of delegated healthcare activities do your non-nursing staff carry out?',
+        );
+        mockDHAs.forEach((activityName) => {
+          cy.getByLabel(activityName).click();
+        });
+        cy.get('button').contains(/Save/).click();
+
+        cy.url().should('contain', workplaceSummaryPath);
+        onWorkplacePage.expectRow('carryOutDelegatedHealthcareActivities').toHaveValue('Yes');
+        onWorkplacePage.expectRow('know-what-delegated-healthcare-activities').toHaveMultipleValues(mockDHAs);
+
+        onWorkplacePage.clickIntoQuestion('know-what-delegated-healthcare-activities');
+        cy.getByLabel('I do not know').click();
+        cy.get('button').contains(/Save/).click();
+
+        onWorkplacePage.expectRow('know-what-delegated-healthcare-activities').toHaveValue('Not known');
+      });
     });
   });
 });
