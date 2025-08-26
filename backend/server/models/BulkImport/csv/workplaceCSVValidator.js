@@ -1441,13 +1441,7 @@ class WorkplaceCSVValidator {
     const ALLOWED_ACTIVITIES = this.mappings.delegatedHealthcareActivities.map((a) => a.bulkUploadCode.toString());
     const dhaActivities = this._currentLine.DHAACTIVITIES;
     const dha = this._currentLine.DHA;
-
-    if (!dhaActivities && dha === '1') {
-      this._validationErrors.push(
-        this._generateWarning('Missing activities list when DHA is set to yes', 'DHAACTIVITIES'),
-      );
-      return false;
-    }
+    const _unexpectedlyEmptyActivities = 'Missing activities list when DHA is set to yes'; // unused warning
 
     if (dhaActivities === '999' && dha === '1') {
       // edge cases
@@ -1457,6 +1451,7 @@ class WorkplaceCSVValidator {
     }
 
     if (!dhaActivities || dhaActivities === '999') {
+      // maybe add _unexpectedlyEmptyActivities as a warning if dha==='1' in future
       this._staffWhatKindDelegatedHealthcareActivities = null;
       return true;
     }
@@ -1465,7 +1460,7 @@ class WorkplaceCSVValidator {
     if (activities.length > 0 && dha !== '1') {
       this._validationErrors.push(
         this._generateWarning(
-          'Value entered for DHA Activities will be ignored as DHA value is not set to yes',
+          'The code you have entered for DHAACTIVITIES will be ignored as the code for DHA is not set to 1',
           'DHAACTIVITIES',
         ),
       );
@@ -1481,7 +1476,7 @@ class WorkplaceCSVValidator {
         // ignore all
         this._validationErrors.push(
           this._generateWarning(
-            'The codes you have entered for DHA activities are invalid values and will be ignored',
+            'The codes you have entered for DHAACTIVITIES are invalid and will be ignored',
             'DHAACTIVITIES',
           ),
         );
@@ -1490,7 +1485,7 @@ class WorkplaceCSVValidator {
         // should this allow valid options and only ignore disallowed ones
         this._validationErrors.push(
           this._generateWarning(
-            'The codes you have entered for DHA activities contain invalid values; invalid values will be ignored',
+            'Some codes you have entered for DHAACTIVITIES are invalid; invalid codes will be ignored',
             'DHAACTIVITIES',
           ),
         );

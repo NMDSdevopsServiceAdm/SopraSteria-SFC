@@ -415,7 +415,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe.only('DHA activities', () => {
+    describe('DHA activities', () => {
       it('should set api value for activities', async () => {
         establishmentRow.DHA = BU_DHA_YES;
         establishmentRow.DHAACTIVITIES = '1;2;3';
@@ -423,19 +423,20 @@ describe('Bulk Upload - Establishment CSV', () => {
         const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
         workplaceValidator.transform();
         const apiObject = workplaceValidator.toAPI();
-        const expected = {knowWhatActivities: 'Yes', activities: [{id: 1}, {id: 2}, {id: 3}]};
+        const expected = { knowWhatActivities: 'Yes', activities: [{ id: 1 }, { id: 2 }, { id: 3 }] };
         expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(expected);
       });
-      ['','2','999'].forEach((dha) =>
-      it(`should set api value to activities to null when dha is set to ${dha}`, async () =>{
-        establishmentRow.DHA = dha;
-        establishmentRow.DHAACTIVITIES = '999';
+      ['', '2', '999'].forEach((dha) =>
+        it(`should set api value to activities to null when dha is set to ${dha}`, async () => {
+          establishmentRow.DHA = dha;
+          establishmentRow.DHAACTIVITIES = '999';
 
-        const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
-        workplaceValidator.transform();
-        const apiObject = workplaceValidator.toAPI();
-        expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.be.null;
-      }));
+          const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
+          workplaceValidator.transform();
+          const apiObject = workplaceValidator.toAPI();
+          expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.be.null;
+        }),
+      );
       it('should set api value to null for activities when dha is dont know', async () => {
         establishmentRow.DHA = '999';
         establishmentRow.DHAACTIVITIES = ''; // expected csv value in don't know case
@@ -452,7 +453,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
         workplaceValidator.transform();
         const apiObject = workplaceValidator.toAPI();
-        const expected = {knowWhatActivities: "Don't know", activities: []};
+        const expected = { knowWhatActivities: "Don't know", activities: [] };
         expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(expected);
       });
     });
@@ -1133,7 +1134,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe('DHA Fields', () => {
+    describe.only('DHA Fields', () => {
       const updateEstablishmentToHaveMainService = (establishmentRow, mainServiceId) => {
         establishmentRow.DHA = BU_DHA_YES;
         establishmentRow.DHAACTIVITIES = '1;2';
@@ -1194,7 +1195,8 @@ describe('Bulk Upload - Establishment CSV', () => {
               lineNumber: establishment.lineNumber,
               warnCode: 2520,
               warnType: 'DHA_MAIN_SERVICE_WARNING',
-              warning: 'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
+              warning:
+                'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
               source: '1',
               column: 'DHA',
               name: establishmentRow.LOCALESTID,
@@ -1214,14 +1216,15 @@ describe('Bulk Upload - Establishment CSV', () => {
 
       describe('DHAActivities', () => {
         const validInputs = [
-          ['',''],
-          ['2',''],
-          ['1','1'],
-          ['1','1;4'],
-          ['1','8'], // 8 is "Other"
-          ['1','999'], // "yes we do, but I don't know what" (edge case)
-          ['999',''],
-          ['999','999'], // we will ignore 999 if it is input for activities
+          ['', ''],
+          ['2', ''],
+          ['1', ''], // for now this will not be enforced as an issue by bulk upload (Aug 2025)
+          ['1', '1'],
+          ['1', '1;4'],
+          ['1', '8'], // 8 is "Other"
+          ['1', '999'], // "yes we do, but I don't know what" (edge case)
+          ['999', ''],
+          ['999', '999'], // we will ignore 999 if it is input for activities
         ];
         validInputs.forEach((allowedInput) => {
           it(`should pass with no validation warnings if DHA set to ${allowedInput}`, async () => {
@@ -1235,10 +1238,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           });
         });
 
-        const mixedInput = [
-          'blah;1',
-          '1;blah',
-        ];
+        const mixedInput = ['blah;1', '1;blah'];
         mixedInput.forEach((mixedInput) => {
           it(`should return warning if input is invalid (${mixedInput})`, async () => {
             updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
@@ -1252,7 +1252,8 @@ describe('Bulk Upload - Establishment CSV', () => {
                 lineNumber: establishment.lineNumber,
                 warnCode: 2530, //although we resuse this code, each line will only raise one of the variants
                 warnType: 'DHAACTIVITIES_WARNING',
-                warning: 'The codes you have entered for DHA activities contain invalid values; invalid values will be ignored',
+                warning:
+                  'Some codes you have entered for DHAACTIVITIES are invalid; invalid codes will be ignored',
                 source: mixedInput,
                 column: 'DHAACTIVITIES',
                 name: establishmentRow.LOCALESTID,
@@ -1264,7 +1265,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           });
         });
 
-      const invalidInput = [
+        const invalidInput = [
           'blah', // no alpha strings
           ';;', // no separators
           '1|2', // semicolon is the only valid separator
@@ -1278,7 +1279,6 @@ describe('Bulk Upload - Establishment CSV', () => {
             establishmentRow.DHAACTIVITIES = invalidInput;
             const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
-
             const valid = establishment.transform();
             expect(valid).to.equal(false);
             expect(establishment.validationErrors).to.deep.equal([
@@ -1287,35 +1287,13 @@ describe('Bulk Upload - Establishment CSV', () => {
                 lineNumber: establishment.lineNumber,
                 warnCode: 2530,
                 warnType: 'DHAACTIVITIES_WARNING',
-                warning: 'The codes you have entered for DHA activities are invalid values and will be ignored',
+                warning: 'The codes you have entered for DHAACTIVITIES are invalid and will be ignored',
                 source: invalidInput,
                 column: 'DHAACTIVITIES',
                 name: establishmentRow.LOCALESTID,
               },
             ]);
           });
-        });
-
-        it('should add an error if DHA is yes but no activity codes are listed', async ()=> {
-          updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
-
-          establishmentRow.DHA = BU_DHA_YES;
-          establishmentRow.DHAACTIVITIES = '';
-
-          const establishment = await generateEstablishmentFromCsv(establishmentRow);
-          establishment.transform();
-          expect(establishment.validationErrors).to.deep.equal([
-            {
-              origin: 'Establishments',
-              lineNumber: establishment.lineNumber,
-              warnCode: 2530,
-              warnType: 'DHAACTIVITIES_WARNING',
-              warning: 'Missing activities list when DHA is set to yes',
-              source: '',
-              column: 'DHAACTIVITIES',
-              name: establishmentRow.LOCALESTID,
-            },
-          ]);
         });
 
         ['', '2', '999'].forEach((dha) => {
@@ -1333,13 +1311,12 @@ describe('Bulk Upload - Establishment CSV', () => {
                 lineNumber: establishment.lineNumber,
                 warnCode: 2530,
                 warnType: 'DHAACTIVITIES_WARNING',
-                warning: 'Value entered for DHA Activities will be ignored as DHA value is not set to yes',
+                warning: 'The code you have entered for DHAACTIVITIES will be ignored as the code for DHA is not set to 1',
                 source: '1;2;3',
                 column: 'DHAACTIVITIES',
                 name: establishmentRow.LOCALESTID,
               },
             ]);
-
           });
         });
 
@@ -1360,7 +1337,8 @@ describe('Bulk Upload - Establishment CSV', () => {
               lineNumber: establishment.lineNumber,
               warnCode: 2520,
               warnType: 'DHA_MAIN_SERVICE_WARNING',
-              warning: 'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
+              warning:
+                'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
               source: '1',
               column: 'DHA',
               name: establishmentRow.LOCALESTID,
