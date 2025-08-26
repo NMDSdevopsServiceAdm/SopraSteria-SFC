@@ -10,6 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
   selector: 'app-staff-what-kind-of-delegated-healthcare-activities',
@@ -35,6 +36,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     protected route: ActivatedRoute,
     private alertService: AlertService,
     private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
+    private previousRouteService: PreviousRouteService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -180,6 +182,21 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
         (error) => this.onError(error),
       ),
     );
+  }
+
+  protected setBackLink(): void {
+    const isInWorkflow = !this.return;
+
+    const previousPage = this.previousRouteService.getPreviousPage();
+    const previousPageWasStaffDoDHA = previousPage === 'staff-do-delegated-healthcare-activities';
+
+    if (isInWorkflow || previousPageWasStaffDoDHA) {
+      this.back = { url: this.previousRoute };
+    } else {
+      this.back = this.return;
+    }
+
+    this.backService.setBackLink(this.back);
   }
 
   ngOnDestroy(): void {

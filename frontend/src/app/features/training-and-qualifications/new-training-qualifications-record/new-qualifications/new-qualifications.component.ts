@@ -16,6 +16,7 @@ export class NewQualificationsComponent {
   @Input() qualificationsByGroup: QualificationsByGroup;
   @Input() canEditWorker: boolean;
   @Input() public certificateErrors: Record<string, string> = {};
+  @Input() public pdfRenderingMode: boolean = false;
   @Output() public downloadFile = new EventEmitter<QualificationCertificateDownloadEvent>();
   @Output() public uploadFile = new EventEmitter<QualificationCertificateUploadEvent>();
   @ViewChild('content') public content: ElementRef;

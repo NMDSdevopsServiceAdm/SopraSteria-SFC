@@ -2,6 +2,7 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const {
   clearDHAWorkerAnswersOnWorkplaceChange,
+  clearDoDHAWorkplaceOnMainServiceChange,
   clearDHAWorkplaceAnswerOnChange,
 } = require('../../../../models/hooks/establishmentHooks');
 
@@ -70,16 +71,22 @@ describe('Establishment sequelize hooks', () => {
 
   describe('beforeSave: clearDHAWorkplaceAnswerOnChange', () => {
     let mockEstablishmentAuditModel = { create: () => {} };
+    let mockEstablishmentDHActivitiesModel = { destroy: () => {} };
+
     const mockEstablishmentSequelizeInstance = {
       id: 'mock-establishment-id',
       changed: (fieldName) => fieldName === 'staffDoDelegatedHealthcareActivities',
-      sequelize: { models: { establishmentAudit: mockEstablishmentAuditModel } },
-      setDelegatedHealthcareActivities: () => {},
+      sequelize: {
+        models: {
+          establishmentAudit: mockEstablishmentAuditModel,
+          EstablishmentDHActivities: mockEstablishmentDHActivitiesModel,
+        },
+      },
     };
 
     beforeEach(() => {
       sinon.spy(mockEstablishmentAuditModel, 'create');
-      sinon.spy(mockEstablishmentSequelizeInstance, 'setDelegatedHealthcareActivities');
+      sinon.spy(mockEstablishmentDHActivitiesModel, 'destroy');
     });
 
     afterEach(() => {
@@ -100,7 +107,8 @@ describe('Establishment sequelize hooks', () => {
         await clearDHAWorkplaceAnswerOnChange(mockEstablishment, mockOptions);
 
         expect(mockEstablishment.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(null);
-        expect(mockEstablishment.setDelegatedHealthcareActivities).to.have.been.calledWith([], {
+        expect(mockEstablishmentDHActivitiesModel.destroy).to.have.been.calledWith({
+          where: { establishmentId: 'mock-establishment-id' },
           transaction: mockTransaction,
         });
       });
@@ -146,7 +154,7 @@ describe('Establishment sequelize hooks', () => {
         knowWhatActivities: 'Yes',
         activities: [{ id: 1 }],
       });
-      expect(mockEstablishment.setDelegatedHealthcareActivities).not.to.have.been.called;
+      expect(mockEstablishmentDHActivitiesModel.destroy).not.to.have.been.called;
       expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
     });
 
@@ -167,8 +175,140 @@ describe('Establishment sequelize hooks', () => {
         knowWhatActivities: 'Yes',
         activities: [{ id: 1 }],
       });
-      expect(mockEstablishment.setDelegatedHealthcareActivities).not.to.have.been.called;
+      expect(mockEstablishmentDHActivitiesModel.destroy).not.to.have.been.called;
       expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
+    });
+  });
+
+  describe('clearDHAWorkplaceAnswersOnMainServiceChange', () => {
+    let mockWorkerModel = { clearDHAAnswerForAllWorkersInWorkplace: () => {} };
+
+    let mockSelectedService = {
+      getCanDoDelegatedHealthcareActivities: () => {},
+    };
+
+    let mockEstablishmentAuditModel = { create: () => {} };
+
+    let getCanDoDelegatedHealthcareActivitiesStub;
+
+    beforeEach(() => {
+      sinon.spy(mockWorkerModel, 'clearDHAAnswerForAllWorkersInWorkplace');
+      getCanDoDelegatedHealthcareActivitiesStub = sinon.stub(
+        mockSelectedService,
+        'getCanDoDelegatedHealthcareActivities',
+      );
+      sinon.spy(mockEstablishmentAuditModel, 'create');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const mockEstablishmentSequelizeInstance = {
+      id: '155',
+      changed: () => false,
+      MainServiceFKValue: 2,
+      sequelize: {
+        models: {
+          services: mockSelectedService,
+          worker: mockWorkerModel,
+          establishmentAudit: mockEstablishmentAuditModel,
+        },
+      },
+    };
+
+    it('should not clear anything if MainServiceFK was changed to a value that can also do DHA', async () => {
+      const mockEstablishment = {
+        ...mockEstablishmentSequelizeInstance,
+        changed: (fieldName) => fieldName === 'MainServiceFKValue',
+        MainServiceFKValue: 3,
+        staffDoDelegatedHealthcareActivities: 'Yes',
+      };
+
+      getCanDoDelegatedHealthcareActivitiesStub.resolves({ canDoDelegatedHealthcareActivities: true });
+
+      await clearDoDHAWorkplaceOnMainServiceChange(mockEstablishment, mockOptions);
+
+      expect(mockWorkerModel.clearDHAAnswerForAllWorkersInWorkplace).not.to.have.been.called;
+      expect(mockSelectedService.getCanDoDelegatedHealthcareActivities).to.have.been.calledWith(
+        mockEstablishment.MainServiceFKValue,
+      );
+      expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
+      expect(mockEstablishment.staffDoDelegatedHealthcareActivities).to.equal('Yes');
+    });
+
+    it('should not clear anything if MainServiceFK did not change', async () => {
+      const mockEstablishment = {
+        ...mockEstablishmentSequelizeInstance,
+        changed: () => false,
+        staffDoDelegatedHealthcareActivities: 'Yes',
+      };
+
+      await clearDoDHAWorkplaceOnMainServiceChange(mockEstablishment, mockOptions);
+
+      expect(mockSelectedService.getCanDoDelegatedHealthcareActivities).not.to.have.been.called;
+      expect(mockWorkerModel.clearDHAAnswerForAllWorkersInWorkplace).not.to.have.been.called;
+      expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
+      expect(mockEstablishment.staffDoDelegatedHealthcareActivities).to.equal('Yes');
+    });
+
+    describe('main service is changed to one that can not do DHA', () => {
+      it('should call clearDHAAnswerForAllWorkersInWorkplace but not clear canDoDelegatedHealthcareActivities if staffDoDelegatedHealthcareActivities is null', async () => {
+        const mockEstablishment = {
+          ...mockEstablishmentSequelizeInstance,
+          changed: (fieldName) => fieldName === 'MainServiceFKValue',
+          MainServiceFKValue: 1,
+          staffDoDelegatedHealthcareActivities: null,
+        };
+
+        getCanDoDelegatedHealthcareActivitiesStub.resolves({ canDoDelegatedHealthcareActivities: false });
+
+        await clearDoDHAWorkplaceOnMainServiceChange(mockEstablishment, mockOptions);
+
+        expect(mockSelectedService.getCanDoDelegatedHealthcareActivities).to.have.been.calledWith(
+          mockEstablishment.MainServiceFKValue,
+        );
+        expect(mockWorkerModel.clearDHAAnswerForAllWorkersInWorkplace).to.have.been.calledWith(
+          mockEstablishment.id,
+          mockOptions,
+        );
+        expect(mockEstablishmentAuditModel.create).not.to.have.been.called;
+        expect(mockEstablishment.staffDoDelegatedHealthcareActivities).to.equal(null);
+      });
+
+      ['Yes', 'No', "Don't know"].forEach((answer) => {
+        it(`should clear staffDoDelegatedHealthcareActivities if staffDoDelegatedHealthcareActivities is ${answer}`, async () => {
+          const mockEstablishment = {
+            ...mockEstablishmentSequelizeInstance,
+            changed: (fieldName) => fieldName === 'MainServiceFKValue',
+            MainServiceFKValue: 1,
+            staffDoDelegatedHealthcareActivities: answer,
+          };
+
+          getCanDoDelegatedHealthcareActivitiesStub.resolves({ canDoDelegatedHealthcareActivities: false });
+
+          await clearDoDHAWorkplaceOnMainServiceChange(mockEstablishment, mockOptions);
+
+          expect(mockWorkerModel.clearDHAAnswerForAllWorkersInWorkplace).to.have.been.calledWith(
+            mockEstablishment.id,
+            mockOptions,
+          );
+          expect(mockSelectedService.getCanDoDelegatedHealthcareActivities).to.have.been.calledWith(
+            mockEstablishment.MainServiceFKValue,
+          );
+          expect(mockEstablishmentAuditModel.create).to.have.been.calledWith(
+            {
+              establishmentFk: mockEstablishment.id,
+              username: mockOptions.savedBy,
+              type: 'changed',
+              property: 'StaffDoDelegatedHealthcareActivities',
+              event: { new: null },
+            },
+            { transaction: mockTransaction },
+          );
+          expect(mockEstablishment.staffDoDelegatedHealthcareActivities).to.equal(null);
+        });
+      });
     });
   });
 });

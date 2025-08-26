@@ -1,9 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentServiceWithNoEmployerType } from '@core/test-utils/MockEstablishmentService';
+import {
+  MockEstablishmentServiceWithNoEmployerType,
+  MockEstablishmentServiceWithOverrides,
+} from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -25,10 +28,12 @@ describe('TypeOfEmployerComponent', () => {
         provideRouter([]),
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceWithNoEmployerType.factory(
-            overrides.employerTypeHasValue ?? true,
-            overrides.owner ?? 'Workplace',
-          ),
+          useFactory: overrides.establishment
+            ? MockEstablishmentServiceWithOverrides.factory(overrides.establishment)
+            : MockEstablishmentServiceWithNoEmployerType.factory(
+                overrides.employerTypeHasValue ?? true,
+                overrides.owner ?? 'Workplace',
+              ),
         },
       ],
     });
@@ -184,5 +189,43 @@ describe('TypeOfEmployerComponent', () => {
     fixture.detectChanges();
 
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid']);
+  });
+
+  describe('Other textbox', () => {
+    optionsWithoutOther.forEach((answer) => {
+      it(`should not show when ${answer.text} is selected`, async () => {
+        const { fixture, getByLabelText, getByTestId, establishmentService } = await setup();
+        spyOn(establishmentService, 'getEstablishment').and.callThrough();
+
+        const radioButton = getByLabelText(answer.text);
+        fireEvent.click(radioButton);
+        fixture.detectChanges();
+
+        expect(getByTestId('conditionalTextBox').getAttribute('class')).toContain('govuk-radios__conditional--hidden');
+      });
+    });
+
+    it('should show when "Other" is selected', async () => {
+      const { fixture, getByTestId, getByLabelText, establishmentService } = await setup();
+      spyOn(establishmentService, 'getEstablishment').and.callThrough();
+
+      const radioButton = getByLabelText('Other');
+      fireEvent.click(radioButton);
+      fixture.detectChanges();
+
+      expect(getByTestId('conditionalTextBox').getAttribute('class')).not.toContain(
+        'govuk-radios__conditional--hidden',
+      );
+    });
+
+    it('should show when "Other" was the previously saved answer', async () => {
+      const overrides = { establishment: { employerType: { value: 'Other', other: 'some employer type' } } };
+      const { getByTestId, establishmentService } = await setup(overrides);
+      spyOn(establishmentService, 'getEstablishment').and.callThrough();
+
+      expect(getByTestId('conditionalTextBox').getAttribute('class')).not.toContain(
+        'govuk-radios__conditional--hidden',
+      );
+    });
   });
 });

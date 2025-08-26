@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { environment } from 'src/environments/environment';
 
 import { BulkUploadTopTipsService } from './bulk-upload-top-tips.service';
 
@@ -22,28 +23,33 @@ describe('BulkUploadTopTipsService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get the top tip titles from the CMS', () => {
-    service.getTopTipsTitles().subscribe();
+  describe('getTopTipsTitles', () => {
+    it('should get the top tip titles from the CMS', () => {
+      service.getTopTipsTitles().subscribe();
 
-    const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(
-      'https://asc-wds-test.directus.app/items/bulk_upload_top_tips?fields=title,slug,link_title',
-    );
+      const http = TestBed.inject(HttpTestingController);
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/cms/items/bulk_upload_top_tips?fields=title,slug,link_title&env=${environment.environmentName}`,
+      );
 
-    expect(req.request.method).toBe('GET');
+      expect(req.request.method).toBe('GET');
+    });
   });
 
-  it('should get the top tip for a given slug', () => {
-    service.getTopTip('slug').subscribe();
+  describe('getTopTip', () => {
+    it('should get the top tip for a given slug', () => {
+      service.getTopTip('slug').subscribe();
 
-    const slugFilter = '%7B%22slug%22:%7B%22_eq%22:%22slug%22%7D%7D';
-    const fields = 'content,title,slug';
+      const slugFilter = '%7B%22slug%22:%7B%22_eq%22:%22slug%22%7D%7D';
+      const fields = 'content,title,slug';
 
-    const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(
-      `https://asc-wds-test.directus.app/items/bulk_upload_top_tips?filter=${slugFilter}&limit=1&fields=${fields}`,
-    );
+      const http = TestBed.inject(HttpTestingController);
 
-    expect(req.request.method).toBe('GET');
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/cms/items/bulk_upload_top_tips?filter=${slugFilter}&limit=1&fields=${fields}&env=${environment.environmentName}`,
+      );
+
+      expect(req.request.method).toBe('GET');
+    });
   });
 });
