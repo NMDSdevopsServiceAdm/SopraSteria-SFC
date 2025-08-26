@@ -30,6 +30,7 @@ import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 
 @NgModule({
   imports: [
@@ -63,6 +64,7 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
     GetMissingCqcLocationsResolver,
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+    GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     FeatureFlagsResolver,
     CareWorkforcePathwayUseReasonsResolver,
     CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,

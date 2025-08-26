@@ -1517,6 +1517,49 @@ module.exports = function (sequelize, DataTypes) {
     return { count, workers };
   };
 
+  Worker.countAllWorkersWithoutDelegatedHealthCareActivities = async function (establishmentId) {
+    return await this.count({
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CarryOutDelegatedHealthcareActivitiesValue: null,
+      },
+    });
+  };
+
+  Worker.getAndCountAllWorkersWithoutDelegatedHealthCareActivities = async function ({
+    establishmentId,
+    itemsPerPage,
+    pageIndex,
+  }) {
+    const { count, rows } = await this.findAndCountAll({
+      attributes: ['uid', 'NameOrIdValue'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CarryOutDelegatedHealthcareActivitiesValue: null,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+        },
+      ],
+      order: [['NameOrIdValue', 'ASC']],
+      offset: itemsPerPage * pageIndex,
+      limit: itemsPerPage,
+    });
+
+    const workers = rows.map((worker) => {
+      const { uid, mainJob, NameOrIdValue: nameOrId } = worker;
+      return { uid, mainJob, nameOrId };
+    });
+
+    return { count, workers };
+  };
+
+  Worker.addHook('beforeSave', unsetDHAAnswerOnJobRoleChange);
   Worker.checkIfAnyWorkerHasDHAAnswered = async function (establishmentId) {
     const workerWithDHAAnswered = await this.findOne({
       attributes: ['id', 'carryOutDelegatedHealthcareActivities'],

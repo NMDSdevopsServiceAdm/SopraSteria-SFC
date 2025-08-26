@@ -18,6 +18,7 @@ const getAllDelegatedHealthcareActivities = async (_req, res) => {
   }
 };
 
+router.route('/');
 router.route('/').get(getAllDelegatedHealthcareActivities);
 
 module.exports = { dhaRouter: router, getAllDelegatedHealthcareActivities };

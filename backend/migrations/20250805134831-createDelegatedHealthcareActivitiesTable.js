@@ -32,7 +32,7 @@ const dhaRows = [
     Seq: 40,
     Title: 'Compromised skin integrity and wound care',
     Description: 'Like applying or replacing a dry dressing',
-    AnalysisFileCode: 0,
+    AnalysisFileCode: 4,
     BulkUploadCode: 4,
   },
   {

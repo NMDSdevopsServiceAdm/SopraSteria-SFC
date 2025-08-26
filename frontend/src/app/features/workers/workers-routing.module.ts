@@ -79,6 +79,8 @@ import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workp
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
+import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
+import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 
 const routes: Routes = [
@@ -244,6 +246,17 @@ const routes: Routes = [
     component: CareWorkforcePathwayWorkersSummaryComponent,
     canActivate: [RequireCWPAnswerForSomeWorkersGuard],
     resolve: { workersWhoRequireCWPAnswer: GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver },
+  },
+  {
+    path: 'who-carry-out-delegated-healthcare-activities',
+    component: WhoCarryOutDelegatedHealthcareActivitiesComponent,
+    resolve: {
+      workerWhoRequireDHAAnswer: GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
+      delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver,
+    },
+    data: {
+      title: 'Who Carry out Delegated Healthcare Activities',
+    },
   },
   {
     path: 'basic-records-save-success',
