@@ -3,9 +3,10 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import {
   DelegatedHealthcareActivity,
+  DHAGetAllWorkersResponse,
+  DHAGetNumberOfWorkersResponse,
   GetDelegatedHealthcareActivitiesResponse,
 } from '@core/model/delegated-healthcare-activities.model';
-import { JobRole } from '@core/model/job.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -58,12 +59,3 @@ export class DelegatedHealthcareActivitiesService {
       .pipe(map((res) => res.hasAnswer));
   }
 }
-
-export type DHAGetNumberOfWorkersResponse = {
-  noOfWorkersWhoRequiresAnswer: number;
-};
-
-export type DHAGetAllWorkersResponse = {
-  workers: { uid: string; nameOrId: string; mainJob: JobRole }[];
-  workerCount: number;
-};

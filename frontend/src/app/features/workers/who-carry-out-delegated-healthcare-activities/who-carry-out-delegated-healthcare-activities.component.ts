@@ -5,13 +5,11 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 import { JobRole } from '@core/model/job.model';
-import {
-  DelegatedHealthcareActivitiesService,
-  DHAGetAllWorkersResponse,
-} from '@core/services/delegated-healthcare-activities.service';
+import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { take } from 'rxjs/operators';
 import {
   DelegatedHealthcareActivity,
+  DHAGetAllWorkersResponse,
   StaffWhatKindDelegatedHealthcareActivities,
 } from '@core/model/delegated-healthcare-activities.model';
 import { AlertService } from '@core/services/alert.service';

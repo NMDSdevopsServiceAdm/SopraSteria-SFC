@@ -1,3 +1,5 @@
+import { JobRole } from './job.model';
+
 export interface GetDelegatedHealthcareActivitiesResponse {
   allDHAs: DelegatedHealthcareActivity[];
 }
@@ -23,4 +25,13 @@ type YES = {
 type DONT_KNOW = {
   knowWhatActivities: "Don't know";
   activities: null;
+};
+
+export type DHAGetNumberOfWorkersResponse = {
+  noOfWorkersWhoRequiresAnswer: number;
+};
+
+export type DHAGetAllWorkersResponse = {
+  workers: { uid: string; nameOrId: string; mainJob: JobRole }[];
+  workerCount: number;
 };
