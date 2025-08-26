@@ -492,6 +492,10 @@ export class MockEstablishmentServiceWithOverrides extends MockEstablishmentServ
             service.establishmentObj = { ...service.establishmentObj, ...overrides['establishment'] };
             break;
           }
+          case 'primaryWorkplace': {
+            service._primaryWorkplace = { ...service._primaryWorkplace, ...overrides['primaryWorkplace'] };
+            break;
+          }
           default: {
             service[overrideName] = overrides[overrideName];
             break;

@@ -1,15 +1,15 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { RankingsResponse } from '@core/model/benchmarks.model';
-import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { DataAreaBarchartComponent } from './data-area-barchart.component';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+
+import { DataAreaBarchartComponent } from './data-area-barchart.component';
 
 describe('DataAreaBarchartComponent', () => {
   const setup = async () => {
@@ -18,12 +18,13 @@ describe('DataAreaBarchartComponent', () => {
       providers: [
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService
+          useClass: MockEstablishmentService,
         },
         {
-          provide: BenchmarksServiceBase,
+          provide: BenchmarksV2Service,
           useClass: MockBenchmarksService,
-        }],
+        },
+      ],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
         isPay: false,
@@ -34,8 +35,8 @@ describe('DataAreaBarchartComponent', () => {
           currentRank: 7,
           hasValue: true,
           stateMessage: null,
-          allValues: []
-        }
+          allValues: [],
+        },
       },
     });
 

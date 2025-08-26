@@ -3,12 +3,10 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -31,7 +29,6 @@ describe('RemoveLinkToParentComponent', () => {
         providers: [
           AlertService,
           WindowRef,
-          { provide: BenchmarksService, useClass: MockBenchmarksService },
           { provide: PermissionsService, useClass: MockPermissionsService },
           {
             provide: BreadcrumbService,
@@ -186,9 +183,7 @@ describe('RemoveLinkToParentComponent', () => {
   it('should navigate to the home tab after parent association has been removed', async () => {
     const { getByText, fixture, establishmentService, component, routerSpy, alertServiceSpy } = await setup();
 
-    spyOn(establishmentService, 'getAllParentWithPostCode').and.returnValue(
-      of(mockparentsWithPostCode),
-    );
+    spyOn(establishmentService, 'getAllParentWithPostCode').and.returnValue(of(mockparentsWithPostCode));
     component.ngOnInit();
 
     const workplaceUid = component.workplace.uid;
@@ -196,7 +191,7 @@ describe('RemoveLinkToParentComponent', () => {
 
     component.workplace.parentUid = parentUid;
     component.workplace.parentName = mockparentsWithPostCode[0].parentName;
-    component.workplace.postcode = mockparentsWithPostCode[0].postcode
+    component.workplace.postcode = mockparentsWithPostCode[0].postcode;
     fixture.detectChanges();
 
     component.getParentPostcode(mockparentsWithPostCode);
