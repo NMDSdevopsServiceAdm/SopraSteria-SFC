@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
@@ -15,42 +14,35 @@ import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address.component';
 
 describe('SelectWorkplaceAddressComponent', () => {
-  async function setup(registrationFlow = true, manyLocationAddresses = false) {
-    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
-      SelectWorkplaceAddressComponent,
-      {
-        imports: [
-          SharedModule,
-          RegistrationModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
-        providers: [
-          SelectWorkplaceAddressDirective,
-          {
-            provide: RegistrationService,
-            useFactory: MockRegistrationService.factory({ value: 'Private sector' }, manyLocationAddresses),
-            deps: [HttpClient],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                parent: {
-                  url: [
-                    {
-                      path: registrationFlow ? 'registration' : 'confirm-details',
-                    },
-                  ],
-                },
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(SelectWorkplaceAddressComponent, {
+      imports: [SharedModule, RegistrationModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      providers: [
+        SelectWorkplaceAddressDirective,
+        {
+          provide: RegistrationService,
+          useFactory: MockRegistrationService.factory(
+            { value: 'Private sector' },
+            overrides.manyLocationAddresses ?? false,
+          ),
+          deps: [HttpClient],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
+                  },
+                ],
               },
             },
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -58,17 +50,12 @@ describe('SelectWorkplaceAddressComponent', () => {
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
-      fixture,
+      ...setupTools,
       component,
       spy,
-      getAllByText,
-      queryByText,
-      getByText,
-      getByTestId,
-      queryByTestId,
     };
   }
 
@@ -101,7 +88,7 @@ describe('SelectWorkplaceAddressComponent', () => {
   });
 
   it('should not render the progress bars when accessed from outside the flow', async () => {
-    const { queryByTestId } = await setup(false);
+    const { queryByTestId } = await setup({ registrationFlow: false });
 
     expect(queryByTestId('progress-bar-1')).toBeFalsy();
     expect(queryByTestId('progress-bar-2')).toBeFalsy();
@@ -115,14 +102,14 @@ describe('SelectWorkplaceAddressComponent', () => {
   });
 
   it('should render the dropdown form if there are 5 or more location addresses for a given postcode', async () => {
-    const { getByTestId, queryByTestId } = await setup(true, true);
+    const { getByTestId, queryByTestId } = await setup({ registrationFlow: true, manyLocationAddresses: true });
 
     expect(getByTestId('dropdown-form')).toBeTruthy();
     expect(queryByTestId('radio-button-form')).toBeFalsy();
   });
 
   it('should display number of addresses found which match postcode when drop down shown', async () => {
-    const { getByText } = await setup(true, true);
+    const { getByText } = await setup({ registrationFlow: true, manyLocationAddresses: true });
 
     const noOfAddressesMessage = '5 addresses found';
 

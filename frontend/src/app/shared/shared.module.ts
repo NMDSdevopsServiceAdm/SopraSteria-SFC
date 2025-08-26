@@ -7,6 +7,7 @@ import { CannotCreateAccountComponent } from '@core/components/error/cannot-crea
 import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { QuestionsAndAnswersResolver } from '@core/resolvers/help/questions-and-answers/questions-and-answers.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -19,7 +20,6 @@ import { AlertComponent } from '@shared/components/alert/alert.component';
 import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/check-cqc-details.component';
 import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
-import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplace-tab.component';
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
 import { SanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
 
@@ -30,7 +30,6 @@ import { RadioButtonAccordionComponent } from './components/accordions/radio-but
 import { AddNoteComponent } from './components/add-note/add-note.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
-import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { CardComponent } from './components/card/card.component';
@@ -46,9 +45,8 @@ import { ErrorSummaryComponent } from './components/error-summary/error-summary.
 import { FundingRequirementsStateComponent } from './components/funding-requirements-state/funding-requirements-state.component';
 import { HelpContentComponent } from './components/help-content/help-content.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
-import { LinkToParentCancelDialogComponent } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import { JobRoleNumbersTableComponent } from './components/job-role-numbers-table/job-role-numbers-table.component';
 import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
-import { LinkToParentDialogComponent } from './components/link-to-parent/link-to-parent-dialog.component';
 import { LinkWithArrowComponent } from './components/link-with-arrow/link-with-arrow.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
@@ -83,7 +81,6 @@ import { PersonalDetailsComponent } from './components/staff-record-summary/pers
 import { QualificationsAndTrainingComponent } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
 import { WdfWarningMessageComponent } from './components/staff-record-summary/wdf-warning-message/wdf-warning-message.component';
-import { StaffRecordsTabComponent } from './components/staff-records-tab/staff-records-tab.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
@@ -99,7 +96,6 @@ import { TotalStaffComponent } from './components/total-staff/total-staff.compon
 import { TrainingAndQualificationsCategoriesComponent } from './components/training-and-qualifications-categories/training-and-qualifications-categories.component';
 import { ViewTrainingComponent } from './components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 import { TrainingAndQualificationsSummaryComponent } from './components/training-and-qualifications-summary/training-and-qualifications-summary.component';
-import { TrainingAndQualificationsTabComponent } from './components/training-and-qualifications-tab/training-and-qualifications-tab.component';
 import { TrainingInfoPanelComponent } from './components/training-info-panel/training-info-panel.component';
 import { TrainingLinkPanelComponent } from './components/training-link-panel/training-link-panel.component';
 import { TrainingSelectViewPanelComponent } from './components/training-select-view-panel/training-select-view-panel.component';
@@ -114,17 +110,21 @@ import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmati
 import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
 import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
-import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
+import { DisplayWorkplaceNameAddress } from './components/display-workplace-name-address/display-workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
+import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
+import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pathway-role-category.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
 import { DontKnowPipe } from './pipes/dont-know.pipe';
 import { FirstErrorPipe } from './pipes/first-error.pipe';
 import { FormatAmpersandPipe } from './pipes/format-ampersand.pipe';
+import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
 import { FormatStartersLeaversVacanciesPipe } from './pipes/format-starters-leavers-vacancies.pipe';
+import { HasValuePipe } from './pipes/has-value.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NewDataViewPermissionsPipe } from './pipes/new-data-view-permissions.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
@@ -138,12 +138,6 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { JobRoleNumbersTableComponent } from './components/job-role-numbers-table/job-role-numbers-table.component';
-import { CareWorkforcePathwayRoleCategoryPipe } from './pipes/care-workforce-pathway-role-category.pipe';
-import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
-import { HasValuePipe } from './pipes/has-value.pipe';
-import { FormatCwpUsePipe } from './pipes/format-cwp-use.pipe';
-import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -181,7 +175,6 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     PhaseBannerComponent,
     ProgressComponent,
     QualificationsAndTrainingComponent,
-    StaffRecordsTabComponent,
     StaffRecordSummaryComponent,
     StaffSummaryComponent,
     StatusComponent,
@@ -198,19 +191,14 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceTabComponent,
     OrderOtherPipe,
     LongDatePipe,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
     TrainingAndQualificationsCategoriesComponent,
-    TrainingAndQualificationsTabComponent,
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
-    LinkToParentDialogComponent,
-    LinkToParentCancelDialogComponent,
     LinkToParentRemoveDialogComponent,
-    BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     DeleteWorkplaceDialogComponent,
     // ParentConfirmationDialogComponent,
@@ -274,7 +262,7 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
-    WorkplaceNameAddress,
+    DisplayWorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
     HelpContentComponent,
     NumberInputWithButtonsComponent,
@@ -321,7 +309,6 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     PhaseBannerComponent,
     ProgressComponent,
     QualificationsAndTrainingComponent,
-    StaffRecordsTabComponent,
     StaffRecordSummaryComponent,
     StaffSummaryComponent,
     StatusComponent,
@@ -336,20 +323,15 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
-    WorkplaceTabComponent,
     OrderOtherPipe,
     TrainingLinkPanelComponent,
     LongDatePipe,
     RejectRequestDialogComponent,
     SetDataPermissionDialogComponent,
     TrainingAndQualificationsCategoriesComponent,
-    TrainingAndQualificationsTabComponent,
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
-    LinkToParentDialogComponent,
-    LinkToParentCancelDialogComponent,
     LinkToParentRemoveDialogComponent,
-    BecomeAParentDialogComponent,
     OwnershipChangeMessageDialogComponent,
     DeleteWorkplaceDialogComponent,
     // ParentConfirmationDialogComponent,
@@ -413,7 +395,7 @@ import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workfo
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
-    WorkplaceNameAddress,
+    DisplayWorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
     HelpContentComponent,
     FormatStartersLeaversVacanciesPipe,

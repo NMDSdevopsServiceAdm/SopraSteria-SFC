@@ -127,11 +127,11 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
         allValues: [
-            {
-              value: -1,
-              currentEst: true,
-            },
-          ],
+          {
+            value: -1,
+            currentEst: true,
+          },
+        ],
       },
     },
     sickness: {
@@ -147,11 +147,11 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
         allValues: [
-            {
-              value: -1,
-              currentEst: true,
-            },
-          ],
+          {
+            value: -1,
+            currentEst: true,
+          },
+        ],
       },
     },
     qualifications: {
@@ -167,11 +167,11 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
         allValues: [
-            {
-              value: -1,
-              currentEst: true,
-            },
-          ],
+          {
+            value: -1,
+            currentEst: true,
+          },
+        ],
       },
     },
     vacancy: {
@@ -187,11 +187,11 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
         allValues: [
-            {
-              value: -1,
-              currentEst: true,
-            },
-          ],
+          {
+            value: -1,
+            currentEst: true,
+          },
+        ],
       },
     },
     timeInRole: {
@@ -207,11 +207,11 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
         allValues: [
-            {
-              value: -1,
-              currentEst: true,
-            },
-          ],
+          {
+            value: -1,
+            currentEst: true,
+          },
+        ],
       },
     },
   },
@@ -279,6 +279,41 @@ export const benchmarksData = {
   },
 };
 
+export const oldBenchmarksData = {
+  sickness: {
+    workplaceValue: { value: 11, hasValue: true },
+    comparisonGroup: { value: 12, hasValue: true },
+    goodCqc: { value: 15, hasValue: true },
+    lowTurnover: { value: 13, hasValue: true },
+  },
+  qualifications: {
+    workplaceValue: { value: 0.521, hasValue: true },
+    comparisonGroup: { value: 0.533, hasValue: true },
+    goodCqc: { value: 0.545, hasValue: true },
+    lowTurnover: { value: 13, hasValue: true },
+  },
+  turnover: {
+    workplaceValue: { value: 0.281, hasValue: true },
+    comparisonGroup: { value: 0.273, hasValue: true },
+    goodCqc: { value: 0.2851, hasValue: true },
+    lowTurnover: { value: 13, hasValue: true },
+  },
+  pay: {
+    workplaceValue: { value: 1015, hasValue: true },
+    comparisonGroup: { value: 1013, hasValue: true },
+    goodCqc: { value: 1026, hasValue: true },
+    lowTurnover: { value: 13, hasValue: true },
+  },
+  meta: {
+    workplaces: 35,
+    staff: 460,
+    workplacesGoodCqc: 22,
+    staffGoodCqc: 315,
+    localAuthority: 'LA1',
+    lastUpdated: new Date(),
+  },
+};
+
 const returnTo = returnToBuilder();
 export const allRankingsData = allRankingsResponseBuilder();
 
@@ -287,9 +322,9 @@ export class MockBenchmarksService extends BenchmarksServiceBase {
   benchmarksData: any = {
     ...benchmarksData,
     newBenchmarks: benchmarksData,
-    oldBenchmarks: benchmarksData
+    oldBenchmarks: oldBenchmarksData,
   };
-  rankingsData: any;
+  rankingsData: any = allRankingsData;
   setReturnTo(returnTo: URLStructure) {
     throw new Error('Method not implemented.');
   }

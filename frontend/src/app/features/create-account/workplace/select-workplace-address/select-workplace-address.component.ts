@@ -8,7 +8,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
 
 @Component({
-  selector: 'app-select-workplace-address',
+  selector: 'app-select-workplace-address-create-account',
   templateUrl:
     '../../../../shared/directives/create-workplace/select-workplace-address/select-workplace-address.component.html',
 })
