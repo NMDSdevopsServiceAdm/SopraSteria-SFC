@@ -418,7 +418,6 @@ describe('ParentHomeTabComponent', () => {
 
       component.workplace.isParentApprovedBannerViewed = false;
       component.isParent = true;
-      component.newHomeDesignParentFlag = true;
 
       const message = `Your request to become a parent has been approved`;
 
@@ -436,7 +435,6 @@ describe('ParentHomeTabComponent', () => {
 
       component.isParentApprovedBannerViewed = null;
       component.isParent = true;
-      component.newHomeDesignParentFlag = true;
 
       fixture.detectChanges();
 
@@ -450,7 +448,6 @@ describe('ParentHomeTabComponent', () => {
 
       component.isParentApprovedBannerViewed = false;
       component.isParent = true;
-      component.newHomeDesignParentFlag = true;
 
       fixture.detectChanges();
       const alertBanner = getByTestId('parentApprovedBanner');
@@ -463,7 +460,6 @@ describe('ParentHomeTabComponent', () => {
 
       component.isParentApprovedBannerViewed = true;
       component.isParent = true;
-      component.newHomeDesignParentFlag = true;
 
       fixture.detectChanges();
 

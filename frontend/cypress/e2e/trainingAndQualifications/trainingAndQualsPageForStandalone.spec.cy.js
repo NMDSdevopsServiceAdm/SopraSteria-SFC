@@ -19,7 +19,7 @@ describe('Standalone training and qualifications page as edit user', () => {
   it('should see the standalone establishment training and quals page', () => {
     cy.url().should('include', '#training-and-qualifications');
     cy.get('[data-cy="add-multiple-training-records-button"]').should('contain', 'Add multiple training records');
-    cy.get('[data-testid="standAloneDashboard"]').contains('Training and qualifications');
+    cy.contains('Training and qualifications');
   });
 
   it('should show all sections', () => {

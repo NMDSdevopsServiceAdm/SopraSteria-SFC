@@ -8,7 +8,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { TypeOfEmployerDirective } from '@shared/directives/create-workplace/type-of-employer/type-of-employer.directive';
 
 @Component({
-  selector: 'app-type-of-employer',
+  selector: 'app-type-of-employer-create-account',
   templateUrl: '../../../../shared/directives/create-workplace/type-of-employer/type-of-employer.component.html',
 })
 export class TypeOfEmployerComponent extends TypeOfEmployerDirective {

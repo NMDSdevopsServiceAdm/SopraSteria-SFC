@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Tab, TabsService } from '@core/services/tabs.service';
@@ -34,7 +34,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private tabsService: TabsService,
-    private benchmarksService: BenchmarksServiceBase,
+    private benchmarksService: BenchmarksV2Service,
   ) {}
 
   ngOnInit(): void {

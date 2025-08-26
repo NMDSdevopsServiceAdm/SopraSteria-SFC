@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
@@ -38,7 +38,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   constructor(
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
-    protected benchmarksService: BenchmarksServiceBase,
+    protected benchmarksService: BenchmarksV2Service,
     protected router: Router,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}

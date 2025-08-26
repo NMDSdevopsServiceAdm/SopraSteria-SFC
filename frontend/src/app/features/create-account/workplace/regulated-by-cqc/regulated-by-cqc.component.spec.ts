@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -15,7 +14,7 @@ import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 describe('RegulatedByCqcComponent', () => {
   async function setup(registrationFlow = true) {
     const component = await render(RegulatedByCqcComponent, {
-      imports: [SharedModule, RegistrationModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RegistrationModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,

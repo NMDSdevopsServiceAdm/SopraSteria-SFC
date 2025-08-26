@@ -1,23 +1,18 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, convertToParamMap } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { DashboardComponent } from '@features/dashboard/dashboard.component';
 
 import { CheckPermissionsGuard } from './check-permissions.guard';
 
 describe('CheckPermissionsGuard', () => {
   function setup(role = Roles.Edit) {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardComponent }]),
-      ],
+      imports: [HttpClientTestingModule],
       providers: [
         CheckPermissionsGuard,
         {

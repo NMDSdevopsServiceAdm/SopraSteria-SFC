@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
@@ -13,9 +12,9 @@ import { BehaviorSubject } from 'rxjs';
 import { AddTotalStaffComponent } from './add-total-staff.component';
 
 describe('AddTotalStaffComponent', () => {
-  async function setup(registrationFlow = true) {
+  async function setup(overrides: any = {}) {
     const component = await render(AddTotalStaffComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -32,7 +31,7 @@ describe('AddTotalStaffComponent', () => {
               parent: {
                 url: [
                   {
-                    path: registrationFlow ? 'registration' : 'confirm-details',
+                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -148,7 +147,7 @@ describe('AddTotalStaffComponent', () => {
     });
 
     it('should not render the progress bars when accessed from outside the flow', async () => {
-      const { component } = await setup(false);
+      const { component } = await setup({ registrationFlow: false });
 
       expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
       expect(component.queryByTestId('progress-bar-2')).toBeFalsy();

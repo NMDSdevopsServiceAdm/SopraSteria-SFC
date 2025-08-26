@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
@@ -15,9 +14,9 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
 describe('IsThisYourWorkplaceComponent', () => {
-  async function setup(searchMethod = 'locationID', locationId = '1-2123313123', registrationFlow = true) {
+  async function setup(overrides: any = {}) {
     const component = await render(IsThisYourWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
       providers: [
         BackService,
         {
@@ -36,11 +35,11 @@ describe('IsThisYourWorkplaceComponent', () => {
               ],
             },
             searchMethod$: {
-              value: searchMethod,
+              value: overrides.searchMethod ?? 'locationID',
             },
             selectedLocationAddress$: {
               value: {
-                locationId: locationId,
+                locationId: overrides.locationId ?? null,
               },
               next: () => {
                 return true;
@@ -68,7 +67,7 @@ describe('IsThisYourWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: registrationFlow ? 'registration' : 'confirm-details',
+                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
                   },
                 ],
               },
@@ -106,7 +105,8 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should not render the progress bars when accessed from outside the flow', async () => {
-    const { component } = await setup('locationID', '1-2123313123', false);
+    const overrides = { searchMethod: 'locationID', locationId: '1-2123313123', registrationFlow: false };
+    const { component } = await setup(overrides);
 
     expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
     expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
@@ -151,7 +151,7 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should show the postcode and address when given the postcode', async () => {
-    const { component } = await setup('postcode');
+    const { component } = await setup({ searchMethod: 'postcode' });
 
     const messageText = component.queryByText('Postcode entered:');
     const locationName = component.queryByText('Hello Care');
@@ -228,7 +228,8 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should navigate to the confirm-details page when selecting yes when returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {
-    const { component, spy, registrationService } = await setup('locationID', '1-2123313123', false);
+    const overrides = { searchMethod: 'locationID', locationId: '1-2123313123', registrationFlow: false };
+    const { component, spy, registrationService } = await setup(overrides);
 
     component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
 
@@ -270,7 +271,8 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should display an error when continue is clicked without selecting anything', async () => {
-    const { component } = await setup('locationID', null);
+    const overrides = { searchMethod: 'locationID', locationId: null };
+    const { component } = await setup(overrides);
 
     const form = component.fixture.componentInstance.form;
     const continueButton = component.getByText('Continue');

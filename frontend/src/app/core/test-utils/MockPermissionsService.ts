@@ -58,4 +58,8 @@ export class MockPermissionsService extends PermissionsService {
       permissions: this._permissions,
     } as PermissionsResponse);
   }
+
+  public hasWorkplacePermissions(): Observable<boolean> {
+    return of(true);
+  }
 }
