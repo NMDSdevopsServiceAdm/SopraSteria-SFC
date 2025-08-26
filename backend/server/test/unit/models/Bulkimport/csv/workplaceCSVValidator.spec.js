@@ -72,7 +72,7 @@ const validateAPIObject = (establishmentRow) => {
     services: { value: 'Yes', services: [{ id: 8 }, { id: 13 }] },
     serviceUsers: [],
     staffDoDelegatedHealthcareActivities: null,
-    chosenDelegatedHealthcareActivities: [],
+    staffWhatKindDelegatedHealthcareActivities: null,
     numberOfStaff: 1,
     vacancies: [999, 333, 1],
     starters: [0, 0, 0],
@@ -117,6 +117,8 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 
   callback(csvEstablishmentSchemaErrors);
 };
+
+const BU_DHA_YES = '1';
 
 describe('Bulk Upload - Establishment CSV', () => {
   let establishmentRow;
@@ -413,16 +415,37 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe.skip('DHA activities', () => {
+    describe('DHA activities', () => {
       it('should set api value for activities', async () => {
+        establishmentRow.DHA = BU_DHA_YES;
         establishmentRow.DHAACTIVITIES = '1;2;3';
 
         const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
         workplaceValidator.transform();
         const apiObject = workplaceValidator.toAPI();
-
-        expect(apiObject.chosenDelegatedHealthcareActivities).to.equal(['1','2','3']); // assumed format, might change
+        const expected = {knowWhatActivities: 'Yes', activities: [{id: 1}, {id: 2}, {id: 3}]}; // todo needs to be right format for junction table
+        expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(expected);
       });
+      it('should set api value for empty activities when dha is dont know', async () => {
+        establishmentRow.DHA = '999';
+        establishmentRow.DHAACTIVITIES = '999';
+
+        const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
+        workplaceValidator.transform();
+        const apiObject = workplaceValidator.toAPI();
+        const expected = {knowWhatActivities: "Don't know", activities: []};
+        expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(expected);
+      });
+      // it('should set api value for the edge case when activities are unknown', async () => {
+      //   establishmentRow.DHA = BU_DHA_YES;
+      //   establishmentRow.DHAACTIVITIES = '999';
+
+      //   const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
+      //   workplaceValidator.transform();
+      //   const apiObject = workplaceValidator.toAPI();
+      //   const expected = {knowWhatActivities: "Don't know", activities: []}; // todo needs to be right format for junction table
+      //   expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(expected);
+      // });
     });
 
     describe('repeatTraining', () => {
@@ -1103,7 +1126,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('DHA Fields', () => {
       const updateEstablishmentToHaveMainService = (establishmentRow, mainServiceId) => {
-        establishmentRow.DHA = '1';
+        establishmentRow.DHA = BU_DHA_YES;
         establishmentRow.DHAACTIVITIES = '1;2';
         establishmentRow.MAINSERVICE = mainServiceId;
         establishmentRow.ALLSERVICES = mainServiceId;
@@ -1121,7 +1144,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           it(`should pass with no validation warnings if DHA set to ${allowedInput}`, async () => {
             establishmentRow.DHA = allowedInput;
 
-            if (allowedInput === '1') {
+            if (allowedInput === BU_DHA_YES) {
               establishmentRow.DHAACTIVITIES = '1;2';
             }
 
@@ -1187,6 +1210,7 @@ describe('Bulk Upload - Establishment CSV', () => {
           ['1','1'],
           ['1','1;4'],
           ['1','8'], // 8 is "Other"
+          //['1','999'], // todo "yes we do, but i don't know what" (edge case)
           ['999',''],
         ];
         validInputs.forEach((allowedInput) => {
@@ -1265,7 +1289,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         it('should add an error if DHA is yes but no activity codes are listed', async ()=> {
           updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
 
-          establishmentRow.DHA = '1';
+          establishmentRow.DHA = BU_DHA_YES;
           establishmentRow.DHAACTIVITIES = '';
 
           const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1314,7 +1338,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         it('should add DHA_MAIN_SERVICE_WARNING if DHA Activities answered but main service cannot do DHA', async () => {
           updateEstablishmentToHaveMainService(establishmentRow, '10'); // 10 is BUDI mapping for id 11 (cannot do DHA)
 
-          establishmentRow.DHA = '1';
+          establishmentRow.DHA = BU_DHA_YES;
           establishmentRow.DHAACTIVITIES = '1;2;3';
 
           const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1337,7 +1361,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         it('should not add DHA_MAIN_SERVICE_WARNING if DHA answered and main service can do DHA', async () => {
           updateEstablishmentToHaveMainService(establishmentRow, '15'); // 15 is BUDI mapping for id 2 (can do DHA)
 
-          establishmentRow.DHA = '1';
+          establishmentRow.DHA = BU_DHA_YES;
           establishmentRow.DHAACTIVITIES = '1;2;3';
 
           const establishment = await generateEstablishmentFromCsv(establishmentRow);
