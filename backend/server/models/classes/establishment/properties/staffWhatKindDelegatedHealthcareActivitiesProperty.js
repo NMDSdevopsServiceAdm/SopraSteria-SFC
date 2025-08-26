@@ -17,8 +17,6 @@ exports.StaffWhatKindDelegatedHealthcareActivitiesProperty = class StaffWhatKind
     return new StaffWhatKindDelegatedHealthcareActivitiesProperty();
   }
 
-// break this with a todo so I can find on tuesday
-
   async restoreFromJson(document) {
     const propertyInDocument = document.staffWhatKindDelegatedHealthcareActivities;
 
@@ -74,7 +72,7 @@ exports.StaffWhatKindDelegatedHealthcareActivitiesProperty = class StaffWhatKind
 
     return validActivitiesFound;
   }
-// break this with a todo so I can find it on tuesday
+
   savePropertyToSequelize() {
     if (!this.property) {
       return {

@@ -415,7 +415,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe('DHA activities', () => {
+    describe.only('DHA activities', () => {
       it('should set api value for activities', async () => {
         establishmentRow.DHA = BU_DHA_YES;
         establishmentRow.DHAACTIVITIES = '1;2;3';
@@ -423,11 +423,30 @@ describe('Bulk Upload - Establishment CSV', () => {
         const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
         workplaceValidator.transform();
         const apiObject = workplaceValidator.toAPI();
-        const expected = {knowWhatActivities: 'Yes', activities: [{id: 1}, {id: 2}, {id: 3}]}; // todo needs to be right format for junction table
+        const expected = {knowWhatActivities: 'Yes', activities: [{id: 1}, {id: 2}, {id: 3}]};
         expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(expected);
       });
-      it('should set api value for empty activities when dha is dont know', async () => {
+      ['','2','999'].forEach((dha) =>
+      it(`should set api value to activities to null when dha is set to ${dha}`, async () =>{
+        establishmentRow.DHA = dha;
+        establishmentRow.DHAACTIVITIES = '999';
+
+        const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
+        workplaceValidator.transform();
+        const apiObject = workplaceValidator.toAPI();
+        expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.be.null;
+      }));
+      it('should set api value to null for activities when dha is dont know', async () => {
         establishmentRow.DHA = '999';
+        establishmentRow.DHAACTIVITIES = ''; // expected csv value in don't know case
+
+        const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
+        workplaceValidator.transform();
+        const apiObject = workplaceValidator.toAPI();
+        expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.be.null;
+      });
+      it('should set api value for the edge case when activities are unknown', async () => {
+        establishmentRow.DHA = BU_DHA_YES;
         establishmentRow.DHAACTIVITIES = '999';
 
         const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
@@ -436,16 +455,6 @@ describe('Bulk Upload - Establishment CSV', () => {
         const expected = {knowWhatActivities: "Don't know", activities: []};
         expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(expected);
       });
-      // it('should set api value for the edge case when activities are unknown', async () => {
-      //   establishmentRow.DHA = BU_DHA_YES;
-      //   establishmentRow.DHAACTIVITIES = '999';
-
-      //   const workplaceValidator = await generateEstablishmentFromCsv(establishmentRow);
-      //   workplaceValidator.transform();
-      //   const apiObject = workplaceValidator.toAPI();
-      //   const expected = {knowWhatActivities: "Don't know", activities: []}; // todo needs to be right format for junction table
-      //   expect(apiObject.staffWhatKindDelegatedHealthcareActivities).to.deep.equal(expected);
-      // });
     });
 
     describe('repeatTraining', () => {
@@ -1210,8 +1219,9 @@ describe('Bulk Upload - Establishment CSV', () => {
           ['1','1'],
           ['1','1;4'],
           ['1','8'], // 8 is "Other"
-          //['1','999'], // todo "yes we do, but i don't know what" (edge case)
+          ['1','999'], // "yes we do, but I don't know what" (edge case)
           ['999',''],
+          ['999','999'], // we will ignore 999 if it is input for activities
         ];
         validInputs.forEach((allowedInput) => {
           it(`should pass with no validation warnings if DHA set to ${allowedInput}`, async () => {

@@ -1449,15 +1449,14 @@ class WorkplaceCSVValidator {
       return false;
     }
 
-    if (dhaActivities === '999' && dha === '999') {
-      // currently handles 999 unknown as empty to match download logic when dha is 999
-      // (doesn't know which activities implied by doesn't know that they do DHA)
-      // { knowWhatActivities, activities }
+    if (dhaActivities === '999' && dha === '1') {
+      // edge cases
+      // doesn't know which activities implied but does know that they do DHA
       this._staffWhatKindDelegatedHealthcareActivities = { knowWhatActivities: "Don't know", activities: [] };
       return true;
     }
 
-    if (!dhaActivities) {
+    if (!dhaActivities || dhaActivities === '999') {
       this._staffWhatKindDelegatedHealthcareActivities = null;
       return true;
     }
@@ -1504,7 +1503,6 @@ class WorkplaceCSVValidator {
 
     const mapped = allowed.map((buCode) => {
       return this._getIdFromBulkUploadCode(buCode, this.mappings.delegatedHealthcareActivities);
-      //return this.mappings.delegatedHealthcareActivities.find((dha) => dha.bulkUploadCode.toString() === activity);
     });
 
     this._staffWhatKindDelegatedHealthcareActivities = { knowWhatActivities: 'Yes', activities: mapped };
@@ -2149,7 +2147,6 @@ class WorkplaceCSVValidator {
     }
   }
 
-  //break for todo for tuesday
   _validateCwpReasons(cwpUseAsString, cwpUseReasons) {
     if (cwpUseAsString !== 'Yes') {
       this._careWorkforcePathwayUse = { use: cwpUseAsString, reasons: [] };
@@ -2846,7 +2843,6 @@ class WorkplaceCSVValidator {
     );
   }
 
-  //break this for todo for tuesday
   _transformCareWorkforcePathwayUse() {
     if (!this._careWorkforcePathwayUse) {
       return false;
