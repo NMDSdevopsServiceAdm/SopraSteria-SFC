@@ -48,7 +48,7 @@
             <div class="govuk-checkboxes__item">
               <input
                 class="govuk-checkboxes__input"
-                id="delegatedHealthcareActivities-do-not-know"
+                id="delegatedHealthcareActivities-{{ delegatedHealthcareActivitiesLength }}"
                 [formControlName]="delegatedHealthcareActivitiesLength"
                 type="checkbox"
                 data-behaviour="exclusive"
@@ -56,7 +56,10 @@
                 (click)="onCheckboxClick($event.target)"
                 [checked]="isDoNotKnowChecked"
               />
-              <label class="govuk-label govuk-checkboxes__label" for="delegatedHealthcareActivities-do-not-know">
+              <label
+                class="govuk-label govuk-checkboxes__label"
+                for="delegatedHealthcareActivities-{{ delegatedHealthcareActivitiesLength }}"
+              >
                 {{ doNotKnowOption.title }}
               </label>
             </div>
