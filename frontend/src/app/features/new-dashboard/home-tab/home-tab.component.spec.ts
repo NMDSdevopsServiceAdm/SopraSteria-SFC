@@ -32,13 +32,7 @@ import { NewDashboardHeaderComponent } from '../../../shared/components/new-dash
 import { NewHomeTabComponent } from './home-tab.component';
 
 describe('NewHomeTabComponent', () => {
-  const setup = async (
-    cqcStatusMatch = true,
-    establishment = Establishment,
-    comparisonDataAvailable = true,
-    noOfWorkplaces = 9,
-    overrides: any = {},
-  ) => {
+  const setup = async (overrides: any = {}) => {
     const dataLayerPushSpy = jasmine.createSpy();
     const MockWindow = {
       dataLayer: {
@@ -65,7 +59,7 @@ describe('NewHomeTabComponent', () => {
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(1, overrides.userRole ?? Roles.Edit),
+          useFactory: MockUserService.factory(1, overrides?.userRole ?? Roles.Edit),
           deps: [HttpClient],
         },
         {
@@ -79,6 +73,7 @@ describe('NewHomeTabComponent', () => {
                   trainingCounts: {} as TrainingCounts,
                   workersNotCompleted: [],
                 },
+                cqcStatusCheck: { cqcStatusMatch: overrides?.cqcStatusMatch ?? true },
               },
             },
             queryParams: of({ view: null }),
@@ -98,9 +93,9 @@ describe('NewHomeTabComponent', () => {
         OwnershipChangeMessageDialogComponent,
       ],
       componentProperties: {
-        workplace: establishment,
-        meta: comparisonDataAvailable
-          ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
+        workplace: overrides?.establishment ?? Establishment,
+        meta: overrides?.comparisonDataAvailable
+          ? { workplaces: overrides?.noOfWorkplaces ?? 9, staff: 4, localAuthority: 'Test LA' }
           : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
       },
       schemas: [NO_ERRORS_SCHEMA],
@@ -172,10 +167,14 @@ describe('NewHomeTabComponent', () => {
     describe('Does your data meet funding requirements card', () => {
       it('should render the funding card with link to wdf section', async () => {
         const overrides = {
+          cqcStatusMatch: false,
+          establishment: Establishment,
+          comparisonDataAvailable: true,
+          noOfWorkplaces: 9,
           permissions: ['canViewEstablishment', 'canViewListOfWorkers', 'canViewWdfReport'],
         };
 
-        const { getByText } = await setup(false, Establishment, true, 9, overrides);
+        const { getByText } = await setup(overrides);
 
         const link = getByText('Does your data meet funding requirements?');
         expect(link).toBeTruthy();
@@ -464,7 +463,8 @@ describe('NewHomeTabComponent', () => {
         };
 
         it('should show the benchmarks card text non pluralised if there is only one workplace in the comparison data', async () => {
-          const { getByText } = await setup(false, establishment, true, 1);
+          const overrides = { cqcStatusMatch: false, establishment, comparisonDataAvailable: true, noOfWorkplaces: 1 };
+          const { getByText } = await setup(overrides);
 
           const benchmarksCardText = getByText('There is 1 workplace providing day care and day services in Test LA.');
 
@@ -472,7 +472,8 @@ describe('NewHomeTabComponent', () => {
         });
 
         it('without comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
-          const { getByText, tabsServiceSpy } = await setup(false, establishment, false);
+          const overrides = { cqcStatusMatch: false, establishment, comparisonDataAvailable: false };
+          const { getByText, tabsServiceSpy } = await setup(overrides);
 
           const benchmarksLink = getByText('See how you compare against other workplaces');
           const benchmarksCardText = getByText(
@@ -498,7 +499,8 @@ describe('NewHomeTabComponent', () => {
           };
 
           it('with comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
-            const { getByText, tabsServiceSpy } = await setup(false, establishment);
+            const overrides = { cqcStatusMatch: false, establishment, comparisonDataAvailable: true };
+            const { getByText, tabsServiceSpy } = await setup(overrides);
 
             const benchmarksLink = getByText(
               'See how your pay, recruitment and retention compares against other workplaces',
@@ -525,7 +527,8 @@ describe('NewHomeTabComponent', () => {
         };
 
         it('should show a card with a link that takes you to the benchmarks tab', async () => {
-          const { getByText, tabsServiceSpy } = await setup(false, establishment);
+          const overrides = { cqcStatusMatch: false, establishment, comparisonDataAvailable: true };
+          const { getByText, tabsServiceSpy } = await setup(overrides);
 
           const benchmarksLink = getByText('See how you compare against other workplaces');
           const benchmarksCardText = getByText('There are 9 workplaces providing adult social care in Test LA.');
@@ -537,7 +540,8 @@ describe('NewHomeTabComponent', () => {
         });
 
         it('should show the benchmarks card text non pluralised if there is only one workplace in the comparison data', async () => {
-          const { getByText } = await setup(false, establishment, true, 1);
+          const overrides = { cqcStatusMatch: false, establishment, comparisonDataAvailable: true, noOfWorkplaces: 1 };
+          const { getByText } = await setup(overrides);
 
           const benchmarksCardText = getByText('There is 1 workplace providing adult social care in Test LA.');
 
@@ -545,7 +549,8 @@ describe('NewHomeTabComponent', () => {
         });
 
         it('without comparison data, should show a card with a link that takes you to the benchmarks tab', async () => {
-          const { getByText, tabsServiceSpy } = await setup(false, establishment, false);
+          const overrides = { cqcStatusMatch: false, establishment, comparisonDataAvailable: false };
+          const { getByText, tabsServiceSpy } = await setup(overrides);
 
           const benchmarksLink = getByText('See how you compare against other workplaces');
           const benchmarksCardText = getByText(
@@ -589,8 +594,11 @@ describe('NewHomeTabComponent', () => {
       });
 
       it('should show a warning link which should navigate to the workplace tab when showAddWorkplaceDetailsBanner is true', async () => {
-        const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-        const { getByText, tabsServiceSpy } = await setup(false, establishment);
+        const overrides = {
+          cqcStatusMatch: false,
+          establishment: { ...Establishment, showAddWorkplaceDetailsBanner: true },
+        };
+        const { getByText, tabsServiceSpy } = await setup(overrides);
 
         const link = getByText('Add more details to your workplace');
 
@@ -600,7 +608,12 @@ describe('NewHomeTabComponent', () => {
       });
 
       it('should show a CQC message when showAddWorkplaceDetailsBanner is false and cqcStatusMatch is false', async () => {
-        const { getByText } = await setup(false);
+        const overrides = {
+          cqcStatusMatch: false,
+          comparisonDataAvailable: true,
+          establishment: { ...Establishment, showAddWorkplaceDetailsBanner: false },
+        };
+        const { getByText } = await setup(overrides);
 
         expect(getByText('You need to check your CQC details')).toBeTruthy();
       });
@@ -633,32 +646,42 @@ describe('NewHomeTabComponent', () => {
     [Roles.Admin, Roles.AdminManager].forEach((adminRole) => {
       it(`should push admin when role is ${adminRole}`, async () => {
         const overrides = {
+          cqcStatusMatch: false,
+          establishment: Establishment,
+          comparisonDataAvailable: true,
+          noOfWorkplaces: 9,
           userRole: adminRole,
         };
 
-        const { dataLayerPushSpy } = await setup(false, Establishment, true, 9, overrides);
+        const { dataLayerPushSpy } = await setup(overrides);
 
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
       });
 
       it(`should push admin when role is ${adminRole} even if isParent is true`, async () => {
         const overrides = {
+          cqcStatusMatch: false,
+          establishment: { ...Establishment, isParent: true },
+          comparisonDataAvailable: true,
+          noOfWorkplaces: 9,
           userRole: adminRole,
         };
-        const establishment = { ...Establishment, isParent: true };
 
-        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+        const { dataLayerPushSpy } = await setup(overrides);
 
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
       });
 
       it(`should push admin when role is ${adminRole} even if there is parentUid`, async () => {
         const overrides = {
+          cqcStatusMatch: false,
+          establishment: { ...Establishment, parentUid: 'parent-uid' },
+          comparisonDataAvailable: true,
+          noOfWorkplaces: 9,
           userRole: adminRole,
         };
-        const establishment = { ...Establishment, parentUid: 'parent-uid' };
 
-        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+        const { dataLayerPushSpy } = await setup(overrides);
 
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
       });
@@ -667,33 +690,42 @@ describe('NewHomeTabComponent', () => {
     [Roles.Edit, Roles.Read].forEach((role) => {
       it(`should push 'Parent' when role is ${role} and isParent is true`, async () => {
         const overrides = {
+          cqcStatusMatch: false,
+          establishment: { ...Establishment, isParent: true },
+          comparisonDataAvailable: true,
+          noOfWorkplaces: 9,
           userRole: role,
         };
-        const establishment = { ...Establishment, isParent: true };
 
-        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+        const { dataLayerPushSpy } = await setup(overrides);
 
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Parent' });
       });
 
       it(`should push 'Sub' when role is ${role} and there is parentUid`, async () => {
         const overrides = {
+          cqcStatusMatch: false,
+          establishment: { ...Establishment, parentUid: 'parent-uid' },
+          comparisonDataAvailable: true,
+          noOfWorkplaces: 9,
           userRole: role,
         };
-        const establishment = { ...Establishment, parentUid: 'parent-uid' };
 
-        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+        const { dataLayerPushSpy } = await setup(overrides);
 
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Sub' });
       });
 
       it(`should push 'Standalone' when role is ${role} and there is no parentUid and isParent false`, async () => {
         const overrides = {
+          cqcStatusMatch: false,
+          establishment: { ...Establishment, parentUid: null, isParent: false },
+          comparisonDataAvailable: true,
+          noOfWorkplaces: 9,
           userRole: role,
         };
-        const establishment = { ...Establishment, parentUid: null, isParent: false };
 
-        const { dataLayerPushSpy } = await setup(false, establishment, true, 9, overrides);
+        const { dataLayerPushSpy } = await setup(overrides);
 
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Standalone' });
       });
