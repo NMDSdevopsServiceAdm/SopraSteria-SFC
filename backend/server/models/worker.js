@@ -1554,7 +1554,6 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.job,
           as: 'mainJob',
           attributes: ['title'],
-
           where: {
             canDoDelegatedHealthcareActivities: true,
           },
