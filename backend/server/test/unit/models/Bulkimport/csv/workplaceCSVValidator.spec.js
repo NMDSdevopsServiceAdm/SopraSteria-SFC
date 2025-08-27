@@ -1320,8 +1320,6 @@ describe('Bulk Upload - Establishment CSV', () => {
           });
         });
 
-        // is this too much duplication? it could be covered by 'dha answered & incompatible main service'
-        // combined with 'activities listed when dha is not yes'
         it('should add DHA_MAIN_SERVICE_WARNING if DHA Activities answered but main service cannot do DHA', async () => {
           updateEstablishmentToHaveMainService(establishmentRow, '10'); // 10 is BUDI mapping for id 11 (cannot do DHA)
 
