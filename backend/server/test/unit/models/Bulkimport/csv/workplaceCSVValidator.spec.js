@@ -1134,7 +1134,7 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe.only('DHA Fields', () => {
+    describe('DHA Fields', () => {
       const updateEstablishmentToHaveMainService = (establishmentRow, mainServiceId) => {
         establishmentRow.DHA = BU_DHA_YES;
         establishmentRow.DHAACTIVITIES = '1;2';

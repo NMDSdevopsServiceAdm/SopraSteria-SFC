@@ -1468,8 +1468,6 @@ class WorkplaceCSVValidator {
     }
 
     const disallowed = activities.filter((a) => !ALLOWED_ACTIVITIES.includes(a));
-
-    console.log('activities: ' + activities + ' disallowed: ' + disallowed);
     let allowed = [];
     if (disallowed.length > 0) {
       if (disallowed.length === activities.length) {
