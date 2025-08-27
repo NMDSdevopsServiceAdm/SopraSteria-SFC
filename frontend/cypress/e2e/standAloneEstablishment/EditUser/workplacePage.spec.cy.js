@@ -234,7 +234,7 @@ describe('Standalone home page as edit user', () => {
     });
   });
 
-  describe.only('Delegate healthcare activities', () => {
+  describe('Delegate healthcare activities', () => {
     const mainServiceThatCanDoDHA = { id: 9, name: 'Day care and day services' };
     const anotherMainServiceThatCanDoDHA = { id: 10, name: 'Other adult day care service' };
 
@@ -320,38 +320,38 @@ describe('Standalone home page as edit user', () => {
       });
 
       it('should clear the answers for DHA questions when main service change to one that cannot do DHA', () => {
-        onWorkplacePage.answerBothDHAQuestions('Yes', mockDHAs);
+        onWorkplacePage.answerDHAQuestions('Yes', mockDHAs);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
 
         // change mainService
-        onWorkplacePage.answerMainService(mainServiceThatCannotDoDHA.name);
+        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCannotDoDHA.name);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).notExist();
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).notExist();
 
         // change it back so that DHA question row appear again
-        onWorkplacePage.answerMainService(mainServiceThatCanDoDHA.name);
+        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCanDoDHA.name);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('-');
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).notExist();
       });
 
       it('should keep the answer for DHA questions unchanged when main service change to another one that can do DHA', () => {
-        onWorkplacePage.answerBothDHAQuestions('Yes', mockDHAs);
+        onWorkplacePage.answerDHAQuestions('Yes', mockDHAs);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
 
         // change mainService
-        onWorkplacePage.answerMainService(anotherMainServiceThatCanDoDHA.name);
+        onWorkplacePage.answerMainServiceQuestion(anotherMainServiceThatCanDoDHA.name);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
 
         // change it back
-        onWorkplacePage.answerMainService(mainServiceThatCanDoDHA.name);
+        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCanDoDHA.name);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
