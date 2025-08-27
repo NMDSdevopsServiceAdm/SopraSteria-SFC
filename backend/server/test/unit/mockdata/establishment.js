@@ -143,6 +143,7 @@ exports.knownHeaders = [
   'SERVICEUSERS',
   'OTHERUSERDESC',
   'DHA',
+  'DHAACTIVITIES',
   'TOTALPERMTEMP',
   'ALLJOBROLES',
   'STARTERS',

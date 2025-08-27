@@ -1481,6 +1481,7 @@ module.exports = function (sequelize, DataTypes) {
         'pensionContribution',
         'careWorkforcePathwayUse',
         'staffDoDelegatedHealthcareActivities',
+        'staffWhatKindDelegatedHealthcareActivities',
       ],
       where: {
         [Op.or]: [
@@ -1552,6 +1553,11 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.careWorkforcePathwayWorkplaceAwareness,
           attributes: ['id', 'bulkUploadCode'],
           as: 'careWorkforcePathwayWorkplaceAwareness',
+        },
+        {
+          model: sequelize.models.delegatedHealthcareActivities,
+          attributes: ['id', 'bulkUploadCode'],
+          as: 'delegatedHealthcareActivities',
         },
       ],
     });

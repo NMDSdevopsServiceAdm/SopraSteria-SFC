@@ -31,5 +31,7 @@ module.exports.apiEstablishmentBuilder = build('Establishment', {
     pensionContribution: null,
     careWorkersLeaveDaysPerYear: null,
     staffDoDelegatedHealthcareActivities: null,
+    staffWhatKindDelegatedHealthcareActivities: null,
+    delegatedHealthcareActivities: [],
   },
 });
