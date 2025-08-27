@@ -24,7 +24,7 @@ export class WorkplacePage {
   ];
 
   // store testId for div rows
-  static mainServiceTestId = '';
+  static mainServiceTestId = 'mainService';
   static DHAQuestion1TestId = 'carryOutDelegatedHealthcareActivities';
   static DHAQuestion2TestId = 'know-what-delegated-healthcare-activities';
 
@@ -91,8 +91,8 @@ export class WorkplacePage {
     });
   };
 
-  answerMainService = (nameOfNewMainService) => {
-    this.clickIntoQuestion('mainService');
+  answerMainServiceQuestion = (nameOfNewMainService) => {
+    this.clickIntoQuestion(WorkplacePage.mainServiceTestId);
     cy.get('h1').should('contain', 'Is your new main service regulated by the Care Quality Commission (CQC)?');
     cy.getByLabel('No').click();
     cy.get('button').contains('Continue').click();
@@ -100,6 +100,8 @@ export class WorkplacePage {
     cy.get('h1').should('contain', 'Select your main service');
     cy.getByLabel(nameOfNewMainService).click();
     cy.get('button').contains(/Save/).click();
+
+    cy.get('h1').should('contain', 'Workplace');
   };
 
   answerDHAQuestion1 = (doStaffCarryOutDHA) => {
@@ -116,7 +118,7 @@ export class WorkplacePage {
     cy.get('button').contains(/Save/).click();
   };
 
-  answerBothDHAQuestions = (doStaffCarryOutDHA, whatKindOfDHAs) => {
+  answerDHAQuestions = (doStaffCarryOutDHA, whatKindOfDHAs) => {
     this.clickIntoQuestion(WorkplacePage.DHAQuestion1TestId);
     this.answerDHAQuestion1(doStaffCarryOutDHA);
 
@@ -125,6 +127,7 @@ export class WorkplacePage {
     }
 
     this.answerDHAQuestion2(whatKindOfDHAs);
+    cy.get('h1').should('contain', 'Workplace');
   };
 }
 
