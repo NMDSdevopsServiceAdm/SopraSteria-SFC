@@ -10,9 +10,10 @@ export class StaffRecordsPage {
 
 export class StaffRecordSummaryPage {
   answerDHAQuestion = (carryOutDHA) => {
-    cy.get('h1').should('contain.text', 'Do they carry out delegated healthcare activities?');
+    cy.get('h1').should('contain', 'Do they carry out delegated healthcare activities?');
     cy.getByLabel(carryOutDHA).click();
     cy.get('button').contains(/Save/).click();
+    cy.get('h1').should('contain', 'Staff record');
   };
 
   // staff record summary page don't use testid for most rows, so use the field name to locate the row instead
