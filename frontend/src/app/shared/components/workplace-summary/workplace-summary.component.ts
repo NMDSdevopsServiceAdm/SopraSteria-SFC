@@ -2,6 +2,7 @@ import { I18nPluralPipe } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
+import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -33,6 +34,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   public checkAnswersPage: boolean;
   public now: Date = new Date();
   public typeOfEmployer: string;
+  public isAwareOfCareWorkforcePathway: boolean;
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
   @Input() removeServiceSectionMargin = false;
@@ -79,6 +81,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     private permissionsService: PermissionsService,
     private workerService: WorkerService,
     private cqcStatusChangeService: CqcStatusChangeService,
+    private careWorkforcePathwayService: CareWorkforcePathwayService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -110,7 +113,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.checkAnswersPage = this.return?.url.includes('check-answers');
-
+    this.checkIfWorkplaceIsAwareOfCareWorkforcePathway();
     this.setTotalStaffWarning();
     if (this.canEditEstablishment && this.wdfView) {
       this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
@@ -163,6 +166,12 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
     capacityService.sort((serviceA: any, serviceB: any) => {
       return serviceA.service.localeCompare(serviceB.service);
     });
+  }
+
+  private checkIfWorkplaceIsAwareOfCareWorkforcePathway(): void {
+    const awarenessAnswer = this.workplace.careWorkforcePathwayWorkplaceAwareness;
+    this.isAwareOfCareWorkforcePathway =
+      this.careWorkforcePathwayService.isAwareOfCareWorkforcePathway(awarenessAnswer);
   }
 
   ngOnDestroy(): void {
