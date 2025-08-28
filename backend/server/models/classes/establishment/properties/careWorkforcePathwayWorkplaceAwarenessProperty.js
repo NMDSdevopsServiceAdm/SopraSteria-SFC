@@ -1,4 +1,5 @@
 const { ChangePropertyPrototype } = require('../../properties/changePrototype');
+const models = require('../../../index');
 
 exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePathwayWorkplaceAwarenessProperty extends (
   ChangePropertyPrototype
@@ -13,8 +14,20 @@ exports.CareWorkforcePathwayWorkplaceAwarenessProperty = class CareWorkforcePath
   }
 
   async restoreFromJson(document) {
-    if (document.careWorkforcePathwayWorkplaceAwareness) {
-      this.property = document.careWorkforcePathwayWorkplaceAwareness;
+    if (!document.careWorkforcePathwayWorkplaceAwareness) {
+      return;
+    }
+
+    const cwpAwareness = await models.careWorkforcePathwayWorkplaceAwareness.findOne({
+      where: {
+        id: document.careWorkforcePathwayWorkplaceAwareness?.id,
+      },
+      attributes: ['id', 'title'],
+      raw: true,
+    });
+
+    if (cwpAwareness) {
+      this.property = cwpAwareness;
     }
   }
 
