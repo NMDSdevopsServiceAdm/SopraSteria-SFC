@@ -14,11 +14,21 @@ Cypress.Commands.add('insertTestWorker', (args) => {
     contractType = 'Permanent',
     mainJobFKValue = '10',
     completed = true,
+    careWorkforcePathwayRoleCategoryFK = null,
   } = args;
   const queryString = `INSERT INTO cqc."Worker"
-    ("WorkerUID", "EstablishmentFK", "NameOrIdValue", "ContractValue", "MainJobFKValue", "CompletedValue", "updatedby")
-    VALUES ($1, $2, $3, $4, $5, $6, 'admin1')`;
-  const parameters = [uuidv4(), establishmentID, workerName, contractType, mainJobFKValue, completed];
+    ("WorkerUID", "EstablishmentFK", "NameOrIdValue", "ContractValue", "MainJobFKValue", "CompletedValue", "CareWorkforcePathwayRoleCategoryFK", "updatedby")
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+  const parameters = [
+    uuidv4(),
+    establishmentID,
+    workerName,
+    contractType,
+    mainJobFKValue,
+    completed,
+    careWorkforcePathwayRoleCategoryFK,
+    'admin1',
+  ];
 
   cy.task('dbQuery', { queryString, parameters });
 });
