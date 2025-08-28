@@ -56,9 +56,6 @@ Thumbs.db
 */fecoverage
 fecoverage
 
-# localhost config variations
-backend/server/config/localhost.yaml
-
 // nodemon localisations
 nodemon.json
 CQCLocationAPICall/coverage/
