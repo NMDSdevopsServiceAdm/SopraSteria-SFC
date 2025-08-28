@@ -1,0 +1,94 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="workersToShow?.length">
+  <fieldset class="govuk-fieldset">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l" data-testid="section-heading">Employment details</span>
+          <h1 class="govuk-fieldset__heading">Who carries out delegated healthcare activities?</h1>
+        </legend>
+        <div
+          class="govuk-inset-text thin-border govuk-!-padding-right-0 govuk-!-margin-top-0 govuk-!-margin-bottom-7"
+          style="margin-right: -20px"
+        >
+          {{ dhaDefinition }}
+        </div>
+
+        <app-details-dha-examples
+          [allDHAs]="allDelegatedHealthcareActivities"
+          [staffWhatKindDelegatedHealthcareActivities]="staffWhatKindDelegatedHealthcareActivities"
+        ></app-details-dha-examples>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <div class="govuk-form-group">
+          <table class="govuk-table">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th scope="col" class="govuk-table__header">Name or ID number</th>
+                <th scope="col" class="govuk-table__header" width="25%">Job role</th>
+                <th scope="col" class="govuk-table__header"></th>
+              </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+              <tr
+                class="govuk-table__row"
+                *ngFor="let worker of workersToShow; let i = index"
+                [attr.data-testid]="'worker-row-' + i"
+              >
+                <td class="govuk-table__cell" style="vertical-align: middle">
+                  <a [routerLink]="['../', worker.uid, 'staff-record-summary']">{{ worker.nameOrId }}</a>
+                </td>
+                <td class="govuk-table__cell" style="vertical-align: middle">{{ worker.mainJob.title }}</td>
+                <td class="govuk-table__cell" style="vertical-align: middle">
+                  <div class="govuk-radios govuk-radios--inline asc-inline-radio-buttons">
+                    <div
+                      *ngFor="let answer of avalibleAnswers; let j = index"
+                      class="govuk-radios__item govuk-!-margin-left-4 govuk-!-margin-bottom-0"
+                    >
+                      <input
+                        id="delegatedHealthcare-{{ i }}-{{ j }}"
+                        name="delegatedHealthcare-{{ i }}"
+                        class="govuk-radios__input"
+                        type="radio"
+                        [checked]="worker.value === answer"
+                        [value]="answer.value"
+                        (change)="radioChange(i, j)"
+                      />
+                      <label class="govuk-label govuk-radios__label" for="delegatedHealthcare-{{ i }}-{{ j }} ">
+                        {{ answer.tag }}</label
+                      >
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <app-pagination
+          [attr.data-testid]="'pagination'"
+          *ngIf="workerCount > itemsPerPage"
+          [itemsPerPage]="itemsPerPage"
+          [totalNoOfItems]="workerCount"
+          (currentPageIndexChange)="handlePageUpdate($event)"
+          [currentPageIndex]="pageIndex"
+        ></app-pagination>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="govuk-button-group govuk-!-margin-top-12">
+    <button type="submit" class="govuk-button govuk-!-margin-right-9">Save and return</button>
+
+    <a
+      class="govuk-button govuk-button--link govuk-!-margin-left-9"
+      role="button"
+      draggable="false"
+      (click)="onCancel($event)"
+      href="#"
+    >
+      Cancel
+    </a>
+  </div>
+</form>

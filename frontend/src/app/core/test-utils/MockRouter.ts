@@ -8,6 +8,10 @@ export class MockRouter extends Router {
       const service = new MockRouter();
 
       Object.keys(overrides).forEach((overrideName) => {
+        if (overrideName === 'url') {
+          Object.defineProperty(service, 'url', { get: () => overrides[overrideName] });
+          return;
+        }
         service[overrideName] = overrides[overrideName];
       });
 

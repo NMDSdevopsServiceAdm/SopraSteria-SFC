@@ -138,6 +138,8 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { DetailsDhaExamplesComponent } from './components/details-dha-examples/details-dha-examples.component';
+import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -276,6 +278,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     HasValuePipe,
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
+    DetailsDhaExamplesComponent,
+    FormatWhatDhaPipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -405,6 +409,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     HasValuePipe,
     FormatCwpUsePipe,
     CareWorkforcePathwayWorkplaceAwarenessTitle,
+    DetailsDhaExamplesComponent,
+    FormatWhatDhaPipe,
   ],
   providers: [
     DialogService,
@@ -415,6 +421,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     FeatureFlagsResolver,
     HasValuePipe,
     FormatCwpUsePipe,
+    FormatWhatDhaPipe,
   ],
 })
 export class SharedModule {}

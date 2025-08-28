@@ -53,6 +53,7 @@ describe('Summary section', () => {
         noOfWorkersWhoRequireInternationalRecruitment: overrides.noOfWorkersWhoRequireInternationalRecruitment ?? 0,
         noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered:
           overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
+        noOfWorkersWithDelegatedHealthcareUnanswered: overrides.noOfWorkersWithDelegatedHealthcareUnanswered ?? 0,
         workplacesNeedAttention: overrides.workplacesNeedAttention ?? false,
       },
     });
@@ -309,6 +310,108 @@ describe('Summary section', () => {
 
         const workplaceLink = getByText('Workplace');
         expect(workplaceLink.tagName).toBe('A');
+      });
+    });
+
+    describe('Staff carry out delegated healthcare activities question', () => {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+          staffDoDelegatedHealthcareActivities: null,
+        };
+      };
+
+      const questionMessage = 'Do your staff carry out delegated healthcare activities?';
+
+      it('should show the DHA question if staffDoDelegatedHealthcareActivities null and main service can do DHA', async () => {
+        const { getByTestId } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).getByText(questionMessage)).toBeTruthy();
+        expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+      });
+
+      it('should navigate to staff-do-delegated-healthcare-activities when question link clicked', async () => {
+        const { getByTestId, routerSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText(questionMessage);
+
+        fireEvent.click(link);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          Establishment.uid,
+          'staff-do-delegated-healthcare-activities',
+        ]);
+      });
+
+      it('should set return in establishment service when question link clicked', async () => {
+        const { getByTestId, setReturnToSpy } = await setup({ establishment: establishmentWhichShouldSeeMessage() });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText(questionMessage);
+
+        fireEvent.click(link);
+        expect(setReturnToSpy).toHaveBeenCalled();
+      });
+
+      it('should show question with no link if no edit permission for establishment', async () => {
+        const { getByTestId, getByText } = await setup({
+          canEditEstablishment: false,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const dhaMessage = within(workplaceRow).queryByText(questionMessage);
+        expect(dhaMessage.tagName).not.toBe('A');
+
+        const workplaceLink = getByText('Workplace');
+        expect(workplaceLink.tagName).toBe('A');
+      });
+
+      it('should not show the DHA question if staffDoDelegatedHealthcareActivities null but main service cannot do DHA', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            ...Establishment,
+            showAddWorkplaceDetailsBanner: false,
+            staffDoDelegatedHealthcareActivities: null,
+            mainService: {
+              canDoDelegatedHealthcareActivities: null,
+              id: 11,
+              name: 'Domestic services and home help',
+              reportingID: 10,
+            },
+          },
+        });
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).queryByText(questionMessage)).toBeFalsy();
+      });
+
+      it('should not show the DHA question if main service can do DHA but staffDoDelegatedHealthcareActivities is answered', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            ...Establishment,
+            showAddWorkplaceDetailsBanner: false,
+            staffDoDelegatedHealthcareActivities: 'Yes',
+            mainService: {
+              canDoDelegatedHealthcareActivities: true,
+              id: 9,
+              name: 'Day care and day services',
+              reportingID: 6,
+            },
+          },
+        });
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).queryByText(questionMessage)).toBeFalsy();
       });
     });
 
@@ -664,6 +767,118 @@ describe('Summary section', () => {
         const workersCareWorkforcePathwayLink = queryByText('Where are your staff on the care workforce pathway?');
 
         expect(workersCareWorkforcePathwayLink).toBeFalsy();
+      });
+    });
+
+    describe('Who carries out delegated healthcare activities', () => {
+      const establishmentWhichShouldSeeMessage = () => {
+        return {
+          ...Establishment,
+          showAddWorkplaceDetailsBanner: false,
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+          staffDoDelegatedHealthcareActivities: null,
+        };
+      };
+
+      const questionMessage = 'Who carries out delegated healthcare activities?';
+
+      it('should show the DHA staff question if staffDoDelegatedHealthcareActivities null and main service can do DHA and noOfWorkersWithDelegatedHealthcareUnanswered is greater than 0', async () => {
+        const { getByTestId } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const staffRow = getByTestId('staff-records-row');
+        expect(within(staffRow).getByText(questionMessage)).toBeTruthy();
+        expect(within(staffRow).getByTestId('orange-flag')).toBeTruthy();
+      });
+
+      it('should navigate to who-carry-out-delegated-healthcare-activities when question link clicked', async () => {
+        const { getByTestId, routerSpy } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const staffRow = getByTestId('staff-records-row');
+        const link = within(staffRow).getByText(questionMessage);
+
+        fireEvent.click(link);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          Establishment.uid,
+          'staff-record',
+          'who-carry-out-delegated-healthcare-activities',
+        ]);
+      });
+
+      it('should set return in establishment service when question link clicked', async () => {
+        const { getByTestId, setReturnToSpy } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const staffRow = getByTestId('staff-records-row');
+        const link = within(staffRow).getByText(questionMessage);
+
+        fireEvent.click(link);
+        expect(setReturnToSpy).toHaveBeenCalled();
+      });
+
+      it('should show question with no link if no edit permission for establishment', async () => {
+        const { getByTestId, getByText } = await setup({
+          noOfWorkersWithDelegatedHealthcareUnanswered: 3,
+          canEditWorker: false,
+          establishment: establishmentWhichShouldSeeMessage(),
+        });
+
+        const staffRow = getByTestId('staff-records-row');
+        const dhaStaffMessage = within(staffRow).queryByText(questionMessage);
+
+        expect(dhaStaffMessage.tagName).not.toBe('A');
+
+        const staffLink = getByText('Staff records');
+        expect(staffLink.tagName).toBe('A');
+      });
+
+      it('should not show the who carries out DHA activities question if staffDoDelegatedHealthcareActivities null but main service cannot do DHA and   noOfWorkersWithDelegatedHealthcareUnanswered is 0', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            ...Establishment,
+            staffDoDelegatedHealthcareActivities: null,
+            mainService: {
+              canDoDelegatedHealthcareActivities: null,
+              id: 11,
+              name: 'Domestic services and home help',
+              reportingID: 10,
+            },
+          },
+        });
+
+        const staffRow = getByTestId('staff-records-row');
+        expect(within(staffRow).queryByText(questionMessage)).toBeFalsy();
+      });
+
+      it('should not show the who carries out DHA activities question question if main service can do DHA but staffDoDelegatedHealthcareActivities is answered', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            ...Establishment,
+            staffDoDelegatedHealthcareActivities: 'No',
+            mainService: {
+              canDoDelegatedHealthcareActivities: true,
+              id: 9,
+              name: 'Day care and day services',
+              reportingID: 6,
+            },
+          },
+        });
+
+        const staffRow = getByTestId('staff-records-row');
+        expect(within(staffRow).queryByText(questionMessage)).toBeFalsy();
       });
     });
 

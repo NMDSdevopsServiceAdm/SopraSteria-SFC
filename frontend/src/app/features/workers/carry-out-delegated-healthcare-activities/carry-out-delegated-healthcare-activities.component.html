@@ -1,0 +1,58 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" data-testid="staff-carry-out-dha">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading" style="width: 90%">
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              {{ heading }}
+            </h1>
+          </legend>
+          <div
+            class="govuk-inset-text thin-border govuk-!-padding-right-0 govuk-!-margin-top-0 asc__negative-margin-right-4"
+          >
+            {{ dhaDefinition }}
+          </div>
+
+          <app-details-dha-examples
+            [allDHAs]="allDelegatedHealthcareActivities"
+            [staffWhatKindDelegatedHealthcareActivities]="staffWhatKindDelegatedHealthcareActivities"
+          ></app-details-dha-examples>
+
+          <div class="govuk-form-group">
+            <div class="govuk-radios govuk-!-margin-top-3">
+              <ng-container *ngFor="let option of options; let i = index">
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    id="carryOutDelegatedHealthcareActivities-{{ i }}"
+                    name="carryOutDelegatedHealthcareActivities"
+                    type="radio"
+                    [formControlName]="'carryOutDelegatedHealthcareActivities'"
+                    [value]="option.value"
+                  />
+                  <label class="govuk-label govuk-radios__label" for="carryOutDelegatedHealthcareActivities-{{ i }}">
+                    {{ option.label }}
+                  </label>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+
+  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+</form>

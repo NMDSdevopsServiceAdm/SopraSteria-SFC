@@ -48,6 +48,8 @@ import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
+import { CarryOutDelegatedHealthcareActivitiesComponent } from '@features/workers/carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
+import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 
 const routes: Routes = [
   {
@@ -205,6 +207,12 @@ const routes: Routes = [
                 path: 'adult-social-care-started',
                 component: AdultSocialCareStartedComponent,
                 data: { title: 'Adult Social Care Started' },
+              },
+              {
+                path: 'carry-out-delegated-healthcare-activities',
+                component: CarryOutDelegatedHealthcareActivitiesComponent,
+                resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
+                data: { title: 'Carry out Delegated Healthcare Activities' },
               },
               {
                 path: 'days-of-sickness',
@@ -413,6 +421,12 @@ const routes: Routes = [
         path: 'adult-social-care-started',
         component: AdultSocialCareStartedComponent,
         data: { title: 'Adult Social Care Started' },
+      },
+      {
+        path: 'carry-out-delegated-healthcare-activities',
+        component: CarryOutDelegatedHealthcareActivitiesComponent,
+        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
+        data: { title: 'Carry out Delegated Healthcare Activities' },
       },
       {
         path: 'days-of-sickness',

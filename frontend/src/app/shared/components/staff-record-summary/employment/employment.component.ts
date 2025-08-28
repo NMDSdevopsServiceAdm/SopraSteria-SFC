@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, OnChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { EthnicityService } from '@core/services/ethnicity.service';
@@ -11,13 +11,14 @@ import dayjs from 'dayjs';
 import isNumber from 'lodash/isNumber';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
+import { shouldSeeDHAWorkerQuestion } from '@core/utils/worker-util';
 
 @Component({
   selector: 'app-employment',
   templateUrl: './employment.component.html',
   providers: [DecimalPipe],
 })
-export class EmploymentComponent extends StaffRecordSummaryComponent {
+export class EmploymentComponent extends StaffRecordSummaryComponent implements OnInit, OnDestroy, OnChanges {
   @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() public canEditWorker: boolean;
@@ -85,7 +86,11 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     );
   }
 
-  public showWdfConfirmations: any = {
+  get displayCarryOutDelegatedHealthcareActivities() {
+    return shouldSeeDHAWorkerQuestion(this.workplace, this.worker);
+  }
+
+  public showWdfConfirmations: Record<string, boolean> = {
     mainJobStartDate: null,
     daysSick: null,
     zeroHoursContract: null,

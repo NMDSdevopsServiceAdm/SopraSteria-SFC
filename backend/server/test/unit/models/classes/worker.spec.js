@@ -552,4 +552,29 @@ describe('Worker Class', () => {
       expect(trainingDestroySpy).to.not.have.been.called;
     });
   });
+
+  describe('patchPropertyValue', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should update the value of a managed property', async () => {
+      const mockWorker = new Worker();
+      mockWorker.load({ carryOutDelegatedHealthcareActivities: 'Yes' });
+
+      expect(mockWorker.carryOutDelegatedHealthcareActivities).to.deep.equal('Yes');
+
+      mockWorker.patchPropertyValue('CarryOutDelegatedHealthcareActivities', 'No');
+      expect(mockWorker.carryOutDelegatedHealthcareActivities).to.deep.equal('No');
+    });
+
+    it('should log an error if given property name is invalid', async () => {
+      const mockWorker = new Worker();
+      sinon.stub(console, 'error');
+
+      mockWorker.patchPropertyValue('SomeNonExistProperty', 'No');
+
+      expect(console.error).to.have.been.calledWith('failed to patch non existing property: "SomeNonExistProperty"');
+    });
+  });
 });

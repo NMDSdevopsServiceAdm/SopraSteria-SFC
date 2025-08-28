@@ -47,6 +47,7 @@ module.exports.apiWorkerBuilder = build('Worker', {
     },
     SocialCareStartDateValue: oneOf('Yes', 'No'),
     SocialCareStartDateYear: fake((f) => f.helpers.replaceSymbolWithNumber('####')),
+    carryOutDelegatedHealthcareActivities: oneOf('Yes', 'No', "Don't know"),
     ApprenticeshipTrainingValue: oneOf('Yes', 'No', "Don't know"),
     ContractValue: oneOf('Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'),
     ZeroHoursContractValue: oneOf('Yes', 'No', "Don't know"),

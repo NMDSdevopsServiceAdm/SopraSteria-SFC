@@ -170,6 +170,23 @@
     </dd>
   </div>
 
+  <ng-container *ngIf="displayCarryOutDelegatedHealthcareActivities">
+    <div class="govuk-summary-list__row" data-testid="carry-out-delegated-healthcare-activities-section">
+      <dt class="govuk-summary-list__key">Carries out delegated healthcare activities</dt>
+      <dd class="govuk-summary-list__value">
+        {{ worker.carryOutDelegatedHealthcareActivities | closedEndedAnswer }}
+      </dd>
+      <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' carries out delegated healthcare activities'"
+          [link]="getRoutePath('carry-out-delegated-healthcare-activities', wdfView)"
+          [hasData]="!!worker.carryOutDelegatedHealthcareActivities"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+  </ng-container>
+
   <ng-container *ngIf="displayDaysSickness">
     <div
       class="govuk-summary-list__row"

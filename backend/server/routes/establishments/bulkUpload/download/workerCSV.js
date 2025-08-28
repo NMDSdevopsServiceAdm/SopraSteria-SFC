@@ -32,7 +32,7 @@ const _convertYesNoDontKnow = (value) => {
 // takes the given Worker entity and writes it out to CSV string (one line)
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
-  //     "CARECERT","L2CARECERT","RECSOURCE","HANDCVISA","INOUTUK","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
+  //     "CARECERT","L2CARECERT","RECSOURCE","HANDCVISA","INOUTUK","STARTDATE","STARTINSECT", "DHA","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
   //     "NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","CWPCATEGORY","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
   const columns = [];
 
@@ -228,6 +228,11 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   };
 
   columns.push(socialCareStartDateMappings[entity.SocialCareStartDateValue] || '');
+
+  // "DHA"
+  const carryOutDha = _convertYesNoDontKnow(entity.carryOutDelegatedHealthcareActivities) || '';
+
+  columns.push(carryOutDha);
 
   // "APPRENTICE"
   let apprenticeship = '';

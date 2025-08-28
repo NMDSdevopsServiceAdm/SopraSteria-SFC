@@ -1,0 +1,70 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group govuk-!-padding-bottom-4">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              Do your non-nursing staff carry out delegated healthcare activities?
+            </h1>
+          </legend>
+          <div
+            class="govuk-inset-text thin-border govuk-!-padding-right-0 govuk-!-margin-top-0 govuk-!-margin-bottom-7"
+            style="margin-right: -20px"
+          >
+            {{ dhaDefinition }}
+          </div>
+
+          <app-details-dha-examples
+            [allDHAs]="allDelegatedHealthcareActivities"
+            [staffWhatKindDelegatedHealthcareActivities]="null"
+          ></app-details-dha-examples>
+
+          <div *ngIf="shouldDisplayWarningMessage" class="govuk-warning-text" data-testid="warning-on-dha-data-removal">
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <span class="govuk-warning-text__text" style="font-weight: normal">
+              <span class="govuk-visually-hidden">Warning</span>
+              If you select <strong>No</strong>, all delegated healthcare activity data will be removed from your staff
+              records.
+            </span>
+          </div>
+
+          <div class="govuk-form-group">
+            <div class="govuk-radios govuk-!-margin-top-3">
+              <ng-container *ngFor="let option of options; let i = index">
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    id="staffDoDelegatedHealthcareActivities-{{ i }}"
+                    name="staffDoDelegatedHealthcareActivities"
+                    type="radio"
+                    [formControlName]="'staffDoDelegatedHealthcareActivities'"
+                    [value]="option.value"
+                  />
+                  <label class="govuk-label govuk-radios__label" for="staffDoDelegatedHealthcareActivities-{{ i }}">
+                    {{ option.label }}
+                  </label>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+        [hasConditionalRouting]="true"
+      ></app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,9 +1,10 @@
+import lodash from 'lodash';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -13,12 +14,14 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
 import { EmploymentComponent } from './employment.component';
-import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('EmploymentComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getByTestId, queryByTestId } = await render(EmploymentComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+  async function setup(overrides: any = {}) {
+    const workerOverrides = overrides.worker ?? {};
+    const workplaceOverrides = overrides.workplace ?? {};
+
+    const setupTools = await render(EmploymentComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
       declarations: [SummaryRecordChangeComponent],
       providers: [
         InternationalRecruitmentService,
@@ -27,23 +30,21 @@ describe('EmploymentComponent', () => {
           useFactory: MockPermissionsService.factory(['canEditWorker']),
           deps: [HttpClient],
         },
+        provideRouter([]),
       ],
       componentProperties: {
         canEditWorker: true,
-        workplace: establishmentBuilder() as Establishment,
-        worker: workerBuilder() as Worker,
+        workplace: establishmentBuilder({ overrides: workplaceOverrides }) as Establishment,
+        worker: workerBuilder({ overrides: workerOverrides }) as Worker,
         wdfView: false,
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getByTestId,
-      queryByTestId,
     };
   }
 
@@ -347,6 +348,103 @@ describe('EmploymentComponent', () => {
           `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/inside-or-outside-of-uk`,
         );
       });
+    });
+  });
+
+  describe('Carries out delegated healthcare activities', () => {
+    const mainServiceWithDHA = {
+      canDoDelegatedHealthcareActivities: true,
+      id: 9,
+      name: 'Day care and day services',
+      reportingID: 6,
+      isCQC: false,
+    };
+    const mainServiceWithoutDHA = {
+      canDoDelegatedHealthcareActivities: null,
+      id: 11,
+      name: 'Domestic services and home help',
+      reportingID: 10,
+      isCQC: false,
+    };
+    const mainJobThatCanDoDHA = {
+      jobId: 10,
+      title: 'Care worker',
+      canDoDelegatedHealthcareActivities: true,
+    };
+    const mainJobThatCannotDoDHA = {
+      jobId: 36,
+      title: 'IT manager',
+      canDoDelegatedHealthcareActivities: false,
+    };
+
+    const defaultOveridesForDHA = {
+      worker: { mainJob: mainJobThatCanDoDHA, carryOutDelegatedHealthcareActivities: null },
+      workplace: { mainService: mainServiceWithDHA, staffDoDelegatedHealthcareActivities: 'Yes' },
+    };
+
+    const setupWithDHA = async (overrides: any = {}) => setup(lodash.merge({}, defaultOveridesForDHA, overrides));
+
+    it('should display a row for "Carries out delegated healthcare activities"', async () => {
+      const { getByTestId } = await setupWithDHA();
+
+      const carryOutDHASection = within(getByTestId('carry-out-delegated-healthcare-activities-section'));
+
+      expect(carryOutDHASection.getByText('Carries out delegated healthcare activities')).toBeTruthy();
+    });
+
+    const values = ['Yes', 'No', "Don't know"];
+    const expectedTexts = ['Yes', 'No', 'Not known'];
+
+    lodash.zip(values, expectedTexts).forEach(([value, expectedText]) => {
+      it(`should display ${expectedText} and a Change link when the answer is ${value}`, async () => {
+        const { component, getByTestId } = await setupWithDHA({
+          worker: { carryOutDelegatedHealthcareActivities: value },
+        });
+
+        const carryOutDHASection = within(getByTestId('carry-out-delegated-healthcare-activities-section'));
+        expect(carryOutDHASection.getByText(expectedText)).toBeTruthy();
+
+        const changeLink = carryOutDHASection.getByText('Change');
+
+        expect(changeLink.getAttribute('href')).toBe(
+          `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/carry-out-delegated-healthcare-activities`,
+        );
+      });
+    });
+
+    it('should display a dash "-" and an "Add" link when the answer is null', async () => {
+      const { component, getByTestId } = await setup(defaultOveridesForDHA);
+
+      const carryOutDHASection = within(getByTestId('carry-out-delegated-healthcare-activities-section'));
+      expect(carryOutDHASection.getByText('-')).toBeTruthy();
+
+      const changeLink = carryOutDHASection.getByText('Add');
+
+      expect(changeLink.getAttribute('href')).toBe(
+        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/carry-out-delegated-healthcare-activities`,
+      );
+    });
+
+    it('should not show the row when workplace staffDoDelegatedHealthcareActivities is "No"', async () => {
+      const { queryByText } = await setupWithDHA({
+        workplace: { staffDoDelegatedHealthcareActivities: 'No' },
+      });
+
+      expect(queryByText('Carries out delegated healthcare activities')).toBeFalsy();
+    });
+
+    it("should not show the row when the workplace's main service does not do DHA", async () => {
+      const { queryByText } = await setupWithDHA({
+        workplace: { mainService: mainServiceWithoutDHA },
+      });
+
+      expect(queryByText('Carries out delegated healthcare activities')).toBeFalsy();
+    });
+
+    it("should not show the row when the worker's main job role cannot do DHA", async () => {
+      const { queryByText } = await setupWithDHA({ worker: { mainJob: mainJobThatCannotDoDHA } });
+
+      expect(queryByText('Carries out delegated healthcare activities')).toBeFalsy();
     });
   });
 });

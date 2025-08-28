@@ -37,6 +37,11 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      canDoDelegatedHealthcareActivities: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'CanDoDelegatedHealthcareActivities',
+      },
     },
     {
       tableName: 'services',
@@ -89,6 +94,16 @@ module.exports = function (sequelize, DataTypes) {
     return this.findOne({
       where,
       attributes: ['id', 'other'],
+    });
+  };
+
+  Services.getCanDoDelegatedHealthcareActivities = function (mainServiceId) {
+    return this.findOne({
+      where: {
+        id: mainServiceId,
+      },
+      attributes: ['canDoDelegatedHealthcareActivities'],
+      raw: true,
     });
   };
 

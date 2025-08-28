@@ -39,6 +39,11 @@ module.exports = function (sequelize, DataTypes) {
         ],
         field: 'JobRoleGroup',
       },
+      canDoDelegatedHealthcareActivities: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'CanDoDelegatedHealthcareActivities',
+      },
     },
     {
       tableName: '"Job"',

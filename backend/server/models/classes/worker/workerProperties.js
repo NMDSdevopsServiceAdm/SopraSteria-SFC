@@ -52,6 +52,9 @@ const level2CareCertificateProperty =
   require('./properties/level2CareCertificateProperty').WorkerLevel2CareCertificateProperty;
 const careWorkforcePathwayRoleCategoryProperty =
   require('./properties/careWorkforcePathwayRoleCategoryProperty').CareWorkforcePathwayRoleCategoryProperty;
+const {
+  CarryOutDelegatedHealthcareActivitiesProperty,
+} = require('./properties/carryOutDelegatedHealthcareActivitiesProperty');
 
 class WorkerPropertyManager {
   constructor() {
@@ -97,6 +100,7 @@ class WorkerPropertyManager {
     this._thisManager.registerProperty(healthAndCareVisaProperty);
     this._thisManager.registerProperty(employedFromOutsideUkProperty);
     this._thisManager.registerProperty(careWorkforcePathwayRoleCategoryProperty);
+    this._thisManager.registerProperty(CarryOutDelegatedHealthcareActivitiesProperty);
   }
 
   get manager() {

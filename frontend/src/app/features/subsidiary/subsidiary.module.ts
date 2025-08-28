@@ -6,6 +6,8 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
+import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { FeatureFlagsResolver } from '@core/resolvers/feature-flags.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
@@ -28,6 +30,7 @@ import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 
 @NgModule({
   imports: [
@@ -61,9 +64,12 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
     GetMissingCqcLocationsResolver,
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+    GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     FeatureFlagsResolver,
     CareWorkforcePathwayUseReasonsResolver,
     CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
+    GetDelegatedHealthcareActivitiesResolver,
+    CheckIfAnyWorkerHasDHAAnsweredResolver,
   ],
 })
 export class SubsidiaryModule {}

@@ -25,6 +25,7 @@ export const workerBuilder = build('Worker', {
       jobRoleName: fake((f) => f.lorem.sentence()),
       title: fake((f) => f.lorem.sentence()),
       other: null,
+      canDoDelegatedHealthActivities: oneOf(true, false),
     },
     contract: oneOf('Permanent', 'Temporary', 'Pool or Bank', 'Agency', 'Other'),
     localIdentifier: fake((f) => f.name.findName()),
@@ -75,6 +76,7 @@ export const workerBuilder = build('Worker', {
     britishCitizenship: null,
     updated: '2024-05-01T06:50:45.882Z',
     careWorkforcePathwayRoleCategory: null,
+    carryOutDelegatedHealthcareActivities: null,
   },
 });
 

@@ -1,5 +1,6 @@
 const MAIN_JOB_ROLE_ERROR_CODE = 1280;
 const TRANSFER_STAFF_RECORD_BASE_ERROR_CODE = 1400;
+const WORKER_DHA_WARNING_CODE = 5660;
 
 const MAIN_JOB_ERRORS = {
   RegisteredManagerWithoutCqcRegulatedService: Object.freeze({
@@ -37,6 +38,33 @@ const TRANSFER_STAFF_RECORD_ERRORS = {
   }),
 };
 
+const WORKER_DHA_WARNINGS = {
+  MainJobCannotDoDHA: Object.freeze({
+    warnCode: WORKER_DHA_WARNING_CODE + 1,
+    warnType: 'DHA_WARNING',
+    column: 'DHA',
+    _sourceFieldName: 'carryOutDelegatedHealthcareActivities',
+    warning:
+      "Value entered for DHA will be ignored as worker's MAINJOBROLE cannot carry out delegated healthcare activities",
+  }),
+  WorkplaceMainServiceCannotDoDHA: Object.freeze({
+    warnCode: WORKER_DHA_WARNING_CODE + 2,
+    warnType: 'DHA_WARNING',
+    column: 'DHA',
+    _sourceFieldName: 'carryOutDelegatedHealthcareActivities',
+    warning:
+      "Value entered for DHA will be ignored as MAINSERVICE of worker's workplace cannot do delegated healthcare activities",
+  }),
+
+  WorkplaceAnsweredNoForStaffDoDHA: Object.freeze({
+    warnCode: WORKER_DHA_WARNING_CODE + 3,
+    warnType: 'DHA_WARNING',
+    column: 'DHA',
+    _sourceFieldName: 'carryOutDelegatedHealthcareActivities',
+    warning: "Value entered for DHA will be ignored as worker's workplace has answered No for DHA",
+  }),
+};
+
 const addCrossValidateError = (errorsArray, errorType, JSONWorker) => {
   const newErrorObject = {
     ...errorType,
@@ -54,4 +82,5 @@ module.exports = {
   addCrossValidateError,
   MAIN_JOB_ERRORS,
   TRANSFER_STAFF_RECORD_ERRORS,
+  WORKER_DHA_WARNINGS,
 };

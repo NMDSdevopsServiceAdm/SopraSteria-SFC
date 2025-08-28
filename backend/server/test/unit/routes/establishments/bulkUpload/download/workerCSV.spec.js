@@ -423,6 +423,28 @@ describe('workerCSV', () => {
           });
         });
 
+        describe('carryOutDelegatedHealthcareActivities', () => {
+          yesNoDontKnow.forEach(({ value, code }) => {
+            it(`should return the correct code for carryOutDelegatedHealthcareActivities, ${value}`, () => {
+              worker.carryOutDelegatedHealthcareActivities = value;
+
+              const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+              const csvAsArray = csv.split(',');
+
+              expect(csvAsArray[getWorkerColumnIndex('DHA')]).to.equal(code);
+            });
+          });
+
+          it('should return empty string if the carryOutDelegatedHealthcareActivities is null (question not answered)', async () => {
+            worker.carryOutDelegatedHealthcareActivities = null;
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('DHA')]).to.equal('');
+          });
+        });
+
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code for apprenticeship ' + value.value, async () => {
             worker.ApprenticeshipTrainingValue = value.value;

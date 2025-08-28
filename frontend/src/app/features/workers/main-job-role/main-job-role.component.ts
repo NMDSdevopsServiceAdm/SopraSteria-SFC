@@ -122,6 +122,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   protected onSuccess(): void {
     if (this.editFlow) {
       this.next = this.determineConditionalRouting();
+      this.reloadWorkerData();
     } else {
       this.next = this.getRoutePath('mandatory-details');
       this.workerService.setAddStaffRecordInProgress(true);
@@ -153,5 +154,17 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   public onSubmit(): void {
     this.workerService.clearNewWorkerMandatoryInfo();
     super.onSubmit();
+  }
+
+  private reloadWorkerData(): void {
+    if (!this.worker.uid) {
+      return;
+    }
+
+    this.workerService
+      .getWorker(this.workplace.uid, this.worker.uid, this.wdfEditPageFlag)
+      .subscribe((updatedWorkerData) => {
+        this.workerService.setState({ ...this.worker, ...updatedWorkerData });
+      });
   }
 }

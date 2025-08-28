@@ -4,7 +4,13 @@ const Establishment = require('../../models/classes/establishment');
 const { hasPermission } = require('../../utils/security/hasPermission');
 const HttpError = require('../../utils/errors/httpError');
 
-const allowedPropertiesToBeRequested = ['EmployerType', 'Name', 'NumberOfStaff', 'ShareData'];
+const allowedPropertiesToBeRequested = [
+  'EmployerType',
+  'Name',
+  'NumberOfStaff',
+  'ShareData',
+  'StaffDoDelegatedHealthcareActivities',
+];
 
 const getEstablishmentField = async (req, res) => {
   const establishmentId = req.establishmentId;

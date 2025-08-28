@@ -5,6 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edit-user-permissions.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
+import { WorkplaceIsAwareOfCwpGuard } from '@core/guards/workplace-is-aware-of-cwp/workplace-is-aware-of-cwp.guard';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
@@ -12,6 +13,7 @@ import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/res
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
@@ -59,6 +61,7 @@ import { ServiceUsersComponent } from '@features/workplace/service-users/service
 import { ServicesCapacityComponent } from '@features/workplace/services-capacity/services-capacity.component';
 import { StaffBenefitCashLoyaltyComponent } from '@features/workplace/staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffBenefitHolidayLeaveComponent } from '@features/workplace/staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
+import { StaffDoDelegatedHealthcareActivitiesComponent } from '@features/workplace/staff-do-delegated-healthcase-activities/staff-do-delegated-healthcare-activities.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from '@features/workplace/staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StartComponent } from '@features/workplace/start/start.component';
 import { TotalStaffQuestionComponent } from '@features/workplace/total-staff-question/total-staff-question.component';
@@ -83,7 +86,10 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
-import { WorkplaceIsAwareOfCwpGuard } from '@core/guards/workplace-is-aware-of-cwp/workplace-is-aware-of-cwp.guard';
+import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from '@features/workplace/staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
+import { WorkplaceStaffDoDHAGuard } from '@core/guards/workplace-staff-do-dha/workplace-staff-do-dha.guard';
+import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
+import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -135,6 +141,8 @@ const routes: Routes = [
       noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
       noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer:
         GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+      noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer:
+        GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     },
     children: [
       {
@@ -355,6 +363,29 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Service Users',
+        },
+      },
+      {
+        path: 'staff-do-delegated-healthcare-activities',
+        component: StaffDoDelegatedHealthcareActivitiesComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: {
+          delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver,
+          workerHasDHAAnswered: CheckIfAnyWorkerHasDHAAnsweredResolver,
+        },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Staff do delegated healthcare activities',
+        },
+      },
+      {
+        path: 'what-kind-of-delegated-healthcare-activities',
+        component: StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
+        canActivate: [CheckPermissionsGuard, WorkplaceStaffDoDHAGuard],
+        resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'What kind of delegated healthcare activities',
         },
       },
       {

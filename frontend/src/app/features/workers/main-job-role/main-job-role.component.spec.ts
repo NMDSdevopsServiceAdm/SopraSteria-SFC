@@ -4,7 +4,6 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Roles } from '@core/model/roles.enum';
 import { Worker } from '@core/model/worker.model';
@@ -22,10 +21,15 @@ import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { MainJobRoleComponent } from './main-job-role.component';
+import { of } from 'rxjs';
 
 describe('MainJobRoleComponent', () => {
-  async function setup(insideFlow = true, returnToMandatoryDetails = false, addNewWorker = false) {
-    let path;
+  async function setup(overrides: any = {}) {
+    const insideFlow = overrides.insideFlow ?? true;
+    const returnToMandatoryDetails = overrides.returnToMandatoryDetails ?? false;
+    const addNewWorker = overrides.addNewWorker ?? false;
+
+    let path: string;
     if (returnToMandatoryDetails) {
       path = 'mandatory-details';
     } else if (insideFlow) {
@@ -34,7 +38,7 @@ describe('MainJobRoleComponent', () => {
       path = 'staff-record-summary';
     }
     const setupTools = await render(MainJobRoleComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       declarations: [ProgressBarComponent],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -144,7 +148,7 @@ describe('MainJobRoleComponent', () => {
   });
 
   it(`should render the 'Mandatory information' caption when accessed from mandatory details page`, async () => {
-    const { getByText } = await setup(false, true);
+    const { getByText } = await setup({ insideFlow: false, returnToMandatoryDetails: true });
 
     expect(getByText('Mandatory information')).toBeTruthy();
   });
@@ -159,26 +163,26 @@ describe('MainJobRoleComponent', () => {
     });
 
     it(`should render the 'Update their main job role' heading when accessed from mandatory details page`, async () => {
-      const { getByText } = await setup(false, true);
+      const { getByText } = await setup({ insideFlow: false, returnToMandatoryDetails: true });
 
       expect(getByText('Update their main job role')).toBeTruthy();
     });
 
     it(`should render the 'Update their main job role' heading when outside flow`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup({ insideFlow: false });
 
       expect(getByText('Update their main job role')).toBeTruthy();
     });
   });
 
   it('should show the accordion', async () => {
-    const { getByTestId } = await setup(false, true);
+    const { getByTestId } = await setup({ insideFlow: false, returnToMandatoryDetails: true });
 
     expect(getByTestId('groupedAccordion')).toBeTruthy();
   });
 
   it('should show the accordion headings', async () => {
-    const { getByText } = await setup(false, true);
+    const { getByText } = await setup({ insideFlow: false, returnToMandatoryDetails: true });
 
     expect(getByText('Care providing roles')).toBeTruthy();
     expect(getByText('Professional and related roles')).toBeTruthy();
@@ -197,7 +201,7 @@ describe('MainJobRoleComponent', () => {
   });
 
   it('should prefill the form when editing the job role', async () => {
-    const { component, fixture } = await setup(false, false);
+    const { component, fixture } = await setup({ insideFlow: false, returnToMandatoryDetails: false });
 
     component.worker.mainJob = { jobId: 13, other: null, title: 'First-line manager' };
     fixture.detectChanges();
@@ -214,7 +218,7 @@ describe('MainJobRoleComponent', () => {
     });
 
     it('should not render the progress bar when accessed from outside the flow', async () => {
-      const { queryByTestId } = await setup(false);
+      const { queryByTestId } = await setup({ insideFlow: false });
 
       expect(queryByTestId('progress-bar-1')).toBeFalsy();
     });
@@ -223,14 +227,16 @@ describe('MainJobRoleComponent', () => {
   describe('submit buttons', () => {
     describe('adding new staff record', () => {
       it(`should show 'Save this staff record' cta button and 'Cancel' link`, async () => {
-        const { getByText } = await setup(true, false, true);
+        const { getByText } = await setup({ addNewWorker: true });
 
         expect(getByText('Save this staff record')).toBeTruthy();
         expect(getByText('Cancel')).toBeTruthy();
       });
 
       it(`should call submit data and navigate to the the correct url when 'Save this staff record' is clicked`, async () => {
-        const { component, fixture, getByText, submitSpy, routerSpy, workerService } = await setup(true, false, true);
+        const { component, fixture, getByText, submitSpy, routerSpy, workerService } = await setup({
+          addNewWorker: true,
+        });
         const createWorkerSpy = spyOn(workerService, 'createWorker').and.callThrough();
 
         userEvent.click(getByText('Care providing roles'));
@@ -258,7 +264,7 @@ describe('MainJobRoleComponent', () => {
       });
 
       it('should show a banner when a staff record has been successfully added', async () => {
-        const { getByText, alertSpy } = await setup(true, false, true);
+        const { getByText, alertSpy } = await setup({ addNewWorker: true });
         userEvent.click(getByText('Care providing roles'));
         userEvent.click(getByText('Care worker'));
         userEvent.click(getByText('Save this staff record'));
@@ -270,7 +276,7 @@ describe('MainJobRoleComponent', () => {
       });
 
       it('should call setAddStaffRecordInProgress when clicking save this staff record', async () => {
-        const { getByText, setAddStaffRecordInProgressSpy } = await setup(true, false, true);
+        const { getByText, setAddStaffRecordInProgressSpy } = await setup({ addNewWorker: true });
 
         userEvent.click(getByText('Care providing roles'));
         userEvent.click(getByText('Care worker'));
@@ -280,7 +286,7 @@ describe('MainJobRoleComponent', () => {
       });
 
       it('should return the user to the staff records tab when clicking cancel', async () => {
-        const { getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(true, false, true);
+        const { getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup({ addNewWorker: true });
 
         userEvent.click(getByText('Cancel'));
         expect(submitSpy).toHaveBeenCalledWith({ action: 'exit', save: false });
@@ -291,7 +297,7 @@ describe('MainJobRoleComponent', () => {
       });
 
       it('should return an error message if user clicked submit without selecting a job role', async () => {
-        const { fixture, getByText, getAllByText } = await setup(true, false, true);
+        const { fixture, getByText, getAllByText } = await setup({ addNewWorker: true });
 
         userEvent.click(getByText('Save this staff record'));
         fixture.detectChanges();
@@ -303,10 +309,32 @@ describe('MainJobRoleComponent', () => {
 
     describe('editing from staff record', () => {
       it(`should show 'Save and return' and 'Cancel' buttons when not in mandatory details flow or in the staff record flow`, async () => {
-        const { getByText } = await setup(false, false);
+        const { getByText } = await setup({ insideFlow: false, returnToMandatoryDetails: false });
 
         expect(getByText('Save and return')).toBeTruthy();
         expect(getByText('Cancel')).toBeTruthy();
+      });
+
+      it('should reload the worker from backend if changes are made to main job role', async () => {
+        const { component, fixture, getByText, workerService } = await setup({
+          insideFlow: false,
+          returnToMandatoryDetails: false,
+        });
+        const getWorkerSpy = spyOn(workerService, 'getWorker').and.returnValue(
+          of({ ...component.worker, carryOutDelegatedHealthcareActivities: null }),
+        );
+        const setWorkerSpy = spyOn(workerService, 'setState');
+
+        userEvent.click(getByText('Care providing roles'));
+        userEvent.click(getByText('Care worker'));
+        userEvent.click(getByText('Save and return'));
+
+        await fixture.whenStable();
+
+        expect(getWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, false);
+        expect(setWorkerSpy).toHaveBeenCalledWith(
+          jasmine.objectContaining({ carryOutDelegatedHealthcareActivities: null }),
+        );
       });
     });
 
@@ -322,7 +350,10 @@ describe('MainJobRoleComponent', () => {
     });
 
     it(`should call submit the edited data and navigate to the the staff record summary page when 'Save and return' is clicked outside of mandatory details flow`, async () => {
-      const { component, fixture, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false, false);
+      const { component, fixture, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup({
+        insideFlow: false,
+        returnToMandatoryDetails: false,
+      });
 
       component.worker.mainJob = { jobId: 13, other: null, title: 'First-line manager' };
       fixture.detectChanges();
@@ -352,7 +383,10 @@ describe('MainJobRoleComponent', () => {
     });
 
     it(`should navigate to the nursing-category page if the main job role is Registered nurse and outside of the flow`, async () => {
-      const { component, fixture, routerSpy, getByText, workerService } = await setup(false, false);
+      const { component, fixture, routerSpy, getByText, workerService } = await setup({
+        insideFlow: false,
+        returnToMandatoryDetails: false,
+      });
 
       spyOn(workerService, 'hasJobRole').and.returnValues(false, true);
       userEvent.click(getByText('Professional and related roles'));
@@ -371,7 +405,10 @@ describe('MainJobRoleComponent', () => {
     });
 
     it(`should navigate to the nursing-category page if the main job role is Registered nurse and in the funding edit version of the page`, async () => {
-      const { component, fixture, router, routerSpy, getByText, workerService } = await setup(false, false);
+      const { component, fixture, router, routerSpy, getByText, workerService } = await setup({
+        insideFlow: false,
+        returnToMandatoryDetails: false,
+      });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
@@ -387,7 +424,10 @@ describe('MainJobRoleComponent', () => {
     });
 
     it(`should navigate to the mental-health-professional page if the main job role is Social worker and outside of the flow`, async () => {
-      const { component, fixture, routerSpy, getByText, workerService } = await setup(false, false);
+      const { component, fixture, routerSpy, getByText, workerService } = await setup({
+        insideFlow: false,
+        returnToMandatoryDetails: false,
+      });
 
       spyOn(workerService, 'hasJobRole').and.returnValue(true);
       userEvent.click(getByText('Professional and related roles'));
@@ -406,7 +446,10 @@ describe('MainJobRoleComponent', () => {
     });
 
     it(`should navigate to the mental-health-professional page if the main job role is Social worker and in funding version of page`, async () => {
-      const { component, fixture, routerSpy, router, getByText, workerService } = await setup(false, false);
+      const { component, fixture, routerSpy, router, getByText, workerService } = await setup({
+        insideFlow: false,
+        returnToMandatoryDetails: false,
+      });
       spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
       component.returnUrl = undefined;
       component.ngOnInit();
