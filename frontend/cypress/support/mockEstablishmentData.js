@@ -2,12 +2,14 @@ export const StandAloneEstablishment = {
   name: 'df',
   id: 180,
   nmdsId: 'J1001043',
+  editUserLoginName: Cypress.env('editStandAloneUser'),
 };
 
 export const ParentEstablishment = {
   name: 'Aster House',
   id: 852,
   nmdsId: 'G1001748',
+  editUserLoginName: Cypress.env('editParentUser'),
 };
 
 export const SubEstablishment = {
@@ -15,6 +17,7 @@ export const SubEstablishment = {
   id: 915,
   nmdsId: 'J1001811',
   parentName: 'Buckden Court',
+  editUserLoginName: Cypress.env('editSubUser'),
 };
 
 export const SubEstablishmentNotDataOwner = {
@@ -22,6 +25,7 @@ export const SubEstablishmentNotDataOwner = {
   id: 853,
   nmdsId: 'G1001749',
   parentName: ParentEstablishment.name,
+  editUserLoginName: Cypress.env('editsubnondataowner'),
 };
 
 export const MockNewEstablishment = {
