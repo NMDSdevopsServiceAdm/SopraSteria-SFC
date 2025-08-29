@@ -1524,6 +1524,16 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         CarryOutDelegatedHealthcareActivitiesValue: null,
       },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+          where: {
+            canDoDelegatedHealthcareActivities: true,
+          },
+        },
+      ],
     });
   };
 
@@ -1544,6 +1554,9 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.job,
           as: 'mainJob',
           attributes: ['title'],
+          where: {
+            canDoDelegatedHealthcareActivities: true,
+          },
         },
       ],
       order: [['NameOrIdValue', 'ASC']],

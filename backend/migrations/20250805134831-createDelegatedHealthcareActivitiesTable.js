@@ -62,7 +62,7 @@ const dhaRows = [
   {
     ID: 8,
     Seq: 80,
-    Title: 'Other delegated healthcare activity',
+    Title: 'Other delegated healthcare activities',
     Description: 'Something else delegated by a regulated healthcare professional',
     AnalysisFileCode: 8,
     BulkUploadCode: 8,

@@ -17,7 +17,7 @@ export const mockDHAs = [
   },
   {
     id: 8,
-    title: 'Other delegated healthcare activity',
+    title: 'Other delegated healthcare activities',
     description: 'Something else delegated by a regulated healthcare professional',
   },
 ];
