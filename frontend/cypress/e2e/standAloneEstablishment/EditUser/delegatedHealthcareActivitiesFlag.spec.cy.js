@@ -26,6 +26,7 @@ describe('Delegated Healthcare Activities journey', () => {
         cy.insertTestWorker({
           establishmentID: establishmentId,
           workerName,
+          // need to fill this value for test workers as CWP flag take higher precedence than DHA flag
           careWorkforcePathwayRoleCategoryFK: '1',
         });
       });
@@ -79,7 +80,7 @@ describe('Delegated Healthcare Activities journey', () => {
       const alreadyAnswered = testWorkerNames.filter((_, index) => index % 2 === 0);
       const notYetAnswered = testWorkerNames.filter((_, index) => index % 2 === 1);
 
-      // fill in answer for each worker
+      // prepping workers
       alreadyAnswered.forEach((workerName) => {
         onHomePage.clickTab('Staff records');
         onStaffRecordsPage.clickIntoWorker(workerName);
@@ -87,6 +88,7 @@ describe('Delegated Healthcare Activities journey', () => {
         onStaffRecordSummaryPage.answerDHAQuestion('No');
       });
 
+      // test starts here
       onHomePage.clickTab('Home');
       cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
 
@@ -101,12 +103,56 @@ describe('Delegated Healthcare Activities journey', () => {
       });
     });
 
-    it.skip('the question page should only list workers that have a relevant main job role', () => {});
+    it('the question page should only list workers that have a relevant main job role', () => {
+      const relevantWorkers = [
+        {
+          workerName: 'Care co-ordinator',
+          mainJobFKValue: '8',
+        },
+        {
+          workerName: 'Senior care worker',
+          mainJobFKValue: '25',
+        },
+      ];
+      const irrelevantWorkers = [
+        {
+          workerName: 'Data analyst',
+          mainJobFKValue: '33',
+        },
+        {
+          workerName: 'IT manager',
+          mainJobFKValue: '36',
+        },
+      ];
+
+      [...relevantWorkers, ...irrelevantWorkers].forEach(({ workerName, mainJobFKValue }) => {
+        cy.insertTestWorker({
+          establishmentID: establishmentId,
+          careWorkforcePathwayRoleCategoryFK: '1',
+          workerName,
+          mainJobFKValue,
+        });
+      });
+
+      // test starts here
+      onHomePage.clickTab('Home');
+      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
+
+      cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
+
+      relevantWorkers.forEach(({ workerName }) => {
+        cy.contains('tr.govuk-table__row', workerName).should('be.visible');
+      });
+
+      irrelevantWorkers.forEach(({ workerName }) => {
+        cy.contains('tr.govuk-table__row', workerName).should('not.exist');
+      });
+    });
 
     it.skip('backlink should work properly when visiting the question page from the flag', () => {});
 
     it.skip('should clear the flag if every worker has got answer for DHA question', () => {});
 
-    it.skip('should show the flag as long as some worker has not got the answer for DHA question', () => {});
+    it.skip('should keep the flag showing up if some workers has not yet got answer for DHA question', () => {});
   });
 });
