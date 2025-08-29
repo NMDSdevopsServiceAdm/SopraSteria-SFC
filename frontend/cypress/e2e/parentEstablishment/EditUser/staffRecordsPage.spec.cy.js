@@ -1,8 +1,20 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { ParentEstablishment } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Parent staff records page as edit user', () => {
+  const workerName = 'test worker for staff record page';
+  const establishmentID = ParentEstablishment.id;
+
+  before(() => {
+    cy.insertTestWorker({ establishmentID, workerName });
+  });
+
+  after(() => {
+    cy.deleteTestWorkerFromDb(workerName);
+  });
+
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     onHomePage.clickTab('Staff records');
