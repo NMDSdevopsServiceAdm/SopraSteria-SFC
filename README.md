@@ -64,12 +64,14 @@ This will start up a test browser instance that allows us to run and debug speci
 
 Ensure no other containers are running in a different terminal window. From the root folder run `make test-e2e-inside-docker`
 
-### Locally run single spec file
+### Locally run single spec file from commandline
 
-To speed up local development you can set the CYPRESS_PATH environment variable to add a `-s` flag to the cypress command. If you don't have this set or it is empty the full suite will run normally.
+For anyone who doesn't want to use the cypress open GUI style:
+
+To speed up local development you can set the CYPRESS_PATH environment variable to add a `-s` flag to the cypress command. If you don't have this set or it is empty the full suite will run normally. The pipeline will not have this set so it will spout a warning in the logs but safely default to a blank string.
 
 - `CYPRESS_PATH=` or `CYPRESS_PATH=""` runs full suite
-- `CYPRESS_PATH="-s**/standAloneEstablishment/EditUser/staffRecordsPage.spec.cy.js"` or `CYPRESS_PATH="-scypress/e2e/standAloneEstablishment/EditUser/staffRecordsPage.spec.cy.js"` runs only staffRecordsPage.spec.cy.js. **NB** there should be no space between `-s` and the glob or path, it's a *nix-ism.
+- `CYPRESS_PATH="-scypress/e2e/standAloneEstablishment/EditUser/staffRecordsPage.spec.cy.js"` runs only staffRecordsPage.spec.cy.js. **NB** there should be no space between `-s` and the path, it's a *nix-ism.
 
 ## Further help
 
