@@ -1,13 +1,15 @@
-import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
-import * as lodash from 'lodash';
-import { onStaffRecordsPage, onStaffRecordSummaryPage } from '../../../support/page_objects/onStaffRecordsPage';
-import { onHomePage } from '../../../support/page_objects/onHomePage';
+/* eslint-disable no-undef */
+/// <reference types="cypress" />
 
-describe('Delegated Healthcare Activities journey', () => {
-  const establishmentId = StandAloneEstablishment.id;
-  const loginUsername = Cypress.env('editStandAloneUser');
-  const loginPassword = Cypress.env('userPassword');
-  const homePagePath = 'dashboard#home';
+import lodash from 'lodash';
+import { onStaffRecordsPage, onStaffRecordSummaryPage } from '../../support/page_objects/onStaffRecordsPage';
+import { onHomePage } from '../../support/page_objects/onHomePage';
+import { SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
+
+export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
+  const { id: establishmentId } = mockEstablishmentData;
+  const homePagePathRegex =
+    mockEstablishmentData === SubEstablishmentNotDataOwner ? /subsidiary\/.*\/home/ : /dashboard#home/;
 
   describe('answer Delegated Healthcare Activities worker question from homepage panel', () => {
     const testWorkerNames = lodash.range(1, 6).map((i) => `test DHA worker${i}`);
@@ -30,9 +32,8 @@ describe('Delegated Healthcare Activities journey', () => {
           careWorkforcePathwayRoleCategoryFK: '1',
         });
       });
-
-      cy.loginAsUser(loginUsername, loginPassword);
-      cy.url().should('contain', homePagePath);
+      cy.reload();
+      // onHomePage.clickTab('Home');
     });
 
     afterEach(() => {
@@ -61,7 +62,9 @@ describe('Delegated Healthcare Activities journey', () => {
 
       cy.get('button').contains('Save and return').click();
 
-      cy.url().should('contain', homePagePath);
+      cy.url().should('match', homePagePathRegex);
+      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).should('not.exist');
+      cy.get('app-alert span').should('contain', 'Delegated healthcare activity information saved');
 
       // verify that the staff records are updated
       testWorkerNames.forEach((workerName, index) => {
@@ -76,7 +79,24 @@ describe('Delegated Healthcare Activities journey', () => {
       });
     });
 
-    it('the question page should only list workers that does not have answer for DHA question', () => {
+    it(`should show a link in each row to the worker's staff record summary page with the name of worker`, () => {
+      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
+
+      cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
+
+      testWorkerNames.forEach((workerName) => {
+        const workerRow = cy.contains('tr.govuk-table__row', workerName);
+        workerRow.within(() => cy.get('a').contains(workerName).should('be.visible'));
+      });
+
+      cy.get('a').contains(testWorkerNames[0]).click();
+
+      cy.url().should('contain', 'staff-record-summary');
+      cy.get('h1').should('contain', 'Staff record');
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[0]);
+    });
+
+    it('should only show workers that does not have answer for DHA question in the question page', () => {
       const alreadyAnswered = testWorkerNames.filter((_, index) => index % 2 === 0);
       const notYetAnswered = testWorkerNames.filter((_, index) => index % 2 === 1);
 
@@ -103,7 +123,7 @@ describe('Delegated Healthcare Activities journey', () => {
       });
     });
 
-    it('the question page should only list workers that have a relevant main job role', () => {
+    it('should only show workers that have a relevant main job role in the question page', () => {
       const relevantWorkers = [
         {
           workerName: 'Care co-ordinator',
@@ -147,12 +167,41 @@ describe('Delegated Healthcare Activities journey', () => {
       irrelevantWorkers.forEach(({ workerName }) => {
         cy.contains('tr.govuk-table__row', workerName).should('not.exist');
       });
+
+      // clear the test workers
+      [...relevantWorkers, ...irrelevantWorkers].forEach(({ workerName }) => {
+        cy.deleteTestWorkerFromDb(workerName);
+      });
     });
 
-    it.skip('backlink should work properly when visiting the question page from the flag', () => {});
+    it('backlink in new question page should bring user back to home tab', () => {
+      onHomePage.clickTab('Home');
+      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
 
-    it.skip('should clear the flag if every worker has got answer for DHA question', () => {});
+      cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
 
-    it.skip('should keep the flag showing up if some workers has not yet got answer for DHA question', () => {});
+      cy.get('a').contains('Back').click();
+
+      cy.url().should('match', homePagePathRegex);
+    });
+
+    it("should keep the flag showing up if haven't got answer for every worker", () => {
+      const workersToAnswer = [testWorkerNames[0], testWorkerNames[2]];
+
+      onHomePage.clickTab('Home');
+      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).click();
+
+      cy.get('h1').should('contain', 'Who carries out delegated healthcare activities?');
+
+      workersToAnswer.forEach((workerName) => {
+        const workerRow = cy.contains('tr.govuk-table__row', workerName);
+        workerRow.within(() => cy.getByLabel('Yes').click());
+      });
+
+      cy.get('button').contains('Save and return').click();
+
+      onHomePage.clickTab('Home');
+      cy.get('[data-testid="staff-records-row"]').contains(dhaFlagMessage).should('be.visible');
+    });
   });
-});
+};
