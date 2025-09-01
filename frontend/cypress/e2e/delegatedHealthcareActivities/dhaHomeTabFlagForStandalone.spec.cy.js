@@ -9,6 +9,5 @@ describe('Delegated healthcare activities journey from home tab flag', () => {
     cy.get('h1').should('contain', StandAloneEstablishment.name);
   });
 
-  // runTestsForDHAHomeTabFlag(SubEstablishmentNotDataOwner);
   runTestsForDHAHomeTabFlag(StandAloneEstablishment);
 });

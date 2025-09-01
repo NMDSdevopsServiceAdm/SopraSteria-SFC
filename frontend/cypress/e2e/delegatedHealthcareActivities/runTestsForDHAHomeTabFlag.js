@@ -33,7 +33,6 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
         });
       });
       cy.reload();
-      // onHomePage.clickTab('Home');
     });
 
     afterEach(() => {
