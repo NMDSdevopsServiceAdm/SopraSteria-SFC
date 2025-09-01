@@ -8,6 +8,7 @@ import { SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentDat
 
 export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
   const { id: establishmentId } = mockEstablishmentData;
+
   const homePagePathRegex =
     mockEstablishmentData === SubEstablishmentNotDataOwner ? /subsidiary\/.*\/home/ : /dashboard#home/;
 
@@ -167,7 +168,7 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
         cy.contains('tr.govuk-table__row', workerName).should('not.exist');
       });
 
-      // clear the test workers
+      // remove the test workers added for this test
       [...relevantWorkers, ...irrelevantWorkers].forEach(({ workerName }) => {
         cy.deleteTestWorkerFromDb(workerName);
       });
@@ -184,7 +185,7 @@ export const runTestsForDHAHomeTabFlag = (mockEstablishmentData) => {
       cy.url().should('match', homePagePathRegex);
     });
 
-    it("should keep the flag showing up if haven't got answer for every worker", () => {
+    it('should keep the flag showing up if there are still workers that havent been answered', () => {
       const workersToAnswer = [testWorkerNames[0], testWorkerNames[2]];
 
       onHomePage.clickTab('Home');
