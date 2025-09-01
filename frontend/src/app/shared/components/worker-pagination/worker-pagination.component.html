@@ -1,0 +1,25 @@
+<div class="govuk-grid-row govuk-!-margin-top-2 govuk-!-margin-bottom-2">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-button-group">
+      <a class="govuk-button" [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment">Close this staff record</a>
+      <span style="margin-left: auto">
+        <a
+          *ngIf="!isFirst"
+          class="asc-chevron-before govuk-button--link govuk-link--no-visited-state govuk-!-margin-right-4"
+          [routerLink]="previousLink.url"
+          [relativeTo]="route"
+          [fragment]=""
+          >Previous staff record</a
+        >
+        <a
+          *ngIf="!isLast"
+          class="asc-chevron-after govuk-button--link govuk-link--no-visited-state govuk-!-margin-left-6 govuk-!-margin-right-4"
+          [routerLink]="nextLink.url"
+          [relativeTo]="route"
+          [fragment]=""
+          >Next staff record</a
+        >
+      </span>
+    </div>
+  </div>
+</div>
