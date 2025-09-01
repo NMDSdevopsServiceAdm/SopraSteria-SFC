@@ -4,7 +4,7 @@ const Qualification = require('../../../models/classes/qualification').Qualifica
 const Training = require('../../../models/classes/training').Training;
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
-const hasAnyTrainingOrQualifications = async (req, res) => {
+const workerHasAnyTrainingOrQualifications = async (req, res) => {
   const establishmentId = req.establishmentId;
   const workerUid = req.params.workerId;
 
@@ -21,13 +21,13 @@ const hasAnyTrainingOrQualifications = async (req, res) => {
     res.status(200);
     return res.json({ hasAnyTrainingOrQualifications });
   } catch (error) {
-    console.error('Training::root hasAnyTrainingOrQualifications - failed', error);
+    console.error('Training::root workerHasAnyTrainingOrQualifications - failed', error);
     res.status(500);
-    return res.send(`Failed to get hasAnyTrainingOrQualifications`);
+    return res.send(`Failed to get workerHasAnyTrainingOrQualifications`);
   }
 };
 
-router.route('/').get(hasPermission('canViewWorker'), hasAnyTrainingOrQualifications);
+router.route('/').get(hasPermission('canViewWorker'), workerHasAnyTrainingOrQualifications);
 
 module.exports = router;
-module.exports.hasAnyTrainingOrQualifications = hasAnyTrainingOrQualifications;
+module.exports.workerHasAnyTrainingOrQualifications = workerHasAnyTrainingOrQualifications;

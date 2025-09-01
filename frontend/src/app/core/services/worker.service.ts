@@ -297,6 +297,12 @@ export class WorkerService {
     );
   }
 
+  workerHasAnyTrainingOrQualifications(workplaceUid: string, workerId: string) {
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/trainingAndQualifications/workerHasAnyTrainingOrQualifications`,
+    );
+  }
+
   setCreateStaffResponse(success: number) {
     this.createStaffResponse = success;
   }

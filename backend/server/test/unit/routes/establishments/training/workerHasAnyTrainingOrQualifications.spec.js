@@ -7,10 +7,10 @@ const Qualification = require('../../../../../models/classes/qualification').Qua
 const { mockTrainingRecords } = require('../../../mockdata/training');
 const { mockQualificationRecords } = require('../../../mockdata/qualifications');
 const {
-  hasAnyTrainingOrQualifications,
-} = require('../../../../../routes/establishments/trainingAndQualifications/hasAnyTrainingOrQualifications');
+  workerHasAnyTrainingOrQualifications,
+} = require('../../../../../routes/establishments/trainingAndQualifications/workerHasAnyTrainingOrQualifications');
 
-describe.only('server/routes/establishments/trainingAndQualifications/hasAnyTrainingOrQualifications', () => {
+describe('server/routes/establishments/trainingAndQualifications/workerHasAnyTrainingOrQualifications', () => {
   const user = buildUser();
 
   let req;
@@ -24,7 +24,7 @@ describe.only('server/routes/establishments/trainingAndQualifications/hasAnyTrai
 
     const request = {
       method: 'GET',
-      url: `/api/establishment/${user.establishmentId}/worker/${workerId}/trainingAndQualifications/hasAnyTrainingOrQualifications`,
+      url: `/api/establishment/${user.establishmentId}/worker/${workerId}/trainingAndQualifications/workerHasAnyTrainingOrQualifications`,
     };
 
     req = httpMocks.createRequest(request);
@@ -42,7 +42,7 @@ describe.only('server/routes/establishments/trainingAndQualifications/hasAnyTrai
   it('should reply with a status of 200', async () => {
     mockTraining.returns({ count: mockTrainingRecords.length, training: mockTrainingRecords });
     mockQualification.returns(mockQualificationRecords);
-    await hasAnyTrainingOrQualifications(req, res);
+    await workerHasAnyTrainingOrQualifications(req, res);
 
     expect(res.statusCode).to.deep.equal(200);
   });
@@ -51,7 +51,7 @@ describe.only('server/routes/establishments/trainingAndQualifications/hasAnyTrai
     mockTraining.returns({ count: mockTrainingRecords.length, training: mockTrainingRecords });
     mockQualification.returns(mockQualificationRecords);
 
-    await hasAnyTrainingOrQualifications(req, res);
+    await workerHasAnyTrainingOrQualifications(req, res);
 
     const response = res._getJSONData();
 
@@ -62,7 +62,7 @@ describe.only('server/routes/establishments/trainingAndQualifications/hasAnyTrai
     mockTraining.returns({ count: mockTrainingRecords.length, training: mockTrainingRecords });
     mockQualification.returns({ ...mockQualificationRecords, count: 0 });
 
-    await hasAnyTrainingOrQualifications(req, res);
+    await workerHasAnyTrainingOrQualifications(req, res);
 
     const response = res._getJSONData();
 
@@ -73,7 +73,7 @@ describe.only('server/routes/establishments/trainingAndQualifications/hasAnyTrai
     mockTraining.returns({ count: 0 });
     mockQualification.returns(mockQualificationRecords);
 
-    await hasAnyTrainingOrQualifications(req, res);
+    await workerHasAnyTrainingOrQualifications(req, res);
 
     const response = res._getJSONData();
 
@@ -83,7 +83,7 @@ describe.only('server/routes/establishments/trainingAndQualifications/hasAnyTrai
   it('should return false when there are no training and qualifications', async () => {
     mockTraining.returns({ count: 0, training: mockTrainingRecords });
     mockQualification.returns({ ...mockQualificationRecords, count: 0 });
-    await hasAnyTrainingOrQualifications(req, res);
+    await workerHasAnyTrainingOrQualifications(req, res);
 
     const response = res._getJSONData();
 
@@ -93,7 +93,7 @@ describe.only('server/routes/establishments/trainingAndQualifications/hasAnyTrai
   it('should return 500 when there is an unxpected error', async () => {
     mockTraining.throws();
 
-    await hasAnyTrainingOrQualifications(req, res);
+    await workerHasAnyTrainingOrQualifications(req, res);
 
     expect(res.statusCode).to.deep.equal(500);
   });
