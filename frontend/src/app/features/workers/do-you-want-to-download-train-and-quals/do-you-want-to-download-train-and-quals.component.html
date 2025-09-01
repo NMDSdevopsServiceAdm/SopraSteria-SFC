@@ -1,0 +1,36 @@
+<ng-container *ngIf="worker">
+  <form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="govuk-grid-row govuk-!-margin-bottom-0">
+      <div class="govuk-grid-column-three-quarters-from-desktop">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-!-margin-bottom-2">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ worker.nameOrId }}</span>
+            <h1 class="govuk-heading-l">
+              Do you want to download their training and qualifications summary, and any certificates, before you delete
+              this staff record?
+            </h1>
+          </legend>
+          <p class="govuk-!-margin-bottom-5">
+            If you select Yes, the summary and any certificates will download to your computer's Downloads folder when
+            you click Continue.
+          </p>
+          <div class="govuk-radios govuk-!-margin-bottom-5" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="downloadTrainAndQuals-yes" name="downloadTrainAndQuals" type="radio" value="Yes" />
+              <label class="govuk-label govuk-radios__label" for="downloadTrainAndQuals-yes"
+                >Yes, I want to download the summary and any certificates</label
+              >
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="downloadTrainAndQuals-no" name="downloadTrainAndQuals" type="radio" value="No" />
+              <label class="govuk-label govuk-radios__label" for="downloadTrainAndQuals-no"
+                >No, I do not want to download the summary and any certificates</label
+              >
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    <app-submit-exit-buttons [cta]="ctaText" [exit]="exitText" [return]="returnUrl"></app-submit-exit-buttons>
+  </form>
+</ng-container>
