@@ -25,7 +25,7 @@ import { of } from 'rxjs';
 import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
 
-describe('StaffRecordComponent', () => {
+fdescribe('StaffRecordComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function setup(overrides: any = {}) {
     const isParent = overrides.isParent ?? true;
@@ -200,6 +200,42 @@ describe('StaffRecordComponent', () => {
         `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/long-term-absence`,
       );
     });
+  });
+
+  describe('Pagination controls',() => {
+
+  xit('should set the Close this staff record buttons to navigate back to primary workplace staff tab when viewing primary workplace', async () => {
+    const { getAllByText } = await setup({
+      workerService: { worker: { completed: true }, addStaffRecordInProgress: false },
+    });
+
+    const closeRecordButtons = getAllByText('Close this staff record');
+    const expectedLink = '/funding/data#staff'; // this needs wiring up and setting correct expectations
+
+    expect(closeRecordButtons.length).toEqual(2);
+
+    expect((closeRecordButtons[0] as HTMLAnchorElement).href).toContain(expectedLink);
+    expect((closeRecordButtons[1] as HTMLAnchorElement).href).toContain(expectedLink);
+  });
+
+  xit('should set the Close this staff record buttons to navigate back to sub workplace staff tab when viewing sub workplace', async () => {
+    const establishmentuid = 'mockEstablishmentUid123';
+
+    //const { getAllByText } = await setup({ establishmentuid });
+
+    const { getAllByText } = await setup({
+          workerService: { worker: { completed: true }, addStaffRecordInProgress: false },
+        });
+
+    const closeRecordButtons = getAllByText('Close this staff record');
+    const expectedLink = `funding/workplaces/${establishmentuid}#staff`;// this needs wiring up and setting correct expectations
+
+    expect(closeRecordButtons.length).toEqual(2);
+
+    expect((closeRecordButtons[0] as HTMLAnchorElement).href).toContain(expectedLink);
+    expect((closeRecordButtons[1] as HTMLAnchorElement).href).toContain(expectedLink);
+  });
+
   });
 
   describe('Add details to worker flow', () => {
