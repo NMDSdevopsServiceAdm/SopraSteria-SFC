@@ -7,6 +7,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { shouldSeeDHAWorkerQuestion } from '@core/utils/worker-util';
 import dayjs from 'dayjs';
 
 import { QuestionComponent } from '../question/question.component';
@@ -63,7 +64,17 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
       });
     }
 
-    this.next = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
+    this.next = this.determineConditionalRouting();
+  }
+
+  private determineConditionalRouting() {
+    const shouldSeeWorkerDHAQuestion = shouldSeeDHAWorkerQuestion(this.workplace, this.worker);
+
+    if (shouldSeeWorkerDHAQuestion) {
+      return this.getRoutePath('carry-out-delegated-healthcare-activities');
+    }
+
+    return [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
       ? this.getRoutePath('days-of-sickness')
       : this.getRoutePath('contract-with-zero-hours');
   }

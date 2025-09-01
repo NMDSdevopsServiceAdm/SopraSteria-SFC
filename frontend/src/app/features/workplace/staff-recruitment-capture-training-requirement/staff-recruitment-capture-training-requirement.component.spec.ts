@@ -1,51 +1,42 @@
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
-  async function setup(returnUrl = true, repeatTraining = undefined) {
-    const { fixture, getByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
-      StaffRecruitmentCaptureTrainingRequirementComponent,
-      {
-        imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: EstablishmentService,
-            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-              doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: repeatTraining,
-            }),
-            deps: [HttpClient],
-          },
-        ],
-      },
-    );
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(StaffRecruitmentCaptureTrainingRequirementComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentServiceWithOverrides.factory(overrides ?? {}),
+        },
+      ],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+      of(null),
+    );
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getByLabelText,
       establishmentServiceSpy,
       routerSpy,
-      getByTestId,
-      queryByTestId,
-      queryByText,
     };
   }
 
@@ -80,7 +71,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   });
 
   it('should unselect previously selected radio button when another radio button is selected', async () => {
-    const { component, fixture, getByLabelText, getByText } = await setup(false);
+    const { component, fixture, getByLabelText, getByText } = await setup({ returnTo: null });
 
     const form = component.form;
     const firstRadio = getByLabelText('Yes, always');
@@ -100,14 +91,14 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button and 'Skip this question' link`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup({ returnTo: null });
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
-      const { component, fixture, getByText } = await setup(false);
+      const { component, fixture, getByText } = await setup({ returnTo: null });
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
@@ -119,7 +110,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
-      const { component, fixture, getByText } = await setup(false);
+      const { component, fixture, getByText } = await setup({ returnTo: null });
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction');
 
@@ -131,7 +122,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     it('should navigate to the next page when clicking Skip this question link', async () => {
-      const { fixture, getByText, routerSpy } = await setup(false);
+      const { fixture, getByText, routerSpy } = await setup({ returnTo: null });
 
       const link = getByText('Skip this question');
       fireEvent.click(link);
@@ -141,7 +132,9 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     it('should not call the updateSingleEstablishmentField when submitting form when the form has not been filled out', async () => {
-      const { fixture, getByText, establishmentServiceSpy } = await setup();
+      const { fixture, getByText, establishmentServiceSpy } = await setup({
+        establishment: { doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: null },
+      });
 
       const button = getByText('Save and return');
 
@@ -185,7 +178,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
 
   describe('form submissions', () => {
     it('should submit the form with the correct value when the "Yes, always" radio button is selected and the form is submitted', async () => {
-      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup(false);
+      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup({ returnTo: null });
 
       const radioButton = getByLabelText('Yes, always');
       fireEvent.click(radioButton);
@@ -202,7 +195,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     it('should submit the form with the correct value when the "Yes, very often" radio button is selected and the form is submitted', async () => {
-      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup(false);
+      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup({ returnTo: null });
 
       const radioButton = getByLabelText('Yes, very often');
       fireEvent.click(radioButton);
@@ -219,7 +212,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     it('should submit the form with the correct value when the "Yes, but not very often" radio button is selected and the form is submitted', async () => {
-      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup(false);
+      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup({ returnTo: null });
 
       const radioButton = getByLabelText('Yes, but not very often');
       fireEvent.click(radioButton);
@@ -236,7 +229,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     it('should submit the form with the correct value when the "No, never" radio button is selected and the form is submitted', async () => {
-      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup(false);
+      const { fixture, getByText, getByLabelText, establishmentServiceSpy } = await setup({ returnTo: null });
 
       const radioButton = getByLabelText('No, never');
       fireEvent.click(radioButton);
@@ -262,17 +255,47 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
 
     it('should render the progress bar when in the flow', async () => {
-      const { getByTestId } = await setup(false);
+      const { getByTestId } = await setup({ returnTo: null });
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
   });
 
   describe('Back button', () => {
-    it('should set the back link to how-many-leavers page', async () => {
-      const { component } = await setup(false);
+    it('should set the back link to how-many-leavers page when main service cannot do delegated healthcare activities', async () => {
+      const { component } = await setup({
+        returnTo: null,
+        establishment: {
+          mainService: {
+            canDoDelegatedHealthcareActivities: null,
+            id: 11,
+            name: 'Domestic services and home help',
+            reportingID: 10,
+          },
+        },
+      });
 
       expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
+    });
+
+    it('should set the back link to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
+      const { component } = await setup({
+        returnToUrl: null,
+        establishment: {
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+        },
+      });
+
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        component.establishment.uid,
+        'what-kind-of-delegated-healthcare-activities',
+      ]);
     });
   });
 });

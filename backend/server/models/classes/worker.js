@@ -363,6 +363,22 @@ class Worker extends EntityValidator {
       : null;
   }
 
+  get carryOutDelegatedHealthcareActivities() {
+    return this._properties.get('CarryOutDelegatedHealthcareActivities')
+      ? this._properties.get('CarryOutDelegatedHealthcareActivities').property
+      : null;
+  }
+
+  patchPropertyValue(propertyName, newValue) {
+    const propertyObject = this._properties.get(propertyName);
+    if (!propertyObject) {
+      console.error(`failed to patch non existing property: "${propertyName}"`);
+      return;
+    }
+
+    propertyObject.property = newValue;
+  }
+
   // takes the given JSON document and creates a Worker's set of extendable properties
   // Returns true if the resulting Worker is valid; otherwise false
   async load(document, associatedEntities = false, bulkUploadCompletion = false) {
@@ -972,7 +988,7 @@ class Worker extends EntityValidator {
           {
             model: models.job,
             as: 'mainJob',
-            attributes: ['id', 'title'],
+            attributes: ['id', 'title', 'canDoDelegatedHealthcareActivities'],
           },
           {
             model: models.ethnicity,

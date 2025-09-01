@@ -344,6 +344,57 @@
         ></app-summary-record-change>
       </dd>
     </div>
+
+    <div
+      *ngIf="!workplace.showAddWorkplaceDetailsBanner && workplace.mainService?.canDoDelegatedHealthcareActivities"
+      class="govuk-summary-list__row"
+      data-testid="carryOutDelegatedHealthcareActivities"
+    >
+      <dt class="govuk-summary-list__key">Carry out delegated healthcare activities</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value>
+          {{ workplace.staffDoDelegatedHealthcareActivities | closedEndedAnswer }}
+        </app-summary-record-value>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' delegated healthcare activities'"
+          [link]="['/workplace', workplace.uid, 'staff-do-delegated-healthcare-activities']"
+          [hasData]="workplace.staffDoDelegatedHealthcareActivities"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="workplace.staffDoDelegatedHealthcareActivities === 'Yes' && workplace.mainService?.canDoDelegatedHealthcareActivities"
+      data-testid="know-what-delegated-healthcare-activities"
+    >
+      <dt class="govuk-summary-list__key">Which delegated healthcare activities</dt>
+      <dd class="govuk-summary-list__value">
+        <ng-container
+          *ngIf="workplace.staffWhatKindDelegatedHealthcareActivities?.knowWhatActivities === 'Yes'; else noActivities"
+        >
+          <ul class="govuk-list govuk-!-margin-bottom-0">
+            <li *ngFor="let activity of workplace.staffWhatKindDelegatedHealthcareActivities.activities">
+              {{ activity.title }}
+            </li>
+          </ul>
+        </ng-container>
+        <ng-template #noActivities>
+          {{ workplace.staffWhatKindDelegatedHealthcareActivities | formatWhatDHA }}
+        </ng-template>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' delegated healthcare activities carried out'"
+          [link]="['/workplace', workplace.uid, 'what-kind-of-delegated-healthcare-activities']"
+          [hasData]="workplace.staffWhatKindDelegatedHealthcareActivities"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
   </dl>
 
   <ng-container *ngIf="!workplace?.showAddWorkplaceDetailsBanner">

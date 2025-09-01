@@ -34,7 +34,7 @@ function isPerm(worker) {
 const _headers_v1 =
   'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
   'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
-  'SERVICEUSERS,OTHERUSERDESC,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
+  'SERVICEUSERS,OTHERUSERDESC,DHA,DHAACTIVITIES,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
   'REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,CWPUSEDESC,BENEFITS,SICKPAY,PENSION,HOLIDAY';
 
 class WorkplaceCSVValidator {
@@ -46,7 +46,7 @@ class WorkplaceCSVValidator {
 
     this._validationErrors = [];
 
-    // CSV properties
+    // CSV properties - internal representation (cache) of the clean data for the object under validation */
     this._localId = null;
     this._status = null;
     this._key = null;
@@ -91,15 +91,23 @@ class WorkplaceCSVValidator {
     this._careWorkforcePathwayAwareness = null;
     this._careWorkforcePathwayUse = null;
     this._careWorkforcePathwayUseDescription = null;
+    this._staffDoDelegatedHealthcareActivities = null;
+    // { knowWhatActivities, activities }
+    this._staffWhatKindDelegatedHealthcareActivities = null;
 
     this._id = null;
+
+    // end csv properties
+
     this._ignore = false;
   }
 
+  /** mapping */
   get CWP_USE_REASON_SOMETHING_ELSE_ID() {
     return '10';
   }
 
+  /** error codes */
   static get EXPECT_JUST_ONE_ERROR() {
     return 950;
   }
@@ -278,6 +286,20 @@ class WorkplaceCSVValidator {
     return 2500;
   }
 
+  static get DHA_WARNING() {
+    return 2510;
+  }
+
+  static get DHA_MAIN_SERVICE_WARNING() {
+    return 2520;
+  }
+
+  static get DHAACTIVITIES_WARNING() {
+    return 2530;
+  }
+  /** end error codes */
+
+  /** validator properties */
   get id() {
     if (this._id === null) {
       const est = this._allCurrentEstablishments.find((currentEstablishment) => currentEstablishment.key === this._key);
@@ -305,6 +327,9 @@ class WorkplaceCSVValidator {
   get currentLine() {
     return this._currentLine;
   }
+  /** end validator properties */
+
+  /** properties - expose internal representation (cache) of the clean data for the object under validation */
 
   get localId() {
     return this._localId;
@@ -447,14 +472,24 @@ class WorkplaceCSVValidator {
     return this._careWorkforcePathwayUse;
   }
 
-  _convertYesNoDontKnow(value) {
+  get staffDoDelegatedHealthcareActivities() {
+    return this._staffDoDelegatedHealthcareActivities;
+  }
+
+  get staffWhatKindDelegatedHealthcareActivities() {
+    return this._staffWhatKindDelegatedHealthcareActivities;
+  }
+  /** end properties for clean data cache */
+
+  /** helper functions */
+  _convertYesNoDontKnow(value, defaultValue = '') {
     const mappings = {
       1: 'Yes',
       2: 'No',
       999: "Don't know",
     };
 
-    return mappings[value] || '';
+    return mappings[value] || defaultValue;
   }
 
   _generateWarning(warning, columnName, warnType = null) {
@@ -476,6 +511,9 @@ class WorkplaceCSVValidator {
     return match?.id ? { id: match.id } : null;
   }
 
+  /** end helper functions */
+
+  /** validation functions */
   _validateLocalisedId() {
     const myLocalId = this._currentLine.LOCALESTID;
 
@@ -1347,6 +1385,9 @@ class WorkplaceCSVValidator {
 
     return true;
   }
+  /** end validation functions */
+
+  /** more helper functions */
   _ignoreZerosIfNo(listOfEntities, zeroInService, allServices) {
     if (zeroInService.length > 0 && listOfEntities.length === 2 && allServices.length === 2) {
       const indexOfZero = allServices.indexOf('0');
@@ -1377,6 +1418,90 @@ class WorkplaceCSVValidator {
     }
     return listOfEntities;
   }
+
+  /** end more helper functions */
+
+  /** more validation functions */
+  _validateDelegatedHealthcareActivities() {
+    const ALLOWED_VALUES = ['', '1', '2', '999'];
+    const dhaAnswer = this._currentLine.DHA;
+    if (!ALLOWED_VALUES.includes(dhaAnswer)) {
+      this._validationErrors.push(
+        this._generateWarning('The code you have entered for DHA is incorrect and will be ignored', 'DHA'),
+      );
+      return false;
+    }
+
+    this._staffDoDelegatedHealthcareActivities = this._convertYesNoDontKnow(dhaAnswer, null);
+    return true;
+  }
+
+  _validateDelegatedHealthcareChosenActivities() {
+    // bulk uload codes for delegatedHealthcareActivities are integers but we want to compare with strings
+    const ALLOWED_ACTIVITIES = this.mappings.delegatedHealthcareActivities.map((a) => a.bulkUploadCode.toString());
+    const dhaActivities = this._currentLine.DHAACTIVITIES;
+    const dha = this._currentLine.DHA;
+    const _unexpectedlyEmptyActivities = 'Missing activities list when DHA is set to yes'; // unused warning
+
+    if (dhaActivities === '999' && dha === '1') {
+      // edge cases
+      // doesn't know which activities implied but does know that they do DHA
+      this._staffWhatKindDelegatedHealthcareActivities = { knowWhatActivities: "Don't know", activities: [] };
+      return true;
+    }
+
+    if (!dhaActivities || dhaActivities === '999') {
+      // maybe add _unexpectedlyEmptyActivities as a warning if dha==='1' in future
+      this._staffWhatKindDelegatedHealthcareActivities = null;
+      return true;
+    }
+
+    const activities = dhaActivities.split(';'); // array of bulk upload codes
+    if (activities.length > 0 && dha !== '1') {
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for DHAACTIVITIES will be ignored as the code for DHA is not set to 1',
+          'DHAACTIVITIES',
+        ),
+      );
+      return false;
+    }
+
+    const disallowed = activities.filter((a) => !ALLOWED_ACTIVITIES.includes(a));
+    let allowed = [];
+    if (disallowed.length > 0) {
+      if (disallowed.length === activities.length) {
+        // ignore all
+        this._validationErrors.push(
+          this._generateWarning(
+            'The codes you have entered for DHAACTIVITIES are invalid and will be ignored',
+            'DHAACTIVITIES',
+          ),
+        );
+        return false;
+      } else {
+        // should this allow valid options and only ignore disallowed ones
+        this._validationErrors.push(
+          this._generateWarning(
+            'Some codes you have entered for DHAACTIVITIES are invalid; invalid codes will be ignored',
+            'DHAACTIVITIES',
+          ),
+        );
+        allowed = activities.filter((el) => !disallowed.includes(el));
+      }
+    } else {
+      // all are valid
+      allowed = activities;
+    }
+
+    const mapped = allowed.map((buCode) => {
+      return this._getIdFromBulkUploadCode(buCode, this.mappings.delegatedHealthcareActivities);
+    });
+
+    this._staffWhatKindDelegatedHealthcareActivities = { knowWhatActivities: 'Yes', activities: mapped };
+    return true;
+  }
+
   _validateCapacitiesAndUtilisations() {
     // capacities/utilisations are a semi colon delimited list of integers
     let listOfCapacities = this._currentLine.CAPACITY.split(';');
@@ -1551,6 +1676,9 @@ class WorkplaceCSVValidator {
     }
   }
 
+  /** end more validation functions */
+
+  /** even more helpers */
   getDuplicateLocationError() {
     return {
       origin: 'Establishments',
@@ -1574,6 +1702,9 @@ class WorkplaceCSVValidator {
     return total;
   }
 
+  /** end even more helpers */
+
+  /** cross validation on jobs and training */
   _crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, { employedWorkers = 0, nonEmployedWorkers = 0 }) {
     const vacancies = this.getTotal(this._currentLine.VACANCIES);
     const starters = this.getTotal(this._currentLine.STARTERS);
@@ -2357,6 +2488,9 @@ class WorkplaceCSVValidator {
     }
   }
 
+  /** end cross validation on jobs */
+
+  /** transforms */
   _transformMainService() {
     if (this._mainService) {
       const mappedService = BUDI.services(BUDI.TO_ASC, this._mainService);
@@ -2387,6 +2521,29 @@ class WorkplaceCSVValidator {
         });
       }
     }
+  }
+
+  _addMainServiceDHAWarningIfMismatch() {
+    if (
+      this._mainService?.id &&
+      !this._serviceCanDoDelegatedHealthcareActivities(this._mainService.id) &&
+      this._staffDoDelegatedHealthcareActivities
+    ) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'Value entered for DHA will be ignored as main service cannot do delegated healthcare activities',
+          'DHA',
+          'DHA_MAIN_SERVICE_WARNING',
+        ),
+      );
+
+      this._staffDoDelegatedHealthcareActivities = null;
+    }
+  }
+
+  _serviceCanDoDelegatedHealthcareActivities(serviceId) {
+    const service = this.mappings.services?.find((service) => service.id === serviceId);
+    return service?.canDoDelegatedHealthcareActivities;
   }
 
   _transformAllServices() {
@@ -2743,6 +2900,8 @@ class WorkplaceCSVValidator {
     this._pensionContribution = mapping[pension];
   }
 
+  /** end transforms */
+
   preValidate(headers) {
     return this._validateHeaders(headers);
   }
@@ -2769,6 +2928,7 @@ class WorkplaceCSVValidator {
     return true;
   }
 
+  /** more error helpers */
   // add a duplicate validation error to the current set
   addDuplicate() {
     return {
@@ -2835,6 +2995,10 @@ class WorkplaceCSVValidator {
     };
   }
 
+  /** end more error helpers */
+
+  /** main methods */
+
   // returns true on success, false is any attribute of WorkplaceCSVValidator fails
   async validate() {
     this._validateLocalisedId();
@@ -2856,6 +3020,8 @@ class WorkplaceCSVValidator {
 
       this._validateAllServices();
       this._validateServiceUsers();
+      this._validateDelegatedHealthcareActivities();
+      this._validateDelegatedHealthcareChosenActivities();
       this._validateCapacitiesAndUtilisations();
 
       this._validateTotalPermTemp();
@@ -2939,13 +3105,14 @@ class WorkplaceCSVValidator {
     this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }
 
-  // returns true on success, false is any attribute of WorkplaceCSVValidator fails
+  // returns true on success, false if any attribute of WorkplaceCSVValidator fails
   transform() {
     // if the status is unchecked or deleted, then don't transform
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
 
       status = !this._transformMainService() ? false : status;
+      this._addMainServiceDHAWarningIfMismatch();
       status = !this._transformEstablishmentType() ? false : status;
       status = !this._transformAllServices() ? false : status;
       status = !this._transformServiceUsers() ? false : status;
@@ -3012,6 +3179,7 @@ class WorkplaceCSVValidator {
       capacities: this._capacities,
       utilisations: this._utilisations,
       totalPermTemp: this._totalPermTemp,
+      staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
 
       allJobs: this._alljobs,
       counts: {
@@ -3034,6 +3202,8 @@ class WorkplaceCSVValidator {
   }
 
   // returns an API representation of this WorkplaceCSVValidator
+  // is built from the clean data in the internal properties
+  // which represent a cache of the object under validation
   toAPI() {
     const fixedProperties = {
       address1: this._address1 ? this._address1 : '',
@@ -3081,6 +3251,8 @@ class WorkplaceCSVValidator {
             return returnThis;
           })
         : [],
+      staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
+      staffWhatKindDelegatedHealthcareActivities: this._staffWhatKindDelegatedHealthcareActivities,
       numberOfStaff: this._totalPermTemp,
       vacancies: this._vacancies,
       starters: this._starters,
@@ -3160,8 +3332,22 @@ class WorkplaceCSVValidator {
   }
 
   // takes the given establishment entity and writes it out to CSV string (one line)
-  static toCSV(entity, mappings) {
-    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
+  static toCSV(entity) {
+    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","DHA","DHAACTIVITIES","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
+
+    const defaultYesNoDontKnowMapping = (valueFromDatabase) => {
+      switch (valueFromDatabase) {
+        case 'Yes':
+          return '1';
+        case 'No':
+          return '2';
+        case "Don't know":
+          return '999';
+        default:
+          return '';
+      }
+    };
+
     const columns = [];
     columns.push(csvQuote(entity.LocalIdentifierValue));
     columns.push('UNCHECKED');
@@ -3239,6 +3425,20 @@ class WorkplaceCSVValidator {
         )
         .join(';'),
     );
+
+    // DHA
+    columns.push(defaultYesNoDontKnowMapping(entity.staffDoDelegatedHealthcareActivities));
+
+    // DHAACTIVITIES
+    const mapDhaActivitiesToCSV = (entity) => {
+      if (!entity.staffWhatKindDelegatedHealthcareActivities) return '';
+      if (entity.staffWhatKindDelegatedHealthcareActivities === "Don't know") return '999';
+
+      const activityCodes = entity.delegatedHealthcareActivities.map((activity) => activity.bulkUploadCode);
+      return activityCodes.join(';');
+    };
+
+    columns.push(mapDhaActivitiesToCSV(entity));
 
     // total perm/temp staff
     columns.push(entity.NumberOfStaffValue ? entity.NumberOfStaffValue : 0);
@@ -3327,20 +3527,7 @@ class WorkplaceCSVValidator {
     columns.push(cwpAwarenessBUCode);
 
     // CWP use
-    const cwpUseMapping = (valueFromDatabase) => {
-      switch (valueFromDatabase) {
-        case 'Yes':
-          return '1';
-        case 'No':
-          return '2';
-        case "Don't know":
-          return '999';
-        default:
-          return '';
-      }
-    };
-
-    const cwpUse = cwpUseMapping(entity.careWorkforcePathwayUse);
+    const cwpUse = defaultYesNoDontKnowMapping(entity.careWorkforcePathwayUse);
     let reasonsCode = [];
     if (entity.careWorkforcePathwayUse === 'Yes' && entity.CareWorkforcePathwayReasons?.length > 0) {
       reasonsCode = entity.CareWorkforcePathwayReasons.map((reason) => reason.bulkUploadCode);
@@ -3409,6 +3596,8 @@ class WorkplaceCSVValidator {
     return WorkplaceCSVValidator.toCSV(entity);
   }
 }
+
+/** end main methods */
 
 module.exports.WorkplaceCSVValidator = WorkplaceCSVValidator;
 module.exports.EstablishmentFileHeaders = _headers_v1;

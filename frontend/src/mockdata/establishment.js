@@ -141,4 +141,5 @@ module.exports.Establishment = {
   ownershipChangeRequestId: '',
   showAddWorkplaceDetailsBanner: false,
   CWPAwarenessQuestionViewed: true,
+  staffWhatKindDelegatedHealthcareActivities: null,
 };

@@ -1,5 +1,10 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+const {
+  clearDHAWorkerAnswersOnWorkplaceChange,
+  clearDoDHAWorkplaceOnMainServiceChange,
+  clearDHAWorkplaceAnswerOnChange,
+} = require('./hooks/establishmentHooks');
 
 module.exports = function (sequelize, DataTypes) {
   const Establishment = sequelize.define(
@@ -801,6 +806,50 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      staffDoDelegatedHealthcareActivities: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'StaffDoDelegatedHealthcareActivitiesValue',
+      },
+      StaffDoDelegatedHealthcareActivitiesSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffDoDelegatedHealthcareActivitiesChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffDoDelegatedHealthcareActivitiesSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      StaffDoDelegatedHealthcareActivitiesChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      staffWhatKindDelegatedHealthcareActivities: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', "Don't know"],
+        field: 'StaffWhatKindDelegatedHealthcareActivitiesValue',
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      StaffWhatKindDelegatedHealthcareActivitiesChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       defaultScope: {
@@ -948,6 +997,13 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
       as: 'CareWorkforcePathwayReasons',
+    });
+
+    Establishment.belongsToMany(models.delegatedHealthcareActivities, {
+      through: 'EstablishmentDHActivities',
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'delegatedHealthcareActivities',
     });
   };
 
@@ -1424,6 +1480,8 @@ module.exports = function (sequelize, DataTypes) {
         'sickPay',
         'pensionContribution',
         'careWorkforcePathwayUse',
+        'staffDoDelegatedHealthcareActivities',
+        'staffWhatKindDelegatedHealthcareActivities',
       ],
       where: {
         [Op.or]: [
@@ -1496,6 +1554,11 @@ module.exports = function (sequelize, DataTypes) {
           attributes: ['id', 'bulkUploadCode'],
           as: 'careWorkforcePathwayWorkplaceAwareness',
         },
+        {
+          model: sequelize.models.delegatedHealthcareActivities,
+          attributes: ['id', 'bulkUploadCode'],
+          as: 'delegatedHealthcareActivities',
+        },
       ],
     });
   };
@@ -1564,6 +1627,7 @@ module.exports = function (sequelize, DataTypes) {
             'Level2CareCertificateValue',
             'Level2CareCertificateYear',
             'CareWorkforcePathwayRoleCategoryFK',
+            'carryOutDelegatedHealthcareActivities',
           ],
           as: 'workers',
           where: {
@@ -2203,6 +2267,12 @@ module.exports = function (sequelize, DataTypes) {
       WHEN "ShowAddWorkplaceDetailsBanner" = true THEN true
       -- CWP awareness flag showing
       WHEN "CareWorkforcePathwayWorkplaceAwarenessFK" IS NULL AND "CWPAwarenessQuestionViewed" != true THEN true
+      -- DHA question flag showing
+      WHEN (
+        SELECT "StaffDoDelegatedHealthcareActivitiesValue" IS NULL AND s."CanDoDelegatedHealthcareActivities" = true
+        FROM cqc."services" s
+        WHERE s."id" = "MainServiceFKValue"
+      ) THEN true
       -- Number of staff does not equal worker count
       WHEN (
         SELECT (COUNT(w."ID") != "NumberOfStaffValue") AND "eightWeeksFromFirstLogin" < now()::timestamp
@@ -2594,6 +2664,10 @@ module.exports = function (sequelize, DataTypes) {
 
     return !!result;
   };
+
+  Establishment.addHook('beforeSave', 'clearDHAWorkerAnswersOnWorkplaceChange', clearDHAWorkerAnswersOnWorkplaceChange);
+  Establishment.addHook('beforeSave', 'clearDHAWorkplaceAnswerOnChange', clearDHAWorkplaceAnswerOnChange);
+  Establishment.addHook('beforeSave', 'clearDoDHAWorkplaceOnMainServiceChange', clearDoDHAWorkplaceOnMainServiceChange);
 
   return Establishment;
 };;

@@ -101,6 +101,8 @@ class Establishment extends EntityValidator {
     this._careWorkforcePathwayWorkplaceAwareness = null;
     this._careWorkforcePathwayUse = null;
     this._CWPAwarenessQuestionViewed = null;
+    this._staffDoDelegatedHealthcareActivities = null;
+    this._staffWhatKindDelegatedHealthcareActivities = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -409,6 +411,18 @@ class Establishment extends EntityValidator {
     return this._CWPAwarenessQuestionViewed;
   }
 
+  get staffDoDelegatedHealthcareActivities() {
+    return this._properties.get('StaffDoDelegatedHealthcareActivities')
+      ? this._properties.get('StaffDoDelegatedHealthcareActivities').property
+      : null;
+  }
+
+  get staffWhatKindDelegatedHealthcareActivities() {
+    return this._properties.get('StaffWhatKindDelegatedHealthcareActivities')
+      ? this._properties.get('StaffWhatKindDelegatedHealthcareActivities').property
+      : null;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -629,6 +643,10 @@ class Establishment extends EntityValidator {
 
         if ('CWPAwarenessQuestionViewed' in document) {
           this._CWPAwarenessQuestionViewed = document.CWPAwarenessQuestionViewed;
+        }
+
+        if ('staffDoDelegatedHealthcareActivities' in document) {
+          this._staffDoDelegatedHealthcareActivities = document.staffDoDelegatedHealthcareActivities;
         }
       }
 
@@ -856,6 +874,7 @@ class Establishment extends EntityValidator {
           primaryAuthorityCssr: this._primaryAuthorityCssr,
           careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
           CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
+          staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1088,6 +1107,7 @@ class Establishment extends EntityValidator {
             primaryAuthorityCssr: this._primaryAuthorityCssr,
             careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
             CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
+            staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1120,6 +1140,7 @@ class Establishment extends EntityValidator {
             },
             attributes: ['id', 'updated'],
             transaction: thisTransaction,
+            savedBy: savedBy.toLowerCase(),
           });
 
           if (updatedRecordCount === 1) {
@@ -1405,6 +1426,7 @@ class Establishment extends EntityValidator {
         this._primaryAuthorityCssr = this.primaryAuthorityCssr;
         this._CWPAwarenessQuestionViewed = fetchResults.CWPAwarenessQuestionViewed;
         this._careWorkforcePathwayUse = fetchResults.careWorkforcePathwayUse;
+        this._staffDoDelegatedHealthcareActivities = fetchResults.staffDoDelegatedHealthcareActivities;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1442,13 +1464,18 @@ class Establishment extends EntityValidator {
           raw: true,
         });
 
+        const delegatedHealthcareActivities = await fetchResults.getDelegatedHealthcareActivities({
+          attributes: ['id', 'title', 'description'],
+          raw: true,
+        });
+
         const [otherServices, mainService, serviceUsers, capacity, jobs] = await Promise.all([
           ServiceCache.allMyOtherServices(establishmentServices.map((x) => x)),
           models.services.findOne({
             where: {
               id: fetchResults.MainServiceFKValue,
             },
-            attributes: ['id', 'name', 'reportingID'],
+            attributes: ['id', 'name', 'reportingID', 'canDoDelegatedHealthcareActivities'],
             raw: true,
           }),
           models.serviceUsers.findAll({
@@ -1519,6 +1546,8 @@ class Establishment extends EntityValidator {
         });
 
         fetchResults.careWorkforcePathwayReasons = careWorkforcePathwayReasons;
+
+        fetchResults.delegatedHealthcareActivities = delegatedHealthcareActivities;
 
         fetchResults.capacity = capacity;
 
@@ -1863,6 +1892,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.isParentApprovedBannerViewed = this.isParentApprovedBannerViewed;
         myDefaultJSON.CWPAwarenessQuestionViewed = this.CWPAwarenessQuestionViewed;
+        myDefaultJSON.staffDoDelegatedHealthcareActivities = this.staffDoDelegatedHealthcareActivities;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

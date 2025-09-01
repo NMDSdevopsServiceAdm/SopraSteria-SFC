@@ -24,6 +24,8 @@ module.exports = build('EstablishmentCSV', {
     SERVICEDESC: '1;1',
     SERVICEUSERS: '',
     OTHERUSERDESC: '',
+    DHA: '',
+    DHAACTIVITIES: '',
     TOTALPERMTEMP: '1',
     ALLJOBROLES: '34;8;4',
     STARTERS: '0;0;0',

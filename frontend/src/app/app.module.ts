@@ -97,6 +97,7 @@ import { HelpAndTipsButtonComponent } from './features/help-and-tips-button/help
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { SortByService } from '@core/services/sort-by.service';
 
 @NgModule({
@@ -211,6 +212,7 @@ import { SortByService } from '@core/services/sort-by.service';
     FundingReportResolver,
     HelpPageResolver,
     GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
+    GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     FeatureFlagsResolver,
   ],
   bootstrap: [AppComponent],

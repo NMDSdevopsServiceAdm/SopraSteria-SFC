@@ -60,6 +60,7 @@ var nhsBsaApiDocumentation = require('./server/routes/nhsBsaApi/apiDocs');
 var careWorkforcePathwayRoleCategories = require('./server/routes/careWorkforcePathwayRoleCategories');
 var careWorkforcePathwayWorkplaceAwarenessAnswers = require('./server/routes/careWorkforcePathwayWorkplaceAwarenessAnswers');
 const { careWorkforcePathwayRouter } = require('./server/routes/careWorkforcePathway');
+const { dhaRouter } = require('./server/routes/delegatedHealthcareActivities');
 const { cmsRouter } = require('./server/routes/cms');
 
 // admin route
@@ -272,6 +273,7 @@ app.use('/api/careWorkforcePathwayWorkplaceAwarenessAnswers', [
   careWorkforcePathwayWorkplaceAwarenessAnswers,
 ]);
 app.use('/api/careWorkforcePathway', [refCacheMiddleware.refcache, careWorkforcePathwayRouter]);
+app.use('/api/delegatedHealthcareActivities', [refCacheMiddleware.refcache, dhaRouter]);
 app.use('/api/cms', [refCacheMiddleware.refcache, cmsRouter]);
 
 // transaction endpoints

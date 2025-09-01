@@ -4,7 +4,7 @@ import { UpdateCareWorkforcePathwayUsePayload } from '@core/model/care-workforce
 import { environment } from 'src/environments/environment';
 
 import { EstablishmentService } from './establishment.service';
-
+import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
 describe('EstablishmentService', () => {
   let service: EstablishmentService;
   let http: HttpTestingController;
@@ -177,6 +177,25 @@ describe('EstablishmentService', () => {
       service.setReturnTo(returnTo);
 
       expect(service.returnIsSetToHomePage()).toBe(false);
+    });
+  });
+
+  describe('updateStaffKindDelegatedHealthcareActivities', () => {
+    const mockWorkplaceUid = 'mockWorkplaceUid';
+    const payload = {
+      knowWhatActivities: 'Yes',
+      activities: [{ id: 1 }, { id: 2 }],
+    } as UpdateStaffKindDelegatedHealthcareActivitiesPayload;
+
+    const endpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/updateStaffKindDelegatedHealthcareActivities`;
+
+    it('should make call to expected backend endpoint', async () => {
+      service.updateStaffKindDelegatedHealthcareActivities(mockWorkplaceUid, payload).subscribe();
+
+      const expectedRequest = http.expectOne(endpoint);
+
+      expect(expectedRequest.request.method).toBe('POST');
+      expect(expectedRequest.request.body).toEqual(payload);
     });
   });
 });

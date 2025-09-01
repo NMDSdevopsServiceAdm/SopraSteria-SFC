@@ -2,6 +2,8 @@ const expect = require('chai').expect;
 
 const careWorkforcePathwayWorkplaceAwarenessPropertyClass =
   require('../../../../../../models/classes/establishment/properties/careWorkforcePathwayWorkplaceAwarenessProperty').CareWorkforcePathwayWorkplaceAwarenessProperty;
+const sinon = require('sinon');
+const models = require('../../../../../../models/');
 
 describe('careWorkforcePathwayWorkplaceAwarenessProperty', () => {
   let careWorkforcePathwayWorkplaceAwarenessProperty;
@@ -11,6 +13,17 @@ describe('careWorkforcePathwayWorkplaceAwarenessProperty', () => {
   });
 
   describe('restoreFromJson()', () => {
+    beforeEach(() => {
+      sinon.stub(models.careWorkforcePathwayWorkplaceAwareness, 'findOne').resolves({
+        id: 1,
+        title: 'Aware of how the care workforce pathway works in practice',
+      });
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
     it('should keep the property unchanged when incoming document does not have the field careWorkforcePathwayWorkplaceAwareness', async () => {
       const document = {};
 
@@ -30,6 +43,7 @@ describe('careWorkforcePathwayWorkplaceAwarenessProperty', () => {
       const document = {
         careWorkforcePathwayWorkplaceAwareness: {
           id: 1,
+          title: 'Aware of how the care workforce pathway works in practice',
         },
       };
 

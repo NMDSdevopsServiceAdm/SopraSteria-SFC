@@ -1,5 +1,6 @@
 const dayjs = require('dayjs');
 const { Op } = require('sequelize');
+const { unsetDHAAnswerOnJobRoleChange } = require('./hooks/workerHooks');
 
 module.exports = function (sequelize, DataTypes) {
   const Worker = sequelize.define(
@@ -1085,6 +1086,30 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareWorkforcePathwayRoleCategoryChangedBy"',
       },
+
+      carryOutDelegatedHealthcareActivities: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"CarryOutDelegatedHealthcareActivitiesValue"',
+      },
+      CarryOutDelegatedHealthcareActivitiesSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CarryOutDelegatedHealthcareActivitiesChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      CarryOutDelegatedHealthcareActivitiesSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      CarryOutDelegatedHealthcareActivitiesChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
       created: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -1491,6 +1516,123 @@ module.exports = function (sequelize, DataTypes) {
 
     return { count, workers };
   };
+
+  Worker.countAllWorkersWithoutDelegatedHealthCareActivities = async function (establishmentId) {
+    return await this.count({
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CarryOutDelegatedHealthcareActivitiesValue: null,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+          where: {
+            canDoDelegatedHealthcareActivities: true,
+          },
+        },
+      ],
+    });
+  };
+
+  Worker.getAndCountAllWorkersWithoutDelegatedHealthCareActivities = async function ({
+    establishmentId,
+    itemsPerPage,
+    pageIndex,
+  }) {
+    const { count, rows } = await this.findAndCountAll({
+      attributes: ['uid', 'NameOrIdValue'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        CarryOutDelegatedHealthcareActivitiesValue: null,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title'],
+          where: {
+            canDoDelegatedHealthcareActivities: true,
+          },
+        },
+      ],
+      order: [['NameOrIdValue', 'ASC']],
+      offset: itemsPerPage * pageIndex,
+      limit: itemsPerPage,
+    });
+
+    const workers = rows.map((worker) => {
+      const { uid, mainJob, NameOrIdValue: nameOrId } = worker;
+      return { uid, mainJob, nameOrId };
+    });
+
+    return { count, workers };
+  };
+
+  Worker.addHook('beforeSave', unsetDHAAnswerOnJobRoleChange);
+  Worker.checkIfAnyWorkerHasDHAAnswered = async function (establishmentId) {
+    const workerWithDHAAnswered = await this.findOne({
+      attributes: ['id', 'carryOutDelegatedHealthcareActivities'],
+      where: {
+        carryOutDelegatedHealthcareActivities: { [Op.ne]: null },
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+    });
+
+    return !!workerWithDHAAnswered;
+  };
+
+  Worker.clearDHAAnswerForAllWorkersInWorkplace = async function (establishmentId, options) {
+    if (!establishmentId) {
+      return;
+    }
+
+    const timestamp = new Date();
+    const username = options?.savedBy ?? '';
+    const transaction = options.transaction;
+
+    const [updatedRecordCount, updatedRows] = await this.update(
+      {
+        carryOutDelegatedHealthcareActivities: null,
+        CarryOutDelegatedHealthcareActivitiesSavedAt: timestamp,
+        CarryOutDelegatedHealthcareActivitiesChangedAt: timestamp,
+        CarryOutDelegatedHealthcareActivitiesSavedBy: username,
+        CarryOutDelegatedHealthcareActivitiesChangedBy: username,
+      },
+      {
+        where: {
+          carryOutDelegatedHealthcareActivities: { [Op.ne]: null },
+          archived: false,
+          establishmentFk: establishmentId,
+        },
+        returning: true,
+        transaction,
+      },
+    );
+
+    if (updatedRecordCount === 0) {
+      return;
+    }
+
+    const workerIds = updatedRows.map((workerRow) => workerRow.dataValues.ID);
+    const auditEvents = workerIds.map((id) => {
+      return {
+        workerFk: id,
+        username,
+        type: 'changed',
+        property: 'CarryOutDelegatedHealthcareActivities',
+        event: { new: null },
+      };
+    });
+
+    await sequelize.models.workerAudit.bulkCreate(auditEvents, { transaction });
+  };
+
+  Worker.addHook('beforeSave', 'unsetDHAAnswerOnJobRoleChange', unsetDHAAnswerOnJobRoleChange);
 
   return Worker;
 };

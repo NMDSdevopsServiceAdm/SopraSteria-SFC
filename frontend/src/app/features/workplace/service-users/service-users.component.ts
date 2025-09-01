@@ -47,7 +47,7 @@ export class ServiceUsersComponent extends Question {
       }),
     );
 
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-vacancies'];
+    this.setNextRoute();
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         (response) => {
@@ -60,7 +60,6 @@ export class ServiceUsersComponent extends Question {
         (error) => this.onError(error),
       ),
     );
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-vacancies'];
   }
 
   private addFormControls(): void {
@@ -118,6 +117,14 @@ export class ServiceUsersComponent extends Question {
         message: 'Service Users could not be updated.',
       },
     ];
+  }
+
+  private setNextRoute(): void {
+    const nextPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
+      ? 'staff-do-delegated-healthcare-activities'
+      : 'do-you-have-vacancies';
+    this.nextRoute = ['/workplace', this.establishment.uid, nextPage];
+    this.skipRoute = this.nextRoute;
   }
 
   protected generateUpdateProps() {
