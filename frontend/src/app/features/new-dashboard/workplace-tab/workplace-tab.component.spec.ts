@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
 import { Roles } from '@core/model/roles.enum';
@@ -14,7 +14,7 @@ import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -33,10 +33,11 @@ const MockWindow = {
     },
   },
 };
+
 describe('NewWorkplaceTabComponent', () => {
   const setup = async (
     permissions = ['canEditEstablishment'],
-    checkCqcDetails = false,
+    cqcStatusMatch = true,
     establishment = Establishment,
     isAdmin = true,
     subsidiaries = 0,
@@ -60,10 +61,8 @@ describe('NewWorkplaceTabComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
-          deps: [HttpClient],
+          useClass: MockEstablishmentService,
         },
-
         {
           provide: WindowRef,
           useClass: WindowRef,
@@ -78,6 +77,16 @@ describe('NewWorkplaceTabComponent', () => {
           provide: AuthService,
           useFactory: MockAuthService.factory(true, isAdmin),
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                cqcStatusCheck: { cqcStatusMatch },
+              },
+            },
+          },
         },
         { provide: WindowToken, useValue: MockWindow },
       ],
@@ -133,10 +142,16 @@ describe('NewWorkplaceTabComponent', () => {
       expect(queryByText('Start to add more details about your workplace')).toBeFalsy();
     });
 
-    it('should show the check cqc details banner when checkCQCDetails is true', async () => {
-      const { getByTestId } = await setup(['canEditEstablishment'], true);
+    it('should show the check cqc details banner when cqcStatusMatch is false in route data', async () => {
+      const { getByTestId } = await setup(['canEditEstablishment'], false);
 
       expect(getByTestId('check-cqc-details-banner')).toBeTruthy();
+    });
+
+    it('should not show the check cqc details banner when cqcStatusMatch is true in route data', async () => {
+      const { queryByTestId } = await setup(['canEditEstablishment'], true);
+
+      expect(queryByTestId('check-cqc-details-banner')).toBeFalsy();
     });
 
     it('should not show the check cqc details banner when there are not the correct permissions', async () => {

@@ -11,6 +11,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CareWorkforcePathwayUseReasonsResolver } from '@core/resolvers/care-workforce-pathway-use-reasons.resolver';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/resolvers/careWorkforcePathway/care-workforce-pathway-workplace-awareness';
 import { GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver } from '@core/resolvers/careWorkforcePathway/no-of-workers-with-care-workforce-pathway-category-role-unanswered.resolver';
+import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
@@ -143,6 +144,7 @@ const routes: Routes = [
         GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
       noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer:
         GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
+      cqcStatusCheck: CqcStatusCheckResolver,
     },
     children: [
       {

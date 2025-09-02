@@ -85,6 +85,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
   public noOfWorkersWithDelegatedHealthcareUnanswered: number;
   public workplacesNeedAttention: boolean;
+  public showCheckCqcDetails: boolean;
 
   constructor(
     private userService: UserService,
@@ -109,6 +110,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
     this.noOfWorkersWhoRequireInternationalRecruitment =
       this.route.snapshot.data.noOfWorkersWhoRequireInternationalRecruitment?.noOfWorkersWhoRequireAnswers;
+    this.showCheckCqcDetails = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
 
     this.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered =
       this.route.snapshot.data.noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer?.noOfWorkersWhoRequireAnswers;

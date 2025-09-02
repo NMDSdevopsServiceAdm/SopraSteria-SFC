@@ -56,7 +56,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   ) {}
 
   ngOnInit(): void {
-    this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 
     this.workers = this.route.snapshot.data.workers?.workers;
@@ -85,6 +84,17 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     if ('workers' in changes || 'trainingCounts' in changes) {
       this.trainingTotals();
     }
+  }
+
+  public getParentPermissions(): void {
+    const parentUid = this.workplace.parentUid;
+
+    this.canEditWorker = this.permissionsService.can(parentUid, 'canEditWorker');
+    this.canEditEstablishment = this.permissionsService.can(parentUid, 'canEditEstablishment');
+  }
+
+  public navigateToMultipleTraining(): void {
+    this.router.navigate(['/workplace', this.workplace.uid, 'add-multiple-training', 'select-staff']);
   }
 
   private getAllTrainingByCategory(): void {
