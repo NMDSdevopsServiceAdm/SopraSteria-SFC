@@ -8,6 +8,10 @@ import { WorkersModule } from '../workers.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { Establishment } from '@core/model/establishment.model';
 import { getTestBed } from '@angular/core/testing';
+import { AlertService } from '@core/services/alert.service';
+import { WindowRef } from '@core/services/window.ref';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
   const yesRadio = 'Yes, I want to download the summary and any certificates';
@@ -17,8 +21,12 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
     const workplace = establishmentBuilder() as Establishment;
 
     const setupTools = await render(DoYouWantToDowloadTrainAndQualsComponent, {
-      imports: [RouterModule, HttpClientTestingModule, WorkersModule],
+      imports: [RouterModule, HttpClientTestingModule, WorkersModule, ReactiveFormsModule],
       providers: [
+        UntypedFormBuilder,
+        AlertService,
+        WindowRef,
+        ErrorSummaryService,
         {
           provide: WorkerService,
           useClass: MockWorkerService,
@@ -47,14 +55,18 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
     const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
-    const router = injector.inject(Router) as Router;
 
+    const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertServiceSpy = spyOn(alertService, 'addAlert');
 
     return {
       component,
       ...setupTools,
       routerSpy,
+      alertServiceSpy,
     };
   }
 
@@ -89,7 +101,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
   });
 
   it('should render the cancel link with the correct url to go back to staff-record-summary', async () => {
-    const { component, fixture, getByText, routerSpy } = await setup();
+    const { component, fixture, getByText } = await setup();
 
     const cancelLink = getByText('Cancel');
 
@@ -102,21 +114,62 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
     );
   });
 
-  it('navigates to delete-staff-record', async () => {
-    const { component, fixture, getByText, routerSpy } = await setup();
+  describe('submit', () => {
+    it('navigates to delete-staff-record and calls the alertService', async () => {
+      const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup();
 
-    const continueButton = getByText('Continue');
+      const continueButton = getByText('Continue');
 
-    fireEvent.click(getByText(yesRadio));
-    fireEvent.click(continueButton);
-    fixture.detectChanges();
+      fireEvent.click(getByText(yesRadio));
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
 
-    expect(routerSpy).toHaveBeenCalledWith([
-      '/workplace',
-      component.workplace.uid,
-      'staff-record',
-      component.worker.uid,
-      'delete-staff-record',
-    ]);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        component.worker.uid,
+        'delete-staff-record',
+      ]);
+
+      await routerSpy.calls.mostRecent().returnValue;
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: "The training and qualifications summary has downloaded to your computer's Downloads folder",
+      });
+    });
+
+    it('navigates to delete-staff-record and does not call the alertService', async () => {
+      const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup();
+
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(getByText(noRadio));
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        component.worker.uid,
+        'delete-staff-record',
+      ]);
+      expect(alertServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return an error message if a user clicks submit without selecting a radio button', async () => {
+      const { fixture, getByText, getAllByText, routerSpy, alertServiceSpy } = await setup();
+
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(getAllByText('Select yes if you want to download the summary and any certificates')).toHaveSize(2);
+      expect(routerSpy).not.toHaveBeenCalled();
+      expect(alertServiceSpy).not.toHaveBeenCalled();
+    });
   });
 });
