@@ -46,7 +46,6 @@ export class WorkerPaginationComponent implements OnInit {
               : ['/funding', 'staff-record', nextID]
  */
 
-
     const urlStructure = {url: [].concat(this.staffSummaryBaseUrl.url)};
     urlStructure.url.push(workerUID);
     if (this.staffSummaryUrlSuffix) urlStructure.url.push(this.staffSummaryUrlSuffix);

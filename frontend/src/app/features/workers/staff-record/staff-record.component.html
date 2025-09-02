@@ -89,6 +89,17 @@
     </div>
   </div>
   <!-- if not continue add grey line and pagination. *ngIf="!(hasCompletedStaffRecordFlow && canEditWorker)" -->
+<ng-container *ngIf="!(hasCompletedStaffRecordFlow && canEditWorker)">
+  <div class="govuk-summary-list--top-border">
+    <app-worker-pagination
+      [workerList]="workerList"
+      [workplaceUid]="workplace.uid"
+      [exitUrl]="exitUrl"
+      [staffSummaryBaseUrl]="staffSummaryBaseUrl"
+      [staffSummaryUrlSuffix]="staffSummaryUrlSuffix"
+    ></app-worker-pagination>
+  </div>
+</ng-container>
   <app-basic-record
     [basicTitle]="'Mandatory information'"
     [workplace]="workplace"
@@ -102,5 +113,15 @@
   <ng-container *ngIf="hasCompletedStaffRecordFlow && canEditWorker">
     <a type="button" class="govuk-button govuk-!-margin-top-9" [routerLink]="continueRoute">Continue</a>
   </ng-container>
-  <!-- if no continue button, show pagination -->
+  <ng-container *ngIf="!(hasCompletedStaffRecordFlow && canEditWorker)">
+  <div class="govuk-summary-list--top-border">
+    <app-worker-pagination
+      [workerList]="workerList"
+      [workplaceUid]="workplace.uid"
+      [exitUrl]="exitUrl"
+      [staffSummaryBaseUrl]="staffSummaryBaseUrl"
+      [staffSummaryUrlSuffix]="staffSummaryUrlSuffix"
+    ></app-worker-pagination>
+  </div>
+</ng-container>
 </ng-container>

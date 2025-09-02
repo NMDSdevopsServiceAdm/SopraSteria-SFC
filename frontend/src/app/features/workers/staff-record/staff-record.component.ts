@@ -30,6 +30,10 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public hasCompletedStaffRecordFlow: boolean;
   public continueRoute: string[];
+  public workerList: string[];
+  public exitUrl: URLStructure;
+  public staffSummaryBaseUrl: URLStructure;
+  public staffSummaryUrlSuffix: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -74,6 +78,19 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+
+    this.getListOfWorkers();
+    this.setPaginationUrls();
+  }
+
+  setPaginationUrls() {
+    this.exitUrl = { url: ['/dashboard'], fragment: 'staff-records' };
+    this.staffSummaryBaseUrl = { url: ['/workplace', this.workplace.uid, 'staff-record'] };
+    this.staffSummaryUrlSuffix = 'staff-record-summary'
+  }
+
+  public getListOfWorkers(): void {
+    this.workerList = JSON.parse(localStorage.getItem('ListOfWorkers'));
   }
 
   private showContinueButtons(): void {
