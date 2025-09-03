@@ -143,6 +143,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
 
   private onSuccess(): void {
     this.vacanciesAndTurnoverService.clearDoYouWantToAddOrDeleteAnswer();
+    this.workerService.clearDoYouWantToDownloadTrainAndQualsAnswer();
 
     const nextPage =
       this.totalNumberOfStaffBeforeDelete > 1

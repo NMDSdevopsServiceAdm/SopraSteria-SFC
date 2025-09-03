@@ -60,6 +60,7 @@ export class WorkerService {
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
   public tabChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public _doYouWantToDownloadTrainAndQualsAnswer = null;
 
   constructor(private http: HttpClient) {}
 
@@ -349,5 +350,17 @@ export class WorkerService {
     );
 
     return nonMandatoryQuestions.some(([_fieldName, answer]) => answer !== null);
+  }
+
+  public setDoYouWantToDownloadTrainAndQualsAnswer(downloadTrainAndQualsAnswer: string) {
+    this._doYouWantToDownloadTrainAndQualsAnswer = downloadTrainAndQualsAnswer;
+  }
+
+  public getDoYouWantToDownloadTrainAndQualsAnswer(): string {
+    return this._doYouWantToDownloadTrainAndQualsAnswer;
+  }
+
+  public clearDoYouWantToDownloadTrainAndQualsAnswer(): void {
+    this._doYouWantToDownloadTrainAndQualsAnswer = null;
   }
 }

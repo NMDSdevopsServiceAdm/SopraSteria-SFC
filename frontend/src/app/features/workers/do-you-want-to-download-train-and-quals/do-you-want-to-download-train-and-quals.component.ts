@@ -8,6 +8,7 @@ import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -39,6 +40,7 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     private backLinkService: BackLinkService,
     private alertService: AlertService,
     private errorSummaryService: ErrorSummaryService,
+    private previousRouteService: PreviousRouteService,
   ) {
     this.form = this.formBuilder.group(
       {
@@ -67,6 +69,18 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     this.returnUrl = {
       url: this.previousRoute,
     };
+    this.prefill();
+  }
+
+  private prefill(): void {
+    const previousPage = this.previousRouteService.getPreviousPage();
+    const previousAnswer = this.workerService.getDoYouWantToDownloadTrainAndQualsAnswer();
+
+    if (previousAnswer && previousPage === 'delete-staff-record') {
+      this.form.patchValue({
+        downloadTrainAndQuals: previousAnswer,
+      });
+    }
   }
 
   private setupFormErrorsMap(): void {
@@ -95,15 +109,19 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     this.submitted = true;
     const answer = this.form.value.downloadTrainAndQuals;
 
-    if (answer === 'Yes') {
-      this.router.navigate(this.nextRoute).then(() =>
-        this.alertService.addAlert({
-          type: 'success',
-          message: "The training and qualifications summary has downloaded to your computer's Downloads folder",
-        }),
-      );
-    } else if (answer === 'No') {
-      this.router.navigate(this.nextRoute);
+    if (this.form.valid) {
+      this.workerService.setDoYouWantToDownloadTrainAndQualsAnswer(answer);
+
+      if (answer === 'Yes') {
+        this.router.navigate(this.nextRoute).then(() =>
+          this.alertService.addAlert({
+            type: 'success',
+            message: "The training and qualifications summary has downloaded to your computer's Downloads folder",
+          }),
+        );
+      } else if (answer === 'No') {
+        this.router.navigate(this.nextRoute);
+      }
     }
   }
 

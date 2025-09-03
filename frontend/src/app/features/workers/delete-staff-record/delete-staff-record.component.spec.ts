@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -25,7 +24,7 @@ describe('DeleteStaffRecordComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(DeleteStaffRecordComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -208,18 +207,24 @@ describe('DeleteStaffRecordComponent', () => {
       });
     });
 
-    it('should clear doYouWantToAddOrDeleteAnswer on deletion to ensure no side effects from previous visits to delete another page', async () => {
-      const { getByRole, vacanciesAndTurnoverService } = await setup();
+    it('should clear doYouWantToAddOrDeleteAnswer and clearDoYouWantToDownloadTrainAndQualsAnswer on deletion to ensure no side effects from previous visits to delete another page', async () => {
+      const { getByRole, vacanciesAndTurnoverService, workerService } = await setup();
 
       const clearDoYouWantToAddOrDeleteAnswerSpy = spyOn(
         vacanciesAndTurnoverService,
         'clearDoYouWantToAddOrDeleteAnswer',
       );
 
+      const clearDoYouWantToDownloadTrainAndQualsAnswerSpy = spyOn(
+        workerService,
+        'clearDoYouWantToDownloadTrainAndQualsAnswer',
+      );
+
       userEvent.click(getByRole('checkbox', { name: /I know that/ }));
       userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
 
       expect(clearDoYouWantToAddOrDeleteAnswerSpy).toHaveBeenCalled();
+      expect(clearDoYouWantToDownloadTrainAndQualsAnswerSpy).toHaveBeenCalled();
     });
 
     it('should show an error message if confirmation checkbox is not ticked', async () => {

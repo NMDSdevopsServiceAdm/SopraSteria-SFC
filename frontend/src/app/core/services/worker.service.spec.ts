@@ -70,4 +70,23 @@ describe('WorkerService', () => {
       expect(service.hasAnsweredNonMandatoryQuestion()).toBe(true);
     });
   });
+
+  describe('selectedDownloadTrainAndQualsAnswer', () => {
+    it('should return null when nothing has been set', async () => {
+      expect(service.getDoYouWantToDownloadTrainAndQualsAnswer()).toEqual(null);
+    });
+
+    it('should be set when getDoYouWantToDownloadTrainAndQualsAnswer is called', async () => {
+      service.setDoYouWantToDownloadTrainAndQualsAnswer('Yes');
+
+      expect(service.getDoYouWantToDownloadTrainAndQualsAnswer()).toEqual('Yes');
+    });
+
+    it('should clear when clearDoYouWantToDownloadTrainAndQualsAnswer is called', async () => {
+      service.setDoYouWantToDownloadTrainAndQualsAnswer('Yes');
+      service.clearDoYouWantToDownloadTrainAndQualsAnswer();
+
+      expect(service.getDoYouWantToDownloadTrainAndQualsAnswer()).toEqual(null);
+    });
+  });
 });

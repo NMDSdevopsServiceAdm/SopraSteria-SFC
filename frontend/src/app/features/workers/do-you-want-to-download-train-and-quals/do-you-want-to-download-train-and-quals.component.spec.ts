@@ -12,6 +12,8 @@ import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
+import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 
 describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
   const yesRadio = 'Yes, I want to download the summary and any certificates';
@@ -30,6 +32,11 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
         {
           provide: WorkerService,
           useClass: MockWorkerService,
+        },
+        {
+          provide: PreviousRouteService,
+          useFactory: MockPreviousRouteService.factory(overrides.previousUrl),
+          deps: [Router],
         },
         {
           provide: ActivatedRoute,
@@ -62,11 +69,14 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+
     return {
       component,
       ...setupTools,
       routerSpy,
       alertServiceSpy,
+      workerService,
     };
   }
 
@@ -114,16 +124,38 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
     );
   });
 
+  it('should prefill if they came from the previous page', async () => {
+    const previousUrl = `/workplace/workplace-uid/staff-record/staff-uid/delete-staff-record`;
+    const { component, fixture, getByText, getByLabelText } = await setup({ previousUrl });
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(getByText(yesRadio));
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    component.ngOnInit();
+
+    const form = component.form;
+
+    const radioButton = getByLabelText(yesRadio) as HTMLInputElement;
+
+    expect(form.value.downloadTrainAndQuals).toEqual('Yes');
+    expect(radioButton.checked).toBeTruthy();
+    expect(form.valid).toBeTruthy();
+  });
+
   describe('submit', () => {
     it('navigates to delete-staff-record and calls the alertService', async () => {
-      const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup();
+      const { component, fixture, getByText, routerSpy, alertServiceSpy, workerService } = await setup();
 
       const continueButton = getByText('Continue');
+      const workerServiceSpy = spyOn(workerService, 'setDoYouWantToDownloadTrainAndQualsAnswer');
 
       fireEvent.click(getByText(yesRadio));
       fireEvent.click(continueButton);
       fixture.detectChanges();
 
+      expect(workerServiceSpy).toHaveBeenCalledWith('Yes');
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         component.workplace.uid,
@@ -140,14 +172,16 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
     });
 
     it('navigates to delete-staff-record and does not call the alertService', async () => {
-      const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup();
+      const { component, fixture, getByText, routerSpy, alertServiceSpy, workerService } = await setup();
 
       const continueButton = getByText('Continue');
+      const workerServiceSpy = spyOn(workerService, 'setDoYouWantToDownloadTrainAndQualsAnswer');
 
       fireEvent.click(getByText(noRadio));
       fireEvent.click(continueButton);
       fixture.detectChanges();
 
+      expect(workerServiceSpy).toHaveBeenCalledWith('No');
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         component.workplace.uid,
@@ -159,13 +193,15 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
     });
 
     it('should return an error message if a user clicks submit without selecting a radio button', async () => {
-      const { fixture, getByText, getAllByText, routerSpy, alertServiceSpy } = await setup();
+      const { fixture, getByText, getAllByText, routerSpy, alertServiceSpy, workerService } = await setup();
 
       const continueButton = getByText('Continue');
+      const workerServiceSpy = spyOn(workerService, 'setDoYouWantToDownloadTrainAndQualsAnswer');
 
       fireEvent.click(continueButton);
       fixture.detectChanges();
 
+      expect(workerServiceSpy).not.toHaveBeenCalled();
       expect(getByText('There is a problem')).toBeTruthy();
       expect(getAllByText('Select yes if you want to download the summary and any certificates')).toHaveSize(2);
       expect(routerSpy).not.toHaveBeenCalled();
