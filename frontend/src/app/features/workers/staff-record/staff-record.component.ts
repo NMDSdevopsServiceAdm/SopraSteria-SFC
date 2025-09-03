@@ -128,7 +128,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   }
 
   public setDeleteRecordNavigation(): void {
-    console.log(this.hasAnyTrainingOrQualifications);
     if (this.hasAnyTrainingOrQualifications) {
       this.router.navigate([
         '/workplace',
