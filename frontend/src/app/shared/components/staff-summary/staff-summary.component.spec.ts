@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -22,15 +22,10 @@ import { SortByService } from '@core/services/sort-by.service';
 import { MockSortByService } from '@core/test-utils/MockSortByService';
 import { TabsService } from '@core/services/tabs.service';
 
-fdescribe('StaffSummaryComponent', () => {
+describe('StaffSummaryComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
-    const listOfAllWorkers = overrides?.listOfAllWorkers ?? workers;
-
-    const localStorageSetSpy = spyOn(localStorage, 'setItem');
-    const localStorageGetSpy = spyOn(localStorage, 'getItem');
-
     const setupTools = await render(StaffSummaryComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule],
       declarations: [PaginationComponent, TablePaginationWrapperComponent],
@@ -47,18 +42,10 @@ fdescribe('StaffSummaryComponent', () => {
         },
         WorkerService,
         provideRouter([]),
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: { workers: { ...workers, listOfAllWorkers } },
-            },
-          },
-        },
       ],
       componentProperties: {
         workplace: establishment,
-        workers: overrides.workers ?? workers,
+        workers: workers,
         wdfView: overrides.isWdf ?? false,
         workerCount: overrides.workerCount ?? workers.length,
       },
@@ -71,6 +58,9 @@ fdescribe('StaffSummaryComponent', () => {
     const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
       of({ workers: [...workers, ...workers, ...workers, ...workers, ...workers, ...workers], workerCount: 18 }),
     );
+
+    const localStorageSetSpy = spyOn(localStorage, 'setItem');
+    const localStorageGetSpy = spyOn(localStorage, 'getItem');
 
     const component = setupTools.fixture.componentInstance;
 
@@ -92,30 +82,6 @@ fdescribe('StaffSummaryComponent', () => {
   it('should render a StaffSummaryComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
-  });
-
-  describe('should prep for individual staff record pagination', () => {
-    beforeEach(() => {
-      localStorage.clear();
-    });
-
-    fit('should store a list of all worker ids in localstorage', async () => {
-      const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
-      const eighteenWorkers = [
-        ...mockWorkers,
-        ...mockWorkers,
-        ...mockWorkers,
-        ...mockWorkers,
-        ...mockWorkers,
-        ...mockWorkers,
-      ];
-      const overrides = { isWdf: false, workers: mockWorkers, listOfAllWorkers: eighteenWorkers };
-      const { localStorageSetSpy } = await setup(overrides);
-
-      const expectedStaffRecordIds = JSON.stringify(eighteenWorkers.map((worker) => worker.uid));
-
-      expect(localStorageSetSpy.calls.allArgs()).toContain(['ListOfWorkers', expectedStaffRecordIds]);
-    });
   });
 
   it('should render the correct information for given workers', async () => {
@@ -289,11 +255,10 @@ fdescribe('StaffSummaryComponent', () => {
 
       const sortByObjectKeys = Object.keys(component.sortStaffOptions);
       userEvent.selectOptions(getByLabelText('Sort by'), sortByObjectKeys[2]);
-
-      expect(localStorageSetSpy).toHaveBeenCalledTimes(7); // spies have now been fixed to count in ngOnInit calls
-      expect(localStorageSetSpy.calls.all()[4].args).toEqual(['staffSummarySortValue', component.sortByValue]);
-      expect(localStorageSetSpy.calls.all()[5].args).toEqual(['staffSummarySearchTerm', '']);
-      expect(localStorageSetSpy.calls.all()[6].args).toEqual(['staffSummaryIndex', '0']);
+      expect(localStorageSetSpy).toHaveBeenCalledTimes(3);
+      expect(localStorageSetSpy.calls.all()[0].args).toEqual(['staffSummarySortValue', component.sortByValue]);
+      expect(localStorageSetSpy.calls.all()[1].args).toEqual(['staffSummarySearchTerm', '']);
+      expect(localStorageSetSpy.calls.all()[2].args).toEqual(['staffSummaryIndex', '0']);
     });
 
     it('should use the values from returnLocalStorageForSort when its not the wdf view', async () => {

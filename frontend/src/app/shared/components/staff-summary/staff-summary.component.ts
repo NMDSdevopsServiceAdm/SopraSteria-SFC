@@ -27,22 +27,11 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     super(permissionsService, workerService, router, route, establishmentService, tabsService, sortByService);
   }
 
-  protected init(): void {
-    this.saveAllWorkerIdsInLocalStorage();
-  }
+  protected init(): void {}
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
     event.preventDefault();
     const path = ['/workplace', this.workplace.uid, 'staff-record', worker.uid, 'staff-record-summary'];
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
-  }
-
-  private saveAllWorkerIdsInLocalStorage(): void {
-    const listOfAllWorkers = this.route.snapshot?.data?.workers?.listOfAllWorkers as Worker[];
-
-    if (!this.wdfView && listOfAllWorkers?.length > 0) {
-      const listOfAllWorkerIds = listOfAllWorkers.map((worker) => worker.uid);
-      localStorage.setItem('ListOfWorkers', JSON.stringify(listOfAllWorkerIds));
-    }
   }
 }
