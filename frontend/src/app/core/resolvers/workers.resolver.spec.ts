@@ -1,22 +1,24 @@
+import { of } from 'rxjs';
+
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { PermissionType } from '@core/model/permissions.model';
+import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { SortByService } from '@core/services/sort-by.service';
+import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockSortByService } from '@core/test-utils/MockSortByService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 
 import { WorkersResolver } from './workers.resolver';
-import { SortByService } from '@core/services/sort-by.service';
-import { MockSortByService } from '@core/test-utils/MockSortByService';
-import { TabsService } from '@core/services/tabs.service';
 
-describe('WorkersResolver', () => {
+fdescribe('WorkersResolver', () => {
   function setup(overrides: any = {}) {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -56,7 +58,7 @@ describe('WorkersResolver', () => {
     const route = TestBed.inject(ActivatedRoute);
 
     const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'getAllWorkers').and.callThrough();
+    const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
 
     const sortByService = TestBed.inject(SortByService) as SortByService;
     const sortByServiceSpy = spyOn(sortByService, 'returnLocalStorageForSort').and.callThrough();
@@ -65,6 +67,7 @@ describe('WorkersResolver', () => {
       resolver,
       route,
       workerService,
+      getAllWorkersSpy,
       sortByServiceSpy,
     };
   }
@@ -206,5 +209,16 @@ describe('WorkersResolver', () => {
 
     expect(sortByServiceSpy).toHaveBeenCalled();
     expect(workerService.getAllWorkers).toHaveBeenCalledWith('paramUid', queryParams);
+  });
+
+  it('should set a property "listOfAllWorkers" in the resolved data', async () => {
+    const mockListOfAllWorkers = ['worker1', 'worker2', 'worker3'] as never as Worker[];
+    const { resolver, route, getAllWorkersSpy } = setup({});
+    getAllWorkersSpy.and.returnValue(of({ workers: mockListOfAllWorkers, workerCount: 3 }));
+
+    const returnedObservable = resolver.resolve(route.snapshot);
+    const resolvedData = await returnedObservable.toPromise();
+
+    expect(resolvedData.listOfAllWorkers).toEqual(mockListOfAllWorkers);
   });
 });
