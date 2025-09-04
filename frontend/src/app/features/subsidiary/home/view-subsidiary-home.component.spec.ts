@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -6,6 +8,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { Worker } from '@core/model/worker.model';
 import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
@@ -18,18 +21,16 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
+import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
 import { ViewSubsidiaryHomeComponent } from './view-subsidiary-home.component';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
-import { Worker } from '@core/model/worker.model';
 
 const MockWindow = {
   dataLayer: {
@@ -386,16 +387,11 @@ fdescribe('ViewSubsidiaryHomeComponent', () => {
     });
 
     it('should store a list of all worker ids in localstorage', async () => {
-      const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
-      const eighteenWorkers = [
-        ...mockWorkers,
-        ...mockWorkers,
-        ...mockWorkers,
-        ...mockWorkers,
-        ...mockWorkers,
-        ...mockWorkers,
-      ];
-      const overrides = { workers: mockWorkers, listOfAllWorkers: eighteenWorkers };
+      const eighteenWorkers = Array(18)
+        .fill(null)
+        .map((_) => workerBuilder()) as Worker[];
+      const overrides = { listOfAllWorkers: eighteenWorkers };
+
       const { localStorageSetSpy } = await setup(overrides);
 
       const expectedStaffRecordIds = JSON.stringify(eighteenWorkers.map((worker) => worker.uid));
