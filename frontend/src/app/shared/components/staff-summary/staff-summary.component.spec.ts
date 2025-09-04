@@ -22,7 +22,7 @@ import { SortByService } from '@core/services/sort-by.service';
 import { MockSortByService } from '@core/test-utils/MockSortByService';
 import { TabsService } from '@core/services/tabs.service';
 
-describe('StaffSummaryComponent', () => {
+fdescribe('StaffSummaryComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];

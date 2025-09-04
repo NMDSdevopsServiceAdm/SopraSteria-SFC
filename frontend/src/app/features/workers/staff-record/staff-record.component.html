@@ -88,9 +88,9 @@
       </a>
     </div>
   </div>
-  <!-- if not continue add grey line and pagination. *ngIf="!(hasCompletedStaffRecordFlow && canEditWorker)" -->
-<ng-container *ngIf="!(hasCompletedStaffRecordFlow && canEditWorker)">
-  <div class="govuk-summary-list--top-border">
+  <ng-container *ngIf="!(hasCompletedStaffRecordFlow && canEditWorker) && workerList?.length > 0">
+    <hr class="govuk-section-break govuk-section-break--visible" />
+
     <app-worker-pagination
       [workerList]="workerList"
       [workplaceUid]="workplace.uid"
@@ -98,8 +98,7 @@
       [staffSummaryBaseUrl]="staffSummaryBaseUrl"
       [staffSummaryUrlSuffix]="staffSummaryUrlSuffix"
     ></app-worker-pagination>
-  </div>
-</ng-container>
+  </ng-container>
   <app-basic-record
     [basicTitle]="'Mandatory information'"
     [workplace]="workplace"
@@ -113,15 +112,16 @@
   <ng-container *ngIf="hasCompletedStaffRecordFlow && canEditWorker">
     <a type="button" class="govuk-button govuk-!-margin-top-9" [routerLink]="continueRoute">Continue</a>
   </ng-container>
+
   <ng-container *ngIf="!(hasCompletedStaffRecordFlow && canEditWorker)">
-  <div class="govuk-summary-list--top-border">
-    <app-worker-pagination
-      [workerList]="workerList"
-      [workplaceUid]="workplace.uid"
-      [exitUrl]="exitUrl"
-      [staffSummaryBaseUrl]="staffSummaryBaseUrl"
-      [staffSummaryUrlSuffix]="staffSummaryUrlSuffix"
-    ></app-worker-pagination>
-  </div>
-</ng-container>
+    <div>
+      <app-worker-pagination
+        [workerList]="workerList"
+        [workplaceUid]="workplace.uid"
+        [exitUrl]="exitUrl"
+        [staffSummaryBaseUrl]="staffSummaryBaseUrl"
+        [staffSummaryUrlSuffix]="staffSummaryUrlSuffix"
+      ></app-worker-pagination>
+    </div>
+  </ng-container>
 </ng-container>
