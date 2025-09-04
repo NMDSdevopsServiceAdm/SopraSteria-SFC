@@ -8,14 +8,12 @@ import { SortByService } from '@core/services/sort-by.service';
 import { TabsService } from '@core/services/tabs.service';
 import { WorkerService } from '@core/services/worker.service';
 import { StaffSummaryDirective } from '@shared/directives/staff-summary/staff-summary.directive';
-import { take } from 'rxjs/internal/operators/take';
 
 @Component({
   selector: 'app-staff-summary',
   templateUrl: './staff-summary.component.html',
 })
 export class StaffSummaryComponent extends StaffSummaryDirective implements OnInit {
-  public staffRecordIds: string[];
   constructor(
     protected permissionsService: PermissionsService,
     protected workerService: WorkerService,
@@ -30,7 +28,7 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
   }
 
   protected init(): void {
-    this.loadStaffRecordIds();
+    this.saveAllWorkerIdsInLocalStorage();
   }
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
@@ -39,10 +37,12 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
   }
 
-  private loadStaffRecordIds(): void {
-    if (!this.wdfView) {
-      this.staffRecordIds = this.workers.map((worker) => worker.uid);
-      localStorage.setItem('ListOfWorkers', JSON.stringify(this.staffRecordIds));
+  private saveAllWorkerIdsInLocalStorage(): void {
+    const listOfAllWorkers = this.route.snapshot?.data?.workers?.listOfAllWorkers as Worker[];
+
+    if (!this.wdfView && listOfAllWorkers?.length > 0) {
+      const listOfAllWorkerIds = listOfAllWorkers.map((worker) => worker.uid);
+      localStorage.setItem('ListOfWorkers', JSON.stringify(listOfAllWorkerIds));
     }
   }
 }

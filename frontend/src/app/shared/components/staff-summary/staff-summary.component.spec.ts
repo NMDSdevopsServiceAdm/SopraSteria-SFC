@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { provideRouter, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -26,6 +26,7 @@ fdescribe('StaffSummaryComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+    const listOfAllWorkers = overrides?.listOfAllWorkers ?? workers;
 
     const localStorageSetSpy = spyOn(localStorage, 'setItem');
     const localStorageGetSpy = spyOn(localStorage, 'getItem');
@@ -46,6 +47,14 @@ fdescribe('StaffSummaryComponent', () => {
         },
         WorkerService,
         provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { workers: { ...workers, listOfAllWorkers } },
+            },
+          },
+        },
       ],
       componentProperties: {
         workplace: establishment,
@@ -89,7 +98,8 @@ fdescribe('StaffSummaryComponent', () => {
     beforeEach(() => {
       localStorage.clear();
     });
-    it('should store full worker list in localstorage', async () => {
+
+    fit('should store a list of all worker ids in localstorage', async () => {
       const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
       const eighteenWorkers = [
         ...mockWorkers,
@@ -99,11 +109,12 @@ fdescribe('StaffSummaryComponent', () => {
         ...mockWorkers,
         ...mockWorkers,
       ];
-      const overrides = { isWdf: false, workers: eighteenWorkers };
-      const { component, localStorageSetSpy } = await setup(overrides);
+      const overrides = { isWdf: false, workers: mockWorkers, listOfAllWorkers: eighteenWorkers };
+      const { localStorageSetSpy } = await setup(overrides);
 
-      expect(component.staffRecordIds?.length ?? -1).toBeGreaterThan(15);
-      expect(localStorageSetSpy.calls.all()[3].args[0]).toEqual('ListOfWorkers');
+      const expectedStaffRecordIds = JSON.stringify(eighteenWorkers.map((worker) => worker.uid));
+
+      expect(localStorageSetSpy.calls.allArgs()).toContain(['ListOfWorkers', expectedStaffRecordIds]);
     });
   });
 
@@ -274,7 +285,7 @@ fdescribe('StaffSummaryComponent', () => {
 
     it('localStorage should be called if isWdf is false', async () => {
       const overrides = { isWdf: false };
-      const { fixture, component, getByLabelText, localStorageSetSpy } = await setup(overrides);
+      const { component, getByLabelText, localStorageSetSpy } = await setup(overrides);
 
       const sortByObjectKeys = Object.keys(component.sortStaffOptions);
       userEvent.selectOptions(getByLabelText('Sort by'), sortByObjectKeys[2]);
