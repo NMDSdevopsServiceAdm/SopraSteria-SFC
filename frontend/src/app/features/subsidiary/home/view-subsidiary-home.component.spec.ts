@@ -40,7 +40,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('ViewSubsidiaryHomeComponent', () => {
+describe('ViewSubsidiaryHomeComponent', () => {
   const setup = async (overrides: any = {}) => {
     const cqcStatusMatch = overrides?.cqcStatusMatch ?? true;
     const establishment = overrides?.establishment ?? Establishment;

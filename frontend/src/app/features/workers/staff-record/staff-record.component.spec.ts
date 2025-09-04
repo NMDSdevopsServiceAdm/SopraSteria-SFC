@@ -27,7 +27,7 @@ import { StaffRecordComponent } from './staff-record.component';
 import { By } from '@angular/platform-browser';
 import { WorkerPaginationComponent } from '@shared/components/worker-pagination/worker-pagination.component';
 
-fdescribe('StaffRecordComponent', () => {
+describe('StaffRecordComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function setup(overrides: any = {}) {
     const isParent = overrides.isParent ?? true;
@@ -293,7 +293,7 @@ fdescribe('StaffRecordComponent', () => {
     });
   });
 
-  fdescribe('Add details to worker flow', () => {
+  describe('Add details to worker flow', () => {
     describe('Continue buttons', () => {
       it('should render a Continue button at top and bottom of page when addStaffRecordInProgress is true', async () => {
         const { getAllByText } = await setup({
@@ -412,7 +412,7 @@ fdescribe('StaffRecordComponent', () => {
     });
   });
 
-  fdescribe('transfer staff record link', () => {
+  describe('transfer staff record link', () => {
     it('should show the link when the primary workplace is a parent and has canEdit permissions', async () => {
       const { getByText } = await setup({ isParent: true });
 
@@ -425,7 +425,7 @@ fdescribe('StaffRecordComponent', () => {
       expect(queryByText('Transfer staff record')).toBeFalsy();
     });
 
-    fit('should not show the link when the workplace is not a parent', async () => {
+    it('should not show the link when the workplace is not a parent', async () => {
       const { queryByText } = await setup({ isParent: false });
 
       expect(queryByText('Transfer staff record')).toBeFalsy();

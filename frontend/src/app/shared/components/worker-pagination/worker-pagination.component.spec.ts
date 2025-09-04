@@ -8,7 +8,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable, Subject } from 'rxjs';
 
-fdescribe('WorkerPagination', () => {
+describe('WorkerPagination', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WorkerPaginationComponent, {
       imports: [HttpClientTestingModule, BrowserModule, SharedModule],

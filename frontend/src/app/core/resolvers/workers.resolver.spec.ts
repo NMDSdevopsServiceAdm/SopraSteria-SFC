@@ -18,7 +18,7 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 
 import { WorkersResolver } from './workers.resolver';
 
-fdescribe('WorkersResolver', () => {
+describe('WorkersResolver', () => {
   function setup(overrides: any = {}) {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],

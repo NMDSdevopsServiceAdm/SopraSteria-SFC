@@ -41,7 +41,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('ParentHomeTabComponent', () => {
+describe('ParentHomeTabComponent', () => {
   const articleList = MockArticlesService.articleListFactory();
   const articles = MockArticlesService.articlesFactory();
 
