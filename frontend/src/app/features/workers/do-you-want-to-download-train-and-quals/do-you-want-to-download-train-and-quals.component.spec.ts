@@ -46,7 +46,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
                 data: {
                   establishment: workplace,
                 },
-                url: [{ path: 'download-staff-train-and-quals' }],
+                url: [{ path: 'download-staff-training-and-qualifications' }],
               },
             },
             snapshot: {

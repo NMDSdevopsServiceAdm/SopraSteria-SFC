@@ -134,7 +134,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         this.workplace.uid,
         'staff-record',
         this.worker.uid,
-        'download-staff-train-and-quals',
+        'download-staff-training-and-qualifications',
       ]);
     } else {
       this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'delete-staff-record']);

@@ -166,7 +166,7 @@ describe('StaffRecordComponent', () => {
       ]);
     });
 
-    it('should navigate to download-staff-train-and-quals page when hasAnyTrainingOrQualifications is true', async () => {
+    it('should navigate to download-staff-training-and-qualifications page when hasAnyTrainingOrQualifications is true', async () => {
       const overrides = {
         hasAnyTrainingOrQualifications: true,
         workerService: { worker: { completed: true, longTermAbsence: null } },
@@ -184,7 +184,7 @@ describe('StaffRecordComponent', () => {
         workplaceUid,
         'staff-record',
         workerUid,
-        'download-staff-train-and-quals',
+        'download-staff-training-and-qualifications',
       ]);
     });
   });

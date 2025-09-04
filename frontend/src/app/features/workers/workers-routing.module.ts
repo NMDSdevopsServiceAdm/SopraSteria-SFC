@@ -882,7 +882,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'download-staff-train-and-quals',
+        path: 'download-staff-training-and-qualifications',
         component: DoYouWantToDowloadTrainAndQualsComponent,
         data: {
           permissions: ['canDeleteWorker'],
