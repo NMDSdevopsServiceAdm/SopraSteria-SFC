@@ -22,8 +22,8 @@ export class WorkerPaginationComponent implements OnInit {
   public isLast = false;
   public nextID: string;
   public previousID: string;
-  public previousLink: URLStructure;
-  public nextLink: URLStructure;
+  public previousLink: string[];
+  public nextLink: string[];
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
@@ -31,7 +31,7 @@ export class WorkerPaginationComponent implements OnInit {
       this.setVariables(data);
     });
   }
-  public setVariables(data: ResolverData) {
+  public setVariables(data: ResolverData): void {
     const workerUID = data.id;
     const workerIndex = this.workerList.findIndex((uid) => uid === workerUID);
     this.isFirst = workerIndex === 0;
@@ -43,20 +43,8 @@ export class WorkerPaginationComponent implements OnInit {
     this.previousLink = this.isFirst ? null : this.setLink(this.previousID);
   }
 
-  private setLink(workerUID: string) {
-    /**
- *             this.route.snapshot.params.establishmentuid
-              ? ['/funding', 'workplaces', workplaceUid, 'staff-record', nextID]
-              : ['/funding', 'staff-record', nextID]
- */
-
-    const urlStructure = { url: [].concat(this.staffSummaryBaseUrl.url) };
-    urlStructure.url.push(workerUID);
-
-    if (this.staffSummaryUrlSuffix) {
-      urlStructure.url.push(this.staffSummaryUrlSuffix);
-    }
-
-    return urlStructure;
+  private setLink(workerUID: string): string[] {
+    const baseUrl = [].concat(this.staffSummaryBaseUrl.url);
+    return [...baseUrl, workerUID, this.staffSummaryUrlSuffix];
   }
 }

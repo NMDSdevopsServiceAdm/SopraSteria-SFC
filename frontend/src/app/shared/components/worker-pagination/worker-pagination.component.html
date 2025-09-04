@@ -4,17 +4,17 @@
       <a class="govuk-button" [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment">Close this staff record</a>
       <span style="margin-left: auto">
         <a
-          *ngIf="!isFirst"
+          *ngIf="!isFirst && previousLink"
           class="asc-chevron-before govuk-button--link govuk-link--no-visited-state govuk-!-margin-right-4"
-          [routerLink]="previousLink.url"
+          [routerLink]="previousLink"
           [relativeTo]="route"
           [fragment]=""
           >Previous staff record</a
         >
         <a
-          *ngIf="!isLast"
+          *ngIf="!isLast && nextLink"
           class="asc-chevron-after govuk-button--link govuk-link--no-visited-state govuk-!-margin-left-6 govuk-!-margin-right-4"
-          [routerLink]="nextLink.url"
+          [routerLink]="nextLink"
           [relativeTo]="route"
           [fragment]=""
           >Next staff record</a
