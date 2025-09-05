@@ -12,11 +12,7 @@ const workerHasAnyTrainingOrQualifications = async (req, res) => {
     const allTrainingRecords = await Training.fetch(establishmentId, workerUid);
     const allQualificationRecords = await Qualification.fetch(establishmentId, workerUid);
 
-    let hasAnyTrainingOrQualifications = false;
-
-    if (allTrainingRecords?.count > 0 || allQualificationRecords?.count > 0) {
-      hasAnyTrainingOrQualifications = true;
-    }
+    const hasAnyTrainingOrQualifications = allTrainingRecords?.count > 0 || allQualificationRecords?.count > 0;
 
     res.status(200);
     return res.json({ hasAnyTrainingOrQualifications });
