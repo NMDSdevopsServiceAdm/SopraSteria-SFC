@@ -45,6 +45,9 @@ export class WorkerPaginationComponent implements OnInit {
 
   private setLink(workerUID: string): string[] {
     const baseUrl = [].concat(this.staffSummaryBaseUrl.url);
-    return [...baseUrl, workerUID, this.staffSummaryUrlSuffix];
+    if (this.staffSummaryUrlSuffix) {
+      return [...baseUrl, workerUID, this.staffSummaryUrlSuffix];
+    }
+    return [...baseUrl, workerUID];
   }
 }
