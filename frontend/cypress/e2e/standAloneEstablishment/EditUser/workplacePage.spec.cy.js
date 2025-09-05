@@ -2,7 +2,7 @@
 /// <reference types="cypress" />
 import { CWPAwarenessAnswers, CWPUseReasons } from '../../../support/careWorkforcePathwayData';
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
-import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
+import { onWorkplacePage, WorkplacePage } from '../../../support/page_objects/onWorkplacePage';
 import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../../support/page_objects/workplaceQuestionPages';
 
 const workplaceSummaryPath = 'dashboard#workplace';
@@ -30,6 +30,7 @@ describe('Standalone home page as edit user', () => {
   before(() => {
     cy.resetStartersLeaversVacancies(establishmentId);
     cy.resetWorkplaceCWPAnswers(establishmentId);
+    cy.resetWorkplaceDHAAnswers(establishmentId);
   });
 
   beforeEach(() => {
@@ -41,6 +42,7 @@ describe('Standalone home page as edit user', () => {
   afterEach(() => {
     cy.resetStartersLeaversVacancies(establishmentId);
     cy.resetWorkplaceCWPAnswers(establishmentId);
+    cy.resetWorkplaceDHAAnswers(establishmentId);
   });
 
   it('should see the standalone establishment workplace page', () => {
@@ -229,6 +231,131 @@ describe('Standalone home page as edit user', () => {
 
       onWorkplacePage.expectRow('care-workforce-pathway-awareness').toHaveValue(CWPAwarenessAnswers[3].textForSummary);
       onWorkplacePage.expectRow('care-workforce-pathway-use').notExist();
+    });
+  });
+
+  describe('Delegate healthcare activities', () => {
+    const mainServiceThatCanDoDHA = { id: 9, name: 'Day care and day services' };
+    const anotherMainServiceThatCanDoDHA = { id: 10, name: 'Other adult day care service' };
+
+    const mainServiceThatCannotDoDHA = { id: 1, name: 'Carers support' };
+
+    const mockDHAs = ['Vital signs monitoring', 'Complex posture and mobility care', 'Airways and breathing care'];
+
+    describe('when main service is compatible with DHA', () => {
+      beforeEach(() => {
+        cy.setWorkplaceMainService(establishmentId, mainServiceThatCanDoDHA.id);
+        cy.get('[data-cy="tab-list"]').contains('Workplace').click();
+        cy.reload();
+      });
+
+      it('should see the "Carry out delegated healthcare activities" row', () => {
+        cy.url().should('contain', workplaceSummaryPath);
+        cy.get('div').contains('Carry out delegated healthcare activities').should('be.visible');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('-');
+      });
+
+      it('should be able to add / update the answer to delegated healthcare activities questions', () => {
+        // answer DHA question 1
+        onWorkplacePage.clickIntoQuestion(WorkplacePage.DHAQuestion1TestId);
+        cy.get('h1').should('contain', 'Do your non-nursing staff carry out delegated healthcare activities?');
+        cy.getByLabel('Yes').click();
+        cy.get('button').contains(/Save/).click();
+
+        // should continue to DHA workplace question 2
+        cy.get('h1').should(
+          'contain',
+          'What kind of delegated healthcare activities do your non-nursing staff carry out?',
+        );
+        mockDHAs.forEach((activityName) => {
+          cy.getByLabel(activityName).click();
+        });
+        cy.get('button').contains(/Save/).click();
+
+        // after answering question 2, should be redirected back to workplace summary page
+        cy.url().should('contain', workplaceSummaryPath);
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
+
+        // update answer to question 2
+        onWorkplacePage.clickIntoQuestion(WorkplacePage.DHAQuestion2TestId);
+        cy.getByLabel('I do not know').click();
+        cy.get('button').contains(/Save/).click();
+
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveValue('Not known');
+
+        // update answer to question 1
+        onWorkplacePage.clickIntoQuestion(WorkplacePage.DHAQuestion1TestId);
+        cy.getByLabel('I do not know').click();
+        cy.get('button').contains(/Save/).click();
+
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Not known');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).notExist();
+      });
+    });
+
+    describe('when main service is NOT compatible with DHA', () => {
+      beforeEach(() => {
+        cy.setWorkplaceMainService(establishmentId, mainServiceThatCannotDoDHA.id);
+        cy.get('[data-cy="tab-list"]').contains('Workplace').click();
+        cy.reload();
+      });
+
+      it('should not see the rows for either DHA questions', () => {
+        cy.url().should('contain', workplaceSummaryPath);
+
+        cy.get('h1').should('contain.text', 'Workplace');
+        cy.get('div').contains('Carry out delegated healthcare activities').should('not.exist');
+        cy.get('div').contains('Which delegated healthcare activities').should('not.exist');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).notExist();
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).notExist();
+      });
+    });
+
+    describe('on main service change', () => {
+      beforeEach(() => {
+        cy.setWorkplaceMainService(establishmentId, mainServiceThatCanDoDHA.id);
+        cy.get('[data-cy="tab-list"]').contains('Workplace').click();
+        cy.reload();
+      });
+
+      it('should clear the answers for DHA questions when main service change to one that cannot do DHA', () => {
+        onWorkplacePage.answerDHAQuestions('Yes', mockDHAs);
+
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
+
+        // change mainService
+        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCannotDoDHA.name);
+
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).notExist();
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).notExist();
+
+        // change it back so that DHA question row appear again
+        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCanDoDHA.name);
+
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('-');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).notExist();
+      });
+
+      it('should keep the answer for DHA questions unchanged when main service change to another one that can do DHA', () => {
+        onWorkplacePage.answerDHAQuestions('Yes', mockDHAs);
+
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
+
+        // change mainService
+        onWorkplacePage.answerMainServiceQuestion(anotherMainServiceThatCanDoDHA.name);
+
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
+
+        // change it back
+        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCanDoDHA.name);
+
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
+        onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
+      });
     });
   });
 });

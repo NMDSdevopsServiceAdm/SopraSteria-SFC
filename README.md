@@ -44,9 +44,11 @@ Run `make test-bu` to execute the unit tests for bulk upload lambda.
 
 ## Running end-to-end tests
 
-For the moment we run our end-to-end tests with [Cypress](https://www.cypress.io/) under a configuration of `docker-compose`.
+We run our end-to-end tests with [Cypress](https://www.cypress.io/) under a configuration of `docker-compose`.
 
 Refer to the confluence document "End to end (e2e) testing configuration" for the steps to set up the environments first.
+
+### Original method
 
 After the docker configurations are set up correctly, we can run the e2e test by the below steps:
 
@@ -58,6 +60,18 @@ This will start up a test browser instance that allows us to run and debug speci
 
 3. After running the test, run `make stop-containers` to stop the docker containers. This will help to reduce the time needed to initiate the docker containers for the next time.
 
+### Single command method
+
+Ensure no other containers are running in a different terminal window. From the root folder run `make test-e2e-inside-docker`
+
+### Locally run single spec file from commandline
+
+For anyone who doesn't want to use the cypress open GUI style:
+
+To speed up local development you can set the CYPRESS_PATH environment variable to add a `-s` flag to the cypress command. If you don't have this set or it is empty the full suite will run normally. The pipeline will not have this set so it will spout a warning in the logs but safely default to a blank string.
+
+- `CYPRESS_PATH=` or `CYPRESS_PATH=""` runs full suite
+- `CYPRESS_PATH="-scypress/e2e/standAloneEstablishment/EditUser/staffRecordsPage.spec.cy.js"` runs only staffRecordsPage.spec.cy.js. **NB** there should be no space between `-s` and the path, it's a *nix-ism.
 
 ## Further help
 

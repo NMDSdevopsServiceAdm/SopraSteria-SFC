@@ -95,3 +95,34 @@ Cypress.Commands.add('resetWorkplaceCWPAnswers', (establishmentID) => {
 
   cy.task('multipleDbQueries', dbQueries);
 });
+
+Cypress.Commands.add('resetWorkplaceDHAAnswers', (establishmentID) => {
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+      SET "StaffDoDelegatedHealthcareActivitiesValue" = null,
+          "StaffWhatKindDelegatedHealthcareActivitiesValue" = null
+      WHERE "EstablishmentID" = $1;`,
+
+    `UPDATE cqc."Worker"
+      SET "CarryOutDelegatedHealthcareActivitiesValue" = null
+      WHERE "EstablishmentFK" = $1;`,
+
+    `DELETE FROM cqc."EstablishmentDHActivities"
+     WHERE "EstablishmentID" = $1;`,
+  ];
+  const parameters = [establishmentID];
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('setWorkplaceMainService', (establishmentID, mainServiceId) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "MainServiceFKValue" = $2
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID, mainServiceId];
+
+  cy.task('dbQuery', { queryString: queryString, parameters: parameters });
+});
