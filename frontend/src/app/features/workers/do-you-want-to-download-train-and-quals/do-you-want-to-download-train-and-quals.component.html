@@ -1,0 +1,81 @@
+<ng-container *ngIf="worker">
+  <app-error-summary
+    *ngIf="submitted && form.invalid"
+    [formErrorsMap]="formErrorsMap"
+    [form]="form"
+  ></app-error-summary>
+  <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="govuk-grid-row govuk-!-margin-bottom-0" style="width: 85%">
+      <div class="govuk-grid-column-full">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-!-margin-bottom-2">
+            <span class="govuk-caption-xl" data-testid="section-heading">{{ worker.nameOrId }}</span>
+            <h1 class="govuk-heading-l">
+              Do you want to download their training and qualifications summary, and any certificates, before you delete
+              this staff record?
+            </h1>
+          </legend>
+          <div
+            class="govuk-form-group"
+            [class.govuk-form-group--error]="submitted && form.get('downloadTrainAndQuals').invalid"
+          >
+            <p class="govuk-!-margin-bottom-6">
+              If you select Yes, the summary and any certificates will download to your computer's Downloads folder when
+              you click Continue.
+            </p>
+            <span
+                *ngIf="submitted && form.get('downloadTrainAndQuals').invalid"
+                id="downloadTrainAndQuals-error"
+                class="govuk-error-message"
+              >
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ getFormErrorMessage('downloadTrainAndQuals', 'required') }}
+              </span>
+
+            <div class="govuk-radios govuk-!-margin-bottom-7" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [class.govuk-input--error]="submitted && form.get('downloadTrainAndQuals').invalid"
+                  id="downloadTrainAndQuals-yes"
+                  name="downloadTrainAndQuals"
+                  [formControlName]="'downloadTrainAndQuals'"
+                  type="radio"
+                  value="Yes"
+                />
+                <label class="govuk-label govuk-radios__label" for="downloadTrainAndQuals-yes"
+                  >Yes, I want to download the summary and any certificates</label
+                >
+              </div>
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [class.govuk-input--error]="submitted && form.get('downloadTrainAndQuals').invalid"
+                  id="downloadTrainAndQuals-no"
+                  name="downloadTrainAndQuals"
+                  [formControlName]="'downloadTrainAndQuals'"
+                  type="radio"
+                  value="No"
+                />
+                <label class="govuk-label govuk-radios__label" for="downloadTrainAndQuals-no"
+                  >No, I do not want to download the summary and any certificates</label
+                >
+              </div>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    <div class="govuk-button-group--gap-between">
+      <button
+        type="submit"
+        class="govuk-button govuk-!-margin-right-4 govuk-!-padding-left-3 govuk-!-padding-right-3"
+        data-module="govuk-button"
+      >
+        Continue
+      </button>
+
+      <a class="govuk-link" href="#" [routerLink]="previousRoute">Cancel</a>
+    </div>
+  </form>
+</ng-container>

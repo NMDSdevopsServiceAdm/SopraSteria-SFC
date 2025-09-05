@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -31,6 +31,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public hasCompletedStaffRecordFlow: boolean;
   public continueRoute: string[];
   private subscriptions: Subscription = new Subscription();
+  public hasAnyTrainingOrQualifications: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -42,6 +43,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     protected backLinkService: BackLinkService,
     public breadcrumbService: BreadcrumbService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
+    protected router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -74,6 +76,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+    this.hasAnyTrainingOrQualifications =
+      this.route.snapshot.data?.workerHasAnyTrainingOrQualifications?.hasAnyTrainingOrQualifications;
   }
 
   private showContinueButtons(): void {
@@ -121,6 +125,20 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       fragment: 'staff-record',
     };
     this.workerService.setReturnTo(this.returnToRecord);
+  }
+
+  public setDeleteRecordNavigation(): void {
+    if (this.hasAnyTrainingOrQualifications) {
+      this.router.navigate([
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'download-staff-training-and-qualifications',
+      ]);
+    } else {
+      this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'delete-staff-record']);
+    }
   }
 
   ngOnDestroy(): void {

@@ -421,6 +421,7 @@ export class MockWorkerService extends WorkerService {
   public _returnTo;
   public _addStaffRecordInProgress: boolean;
   public _totalStaffReturn: boolean;
+  public _doYouWantToDownloadTrainAndQualsAnswer: string;
 
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
@@ -528,6 +529,14 @@ export class MockWorkerService extends WorkerService {
 
   updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
     return of({ uid: '1' } as WorkerEditResponse);
+  }
+
+  public setDoYouWantToDownloadTrainAndQualsAnswer(downloadTrainAndQualsAnswer: string): void {
+    this._doYouWantToDownloadTrainAndQualsAnswer = downloadTrainAndQualsAnswer;
+  }
+
+  getDoYouWantToDownloadTrainAndQualsAnswer(): string {
+    return this._doYouWantToDownloadTrainAndQualsAnswer;
   }
 }
 

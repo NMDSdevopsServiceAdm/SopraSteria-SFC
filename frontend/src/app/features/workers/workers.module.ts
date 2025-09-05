@@ -79,6 +79,8 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
 import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-delegated-healthcare-activities/carry-out-delegated-healthcare-activities.component';
 import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
 import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
+import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
+import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -141,6 +143,7 @@ import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from 
     CareWorkforcePathwayWorkersSummaryComponent,
     CarryOutDelegatedHealthcareActivitiesComponent,
     WhoCarryOutDelegatedHealthcareActivitiesComponent,
+    DoYouWantToDowloadTrainAndQualsComponent,
   ],
   providers: [
     DialogService,
@@ -162,6 +165,7 @@ import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from 
     CareWorkforcePathwayWorkersSummaryComponent,
     GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
     GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
+    WorkerHasAnyTrainingOrQualificationsResolver,
   ],
 })
 export class WorkersModule {}
