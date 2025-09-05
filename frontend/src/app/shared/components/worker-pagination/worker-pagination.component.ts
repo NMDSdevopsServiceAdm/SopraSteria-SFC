@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { Subscription } from 'rxjs';
 
 interface ResolverData {
   id: string;
@@ -20,16 +21,20 @@ export class WorkerPaginationComponent implements OnInit {
 
   public isFirst = false;
   public isLast = false;
-  public nextID: string;
   public previousID: string;
+  public nextID: string;
   public previousLink: string[];
   public nextLink: string[];
+  private subscriptions: Subscription = new Subscription();
+
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe((data: ResolverData) => {
-      this.setVariables(data);
-    });
+    this.subscriptions.add(
+      this.route.params.subscribe((data: ResolverData) => {
+        this.setVariables(data);
+      }),
+    );
   }
   public setVariables(data: ResolverData): void {
     const workerUID = data.id;
@@ -49,5 +54,9 @@ export class WorkerPaginationComponent implements OnInit {
       return [...baseUrl, workerUID, this.staffSummaryUrlSuffix];
     }
     return [...baseUrl, workerUID];
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

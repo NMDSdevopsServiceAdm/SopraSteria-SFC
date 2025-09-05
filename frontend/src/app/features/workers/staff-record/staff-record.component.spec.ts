@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -19,13 +21,10 @@ import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesA
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
-import { Observable, of } from 'rxjs';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
-import { By } from '@angular/platform-browser';
-import { WorkerPaginationComponent } from '@shared/components/worker-pagination/worker-pagination.component';
 
 describe('StaffRecordComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -59,7 +58,7 @@ describe('StaffRecordComponent', () => {
                 url: [{ path: 'staff-record-summary' }],
               },
             },
-            params: Observable.from([{ id: thisWorkerId }]),
+            params: of({ id: thisWorkerId }),
             snapshot: {
               params: overrides.establishmentuid ? { establishmentuid: overrides.establishmentuid } : {},
               paramMap: {
@@ -104,7 +103,6 @@ describe('StaffRecordComponent', () => {
 
     const workerService = injector.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setReturnTo');
-    // const workerServiceSetStateSpy = spyOn(workerService, 'setState');
     workerSpy.and.callThrough();
 
     const workplaceUid = component.workplace.uid;
@@ -140,17 +138,16 @@ describe('StaffRecordComponent', () => {
 
   [true, false].forEach((completedValue) => {
     it(`should render the correct links and navigation, when worker.completed is ${completedValue}`, async () => {
-      const { fixture, queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid, localStorageGetSpy } =
-        await setup({
-          workerService: { worker: { uid: '123', completed: completedValue, longTermAbsence: null } },
-        });
+      const { getAllByTestId, queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid } = await setup({
+        workerService: { worker: { uid: '123', completed: completedValue, longTermAbsence: null } },
+      });
 
       const button = queryByText('Confirm record details');
       const flagLongTermAbsenceLink = getByText('Flag long-term absence');
       const deleteRecordLink = getByRole('button', { name: 'Delete staff record' });
       const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
-      const pagination = fixture.debugElement.queryAll(By.directive(WorkerPaginationComponent));
-      const closeButton = pagination[0].query(By.css('.govuk-button'));
+      const pagination = getAllByTestId('worker-pagination');
+      const closeButton = within(pagination[0]).getByText('Close this staff record');
 
       expect(button).toBeFalsy();
       expect(flagLongTermAbsenceLink).toBeTruthy();

@@ -13,7 +13,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { filter, mergeMap, skip } from 'rxjs/operators';
+import { filter, skip } from 'rxjs/operators';
 
 import { MoveWorkerDialogComponent } from '../move-worker-dialog/move-worker-dialog.component';
 

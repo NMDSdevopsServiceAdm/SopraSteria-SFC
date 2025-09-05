@@ -255,7 +255,7 @@ $chevron-border-colour: $govuk-link-colour;
   }
 }
 
-// set up asc-chevron to follow the color rules from govuk-link--no-visited-state
+// set up asc-chevron to show correct colour when using together with govuk-link--no-visited-state class
 .govuk-link--no-visited-state {
   &:link {
     @include asc-chevron-color($govuk-link-colour);
