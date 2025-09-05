@@ -95,11 +95,11 @@ export class PdfMakeService {
             },
           ],
         },
-        ...this.contentBody.content,
+        ...JSON.parse(JSON.stringify(this.contentBody.content)),
       ],
 
       styles: {
-        ...this.contentBody.styles,
+        ...JSON.parse(JSON.stringify(this.contentBody.styles)),
         header: {
           fontSize: 18,
           bold: true,
@@ -179,7 +179,7 @@ export class PdfMakeService {
         stack: [
           {
             text: 'Mandatory training',
-            style: 'subheader',
+            style: 'header',
             margin: [0, 10, 0, 10],
           },
           {
@@ -240,6 +240,68 @@ export class PdfMakeService {
     ];
   }
 
+  public qualificationSection(qualifications) {
+    return [
+      {
+        stack: [
+          {
+            text: 'Qualifications',
+            style: 'header',
+            margin: [0, 10, 0, 10],
+          },
+          {
+            canvas: [
+              {
+                type: 'line',
+                x1: 0,
+                y1: 0,
+                x2: 515, // ~A4 width minus margins
+                y2: 0,
+                lineWidth: 1,
+                lineColor: '#cccccc', // grey line
+              },
+            ],
+            margin: [0, 0, 0, 15], // space after line
+          },
+        ],
+      },
+      ...qualifications.flatMap((qualification) => [
+        { text: qualification.title, style: 'subheader', margin: [0, 10, 0, 5] },
+        {
+          table: {
+            widths: ['*', '*', '*', '*', '*'],
+            body: [
+              [
+                { text: 'Award name', bold: true },
+                { text: 'Year achieved', bold: true },
+                { text: 'Certificate', bold: true },
+              ],
+              [
+                qualification.details.certificatename,
+                qualification.details.yearachieved,
+                qualification.details.certificate,
+              ],
+            ],
+          },
+          layout: 'headerLineOnly',
+        },
+        {
+          canvas: [
+            {
+              type: 'line',
+              x1: 0,
+              y1: 0,
+              x2: 515,
+              y2: 0, // full width (A4 minus margins)
+              lineWidth: 1,
+              lineColor: '#cccccc', // grey
+            },
+          ],
+          margin: [0, 5, 0, 10], // spacing above and below line
+        },
+      ]),
+    ];
+  }
   public staffInfo = {
     name: 'Adele Singh',
     workplace: 'Highfield Hall',
@@ -339,11 +401,30 @@ export class PdfMakeService {
       },
     },
   ];
+  public qualifications = [
+    {
+      title: 'Award',
+      details: {
+        certificatename: 'Level 1',
+        yearachieved: '15 Aug 2024',
+        certificate: 'See download',
+      },
+    },
+    {
+      title: 'Certificate',
+      details: {
+        certificatename: 'Level 1',
+        yearachieved: '2 Oct 2023',
+        certificate: 'No',
+      },
+    },
+  ];
 
   public sections = [
     () => this.sectionHeader('Training and qualifications'),
     () => this.staffInfoSection(this.staffInfo),
     () => this.trainingSection(this.trainings),
+    () => this.qualificationSection(this.qualifications),
   ];
 
   public contentBody = {
