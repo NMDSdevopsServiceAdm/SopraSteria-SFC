@@ -246,6 +246,34 @@ $chevron-border-colour: $govuk-link-colour;
   }
 }
 
+@mixin asc-chevron-color($colour-to-use) {
+  &.asc-chevron-before::before {
+    border-color: $colour-to-use;
+  }
+  &.asc-chevron-after::after {
+    border-color: $colour-to-use;
+  }
+}
+
+// set up asc-chevron to show correct colour when using together with govuk-link--no-visited-state class
+.govuk-link--no-visited-state {
+  &:link {
+    @include asc-chevron-color($govuk-link-colour);
+  }
+  &:visited {
+    @include asc-chevron-color($govuk-link-colour);
+  }
+  &:hover {
+    @include asc-chevron-color($govuk-link-hover-colour);
+  }
+  &:active {
+    @include asc-chevron-color($govuk-link-active-colour);
+  }
+  &:focus {
+    @include asc-chevron-color($govuk-focus-text-colour);
+  }
+}
+
 @if $govuk-use-legacy-font {
   // Begin adjustments for font baseline offset
   // These should be removed when legacy font support is dropped

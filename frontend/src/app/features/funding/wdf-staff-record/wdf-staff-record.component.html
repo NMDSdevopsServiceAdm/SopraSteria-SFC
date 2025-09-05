@@ -19,7 +19,12 @@
     ></app-wdf-staff-record-status-message>
   </div>
 
-  <app-wdf-pagination [workplaceUid]="workplaceUid" [workerList]="workerList" [exitUrl]="exitUrl"></app-wdf-pagination>
+  <app-worker-pagination
+    [workplaceUid]="workplaceUid"
+    [workerList]="workerList"
+    [exitUrl]="exitUrl"
+    [staffSummaryBaseUrl]="staffSummaryBaseUrl"
+  ></app-worker-pagination>
 
   <app-staff-record-summary
     *ngIf="workplace && worker"
@@ -31,10 +36,11 @@
   ></app-staff-record-summary>
 
   <div class="govuk-!-margin-top-4">
-    <app-wdf-pagination
+    <app-worker-pagination
       [workplaceUid]="workplaceUid"
       [workerList]="workerList"
       [exitUrl]="exitUrl"
-    ></app-wdf-pagination>
+      [staffSummaryBaseUrl]="staffSummaryBaseUrl"
+    ></app-worker-pagination>
   </div>
 </ng-container>

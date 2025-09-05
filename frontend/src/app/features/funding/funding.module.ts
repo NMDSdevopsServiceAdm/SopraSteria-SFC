@@ -13,7 +13,6 @@ import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordStatusMessageComponent } from './wdf-staff-record-status-message/wdf-staff-record-status-message.component';
-import { WdfPaginationComponent } from './wdf-staff-record/wdf-pagination/wdf-pagination.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary/wdf-staff-summary.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
@@ -25,7 +24,6 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
     WdfStaffSummaryComponent,
     WdfStaffRecordComponent,
     WdfStaffRecordStatusMessageComponent,
-    WdfPaginationComponent,
     WdfWorkplacesSummaryComponent,
     WdfOverviewComponent,
     FundingRequirementsComponent,

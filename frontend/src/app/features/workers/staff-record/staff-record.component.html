@@ -88,6 +88,17 @@
       </a>
     </div>
   </div>
+  <ng-container *ngIf="!(hasCompletedStaffRecordFlow && canEditWorker) && workerList?.length > 0">
+    <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-1" />
+
+    <app-worker-pagination
+      [workerList]="workerList"
+      [workplaceUid]="workplace.uid"
+      [exitUrl]="exitUrl"
+      [staffSummaryBaseUrl]="staffSummaryBaseUrl"
+      [staffSummaryUrlSuffix]="staffSummaryUrlSuffix"
+    ></app-worker-pagination>
+  </ng-container>
   <app-basic-record
     [basicTitle]="'Mandatory information'"
     [workplace]="workplace"
@@ -100,5 +111,17 @@
 
   <ng-container *ngIf="hasCompletedStaffRecordFlow && canEditWorker">
     <a type="button" class="govuk-button govuk-!-margin-top-9" [routerLink]="continueRoute">Continue</a>
+  </ng-container>
+
+  <ng-container *ngIf="!(hasCompletedStaffRecordFlow && canEditWorker)">
+    <div>
+      <app-worker-pagination
+        [workerList]="workerList"
+        [workplaceUid]="workplace.uid"
+        [exitUrl]="exitUrl"
+        [staffSummaryBaseUrl]="staffSummaryBaseUrl"
+        [staffSummaryUrlSuffix]="staffSummaryUrlSuffix"
+      ></app-worker-pagination>
+    </div>
   </ng-container>
 </ng-container>

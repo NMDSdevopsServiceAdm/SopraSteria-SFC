@@ -140,6 +140,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 import { DetailsDhaExamplesComponent } from './components/details-dha-examples/details-dha-examples.component';
 import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
+import { WorkerPaginationComponent } from './components/worker-pagination/worker-pagination.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -190,6 +191,7 @@ import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
     TrainingLinkPanelComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
+    WorkerPaginationComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
@@ -324,6 +326,7 @@ import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
+    WorkerPaginationComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,

@@ -30,6 +30,8 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { ParentHomeTabComponent } from './parent-home-tab.component';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { Worker } from '@core/model/worker.model';
 
 const MockWindow = {
   dataLayer: {
@@ -50,6 +52,10 @@ describe('ParentHomeTabComponent', () => {
         push: dataLayerPushSpy,
       },
     };
+
+    const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+    const listOfAllWorkers = overrides?.listOfAllWorkers ?? workers;
+    const localStorageSetSpy = spyOn(localStorage, 'setItem');
 
     const setupTools = await render(ParentHomeTabComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule],
@@ -81,6 +87,7 @@ describe('ParentHomeTabComponent', () => {
                   workerCount: 0,
                   trainingCounts: {} as TrainingCounts,
                   workersNotCompleted: [],
+                  listOfAllWorkers,
                 },
                 cqcStatusCheck: { cqcStatusMatch: overrides?.cqcStatusMatch ?? true },
               },
@@ -126,6 +133,7 @@ describe('ParentHomeTabComponent', () => {
       parentsRequestService,
       tabsServiceSpy,
       dataLayerPushSpy,
+      localStorageSetSpy,
     };
   };
 
@@ -603,6 +611,25 @@ describe('ParentHomeTabComponent', () => {
 
         expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Parent' });
       });
+    });
+  });
+
+  describe('should prep for individual staff record pagination', () => {
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    it('should store a list of all worker ids in localstorage', async () => {
+      const eighteenWorkers = Array(18)
+        .fill(null)
+        .map((_) => workerBuilder()) as Worker[];
+      const overrides = { listOfAllWorkers: eighteenWorkers };
+
+      const { localStorageSetSpy } = await setup(overrides);
+
+      const expectedStaffRecordIds = JSON.stringify(eighteenWorkers.map((worker) => worker.uid));
+
+      expect(localStorageSetSpy.calls.allArgs()).toContain(['ListOfWorkers', expectedStaffRecordIds]);
     });
   });
 });

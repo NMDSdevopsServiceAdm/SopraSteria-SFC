@@ -3,16 +3,15 @@ import { DebugElement } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule, By } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { WdfPaginationComponent } from '@features/funding/wdf-staff-record/wdf-pagination/wdf-pagination.component';
+import { WorkerPaginationComponent } from '@shared/components/worker-pagination/worker-pagination.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable, Subject } from 'rxjs';
 
-describe('WdfPagination', () => {
+describe('WorkerPagination', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfPaginationComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+    const setupTools = await render(WorkerPaginationComponent, {
+      imports: [HttpClientTestingModule, BrowserModule, SharedModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -24,7 +23,7 @@ describe('WdfPagination', () => {
                 establishmentuid: '',
               },
               paramMap: {
-                get(id) {
+                get(_id) {
                   return overrides.id ?? '123';
                 },
               },
@@ -34,7 +33,9 @@ describe('WdfPagination', () => {
       ],
       componentProperties: {
         workerList: ['1', '2', '3', '4'],
-        exitUrl: overrides.exitUrl ?? { url: 'funding/test/url', fragment: 'staff-records' },
+        exitUrl: overrides.exitUrl ?? { url: 'dashboard', fragment: 'staff-records' },
+        staffSummaryBaseUrl: overrides.staffSummaryBaseUrl ?? { url: ['/workplace,1,staff-record'] },
+        staffSummaryUrlSuffix: overrides.staffSummaryUrlSuffix ?? 'staff-record-summary',
       },
     });
 
@@ -42,19 +43,19 @@ describe('WdfPagination', () => {
     const event = new NavigationEnd(42, '/', '/');
     (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+    return { component, ...setupTools };
   };
 
-  it('should render a WdfPagination', async () => {
+  it('should render a WorkerPagination', async () => {
     const { component, fixture } = await setup();
     fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should be able to find next and previous ids', async () => {
-    const { component, fixture } = await setup({ id: '2' });
+    const { component, fixture } = await setup({ id: '2', staffSummaryBaseUrl: { url: ['..'] } });
     const links = fixture.debugElement.queryAll(By.css('a'));
     const previousHref = links[1].nativeElement.getAttribute('ng-reflect-router-link');
     const nextHref = links[2].nativeElement.getAttribute('ng-reflect-router-link');
@@ -62,8 +63,8 @@ describe('WdfPagination', () => {
 
     expect(component.previousID).toEqual('1');
     expect(component.nextID).toEqual('3');
-    expect(previousHref).toEqual('/funding,staff-record,1');
-    expect(nextHref).toEqual('/funding,staff-record,3');
+    expect(previousHref).toEqual('..,1,staff-record-summary');
+    expect(nextHref).toEqual('..,3,staff-record-summary');
   });
 
   it('should only show Next staff record when current staff record is first ID in list', async () => {
@@ -83,7 +84,7 @@ describe('WdfPagination', () => {
   });
 
   it('should show a Close this staff record link with refs passed in', async () => {
-    const exitUrl = { url: 'funding/test/url', fragment: 'staff-records' };
+    const exitUrl = { url: 'dashboard', fragment: 'staff-records' };
 
     const { component, fixture, getByText } = await setup({ exitUrl });
 

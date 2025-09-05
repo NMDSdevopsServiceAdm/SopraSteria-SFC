@@ -182,6 +182,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.updateParentStatusRequested();
     this.updateCancelLinkToParentRequest();
     this.updateOnRemoveLinkToParentSuccess();
+
+    this.saveAllWorkerIdsInLocalStorage();
   }
 
   private setBenchmarksCard(): void {
@@ -429,6 +431,15 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     if (this.workplace.isParent) return 'Parent';
     if (this.workplace.parentUid) return 'Sub';
     return 'Standalone';
+  }
+
+  private saveAllWorkerIdsInLocalStorage(): void {
+    const listOfAllWorkers = this.route.snapshot?.data?.workers?.listOfAllWorkers as Worker[];
+
+    if (listOfAllWorkers?.length > 0) {
+      const listOfAllWorkerIds = listOfAllWorkers.map((worker) => worker.uid);
+      localStorage.setItem('ListOfWorkers', JSON.stringify(listOfAllWorkerIds));
+    }
   }
 
   ngOnDestroy(): void {

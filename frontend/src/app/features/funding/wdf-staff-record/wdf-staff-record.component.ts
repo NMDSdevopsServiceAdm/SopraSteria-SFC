@@ -25,6 +25,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   public workplaceUid: string;
   public primaryWorkplaceUid: string;
   public exitUrl: URLStructure;
+  public staffSummaryBaseUrl: URLStructure;
   public returnTo: URLStructure;
   public overallWdfEligibility: boolean;
   public wdfStartDate: string;
@@ -48,6 +49,11 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.setExitUrl();
+
+    this.staffSummaryBaseUrl = this.route.snapshot.params.establishmentuid
+      ? { url: ['/funding', 'workplaces', this.workplaceUid, 'staff-record'] }
+      : { url: ['/funding', 'staff-record'] };
+
     this.refreshSubscription();
     this.getEstablishment();
     this.getWorker(this.route.snapshot.params);

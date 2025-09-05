@@ -107,6 +107,8 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
 
     this.hasBenchmarkComparisonData = !!this.tilesData?.meta.staff && !!this.tilesData?.meta.workplaces;
     this.setBenchmarksCard();
+
+    this.saveAllWorkerIdsInLocalStorage();
   }
 
   ngOnChanges(): void {
@@ -174,6 +176,15 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
       this.benchmarksMessage = `${noOfWorkplacesText} providing ${serviceText} in ${localAuthority}.`;
     } else {
       this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
+    }
+  }
+
+  private saveAllWorkerIdsInLocalStorage(): void {
+    const listOfAllWorkers = this.route.snapshot?.data?.workers?.listOfAllWorkers as Worker[];
+
+    if (listOfAllWorkers?.length > 0) {
+      const listOfAllWorkerIds = listOfAllWorkers.map((worker) => worker.uid);
+      localStorage.setItem('ListOfWorkers', JSON.stringify(listOfAllWorkerIds));
     }
   }
 
