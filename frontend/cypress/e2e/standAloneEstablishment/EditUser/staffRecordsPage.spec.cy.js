@@ -586,6 +586,55 @@ describe('Standalone staff records page as edit user', () => {
     });
   });
 
+  describe('pagination controls in staff record summary page', () => {
+    const testWorkerNames = Array(5)
+      .fill()
+      .map((_, index) => `test worker pagination ${index.toString().padStart(2, 0)}`);
+
+    before(() => {
+      testWorkerNames.forEach((workerName) =>
+        cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName }),
+      );
+    });
+
+    after(() => {
+      testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
+    });
+
+    beforeEach(() => {
+      onHomePage.clickTab('Home');
+      onHomePage.clickTab('Staff records');
+      cy.reload();
+    });
+
+    it('should allow user to cycle between workers by the "Previous staff record" and "Next staff record" links', () => {
+      onStaffRecordsPage.clickIntoWorker(testWorkerNames[2]);
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[2]);
+      cy.get('a').contains('Previous staff record').should('be.visible');
+      cy.get('a').contains('Next staff record').should('be.visible');
+
+      // visit previous worker
+      cy.get('a').contains('Previous staff record').click();
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[1]);
+
+      // visit next worker
+      cy.get('a').contains('Next staff record').click();
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[2]);
+
+      cy.get('a').contains('Next staff record').click();
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[3]);
+    });
+
+    it('should direct user back to staff records page when "Close this staff record" button is clicked', () => {
+      onStaffRecordsPage.clickIntoWorker(testWorkerNames[2]);
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[2]);
+
+      cy.get('a').contains('Close this staff record').click();
+
+      cy.get('h1').should('include.text', 'Staff records');
+    });
+  });
+
   const createStaffRecordWithMandatoryDetails = (
     name = 'Bob',
     contractType = 'Permanent',
