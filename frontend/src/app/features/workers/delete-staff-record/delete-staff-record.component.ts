@@ -84,9 +84,9 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
       : 'this staff record';
     const itWill = hasAnyTrainingOrQualifications ? `It'll` : 'It will';
 
-    this.warningMessage = `${itWill} permanently delete ${contentsThatWillBeDeleted} from ASC-WDS.`;
-    this.confirmationCheckboxLabelText = `I know that this action will permanently delete ${contentsThatWillBeDeleted} from ASC-WDS.`;
-    this.confirmationMissingErrorMessage = `Confirm that you know this action will permanently delete ${contentsThatWillBeDeleted} from ASC-WDS.`;
+    this.warningMessage = `${itWill} permanently delete ${contentsThatWillBeDeleted} from ASC‑WDS.`;
+    this.confirmationCheckboxLabelText = `I know that this action will permanently delete ${contentsThatWillBeDeleted} from ASC‑WDS.`;
+    this.confirmationMissingErrorMessage = `Confirm that you know this action will permanently delete ${contentsThatWillBeDeleted} from ASC‑WDS`;
   }
 
   private setBackLink(): void {

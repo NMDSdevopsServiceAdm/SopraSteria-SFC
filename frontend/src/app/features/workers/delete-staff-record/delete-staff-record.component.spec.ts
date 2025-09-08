@@ -19,7 +19,7 @@ import { of } from 'rxjs';
 
 import { DeleteStaffRecordComponent } from './delete-staff-record.component';
 
-fdescribe('DeleteStaffRecordComponent', () => {
+describe('DeleteStaffRecordComponent', () => {
   const mockWorker = workerBuilder() as Worker;
 
   const setup = async (overrides: any = {}) => {
@@ -139,13 +139,13 @@ fdescribe('DeleteStaffRecordComponent', () => {
     describe('worker has training and qualifications record', () => {
       it('should warn about the action will permanently delete T&Q records and any certificates', async () => {
         const { getByText } = await setup({ hasAnyTrainingOrQualifications: true });
-        const expectedText = `It'll permanently delete this staff record and their training and qualification records (and any certificates) from ASC-WDS.`;
+        const expectedText = `It'll permanently delete this staff record and their training and qualification records (and any certificates) from ASC‑WDS.`;
         expect(getByText(expectedText)).toBeTruthy();
       });
 
       it('should mention about T&Q records in checkbox label text and validation message', async () => {
         const { getByLabelText } = await setup({ hasAnyTrainingOrQualifications: true });
-        const expectedText = `I know that this action will permanently delete this staff record and their training and qualification records (and any certificates) from ASC-WDS.`;
+        const expectedText = `I know that this action will permanently delete this staff record and their training and qualification records (and any certificates) from ASC‑WDS.`;
 
         expect(getByLabelText(expectedText)).toBeTruthy();
       });
@@ -154,13 +154,13 @@ fdescribe('DeleteStaffRecordComponent', () => {
     describe('worker does not have training and qualifications record', () => {
       it('should only mention about staff record in warning text', async () => {
         const { getByText } = await setup({ hasAnyTrainingOrQualifications: false });
-        const expectedText = `It will permanently delete this staff record from ASC-WDS.`;
+        const expectedText = `It will permanently delete this staff record from ASC‑WDS.`;
         expect(getByText(expectedText)).toBeTruthy();
       });
 
       it('should mention about T&Q records in checkbox label text and validation message', async () => {
         const { getByLabelText } = await setup({ hasAnyTrainingOrQualifications: false });
-        const expectedText = `I know that this action will permanently delete this staff record from ASC-WDS.`;
+        const expectedText = `I know that this action will permanently delete this staff record from ASC‑WDS.`;
 
         expect(getByLabelText(expectedText)).toBeTruthy();
       });
@@ -270,7 +270,7 @@ fdescribe('DeleteStaffRecordComponent', () => {
     it('should show an error message if confirmation checkbox is not ticked', async () => {
       const { fixture, getByRole, getByText, getAllByText, deleteWorkerSpy } = await setup();
       const expectedErrorMessage =
-        'Confirm that you know this action will permanently delete this staff record and their training and qualification records (and any certificates) from ASC-WDS.';
+        'Confirm that you know this action will permanently delete this staff record and their training and qualification records (and any certificates) from ASC‑WDS';
 
       userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
       fixture.detectChanges();
@@ -286,7 +286,7 @@ fdescribe('DeleteStaffRecordComponent', () => {
         hasAnyTrainingOrQualifications: false,
       });
       const expectedErrorMessage =
-        'Confirm that you know this action will permanently delete this staff record from ASC-WDS.';
+        'Confirm that you know this action will permanently delete this staff record from ASC‑WDS';
 
       userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
       fixture.detectChanges();
