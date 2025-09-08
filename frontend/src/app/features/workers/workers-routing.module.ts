@@ -875,6 +875,7 @@ const routes: Routes = [
         resolve: {
           reasonsForLeaving: WorkerReasonsForLeavingResolver,
           totalNumberOfStaff: TotalStaffRecordsResolver,
+          workerHasAnyTrainingOrQualifications: WorkerHasAnyTrainingOrQualificationsResolver,
         },
         data: {
           permissions: ['canDeleteWorker'],
