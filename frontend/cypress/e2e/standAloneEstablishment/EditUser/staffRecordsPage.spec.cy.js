@@ -4,6 +4,7 @@
 import lodash from 'lodash';
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
+const path = require('path');
 
 describe('Standalone staff records page as edit user', () => {
   const establishmentId = StandAloneEstablishment.id;
@@ -13,6 +14,9 @@ describe('Standalone staff records page as edit user', () => {
   const testWorkerNames = ['Mr Cool', 'Mr Warm', 'Mr Smith', 'Bob', 'Cypress test worker', worker1, worker2, worker3];
 
   before(() => {
+    testWorkerNames.forEach((workerName) =>
+      cy.deleteWorkerQualificationsRecord({ establishmentID: establishmentId, workerName }),
+    );
     testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
     cy.resetStartersLeaversVacancies(establishmentId);
   });
@@ -25,6 +29,9 @@ describe('Standalone staff records page as edit user', () => {
   });
 
   afterEach(() => {
+    testWorkerNames.forEach((workerName) =>
+      cy.deleteWorkerQualificationsRecord({ establishmentID: StandAloneEstablishment.id, workerName }),
+    );
     testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
     cy.resetStartersLeaversVacancies(establishmentId);
   });
@@ -212,6 +219,49 @@ describe('Standalone staff records page as edit user', () => {
 
       cy.get('h1').invoke('text').should('eq', 'Staff record');
       cy.contains('a', 'Delete staff record').click();
+      cy.getByLabel('Reason not known').check();
+      cy.get('input#confirmDelete').check();
+
+      cy.get('button').contains('Delete this staff record').click();
+      cy.wait('@deleteWorker');
+
+      cy.contains(`Staff record deleted (${workerName})`).should('be.visible');
+      cy.get('a').contains(workerName).should('not.exist');
+    });
+
+    it('should delete a staff record successfully without downloading summary and certificates', () => {
+      const workerName = 'Mr Warm';
+
+      cy.intercept('DELETE', '/api/establishment/*/worker/*').as('deleteWorker');
+
+      cy.insertTestWorker({ establishmentID: establishmentId.id, workerName });
+      cy.reload();
+      cy.addWorkerQualification({
+        establishmentID: establishmentId,
+        workerName,
+        categoryId: 121,
+      });
+
+      cy.wait(10);
+
+      cy.reload();
+
+      cy.get('a').contains(workerName).click();
+
+      cy.get('h1').invoke('text').should('eq', 'Staff record');
+      cy.contains('a', 'Delete staff record').click();
+
+      // do you want to download page
+      cy.get('h1')
+        .invoke('text')
+        .should(
+          'eq',
+          'Do you want to download their training and qualifications summary, and any certificates, before you delete this staff record?',
+        );
+      cy.getByLabel('No, I do not want to download the summary and any certificates').check();
+      cy.get('button').contains('Continue').click();
+
+      // delete staff record page
       cy.getByLabel('Reason not known').check();
       cy.get('input#confirmDelete').check();
 
