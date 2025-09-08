@@ -7,11 +7,13 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
+import { TrainingCertificateService, QualificationCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { FileUtil } from '@core/utils/file-util';
+import { from, merge, Subscription } from 'rxjs';
+import { mergeMap, take, toArray } from 'rxjs/operators';
 
 @Component({
   selector: 'app-do-you-want-to-download-train-and-quals',
@@ -31,6 +33,7 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   private subscriptions: Subscription = new Subscription();
+  private downloadingAllCertsInBackground = false;
 
   constructor(
     private workerService: WorkerService,
@@ -41,6 +44,8 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     private alertService: AlertService,
     private errorSummaryService: ErrorSummaryService,
     private previousRouteService: PreviousRouteService,
+    private trainingCertificateService: TrainingCertificateService,
+    private qualificationCertificateService: QualificationCertificateService,
   ) {
     this.form = this.formBuilder.group(
       {
@@ -105,6 +110,47 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     this.backLinkService.showBackLink();
   }
 
+  public downloadAllCertificates(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (this.downloadingAllCertsInBackground) {
+        return;
+      }
+
+      this.downloadingAllCertsInBackground = true;
+
+      const allTrainingCerts$ = this.trainingCertificateService.downloadAllCertificatesAsBlobs(
+        this.workplace.uid,
+        this.worker.uid,
+      );
+      const allQualificationCerts$ = this.qualificationCertificateService.downloadAllCertificatesAsBlobs(
+        this.workplace.uid,
+        this.worker.uid,
+      );
+
+      const zipFileName = this.worker.nameOrId
+        ? `All certificates - ${this.worker.nameOrId}.zip`
+        : 'All certificates.zip';
+
+      const downloadAllCertificatesAsZip$ = merge(allTrainingCerts$, allQualificationCerts$).pipe(
+        toArray(),
+        mergeMap((allFileBlobs) => from(FileUtil.saveFilesAsZip(allFileBlobs, zipFileName))),
+      );
+
+      this.subscriptions.add(
+        downloadAllCertificatesAsZip$.subscribe(
+          () => {
+            this.downloadingAllCertsInBackground = false;
+            resolve(true);
+          },
+          (err) => {
+            console.error('Error occurred when downloading all certificates: ', err);
+            this.downloadingAllCertsInBackground = false;
+          },
+        ),
+      );
+    });
+  }
+
   public onSubmit(): void {
     this.submitted = true;
     const answer = this.form.value.downloadTrainAndQuals;
@@ -113,11 +159,13 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
       this.workerService.setDoYouWantToDownloadTrainAndQualsAnswer(answer);
 
       if (answer === 'Yes') {
-        this.router.navigate(this.nextRoute).then(() =>
-          this.alertService.addAlert({
-            type: 'success',
-            message: "The training and qualifications summary has downloaded to your computer's Downloads folder",
-          }),
+        this.downloadAllCertificates().then(() =>
+          this.router.navigate(this.nextRoute).then(() =>
+            this.alertService.addAlert({
+              type: 'success',
+              message: "The training and qualifications summary has downloaded to your computer's Downloads folder",
+            }),
+          ),
         );
       } else if (answer === 'No') {
         this.router.navigate(this.nextRoute);
