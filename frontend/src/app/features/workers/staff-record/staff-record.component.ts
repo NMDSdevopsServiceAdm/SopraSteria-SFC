@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -13,7 +13,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { filter, skip } from 'rxjs/operators';
 
 import { MoveWorkerDialogComponent } from '../move-worker-dialog/move-worker-dialog.component';
 
@@ -30,6 +30,10 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public hasCompletedStaffRecordFlow: boolean;
   public continueRoute: string[];
+  public workerList: string[];
+  public exitUrl: URLStructure;
+  public staffSummaryBaseUrl: URLStructure;
+  public staffSummaryUrlSuffix: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -42,6 +46,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     protected backLinkService: BackLinkService,
     public breadcrumbService: BreadcrumbService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -54,7 +59,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     }
 
     this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
+      this.workerService.worker$.pipe().subscribe((worker) => {
         this.worker = worker;
         if (!this.worker?.completed) {
           this.updateCompleted();
@@ -74,6 +79,39 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+
+    this.getListOfWorkers();
+    this.setPaginationUrls();
+    this.setupSubscriptionForPagination();
+  }
+
+  private setPaginationUrls() {
+    this.exitUrl = { url: ['/dashboard'], fragment: 'staff-records' };
+    this.staffSummaryBaseUrl = { url: ['/workplace', this.workplace.uid, 'staff-record'] };
+    this.staffSummaryUrlSuffix = 'staff-record-summary';
+  }
+
+  private getListOfWorkers(): void {
+    this.workerList = JSON.parse(localStorage.getItem('ListOfWorkers'));
+  }
+
+  private setupSubscriptionForPagination(): void {
+    const dataFromResolver = this.route.parent.data;
+    const reloadWorkerOnPageChange = dataFromResolver?.pipe(skip(1)).subscribe((data) => {
+      if (!data?.worker) {
+        return;
+      }
+      this.workerService.setState(data.worker);
+    });
+
+    const keepBreadcrumbOnPageChange = this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((_event) => {
+        this.breadcrumbService.show(JourneyType.STAFF_RECORDS_TAB);
+      });
+
+    this.subscriptions.add(reloadWorkerOnPageChange);
+    this.subscriptions.add(keepBreadcrumbOnPageChange);
   }
 
   private showContinueButtons(): void {

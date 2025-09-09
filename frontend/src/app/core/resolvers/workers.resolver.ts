@@ -1,12 +1,22 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
-import { WorkersResponse } from '@core/model/worker.model';
+import { Worker, WorkersResponse } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { SortByService } from '@core/services/sort-by.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
+
+type ResolvedData = WorkersResponse & {
+  paginatedWorkerCount: number;
+  workerCount: number;
+  workersCreatedDate: string;
+  trainingCounts: number;
+  tAndQsLastUpdated: string;
+  workersNotCompleted: Worker[];
+  listOfAllWorkers: Worker[];
+};
 
 @Injectable()
 export class WorkersResolver {
@@ -26,7 +36,7 @@ export class WorkersResolver {
     }
   }
 
-  resolve(route: ActivatedRouteSnapshot): Observable<WorkersResponse | null> {
+  resolve(route: ActivatedRouteSnapshot): Observable<ResolvedData | null> {
     const workplaceUid = route.paramMap.get('establishmentuid')
       ? route.paramMap.get('establishmentuid')
       : this.establishmentService.establishmentId;
@@ -73,6 +83,7 @@ export class WorkersResolver {
         map(([totalResponse, paginatedResponse]) => {
           const paginatedWorkerCount = paginatedResponse.workerCount;
           const workerCount = totalResponse.workerCount;
+          const listOfAllWorkers = totalResponse.workers;
 
           totalResponse.workers.forEach((worker) => {
             trainingCounts.totalTraining += worker.trainingCount;
@@ -108,6 +119,7 @@ export class WorkersResolver {
             trainingCounts,
             tAndQsLastUpdated,
             workersNotCompleted,
+            listOfAllWorkers,
           };
         }),
         catchError(() => {
