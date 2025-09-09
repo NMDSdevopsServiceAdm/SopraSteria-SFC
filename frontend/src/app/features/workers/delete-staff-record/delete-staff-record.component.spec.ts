@@ -281,7 +281,7 @@ describe('DeleteStaffRecordComponent', () => {
       expect(deleteWorkerSpy).not.toHaveBeenCalled();
     });
 
-    it('should show a slight different error message if worker does not have any training and qualifications', async () => {
+    it('should show a different validation error message if worker does not have any training and qualifications', async () => {
       const { fixture, getByRole, getByText, getAllByText, deleteWorkerSpy } = await setup({
         hasAnyTrainingOrQualifications: false,
       });
