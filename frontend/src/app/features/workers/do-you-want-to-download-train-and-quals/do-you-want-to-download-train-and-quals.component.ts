@@ -159,14 +159,16 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
       this.workerService.setDoYouWantToDownloadTrainAndQualsAnswer(answer);
 
       if (answer === 'Yes') {
-        this.downloadAllCertificates().then(() =>
-          this.router.navigate(this.nextRoute).then(() =>
+        this.downloadAllCertificates()
+          .then(() => {
+            return this.router.navigate(this.nextRoute);
+          })
+          .then(() =>
             this.alertService.addAlert({
               type: 'success',
               message: "The training and qualifications summary has downloaded to your computer's Downloads folder",
             }),
-          ),
-        );
+          );
       } else if (answer === 'No') {
         this.router.navigate(this.nextRoute);
       }
