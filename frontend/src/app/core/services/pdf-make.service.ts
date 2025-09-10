@@ -5,6 +5,9 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { HttpClient } from '@angular/common/http';
 import { mergeMap } from 'rxjs/operators';
+import { Establishment } from '@core/model/establishment.model';
+import { TrainingRecordCategory } from '@core/model/training.model';
+import { QualificationsByGroup } from '@core/model/qualification.model';
 
 @Injectable({
   providedIn: 'root',
@@ -40,22 +43,42 @@ export class PdfMakeService {
       });
   }
 
-  public buildTrainingAndQualificationPdfDefinition(): TDocumentDefinitions {
+  public buildTrainingAndQualificationPdfDefinition(
+    workplace: Establishment,
+    mandatoryTraining: TrainingRecordCategory[],
+    nonMandatoryTraining: TrainingRecordCategory[],
+    qualificationsByGroup: QualificationsByGroup,
+    worker,
+    lastUpdatedDate,
+  ): TDocumentDefinitions {
+    // build content using your helper sections
+    const contentBody = [
+      this.sectionHeader('Training and qualifications'),
+      this.staffInfoSection(workplace, worker, lastUpdatedDate),
+      ...this.mandatoryTrainingSection(mandatoryTraining),
+      ...this.nonMandatoryTrainingSection(nonMandatoryTraining),
+      ...this.qualificationSection(qualificationsByGroup),
+    ];
+
     return {
       pageSize: 'A4',
       pageOrientation: 'portrait',
       pageMargins: [40, 60, 40, 40],
-      header: function (currentPage = 1, pageCount = 1, pageSize): Content {
-        return {
-          columns: [{ text: `Page ${currentPage} of ${pageCount}`, alignment: 'right', margin: [20, 30] }],
-        };
-      },
+
+      header: (currentPage = 1, pageCount = 1): Content => ({
+        columns: [
+          {
+            text: `Page ${currentPage} of ${pageCount}`,
+            alignment: 'right',
+            margin: [20, 30],
+          },
+        ],
+      }),
 
       content: [
         {
           columns: [
             { image: 'sfcLogo', alignment: 'left' },
-
             {
               table: {
                 body: [
@@ -79,7 +102,6 @@ export class PdfMakeService {
               margin: [5, 20, 0, 20],
             },
           ],
-
           margin: [0, -50, 20, 20],
         },
         {
@@ -91,29 +113,33 @@ export class PdfMakeService {
               x2: 600,
               y2: 0,
               lineWidth: 3,
-              lineColor: '#1d70b8', // todo: refers to govuk vars
+              lineColor: '#1d70b8',
             },
           ],
         },
-        ...JSON.parse(JSON.stringify(this.contentBody.content)),
+        ...contentBody, // sections go here
       ],
 
       styles: {
-        ...JSON.parse(JSON.stringify(this.contentBody.styles)),
         header: {
           fontSize: 18,
           bold: true,
           margin: [0, 190, 0, 80],
         },
         h1Heading: {
-          fontSize: 36 * 0.75,
+          fontSize: 27,
           bold: true,
-          color: '#0b0c0c', // todo: refers to govuk vars
+          color: '#0b0c0c',
         },
         pageNumber: {
-          fontSize: 16 * 0.75,
+          fontSize: 12,
           bold: true,
-          color: '#0b0c0c', // todo: refers to govuk vars
+          color: '#0b0c0c',
+        },
+        subheader: {
+          fontSize: 14,
+          bold: true,
+          margin: [0, 10, 0, 5],
         },
       },
 
@@ -150,7 +176,14 @@ export class PdfMakeService {
     };
   }
 
-  public staffInfoSection(staff) {
+  public staffInfoSection(workplace, worker, lastUpdatedDate) {
+    const lastUpdated = new Date(lastUpdatedDate);
+    const formattedDate = lastUpdated.toLocaleDateString('en-GB', {
+      day: 'numeric', // "10"
+      month: 'short', // "Sep"
+      year: 'numeric', // "2025"
+    });
+
     return {
       table: {
         widths: ['*', '*'],
@@ -159,13 +192,13 @@ export class PdfMakeService {
             { text: 'Workplace name', bold: true },
             { text: 'Staff name', bold: true },
           ],
-          [staff.workplace, staff.name],
+          [workplace.name, worker.nameOrId],
           [
             { text: 'Care certificate', bold: true, margin: [0, 10, 0, 0] },
             { text: 'Last updated', bold: true, margin: [0, 10, 0, 0] },
           ],
 
-          [staff.certificate, staff.lastUpdated],
+          [worker.careCertificate ? worker.careCertificate : 'Not answered', formattedDate],
         ],
       },
       layout: 'headerLineOnly',
@@ -173,14 +206,14 @@ export class PdfMakeService {
     };
   }
 
-  public trainingSection(trainings) {
+  public mandatoryTrainingSection(mandatoryTraining) {
     return [
       {
         stack: [
           {
             text: 'Mandatory training',
             style: 'header',
-            margin: [0, 10, 0, 10],
+            margin: [0, 20, 0, 10],
           },
           {
             canvas: [
@@ -188,66 +221,133 @@ export class PdfMakeService {
                 type: 'line',
                 x1: 0,
                 y1: 0,
-                x2: 515, // ~A4 width minus margins
+                x2: 515,
                 y2: 0,
                 lineWidth: 1,
-                lineColor: '#cccccc', // grey line
+                lineColor: '#cccccc',
               },
             ],
-            margin: [0, 0, 0, 15], // space after line
+            margin: [0, 0, 0, 15],
           },
         ],
       },
-      ...trainings.flatMap((training) => [
-        { text: training.title, style: 'subheader', margin: [0, 10, 0, 5] },
-        {
-          table: {
-            widths: ['*', '*', '*', '*', '*'],
-            body: [
-              [
-                { text: 'Training name', bold: true },
-                { text: 'Accredited', bold: true },
-                { text: 'Completion date', bold: true },
-                { text: 'Expiry date', bold: true },
-                { text: 'Certificate', bold: true },
+
+      ...mandatoryTraining.map((training) => ({
+        stack: [
+          // 👇 category + table live inside the same stack
+          { text: training.category, style: 'subheader', margin: [0, 10, 0, 15] },
+
+          {
+            table: {
+              widths: ['*', '*', '*', '*', '*'],
+              body: [
+                // header row
+                [
+                  { text: 'Training name', bold: true },
+                  { text: 'Accredited', bold: true },
+                  { text: 'Completion date', bold: true },
+                  { text: 'Expiry date', bold: true },
+                  { text: 'Certificate', bold: true },
+                ],
+
+                // data rows
+                ...training.trainingRecords.map((record) => [
+                  record.title || '-',
+                  record.accredited || '-',
+                  record.completed || '-',
+                  record.expires || '-',
+                  record.certificate ? 'See download' : 'No',
+                ]),
               ],
-              [
-                training.details.Training,
-                training.details.Accredited,
-                training.details.Completion,
-                training.details.Expiry,
-                training.details.Certificate,
-              ],
-            ],
-          },
-          layout: 'headerLineOnly',
-        },
-        {
-          canvas: [
-            {
-              type: 'line',
-              x1: 0,
-              y1: 0,
-              x2: 515,
-              y2: 0, // full width (A4 minus margins)
-              lineWidth: 1,
-              lineColor: '#cccccc', // grey
             },
-          ],
-          margin: [0, 5, 0, 10], // spacing above and below line
-        },
-      ]),
+            layout: {
+              hLineWidth: (i) => (i === 0 ? 0 : 0.5), // thin gray line only under rows
+              vLineWidth: () => 0,
+              hLineColor: () => '#cccccc',
+            },
+          },
+        ],
+        unbreakable: true, // 👈 ensures stack stays on one page
+        margin: [0, 0, 0, 15],
+      })),
     ];
   }
 
-  public qualificationSection(qualifications) {
+  public nonMandatoryTrainingSection(nonMandatoryTraining) {
+    return [
+      {
+        stack: [
+          {
+            text: 'Non-mandatory training',
+            style: 'header',
+            margin: [0, 20, 0, 10],
+          },
+          {
+            canvas: [
+              {
+                type: 'line',
+                x1: 0,
+                y1: 0,
+                x2: 515,
+                y2: 0,
+                lineWidth: 1,
+                lineColor: '#cccccc',
+              },
+            ],
+            margin: [0, 0, 0, 15],
+          },
+        ],
+      },
+
+      ...nonMandatoryTraining.map((training) => ({
+        stack: [
+          // 👇 category + table live inside the same stack
+          { text: training.category, style: 'subheader', margin: [0, 10, 0, 15] },
+
+          {
+            table: {
+              widths: ['*', '*', '*', '*', '*'],
+              body: [
+                // header row
+                [
+                  { text: 'Training name', bold: true },
+                  { text: 'Accredited', bold: true },
+                  { text: 'Completion date', bold: true },
+                  { text: 'Expiry date', bold: true },
+                  { text: 'Certificate', bold: true },
+                ],
+
+                // data rows
+                ...training.trainingRecords.map((record) => [
+                  record.title || '-',
+                  record.accredited || '-',
+                  record.completed || '-',
+                  record.expires || '-',
+                  record.certificate ? 'See download' : 'No',
+                ]),
+              ],
+            },
+            layout: {
+              hLineWidth: (i) => (i === 0 ? 0 : 0.5), // thin gray line only under rows
+              vLineWidth: () => 0,
+              hLineColor: () => '#cccccc',
+            },
+          },
+        ],
+        unbreakable: true, // 👈 ensures stack stays on one page
+        margin: [0, 0, 0, 15],
+      })),
+    ];
+  }
+
+  public qualificationSection(qualificationsByGroup) {
     return [
       {
         stack: [
           {
             text: 'Qualifications',
             style: 'header',
-            margin: [0, 10, 0, 10],
+            margin: [0, 20, 0, 10],
           },
           {
             canvas: [
@@ -255,195 +355,73 @@ export class PdfMakeService {
                 type: 'line',
                 x1: 0,
                 y1: 0,
-                x2: 515, // ~A4 width minus margins
+                x2: 515,
                 y2: 0,
                 lineWidth: 1,
-                lineColor: '#cccccc', // grey line
+                lineColor: '#cccccc',
               },
             ],
-            margin: [0, 0, 0, 15], // space after line
+            margin: [0, 0, 0, 15],
           },
         ],
       },
-      ...qualifications.flatMap((qualification) => [
-        { text: qualification.title, style: 'subheader', margin: [0, 10, 0, 5] },
-        {
-          table: {
-            widths: ['*', '*', '*', '*', '*'],
-            body: [
-              [
-                { text: 'Award name', bold: true },
-                { text: 'Year achieved', bold: true },
-                { text: 'Certificate', bold: true },
+
+      ...qualificationsByGroup.groups.map((qualification) => ({
+        stack: [
+          // 👇 category + table live inside the same stack
+          { text: qualification.group, style: 'subheader', margin: [0, 10, 0, 15] },
+
+          {
+            table: {
+              widths: ['*', '*', '*'],
+              body: [
+                //header row
+                [
+                  { text: `${qualification.group} name`, bold: true },
+                  { text: 'Year achieved', bold: true },
+                  { text: 'Certificate', bold: true },
+                ],
+                //   data rows
+                ...qualification.records.map((record) => [
+                  record.title || '-',
+                  record.year || '-',
+                  record.certificate ? 'See download' : 'No',
+                ]),
               ],
-              [
-                qualification.details.certificatename,
-                qualification.details.yearachieved,
-                qualification.details.certificate,
-              ],
-            ],
-          },
-          layout: 'headerLineOnly',
-        },
-        {
-          canvas: [
-            {
-              type: 'line',
-              x1: 0,
-              y1: 0,
-              x2: 515,
-              y2: 0, // full width (A4 minus margins)
-              lineWidth: 1,
-              lineColor: '#cccccc', // grey
             },
-          ],
-          margin: [0, 5, 0, 10], // spacing above and below line
-        },
-      ]),
+            layout: {
+              hLineWidth: (i) => (i === 0 ? 0 : 0.5), // thin gray line only under rows
+              vLineWidth: () => 0,
+              hLineColor: () => '#cccccc',
+            },
+          },
+        ],
+        unbreakable: true, // 👈 ensures stack stays on one page
+        margin: [0, 0, 0, 15],
+      })),
     ];
   }
-  public staffInfo = {
-    name: 'Adele Singh',
-    workplace: 'Highfield Hall',
-    certificate: 'Yes, completed',
-    lastUpdated: '26 June 2025',
-  };
-
-  public trainings = [
-    {
-      title: 'Basic life support and first aid',
-      details: {
-        Training: 'Level 1',
-        Accredited: 'Yes',
-        Completion: '15 Aug 2024',
-        Expiry: '14 Aug 2027',
-        Certificate: 'See download',
-      },
-    },
-    {
-      title: 'Dementia care',
-      details: {
-        Training: 'Level 1',
-        Accredited: 'Yes',
-        Completion: '2 Oct 2023',
-        Expiry: '1 Oct 2025',
-        Certificate: 'No',
-      },
-    },
-    {
-      title: 'Dementia care',
-      details: {
-        Training: 'Level 1',
-        Accredited: 'Yes',
-        Completion: '2 Oct 2023',
-        Expiry: '1 Oct 2025',
-        Certificate: 'No',
-      },
-    },
-    {
-      title: 'Dementia care',
-      details: {
-        Training: 'Level 1',
-        Accredited: 'Yes',
-        Completion: '2 Oct 2023',
-        Expiry: '1 Oct 2025',
-        Certificate: 'No',
-      },
-    },
-    {
-      title: 'Dementia care',
-      details: {
-        Training: 'Level 1',
-        Accredited: 'Yes',
-        Completion: '2 Oct 2023',
-        Expiry: '1 Oct 2025',
-        Certificate: 'No',
-      },
-    },
-    {
-      title: 'Dementia care',
-      details: {
-        Training: 'Level 1',
-        Accredited: 'Yes',
-        Completion: '2 Oct 2023',
-        Expiry: '1 Oct 2025',
-        Certificate: 'No',
-      },
-    },
-    {
-      title: 'Dementia care',
-      details: {
-        Training: 'Level 1',
-        Accredited: 'Yes',
-        Completion: '2 Oct 2023',
-        Expiry: '1 Oct 2025',
-        Certificate: 'No',
-      },
-    },
-    {
-      title: 'Dementia care',
-      details: {
-        Training: 'Level 1',
-        Accredited: 'Yes',
-        Completion: '2 Oct 2023',
-        Expiry: '1 Oct 2025',
-        Certificate: 'No',
-      },
-    },
-    {
-      title: 'Dementia care',
-      details: {
-        Training: 'Level 1',
-        Accredited: 'Yes',
-        Completion: '2 Oct 2023',
-        Expiry: '1 Oct 2025',
-        Certificate: 'No',
-      },
-    },
-  ];
-  public qualifications = [
-    {
-      title: 'Award',
-      details: {
-        certificatename: 'Level 1',
-        yearachieved: '15 Aug 2024',
-        certificate: 'See download',
-      },
-    },
-    {
-      title: 'Certificate',
-      details: {
-        certificatename: 'Level 1',
-        yearachieved: '2 Oct 2023',
-        certificate: 'No',
-      },
-    },
-  ];
-
-  public sections = [
-    () => this.sectionHeader('Training and qualifications'),
-    () => this.staffInfoSection(this.staffInfo),
-    () => this.trainingSection(this.trainings),
-    () => this.qualificationSection(this.qualifications),
-  ];
-
-  public contentBody = {
-    content: this.sections.flatMap((fn) => fn()),
-    styles: {
-      header: { fontSize: 18, bold: true },
-      subheader: { fontSize: 14, bold: true },
-    },
-  };
-
-  // pdfMake.createPdf(docDefinition).download("staff-training.pdf");
 
   public viewPdf(docDefinition: TDocumentDefinitions): void {
-    const pdf = pdfMake.createPdf(docDefinition);
-    pdf.open();
+    pdfMake.createPdf(docDefinition).open();
   }
 
-  public debugView(): void {
-    const trainingAndQualsPdf = this.buildTrainingAndQualificationPdfDefinition();
-    this.viewPdf(trainingAndQualsPdf);
+  public debugView(
+    workplace: Establishment,
+    mandatoryTraining: TrainingRecordCategory[],
+    nonMandatoryTraining: TrainingRecordCategory[],
+    qualificationsByGroup: QualificationsByGroup,
+    worker,
+    lastUpdatedDate: string | Date,
+  ): void {
+    const docDefinition = this.buildTrainingAndQualificationPdfDefinition(
+      workplace,
+      mandatoryTraining,
+      nonMandatoryTraining,
+      qualificationsByGroup,
+      worker,
+      lastUpdatedDate,
+    );
+    this.viewPdf(docDefinition);
   }
 }
