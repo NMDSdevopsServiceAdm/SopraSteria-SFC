@@ -112,7 +112,18 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   public async newDownloadTrainingAndQualsPdf() {
-    this.pdfMakeService.debugView();
+    try {
+      return await this.pdfMakeService.debugView(
+        this.workplace,
+        this.mandatoryTraining,
+        this.nonMandatoryTraining,
+        this.qualificationsByGroup,
+        this.worker,
+        this.lastUpdatedDate,
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   private setPageData(): void {
