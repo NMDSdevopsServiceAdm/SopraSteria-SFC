@@ -14,6 +14,15 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
+import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
+import { FileUtil } from '@core/utils/file-util';
+import {
+  mockCertificateFileBlob,
+  MockQualificationCertificateService,
+  mockTrainingCertificates,
+  MockTrainingCertificateService,
+} from '@core/test-utils/MockCertificateService';
+import { mockQualificationCertificates } from '../../../core/test-utils/MockCertificateService';
 
 describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
   const yesRadio = 'Yes, I want to download the summary and any certificates';
@@ -56,6 +65,8 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
             },
           },
         },
+        { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
+        { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
       ],
     });
 
@@ -71,12 +82,19 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
 
     const workerService = injector.inject(WorkerService) as WorkerService;
 
+    const trainingCertificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
+    const qualificationCertificateService = injector.inject(
+      QualificationCertificateService,
+    ) as QualificationCertificateService;
+
     return {
       component,
       ...setupTools,
       routerSpy,
       alertServiceSpy,
       workerService,
+      trainingCertificateService,
+      qualificationCertificateService,
     };
   }
 
@@ -146,16 +164,32 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
 
   describe('submit', () => {
     it('navigates to delete-staff-record and calls the alertService', async () => {
-      const { component, fixture, getByText, routerSpy, alertServiceSpy, workerService } = await setup();
+      const {
+        component,
+        fixture,
+        getByText,
+        routerSpy,
+        alertServiceSpy,
+        workerService,
+        trainingCertificateService,
+        qualificationCertificateService,
+      } = await setup();
 
       const continueButton = getByText('Continue');
       const workerServiceSpy = spyOn(workerService, 'setDoYouWantToDownloadTrainAndQualsAnswer');
+      const componentSpy = spyOn(component, 'downloadAllCertificates').and.returnValue(Promise.resolve(true));
+
+      spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+      spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+
+      spyOn(FileUtil, 'saveFilesAsZip').and.callThrough();
 
       fireEvent.click(getByText(yesRadio));
       fireEvent.click(continueButton);
       fixture.detectChanges();
 
       expect(workerServiceSpy).toHaveBeenCalledWith('Yes');
+      await componentSpy.calls.mostRecent().returnValue;
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         component.workplace.uid,
@@ -206,6 +240,85 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
       expect(getAllByText('Select yes if you want to download the summary and any certificates')).toHaveSize(2);
       expect(routerSpy).not.toHaveBeenCalled();
       expect(alertServiceSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('download all certificates', () => {
+    it('should download all training and qualification certificates for the worker when clicked', async () => {
+      const { component, getByText, fixture, trainingCertificateService, qualificationCertificateService } =
+        await setup();
+
+      spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+      spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(getByText(yesRadio));
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(trainingCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+      );
+      expect(qualificationCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+      );
+    });
+
+    it('should call saveFilesAsZip with all the downloaded certificates', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      const expectedZipFileName = `All certificates - ${component.worker.nameOrId}.zip`;
+
+      const fileUtilSpy = spyOn(FileUtil, 'saveFilesAsZip').and.callThrough();
+
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(getByText(yesRadio));
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(fileUtilSpy).toHaveBeenCalled();
+
+      const contentsOfZipFile = fileUtilSpy.calls.mostRecent().args[0];
+      const nameOfZipFile = fileUtilSpy.calls.mostRecent().args[1];
+
+      expect(nameOfZipFile).toEqual(expectedZipFileName);
+
+      mockTrainingCertificates.forEach((certificate) => {
+        expect(contentsOfZipFile).toContain(
+          jasmine.objectContaining({
+            filename: 'Training certificates/' + certificate.filename,
+            fileBlob: mockCertificateFileBlob,
+          }),
+        );
+      });
+      mockQualificationCertificates.forEach((certificate) => {
+        expect(contentsOfZipFile).toContain(
+          jasmine.objectContaining({
+            filename: 'Qualification certificates/' + certificate.filename,
+            fileBlob: mockCertificateFileBlob,
+          }),
+        );
+      });
+    });
+
+    it('should not start a new download on click if still downloading certificates in the background', async () => {
+      const { getByText, fixture, trainingCertificateService, qualificationCertificateService } = await setup();
+
+      spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+      spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(getByText(yesRadio));
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(trainingCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledTimes(1);
+      expect(qualificationCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledTimes(1);
     });
   });
 });
