@@ -30,9 +30,12 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
 
   public otherReasonId = 8;
   public otherReasonDetailMaxLength = 500;
+  public totalNumberOfStaffBeforeDelete: number;
+  public hasAnyTrainingOrQualifications: boolean;
+  public warningMessage: string;
+  public confirmationCheckboxLabelText: string;
   public confirmationMissingErrorMessage =
     'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
-  public totalNumberOfStaffBeforeDelete: number;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -53,6 +56,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
     this.workplace = this.establishmentService.establishment;
     this.reasons = this.route.snapshot.data?.reasonsForLeaving;
     this.totalNumberOfStaffBeforeDelete = this.route.snapshot.data?.totalNumberOfStaff;
+    this.setupTextContents();
 
     this.setupForm();
     this.setupFormErrorsMap();
@@ -69,6 +73,20 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
       details: [null, { validators: [Validators.maxLength(this.otherReasonDetailMaxLength)], updateOn: 'submit' }],
       confirmDelete: [null, { validators: [Validators.requiredTrue], updateOn: 'submit' }],
     });
+  }
+
+  private setupTextContents(): void {
+    const hasAnyTrainingOrQualifications =
+      this.route.snapshot.data?.workerHasAnyTrainingOrQualifications?.hasAnyTrainingOrQualifications;
+
+    const contentsThatWillBeDeleted = hasAnyTrainingOrQualifications
+      ? 'this staff record and their training and qualification records (and any certificates)'
+      : 'this staff record';
+    const itWill = hasAnyTrainingOrQualifications ? `It'll` : 'It will';
+
+    this.warningMessage = `${itWill} permanently delete ${contentsThatWillBeDeleted} from ASC‑WDS.`;
+    this.confirmationCheckboxLabelText = `I know that this action will permanently delete ${contentsThatWillBeDeleted} from ASC‑WDS.`;
+    this.confirmationMissingErrorMessage = `Confirm that you know this action will permanently delete ${contentsThatWillBeDeleted} from ASC‑WDS`;
   }
 
   private setBackLink(): void {
