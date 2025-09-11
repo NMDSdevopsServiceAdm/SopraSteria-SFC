@@ -1,0 +1,38 @@
+@import 'node_modules/govuk-frontend/govuk/base';
+
+.asc-cookie-banner__wrapper {
+  //   display: none;
+  background-color: rgba(0, 0, 0, 0.32);
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.asc-cookie-banner__content {
+  background-color: #fff;
+  left: 0;
+  width: 31em;
+  height: 100%;
+  outline: 0;
+  padding: govuk-spacing(8);
+  box-sizing: border-box;
+}
+
+.asc-cookie-banner__explanation {
+  margin-top: govuk-spacing(6);
+  margin-bottom: govuk-spacing(8);
+}
+
+.asc-cookie-banner__content > .govuk-button-group {
+  display: flex;
+  flex-direction: column;
+  gap: govuk-spacing(3);
+}
