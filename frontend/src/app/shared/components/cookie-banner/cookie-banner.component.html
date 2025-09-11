@@ -18,8 +18,10 @@
       </div>
 
       <div class="govuk-button-group">
-        <button type="button" class="govuk-button" #acceptButton>Accept analytics cookies</button>
-        <button type="button" class="govuk-button govuk-button--secondary">Reject analytics cookies</button>
+        <button type="button" class="govuk-button" (click)="acceptAnalyticCookies()">Accept analytics cookies</button>
+        <button type="button" class="govuk-button govuk-button--secondary" (click)="rejectAnalyticCookies()">
+          Reject analytics cookies
+        </button>
         <a class="govuk-link" href="#">View cookies</a>
       </div>
     </div>

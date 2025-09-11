@@ -3,6 +3,7 @@ import { render } from '@testing-library/angular';
 import { RouterModule } from '@angular/router';
 import { CookiePolicyService } from '@core/services/cookie-policy.service';
 import { MockCookiePolicyService } from '@core/test-utils/MockCookiePolicyService';
+import { getTestBed } from '@angular/core/testing';
 
 fdescribe('CookieBannerComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -19,8 +20,9 @@ fdescribe('CookieBannerComponent', () => {
     });
 
     const component = setupTools.fixture.componentInstance;
+    const cookiePolicyService = getTestBed().inject(CookiePolicyService);
 
-    return { ...setupTools, component };
+    return { ...setupTools, component, cookiePolicyService };
   };
 
   it('should create', async () => {
@@ -61,4 +63,46 @@ fdescribe('CookieBannerComponent', () => {
   });
 
   xit('should show a link for cookie policy page', async () => {});
+
+  describe('when accept buttons is pressed', () => {
+    it('should set the cookie preferences and policy', async () => {
+      const { getByRole, cookiePolicyService } = await setup();
+
+      getByRole('button', { name: 'Accept analytics cookies' }).click();
+
+      expect(cookiePolicyService.hasAnsweredCookiePreferences).toBeTrue();
+      expect(cookiePolicyService.analyticCookiesAccepted).toBeTrue();
+    });
+
+    it('should close the banner', async () => {
+      const { getByRole, fixture, queryByTestId } = await setup();
+
+      getByRole('button', { name: 'Accept analytics cookies' }).click();
+
+      fixture.detectChanges();
+
+      expect(queryByTestId('cookie-banner')).toBeFalsy();
+    });
+  });
+
+  describe('when reject buttons is pressed', () => {
+    it('should set the cookie preferences and policy', async () => {
+      const { getByRole, cookiePolicyService } = await setup();
+
+      getByRole('button', { name: 'Reject analytics cookies' }).click();
+
+      expect(cookiePolicyService.hasAnsweredCookiePreferences).toBeTrue();
+      expect(cookiePolicyService.analyticCookiesAccepted).toBeFalse();
+    });
+
+    it('should close the banner', async () => {
+      const { getByRole, fixture, queryByTestId } = await setup();
+
+      getByRole('button', { name: 'Reject analytics cookies' }).click();
+
+      fixture.detectChanges();
+
+      expect(queryByTestId('cookie-banner')).toBeFalsy();
+    });
+  });
 });
