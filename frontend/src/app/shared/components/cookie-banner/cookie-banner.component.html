@@ -1,4 +1,11 @@
-<div class="asc-cookie-banner" data-testid="cookie-banner" data-nosnippet role="region" aria-label="Cookies on ASC-WDS">
+<div
+  class="asc-cookie-banner"
+  data-testid="cookie-banner"
+  data-nosnippet
+  role="region"
+  aria-label="Cookies on ASC-WDS"
+  *ngIf="isShowing"
+>
   <div class="asc-cookie-banner__wrapper">
     <div class="asc-cookie-banner__content" #cookieBanner tabindex="-1" cdkTrapFocus>
       <h2 class="govuk-heading-m asc-cookie-banner__heading">Cookies on the Adult Social Care Workforce Data Set</h2>

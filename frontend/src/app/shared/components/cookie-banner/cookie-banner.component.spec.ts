@@ -1,13 +1,20 @@
 import { CookieBannerComponent } from './cookie-banner.component';
 import { render } from '@testing-library/angular';
 import { RouterModule } from '@angular/router';
+import { CookiePolicyService } from '@core/services/cookie-policy.service';
+import { MockCookiePolicyService } from '@core/test-utils/MockCookiePolicyService';
 
 fdescribe('CookieBannerComponent', () => {
-  const setup = async () => {
+  const setup = async (overrides: any = {}) => {
     const setupTools = await render(CookieBannerComponent, {
       imports: [RouterModule],
       declarations: [],
-      providers: [],
+      providers: [
+        {
+          provide: CookiePolicyService,
+          useFactory: MockCookiePolicyService.factory(overrides),
+        },
+      ],
       componentProperties: {},
     });
 
@@ -19,6 +26,18 @@ fdescribe('CookieBannerComponent', () => {
   it('should create', async () => {
     const component = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should not show up when user already answered their cookie preferences', async () => {
+    const { queryByTestId } = await setup({ hasAnsweredCookiePreferences: true });
+
+    expect(queryByTestId('cookie-banner')).toBeFalsy();
+  });
+
+  it('should show up when user has not answer their cookie preferences', async () => {
+    const { queryByTestId } = await setup();
+
+    expect(queryByTestId('cookie-banner')).toBeTruthy();
   });
 
   it('should show a heading', async () => {
@@ -40,4 +59,6 @@ fdescribe('CookieBannerComponent', () => {
     expect(acceptButton).toBeTruthy();
     expect(rejectButton).toBeTruthy();
   });
+
+  xit('should show a link for cookie policy page', async () => {});
 });

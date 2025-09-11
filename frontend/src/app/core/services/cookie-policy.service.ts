@@ -37,7 +37,7 @@ export class CookiePolicyService {
     return this.getCookie(Key.CookiesPreferencesSet) === true;
   }
 
-  private getCookie(key: string) {
+  protected getCookie(key: string) {
     const value = this.cookieService.get(key);
     try {
       return JSON.parse(value);
@@ -46,12 +46,12 @@ export class CookiePolicyService {
     }
   }
 
-  private setCookie(key: string, value: string | boolean | object) {
+  protected setCookie(key: string, value: string | boolean | object) {
     const valueAsString = typeof value === 'string' ? value : JSON.stringify(value);
     this.cookieService.set(key, valueAsString, {
       path: '/',
       secure: true,
-      expires: dayjs(new Date()).add(1, 'year').toDate(),
+      expires: dayjs().add(1, 'year').toDate(),
     });
   }
 }
