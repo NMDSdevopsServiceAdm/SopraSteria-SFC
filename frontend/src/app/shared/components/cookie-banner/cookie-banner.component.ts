@@ -1,15 +1,17 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { CookiePolicyService } from '@core/services/cookie-policy.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { filter, takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-cookie-banner',
   templateUrl: './cookie-banner.component.html',
   styleUrl: './cookie-banner.component.scss',
 })
-export class CookieBannerComponent implements OnInit, AfterViewInit {
+export class CookieBannerComponent implements OnInit, OnDestroy {
   private _isShowing: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  private subscriptions: Subscription = new Subscription();
 
   @ViewChild('cookieBanner') cookieBanner: ElementRef;
 
@@ -17,15 +19,10 @@ export class CookieBannerComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.checkIfShouldShowUp();
+    this.listenToPageChange();
   }
 
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.cookieBanner.nativeElement.focus();
-    }, 1000);
-  }
-
-  get isShowing(): boolean {
+  get isShowing() {
     return this._isShowing.value;
   }
 
@@ -43,5 +40,27 @@ export class CookieBannerComponent implements OnInit, AfterViewInit {
   public rejectAnalyticCookies() {
     this.cookiePolicyService.rejectAnalyticCookies();
     this._isShowing.next(false);
+  }
+
+  private listenToPageChange() {
+    const pageChangeEventsUntilAnswered = this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      takeWhile(() => !this.cookiePolicyService.hasAnsweredCookiePreferences),
+    );
+
+    const recheckOnPageChange = pageChangeEventsUntilAnswered.subscribe((event: NavigationEnd) => {
+      const url = event.urlAfterRedirects;
+      if (url.includes('cookie-policy') || url.includes('sfcadmin')) {
+        this._isShowing.next(false);
+      } else {
+        this.checkIfShouldShowUp();
+      }
+    });
+
+    this.subscriptions.add(recheckOnPageChange);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
