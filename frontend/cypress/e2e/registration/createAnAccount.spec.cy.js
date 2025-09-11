@@ -132,56 +132,56 @@ describe('Create account', () => {
     cy.getByLabel('Older people with dementia').check();
     cy.get('button').contains('Save and continue').click();
 
-    // Do you have any current staff vacancies?
+    // carry out delegated healthcare activities
+    cy.contains('Do your non-nursing staff carry out delegated healthcare activities?');
     cy.getByLabel('Yes').check();
     cy.get('button').contains('Save and continue').click();
 
-    // Select job roles for the vacancies
-    cy.contains('Care providing roles').click();
-    cy.getByLabel('Care worker').check();
-    cy.get('button').contains('Save and continue').click();
-
-    // How many current staff vacancies do you have?
-    cy.get('button').contains('Save and continue').click();
-
-    // Have you had any starters SINCE...
-    cy.getByLabel('No').check();
-    cy.get('button').contains('Save and continue').click();
-
-    // Have you had any leavers SINCE...
-    cy.getByLabel('I do not know').check();
+    // what kind of delegated healthcare activities
+    cy.contains('What kind of delegated healthcare activities do your non-nursing staff carry out?');
+    cy.getByLabel('Vital signs monitoring').check();
+    cy.getByLabel('Airways and breathing care').check();
+    cy.getByLabel('Feeding and digestive care').check();
     cy.get('button').contains('Save and continue').click();
 
     // Repeat training
+    cy.contains("Do new care workers have to repeat training they've done with previous employers?");
     cy.getByLabel('Yes, always').check();
     cy.get('button').contains('Save and continue').click();
 
     // Would you accept a Care Certificate...
+    cy.contains("Would you accept a Care Certificate from a worker's previous employer?");
     cy.getByLabel('No, never').check();
     cy.get('button').contains('Save and continue').click();
 
     // Care workforce pathway aware
+    cy.contains('How aware of the care workforce pathway is your workplace?');
     cy.getByLabel('Aware of how the care workforce pathway works in practice').check();
     cy.get('button').contains('Save and continue').click();
 
     // Using the care workforce pathway
+    cy.contains('Is your workplace using the care workforce pathway?');
     cy.getByLabel('No, we do not currently use the pathway').check();
     cy.get('button').contains('Save and continue').click();
 
     // Cash loyalty bonus
+    cy.contains('Do you pay care workers a cash loyalty bonus within their first 2 years of employment?');
     cy.getByLabel('Yes').check();
     cy.getByLabel('Amount (optional)').type('300.00');
     cy.get('button').contains('Save and continue').click();
 
     // Statutory Sick Pay
+    cy.contains('Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?');
     cy.getByLabel('No').check();
     cy.get('button').contains('Save and continue').click();
 
     // Workplace pensions
+    cy.contains('Do you contribute more than the minimum 3% into workplace pensions for your care workers?');
     cy.getByLabel('Yes').check();
     cy.get('button').contains('Save and continue').click();
 
     // How many days leave
+    cy.contains('How many days leave do your full-time care workers get each year?');
     cy.getByLabel('Number of days').type(25);
     cy.get('button').contains('Save and continue').click();
 

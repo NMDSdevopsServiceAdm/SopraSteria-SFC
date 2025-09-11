@@ -76,6 +76,11 @@ Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
     WHERE "Establishment"."EstablishmentID" = "EstablishmentServiceUsers"."EstablishmentID"
     AND "Establishment"."NameValue" = $1`,
 
+    `DELETE FROM cqc."EstablishmentDHActivities"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentDHActivities"."EstablishmentID"
+    AND "Establishment"."NameValue" = $1`,
+
     `DELETE FROM "cqc"."Establishment"
     WHERE "NameValue" = $1;`,
   ];
