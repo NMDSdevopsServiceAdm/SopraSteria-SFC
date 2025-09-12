@@ -5,6 +5,7 @@ import { CookiePolicyService } from '@core/services/cookie-policy.service';
 import { MockCookiePolicyService } from '@core/test-utils/MockCookiePolicyService';
 import { getTestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
+import { WindowToken } from '@core/services/window';
 
 fdescribe('CookieBannerComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -20,8 +21,8 @@ fdescribe('CookieBannerComponent', () => {
           provide: ActivatedRoute,
           useValue: {},
         },
+        { provide: WindowToken, useValue: {} },
       ],
-      componentProperties: {},
     });
 
     const component = setupTools.fixture.componentInstance;

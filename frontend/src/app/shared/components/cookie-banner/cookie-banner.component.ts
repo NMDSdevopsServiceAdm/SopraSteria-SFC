@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { CookiePolicyService } from '@core/services/cookie-policy.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { filter, takeWhile } from 'rxjs/operators';
+import { AnalyticCookiesService } from '../../../core/services/analytic-cookies.service';
 
 @Component({
   selector: 'app-cookie-banner',
@@ -15,7 +16,11 @@ export class CookieBannerComponent implements OnInit, OnDestroy {
 
   @ViewChild('cookieBanner') cookieBanner: ElementRef;
 
-  constructor(private cookiePolicyService: CookiePolicyService, private router: Router) {}
+  constructor(
+    private cookiePolicyService: CookiePolicyService,
+    private analyticCookiesService: AnalyticCookiesService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.checkIfShouldShowUp();
@@ -34,6 +39,7 @@ export class CookieBannerComponent implements OnInit, OnDestroy {
 
   public acceptAnalyticCookies() {
     this.cookiePolicyService.acceptAnalyticCookies();
+    this.analyticCookiesService.startGoogleAnalyticsTracking();
     this._isShowing.next(false);
   }
 
