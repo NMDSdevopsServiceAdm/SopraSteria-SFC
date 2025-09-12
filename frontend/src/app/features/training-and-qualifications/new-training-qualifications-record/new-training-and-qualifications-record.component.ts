@@ -25,6 +25,7 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { from, merge, Subscription } from 'rxjs';
 import { mergeMap, toArray } from 'rxjs/operators';
+import { PdfMakeService } from '../../../core/services/pdf-make.service';
 
 @Component({
   selector: 'app-new-training-and-qualifications-record',
@@ -74,6 +75,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     public viewContainerRef: ViewContainerRef,
     private pdfTrainingAndQualificationService: PdfTrainingAndQualificationService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private pdfMakeService: PdfMakeService,
   ) {
     pdfTrainingAndQualificationService.setViewContainer = viewContainerRef;
   }
@@ -103,6 +105,21 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         this.actionsListData,
         'Training_And_Qualification.pdf',
         save,
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public async newDownloadTrainingAndQualsPdf() {
+    try {
+      return await this.pdfMakeService.debugView(
+        this.workplace,
+        this.mandatoryTraining,
+        this.nonMandatoryTraining,
+        this.qualificationsByGroup,
+        this.worker,
+        this.lastUpdatedDate,
       );
     } catch (error) {
       console.error(error);
