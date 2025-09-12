@@ -207,7 +207,7 @@ export class PdfMakeService {
           {
             text: 'Mandatory training',
             style: 'header',
-            margin: [0, 20, 0, 10],
+            margin: [3, 20, 0, 10],
           },
           {
             canvas: [
@@ -274,7 +274,7 @@ export class PdfMakeService {
           {
             text: 'Non-mandatory training',
             style: 'header',
-            margin: [0, 20, 0, 10],
+            margin: [3, 20, 0, 10],
           },
           {
             canvas: [
@@ -338,7 +338,7 @@ export class PdfMakeService {
           {
             text: 'Qualifications',
             style: 'header',
-            margin: [0, 20, 0, 10],
+            margin: [3, 20, 0, 10],
           },
           {
             canvas: [
@@ -364,19 +364,19 @@ export class PdfMakeService {
 
           {
             table: {
-              widths: [200, '*', 80],
+              widths: [200, 190, 95],
               body: [
                 //header row
                 [
                   { text: `${qualification.group} name`, bold: true },
-                  { text: 'Year achieved', bold: true },
-                  { text: 'Certificate', bold: true },
+                  { text: 'Year achieved', bold: true, margin: [7, 0, 0, 0] },
+                  { text: 'Certificate', bold: true, margin: [13, 0, 0, 0] },
                 ],
                 //   data rows
                 ...qualification.records.map((record) => [
                   record.title || '-',
-                  record.year || '-',
-                  record.qualificationCertificates?.length ? 'See download' : 'No',
+                  { text: record.year || '-', margin: [7, 0, 0, 0] },
+                  { text: record.qualificationCertificates?.length ? 'See download' : 'No', margin: [13, 0, 0, 0] },
                 ]),
               ],
             },
