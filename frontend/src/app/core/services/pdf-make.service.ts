@@ -229,7 +229,7 @@ export class PdfMakeService {
       ...mandatoryTraining.map((training) => ({
         stack: [
           // 👇 category + table live inside the same stack
-          { text: training.category, style: 'subheader', margin: [0, 10, 0, 15] },
+          { text: training.category, style: 'subheader', margin: [3, 10, 0, 15] },
 
           {
             table: {
@@ -250,7 +250,7 @@ export class PdfMakeService {
                   record.accredited || '-',
                   FormatDate.formatUKDate(record.completed),
                   FormatDate.formatUKDate(record.expires),
-                  record.certificate ? 'See download' : 'No',
+                  record.trainingCertificates?.length ? 'See download' : 'No',
                 ]),
               ],
             },
@@ -295,7 +295,7 @@ export class PdfMakeService {
 
       ...nonMandatoryTraining.map((training) => ({
         stack: [
-          { text: training.category, style: 'subheader', margin: [0, 10, 0, 15] },
+          { text: training.category, style: 'subheader', margin: [3, 10, 0, 15] },
 
           {
             table: {
@@ -314,7 +314,7 @@ export class PdfMakeService {
                   record.accredited || '-',
                   FormatDate.formatUKDate(record.completed),
                   FormatDate.formatUKDate(record.expires),
-                  record.certificate ? 'See download' : 'No',
+                  record.trainingCertificates?.length ? 'See download' : 'No',
                 ]),
               ],
             },
@@ -360,11 +360,11 @@ export class PdfMakeService {
       ...qualificationsByGroup.groups.map((qualification) => ({
         stack: [
           //  category + table live inside the same stack
-          { text: qualification.group, style: 'subheader', margin: [0, 10, 0, 15] },
+          { text: qualification.group, style: 'subheader', margin: [3, 10, 0, 15] },
 
           {
             table: {
-              widths: ['*', '*', '*'],
+              widths: [200, '*', 80],
               body: [
                 //header row
                 [
@@ -376,7 +376,7 @@ export class PdfMakeService {
                 ...qualification.records.map((record) => [
                   record.title || '-',
                   record.year || '-',
-                  record.certificate ? 'See download' : 'No',
+                  record.qualificationCertificates?.length ? 'See download' : 'No',
                 ]),
               ],
             },
