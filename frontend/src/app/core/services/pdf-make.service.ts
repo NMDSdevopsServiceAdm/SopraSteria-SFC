@@ -8,6 +8,7 @@ import { mergeMap } from 'rxjs/operators';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingRecordCategory } from '@core/model/training.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
+import { FormatDate } from '@core/utils/date-util';
 
 @Injectable({
   providedIn: 'root',
@@ -177,13 +178,6 @@ export class PdfMakeService {
   }
 
   public staffInfoSection(workplace, worker, lastUpdatedDate) {
-    const lastUpdated = new Date(lastUpdatedDate);
-    const formattedDate = lastUpdated.toLocaleDateString('en-GB', {
-      day: 'numeric', // "10"
-      month: 'short', // "Sep"
-      year: 'numeric', // "2025"
-    });
-
     return {
       table: {
         widths: ['*', '*'],
@@ -198,7 +192,7 @@ export class PdfMakeService {
             { text: 'Last updated', bold: true, margin: [0, 10, 0, 0] },
           ],
 
-          [worker.careCertificate ? worker.careCertificate : 'Not answered', formattedDate],
+          [worker.careCertificate ? worker.careCertificate : 'Not answered', FormatDate.formatUKDate(lastUpdatedDate)],
         ],
       },
       layout: 'headerLineOnly',
@@ -254,8 +248,8 @@ export class PdfMakeService {
                 ...training.trainingRecords.map((record) => [
                   record.title || '-',
                   record.accredited || '-',
-                  record.completed || '-',
-                  record.expires || '-',
+                  FormatDate.formatUKDate(record.completed),
+                  FormatDate.formatUKDate(record.expires),
                   record.certificate ? 'See download' : 'No',
                 ]),
               ],
@@ -267,7 +261,7 @@ export class PdfMakeService {
             },
           },
         ],
-        unbreakable: true, // 👈 ensures stack stays on one page
+        unbreakable: true, //  ensures stack stays on one page
         margin: [0, 0, 0, 15],
       })),
     ];
@@ -301,14 +295,12 @@ export class PdfMakeService {
 
       ...nonMandatoryTraining.map((training) => ({
         stack: [
-          // 👇 category + table live inside the same stack
           { text: training.category, style: 'subheader', margin: [0, 10, 0, 15] },
 
           {
             table: {
               widths: ['*', '*', '*', '*', '*'],
               body: [
-                // header row
                 [
                   { text: 'Training name', bold: true },
                   { text: 'Accredited', bold: true },
@@ -317,24 +309,23 @@ export class PdfMakeService {
                   { text: 'Certificate', bold: true },
                 ],
 
-                // data rows
                 ...training.trainingRecords.map((record) => [
                   record.title || '-',
                   record.accredited || '-',
-                  record.completed || '-',
-                  record.expires || '-',
+                  FormatDate.formatUKDate(record.completed),
+                  FormatDate.formatUKDate(record.expires),
                   record.certificate ? 'See download' : 'No',
                 ]),
               ],
             },
             layout: {
-              hLineWidth: (i) => (i === 0 ? 0 : 0.5), // thin gray line only under rows
+              hLineWidth: (i) => (i === 0 ? 0 : 0.5),
               vLineWidth: () => 0,
               hLineColor: () => '#cccccc',
             },
           },
         ],
-        unbreakable: true, // 👈 ensures stack stays on one page
+        unbreakable: true,
         margin: [0, 0, 0, 15],
       })),
     ];
@@ -368,7 +359,7 @@ export class PdfMakeService {
 
       ...qualificationsByGroup.groups.map((qualification) => ({
         stack: [
-          // 👇 category + table live inside the same stack
+          //  category + table live inside the same stack
           { text: qualification.group, style: 'subheader', margin: [0, 10, 0, 15] },
 
           {
@@ -396,7 +387,7 @@ export class PdfMakeService {
             },
           },
         ],
-        unbreakable: true, // 👈 ensures stack stays on one page
+        unbreakable: true, //  ensures stack stays on one page
         margin: [0, 0, 0, 15],
       })),
     ];
