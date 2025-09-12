@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { CookiePolicyService } from './cookie-policy.service';
 import { CookieService } from 'ngx-cookie-service';
 
-fdescribe('CookiePolicyService', () => {
+describe('CookiePolicyService', () => {
   let service: CookiePolicyService;
   let cookieService: CookieService;
 

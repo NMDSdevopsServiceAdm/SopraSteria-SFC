@@ -25,6 +25,7 @@ export class CookieBannerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkIfShouldShowUp();
     this.listenToPageChange();
+    this.triggerGoogleAnalyticsTrackingIfAccepted();
   }
 
   get isShowing() {
@@ -64,6 +65,12 @@ export class CookieBannerComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.add(recheckOnPageChange);
+  }
+
+  private triggerGoogleAnalyticsTrackingIfAccepted() {
+    if (this.cookiePolicyService.analyticCookiesAccepted) {
+      this.analyticCookiesService.startGoogleAnalyticsTracking();
+    }
   }
 
   ngOnDestroy(): void {

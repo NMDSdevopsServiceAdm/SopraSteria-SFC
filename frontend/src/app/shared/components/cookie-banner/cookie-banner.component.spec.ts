@@ -1,14 +1,19 @@
-import { CookieBannerComponent } from './cookie-banner.component';
-import { render } from '@testing-library/angular';
-import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
-import { CookiePolicyService } from '@core/services/cookie-policy.service';
-import { MockCookiePolicyService } from '@core/test-utils/MockCookiePolicyService';
-import { getTestBed } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
-import { WindowToken } from '@core/services/window';
 
-fdescribe('CookieBannerComponent', () => {
+import { getTestBed } from '@angular/core/testing';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
+import { AnalyticCookiesService } from '@core/services/analytic-cookies.service';
+import { CookiePolicyService } from '@core/services/cookie-policy.service';
+import { WindowToken } from '@core/services/window';
+import { MockCookiePolicyService } from '@core/test-utils/MockCookiePolicyService';
+import { render } from '@testing-library/angular';
+
+import { CookieBannerComponent } from './cookie-banner.component';
+
+describe('CookieBannerComponent', () => {
   const setup = async (overrides: any = {}) => {
+    const analyticCookiesServiceSpy = jasmine.createSpy();
+
     const setupTools = await render(CookieBannerComponent, {
       imports: [RouterModule],
       declarations: [],
@@ -21,16 +26,20 @@ fdescribe('CookieBannerComponent', () => {
           provide: ActivatedRoute,
           useValue: {},
         },
+        {
+          provide: AnalyticCookiesService,
+          useValue: { startGoogleAnalyticsTracking: analyticCookiesServiceSpy },
+        },
         { provide: WindowToken, useValue: {} },
       ],
     });
 
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
-    const cookiePolicyService = getTestBed().inject(CookiePolicyService);
+    const cookiePolicyService = injector.inject(CookiePolicyService);
     const router = injector.inject(Router);
 
-    return { ...setupTools, component, cookiePolicyService, router };
+    return { ...setupTools, component, cookiePolicyService, router, analyticCookiesServiceSpy };
   };
 
   it('should create', async () => {
@@ -97,6 +106,14 @@ fdescribe('CookieBannerComponent', () => {
 
       expect(queryByTestId('cookie-banner')).toBeFalsy();
     });
+
+    it('should trigger google analytic tracking', async () => {
+      const { getByRole, analyticCookiesServiceSpy } = await setup();
+
+      getByRole('button', { name: 'Accept analytics cookies' }).click();
+
+      expect(analyticCookiesServiceSpy).toHaveBeenCalled();
+    });
   });
 
   describe('when reject buttons is pressed', () => {
@@ -120,25 +137,41 @@ fdescribe('CookieBannerComponent', () => {
     });
   });
 
-  it('should not show up on cookie policy page', async () => {
-    const { queryByTestId, router, fixture } = await setup();
+  describe('pages that does not show cookie banner', () => {
+    it('should not show up on cookie policy page', async () => {
+      const { queryByTestId, router, fixture } = await setup();
 
-    const routerEvent$ = router.events as BehaviorSubject<any>;
-    routerEvent$.next(new NavigationEnd(2, '/cookie-policy', '/cookie-policy'));
+      const routerEvent$ = router.events as BehaviorSubject<any>;
+      routerEvent$.next(new NavigationEnd(2, '/cookie-policy', '/cookie-policy'));
 
-    fixture.detectChanges();
+      fixture.detectChanges();
 
-    expect(queryByTestId('cookie-banner')).toBeFalsy();
+      expect(queryByTestId('cookie-banner')).toBeFalsy();
+    });
+
+    it('should not show up on admin panel', async () => {
+      const { queryByTestId, router, fixture } = await setup();
+
+      const routerEvent$ = router.events as BehaviorSubject<any>;
+      routerEvent$.next(new NavigationEnd(2, '/sfcadmin/search/workplace', '/sfcadmin/search/workplace'));
+
+      fixture.detectChanges();
+
+      expect(queryByTestId('cookie-banner')).toBeFalsy();
+    });
   });
 
-  it('should not show up on admin panel', async () => {
-    const { queryByTestId, router, fixture } = await setup();
+  describe('on page load', () => {
+    it('should trigger google analytics if user has accepted analytic cookies', async () => {
+      const { analyticCookiesServiceSpy } = await setup({ analyticCookiesAccepted: true });
 
-    const routerEvent$ = router.events as BehaviorSubject<any>;
-    routerEvent$.next(new NavigationEnd(2, '/sfcadmin/search/workplace', '/sfcadmin/search/workplace'));
+      expect(analyticCookiesServiceSpy).toHaveBeenCalled();
+    });
 
-    fixture.detectChanges();
+    it('should not trigger google analytics if user has not accepted analytic cookies', async () => {
+      const { analyticCookiesServiceSpy } = await setup({ analyticCookiesAccepted: false });
 
-    expect(queryByTestId('cookie-banner')).toBeFalsy();
+      expect(analyticCookiesServiceSpy).not.toHaveBeenCalled();
+    });
   });
 });

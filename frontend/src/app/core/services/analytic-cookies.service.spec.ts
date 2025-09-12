@@ -4,7 +4,7 @@ import { AnalyticCookiesService } from './analytic-cookies.service';
 import { WindowToken } from './window';
 import { DOCUMENT } from '@angular/common';
 
-fdescribe('AnalyticCookiesService', () => {
+describe('AnalyticCookiesService', () => {
   let service: AnalyticCookiesService;
   let document: Document;
 
@@ -47,18 +47,6 @@ fdescribe('AnalyticCookiesService', () => {
 
       expect(window.dataLayer.length).toEqual(1);
       expect(window.dataLayer[0]).toEqual({ 'gtm.start': jasmine.any(Number), event: 'gtm.js' });
-    });
-  });
-
-  describe('googleAnalyticsStarted', () => {
-    it('should return true if google analytics has started', async () => {
-      service.startGoogleAnalyticsTracking();
-
-      expect(service.googleAnalyticsStarted).toEqual(true);
-    });
-
-    it('should return false if google analytics has not started', async () => {
-      expect(service.googleAnalyticsStarted).toEqual(false);
     });
   });
 });

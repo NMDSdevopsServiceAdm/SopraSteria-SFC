@@ -8,8 +8,6 @@ const googleTagManagerId = 'GTM-WZKV3HJ';
   providedIn: 'root',
 })
 export class AnalyticCookiesService {
-  private _googleAnalyticStarted: boolean = false;
-
   constructor(@Inject(WindowToken) private window: Window, @Inject(DOCUMENT) private document: Document) {}
 
   public startGoogleAnalyticsTracking(): void {
@@ -30,15 +28,10 @@ export class AnalyticCookiesService {
       scriptTag.src = `https://www.googletagmanager.com/gtm.js?id=${googleTagManagerId}`;
 
       document.head.appendChild(scriptTag);
-      this._googleAnalyticStarted = true;
     } catch (e) {
       console.log('failed to initiate google tag manager');
       console.error(e);
     }
-  }
-
-  public get googleAnalyticsStarted(): boolean {
-    return this._googleAnalyticStarted;
   }
 
   private googleAnalyticsTagAlreadyInserted(): boolean {
