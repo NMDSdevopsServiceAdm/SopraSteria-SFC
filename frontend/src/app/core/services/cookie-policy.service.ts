@@ -37,7 +37,7 @@ export class CookiePolicyService {
     return this.getCookie(Key.CookiesPreferencesSet) === true;
   }
 
-  protected getCookie(key: string) {
+  private getCookie(key: string) {
     const value = this.cookieService.get(key);
     try {
       return JSON.parse(value);
@@ -46,7 +46,7 @@ export class CookiePolicyService {
     }
   }
 
-  protected setCookie(key: string, value: string | boolean | object) {
+  private setCookie(key: string, value: string | boolean | object) {
     const valueAsString = typeof value === 'string' ? value : JSON.stringify(value);
     this.cookieService.set(key, valueAsString, {
       path: '/',
