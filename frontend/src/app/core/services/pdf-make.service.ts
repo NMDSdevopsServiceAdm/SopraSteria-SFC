@@ -17,13 +17,11 @@ export class PdfMakeService {
   public imageAssets: Record<string, string> = {};
 
   constructor(private http: HttpClient) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (<any>pdfMake).addVirtualFileSystem(pdfFonts);
 
     this.loadImageAssets();
   }
 
-  // TODO: refactored this to a util func
   blobToBase64 = (blob: Blob): Promise<string> => {
     const reader = new FileReader();
     reader.readAsDataURL(blob);
@@ -34,7 +32,6 @@ export class PdfMakeService {
     });
   };
 
-  // TODO: refactor this to also load other image files
   public async loadImageAssets() {
     this.http
       .get('assets/images/logo.png', { responseType: 'blob' })
@@ -52,7 +49,7 @@ export class PdfMakeService {
     worker,
     lastUpdatedDate,
   ): TDocumentDefinitions {
-    // build content using your helper sections
+    // build content using helper sections
     const contentBody = [
       this.sectionHeader('Training and qualifications'),
       this.staffInfoSection(workplace, worker, lastUpdatedDate),
@@ -209,7 +206,31 @@ export class PdfMakeService {
     };
   }
 
-  private buildSection(
+  // public buildSection(
+  //   title: string,
+  //   groups: any[],
+  //   headers: any[],
+  //   widths: any[],
+  //   rowMapper: (record: any) => any[],
+  // ): Content[] {
+  //   return [
+  //     this.sectionHeader(title),
+  //     ...groups.map<Content>((group) => ({
+  //       stack: [
+  //         {
+  //           text: group.category || group.group,
+  //           style: 'subheader',
+  //           margin: [3, 10, 0, 15] as [number, number, number, number],
+  //         },
+  //         this.buildTable(headers, group.trainingRecords?.map(rowMapper) || group.records.map(rowMapper), widths),
+  //       ],
+  //       unbreakable: true,
+  //       margin: [0, 0, 0, 15] as [number, number, number, number],
+  //     })),
+  //   ];
+  // }
+
+  public buildSection(
     title: string,
     groups: any[],
     headers: any[],
@@ -218,18 +239,25 @@ export class PdfMakeService {
   ): Content[] {
     return [
       this.sectionHeader(title),
-      ...groups.map<Content>((group) => ({
-        stack: [
-          {
-            text: group.category || group.group,
-            style: 'subheader',
-            margin: [3, 10, 0, 15] as [number, number, number, number],
-          },
-          this.buildTable(headers, group.trainingRecords?.map(rowMapper) || group.records.map(rowMapper), widths),
-        ],
-        unbreakable: true,
-        margin: [0, 0, 0, 15] as [number, number, number, number],
-      })),
+      ...groups.map<Content>((group) => {
+        // resolve header functions before building the table
+        const resolvedHeaders = headers.map((h) => (typeof h === 'function' ? h(group) : h));
+
+        const rows = group.trainingRecords?.map(rowMapper) || group.records.map(rowMapper);
+
+        return {
+          stack: [
+            {
+              text: group.category || group.group,
+              style: 'subheader',
+              margin: [3, 10, 0, 15] as [number, number, number, number],
+            },
+            this.buildTable(resolvedHeaders, rows, widths),
+          ],
+          unbreakable: true,
+          margin: [0, 0, 0, 15] as [number, number, number, number],
+        };
+      }),
     ];
   }
 
