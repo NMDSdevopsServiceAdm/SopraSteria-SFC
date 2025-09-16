@@ -49,7 +49,7 @@ export class CookieBannerComponent implements OnInit, OnDestroy {
       return this.shouldShowBannerToLoggedInUser();
     }
 
-    return this.shouldShowShowBannerToVisiter();
+    return this.shouldShowShowBannerToVisitor();
   }
 
   private shouldShowBannerToLoggedInUser(): boolean {
@@ -59,7 +59,7 @@ export class CookieBannerComponent implements OnInit, OnDestroy {
     return !viewingAdminPage && !viewingCookiePolicyPage;
   }
 
-  private shouldShowShowBannerToVisiter(): boolean {
+  private shouldShowShowBannerToVisitor(): boolean {
     const firstQuestionPageInCreateNewAccountJourney = '/registration/regulated-by-cqc';
     return this.router.url.includes(firstQuestionPageInCreateNewAccountJourney);
   }
