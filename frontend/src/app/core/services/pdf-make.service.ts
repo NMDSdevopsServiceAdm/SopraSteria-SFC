@@ -314,11 +314,11 @@ export class PdfMakeService {
     );
   }
 
-  public viewPdf(docDefinition: TDocumentDefinitions): void {
-    pdfMake.createPdf(docDefinition).open();
+  public downloadPdf(docDefinition: TDocumentDefinitions): void {
+    pdfMake.createPdf(docDefinition).download('Training_And_Qualification.pdf');
   }
 
-  public debugView(
+  public GenerateTrainingAndQualifications(
     workplace: Establishment,
     mandatoryTraining: TrainingRecordCategory[],
     nonMandatoryTraining: TrainingRecordCategory[],
@@ -334,6 +334,6 @@ export class PdfMakeService {
       worker,
       lastUpdatedDate,
     );
-    this.viewPdf(docDefinition);
+    this.downloadPdf(docDefinition);
   }
 }

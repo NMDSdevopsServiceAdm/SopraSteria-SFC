@@ -113,7 +113,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   public async newDownloadTrainingAndQualsPdf() {
     try {
-      return await this.pdfMakeService.debugView(
+      return await this.pdfMakeService.GenerateTrainingAndQualifications(
         this.workplace,
         this.mandatoryTraining,
         this.nonMandatoryTraining,
