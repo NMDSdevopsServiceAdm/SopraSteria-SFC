@@ -71,7 +71,7 @@ export class PdfMakeService {
           {
             text: `Page ${currentPage} of ${pageCount}`,
             alignment: 'right',
-            margin: [20, 30],
+            margin: [20, 30] as [number, number],
           },
         ],
       }),
@@ -100,10 +100,10 @@ export class PdfMakeService {
                 vLineWidth: () => 0,
               },
               width: '70%',
-              margin: [5, 20, 0, 20],
+              margin: [5, 20, 0, 20] as [number, number, number, number],
             },
           ],
-          margin: [0, -50, 20, 20],
+          margin: [0, -50, 20, 20] as [number, number, number, number],
         },
         {
           canvas: [
@@ -125,7 +125,7 @@ export class PdfMakeService {
         header: {
           fontSize: 18,
           bold: true,
-          margin: [0, 190, 0, 80],
+          margin: [0, 190, 0, 80] as [number, number, number, number],
         },
         h1Heading: {
           fontSize: 27,
@@ -140,40 +140,13 @@ export class PdfMakeService {
         subheader: {
           fontSize: 14,
           bold: true,
-          margin: [0, 10, 0, 5],
+          margin: [0, 10, 0, 5] as [number, number, number, number],
         },
       },
 
       images: {
         sfcLogo: this.imageAssets.sfcLogo,
       },
-    };
-  }
-
-  public sectionHeader(title: string) {
-    return {
-      stack: [
-        {
-          text: title,
-          bold: true,
-          style: 'header',
-          margin: [0, 15, 0, 15], // space below title before line
-        },
-        {
-          canvas: [
-            {
-              type: 'line',
-              x1: 0,
-              y1: 0,
-              x2: 515, // ~A4 width minus margins
-              y2: 0,
-              lineWidth: 1,
-              lineColor: '#cccccc', // grey line
-            },
-          ],
-          margin: [0, 0, 0, 15], // space after line
-        },
-      ],
     };
   }
 
@@ -188,209 +161,129 @@ export class PdfMakeService {
           ],
           [workplace.name, worker.nameOrId],
           [
-            { text: 'Care certificate', bold: true, margin: [0, 10, 0, 0] },
-            { text: 'Last updated', bold: true, margin: [0, 10, 0, 0] },
+            { text: 'Care certificate', bold: true, margin: [0, 10, 0, 0] as [number, number, number, number] },
+            { text: 'Last updated', bold: true, margin: [0, 10, 0, 0] as [number, number, number, number] },
           ],
 
           [worker.careCertificate ? worker.careCertificate : 'Not answered', FormatDate.formatUKDate(lastUpdatedDate)],
         ],
       },
       layout: 'headerLineOnly',
-      margin: [0, 5, 0, 20],
+      margin: [0, 5, 0, 20] as [number, number, number, number],
     };
   }
 
-  public mandatoryTrainingSection(mandatoryTraining) {
-    return [
-      {
-        stack: [
-          {
-            text: 'Mandatory training',
-            style: 'header',
-            margin: [3, 20, 0, 10],
-          },
-          {
-            canvas: [
-              {
-                type: 'line',
-                x1: 0,
-                y1: 0,
-                x2: 515,
-                y2: 0,
-                lineWidth: 1,
-                lineColor: '#cccccc',
-              },
-            ],
-            margin: [0, 0, 0, 15],
-          },
-        ],
-      },
-
-      ...mandatoryTraining.map((training) => ({
-        stack: [
-          // 👇 category + table live inside the same stack
-          { text: training.category, style: 'subheader', margin: [3, 10, 0, 15] },
-
-          {
-            table: {
-              widths: ['*', '*', '*', '*', '*'],
-              body: [
-                // header row
-                [
-                  { text: 'Training name', bold: true },
-                  { text: 'Accredited', bold: true },
-                  { text: 'Completion date', bold: true },
-                  { text: 'Expiry date', bold: true },
-                  { text: 'Certificate', bold: true },
-                ],
-
-                // data rows
-                ...training.trainingRecords.map((record) => [
-                  record.title || '-',
-                  record.accredited || '-',
-                  FormatDate.formatUKDate(record.completed),
-                  FormatDate.formatUKDate(record.expires),
-                  record.trainingCertificates?.length ? 'See download' : 'No',
-                ]),
-              ],
+  public sectionHeader(title: string): Content {
+    return {
+      stack: [
+        { text: title, style: 'header', margin: [3, 20, 0, 10] as [number, number, number, number] },
+        {
+          canvas: [
+            {
+              type: 'line',
+              x1: 0,
+              y1: 0,
+              x2: 515,
+              y2: 0,
+              lineWidth: 1,
+              lineColor: '#cccccc',
             },
-            layout: {
-              hLineWidth: (i) => (i === 0 ? 0 : 0.5), // thin gray line only under rows
-              vLineWidth: () => 0,
-              hLineColor: () => '#cccccc',
-            },
-          },
-        ],
-        unbreakable: true, //  ensures stack stays on one page
-        margin: [0, 0, 0, 15],
-      })),
-    ];
+          ],
+          margin: [0, 0, 0, 15] as [number, number, number, number],
+        },
+      ],
+    };
   }
 
-  public nonMandatoryTrainingSection(nonMandatoryTraining) {
-    return [
-      {
-        stack: [
-          {
-            text: 'Non-mandatory training',
-            style: 'header',
-            margin: [3, 20, 0, 10],
-          },
-          {
-            canvas: [
-              {
-                type: 'line',
-                x1: 0,
-                y1: 0,
-                x2: 515,
-                y2: 0,
-                lineWidth: 1,
-                lineColor: '#cccccc',
-              },
-            ],
-            margin: [0, 0, 0, 15],
-          },
-        ],
+  public buildTable(headers: any[], rows: any[][], widths: any[]): Content {
+    return {
+      table: {
+        widths,
+        body: [headers.map((h) => (typeof h === 'string' ? { text: h, bold: true } : h)), ...rows],
       },
+      layout: {
+        hLineWidth: (i) => (i === 0 ? 0 : 0.5),
+        vLineWidth: () => 0,
+        hLineColor: () => '#cccccc',
+      },
+    };
+  }
 
-      ...nonMandatoryTraining.map((training) => ({
+  private buildSection(
+    title: string,
+    groups: any[],
+    headers: any[],
+    widths: any[],
+    rowMapper: (record: any) => any[],
+  ): Content[] {
+    return [
+      this.sectionHeader(title),
+      ...groups.map<Content>((group) => ({
         stack: [
-          { text: training.category, style: 'subheader', margin: [3, 10, 0, 15] },
-
           {
-            table: {
-              widths: ['*', '*', '*', '*', '*'],
-              body: [
-                [
-                  { text: 'Training name', bold: true },
-                  { text: 'Accredited', bold: true },
-                  { text: 'Completion date', bold: true },
-                  { text: 'Expiry date', bold: true },
-                  { text: 'Certificate', bold: true },
-                ],
-
-                ...training.trainingRecords.map((record) => [
-                  record.title || '-',
-                  record.accredited || '-',
-                  FormatDate.formatUKDate(record.completed),
-                  FormatDate.formatUKDate(record.expires),
-                  record.trainingCertificates?.length ? 'See download' : 'No',
-                ]),
-              ],
-            },
-            layout: {
-              hLineWidth: (i) => (i === 0 ? 0 : 0.5),
-              vLineWidth: () => 0,
-              hLineColor: () => '#cccccc',
-            },
+            text: group.category || group.group,
+            style: 'subheader',
+            margin: [3, 10, 0, 15] as [number, number, number, number],
           },
+          this.buildTable(headers, group.trainingRecords?.map(rowMapper) || group.records.map(rowMapper), widths),
         ],
         unbreakable: true,
-        margin: [0, 0, 0, 15],
+        margin: [0, 0, 0, 15] as [number, number, number, number],
       })),
     ];
   }
 
-  public qualificationSection(qualificationsByGroup) {
-    return [
-      {
-        stack: [
-          {
-            text: 'Qualifications',
-            style: 'header',
-            margin: [3, 20, 0, 10],
-          },
-          {
-            canvas: [
-              {
-                type: 'line',
-                x1: 0,
-                y1: 0,
-                x2: 515,
-                y2: 0,
-                lineWidth: 1,
-                lineColor: '#cccccc',
-              },
-            ],
-            margin: [0, 0, 0, 15],
-          },
-        ],
-      },
+  public mandatoryTrainingSection(mandatoryTraining: any[]): Content[] {
+    return this.buildSection(
+      'Mandatory training',
+      mandatoryTraining,
+      ['Training name', 'Accredited', 'Completion date', 'Expiry date', 'Certificate'],
+      ['*', '*', '*', '*', '*'],
+      (record) => [
+        record.title || '-',
+        record.accredited || '-',
+        FormatDate.formatUKDate(record.completed),
+        FormatDate.formatUKDate(record.expires),
+        record.trainingCertificates?.length ? 'See download' : 'No',
+      ],
+    );
+  }
 
-      ...qualificationsByGroup.groups.map((qualification) => ({
-        stack: [
-          //  category + table live inside the same stack
-          { text: qualification.group, style: 'subheader', margin: [3, 10, 0, 15] },
+  public nonMandatoryTrainingSection(nonMandatoryTraining: any[]): Content[] {
+    return this.buildSection(
+      'Non-mandatory training',
+      nonMandatoryTraining,
+      ['Training name', 'Accredited', 'Completion date', 'Expiry date', 'Certificate'],
+      ['*', '*', '*', '*', '*'],
+      (record) => [
+        record.title || '-',
+        record.accredited || '-',
+        FormatDate.formatUKDate(record.completed),
+        FormatDate.formatUKDate(record.expires),
+        record.trainingCertificates?.length ? 'See download' : 'No',
+      ],
+    );
+  }
 
-          {
-            table: {
-              widths: [200, 190, 95],
-              body: [
-                //header row
-                [
-                  { text: `${qualification.group} name`, bold: true },
-                  { text: 'Year achieved', bold: true, margin: [7, 0, 0, 0] },
-                  { text: 'Certificate', bold: true, margin: [13, 0, 0, 0] },
-                ],
-                //   data rows
-                ...qualification.records.map((record) => [
-                  record.title || '-',
-                  { text: record.year || '-', margin: [7, 0, 0, 0] },
-                  { text: record.qualificationCertificates?.length ? 'See download' : 'No', margin: [13, 0, 0, 0] },
-                ]),
-              ],
-            },
-            layout: {
-              hLineWidth: (i) => (i === 0 ? 0 : 0.5), // thin gray line only under rows
-              vLineWidth: () => 0,
-              hLineColor: () => '#cccccc',
-            },
-          },
-        ],
-        unbreakable: true, //  ensures stack stays on one page
-        margin: [0, 0, 0, 15],
-      })),
-    ];
+  public qualificationSection(qualificationsByGroup): Content[] {
+    return this.buildSection(
+      'Qualifications',
+      qualificationsByGroup.groups,
+      [
+        (q) => ({ text: `${q.group} name`, bold: true }),
+        { text: 'Year achieved', bold: true, margin: [7, 0, 0, 0] as [number, number, number, number] },
+        { text: 'Certificate', bold: true, margin: [13, 0, 0, 0] as [number, number, number, number] },
+      ],
+      [200, 190, 95],
+      (record) => [
+        record.title || '-',
+        { text: record.year || '-', margin: [7, 0, 0, 0] as [number, number, number, number] },
+        {
+          text: record.qualificationCertificates?.length ? 'See download' : 'No',
+          margin: [13, 0, 0, 0] as [number, number, number, number],
+        },
+      ],
+    );
   }
 
   public viewPdf(docDefinition: TDocumentDefinitions): void {
