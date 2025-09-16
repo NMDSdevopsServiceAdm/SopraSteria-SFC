@@ -77,6 +77,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
 import { WorkplaceStaffDoDHAGuard } from '@core/guards/workplace-staff-do-dha/workplace-staff-do-dha.guard';
 import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
+import { ChangeDataPermissionsComponent } from './change-data-permissions/change-data-permissions.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -92,6 +93,13 @@ const routes: Routes = [
     component: ChangeDataOwnerComponent,
     resolve: { establishment: WorkplaceResolver },
     data: { title: 'Change Data Owner' },
+  },
+  {
+    path: 'change-data-permissions',
+    component: ChangeDataPermissionsComponent,
+    resolve: { establishment: WorkplaceResolver },
+    canActivate: [HasPermissionsGuard],
+    data: { title: 'Change Data Permissions' },
   },
   {
     path: 'about-parents',
