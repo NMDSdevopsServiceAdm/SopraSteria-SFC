@@ -1,10 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
@@ -18,18 +16,20 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { MoveWorkerDialogComponent } from './move-worker-dialog.component';
+import userEvent from '@testing-library/user-event';
 
-describe('MoveWorkerDialog', () => {
-  async function setup(role = Roles.Admin, subsidiaries = 2) {
-    const component = await render(MoveWorkerDialogComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
-      schemas: [NO_ERRORS_SCHEMA],
+fdescribe('MoveWorkerDialog', () => {
+  async function setup(overrides: any = {}) {
+    const role = overrides?.role ?? Roles.Admin;
+    const numberOfSubsidiaries = overrides?.numberOfSubsidiaries ?? 2;
+
+    const setupTools = await render(MoveWorkerDialogComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, role),
+          useFactory: MockUserService.factory(numberOfSubsidiaries, role),
           deps: [HttpClient],
         },
         AlertService,
@@ -46,20 +46,20 @@ describe('MoveWorkerDialog', () => {
             primaryWorkplaceUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
           },
         },
+        WindowRef,
         {
           provide: Dialog,
           useValue: Dialog,
         },
-        {
-          provide: WindowRef,
-          useValue: WindowRef,
-        },
+        provideRouter([]),
       ],
     });
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const component = setupTools.fixture.componentInstance;
 
     return {
+      ...setupTools,
       component,
       router,
     };
@@ -70,15 +70,31 @@ describe('MoveWorkerDialog', () => {
     expect(component).toBeTruthy();
   });
 
-  // The following test doesn't work yet - we struggled to get the auto-suggest component working.
-  // Leaving this here to follow up on
+  it('should show an error message when user did not enter the workplace name or postcode', async () => {
+    const { getByText, getAllByText, fixture } = await setup();
 
-  // it('should filter out invalid workplaces for transfer', async () => {
-  //   const { component } = await setup();
-  //   component.fixture.detectChanges();
-  //   const form = component.fixture.componentInstance.form;
-  //   form.controls.workplaceNameOrPostCode.setValue('Primary Workplace');
-  //   component.fixture.detectChanges();
-  //   const text = component.getByText('Subsid Workplace, WA1 1BQ');
-  // });
+    const expectedErrorMessage = 'Enter workplace name or post code.';
+
+    userEvent.click(getByText('Transfer'));
+
+    fixture.detectChanges();
+
+    expect(getByText('There is a problem')).toBeTruthy();
+    expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+  });
+
+  it('should show an error message when user entered an invalid workplace name / postcode', async () => {
+    const { getByText, getAllByText, getByLabelText, fixture } = await setup();
+
+    const expectedErrorMessage = 'Enter correct workplace name or post code.';
+
+    const inputBox = getByLabelText('Enter a workplace name or postcode');
+    userEvent.type(inputBox, 'some non exist workplace name');
+    userEvent.click(getByText('Transfer'));
+
+    fixture.detectChanges();
+
+    expect(getByText('There is a problem')).toBeTruthy();
+    expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+  });
 });
