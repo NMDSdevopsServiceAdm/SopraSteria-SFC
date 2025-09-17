@@ -31,10 +31,7 @@ describe('workplace-info-panel', () => {
     const setupTools = await render(WorkplaceInfoPanelComponent, {
       imports: [RouterModule, SharedModule, HttpClientTestingModule],
       providers: [
-        {
-          provide: WindowRef,
-          useClass: WindowRef,
-        },
+        WindowRef,
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory({ primaryWorkplace: overrides.primaryWorkplace }),
@@ -232,6 +229,27 @@ describe('workplace-info-panel', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace/change-data-owner'], {
         queryParams: { changeDataOwnerFrom: workplace.uid },
+      });
+    });
+
+    it('should display "Change data permissions" if they are a parent and data owner', async () => {
+      const workplace = {
+        dataOwner: 'Parent',
+        uid: 'sub-uuid',
+      };
+
+      const { getByText, routerSpy } = await setup({
+        primaryWorkplace: { isParent: true },
+        workplace,
+        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+      });
+
+      const changeDataPermissionsLink = getByText('Change data permissions');
+      userEvent.click(changeDataPermissionsLink);
+
+      expect(changeDataPermissionsLink).toBeTruthy();
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace/change-data-permissions'], {
+        queryParams: { changeDataPermissionsFor: workplace.uid },
       });
     });
   });

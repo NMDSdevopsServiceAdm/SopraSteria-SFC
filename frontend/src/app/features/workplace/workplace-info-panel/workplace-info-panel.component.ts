@@ -15,9 +15,6 @@ import {
   ChangeDataOwnerDialogComponent,
 } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { MoveWorkplaceDialogComponent } from '@shared/components/move-workplace/move-workplace-dialog.component';
-import {
-  SetDataPermissionDialogComponent,
-} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
@@ -129,24 +126,17 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     );
   }
 
-  public setDataPermissions($event: Event) {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe((setPermissionConfirmed) => {
-      if (setPermissionConfirmed) {
-        this.router.navigate(['/workplace/view-all-workplaces']);
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Data permissions for ${this.workplace.name} have been set.`,
-        });
-      }
-    });
-  }
-
   public navigateToChangeDataOwner(event: Event): void {
     event.preventDefault();
     this.router.navigate(['/workplace/change-data-owner'], {
       queryParams: { changeDataOwnerFrom: this.workplace.uid },
+    });
+  }
+
+  public navigateToChangeDataPermissions(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/workplace/change-data-permissions'], {
+      queryParams: { changeDataPermissionsFor: this.workplace.uid },
     });
   }
 
