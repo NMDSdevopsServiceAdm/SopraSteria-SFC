@@ -111,21 +111,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     }
   }
 
-  public async newDownloadTrainingAndQualsPdf() {
-    try {
-      return await this.pdfMakeService.GenerateTrainingAndQualifications(
-        this.workplace,
-        this.mandatoryTraining,
-        this.nonMandatoryTraining,
-        this.qualificationsByGroup,
-        this.worker,
-        this.lastUpdatedDate,
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   private setPageData(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
