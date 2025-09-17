@@ -10,15 +10,20 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockUserService } from '@core/test-utils/MockUserService';
+import { MockUserService, subsid1 } from '@core/test-utils/MockUserService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { MoveWorkerDialogComponent } from './move-worker-dialog.component';
 import userEvent from '@testing-library/user-event';
+import { Workplace } from '@core/model/my-workplaces.model';
+import { of } from 'rxjs';
 
 fdescribe('MoveWorkerDialog', () => {
+  const mockCurrentWorkplaceId = 'mock-workplace-uid';
+  const mockWorkerId = 'mock-worker-uid';
+
   async function setup(overrides: any = {}) {
     const role = overrides?.role ?? Roles.Admin;
     const numberOfSubsidiaries = overrides?.numberOfSubsidiaries ?? 2;
@@ -41,9 +46,11 @@ fdescribe('MoveWorkerDialog', () => {
         {
           provide: DIALOG_DATA,
           useValue: {
-            worker: {},
-            workplace: { uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd' },
-            primaryWorkplaceUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
+            worker: { uid: mockWorkerId },
+            workplace: {
+              uid: mockCurrentWorkplaceId,
+              primaryWorkplaceUid: mockCurrentWorkplaceId,
+            },
           },
         },
         WindowRef,
@@ -56,12 +63,17 @@ fdescribe('MoveWorkerDialog', () => {
     });
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.returnValue(of(null));
+    const navigateSpy = spyOn(router, 'navigate').and.resolveTo(true);
     const component = setupTools.fixture.componentInstance;
 
     return {
       ...setupTools,
       component,
       router,
+      updateWorkerSpy,
+      navigateSpy,
     };
   }
 
@@ -70,31 +82,49 @@ fdescribe('MoveWorkerDialog', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show an error message when user did not enter the workplace name or postcode', async () => {
-    const { getByText, getAllByText, fixture } = await setup();
+  describe('on form submit: ', () => {
+    it('should show an error message if user did not enter the workplace name or postcode', async () => {
+      const { getByText, getAllByText, fixture } = await setup();
 
-    const expectedErrorMessage = 'Enter workplace name or post code.';
+      const expectedErrorMessage = 'Enter workplace name or post code.';
 
-    userEvent.click(getByText('Transfer'));
+      userEvent.click(getByText('Transfer'));
 
-    fixture.detectChanges();
+      fixture.detectChanges();
 
-    expect(getByText('There is a problem')).toBeTruthy();
-    expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
-  });
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+    });
 
-  it('should show an error message when user entered an invalid workplace name / postcode', async () => {
-    const { getByText, getAllByText, getByLabelText, fixture } = await setup();
+    it('should show an error message if user entered an invalid workplace name / postcode', async () => {
+      const { getByText, getAllByText, getByLabelText, fixture } = await setup();
 
-    const expectedErrorMessage = 'Enter correct workplace name or post code.';
+      const expectedErrorMessage = 'Enter correct workplace name or post code.';
 
-    const inputBox = getByLabelText('Enter a workplace name or postcode');
-    userEvent.type(inputBox, 'some non exist workplace name');
-    userEvent.click(getByText('Transfer'));
+      const inputBox = getByLabelText('Enter a workplace name or postcode');
+      userEvent.type(inputBox, 'some non exist workplace name');
+      userEvent.click(getByText('Transfer'));
 
-    fixture.detectChanges();
+      fixture.detectChanges();
 
-    expect(getByText('There is a problem')).toBeTruthy();
-    expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+    });
+
+    it('should trigger updateWorker and navigation if user has chosen a valid workplace', async () => {
+      const { getByText, getByLabelText, fixture, updateWorkerSpy, navigateSpy } = await setup();
+
+      const validWorkplace = subsid1 as Workplace;
+      const validInput = `${validWorkplace.name}, ${validWorkplace.postCode}`;
+      const inputBox = getByLabelText('Enter a workplace name or postcode');
+      userEvent.type(inputBox, validInput);
+      userEvent.click(getByText('Transfer'));
+
+      fixture.detectChanges();
+      expect(updateWorkerSpy).toHaveBeenCalledWith(mockCurrentWorkplaceId, mockWorkerId, {
+        establishmentId: subsid1.id,
+      });
+      expect(navigateSpy).toHaveBeenCalled();
+    });
   });
 });
