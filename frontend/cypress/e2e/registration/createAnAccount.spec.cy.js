@@ -27,7 +27,7 @@ describe('Create account', () => {
   });
 
   beforeEach(() => {
-    cy.visit('/');
+    cy.openLoginPage();
   });
 
   it('should show the create acount start page', () => {

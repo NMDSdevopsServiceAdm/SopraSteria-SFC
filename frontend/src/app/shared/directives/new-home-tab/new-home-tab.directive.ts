@@ -34,7 +34,7 @@ declare global {
   }
 }
 
-window.dataLayer = window.dataLayer || {};
+window.dataLayer = window.dataLayer || [];
 
 @Directive()
 export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
