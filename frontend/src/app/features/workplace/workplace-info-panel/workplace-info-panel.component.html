@@ -76,7 +76,7 @@
           <ng-template #dataPermissions>
             <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
               <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                <a (click)="setDataPermissions($event)" href="#" class="govuk-link">Change data permissions</a>
+                <a (click)="navigateToChangeDataPermissions($event)" href="#" class="govuk-link">Change data permissions</a>
               </ng-container>
               <ng-template #notParent>
                 <a (click)="onChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
