@@ -18,7 +18,7 @@ describe('Cookie banner', () => {
         cy.get('div').contains('Cookies on the Adult Social Care Workforce Data Set').should('be.visible');
         cy.get('button').contains('Accept analytics cookies').should('be.visible');
         cy.get('button').contains('Reject analytics cookies').should('be.visible');
-        cy.get('a').contains('View cookies').should('be.visible');
+        cy.get('a').contains('View cookie policy').should('be.visible');
       });
     });
 
@@ -47,7 +47,7 @@ describe('Cookie banner', () => {
     });
 
     it('should not show the cookie banner on the cookie policy page', () => {
-      cy.get('a').contains('View cookies').click();
+      cy.get('a').contains('View cookie policy').click();
       cy.get('h1').should('contain', 'Cookie policy');
 
       cy.get('[data-testid="cookie-banner"]').should('not.exist');

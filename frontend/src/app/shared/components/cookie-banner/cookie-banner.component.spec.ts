@@ -82,7 +82,7 @@ describe('CookieBannerComponent', () => {
   it('should show a link to the cookie policy page', async () => {
     const { getByText } = await setup();
 
-    const link = getByText('View cookies') as HTMLAnchorElement;
+    const link = getByText('View cookie policy') as HTMLAnchorElement;
 
     expect(link.href).toContain('/cookie-policy');
   });
