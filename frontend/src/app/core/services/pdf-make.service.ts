@@ -124,16 +124,6 @@ export class PdfMakeService {
           bold: true,
           margin: [0, 190, 0, 80] as [number, number, number, number],
         },
-        h1Heading: {
-          fontSize: 27,
-          bold: true,
-          color: '#0b0c0c',
-        },
-        pageNumber: {
-          fontSize: 12,
-          bold: true,
-          color: '#0b0c0c',
-        },
         subheader: {
           fontSize: 14,
           bold: true,
@@ -205,30 +195,6 @@ export class PdfMakeService {
       },
     };
   }
-
-  // public buildSection(
-  //   title: string,
-  //   groups: any[],
-  //   headers: any[],
-  //   widths: any[],
-  //   rowMapper: (record: any) => any[],
-  // ): Content[] {
-  //   return [
-  //     this.sectionHeader(title),
-  //     ...groups.map<Content>((group) => ({
-  //       stack: [
-  //         {
-  //           text: group.category || group.group,
-  //           style: 'subheader',
-  //           margin: [3, 10, 0, 15] as [number, number, number, number],
-  //         },
-  //         this.buildTable(headers, group.trainingRecords?.map(rowMapper) || group.records.map(rowMapper), widths),
-  //       ],
-  //       unbreakable: true,
-  //       margin: [0, 0, 0, 15] as [number, number, number, number],
-  //     })),
-  //   ];
-  // }
 
   public buildSection(
     title: string,
@@ -318,7 +284,7 @@ export class PdfMakeService {
     pdfMake.createPdf(docDefinition).download('Training_And_Qualification.pdf');
   }
 
-  public GenerateTrainingAndQualifications(
+  public generateTrainingAndQualifications(
     workplace: Establishment,
     mandatoryTraining: TrainingRecordCategory[],
     nonMandatoryTraining: TrainingRecordCategory[],

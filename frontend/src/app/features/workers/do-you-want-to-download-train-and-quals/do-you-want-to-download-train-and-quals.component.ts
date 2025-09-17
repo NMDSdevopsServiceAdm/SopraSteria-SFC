@@ -169,7 +169,7 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
   public async downloadTrainingAndQualsPdfWhenDelete() {
     try {
       this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, this.trainingRecords?.lastUpdated]);
-      return await this.pdfMakeService.GenerateTrainingAndQualifications(
+      return await this.pdfMakeService.generateTrainingAndQualifications(
         this.workplace,
         this.mandatoryTraining,
         this.nonMandatoryTraining,
