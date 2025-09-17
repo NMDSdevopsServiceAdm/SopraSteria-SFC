@@ -166,10 +166,11 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     });
   }
 
-  public async downloadTrainingAndQualsPdfWhenDelete() {
+  public async downloadTrainingAndQualsPdfWhenDeleteStaff() {
     try {
       this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, this.trainingRecords?.lastUpdated]);
-      return await this.pdfMakeService.generateTrainingAndQualifications(
+
+      return this.pdfMakeService.generateTrainingAndQualifications(
         this.workplace,
         this.mandatoryTraining,
         this.nonMandatoryTraining,
@@ -196,7 +197,7 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
       if (answer === 'Yes') {
         this.downloadAllCertificates()
           .then(() => {
-            return this.downloadTrainingAndQualsPdfWhenDelete();
+            return this.downloadTrainingAndQualsPdfWhenDeleteStaff();
           })
           .then(() => {
             return this.router.navigate(this.nextRoute);
