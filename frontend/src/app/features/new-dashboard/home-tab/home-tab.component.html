@@ -114,7 +114,7 @@
             </ng-template></app-link-with-arrow
           >
           <app-link-with-arrow *ngIf="canViewDataPermissionsLink">
-            <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
+            <a class="govuk-link" [routerLink]="['/workplace/change-data-permissions']" href="#">Change data permissions</a>
           </app-link-with-arrow>
           <app-link-with-arrow *ngIf="canRemoveParentAssociation">
             <ng-container *ngIf="canViewChangeDataOwner; else removeLinkToParent">

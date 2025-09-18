@@ -20,7 +20,6 @@ import { isAdminRole } from '@core/utils/check-role-util';
 import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -313,21 +312,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
       this.linkToParentRequestedStatus = false;
       this.canBecomeAParent = true;
     }
-  }
-
-  public setDataPermissions($event: Event) {
-    $event.preventDefault();
-    const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
-    dialog.afterClosed.subscribe((setPermissionConfirmed) => {
-      if (setPermissionConfirmed) {
-        this.changeDataOwnerLink();
-        this.router.navigate(['/dashboard']);
-        this.alertService.addAlert({
-          type: 'success',
-          message: `Data permissions for ${this.workplace.parentName} have been set.`,
-        });
-      }
-    });
   }
 
   private changeDataOwnerLink(): void {
