@@ -13,18 +13,20 @@ import {
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
+import {
+  DownloadCertificateService,
+  QualificationCertificateService,
+  TrainingCertificateService,
+} from '@core/services/certificate.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FileUtil } from '@core/utils/file-util';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { from, merge, Subscription } from 'rxjs';
-import { mergeMap, toArray } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { PdfMakeService } from '../../../core/services/pdf-make.service';
 
 @Component({
@@ -76,6 +78,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private pdfTrainingAndQualificationService: PdfTrainingAndQualificationService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private pdfMakeService: PdfMakeService,
+    private downloadCertificateService: DownloadCertificateService,
   ) {
     pdfTrainingAndQualificationService.setViewContainer = viewContainerRef;
   }
@@ -416,38 +419,17 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     if (this.downloadingAllCertsInBackground) {
       return;
     }
-
     this.downloadingAllCertsInBackground = true;
 
-    const allTrainingCerts$ = this.trainingCertificateService.downloadAllCertificatesAsBlobs(
-      this.workplace.uid,
-      this.worker.uid,
-    );
-    const allQualificationCerts$ = this.qualificationCertificateService.downloadAllCertificatesAsBlobs(
-      this.workplace.uid,
-      this.worker.uid,
-    );
-
-    const zipFileName = this.worker.nameOrId
-      ? `All certificates - ${this.worker.nameOrId}.zip`
-      : 'All certificates.zip';
-
-    const downloadAllCertificatesAsZip$ = merge(allTrainingCerts$, allQualificationCerts$).pipe(
-      toArray(),
-      mergeMap((allFileBlobs) => from(FileUtil.saveFilesAsZip(allFileBlobs, zipFileName))),
-    );
-
-    this.subscriptions.add(
-      downloadAllCertificatesAsZip$.subscribe(
-        () => {
-          this.downloadingAllCertsInBackground = false;
-        },
-        (err) => {
-          console.error('Error occurred when downloading all certificates: ', err);
-          this.downloadingAllCertsInBackground = false;
-        },
-      ),
-    );
+    this.downloadCertificateService
+      .downloadAllCertificatesForWorker(
+        this.workplace.uid,
+        this.worker.uid,
+        `All certificates - ${this.worker.nameOrId}.zip`,
+      )
+      .finally(() => {
+        this.downloadingAllCertsInBackground = false;
+      });
   }
 
   private async refreshTrainingAndQualificationRecords() {

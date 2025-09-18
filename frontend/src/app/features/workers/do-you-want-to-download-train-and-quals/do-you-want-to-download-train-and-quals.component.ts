@@ -9,14 +9,13 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
-import { TrainingCertificateService, QualificationCertificateService } from '@core/services/certificate.service';
+import { DownloadCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { PdfMakeService } from '@core/services/pdf-make.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FileUtil } from '@core/utils/file-util';
-import { from, merge, Subscription } from 'rxjs';
-import { mergeMap, take, toArray } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-do-you-want-to-download-train-and-quals',
@@ -52,9 +51,8 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     private alertService: AlertService,
     private errorSummaryService: ErrorSummaryService,
     private previousRouteService: PreviousRouteService,
-    private trainingCertificateService: TrainingCertificateService,
-    private qualificationCertificateService: QualificationCertificateService,
     private pdfMakeService: PdfMakeService,
+    private downloadCertificateService: DownloadCertificateService,
   ) {
     this.form = this.formBuilder.group(
       {
@@ -121,44 +119,20 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
   }
 
   public downloadAllCertificates(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      if (this.downloadingAllCertsInBackground) {
-        return;
-      }
+    if (this.downloadingAllCertsInBackground) {
+      return;
+    }
 
-      this.downloadingAllCertsInBackground = true;
+    this.downloadingAllCertsInBackground = true;
 
-      const allTrainingCerts$ = this.trainingCertificateService.downloadAllCertificatesAsBlobs(
+    return this.downloadCertificateService
+      .downloadAllCertificatesForWorker(
         this.workplace.uid,
         this.worker.uid,
-      );
-      const allQualificationCerts$ = this.qualificationCertificateService.downloadAllCertificatesAsBlobs(
-        this.workplace.uid,
-        this.worker.uid,
-      );
-
-      const zipFileName = this.worker.nameOrId
-        ? `All certificates - ${this.worker.nameOrId}.zip`
-        : 'All certificates.zip';
-
-      const downloadAllCertificatesAsZip$ = merge(allTrainingCerts$, allQualificationCerts$).pipe(
-        toArray(),
-        mergeMap((allFileBlobs) => from(FileUtil.saveFilesAsZip(allFileBlobs, zipFileName))),
-      );
-
-      this.subscriptions.add(
-        downloadAllCertificatesAsZip$.subscribe(
-          () => {
-            this.downloadingAllCertsInBackground = false;
-            resolve(true);
-          },
-          (err) => {
-            console.error('Error occurred when downloading all certificates: ', err);
-            this.downloadingAllCertsInBackground = false;
-          },
-        ),
-      );
-    });
+        `All certificates - ${this.worker.nameOrId}.zip`,
+      )
+      .then(() => true)
+      .finally(() => (this.downloadingAllCertsInBackground = false));
   }
 
   public async downloadTrainingAndQualsPdfWhenDeleteStaff() {

@@ -9,7 +9,11 @@ import { TrainingRecord, TrainingRecordCategory, TrainingRecords } from '@core/m
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
+import {
+  DownloadCertificateService,
+  QualificationCertificateService,
+  TrainingCertificateService,
+} from '@core/services/certificate.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -348,6 +352,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
           // suppress the distracting error msg of "reading 'nativeElement'" from PdfTrainingAndQualificationService
           { provide: PdfTrainingAndQualificationService, useValue: { BuildTrainingAndQualsPdf: () => {} } },
+          DownloadCertificateService,
         ],
       },
     );
