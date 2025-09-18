@@ -1,9 +1,10 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
@@ -24,7 +25,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   public parentWorkplaceId: string;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
-  public availableWorkPlaces;
+  public availableWorkPlaces: Array<Workplace>;
   public workplaceNameOrPostCode: string;
 
   constructor(
@@ -38,7 +39,6 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     private userService: UserService,
   ) {
     super(data, dialog);
-    this.workplaceNameOrPostCodeValidator = this.workplaceNameOrPostCodeValidator.bind(this);
     this.workplaceNameOrPostCodeFilter = this.workplaceNameOrPostCodeFilter.bind(this);
     this.setupForm();
   }
@@ -52,7 +52,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   private getAllValidWorkplaces() {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
-        (allEstablishments) => {
+        (allEstablishments: GetWorkplacesResponse) => {
           this.availableWorkPlaces = this.getValidEstablishments(allEstablishments, this.data.workplace.uid);
         },
         (error) => {
@@ -64,7 +64,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     );
   }
 
-  private getValidEstablishments(establishments, currentWorkplaceUid) {
+  private getValidEstablishments(establishments: GetWorkplacesResponse, currentWorkplaceUid: string) {
     const establishmentArray = this.constructEstablishmentsArray(establishments);
 
     const validEstablishments = establishmentArray
@@ -75,37 +75,30 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     return validEstablishments;
   }
 
-  private constructEstablishmentsArray({ primary, subsidaries }) {
-    const establishmentArray = [];
+  private constructEstablishmentsArray(response: GetWorkplacesResponse) {
+    if (response?.subsidaries?.establishments?.length > 0) {
+      return [response.primary, ...response.subsidaries.establishments];
+    }
 
-    establishmentArray.push(primary);
-    subsidaries.establishments?.forEach((establishment) => establishmentArray.push(establishment));
-
-    return establishmentArray;
+    return [response.primary];
   }
 
-  private addNameAndPostcodeAttribute(establishment) {
+  private addNameAndPostcodeAttribute(establishment: Workplace): Workplace {
     establishment.nameAndPostCode = establishment.name + ', ' + establishment.postCode;
 
     return establishment;
   }
 
-  /**
-   * Pass in formGroup or formControl name
-   * Then return error message
-   * @param error item
-   */
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   public close(event: Event) {
-    event.preventDefault();
+    event?.preventDefault();
     this.dialog.close();
   }
 
-  //function is use to move worker in selected  workplace
   public onSubmit() {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -124,35 +117,29 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
         ),
     );
   }
-  /**
-   * Function is used to move worker in selected workplace.
-   * @param {string} nameOrPostCode of selected workplace
-   * @return {void}
-   **/
 
   private onSuccess(nameAndPostCode: string): void {
     const newEstablishmentName = this.getWorkplaceEstablishmentIdOrName(nameAndPostCode, 'name');
-    const url = this.data.workplace.parentUid !== null ? ['/workplace', this.data.workplace.uid] : ['/dashboard'];
-    this.router.navigate(url, { fragment: 'staff-records' });
-    this.alertService.addAlert({
-      type: 'success',
-      message: `${this.data.worker.nameOrId} has been moved to ${newEstablishmentName}.`,
+
+    this.dialog.close();
+    this.navigateToStaffRecords().then(() => {
+      this.alertService.addAlert({
+        type: 'success',
+        message: `${this.data.worker.nameOrId} has been moved to ${newEstablishmentName}.`,
+      });
     });
-    this.close(event);
   }
 
   private onError(error): void {
     console.log(error);
   }
 
-  //Set the form fields and validator
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      workplaceNameOrPostCode: [null, [Validators.required, this.workplaceNameOrPostCodeValidator]],
+      workplaceNameOrPostCode: [null, [Validators.required, this.workplaceNameOrPostCodeValidator()]],
     });
   }
 
-  //setup  form error message
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -171,7 +158,6 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     ];
   }
 
-  //setup server error message
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
@@ -189,27 +175,32 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     ];
   }
 
-  /**
-   * Function is used to validate input workplace name or Post code is  valid or not.
-   * if valid then return null otherwise return object {validNameOrPostCode:true}
-   * @param {void}
-   * @return {void}
-   */
-  public workplaceNameOrPostCodeValidator() {
-    if (this.form && this.availableWorkPlaces) {
-      const { workplaceNameOrPostCode } = this.form.controls;
-      if (workplaceNameOrPostCode.value !== null) {
-        const workplaceNameOrPostCodeLowerCase = workplaceNameOrPostCode.value.toLowerCase();
-        return this.availableWorkPlaces.some(
-          (wp) => wp.nameAndPostCode.toLowerCase() === workplaceNameOrPostCodeLowerCase,
-        )
-          ? null
-          : { validNameOrPostCode: true };
+  public workplaceNameOrPostCodeValidator(): ValidatorFn {
+    const validator = (control: FormControl) => {
+      if (!control.value || !this.availableWorkPlaces) {
+        return null;
       }
-    }
 
-    return null;
+      const workplaceNameOrPostCodeLowerCase = control.value.toLowerCase();
+      const inputMatchesRecord: boolean = this.availableWorkPlaces.some(
+        (wp) => wp.nameAndPostCode.toLowerCase() === workplaceNameOrPostCodeLowerCase,
+      );
+      return inputMatchesRecord ? null : { validNameOrPostCode: true };
+    };
+
+    return validator;
   }
+
+  public navigateToStaffRecords(): Promise<boolean> {
+    const currentWorkplaceIsSubsidairy = !!this.data.workplace.parentUid;
+
+    if (currentWorkplaceIsSubsidairy) {
+      return this.router.navigate(['/subsidiary', this.data.workplace.uid, 'staff-records']);
+    } else {
+      return this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+    }
+  }
+
   /**
    * Function is used to filter workplace name and Post code array based on input keys.
    * if matched found the return combition of name and Post code's array of string
