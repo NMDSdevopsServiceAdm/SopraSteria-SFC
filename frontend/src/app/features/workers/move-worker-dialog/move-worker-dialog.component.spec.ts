@@ -89,6 +89,20 @@ describe('MoveWorkerDialog', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should trigger autocomplete on input', async () => {
+    const { getByText, fixture, getByLabelText } = await setup();
+
+    const validWorkplace = subsid1 as Workplace;
+    const expectedAutoCompleteText = `${validWorkplace.name}, ${validWorkplace.postCode}`;
+
+    const inputBox = getByLabelText('Enter a workplace name or postcode');
+
+    userEvent.type(inputBox, validWorkplace.postCode.slice(0, 2));
+    fixture.detectChanges();
+
+    expect(getByText(expectedAutoCompleteText)).toBeTruthy();
+  });
+
   describe('on form submit: ', () => {
     it('should show an error message if user did not enter the workplace name or postcode', async () => {
       const { getByText, getAllByText, fixture, updateWorkerSpy } = await setup();

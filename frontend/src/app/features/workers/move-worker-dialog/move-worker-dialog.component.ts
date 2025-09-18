@@ -27,6 +27,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
   public serverErrorsMap: Array<ErrorDefinition>;
   public availableWorkPlaces: Array<Workplace>;
   public workplaceNameOrPostCode: string;
+  public autoCompleteDataProvider: () => Array<string>;
 
   constructor(
     @Inject(DIALOG_DATA) public data: { worker: Worker; workplace: Establishment; primaryWorkplaceUid: string },
@@ -39,7 +40,7 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     private userService: UserService,
   ) {
     super(data, dialog);
-    this.workplaceNameOrPostCodeFilter = this.workplaceNameOrPostCodeFilter.bind(this);
+    this.autoCompleteDataProvider = () => this.workplaceNameOrPostCodeFilter();
     this.setupForm();
   }
 
@@ -107,19 +108,20 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
-    const newEstablishmentId = this.getWorkplaceEstablishmentIdOrName(this.form.value.workplaceNameOrPostCode, 'id');
+    const newEstablishmentId = this.getWorkplaceEstablishment(this.form.value.workplaceNameOrPostCode)?.id;
     this.subscriptions.add(
       this.workerService
         .updateWorker(this.data.workplace.uid, this.data.worker.uid, { establishmentId: newEstablishmentId })
         .subscribe(
-          () => this.onSuccess(this.form.value.workplaceNameOrPostCode),
+          () => this.onSuccess(),
           (error) => this.onError(error),
         ),
     );
   }
 
-  private onSuccess(nameAndPostCode: string): void {
-    const newEstablishmentName = this.getWorkplaceEstablishmentIdOrName(nameAndPostCode, 'name');
+  private onSuccess(): void {
+    const nameAndPostCode = this.form.value.workplaceNameOrPostCode;
+    const newEstablishmentName = this.getWorkplaceEstablishment(nameAndPostCode)?.name;
 
     this.dialog.close();
     this.navigateToStaffRecords().then(() => {
@@ -201,46 +203,34 @@ export class MoveWorkerDialogComponent extends DialogComponent implements OnInit
     }
   }
 
-  /**
-   * Function is used to filter workplace name and Post code array based on input keys.
-   * if matched found the return combition of name and Post code's array of string
-   * @param {void}
-   * @return {array}  array of string
-   */
   public workplaceNameOrPostCodeFilter(): string[] {
     const workplaceNameOrPostCode = this.form.value.workplaceNameOrPostCode;
-    if (this.availableWorkPlaces && workplaceNameOrPostCode && workplaceNameOrPostCode.length) {
-      const workplaceNameOrPostCodeLowerCase = workplaceNameOrPostCode.toLowerCase();
-      return this.availableWorkPlaces
-        .filter((wp) => {
-          return (
-            wp.name.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
-            wp.postCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
-            wp.nameAndPostCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase)
-          );
-        })
-        .filter((wp) => wp.nameAndPostCode.toLowerCase() !== workplaceNameOrPostCodeLowerCase)
-        .map((wp) => wp.nameAndPostCode);
+    if (!this.availableWorkPlaces || !workplaceNameOrPostCode?.length) {
+      return [];
     }
 
-    return [];
+    const workplaceNameOrPostCodeLowerCase = workplaceNameOrPostCode.toLowerCase();
+
+    const nameOrPostcodeMatchInput = (wp: Workplace) => {
+      return (
+        wp.name.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
+        wp.postCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase) ||
+        wp.nameAndPostCode.toLowerCase().startsWith(workplaceNameOrPostCodeLowerCase)
+      );
+    };
+
+    return this.availableWorkPlaces
+      .filter(nameOrPostcodeMatchInput)
+      .filter((wp) => wp.nameAndPostCode.toLowerCase() !== workplaceNameOrPostCodeLowerCase)
+      .map((wp) => wp.nameAndPostCode);
   }
 
-  /**
-   * Function is used to get selected parent's uid.
-   * @param {string} nameAndPostCode of selected parent
-   * @param {string} nameOrId of selected parent
-   * @return {array}  array of string
-   */
-  public getWorkplaceEstablishmentIdOrName(nameAndPostCode: string, nameOrId: string) {
+  public getWorkplaceEstablishment(nameAndPostCode: string): Workplace {
     if (nameAndPostCode) {
-      const filterArray = this.availableWorkPlaces.filter(
+      const workplace = this.availableWorkPlaces.find(
         (wp) => wp.nameAndPostCode.toLowerCase() === nameAndPostCode.toLowerCase(),
       );
-      if (nameOrId === 'id') {
-        return filterArray[0].id;
-      }
-      return filterArray[0].name;
+      return workplace;
     }
   }
 
