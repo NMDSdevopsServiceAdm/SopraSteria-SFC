@@ -885,6 +885,12 @@ const routes: Routes = [
       {
         path: 'download-staff-training-and-qualifications',
         component: DoYouWantToDowloadTrainAndQualsComponent,
+        resolve: {
+          worker: WorkerResolver,
+          trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
+          mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
+        },
+
         data: {
           permissions: ['canDeleteWorker'],
           title: 'Download staff training and qualifications',

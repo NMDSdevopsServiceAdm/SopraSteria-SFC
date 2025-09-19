@@ -1,7 +1,7 @@
 import { fireEvent, render, within } from '@testing-library/angular';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals.component';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, qualificationsByGroup, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { WorkersModule } from '../workers.module';
@@ -23,10 +23,53 @@ import {
   MockTrainingCertificateService,
 } from '@core/test-utils/MockCertificateService';
 import { mockQualificationCertificates } from '../../../core/test-utils/MockCertificateService';
-
+import { PdfMakeService } from '@core/services/pdf-make.service';
+import { TrainingRecords } from '@core/model/training.model';
 describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
   const yesRadio = 'Yes, I want to download the summary and any certificates';
   const noRadio = 'No, I do not want to download the summary and any certificates';
+
+  const mockWorker = workerBuilder();
+  const activeDate = new Date();
+  activeDate.setDate(activeDate.getDate() + 93); // 3 months in the future
+  const mockTrainingData: TrainingRecords = {
+    lastUpdated: new Date('2020-01-01'),
+    mandatory: [],
+    jobRoleMandatoryTrainingCount: [],
+    nonMandatory: [
+      {
+        category: 'Health',
+        id: 1,
+        trainingRecords: [
+          {
+            accredited: true,
+            completed: new Date('10/20/2021'),
+            expires: activeDate,
+            title: 'Health training',
+            trainingCategory: { id: 1, category: 'Health' },
+            trainingCertificates: [],
+            trainingStatus: 0,
+            uid: 'someHealthuid',
+            created: new Date('10/20/2021'),
+            updated: new Date('10/20/2021'),
+            updatedBy: '',
+          },
+        ],
+      },
+    ],
+  };
+
+  const qualifications = {
+    groups: [
+      {
+        group: 'IT',
+        records: [
+          { title: 'CompTI', year: '2020', qualificationCertificates: ['a.pdf'] },
+          { title: 'Cisco CCNA', year: '', qualificationCertificates: [] },
+        ],
+      },
+    ],
+  };
 
   async function setup(overrides: any = {}) {
     const workplace = establishmentBuilder() as Establishment;
@@ -61,12 +104,18 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
             snapshot: {
               data: {
                 establishment: workplace,
+                worker: mockWorker,
+                trainingAndQualificationRecords: {
+                  training: mockTrainingData,
+                  qualifications: qualifications,
+                },
               },
             },
           },
         },
         { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
         { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
+        { provide: PdfMakeService, useValue: { generateTrainingAndQualifications: () => {} } },
       ],
     });
 
@@ -87,6 +136,8 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
       QualificationCertificateService,
     ) as QualificationCertificateService;
 
+    const PdfMakeServiceInject = injector.inject(PdfMakeService) as PdfMakeService;
+
     return {
       component,
       ...setupTools,
@@ -95,6 +146,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
       workerService,
       trainingCertificateService,
       qualificationCertificateService,
+      PdfMakeServiceInject,
     };
   }
 
@@ -173,11 +225,13 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
         workerService,
         trainingCertificateService,
         qualificationCertificateService,
+        PdfMakeServiceInject,
       } = await setup();
 
       const continueButton = getByText('Continue');
       const workerServiceSpy = spyOn(workerService, 'setDoYouWantToDownloadTrainAndQualsAnswer');
       const componentSpy = spyOn(component, 'downloadAllCertificates').and.returnValue(Promise.resolve(true));
+      spyOn(component, 'downloadTrainingAndQualsPdfWhenDeleteStaff').and.resolveTo(undefined);
 
       spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
       spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
@@ -187,6 +241,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
       fireEvent.click(getByText(yesRadio));
       fireEvent.click(continueButton);
       fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(workerServiceSpy).toHaveBeenCalledWith('Yes');
       await componentSpy.calls.mostRecent().returnValue;
@@ -319,6 +374,29 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
 
       expect(trainingCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledTimes(1);
       expect(qualificationCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('downloadTrainingAndQualsPdfWhenDeleteStaff', async () => {
+    it('should download the training and qualifications records when the yes is clicked', async () => {
+      const { component, getByText, PdfMakeServiceInject, fixture } = await setup();
+      const downloadFunctionSpy = spyOn(component, 'downloadTrainingAndQualsPdfWhenDeleteStaff').and.callThrough();
+      spyOn(component, 'downloadAllCertificates').and.resolveTo(true);
+
+      const pdfTrainingAndQualsServiceSpy = spyOn(
+        PdfMakeServiceInject,
+        'generateTrainingAndQualifications',
+      ).and.callThrough();
+
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(getByText(yesRadio));
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(downloadFunctionSpy).toHaveBeenCalled();
+      expect(pdfTrainingAndQualsServiceSpy).toHaveBeenCalled();
     });
   });
 });
