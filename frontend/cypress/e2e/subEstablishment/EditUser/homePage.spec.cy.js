@@ -29,7 +29,7 @@ describe('Sub home page as edit user', () => {
     cy.get('[data-cy="home-other-links"]').should('contain', 'Remove the link to your parent workplace');
   });
 
-  it('should show set data permissions', () => {
-    cy.get('[data-cy="home-other-links"]').should('contain', 'Set data permissions');
+  it('should show change data permissions', () => {
+    cy.get('[data-cy="home-other-links"]').should('contain', 'Change data permissions');
   });
 });

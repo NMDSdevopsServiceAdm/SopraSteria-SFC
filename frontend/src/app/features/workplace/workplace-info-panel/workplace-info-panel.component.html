@@ -56,12 +56,12 @@
 
   <div class="govuk-grid-column-three-quarters">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-quarter" style="width: 20%">
+      <div class="govuk-grid-column-one-quarter" style="width: 20%" data-cy="workplace-data-owner">
         <p class="govuk-!-margin-bottom-1"><strong>Data owner</strong></p>
         <p class="govuk-!-margin-bottom-0">{{ workplace.dataOwner }}</p>
       </div>
 
-      <div class="govuk-grid-column-one-half" style="width: 45%">
+      <div class="govuk-grid-column-one-half" style="width: 45%" data-cy="workplace-data-permission">
         <p class="govuk-!-margin-bottom-1">
           <strong>{{ workplace.dataOwner | workplacePermissionsBearer }} view only permissions</strong>
         </p>
@@ -76,7 +76,9 @@
           <ng-template #dataPermissions>
             <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
               <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                <a (click)="navigateToChangeDataPermissions($event)" href="#" class="govuk-link">Change data permissions</a>
+                <a (click)="navigateToChangeDataPermissions($event)" href="#" class="govuk-link"
+                  >Change data permissions</a
+                >
               </ng-container>
               <ng-template #notParent>
                 <a (click)="onChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
