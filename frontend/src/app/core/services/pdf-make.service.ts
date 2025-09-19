@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import * as pdfMake from 'pdfmake/build/pdfmake';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-import { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
+import { Content, Margins, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { HttpClient } from '@angular/common/http';
 import { mergeMap } from 'rxjs/operators';
 import { Establishment } from '@core/model/establishment.model';
@@ -68,7 +68,7 @@ export class PdfMakeService {
           {
             text: `Page ${currentPage} of ${pageCount}`,
             alignment: 'right',
-            margin: [20, 30] as [number, number],
+            margin: [20, 30] as Margins,
           },
         ],
       }),
@@ -97,10 +97,10 @@ export class PdfMakeService {
                 vLineWidth: () => 0,
               },
               width: '70%',
-              margin: [5, 20, 0, 20] as [number, number, number, number],
+              margin: [5, 20, 0, 20] as Margins,
             },
           ],
-          margin: [0, -50, 20, 20] as [number, number, number, number],
+          margin: [0, -50, 20, 20] as Margins,
         },
         {
           canvas: [
@@ -122,12 +122,12 @@ export class PdfMakeService {
         header: {
           fontSize: 18,
           bold: true,
-          margin: [0, 190, 0, 80] as [number, number, number, number],
+          margin: [0, 190, 0, 80] as Margins,
         },
         subheader: {
           fontSize: 14,
           bold: true,
-          margin: [0, 10, 0, 5] as [number, number, number, number],
+          margin: [0, 10, 0, 5] as Margins,
         },
       },
 
@@ -148,22 +148,22 @@ export class PdfMakeService {
           ],
           [workplace.name, worker.nameOrId],
           [
-            { text: 'Care certificate', bold: true, margin: [0, 10, 0, 0] as [number, number, number, number] },
-            { text: 'Last updated', bold: true, margin: [0, 10, 0, 0] as [number, number, number, number] },
+            { text: 'Care certificate', bold: true, margin: [0, 10, 0, 0] as Margins },
+            { text: 'Last updated', bold: true, margin: [0, 10, 0, 0] as Margins },
           ],
 
           [worker.careCertificate ? worker.careCertificate : 'Not answered', FormatDate.formatUKDate(lastUpdatedDate)],
         ],
       },
       layout: 'headerLineOnly',
-      margin: [0, 5, 0, 20] as [number, number, number, number],
+      margin: [0, 5, 0, 20] as Margins,
     };
   }
 
   public sectionHeader(title: string): Content {
     return {
       stack: [
-        { text: title, style: 'header', margin: [3, 20, 0, 10] as [number, number, number, number] },
+        { text: title, style: 'header', margin: [3, 20, 0, 10] as Margins },
         {
           canvas: [
             {
@@ -176,7 +176,7 @@ export class PdfMakeService {
               lineColor: '#cccccc',
             },
           ],
-          margin: [0, 0, 0, 15] as [number, number, number, number],
+          margin: [0, 0, 0, 15] as Margins,
         },
       ],
     };
@@ -207,7 +207,12 @@ export class PdfMakeService {
       this.sectionHeader(title),
       ...groups.map<Content>((group) => {
         // resolve header functions before building the table
-        const resolvedHeaders = headers.map((h) => (typeof h === 'function' ? h(group) : h));
+        const resolvedHeaders = headers.map((h) => {
+          if (typeof h === 'function') {
+            return h(group);
+          }
+          return typeof h === 'object' ? { ...h } : h;
+        });
 
         const rows = group.trainingRecords?.map(rowMapper) || group.records.map(rowMapper);
 
@@ -216,12 +221,12 @@ export class PdfMakeService {
             {
               text: group.category || group.group,
               style: 'subheader',
-              margin: [3, 10, 0, 15] as [number, number, number, number],
+              margin: [3, 10, 0, 15] as Margins,
             },
             this.buildTable(resolvedHeaders, rows, widths),
           ],
           unbreakable: true,
-          margin: [0, 0, 0, 15] as [number, number, number, number],
+          margin: [0, 0, 0, 15] as Margins,
         };
       }),
     ];
@@ -265,16 +270,16 @@ export class PdfMakeService {
       qualificationsByGroup.groups,
       [
         (q) => ({ text: `${q.group} name`, bold: true }),
-        { text: 'Year achieved', bold: true, margin: [7, 0, 0, 0] as [number, number, number, number] },
-        { text: 'Certificate', bold: true, margin: [13, 0, 0, 0] as [number, number, number, number] },
+        { text: 'Year achieved', bold: true, margin: [7, 0, 0, 0] as Margins },
+        { text: 'Certificate', bold: true, margin: [13, 0, 0, 0] as Margins },
       ],
       [200, 190, 95],
       (record) => [
         record.title || '-',
-        { text: record.year || '-', margin: [7, 0, 0, 0] as [number, number, number, number] },
+        { text: record.year || '-', margin: [7, 0, 0, 0] as Margins },
         {
           text: record.qualificationCertificates?.length ? 'See download' : 'No',
-          margin: [13, 0, 0, 0] as [number, number, number, number],
+          margin: [13, 0, 0, 0] as Margins,
         },
       ],
     );

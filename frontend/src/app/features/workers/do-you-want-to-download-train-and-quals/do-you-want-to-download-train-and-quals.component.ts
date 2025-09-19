@@ -77,11 +77,6 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     this.mandatoryTraining = this.trainingRecords.mandatory;
     this.nonMandatoryTraining = this.trainingRecords.nonMandatory;
 
-    this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
-        this.worker = worker;
-      }),
-    );
     this.previousRoute = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
     this.nextRoute = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'delete-staff-record'];
     this.setBackLink();
