@@ -139,6 +139,12 @@ export class EstablishmentService {
     );
   }
 
+  public get establishmentObservable$() {
+    // provide a proper way to subscribe to _establishment$,
+    // as the existing get establishment$() cause side effect
+    return this._establishment$.asObservable();
+  }
+
   public get establishment() {
     return this._establishment$.value as Establishment;
   }
