@@ -651,96 +651,6 @@ describe('NewHomeTabComponent', () => {
     });
   });
 
-  describe('Pushing userType to dataLayer', () => {
-    [Roles.Admin, Roles.AdminManager].forEach((adminRole) => {
-      it(`should push admin when role is ${adminRole}`, async () => {
-        const overrides = {
-          cqcStatusMatch: false,
-          establishment: Establishment,
-          comparisonDataAvailable: true,
-          noOfWorkplaces: 9,
-          userRole: adminRole,
-        };
-
-        const { dataLayerPushSpy } = await setup(overrides);
-
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
-      });
-
-      it(`should push admin when role is ${adminRole} even if isParent is true`, async () => {
-        const overrides = {
-          cqcStatusMatch: false,
-          establishment: { ...Establishment, isParent: true },
-          comparisonDataAvailable: true,
-          noOfWorkplaces: 9,
-          userRole: adminRole,
-        };
-
-        const { dataLayerPushSpy } = await setup(overrides);
-
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
-      });
-
-      it(`should push admin when role is ${adminRole} even if there is parentUid`, async () => {
-        const overrides = {
-          cqcStatusMatch: false,
-          establishment: { ...Establishment, parentUid: 'parent-uid' },
-          comparisonDataAvailable: true,
-          noOfWorkplaces: 9,
-          userRole: adminRole,
-        };
-
-        const { dataLayerPushSpy } = await setup(overrides);
-
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
-      });
-    });
-
-    [Roles.Edit, Roles.Read].forEach((role) => {
-      it(`should push 'Parent' when role is ${role} and isParent is true`, async () => {
-        const overrides = {
-          cqcStatusMatch: false,
-          establishment: { ...Establishment, isParent: true },
-          comparisonDataAvailable: true,
-          noOfWorkplaces: 9,
-          userRole: role,
-        };
-
-        const { dataLayerPushSpy } = await setup(overrides);
-
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Parent' });
-      });
-
-      it(`should push 'Sub' when role is ${role} and there is parentUid`, async () => {
-        const overrides = {
-          cqcStatusMatch: false,
-          establishment: { ...Establishment, parentUid: 'parent-uid' },
-          comparisonDataAvailable: true,
-          noOfWorkplaces: 9,
-          userRole: role,
-        };
-
-        const { dataLayerPushSpy } = await setup(overrides);
-
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Sub' });
-      });
-
-      it(`should push 'Standalone' when role is ${role} and there is no parentUid and isParent false`, async () => {
-        const overrides = {
-          cqcStatusMatch: false,
-          establishment: { ...Establishment, parentUid: null, isParent: false },
-          comparisonDataAvailable: true,
-          noOfWorkplaces: 9,
-          userRole: role,
-        };
-
-        const { dataLayerPushSpy } = await setup(overrides);
-
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Standalone' });
-      });
-    });
-  });
-
   describe('should prep for individual staff record pagination', () => {
     beforeEach(() => {
       localStorage.clear();
@@ -749,7 +659,7 @@ describe('NewHomeTabComponent', () => {
     it('should store a list of all worker ids in localstorage', async () => {
       const eighteenWorkers = Array(18)
         .fill(null)
-        .map((_) => workerBuilder()) as Worker[];
+        .map(() => workerBuilder()) as Worker[];
       const overrides = { listOfAllWorkers: eighteenWorkers };
 
       const { localStorageSetSpy } = await setup(overrides);

@@ -141,10 +141,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
         this.permissionsService.can(this.workplace.uid, 'canRunLocalAuthorityReport');
     }
 
-    this.window.dataLayer.push({
-      userType: this.getUserType(),
-    });
-
     if (this.addWorkplaceDetailsBanner) {
       this.window.dataLayer.push({
         firstTimeLogin: true,
@@ -424,13 +420,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
         }
       });
     }
-  }
-
-  private getUserType(): string {
-    if (isAdminRole(this.user.role)) return 'Admin';
-    if (this.workplace.isParent) return 'Parent';
-    if (this.workplace.parentUid) return 'Sub';
-    return 'Standalone';
   }
 
   private saveAllWorkerIdsInLocalStorage(): void {
