@@ -34,6 +34,7 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit {
   public currentDataOwner: string;
   public parentName: string;
   public parentUid: string;
+  public posssesivePronounText: string;
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
@@ -54,6 +55,7 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit {
     this.uidToChangeDataPermissionsFor = this.route.snapshot?.queryParams?.changeDataPermissionsFor;
     this.workplace = this.route.snapshot.data.establishment;
     this.isParent = this.workplace?.isParent;
+    this.posssesivePronounText = this.isParent ? 'their' : 'your';
     this.setPreviousRoute();
     this.getWorkplaceToChangeDataPermissionsFor();
     this.setupForm();

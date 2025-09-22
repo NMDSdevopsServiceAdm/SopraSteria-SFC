@@ -98,7 +98,6 @@ const routes: Routes = [
     path: 'change-data-permissions',
     component: ChangeDataPermissionsComponent,
     resolve: { establishment: WorkplaceResolver },
-    canActivate: [HasPermissionsGuard],
     data: { title: 'Change Data Permissions' },
   },
   {
