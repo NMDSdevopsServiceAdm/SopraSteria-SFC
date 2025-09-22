@@ -190,9 +190,9 @@ describe('ChangeDataPermissionsComponent', () => {
     [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None].forEach(
       (permission: string, index: number) => {
         const permissionText = [
-          'can currently view their workplace details, but cannot edit them (they have view only access)',
-          'can currently view their workplace details and their staff records, but cannot edit them (they have view only access)',
-          'cannot currently view any of their data (they are linked by name only)',
+          'can currently view their workplace details, but cannot edit them (they have view only access).',
+          'can currently view their workplace details and their staff records, but cannot edit them (they have view only access).',
+          'cannot currently view any of their data (they are linked by name only).',
         ];
         it(`should show the correct text when the subsidiary has ${permission} as the data permission`, async () => {
           overrides = {
@@ -216,12 +216,9 @@ describe('ChangeDataPermissionsComponent', () => {
         const listText = [
           [
             'can view their workplace details and their staff records',
-            'are linked by the name only and are unable to view any of their data',
+            'are linked by name only and are unable to view any of their data',
           ],
-          [
-            'can only view their workplace details',
-            'are linked by the name only and are unable to view any of their data',
-          ],
+          ['can only view their workplace details', 'are linked by name only and are unable to view any of their data'],
           ['can only view their workplace details', 'can view their workplace details and their staff records'],
         ];
         it(`should show the correct bullet list when the data permission on the subsidiary is ${permission}`, async () => {
@@ -334,9 +331,9 @@ describe('ChangeDataPermissionsComponent', () => {
     [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None].forEach(
       (permission: string, index: number) => {
         const permissionText = [
-          'can currently view your workplace details, but cannot edit them (they have view only access)',
-          'can currently view your workplace details and your staff records, but cannot edit them (they have view only access)',
-          'cannot currently view any of your data (they are linked by name only)',
+          'can currently view your workplace details, but cannot edit them (they have view only access).',
+          'can currently view your workplace details and your staff records, but cannot edit them (they have view only access).',
+          'cannot currently view any of your data (they are linked by name only).',
         ];
         it(`should show the correct text when the subsidiary has ${permission} as the data permission`, async () => {
           overrides = {
@@ -361,12 +358,9 @@ describe('ChangeDataPermissionsComponent', () => {
         const listText = [
           [
             'can view your workplace details and your staff records',
-            'are linked by the name only and are unable to view any of your data',
+            'are linked by name only and are unable to view any of your data',
           ],
-          [
-            'can only view your workplace details',
-            'are linked by the name only and are unable to view any of your data',
-          ],
+          ['can only view your workplace details', 'are linked by name only and are unable to view any of your data'],
           ['can only view your workplace details', 'can view your workplace details and your staff records'],
         ];
 

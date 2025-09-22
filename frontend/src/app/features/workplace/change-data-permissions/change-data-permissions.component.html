@@ -21,63 +21,62 @@
       <ng-container *ngIf="workplace?.isParent; else subsidiaryView">
         <span *ngIf="currentDataPermission === dataPermissions[0]">
           can currently view their workplace details, but cannot edit them (they have
-          <strong>view only</strong> access)</span
+          <strong>view only</strong> access).</span
         >
         <span *ngIf="currentDataPermission === dataPermissions[1]">
           can currently view their workplace details and their staff records, but cannot edit them (they have
-          <strong>view only</strong> access)</span
+          <strong>view only</strong> access).</span
         >
         <span *ngIf="currentDataPermission === dataPermissions[2]">
-          cannot currently view any of their data (they are linked by name only)</span
+          cannot currently view any of their data (they are linked by name only).</span
         >
       </ng-container>
       <ng-template #subsidiaryView>
         <span *ngIf="currentDataPermission === dataPermissions[0]">
           can currently view your workplace details, but cannot edit them (they have
-          <strong>view only</strong> access)</span
+          <strong>view only</strong> access).</span
         >
         <span *ngIf="currentDataPermission === dataPermissions[1]">
           can currently view your workplace details and your staff records, but cannot edit them (they have
-          <strong>view only</strong> access)</span
+          <strong>view only</strong> access).</span
         >
         <span *ngIf="currentDataPermission === dataPermissions[2]">
-          cannot currently view any of your data (they are linked by name only)</span
+          cannot currently view any of your data (they are linked by name only).</span
         >
       </ng-template>
     </p>
     <p class="govuk-body">You can change their data permissions so that they:</p>
-
     <ul class="govuk-list govuk-list--bullet">
       <ng-container *ngIf="workplace?.isParent; else subsidiaryViewList">
-      <span *ngIf="currentDataPermission === dataPermissions[0]">
-        <li>can view their workplace details and their staff records</li>
-        <li>are linked by the name only and are unable to view any of their data</li>
-      </span>
-       <span *ngIf="currentDataPermission === dataPermissions[1]">
-        <li>can only view their workplace details</li>
-        <li>are linked by the name only and are unable to view any of their data</li>
-      </span>
-       <span *ngIf="currentDataPermission === dataPermissions[2]">
-        <li>can only view their workplace details</li>
-        <li>can view their workplace details and their staff records</li>
-      </span>
+        <ng-container *ngIf="currentDataPermission === dataPermissions[0]">
+          <li>can view their workplace details and their staff records</li>
+          <li>are linked by name only and are unable to view any of their data</li>
+        </ng-container>
+        <ng-container *ngIf="currentDataPermission === dataPermissions[1]">
+          <li>can only view their workplace details</li>
+          <li>are linked by name only and are unable to view any of their data</li>
+        </ng-container>
+        <ng-container *ngIf="currentDataPermission === dataPermissions[2]">
+          <li>can only view their workplace details</li>
+          <li>can view their workplace details and their staff records</li>
+        </ng-container>
       </ng-container>
       <ng-template #subsidiaryViewList>
-        <span *ngIf="currentDataPermission === dataPermissions[0]">
-        <li>can view your workplace details and your staff records</li>
-        <li>are linked by the name only and are unable to view any of your data</li>
-      </span>
-       <span *ngIf="currentDataPermission === dataPermissions[1]">
-        <li>can only view your workplace details</li>
-        <li>are linked by the name only and are unable to view any of your data</li>
-      </span>
-       <span *ngIf="currentDataPermission === dataPermissions[2]">
-        <li>can only view your workplace details</li>
-        <li>can view your workplace details and your staff records</li>
-      </span>
+        <ng-container *ngIf="currentDataPermission === dataPermissions[0]">
+          <li>can view your workplace details and your staff records</li>
+          <li>are linked by name only and are unable to view any of your data</li>
+        </ng-container>
+        <ng-container *ngIf="currentDataPermission === dataPermissions[1]">
+          <li>can only view your workplace details</li>
+          <li>are linked by name only and are unable to view any of your data</li>
+        </ng-container>
+        <ng-container *ngIf="currentDataPermission === dataPermissions[2]">
+          <li>can only view your workplace details</li>
+          <li>can view your workplace details and your staff records</li>
+        </ng-container>
       </ng-template>
     </ul>
-    <p>
+    <p class="govuk-!-margin-top-6">
       What data do you want <strong>{{ workplaceNameToChangeDataPermissionsFor }}</strong> to have
       <strong>view only</strong> access to?
     </p>
@@ -127,7 +126,7 @@
                 </label>
               </div>
               <div class="govuk-radios__divider govuk-!-text-align-left govuk-!-padding-top-2 govuk-!-padding-bottom-2">
-                Or
+                or
               </div>
               <div class="govuk-radios__item">
                 <input
