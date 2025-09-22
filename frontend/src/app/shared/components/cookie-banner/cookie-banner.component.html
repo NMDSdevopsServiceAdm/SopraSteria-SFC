@@ -1,0 +1,29 @@
+<div
+  class="asc-cookie-banner"
+  data-testid="cookie-banner"
+  data-nosnippet
+  role="region"
+  aria-label="Cookies on ASC-WDS"
+  *ngIf="isShowing"
+>
+  <div class="asc-cookie-banner__wrapper">
+    <div class="asc-cookie-banner__content" #cookieBanner tabindex="-1" cdkTrapFocus>
+      <h2 class="govuk-heading-m asc-cookie-banner__heading">Cookies on the Adult Social Care Workforce Data Set</h2>
+
+      <div class="asc-cookie-banner__explanation">
+        <p class="govuk-body-m">We use some essential cookies to make this service work.</p>
+        <p class="govuk-body-m">
+          We'd also like to use analytics cookies so we can understand how you use ASC-WDS and make improvements.
+        </p>
+      </div>
+
+      <div class="govuk-button-group">
+        <button type="button" class="govuk-button" (click)="acceptAnalyticCookies()">Accept analytics cookies</button>
+        <button type="button" class="govuk-button govuk-button--secondary" (click)="rejectAnalyticCookies()">
+          Reject analytics cookies
+        </button>
+        <a class="govuk-link" href="#" [routerLink]="['/cookie-policy']">View cookie policy</a>
+      </div>
+    </div>
+  </div>
+</div>

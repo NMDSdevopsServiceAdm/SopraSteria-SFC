@@ -1,10 +1,13 @@
 /* eslint-disable no-undef */
 Cypress.Commands.add('openLoginPage', () => {
+  cy.setCookie('cookies_preferences_set', 'true');
   cy.visit('/');
 });
 
 Cypress.Commands.add('loginAsAdmin', () => {
   cy.intercept('POST', '/api/login').as('login');
+
+  cy.setCookie('cookies_preferences_set', 'true');
   cy.visit('/');
   cy.get('[data-cy="username"]').type(Cypress.env('adminUser'));
   cy.get('[data-cy="password"]').type(Cypress.env('userPassword'));
@@ -14,6 +17,8 @@ Cypress.Commands.add('loginAsAdmin', () => {
 
 Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.intercept('POST', '/api/login').as('login');
+
+  cy.setCookie('cookies_preferences_set', 'true');
   cy.visit('/');
   cy.get('[data-cy="username"]').type(username);
   cy.get('[data-cy="password"]').type(password);

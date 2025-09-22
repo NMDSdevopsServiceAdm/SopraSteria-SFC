@@ -141,9 +141,11 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
 import { DetailsDhaExamplesComponent } from './components/details-dha-examples/details-dha-examples.component';
 import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
 import { WorkerPaginationComponent } from './components/worker-pagination/worker-pagination.component';
+import { CookieBannerComponent } from './components/cookie-banner/cookie-banner.component';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule, A11yModule],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,
@@ -282,6 +284,7 @@ import { WorkerPaginationComponent } from './components/worker-pagination/worker
     CareWorkforcePathwayWorkplaceAwarenessTitle,
     DetailsDhaExamplesComponent,
     FormatWhatDhaPipe,
+    CookieBannerComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -414,6 +417,7 @@ import { WorkerPaginationComponent } from './components/worker-pagination/worker
     CareWorkforcePathwayWorkplaceAwarenessTitle,
     DetailsDhaExamplesComponent,
     FormatWhatDhaPipe,
+    CookieBannerComponent,
   ],
   providers: [
     DialogService,
