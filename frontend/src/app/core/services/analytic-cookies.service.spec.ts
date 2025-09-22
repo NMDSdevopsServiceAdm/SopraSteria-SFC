@@ -1,17 +1,18 @@
-import { TestBed } from '@angular/core/testing';
-
-import { AnalyticCookiesService } from './analytic-cookies.service';
-import { WindowToken } from './window';
-import { DOCUMENT } from '@angular/common';
-import { UserService } from './user.service';
-import { MockUserService } from '@core/test-utils/MockUserService';
-import { HttpClient } from '@angular/common/http';
-import { Roles } from '@core/model/roles.enum';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { EstablishmentService } from './establishment.service';
-import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
-import { Establishment } from '../../../mockdata/establishment.js';
 import { BehaviorSubject } from 'rxjs';
+
+import { DOCUMENT } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { Roles } from '@core/model/roles.enum';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { MockUserService } from '@core/test-utils/MockUserService';
+
+import { Establishment } from '../../../mockdata/establishment.js';
+import { AnalyticCookiesService } from './analytic-cookies.service';
+import { EstablishmentService } from './establishment.service';
+import { UserService } from './user.service';
+import { WindowToken } from './window';
 
 describe('AnalyticCookiesService', async () => {
   let mockEstablishmentObservable = new BehaviorSubject(null);
