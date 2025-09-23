@@ -111,18 +111,18 @@ describe('ChangeDataPermissionsComponent', () => {
   });
 
   it('should show with the correct href back to the your other workplaces for the "Cancel" link', async () => {
-    const { component } = await setup();
+    const { component, getByTestId } = await setup();
 
-    const cancelLink = within(document.body).getByTestId('cancelLink');
+    const cancelLink = getByTestId('cancelLink');
 
     expect(cancelLink).toBeTruthy();
     expect(cancelLink.getAttribute('href')).toEqual('/workplace/view-all-workplaces');
   });
 
   it('should show error message when nothing is submitted', async () => {
-    const { component, fixture } = await setup();
+    const { component, fixture, getByText, getAllByText } = await setup();
 
-    const submitButton = within(document.body).getByText('Save and return');
+    const submitButton = getByText('Save and return');
 
     const dataPermissionErrorMessage = 'Select which data permission you want them to have';
     const form = component.form;
@@ -131,7 +131,7 @@ describe('ChangeDataPermissionsComponent', () => {
     fixture.detectChanges();
 
     expect(form.invalid).toBeTruthy();
-    expect(within(document.body).getAllByText(dataPermissionErrorMessage).length).toEqual(2);
+    expect(getAllByText(dataPermissionErrorMessage).length).toEqual(2);
   });
 
   describe('parent changing subsidiary workplace permissions', () => {
@@ -163,9 +163,9 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the name of the workplace to change data permissions for', async () => {
-      const { component } = await setup(overrides);
+      const { component, getAllByText } = await setup(overrides);
 
-      expect(within(document.body).getAllByText(subsidiaryWorkplace.name).length).toEqual(2);
+      expect(getAllByText(subsidiaryWorkplace.name).length).toEqual(2);
     });
 
     it('should set the back link to "All your workplaces" page', async () => {
@@ -177,14 +177,14 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the correct labels for the radio buttons', async () => {
-      const { component, fixture } = await setup(overrides);
+      const { component, fixture, getByLabelText } = await setup(overrides);
 
       component.ngOnInit();
       fixture.detectChanges();
 
-      expect(within(document.body).getByLabelText('Only their workplace details')).toBeTruthy();
-      expect(within(document.body).getByLabelText('Their workplace details and their staff records')).toBeTruthy();
-      expect(within(document.body).getByLabelText('No access to their data, linked only')).toBeTruthy();
+      expect(getByLabelText('Only their workplace details')).toBeTruthy();
+      expect(getByLabelText('Their workplace details and their staff records')).toBeTruthy();
+      expect(getByLabelText('No access to their data, linked only')).toBeTruthy();
     });
 
     [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None].forEach(
@@ -304,9 +304,9 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the name of the workplace to change data permissions for', async () => {
-      const { component } = await setup(overrides);
+      const { component, getAllByText } = await setup(overrides);
 
-      expect(within(document.body).getAllByText(parentWorkplace.name).length).toEqual(2);
+      expect(getAllByText(parentWorkplace.name).length).toEqual(2);
     });
 
     it('should set the back link to "All your workplaces" page', async () => {
@@ -318,14 +318,14 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the correct labels for the radio buttons', async () => {
-      const { component, fixture } = await setup(overrides);
+      const { component, fixture, getByLabelText } = await setup(overrides);
 
       component.ngOnInit();
       fixture.detectChanges();
 
-      expect(within(document.body).getByLabelText('Only your workplace details')).toBeTruthy();
-      expect(within(document.body).getByLabelText('Your workplace details and your staff records')).toBeTruthy();
-      expect(within(document.body).getByLabelText('No access to your data, linked only')).toBeTruthy();
+      expect(getByLabelText('Only your workplace details')).toBeTruthy();
+      expect(getByLabelText('Your workplace details and your staff records')).toBeTruthy();
+      expect(getByLabelText('No access to your data, linked only')).toBeTruthy();
     });
 
     [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None].forEach(
