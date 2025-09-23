@@ -334,7 +334,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: 'Care workforce pathway information saved',
+          message: "Care workforce pathway information saved in 'Workplace'",
         });
       });
 

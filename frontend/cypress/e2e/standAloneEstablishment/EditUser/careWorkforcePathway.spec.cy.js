@@ -43,7 +43,7 @@ describe('Care workforce pathway journey', () => {
       answerCWPUseQuestion('Yes', reasonsToSelect);
 
       cy.url().should('contain', homePagePath);
-      cy.get('app-alert span').should('contain', 'Care workforce pathway information saved');
+      cy.get('app-alert span').should('contain', `Care workforce pathway information saved in 'Workplace'`);
       cy.get('[data-testid="summaryBox"]').should('not.contain', cwpAwarenessFlagMessage);
 
       // verify that workplace summary got the answers
@@ -63,7 +63,7 @@ describe('Care workforce pathway journey', () => {
       answerCWPAwarenessQuestion(CWPAwarenessAnswers[3]);
 
       cy.url().should('contain', homePagePath);
-      cy.get('app-alert span').should('contain', 'Care workforce pathway information saved');
+      cy.get('app-alert span').should('contain', "Care workforce pathway information saved 'Workplace'");
       cy.get('[data-testid="summaryBox"]').should('not.contain', cwpAwarenessFlagMessage);
 
       // verify that workplace summary got the answers

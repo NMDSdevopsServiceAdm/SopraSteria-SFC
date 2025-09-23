@@ -116,7 +116,7 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
     if (this.returnIsSetToHomePage && this.hasGivenNotAwareAnswer) {
       this.alertService.addAlert({
         type: 'success',
-        message: 'Care workforce pathway information saved',
+        message: "Care workforce pathway information saved in 'Workplace'",
       });
     }
   }
