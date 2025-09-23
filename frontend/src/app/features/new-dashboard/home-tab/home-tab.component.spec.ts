@@ -357,18 +357,18 @@ describe('NewHomeTabComponent', () => {
       });
     });
 
-    describe('set data permissions', () => {
+    describe('change data permissions', () => {
       it('does not show the change data permissions link if canViewDataPermissionsLink is false', async () => {
         const { component, fixture, queryByText } = await setup();
 
         component.canViewDataPermissionsLink = false;
         fixture.detectChanges();
-        const setDataPermissionsLink = queryByText('Change data permissions');
+        const changeDataPermissionsLink = queryByText('Change data permissions');
 
-        expect(setDataPermissionsLink).toBeFalsy();
+        expect(changeDataPermissionsLink).toBeFalsy();
       });
 
-      it('shows the set data permissions link if canViewDataPermissionsLink is true', async () => {
+      it('shows the change data permissions link if canViewDataPermissionsLink is true', async () => {
         const { component, fixture, getByText } = await setup();
 
         component.canViewDataPermissionsLink = true;

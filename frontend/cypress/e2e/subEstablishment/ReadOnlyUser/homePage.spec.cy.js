@@ -29,7 +29,7 @@ describe('Sub home page as read only user', () => {
     cy.get('[data-cy="home-other-links"]').should('not.contain', 'Remove the link to your parent workplace');
   });
 
-  it('should not show set data permissions', () => {
-    cy.get('[data-cy="home-other-links"]').should('not.contain', 'Set data permissions');
+  it('should not show change data permissions', () => {
+    cy.get('[data-cy="home-other-links"]').should('not.contain', 'Change data permissions');
   });
 });

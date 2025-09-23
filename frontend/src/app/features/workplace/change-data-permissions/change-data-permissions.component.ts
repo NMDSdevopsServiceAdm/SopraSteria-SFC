@@ -182,15 +182,15 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit {
     this.serverErrorsMap = [
       {
         name: 500,
-        message: 'We could not set data permission. You can try again or contact us.',
+        message: 'We could not change data permission. You can try again or contact us.',
       },
       {
         name: 400,
-        message: 'Unable to set data permission.',
+        message: 'Unable to change data permission.',
       },
       {
         name: 404,
-        message: 'Set data permission service not found. You can try again or contact us.',
+        message: 'Change data permission service not found. You can try again or contact us.',
       },
     ];
   }
