@@ -3,12 +3,15 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { QualificationsByGroup } from '@core/model/qualification.model';
+import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCertificateService, QualificationCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { PdfMakeService } from '@core/services/pdf-make.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WorkerService } from '@core/services/worker.service';
 import { FileUtil } from '@core/utils/file-util';
@@ -34,6 +37,11 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
   public submitted = false;
   private subscriptions: Subscription = new Subscription();
   private downloadingAllCertsInBackground = false;
+  public qualificationsByGroup: QualificationsByGroup;
+  private trainingRecords: TrainingRecords;
+  public lastUpdatedDate: Date;
+  public nonMandatoryTraining: TrainingRecordCategory[];
+  public mandatoryTraining: TrainingRecordCategory[];
 
   constructor(
     private workerService: WorkerService,
@@ -46,6 +54,7 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     private previousRouteService: PreviousRouteService,
     private trainingCertificateService: TrainingCertificateService,
     private qualificationCertificateService: QualificationCertificateService,
+    private pdfMakeService: PdfMakeService,
   ) {
     this.form = this.formBuilder.group(
       {
@@ -61,12 +70,13 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.worker = this.route.snapshot.data.worker;
+    this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
+    this.trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
 
-    this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
-        this.worker = worker;
-      }),
-    );
+    this.mandatoryTraining = this.trainingRecords.mandatory;
+    this.nonMandatoryTraining = this.trainingRecords.nonMandatory;
+
     this.previousRoute = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'staff-record-summary'];
     this.nextRoute = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'delete-staff-record'];
     this.setBackLink();
@@ -151,6 +161,27 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
     });
   }
 
+  public async downloadTrainingAndQualsPdfWhenDeleteStaff() {
+    try {
+      this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, this.trainingRecords?.lastUpdated]);
+
+      return this.pdfMakeService.generateTrainingAndQualifications(
+        this.workplace,
+        this.mandatoryTraining,
+        this.nonMandatoryTraining,
+        this.qualificationsByGroup,
+        this.worker,
+        this.lastUpdatedDate,
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public getLastUpdatedDate(lastUpdatedDates: Date[]): void {
+    const filteredDates = lastUpdatedDates.filter((date) => date);
+    this.lastUpdatedDate = filteredDates.reduce((a, b) => (a > b ? a : b), null);
+  }
   public onSubmit(): void {
     this.submitted = true;
     const answer = this.form.value.downloadTrainAndQuals;
@@ -160,6 +191,9 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
 
       if (answer === 'Yes') {
         this.downloadAllCertificates()
+          .then(() => {
+            return this.downloadTrainingAndQualsPdfWhenDeleteStaff();
+          })
           .then(() => {
             return this.router.navigate(this.nextRoute);
           })
