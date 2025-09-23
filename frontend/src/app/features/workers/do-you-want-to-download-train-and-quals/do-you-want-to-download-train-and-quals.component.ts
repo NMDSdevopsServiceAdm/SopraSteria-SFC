@@ -15,7 +15,6 @@ import { PdfMakeService } from '@core/services/pdf-make.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-do-you-want-to-download-train-and-quals',
@@ -132,7 +131,9 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
         `All certificates - ${this.worker.nameOrId}.zip`,
       )
       .then(() => true)
-      .finally(() => (this.downloadingAllCertsInBackground = false));
+      .finally(() => {
+        this.downloadingAllCertsInBackground = false;
+      });
   }
 
   public async downloadTrainingAndQualsPdfWhenDeleteStaff() {
