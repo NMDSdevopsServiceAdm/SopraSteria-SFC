@@ -10,10 +10,19 @@ import {
   qualificationUidsWithoutCerts as qualificationUidsNoCerts,
   trainingUidsWithCerts,
   trainingUidsWithoutCerts as trainingUidsNoCerts,
+  MockTrainingCertificateService,
+  MockQualificationCertificateService,
+  mockTrainingCertificates,
+  mockQualificationCertificates,
 } from '@core/test-utils/MockCertificateService';
 
-import { QualificationCertificateService, TrainingCertificateService } from './certificate.service';
+import {
+  DownloadCertificateService,
+  QualificationCertificateService,
+  TrainingCertificateService,
+} from './certificate.service';
 import { mockCertificateFileBlob } from '../test-utils/MockCertificateService';
+import { FileUtil } from '@core/utils/file-util';
 
 describe('CertificateService', () => {
   const testConfigs = [
@@ -331,6 +340,57 @@ describe('CertificateService', () => {
           expect(deleteRequest.request.method).toBe('POST');
           expect(deleteRequest.request.body).toEqual(expectedRequestBody);
         });
+      });
+    });
+  });
+});
+
+describe('DownloadCertificateService', () => {
+  let service: DownloadCertificateService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        DownloadCertificateService,
+        { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
+        { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
+      ],
+    });
+    service = TestBed.inject(DownloadCertificateService);
+  });
+
+  it('should create', () => {
+    expect(service).toBeTruthy();
+  });
+
+  describe('downloadAllCertificatesForWorker', () => {
+    it('should download all certificates for a worker and save as a zip file', async () => {
+      const fileUtilSpy = spyOn(FileUtil, 'saveFilesAsZip').and.callThrough();
+
+      await service.downloadAllCertificatesForWorker('mock-workplace-uid', 'mock-worker-uid', 'mock-filename.zip');
+
+      expect(fileUtilSpy).toHaveBeenCalled();
+      const contentsOfZipFile = fileUtilSpy.calls.mostRecent().args[0];
+      const nameOfZipFile = fileUtilSpy.calls.mostRecent().args[1];
+
+      expect(nameOfZipFile).toEqual('mock-filename.zip');
+
+      mockTrainingCertificates.forEach((certificate) => {
+        expect(contentsOfZipFile).toContain(
+          jasmine.objectContaining({
+            filename: 'Training certificates/' + certificate.filename,
+            fileBlob: mockCertificateFileBlob,
+          }),
+        );
+      });
+      mockQualificationCertificates.forEach((certificate) => {
+        expect(contentsOfZipFile).toContain(
+          jasmine.objectContaining({
+            filename: 'Qualification certificates/' + certificate.filename,
+            fileBlob: mockCertificateFileBlob,
+          }),
+        );
       });
     });
   });

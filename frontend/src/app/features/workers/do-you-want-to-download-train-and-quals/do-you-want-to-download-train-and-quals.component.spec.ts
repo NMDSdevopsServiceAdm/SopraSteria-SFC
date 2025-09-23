@@ -14,7 +14,11 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
-import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
+import {
+  DownloadCertificateService,
+  QualificationCertificateService,
+  TrainingCertificateService,
+} from '@core/services/certificate.service';
 import { FileUtil } from '@core/utils/file-util';
 import {
   mockCertificateFileBlob,
@@ -25,6 +29,7 @@ import {
 import { mockQualificationCertificates } from '../../../core/test-utils/MockCertificateService';
 import { PdfMakeService } from '@core/services/pdf-make.service';
 import { TrainingRecords } from '@core/model/training.model';
+
 describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
   const yesRadio = 'Yes, I want to download the summary and any certificates';
   const noRadio = 'No, I do not want to download the summary and any certificates';
@@ -116,6 +121,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
         { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
         { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
         { provide: PdfMakeService, useValue: { generateTrainingAndQualifications: () => {} } },
+        DownloadCertificateService,
       ],
     });
 

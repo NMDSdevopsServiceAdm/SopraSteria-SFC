@@ -15,7 +15,11 @@ import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-rec
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-for-leaving.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
-import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
+import {
+  DownloadCertificateService,
+  QualificationCertificateService,
+  TrainingCertificateService,
+} from '@core/services/certificate.service';
 import { DialogService } from '@core/services/dialog.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { DownloadPdfTrainingAndQualificationComponent } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
@@ -166,6 +170,7 @@ import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-downl
     GetWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
     GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     WorkerHasAnyTrainingOrQualificationsResolver,
+    DownloadCertificateService,
   ],
 })
 export class WorkersModule {}
