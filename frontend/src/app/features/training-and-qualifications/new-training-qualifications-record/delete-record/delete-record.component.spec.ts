@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -21,7 +20,7 @@ describe('DeleteRecordComponent', () => {
 
   async function setup(trainingView = true, otherJob = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(DeleteRecordComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       providers: [
         AlertService,
         WindowRef,
@@ -49,7 +48,9 @@ describe('DeleteRecordComponent', () => {
           provide: WorkerService,
           useClass: MockWorkerService,
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

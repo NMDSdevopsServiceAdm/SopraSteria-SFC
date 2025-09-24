@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -12,7 +11,7 @@ import { ParentRequestsListComponent } from './parent-requests-list.component';
 describe('ParentRequestsListComponent', () => {
   async function setup() {
     const component = await render(ParentRequestsListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, AdminModule],
+      imports: [SharedModule, RouterModule, AdminModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -49,7 +48,9 @@ describe('ParentRequestsListComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const fixture = component.fixture;

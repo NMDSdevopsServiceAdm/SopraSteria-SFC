@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { StaffSummaryComponent } from '@shared/components/staff-summary/staff-summary.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -52,19 +51,14 @@ describe('NursingSpecialismComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, getAllByRole } = await render(
       NursingSpecialismComponent,
       {
-        imports: [
-          FormsModule,
-          ReactiveFormsModule,
-
-          SharedModule,
-          RouterTestingModule.withRoutes([{ path: 'dashboard', component: StaffSummaryComponent }]),
-        ],
+        imports: [FormsModule, ReactiveFormsModule, RouterModule, SharedModule],
         providers: [
           {
             provide: WorkerService,
             useFactory: MockWorkerServiceWithUpdateWorker.factory(worker),
             deps: [HttpClient],
           },
+          provideRouter([{ path: 'dashboard', component: StaffSummaryComponent }]),
           {
             provide: ActivatedRoute,
             useValue: {
@@ -81,7 +75,9 @@ describe('NursingSpecialismComponent', () => {
               },
             },
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

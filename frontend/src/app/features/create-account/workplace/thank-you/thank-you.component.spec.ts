@@ -33,7 +33,9 @@ describe('ThankYouComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

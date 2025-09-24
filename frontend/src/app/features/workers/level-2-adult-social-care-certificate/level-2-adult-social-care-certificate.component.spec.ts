@@ -3,7 +3,6 @@ import { getTestBed } from '@angular/core/testing';
 import { fireEvent, render } from '@testing-library/angular';
 import { SharedModule } from '@shared/shared.module';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { WorkerService } from '@core/services/worker.service';
@@ -20,7 +19,7 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       Level2AdultSocialCareCertificateComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -45,7 +44,9 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
             useFactory: MockWorkerServiceWithUpdateWorker.factory({ ...workerBuilder(), ...workerFields } as Worker),
             deps: [HttpClient],
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
         declarations: [],
       },
     );

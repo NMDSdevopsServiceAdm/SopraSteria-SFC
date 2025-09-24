@@ -1,8 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { RouterModule, provideRouter } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
@@ -20,7 +19,7 @@ describe('BasicRecordComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function setup(overrides: any = {}) {
     const setupTools = await render(BasicRecordComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [SummaryRecordChangeComponent],
       providers: [
         InternationalRecruitmentService,
@@ -29,7 +28,10 @@ describe('BasicRecordComponent', () => {
           useFactory: MockPermissionsService.factory(['canEditWorker']),
           deps: [HttpClient],
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         canEditWorker: true,
         mandatoryDetailsPage: false,

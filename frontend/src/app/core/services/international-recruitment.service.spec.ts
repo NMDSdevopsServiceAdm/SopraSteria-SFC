@@ -1,6 +1,5 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 
@@ -13,7 +12,7 @@ describe('InternationalRecruitmentService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [],
       providers: [InternationalRecruitmentService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(InternationalRecruitmentService);

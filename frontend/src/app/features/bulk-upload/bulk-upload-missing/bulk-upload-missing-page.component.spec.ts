@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -29,7 +28,7 @@ describe('BulkUploadMissingPageComponent', () => {
   const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
   async function setup() {
     const component = await render(BulkUploadMissingPageComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, BulkUploadModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -61,7 +60,9 @@ describe('BulkUploadMissingPageComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [BulkUploadMissingPageComponent, BulkUploadRelatedContentComponent],
     });
 

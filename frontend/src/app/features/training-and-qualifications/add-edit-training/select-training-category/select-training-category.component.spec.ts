@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -29,7 +28,7 @@ describe('SelectTrainingCategoryComponent', () => {
     const worker = workerBuilder();
 
     const setupTools = await render(SelectTrainingCategoryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       declarations: [
         SelectTrainingCategoryComponent,
         GroupedRadioButtonAccordionComponent,
@@ -63,7 +62,9 @@ describe('SelectTrainingCategoryComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();

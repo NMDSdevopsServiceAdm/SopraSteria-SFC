@@ -73,7 +73,9 @@ describe('NewWorkplaceSummaryComponent', () => {
           }),
         },
         provideRouter([]),
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         workplace: mockWorkplace,
         navigateToTab(event) {

@@ -2,8 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
@@ -22,7 +21,7 @@ describe('AddAdminUserComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
       AddAdminUserComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           AlertService,
           WindowRef,
@@ -34,7 +33,10 @@ describe('AddAdminUserComponent', () => {
             provide: AdminUsersService,
             useClass: MockAdminUsersService,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
@@ -33,7 +32,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByTestId } = await render(
       MultipleTrainingDetailsComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
+        imports: [SharedModule, RouterModule, AddMultipleTrainingModule],
         providers: [
           WindowRef,
           { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -69,7 +68,9 @@ describe('MultipleTrainingDetailsComponent', () => {
             provide: TrainingCategoryService,
             useClass: MockTrainingCategoryService,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

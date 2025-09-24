@@ -1,8 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -38,7 +37,7 @@ describe('NotificationOwnerChangeComponent', () => {
     };
 
     const { fixture, getByText, getByTestId, queryByTestId } = await render(NotificationOwnerChangeComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [NotificationTypePipe, RejectRequestDialogComponent],
       providers: [
         AlertService,
@@ -48,7 +47,10 @@ describe('NotificationOwnerChangeComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         events: new Observable<string>(),
         notification: notificationData,

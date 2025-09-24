@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -19,7 +18,7 @@ import { AdminUsersComponent } from './admin-users.component';
 describe('AdminUsersComponent', () => {
   async function setup(role = Roles.Admin) {
     const { fixture, getByText, getByTestId, queryByText } = await render(AdminUsersComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -41,7 +40,9 @@ describe('AdminUsersComponent', () => {
           useFactory: MockUserService.factory(0, role),
           deps: [HttpClient],
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

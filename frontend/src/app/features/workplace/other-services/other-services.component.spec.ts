@@ -13,13 +13,13 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { OtherServicesComponent } from './other-services.component';
-import { provideRouter, Router } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { getTestBed } from '@angular/core/testing';
 
 describe('OtherServicesComponent', () => {
   const setup = async () => {
     const setupTools = await render(OtherServicesComponent, {
-      imports: [BrowserModule, SharedModule, ReactiveFormsModule],
+      imports: [BrowserModule, SharedModule, ReactiveFormsModule, RouterModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -31,7 +31,9 @@ describe('OtherServicesComponent', () => {
         SubmitButtonComponent,
         QuestionComponent,
         provideRouter([]),
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
 

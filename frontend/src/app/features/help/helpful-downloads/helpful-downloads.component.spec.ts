@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { WizardService } from '@core/services/wizard.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockWizardService } from '@core/test-utils/MockWizardService';
@@ -15,7 +14,7 @@ import { MockPagesService } from '@core/test-utils/MockPagesService';
 describe('HelpfulDownloadsComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(HelpfulDownloadsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         { provide: WizardService, useClass: MockWizardService },
         {
@@ -32,7 +31,9 @@ describe('HelpfulDownloadsComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;

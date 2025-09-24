@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { SharedModule } from '@shared/shared.module';
@@ -16,7 +15,7 @@ import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 describe('RegulatedByCqcComponent', () => {
   async function setup(addWorkplaceFlow = true) {
     const component = await render(RegulatedByCqcComponent, {
-      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, AddWorkplaceModule, ReactiveFormsModule],
       providers: [
         {
           provide: WorkplaceService,
@@ -36,7 +35,9 @@ describe('RegulatedByCqcComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

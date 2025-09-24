@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
@@ -19,13 +18,14 @@ describe('SelectWorkplaceComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       SelectWorkplaceComponent,
       {
-        imports: [SharedModule, RegistrationModule, RouterTestingModule, FormsModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, RegistrationModule, FormsModule, ReactiveFormsModule],
         providers: [
           {
             provide: WorkplaceService,
             useFactory: MockWorkplaceService.factory({ value: 'Private Sector' }, manyLocationAddresses),
             deps: [HttpClient],
           },
+          provideRouter([]),
           {
             provide: ActivatedRoute,
             useValue: {
@@ -41,7 +41,9 @@ describe('SelectWorkplaceComponent', () => {
             },
           },
           UntypedFormBuilder,
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

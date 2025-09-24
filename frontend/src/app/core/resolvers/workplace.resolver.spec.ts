@@ -1,7 +1,6 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, convertToParamMap } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRouteSnapshot, convertToParamMap, provideRouter, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
@@ -11,7 +10,7 @@ import { provideHttpClient } from '@angular/common/http';
 describe('WorkplaceResolver', () => {
   function setup(overrides: any = {}) {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([])],
+      imports: [RouterModule],
       providers: [
         WorkplaceResolver,
         {
@@ -28,6 +27,7 @@ describe('WorkplaceResolver', () => {
 
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideRouter([]),
       ],
     });
 

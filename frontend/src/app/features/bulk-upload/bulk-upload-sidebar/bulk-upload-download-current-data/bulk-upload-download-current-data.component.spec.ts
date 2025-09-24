@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -18,7 +17,7 @@ describe('BulkUploadDownloadCurrentDataComponent', () => {
 
   const setup = async (sanitise = true) => {
     const { fixture, getByText, getByTestId } = await render(BulkUploadDownloadCurrentDataComponent, {
-      imports: [RouterTestingModule, SharedModule, BulkUploadModule],
+      imports: [SharedModule, BulkUploadModule],
       providers: [
         {
           provider: BulkUploadService,
@@ -28,7 +27,9 @@ describe('BulkUploadDownloadCurrentDataComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         sanitise,
       },

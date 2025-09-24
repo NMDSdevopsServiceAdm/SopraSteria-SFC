@@ -1,8 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -29,7 +28,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     const existingMandatoryTraining = mockMandatoryTraining();
 
     const setupTools = await render(AddAndManageMandatoryTrainingComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule.withRoutes([])],
+      imports: [SharedModule, RouterModule],
       declarations: [],
       providers: [
         {
@@ -48,6 +47,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        provideRouter([]),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -60,7 +60,9 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;

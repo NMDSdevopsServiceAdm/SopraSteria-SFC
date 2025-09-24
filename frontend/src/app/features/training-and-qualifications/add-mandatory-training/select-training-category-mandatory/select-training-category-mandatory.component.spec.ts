@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -30,7 +29,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
 
     const setupTools = await render(SelectTrainingCategoryMandatoryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, AddMandatoryTrainingModule],
+      imports: [SharedModule, RouterModule, AddMandatoryTrainingModule],
       declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
         BackLinkService,
@@ -62,7 +61,9 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;

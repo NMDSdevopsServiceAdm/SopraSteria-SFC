@@ -4,7 +4,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
@@ -17,7 +16,7 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       StaffBenefitCashLoyaltyComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -27,7 +26,9 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
             }),
             deps: [HttpClient],
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

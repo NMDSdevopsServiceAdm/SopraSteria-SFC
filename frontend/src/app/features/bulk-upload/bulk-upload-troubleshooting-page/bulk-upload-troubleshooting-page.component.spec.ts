@@ -1,8 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -27,7 +26,7 @@ describe('BulkUploadTroubleshootingComponent', () => {
 
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadTroubleshootingComponent, {
-      imports: [RouterTestingModule, BrowserModule],
+      imports: [BrowserModule, RouterModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -46,7 +45,9 @@ describe('BulkUploadTroubleshootingComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [BulkUploadTroubleshootingComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });
     const component = fixture.componentInstance;

@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -23,7 +22,7 @@ describe('StaffBasicRecord', () => {
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
     const component = await render(StaffBasicRecord, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
 
       providers: [
         {
@@ -43,7 +42,9 @@ describe('StaffBasicRecord', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

@@ -1,6 +1,5 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { spy } from 'sinon';
@@ -10,8 +9,8 @@ import { BulkUploadSanitiseDataCheckboxComponent } from './bulk-upload-sanitise-
 describe('BulkUploadSanitiseDataCheckboxComponent', () => {
   const setup = async (sanitise = true) => {
     const { fixture, getByText, getByTestId } = await render(BulkUploadSanitiseDataCheckboxComponent, {
-      imports: [RouterTestingModule, SharedModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      imports: [SharedModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         sanitise,
         checkboxToggled: {

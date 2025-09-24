@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { SharedModule } from '@shared/shared.module';
@@ -16,7 +16,7 @@ import { SelectWorkplaceComponent } from './select-workplace.component';
 describe('SelectWorkplaceComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(SelectWorkplaceComponent, {
-      imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, RegistrationModule, FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,
@@ -40,7 +40,9 @@ describe('SelectWorkplaceComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

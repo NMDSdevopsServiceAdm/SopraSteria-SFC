@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { ActivatedRoute, provideRouter, Router } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -14,7 +14,7 @@ import { environment } from 'src/environments/environment';
 
 const getSatisfactionSurveyComponent = async () => {
   return render(SatisfactionSurveyComponent, {
-    imports: [FormsModule, ReactiveFormsModule, SharedModule],
+    imports: [FormsModule, ReactiveFormsModule, RouterModule, SharedModule],
     providers: [
       {
         provide: ActivatedRoute,

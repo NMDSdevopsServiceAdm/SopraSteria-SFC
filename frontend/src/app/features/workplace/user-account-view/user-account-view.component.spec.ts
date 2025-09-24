@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
@@ -35,7 +34,7 @@ describe('UserAccountViewComponent', () => {
     }
 
     const { fixture, getByText, getByTestId, queryByText } = await render(UserAccountViewComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [],
       providers: [
         AlertService,
@@ -81,7 +80,9 @@ describe('UserAccountViewComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

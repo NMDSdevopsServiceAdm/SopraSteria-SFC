@@ -1,4 +1,3 @@
-import { RouterTestingModule } from '@angular/router/testing';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { SubmitButtonComponent } from './submit-button.component';
@@ -6,7 +5,7 @@ import { SubmitButtonComponent } from './submit-button.component';
 describe('SubmitButtonComponent', () => {
   const setup = async (shouldReturn = false, summaryContinue = false) =>
     render(SubmitButtonComponent, {
-      imports: [RouterTestingModule],
+      imports: [],
       componentProperties: {
         return: shouldReturn,
         callToAction: 'Save and continue',

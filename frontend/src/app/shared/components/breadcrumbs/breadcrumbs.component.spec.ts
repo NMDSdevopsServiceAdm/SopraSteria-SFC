@@ -9,14 +9,13 @@ import { TabsService } from '@core/services/tabs.service';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { SharedModule } from '@shared/shared.module';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import { BreadcrumbsComponent } from './breadcrumbs.component';
 
 describe('BreadcrumbsComponent', () => {
   const setup = async (workplaceName = '') => {
     const { fixture, getByText } = await render(BreadcrumbsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         WindowRef,
         {
@@ -27,7 +26,9 @@ describe('BreadcrumbsComponent', () => {
           provide: TabsService,
           useClass: MockTabsService,
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
         workplaceName: workplaceName,

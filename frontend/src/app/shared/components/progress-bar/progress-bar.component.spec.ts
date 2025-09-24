@@ -1,5 +1,4 @@
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -8,7 +7,7 @@ import { ProgressBarComponent } from './progress-bar.component';
 describe('ProgressBarComponent', () => {
   const setup = async (currentSection = 'Section 1', completeProgressBarBoolean = false) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(ProgressBarComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       componentProperties: {
         header: 'Section Heading',
         sections: ['Section 1', 'Section 2', 'Section 3', 'Section 4', 'Section 5'],

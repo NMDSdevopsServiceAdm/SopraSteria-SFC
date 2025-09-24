@@ -2,8 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { Worker } from '@core/model/worker.model';
@@ -22,7 +21,7 @@ import { NewTrainingLinkPanelComponent } from './training-link-panel.component';
 describe('NewTrainingLinkPanelComponent', () => {
   async function setup(totalRecords = 6, canEditEstablishment = true, isParent = false) {
     const { fixture, getByText, queryByText } = await render(NewTrainingLinkPanelComponent, {
-      imports: [RouterModule, RouterTestingModule],
+      imports: [RouterModule],
       providers: [
         {
           provide: WorkerService,
@@ -38,7 +37,10 @@ describe('NewTrainingLinkPanelComponent', () => {
           useFactory: MockPermissionsService.factory(['canEditEstablishment']),
           deps: [HttpClient, Router, UserService],
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         workplace: {
           uid: 'testuid123',

@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import {
   QualificationCertificateDownloadEvent,
   QualificationCertificateUploadEvent,
@@ -18,8 +18,8 @@ import { NewQualificationsComponent } from './new-qualifications.component';
 describe('NewQualificationsComponent', () => {
   async function setup(override: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(NewQualificationsComponent, {
-      imports: [SharedModule, RouterTestingModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      imports: [SharedModule, RouterModule],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         canEditWorker: true,
         qualificationsByGroup: cloneDeep(qualificationsByGroup),

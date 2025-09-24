@@ -1,6 +1,5 @@
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'src/environments/environment';
 
 import { HelpPagesService } from './help-pages.service';
@@ -12,7 +11,7 @@ describe('HelpPagesService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [],
       providers: [HelpPagesService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(HelpPagesService);

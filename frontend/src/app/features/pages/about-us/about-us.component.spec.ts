@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockArticlesService } from '@core/test-utils/MockArticlesService';
@@ -21,7 +20,7 @@ describe('AboutUsComponent', () => {
 
   async function setup() {
     const { fixture, getByText } = await render(AboutUsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -38,7 +37,9 @@ describe('AboutUsComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

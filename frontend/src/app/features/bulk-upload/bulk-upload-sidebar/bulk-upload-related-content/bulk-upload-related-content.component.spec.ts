@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
@@ -18,7 +17,7 @@ describe('BulkUploadRelatedContentComponent', () => {
 
   const setup = async (isAdmin = false, isLoggedIn: boolean = true) => {
     const { fixture, getByText, queryByText, getByTestId } = await render(BulkUploadRelatedContentComponent, {
-      imports: [RouterTestingModule, BrowserModule, BulkUploadModule],
+      imports: [BrowserModule, BulkUploadModule],
       providers: [
         {
           provide: AuthService,
@@ -35,7 +34,9 @@ describe('BulkUploadRelatedContentComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [BulkUploadRelatedContentComponent],
     });
     const component = fixture.componentInstance;

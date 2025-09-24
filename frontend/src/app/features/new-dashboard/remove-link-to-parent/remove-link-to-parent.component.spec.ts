@@ -1,8 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -25,7 +24,7 @@ describe('RemoveLinkToParentComponent', () => {
     const { getByRole, getByText, getByLabelText, getByTestId, fixture, getAllByText } = await render(
       RemoveLinkToParentComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule],
+        imports: [SharedModule, RouterModule],
         declarations: [],
         providers: [
           AlertService,
@@ -43,7 +42,10 @@ describe('RemoveLinkToParentComponent', () => {
             provide: FeatureFlagsService,
             useClass: MockFeatureFlagsService,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
         componentProperties: {},
       },
     );

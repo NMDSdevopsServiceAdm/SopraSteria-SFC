@@ -1,25 +1,28 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { RegistrationSurveyModule } from '../registration-survey.module';
 import { ThankYouComponent } from './thank-you.component';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('ThankYouComponent', () => {
   async function setup() {
     return render(ThankYouComponent, {
-      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule, RegistrationSurveyModule],
       providers: [
         {
           provide: RegistrationSurveyService,
           useClass: RegistrationSurveyService,
           deps: [HttpClient],
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
   }
 

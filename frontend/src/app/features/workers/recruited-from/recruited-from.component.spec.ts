@@ -4,7 +4,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { build, fake } from '@jackfranklin/test-data-bot';
@@ -89,7 +88,7 @@ describe('RecruitedFromComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       RecruitedFromComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -118,7 +117,9 @@ describe('RecruitedFromComponent', () => {
             provide: RecruitmentService,
             useClass: MockRecruitmentService,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
         schemas: [NO_ERRORS_SCHEMA],
       },
     );

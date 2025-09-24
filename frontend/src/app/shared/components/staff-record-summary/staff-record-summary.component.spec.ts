@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { provideRouter, Router } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
@@ -26,7 +26,7 @@ import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 describe('StaffRecordSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(StaffRecordSummaryComponent, {
-      imports: [SharedModule, BrowserModule, FundingModule],
+      imports: [SharedModule, BrowserModule, FundingModule, RouterModule],
       providers: [
         InternationalRecruitmentService,
         {
@@ -40,7 +40,9 @@ describe('StaffRecordSummaryComponent', () => {
         },
         WdfConfirmFieldsService,
         provideRouter([]),
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         wdfView: overrides.wdfView ?? true,
         workplace: establishmentBuilder() as Establishment,

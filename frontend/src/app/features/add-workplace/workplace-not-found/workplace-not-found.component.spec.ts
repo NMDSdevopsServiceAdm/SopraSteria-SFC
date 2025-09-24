@@ -4,7 +4,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
@@ -23,7 +22,7 @@ describe('WorkplaceNotFoundComponent', () => {
     addWorkplaceFlow = true,
   ) {
     const component = await render(WorkplaceNotFoundComponent, {
-      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, AddWorkplaceModule, ReactiveFormsModule],
       providers: [
         {
           provide: WorkplaceService,
@@ -72,7 +71,9 @@ describe('WorkplaceNotFoundComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

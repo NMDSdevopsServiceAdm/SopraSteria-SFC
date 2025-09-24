@@ -1,18 +1,18 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WdfFieldConfirmationComponent } from './wdf-field-confirmation.component';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('WdfFieldConfirmationComponent', async () => {
   const setup = async () => {
     const { fixture, getByText, queryByText } = await render(WdfFieldConfirmationComponent, {
-      imports: [SharedModule, RouterTestingModule, BrowserModule, FundingModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      imports: [SharedModule, RouterModule, BrowserModule, FundingModule],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       declarations: [],
       componentProperties: {
         changeLink: ['123', 'nationality'],

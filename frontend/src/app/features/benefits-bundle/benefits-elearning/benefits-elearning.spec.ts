@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PagesService } from '@core/services/pages.service';
@@ -19,7 +18,7 @@ describe('BenefitsELearningComponent', () => {
 
   async function setup() {
     const { fixture, getByText, queryByText } = await render(BenefitsELearningComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         { provide: PagesService, useClass: MockPagesService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -34,7 +33,9 @@ describe('BenefitsELearningComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

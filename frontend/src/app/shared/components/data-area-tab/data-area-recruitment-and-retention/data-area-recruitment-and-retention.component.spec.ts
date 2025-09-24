@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { benchmarksData, allRankingsData } from '@core/test-utils/MockBenchmarkService';
 import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { SharedModule } from '@shared/shared.module';
@@ -14,8 +13,8 @@ import { DataAreaRecruitmentAndRetentionComponent } from './data-area-recruiment
 describe('DataAreaRecruitmentAndRetentionComponent', () => {
   const setup = async (viewBenchmarksComparisonGroups = false) => {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaRecruitmentAndRetentionComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {

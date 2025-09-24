@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -18,7 +17,7 @@ describe('NameOfWorkplaceComponent', () => {
   async function setup(addWorkplaceFlow = true) {
     const primaryWorkplace = { isParent: true };
     const component = await render(NameOfWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, RegistrationModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, RegistrationModule, ReactiveFormsModule],
       providers: [
         BackService,
         {
@@ -43,7 +42,9 @@ describe('NameOfWorkplaceComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

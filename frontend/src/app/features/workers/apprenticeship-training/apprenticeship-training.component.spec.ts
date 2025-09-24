@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -16,7 +15,7 @@ describe('ApprenticeshipTrainingComponent', () => {
     const { fixture, getByText, queryByTestId, getByLabelText, getByTestId } = await render(
       ApprenticeshipTrainingComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -40,7 +39,9 @@ describe('ApprenticeshipTrainingComponent', () => {
             provide: WorkerService,
             useClass: MockWorkerServiceWithUpdateWorker,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

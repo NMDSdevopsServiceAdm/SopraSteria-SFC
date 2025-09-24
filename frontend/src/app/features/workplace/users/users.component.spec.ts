@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -18,7 +17,7 @@ import { UsersComponent } from './users.component';
 describe('UsersComponent', () => {
   const setup = async () => {
     const { fixture } = await render(UsersComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: PermissionsService,
@@ -39,7 +38,9 @@ describe('UsersComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = fixture.componentInstance;
 

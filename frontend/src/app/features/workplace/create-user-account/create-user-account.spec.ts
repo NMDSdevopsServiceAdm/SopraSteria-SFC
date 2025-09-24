@@ -2,8 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
@@ -25,16 +24,7 @@ import { CreateUserAccountComponent } from './create-user-account.component';
 describe('CreateUserAccountComponent', () => {
   async function setup() {
     const setupTools = await render(CreateUserAccountComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule.withRoutes([
-          { path: 'workplace/c131232132ab/user/saved/testuid', component: UserAccountSavedComponent },
-        ]),
-
-        FormsModule,
-        ReactiveFormsModule,
-      ],
+      imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
       providers: [
         ErrorSummaryService,
         BackService,
@@ -46,6 +36,7 @@ describe('CreateUserAccountComponent', () => {
           provide: UserService,
           useClass: MockUserService,
         },
+        provideRouter([{ path: 'workplace/c131232132ab/user/saved/testuid', component: UserAccountSavedComponent }]),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -53,7 +44,9 @@ describe('CreateUserAccountComponent', () => {
           },
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;

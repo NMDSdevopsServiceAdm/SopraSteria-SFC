@@ -4,7 +4,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { Worker } from '@core/model/worker.model';
@@ -33,7 +32,7 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
     const role = Roles.Edit;
     const { fixture, getByTestId, queryByTestId } = await render(ViewSubsidiaryStaffRecordsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: PermissionsService,
@@ -76,7 +75,9 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [NewDashboardHeaderComponent],
     });
 

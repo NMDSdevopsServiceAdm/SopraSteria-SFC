@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -27,7 +26,7 @@ import { DialogService } from '@core/services/dialog.service';
 describe('ViewSubsidiaryWorkplaceUsersComponent', () => {
   const setup = async (isAdmin = true, establishment = Establishment) => {
     const { fixture } = await render(ViewSubsidiaryWorkplaceUsersComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         AlertService,
         WindowRef,
@@ -60,7 +59,9 @@ describe('ViewSubsidiaryWorkplaceUsersComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [NewDashboardHeaderComponent],
     });
     const component = fixture.componentInstance;

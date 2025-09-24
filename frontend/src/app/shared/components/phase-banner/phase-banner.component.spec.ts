@@ -2,21 +2,22 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { PhaseBannerComponent } from './phase-banner.component';
+import { provideRouter } from '@angular/router';
 
 describe('PhaseBannerComponent', () => {
   const setup = async () => {
     const { fixture } = await render(PhaseBannerComponent, {
-      imports: [RouterTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      imports: [BrowserModule, SharedModule, ReactiveFormsModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         UntypedFormBuilder,
+        provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

@@ -5,7 +5,6 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
@@ -43,7 +42,7 @@ describe('StaffDetailsComponent', () => {
     const { fixture, getByText, getByTestId, getByLabelText, queryByTestId, getAllByText } = await render(
       StaffDetailsComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         declarations: [ProgressBarComponent],
         schemas: [NO_ERRORS_SCHEMA],
         providers: [
@@ -84,7 +83,9 @@ describe('StaffDetailsComponent', () => {
               },
             },
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

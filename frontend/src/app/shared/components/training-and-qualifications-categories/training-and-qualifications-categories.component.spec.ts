@@ -1,12 +1,12 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { fireEvent, render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
 import { TrainingAndQualificationsCategoriesComponent } from './training-and-qualifications-categories.component';
+import { provideRouter, RouterModule } from '@angular/router';
 
 const { build, fake, sequence, perBuild } = require('@jackfranklin/test-data-bot');
 
@@ -119,8 +119,8 @@ const trainingCategories = [
 describe('TrainingAndQualificationsCategoriesComponent', () => {
   async function setup(totalTraining = 5) {
     const { getByTestId, getByLabelText, fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
-      imports: [RouterTestingModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      imports: [RouterModule],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: trainingCategories,

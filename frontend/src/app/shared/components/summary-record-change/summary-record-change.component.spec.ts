@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -10,9 +9,9 @@ import { SummaryRecordChangeComponent } from './summary-record-change.component'
 describe('SummaryRecordChangeComponent', () => {
   async function setup(explanationText = '', link = [], hasData = false) {
     const component = await render(SummaryRecordChangeComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         explanationText,
         link,

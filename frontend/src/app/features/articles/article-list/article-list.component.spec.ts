@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ArticlesService } from '@core/services/articles.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -22,7 +21,7 @@ describe('ArticleListComponent', () => {
 
   async function setup() {
     const { fixture, getByText, queryByText } = await render(ArticleListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         { provide: ArticlesService, useClass: MockArticlesService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -40,7 +39,9 @@ describe('ArticleListComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

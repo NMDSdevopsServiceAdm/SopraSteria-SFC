@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -49,7 +48,7 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     if (fixTrainingCount) workerObj = { workers: [workers[0]], workerCount: 1 };
 
     const setupTools = await render(MissingMandatoryTrainingStatusComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         WindowRef,
         BackLinkService,
@@ -83,7 +82,9 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
 

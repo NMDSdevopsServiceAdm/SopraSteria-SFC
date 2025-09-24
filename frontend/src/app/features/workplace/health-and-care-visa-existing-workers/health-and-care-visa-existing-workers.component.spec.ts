@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { PermissionType } from '@core/model/permissions.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -40,7 +39,7 @@ describe('HealthAndCareVisaExistingWorkers', () => {
     previousUrl = '/dashboard#home',
   ) {
     const { fixture, getByText, getByTestId, getByRole, queryByText } = await render(HealthAndCareVisaExistingWorkers, {
-      imports: [RouterTestingModule, FormsModule, ReactiveFormsModule, SharedModule],
+      imports: [FormsModule, RouterModule, ReactiveFormsModule, SharedModule],
       declarations: [DetailsComponent, SubmitExitButtonsComponent],
       providers: [
         UntypedFormBuilder,
@@ -71,7 +70,10 @@ describe('HealthAndCareVisaExistingWorkers', () => {
           useFactory: MockPreviousRouteService.factory(previousUrl),
           deps: [Router],
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

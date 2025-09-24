@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
@@ -23,7 +22,7 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 describe('UserAccountEditPermissionsComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(UserAccountEditPermissionsComponent, {
-      imports: [RouterModule, RouterTestingModule, WorkplaceModule],
+      imports: [RouterModule, WorkplaceModule],
       providers: [
         BackService,
         AlertService,
@@ -62,7 +61,9 @@ describe('UserAccountEditPermissionsComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

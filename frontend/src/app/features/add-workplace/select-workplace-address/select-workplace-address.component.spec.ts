@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
@@ -20,7 +19,7 @@ describe('SelectWorkplaceAddressComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       SelectWorkplaceAddressComponent,
       {
-        imports: [SharedModule, RegistrationModule, RouterTestingModule, FormsModule, ReactiveFormsModule],
+        imports: [SharedModule, RegistrationModule, RouterModule, FormsModule, ReactiveFormsModule],
         providers: [
           SelectWorkplaceAddressDirective,
           {
@@ -28,6 +27,7 @@ describe('SelectWorkplaceAddressComponent', () => {
             useFactory: MockWorkplaceService.factory({ value: 'Private Sector' }, manyLocationAddresses),
             deps: [HttpClient],
           },
+          provideRouter([]),
           {
             provide: ActivatedRoute,
             useValue: {
@@ -42,7 +42,9 @@ describe('SelectWorkplaceAddressComponent', () => {
               },
             },
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

@@ -2,8 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
@@ -28,7 +27,7 @@ describe('HeaderComponent', () => {
     const showNotificationsLink = overrides.showNotificationsLink ?? true;
 
     const setupTools = await render(HeaderComponent, {
-      imports: [RouterTestingModule],
+      imports: [RouterModule],
       declarations: [HeaderComponent],
       providers: [
         {
@@ -49,6 +48,7 @@ describe('HeaderComponent', () => {
           provide: NotificationsService,
           useClass: MockNotificationsService,
         },
+        provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

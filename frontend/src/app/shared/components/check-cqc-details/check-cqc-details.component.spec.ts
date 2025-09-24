@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -13,7 +12,7 @@ describe('CheckCQCDetailsComponent', () => {
     const locationId = '1-11111111';
 
     const { fixture, getByText } = await render(CheckCQCDetailsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -21,7 +20,9 @@ describe('CheckCQCDetailsComponent', () => {
             establishment: { locationId },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

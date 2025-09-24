@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationType } from '@core/model/qualification.model';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -42,7 +41,7 @@ describe('SelectQualificationTypeComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, getByRole } = await render(
       SelectQualificationTypeComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule, FormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule, FormsModule],
         declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
         providers: [
           BackLinkService,
@@ -72,7 +71,9 @@ describe('SelectQualificationTypeComponent', () => {
               },
             },
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

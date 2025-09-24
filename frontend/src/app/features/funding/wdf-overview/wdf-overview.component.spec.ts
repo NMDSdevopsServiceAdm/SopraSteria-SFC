@@ -2,8 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -21,7 +20,7 @@ describe('WdfOverviewComponent', () => {
     const currentYear = new Date().getFullYear();
 
     const setupTools = await render(WdfOverviewComponent, {
-      imports: [RouterTestingModule, BrowserModule, SharedModule],
+      imports: [BrowserModule, RouterModule, SharedModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -49,7 +48,9 @@ describe('WdfOverviewComponent', () => {
             getEstablishments: () => of(overrides.getParentAndSubs ?? null),
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         wdfStartDate: `1 April ${currentYear}`,
         wdfEndDate: `31 March ${currentYear + 1}`,

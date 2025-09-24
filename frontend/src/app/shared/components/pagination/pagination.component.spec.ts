@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -10,9 +9,9 @@ import { PaginationComponent } from './pagination.component';
 describe('PaginationComponent', () => {
   async function setup(itemsPerPage = 15, totalNoOfItems = 43, isBigWindow = true) {
     const { fixture, queryByText, queryByTestId, rerender } = await render(PaginationComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         itemsPerPage,
         totalNoOfItems,

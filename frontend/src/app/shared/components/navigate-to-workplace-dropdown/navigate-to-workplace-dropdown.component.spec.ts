@@ -4,7 +4,6 @@ import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { establishmentBuilder, MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
@@ -25,7 +24,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     const childWorkplaces = 'childWorkplaces' in overrides ? overrides.childWorkplaces : null;
 
     const setupTools = await render(NavigateToWorkplaceDropdownComponent, {
-      imports: [RouterTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -37,7 +36,9 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
               : {}),
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         maxChildWorkplacesForDropdown,
       },

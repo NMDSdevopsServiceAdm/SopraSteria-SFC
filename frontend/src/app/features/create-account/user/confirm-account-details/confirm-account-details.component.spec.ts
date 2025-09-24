@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
@@ -19,7 +18,7 @@ describe('ConfirmAccountDetailsComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       ConfirmAccountDetailsComponent,
       {
-        imports: [SharedModule, RegistrationModule, RouterTestingModule, FormsModule, ReactiveFormsModule],
+        imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
         providers: [
           {
             provide: RegistrationService,
@@ -44,7 +43,9 @@ describe('ConfirmAccountDetailsComponent', () => {
             },
           },
           UntypedFormBuilder,
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

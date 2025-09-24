@@ -16,7 +16,6 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
 import { SharedModule } from '@shared/shared.module';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { TrainingService } from '@core/services/training.service';
@@ -35,7 +34,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     const workers = override?.withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(ViewSubsidiaryTrainingAndQualificationsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [
         NewDashboardHeaderComponent,
         NewTrainingLinkPanelComponent,
@@ -86,7 +85,9 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
             queryParamMap: { get: () => null },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         canEditEstablishment: override.canEditEstablishment,
       },

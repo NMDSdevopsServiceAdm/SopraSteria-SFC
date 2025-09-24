@@ -4,8 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -24,7 +23,7 @@ describe('ServicesCapacityComponent', () => {
     const { fixture, getByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       ServicesCapacityComponent,
       {
-        imports: [RouterTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+        imports: [BrowserModule, SharedModule, ReactiveFormsModule, RouterModule],
         providers: [
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           {
@@ -37,7 +36,10 @@ describe('ServicesCapacityComponent', () => {
           ErrorSummaryService,
           SubmitButtonComponent,
           QuestionComponent,
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
     const component = fixture.componentInstance;

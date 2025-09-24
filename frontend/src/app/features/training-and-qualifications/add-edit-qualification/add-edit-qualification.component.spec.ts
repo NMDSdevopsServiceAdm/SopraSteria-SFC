@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { QualificationResponse, QualificationType } from '@core/model/qualification.model';
 import { QualificationCertificateService } from '@core/services/certificate.service';
 import { QualificationService } from '@core/services/qualification.service';
@@ -26,7 +25,7 @@ describe('AddEditQualificationComponent', () => {
     const { fixture, getByText, getByTestId, queryByText, queryByTestId, getByLabelText, getAllByText } = await render(
       AddEditQualificationComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           {
             provide: ActivatedRoute,
@@ -58,7 +57,9 @@ describe('AddEditQualificationComponent', () => {
             provide: QualificationCertificateService,
             useClass: MockQualificationCertificateService,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

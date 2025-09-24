@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -16,7 +15,7 @@ describe('AverageWeeklyHoursComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       AverageWeeklyHoursComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -40,7 +39,9 @@ describe('AverageWeeklyHoursComponent', () => {
             provide: WorkerService,
             useClass: MockWorkerServiceWithoutReturnUrl,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { TrainingService } from '@core/services/training.service';
 import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
@@ -15,7 +14,7 @@ import { SelectRecordTypeComponent } from './select-record-type.component';
 describe('SelectRecordTypeComponent', () => {
   async function setup(prefill = false) {
     const { fixture, getByText, getAllByText } = await render(SelectRecordTypeComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       providers: [
         { provide: TrainingService, useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService },
         {
@@ -24,7 +23,9 @@ describe('SelectRecordTypeComponent', () => {
             params: Observable.from([{ establishmentuid: 'establishmentUid', id: 1 }]),
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

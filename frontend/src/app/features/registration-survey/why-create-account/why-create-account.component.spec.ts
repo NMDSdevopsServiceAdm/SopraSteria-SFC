@@ -2,7 +2,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -13,8 +12,8 @@ import { WhyCreateAccountComponent } from './why-create-account.component';
 describe('WhyCreateAccountComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(WhyCreateAccountComponent, {
-      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      imports: [SharedModule, RegistrationSurveyModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
 
     const component = fixture.componentInstance;

@@ -4,8 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { PermissionType } from '@core/model/permissions.model';
 import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -37,7 +36,7 @@ describe('SubsidiaryAccountComponent', () => {
     permissions = ['canViewBenchmarks', 'canViewListOfUsers', 'canViewListOfWorkers', 'canViewEstablishment'],
   ) => {
     const { fixture, getByTestId, queryByTestId, getByRole } = await render(SubsidiaryAccountComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         WindowRef,
         {
@@ -61,6 +60,7 @@ describe('SubsidiaryAccountComponent', () => {
           provide: ParentSubsidiaryViewService,
           useClass: MockParentSubsidiaryViewService,
         },
+        provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

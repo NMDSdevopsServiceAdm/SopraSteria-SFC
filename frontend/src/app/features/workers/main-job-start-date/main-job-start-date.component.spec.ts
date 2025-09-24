@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -53,7 +52,7 @@ describe('MainJobStartDateComponent', () => {
     const { fixture, getByText, getByLabelText, getAllByText, getByTestId, queryByTestId } = await render(
       MainJobStartDateComponent,
       {
-        imports: [RouterTestingModule, ReactiveFormsModule],
+        imports: [ReactiveFormsModule, RouterModule],
         declarations: [DatePickerComponent, SubmitButtonComponent, ErrorSummaryComponent, ProgressBarComponent],
         providers: [
           UntypedFormBuilder,
@@ -93,7 +92,9 @@ describe('MainJobStartDateComponent', () => {
             provide: PermissionsService,
             useClass: MockPermissionsService,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { SharedModule } from '@shared/shared.module';
@@ -15,8 +14,8 @@ import { DataAreaPayComponent } from './data-area-pay.component';
 describe('DataAreaPayComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaPayComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {

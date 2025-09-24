@@ -4,7 +4,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -26,7 +25,7 @@ describe('SelectPrimaryUserDeleteComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText } = await render(
       SelectPrimaryUserDeleteComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, FormsModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
         declarations: [],
         providers: [
           AlertService,
@@ -71,7 +70,9 @@ describe('SelectPrimaryUserDeleteComponent', () => {
               },
             },
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

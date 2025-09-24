@@ -1,7 +1,6 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, convertToParamMap, provideRouter, RouterModule } from '@angular/router';
 import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
 
 import { BulkUploadTopTipResolver } from './bulk-upload-top-tip.resolver';
@@ -13,14 +12,14 @@ describe('BulkUploadTopTipsResolver', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule.withRoutes([])],
+      imports: [RouterModule],
       providers: [
+        provideRouter([]),
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap({ slug: 'topTipSlug' }) } },
         },
         BulkUploadTopTipResolver,
-
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

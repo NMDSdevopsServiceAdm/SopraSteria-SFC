@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackLinkService } from '@core/services/backLink.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -13,13 +12,15 @@ describe('BulkUploadFlowchartComponent', () => {
     const backLinkServiceSpy = jasmine.createSpyObj('BacklinkService', ['showBackLink']);
 
     const setupTools = await render(BulkUploadFlowchartComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: BackLinkService,
           useValue: backLinkServiceSpy,
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     return {

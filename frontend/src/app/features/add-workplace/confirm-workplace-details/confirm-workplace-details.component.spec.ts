@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { EmployerType } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -23,7 +22,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       ConfirmWorkplaceDetailsComponent,
       {
-        imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, FormsModule, ReactiveFormsModule],
+        imports: [SharedModule, AddWorkplaceModule, FormsModule, RouterModule, ReactiveFormsModule],
         providers: [
           {
             provide: WorkplaceService,
@@ -38,7 +37,10 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
             provide: UserService,
             useClass: MockUserService,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

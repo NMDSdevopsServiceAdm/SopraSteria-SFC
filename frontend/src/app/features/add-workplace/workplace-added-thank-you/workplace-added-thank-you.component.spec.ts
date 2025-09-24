@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -11,8 +10,8 @@ import { WorkplaceAddedThankYouComponent } from './workplace-added-thank-you.com
 describe('WorkplaceAddedThankYouComponent', () => {
   async function setup() {
     const component = await render(WorkplaceAddedThankYouComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, AddWorkplaceModule],
-      providers: [provideHttpClient(), provideHttpClientTesting(),],
+      imports: [SharedModule, RouterModule, AddWorkplaceModule],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     });
 
     return {

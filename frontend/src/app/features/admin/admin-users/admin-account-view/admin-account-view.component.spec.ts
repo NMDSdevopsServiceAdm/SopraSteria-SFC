@@ -2,8 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
@@ -44,7 +43,7 @@ describe('AdminAccountViewComponent', () => {
       user = AdminUser();
     }
     const { fixture, getByText, queryByText } = await render(AdminAccountViewComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule.withRoutes([])],
+      imports: [SharedModule, RouterModule],
       providers: [
         AlertService,
         WindowRef,
@@ -79,7 +78,9 @@ describe('AdminAccountViewComponent', () => {
           useFactory: MockUserService.factory(0, role),
           deps: [HttpClient],
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

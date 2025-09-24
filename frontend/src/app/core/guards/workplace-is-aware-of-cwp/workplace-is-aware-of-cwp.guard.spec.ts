@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRoute, provideRouter, RouterModule, RouterStateSnapshot, UrlTree } from '@angular/router';
 
 import { WorkplaceIsAwareOfCwpGuard } from './workplace-is-aware-of-cwp.guard';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -12,7 +12,7 @@ import { provideHttpClient } from '@angular/common/http';
 describe('WorkplaceIsAwareOfCwpGuard', () => {
   const setup = async (overrides: any = {}) => {
     TestBed.configureTestingModule({
-      imports: [],
+      imports: [RouterModule],
       providers: [
         WorkplaceIsAwareOfCwpGuard,
         {

@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
@@ -12,14 +12,17 @@ import { StartComponent } from './start.component';
 describe('StartComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(StartComponent, {
-      imports: [SharedModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: WorkplaceService,
           useClass: MockWorkplaceService,
         },
         BackLinkService,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

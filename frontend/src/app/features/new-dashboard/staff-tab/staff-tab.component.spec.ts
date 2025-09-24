@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { Worker } from '@core/model/worker.model';
@@ -44,7 +43,7 @@ describe('NewStaffTabComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const { fixture, getByTestId, queryByTestId } = await render(NewStaffTabComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: FeatureFlagsService,
@@ -78,7 +77,10 @@ describe('NewStaffTabComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [NewDashboardHeaderComponent],
       componentProperties: {
         workplace: establishment,

@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -11,16 +10,20 @@ import { render } from '@testing-library/angular';
 import { AdminSkipService } from '../admin-skip.service';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadStartPageComponent } from './bulk-upload-start-page.component';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('BulkUploadStartPage', () => {
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadStartPageComponent, {
-      imports: [RouterTestingModule, BrowserModule],
+      imports: [BrowserModule, RouterModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         AdminSkipService,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [BulkUploadStartPageComponent, CodesAndGuidanceComponent],
     });
     const component = fixture.componentInstance;

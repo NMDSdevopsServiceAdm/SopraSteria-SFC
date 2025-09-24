@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
@@ -13,13 +12,15 @@ import { fireEvent, render } from '@testing-library/angular';
 describe('SelectMainServiceCQCComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(SelectMainServiceCqcComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

@@ -3,7 +3,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
@@ -85,7 +84,7 @@ describe('ChangeDataOwnerComponent', async () => {
     const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
       ChangeDataOwnerComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         declarations: [ChangeDataOwnerComponent],
         providers: [
           AlertService,
@@ -112,7 +111,9 @@ describe('ChangeDataOwnerComponent', async () => {
               },
             },
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
         componentProperties: {},
       },
     );

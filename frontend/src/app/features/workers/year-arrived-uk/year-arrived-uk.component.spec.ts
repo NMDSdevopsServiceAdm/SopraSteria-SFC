@@ -4,7 +4,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -20,7 +19,7 @@ describe('YearArrivedUkComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       YearArrivedUkComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           InternationalRecruitmentService,
@@ -47,7 +46,9 @@ describe('YearArrivedUkComponent', () => {
             useFactory: MockWorkerServiceWithUpdateWorker.factory({ ...workerBuilder(), ...workerFields } as Worker),
             deps: [HttpClient],
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

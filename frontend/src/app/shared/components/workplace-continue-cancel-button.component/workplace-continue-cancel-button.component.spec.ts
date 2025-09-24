@@ -1,4 +1,3 @@
-import { RouterTestingModule } from '@angular/router/testing';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceContinueCancelButtonComponent } from './workplace-continue-cancel-button.component';
@@ -6,7 +5,7 @@ import { WorkplaceContinueCancelButtonComponent } from './workplace-continue-can
 describe('WorkplaceContinueCancelButtonComponent', () => {
   const setup = async () =>
     render(WorkplaceContinueCancelButtonComponent, {
-      imports: [RouterTestingModule],
+      imports: [],
       componentProperties: {
         marginTop4: false,
       },

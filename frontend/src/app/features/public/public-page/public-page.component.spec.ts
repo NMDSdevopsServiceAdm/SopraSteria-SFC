@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
@@ -17,7 +16,7 @@ describe('PublicPageComponent', () => {
 
   async function setup(returnToHomeButton = false) {
     const { fixture, getByText, queryByText } = await render(PublicPageComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -35,7 +34,9 @@ describe('PublicPageComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

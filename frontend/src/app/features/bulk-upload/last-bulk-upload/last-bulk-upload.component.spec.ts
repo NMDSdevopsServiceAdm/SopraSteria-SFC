@@ -1,8 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, RouterModule } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
@@ -58,7 +57,7 @@ describe('LastBulkUploadComponent', () => {
 
   const setup = async () => {
     const { fixture, getByText, getByTestId } = await render(LastBulkUploadComponent, {
-      imports: [SharedModule, RouterTestingModule.withRoutes([])],
+      imports: [SharedModule, RouterModule],
       providers: [
         AlertService,
         WindowRef,
@@ -74,6 +73,7 @@ describe('LastBulkUploadComponent', () => {
             },
           },
         },
+        provideRouter([]),
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
@@ -87,7 +87,9 @@ describe('LastBulkUploadComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [BulkUploadSanitiseDataCheckboxComponent],
     });
 

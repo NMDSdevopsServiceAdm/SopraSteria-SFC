@@ -1,5 +1,4 @@
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { render, within } from '@testing-library/angular';
@@ -53,7 +52,7 @@ describe('QuestionsAndAnswersComponent', () => {
     ];
 
     const setupTools = await render(QuestionsAndAnswersComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -202,7 +201,7 @@ describe('QuestionsAndAnswersComponent', () => {
         userEvent.click(button);
         fixture.detectChanges();
         expect(getByTestId('no-matching-results')).toBeTruthy();
-      })
+      });
     });
 
     describe('results found', () => {

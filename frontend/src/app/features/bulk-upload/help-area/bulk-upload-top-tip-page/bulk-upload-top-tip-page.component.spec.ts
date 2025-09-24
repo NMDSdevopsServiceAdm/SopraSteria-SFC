@@ -2,8 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
@@ -29,19 +28,16 @@ describe('BulkUploadTopTipPageComponent', () => {
 
   const setup = async () => {
     const { fixture, getByText } = await render(BulkUploadTopTipPageComponent, {
-      imports: [
-        RouterTestingModule.withRoutes([
-          { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
-          { path: `bulk-upload/get-help/${topTipsList.data[1].slug}`, component: BulkUploadTopTipPageComponent },
-          { path: `bulk-upload/get-help/${topTipsList.data[2].slug}`, component: BulkUploadTopTipPageComponent },
-        ]),
-
-        BrowserModule,
-      ],
+      imports: [RouterModule, BrowserModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         { provide: AuthService, useClass: MockAuthService },
+        provideRouter([
+          { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
+          { path: `bulk-upload/get-help/${topTipsList.data[1].slug}`, component: BulkUploadTopTipPageComponent },
+          { path: `bulk-upload/get-help/${topTipsList.data[2].slug}`, component: BulkUploadTopTipPageComponent },
+        ]),
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
@@ -57,7 +53,9 @@ describe('BulkUploadTopTipPageComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [BulkUploadTopTipPageComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });
 

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRoute, provideRouter, RouterModule, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { WorkplaceStaffDoDHAGuard } from './workplace-staff-do-dha.guard';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -9,7 +9,7 @@ import { provideHttpClient } from '@angular/common/http';
 describe('WorkplaceStaffDoDHAGuard', () => {
   const setup = async (overrides: any = {}) => {
     TestBed.configureTestingModule({
-      imports: [],
+      imports: [RouterModule],
       providers: [
         WorkplaceStaffDoDHAGuard,
         {

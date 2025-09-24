@@ -1,6 +1,5 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { within } from '@testing-library/angular';
 
@@ -9,6 +8,7 @@ import { Permissions } from '../../../../mockdata/permissions';
 import { TotalStaffPanelComponent } from './total-staff-panel.component';
 import { SharedModule } from '@shared/shared.module';
 import { provideHttpClient } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 
 describe('TotalStaffPanelComponent', () => {
   let component: TotalStaffPanelComponent;
@@ -19,8 +19,8 @@ describe('TotalStaffPanelComponent', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [TotalStaffPanelComponent],
-        imports: [RouterTestingModule, SharedModule],
-        providers: [provideHttpClient(), provideHttpClientTesting()],
+        imports: [SharedModule],
+        providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       }).compileComponents();
     }),
   );

@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
@@ -12,13 +11,15 @@ import { MissingRefsSubmitExitButtonsComponent } from './missing-refs-submit-exi
 describe('MissingRefsSubmitExitButtonsComponent', () => {
   const setup = async (isAdmin = false, isLoggedIn: boolean = true) => {
     const { fixture, getByText, queryByText } = await render(MissingRefsSubmitExitButtonsComponent, {
-      imports: [RouterTestingModule, BrowserModule, BulkUploadModule],
+      imports: [BrowserModule, BulkUploadModule],
       providers: [
         {
           provide: AuthService,
           useFactory: MockAuthService.factory(isLoggedIn, isAdmin),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [MissingRefsSubmitExitButtonsComponent],
     });
     const component = fixture.componentInstance;

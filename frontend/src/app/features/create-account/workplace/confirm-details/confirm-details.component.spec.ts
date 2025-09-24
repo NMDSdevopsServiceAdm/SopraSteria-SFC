@@ -4,7 +4,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -21,7 +20,7 @@ import { ConfirmDetailsComponent } from './confirm-details.component';
 describe('ConfirmDetailsComponent', () => {
   async function setup(registrationFlow = true) {
     const { fixture, getByText, getByTestId, getAllByText, queryByText } = await render(ConfirmDetailsComponent, {
-      imports: [SharedModule, RegistrationModule, RouterTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,
@@ -47,7 +46,9 @@ describe('ConfirmDetailsComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

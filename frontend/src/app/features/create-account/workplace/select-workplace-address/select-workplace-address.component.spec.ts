@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { RegistrationService } from '@core/services/registration.service';
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
@@ -17,7 +17,7 @@ import { SelectWorkplaceAddressComponent } from './select-workplace-address.comp
 describe('SelectWorkplaceAddressComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(SelectWorkplaceAddressComponent, {
-      imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
+      imports: [SharedModule, RegistrationModule, RouterModule, FormsModule, ReactiveFormsModule],
       providers: [
         SelectWorkplaceAddressDirective,
         {
@@ -28,6 +28,7 @@ describe('SelectWorkplaceAddressComponent', () => {
           ),
           deps: [HttpClient],
         },
+        provideRouter([]),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -42,7 +43,9 @@ describe('SelectWorkplaceAddressComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

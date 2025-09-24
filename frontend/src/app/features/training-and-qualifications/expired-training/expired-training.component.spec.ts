@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -75,7 +74,7 @@ describe('ExpiredTrainingComponent', () => {
     const { fixture, getByText, getByTestId, getByLabelText, queryByLabelText, queryByTestId } = await render(
       ExpiredTrainingComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule],
+        imports: [SharedModule, RouterModule],
         providers: [
           WindowRef,
           BackLinkService,
@@ -102,7 +101,9 @@ describe('ExpiredTrainingComponent', () => {
               },
             },
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

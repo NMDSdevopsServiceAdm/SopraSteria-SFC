@@ -8,14 +8,14 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 
 import { WizardResolver } from './wizard.resolver';
-import { provideRouter } from '@angular/router';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('WizardResolver', () => {
   let resolver: WizardResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [],
+      imports: [RouterModule],
       providers: [
         WizardResolver,
         {

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { provideRouter, Router } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -56,7 +56,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfWorkplacesSummaryComponent, {
-      imports: [BrowserModule, SharedModule, FundingModule],
+      imports: [BrowserModule, SharedModule, FundingModule, RouterModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -70,7 +70,9 @@ describe('WdfWorkplacesSummaryComponent', () => {
           deps: [HttpClient, Router, UserService],
         },
         provideRouter([]),
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         workplaces: mockWorkplaces(),
         ...overrides,

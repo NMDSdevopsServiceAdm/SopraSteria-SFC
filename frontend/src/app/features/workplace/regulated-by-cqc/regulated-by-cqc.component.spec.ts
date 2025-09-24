@@ -1,8 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
 import { SharedModule } from '@shared/shared.module';
@@ -15,7 +14,7 @@ describe('RegulatedByCqcComponent', () => {
 
   async function setup() {
     const { fixture, getByText } = await render(RegulatedByCqcComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -25,7 +24,10 @@ describe('RegulatedByCqcComponent', () => {
           },
         },
         LocationService,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;

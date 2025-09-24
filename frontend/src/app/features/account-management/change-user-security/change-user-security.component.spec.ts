@@ -3,8 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -24,7 +23,7 @@ describe('ChangeUserSecurityComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
       ChangeUserSecurityComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           AlertService,
           WindowRef,
@@ -41,7 +40,10 @@ describe('ChangeUserSecurityComponent', () => {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 

@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRoute, provideRouter, RouterModule, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
@@ -16,7 +16,7 @@ import { provideHttpClient } from '@angular/common/http';
 describe('RequireCWPAnswerForSomeWorkersGuard', () => {
   const setup = async (overrides: any = {}) => {
     TestBed.configureTestingModule({
-      imports: [],
+      imports: [RouterModule],
       providers: [
         RequireCWPAnswerForSomeWorkersGuard,
         { provide: CareWorkforcePathwayService, useClass: MockCareWorkforcePathwayService },

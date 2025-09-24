@@ -1,7 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockPagesService } from '@core/test-utils/MockPagesService';
 import { SharedModule } from '@shared/shared.module';
@@ -15,7 +14,7 @@ describe('PageComponent', () => {
 
   async function setup() {
     const { fixture, getByText } = await render(PageComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -29,7 +28,9 @@ describe('PageComponent', () => {
             },
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;
