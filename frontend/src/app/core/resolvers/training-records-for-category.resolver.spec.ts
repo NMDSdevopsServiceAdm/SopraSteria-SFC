@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -8,11 +8,12 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 
 import { TrainingRecordsForCategoryResolver } from './training-records-for-category.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('TrainingRecordsForCategoryResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule.withRoutes([])],
       providers: [
         TrainingRecordsForCategoryResolver,
         {
@@ -29,6 +30,9 @@ describe('TrainingRecordsForCategoryResolver', () => {
             snapshot: { paramMap: convertToParamMap({ categoryId: '1', establishmentuid: 'mock-uid' }) },
           },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

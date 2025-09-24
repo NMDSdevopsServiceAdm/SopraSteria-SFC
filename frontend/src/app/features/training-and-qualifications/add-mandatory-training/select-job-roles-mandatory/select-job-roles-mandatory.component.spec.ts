@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -39,7 +40,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
     };
 
     const setupTools = await render(SelectJobRolesMandatoryComponent, {
-      imports: [HttpClientTestingModule, SharedModule, RouterModule, AddMandatoryTrainingModule],
+      imports: [SharedModule, RouterModule, AddMandatoryTrainingModule],
       declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
         BackLinkService,
@@ -64,7 +65,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

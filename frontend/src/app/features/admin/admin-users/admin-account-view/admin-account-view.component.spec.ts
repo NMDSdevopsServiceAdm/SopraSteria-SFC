@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -43,7 +44,7 @@ describe('AdminAccountViewComponent', () => {
       user = AdminUser();
     }
     const { fixture, getByText, queryByText } = await render(AdminAccountViewComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [SharedModule, RouterModule, RouterTestingModule.withRoutes([])],
       providers: [
         AlertService,
         WindowRef,
@@ -78,7 +79,7 @@ describe('AdminAccountViewComponent', () => {
           useFactory: MockUserService.factory(0, role),
           deps: [HttpClient],
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = fixture.componentInstance;

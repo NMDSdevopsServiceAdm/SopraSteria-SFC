@@ -1,4 +1,4 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -54,7 +54,7 @@ const noPayRankingData = {
 
 const getBenchmarksMetricComponent = async () => {
   return render(BenchmarksMetricComponent, {
-    imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BenchmarksModule],
+    imports: [RouterTestingModule, BrowserModule, BenchmarksModule],
     providers: [
       {
         provide: BenchmarksV2Service,

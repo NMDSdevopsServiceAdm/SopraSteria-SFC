@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -16,9 +17,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import {
-  BulkUploadRelatedContentComponent,
-} from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
+import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadFlowchartComponent } from './bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './bulk-upload-help-main-page.component';
@@ -38,7 +37,7 @@ describe('BulkUploadHelpMainPageComponent', () => {
           { path: `bulk-upload/get-help/${topTipsList.data[1].slug}`, component: BulkUploadTopTipPageComponent },
           { path: `bulk-upload/get-help/${topTipsList.data[2].slug}`, component: BulkUploadTopTipPageComponent },
         ]),
-        HttpClientTestingModule,
+
         BrowserModule,
       ],
       providers: [
@@ -59,7 +58,7 @@ describe('BulkUploadHelpMainPageComponent', () => {
             },
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       declarations: [BulkUploadHelpMainPageComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });
 

@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
@@ -15,7 +16,7 @@ import { ParticipationComponent } from './participation.component';
 describe('ParticipationComponent', () => {
   async function setup() {
     return render(ParticipationComponent, {
-      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule],
       providers: [
         {
           provide: RegistrationSurveyService,
@@ -31,7 +32,7 @@ describe('ParticipationComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
   }
 

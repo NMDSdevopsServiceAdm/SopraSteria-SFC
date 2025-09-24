@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WizardService } from '@core/services/wizard.service';
@@ -14,7 +15,7 @@ import { MockPagesService } from '@core/test-utils/MockPagesService';
 describe('HelpfulDownloadsComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(HelpfulDownloadsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         { provide: WizardService, useClass: MockWizardService },
         {
@@ -31,7 +32,7 @@ describe('HelpfulDownloadsComponent', () => {
             },
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -50,7 +51,7 @@ describe('HelpfulDownloadsComponent', () => {
     const override = {
       hasContent: true,
     };
-    const { getByTestId} = await setup(override);
+    const { getByTestId } = await setup(override);
 
     expect(getByTestId('helpful-downloads-content')).toBeTruthy();
   });
@@ -59,7 +60,7 @@ describe('HelpfulDownloadsComponent', () => {
     const override = {
       hasContent: false,
     };
-    const { queryByTestId} = await setup(override);
+    const { queryByTestId } = await setup(override);
 
     expect(queryByTestId('helpful-downloads-content')).toBeFalsy();
   });

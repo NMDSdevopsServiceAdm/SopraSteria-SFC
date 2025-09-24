@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 import { SharedModule } from '@shared/shared.module';
@@ -11,14 +12,14 @@ import { ThankYouComponent } from './thank-you.component';
 describe('ThankYouComponent', () => {
   async function setup() {
     return render(ThankYouComponent, {
-      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule],
       providers: [
         {
           provide: RegistrationSurveyService,
           useClass: RegistrationSurveyService,
           deps: [HttpClient],
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
   }
 

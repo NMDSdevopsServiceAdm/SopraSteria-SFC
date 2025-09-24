@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -39,7 +40,7 @@ describe('SelectStaffComponent', () => {
       queryByLabelText,
       queryByTestId,
     } = await render(SelectStaffComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -71,7 +72,7 @@ describe('SelectStaffComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = fixture.componentInstance;

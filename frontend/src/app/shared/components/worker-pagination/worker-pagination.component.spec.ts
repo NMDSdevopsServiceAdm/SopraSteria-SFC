@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { DebugElement } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule, By } from '@angular/platform-browser';
@@ -11,7 +12,7 @@ import { Observable, Subject } from 'rxjs';
 describe('WorkerPagination', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WorkerPaginationComponent, {
-      imports: [HttpClientTestingModule, BrowserModule, SharedModule],
+      imports: [BrowserModule, SharedModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -30,7 +31,7 @@ describe('WorkerPagination', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workerList: ['1', '2', '3', '4'],
         exitUrl: overrides.exitUrl ?? { url: 'dashboard', fragment: 'staff-records' },

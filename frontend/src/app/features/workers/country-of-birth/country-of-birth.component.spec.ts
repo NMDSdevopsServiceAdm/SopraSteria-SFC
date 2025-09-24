@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -19,7 +20,7 @@ describe('CountryOfBirthComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       CountryOfBirthComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           InternationalRecruitmentService,
@@ -44,7 +45,7 @@ describe('CountryOfBirthComponent', () => {
               },
             },
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

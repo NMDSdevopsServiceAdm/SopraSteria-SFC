@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -8,8 +9,8 @@ import { BenefitAccordionComponent } from './benefit-accordion.component';
 describe('BenefitAccordionComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(BenefitAccordionComponent, {
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [],
+      imports: [SharedModule, RouterTestingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         index: 0,
         benefit: {

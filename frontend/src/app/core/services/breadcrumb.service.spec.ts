@@ -1,17 +1,18 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { UrlSegment } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { BreadcrumbService } from './breadcrumb.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('BreadcrumbService', () => {
   let service: BreadcrumbService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [BreadcrumbService],
+      imports: [RouterTestingModule],
+      providers: [BreadcrumbService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(BreadcrumbService);
   });

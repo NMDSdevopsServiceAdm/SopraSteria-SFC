@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -36,7 +37,7 @@ describe('ViewTrainingComponent', () => {
     if (overrides.fixTrainingCount) trainingObj = { ...trainingObj, training: [trainingBuilder()], trainingCount: 1 };
 
     const setupTools = await render(ViewTrainingComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         WindowRef,
         {
@@ -67,7 +68,7 @@ describe('ViewTrainingComponent', () => {
           provide: PermissionsService,
           useClass: MockPermissionsService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

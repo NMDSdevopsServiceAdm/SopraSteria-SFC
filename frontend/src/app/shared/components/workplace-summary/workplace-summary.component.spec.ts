@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
@@ -35,7 +36,7 @@ describe('WorkplaceSummaryComponent', () => {
       ? establishmentWithShareWith(shareWith)
       : (establishmentWithWdfBuilder({ careWorkforcePathwayUse }) as Establishment);
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, FundingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, FundingModule],
       declarations: [],
       providers: [
         {
@@ -61,7 +62,7 @@ describe('WorkplaceSummaryComponent', () => {
           provide: CqcStatusChangeService,
           useClass: MockCqcStatusChangeService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         wdfView: true,
         workplace: mockWorkplace,

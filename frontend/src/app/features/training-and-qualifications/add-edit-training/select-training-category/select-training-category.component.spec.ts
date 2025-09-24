@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -28,7 +29,7 @@ describe('SelectTrainingCategoryComponent', () => {
     const worker = workerBuilder();
 
     const setupTools = await render(SelectTrainingCategoryComponent, {
-      imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
       declarations: [
         SelectTrainingCategoryComponent,
         GroupedRadioButtonAccordionComponent,
@@ -62,7 +63,7 @@ describe('SelectTrainingCategoryComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();

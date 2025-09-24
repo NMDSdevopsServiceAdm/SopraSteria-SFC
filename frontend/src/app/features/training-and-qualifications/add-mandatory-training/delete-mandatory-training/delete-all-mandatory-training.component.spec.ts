@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -21,7 +22,7 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
 
     const setupTools = await render(RemoveAllMandatoryTrainingComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       declarations: [],
       providers: [
         AlertService,
@@ -51,7 +52,7 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
     const component = setupTools.fixture.componentInstance;
 

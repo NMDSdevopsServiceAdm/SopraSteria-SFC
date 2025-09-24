@@ -1,14 +1,14 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockBulkUploadService, errorReport } from '@core/test-utils/MockBulkUploadService';
+import { errorReport } from '@core/test-utils/MockBulkUploadService';
 import { render } from '@testing-library/angular';
 
 import { BulkUploadModule } from '../bulk-upload.module';
@@ -19,13 +19,13 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 describe('ErrorPageComponent', () => {
   const getErrorPageComponent = async () => {
     return await render(ErrorPageComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadModule],
+      imports: [BrowserModule, BulkUploadModule],
       declarations: [ErrorPageComponent],
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService},
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -36,6 +36,8 @@ describe('ErrorPageComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
   };

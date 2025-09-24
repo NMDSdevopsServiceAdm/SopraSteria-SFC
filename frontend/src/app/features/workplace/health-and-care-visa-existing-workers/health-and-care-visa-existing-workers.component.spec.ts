@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -39,7 +40,7 @@ describe('HealthAndCareVisaExistingWorkers', () => {
     previousUrl = '/dashboard#home',
   ) {
     const { fixture, getByText, getByTestId, getByRole, queryByText } = await render(HealthAndCareVisaExistingWorkers, {
-      imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule, SharedModule],
+      imports: [RouterTestingModule, FormsModule, ReactiveFormsModule, SharedModule],
       declarations: [DetailsComponent, SubmitExitButtonsComponent],
       providers: [
         UntypedFormBuilder,
@@ -70,7 +71,7 @@ describe('HealthAndCareVisaExistingWorkers', () => {
           useFactory: MockPreviousRouteService.factory(previousUrl),
           deps: [Router],
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = fixture.componentInstance;

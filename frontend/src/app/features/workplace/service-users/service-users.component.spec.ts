@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -68,7 +69,7 @@ describe('ServiceUsersComponent', () => {
     const getServiceUsersSpy = jasmine.createSpy('getServiceUsers').and.returnValue(of(mockServiceUser));
 
     const setupTools = await render(ServiceUsersComponent, {
-      imports: [HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      imports: [BrowserModule, SharedModule, ReactiveFormsModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -84,7 +85,7 @@ describe('ServiceUsersComponent', () => {
         ErrorSummaryService,
         SubmitButtonComponent,
         QuestionComponent,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();

@@ -1,11 +1,10 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import {
-  LocalAuthoritiesReturnService,
-} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
+import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockLocalAuthoritiesReturnService } from '@core/test-utils/MockLocalAuthoritiesReturnService';
@@ -17,7 +16,7 @@ import { SetDatesComponent } from './set-dates.component';
 describe('SetDatesComponent', () => {
   async function setup(correctDates = false) {
     const component = await render(SetDatesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: LocalAuthoritiesReturnService,
@@ -40,7 +39,7 @@ describe('SetDatesComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

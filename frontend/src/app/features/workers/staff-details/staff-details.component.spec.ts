@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -42,7 +43,7 @@ describe('StaffDetailsComponent', () => {
     const { fixture, getByText, getByTestId, getByLabelText, queryByTestId, getAllByText } = await render(
       StaffDetailsComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
         declarations: [ProgressBarComponent],
         schemas: [NO_ERRORS_SCHEMA],
         providers: [
@@ -83,7 +84,7 @@ describe('StaffDetailsComponent', () => {
               },
             },
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

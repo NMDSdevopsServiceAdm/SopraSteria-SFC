@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,7 +19,7 @@ describe('WdfStaffMismatchMessageComponent', () => {
     const userPermissions: PermissionType[] = overrides.isReadOnlyUser ? [] : ['canEditEstablishment'];
 
     const setupTools = await render(WdfStaffMismatchMessageComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+      imports: [RouterTestingModule, BrowserModule, SharedModule],
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         {
@@ -35,7 +36,7 @@ describe('WdfStaffMismatchMessageComponent', () => {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(userPermissions),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: overrides.workplace ?? (establishmentBuilder() as Establishment),
         workerCount: 1,

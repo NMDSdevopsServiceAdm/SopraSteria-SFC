@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -15,7 +16,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     const { fixture, getByText, getByLabelText, getByTestId, queryByTestId } = await render(
       AcceptPreviousCareCertificateComponent,
       {
-        imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -25,7 +26,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
             }),
             deps: [HttpClient],
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -16,7 +17,7 @@ import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts.c
 describe('ChangeExpiresSoonAlertsComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText } = await render(ChangeExpiresSoonAlertsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, WorkplaceModule],
       providers: [
         WindowRef,
         {
@@ -38,7 +39,7 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = fixture.componentInstance;

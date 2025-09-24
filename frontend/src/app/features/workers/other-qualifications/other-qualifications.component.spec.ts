@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
@@ -19,7 +20,7 @@ describe('OtherQualificationsComponent', () => {
     const workerOverrides = overrides.worker ?? { otherQualification: null };
 
     const setupTools = await render(OtherQualificationsComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -45,7 +46,7 @@ describe('OtherQualificationsComponent', () => {
         },
         WindowRef,
         AlertService,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

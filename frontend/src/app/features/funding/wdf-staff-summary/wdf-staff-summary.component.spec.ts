@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
@@ -30,7 +31,7 @@ describe('WdfStaffSummaryComponent', () => {
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
     const setupTools = await render(WdfStaffSummaryComponent, {
-      imports: [HttpClientTestingModule, BrowserModule, SharedModule, FundingModule, RouterModule],
+      imports: [BrowserModule, SharedModule, FundingModule, RouterModule],
       declarations: [PaginationComponent, TablePaginationWrapperComponent, SearchInputComponent],
       providers: [
         provideRouter([]),
@@ -54,7 +55,7 @@ describe('WdfStaffSummaryComponent', () => {
           },
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: establishment,
         workers: workers,

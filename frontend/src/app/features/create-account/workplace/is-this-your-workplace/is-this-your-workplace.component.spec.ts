@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BackService } from '@core/services/back.service';
@@ -16,7 +17,7 @@ import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component
 describe('IsThisYourWorkplaceComponent', () => {
   async function setup(overrides: any = {}) {
     const component = await render(IsThisYourWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
         BackService,
         {
@@ -74,7 +75,7 @@ describe('IsThisYourWorkplaceComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

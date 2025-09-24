@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
@@ -12,8 +13,8 @@ describe('MissingMandatoryTrainingComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryAllByTestId } = await render(
       MissingMandatoryTrainingComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
-        providers: [],
+        imports: [SharedModule, RouterModule, RouterTestingModule, WorkersModule],
+        providers: [provideHttpClient(), provideHttpClientTesting(),],
         componentProperties: {
           missingMandatoryTraining: categories,
           canEditWorker,

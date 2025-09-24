@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -54,7 +55,7 @@ describe('NursingSpecialismComponent', () => {
         imports: [
           FormsModule,
           ReactiveFormsModule,
-          HttpClientTestingModule,
+
           SharedModule,
           RouterTestingModule.withRoutes([{ path: 'dashboard', component: StaffSummaryComponent }]),
         ],
@@ -80,7 +81,7 @@ describe('NursingSpecialismComponent', () => {
               },
             },
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

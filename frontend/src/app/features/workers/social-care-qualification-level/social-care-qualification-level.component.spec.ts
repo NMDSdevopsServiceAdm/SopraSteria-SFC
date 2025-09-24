@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -14,7 +15,7 @@ import { SocialCareQualificationLevelComponent } from './social-care-qualificati
 describe('SocialCareQualificationLevelComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(SocialCareQualificationLevelComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -50,7 +51,7 @@ describe('SocialCareQualificationLevelComponent', () => {
           provide: QualificationService,
           useClass: MockQualificationService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

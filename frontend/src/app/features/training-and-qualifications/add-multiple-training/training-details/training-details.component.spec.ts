@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -32,7 +33,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByTestId } = await render(
       MultipleTrainingDetailsComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
         providers: [
           WindowRef,
           { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -68,7 +69,7 @@ describe('MultipleTrainingDetailsComponent', () => {
             provide: TrainingCategoryService,
             useClass: MockTrainingCategoryService,
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

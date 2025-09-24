@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
@@ -118,8 +119,8 @@ const trainingCategories = [
 describe('TrainingAndQualificationsCategoriesComponent', () => {
   async function setup(totalTraining = 5) {
     const { getByTestId, getByLabelText, fixture } = await render(TrainingAndQualificationsCategoriesComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
-      providers: [],
+      imports: [RouterTestingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
         trainingCategories: trainingCategories,

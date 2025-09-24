@@ -1,9 +1,8 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
@@ -27,17 +26,7 @@ import { environment } from 'src/environments/environment';
 async function renderHeaderComponent(isAdmin: boolean) {
   const role = isAdmin ? Roles.Admin : Roles.Edit;
   component = await render(TestRootComponent, {
-    imports: [
-      FormsModule,
-      ReactiveFormsModule,
-      HttpClientTestingModule,
-      SharedModule,
-      RouterTestingModule.withRoutes([
-        { path: '', component: HeaderComponent },
-        { path: 'logged-out', component: LogoutComponent },
-        { path: 'satisfaction-survey', component: SatisfactionSurveyComponent },
-      ]),
-    ],
+    imports: [FormsModule, ReactiveFormsModule, SharedModule, RouterModule],
     declarations: [HeaderComponent, LogoutComponent, SatisfactionSurveyComponent],
     providers: [
       {
@@ -62,6 +51,13 @@ async function renderHeaderComponent(isAdmin: boolean) {
         provide: EstablishmentService,
         useClass: MockEstablishmentService,
       },
+      provideRouter([
+        { path: '', component: HeaderComponent },
+        { path: 'logged-out', component: LogoutComponent },
+        { path: 'satisfaction-survey', component: SatisfactionSurveyComponent },
+      ]),
+      provideHttpClient(),
+      provideHttpClientTesting(),
     ],
   });
 }

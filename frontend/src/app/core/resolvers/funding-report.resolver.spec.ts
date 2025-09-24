@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -8,11 +8,12 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { of } from 'rxjs';
 
 import { FundingReportResolver } from './funding-report.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('FundingReportResolver', () => {
   function setup(overrides: any = {}) {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule.withRoutes([])],
       providers: [
         FundingReportResolver,
         {
@@ -25,6 +26,9 @@ describe('FundingReportResolver', () => {
             paramMap: convertToParamMap({ establishmentuid: overrides.idInParams ?? null }),
           },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

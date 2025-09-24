@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -22,7 +23,7 @@ import { Establishment as MockEstablishment } from '../../../../mockdata/establi
 describe('TrainingLinkPanelComponent', () => {
   async function setup(totalRecords = 6) {
     const { fixture, getByText, queryByText } = await render(TrainingLinkPanelComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterModule, RouterTestingModule],
       providers: [
         {
           provide: WorkerService,
@@ -38,7 +39,7 @@ describe('TrainingLinkPanelComponent', () => {
           useFactory: MockPermissionsService.factory(['canEditEstablishment']),
           deps: [HttpClient, Router, UserService],
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: MockEstablishment as Establishment,
         workers: [

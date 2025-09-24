@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,7 +19,7 @@ import { AdminUsersComponent } from './admin-users.component';
 describe('AdminUsersComponent', () => {
   async function setup(role = Roles.Admin) {
     const { fixture, getByText, getByTestId, queryByText } = await render(AdminUsersComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -40,7 +41,7 @@ describe('AdminUsersComponent', () => {
           useFactory: MockUserService.factory(0, role),
           deps: [HttpClient],
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = fixture.componentInstance;

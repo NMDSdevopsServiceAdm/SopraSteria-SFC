@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -46,7 +47,7 @@ describe('ParentRequestIndividualComponent', () => {
           RouterTestingModule.withRoutes([
             { path: 'sfcadmin/parent-requests', component: ParentRequestIndividualComponent },
           ]),
-          HttpClientTestingModule,
+
           FormsModule,
           ReactiveFormsModule,
         ],
@@ -67,7 +68,7 @@ describe('ParentRequestIndividualComponent', () => {
               },
             },
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

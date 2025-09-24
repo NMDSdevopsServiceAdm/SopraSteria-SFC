@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -22,7 +23,7 @@ import { BecomeAParentComponent } from './become-a-parent.component';
 describe('BecomeAParentComponent', () => {
   async function setup(isBecomeParentRequestPending = false) {
     const { getByRole, getByText, getByLabelText, getByTestId, fixture } = await render(BecomeAParentComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       declarations: [],
       providers: [
         AlertService,
@@ -52,7 +53,7 @@ describe('BecomeAParentComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         isBecomeParentRequestPending,
       },

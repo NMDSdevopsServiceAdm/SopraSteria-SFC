@@ -1,4 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { render, waitForElementToBeRemoved } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -8,7 +7,7 @@ import { SearchInputComponent } from './search-input.component';
 describe('SearchInputComponent', () => {
   const setup = (accessibleLabel?: string, ref?: string) =>
     render(SearchInputComponent, {
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [FormsModule, ReactiveFormsModule],
       componentProperties: {
         accessibleLabel,
         ref,

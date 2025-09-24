@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -7,17 +7,21 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
 import { RankingsResolver } from './rankings.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('RankingsResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule.withRoutes([])],
       providers: [
         RankingsResolver,
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -49,7 +50,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
           RouterTestingModule.withRoutes([
             { path: 'sfcadmin/cqc-main-service-change', component: CQCMainServiceChangeListComponent },
           ]),
-          HttpClientTestingModule,
+
           FormsModule,
           ReactiveFormsModule,
         ],
@@ -72,7 +73,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
               },
             },
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

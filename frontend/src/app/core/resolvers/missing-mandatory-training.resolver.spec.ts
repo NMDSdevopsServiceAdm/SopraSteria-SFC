@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -7,12 +7,13 @@ import { TrainingService } from '@core/services/training.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
 import { MissingMandatoryTrainingResolver } from './missing-mandatory-training.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('MissingMandatoryTrainingResolver', () => {
   const workplaceUid = 'mock-uid';
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule.withRoutes([])],
       providers: [
         MissingMandatoryTrainingResolver,
         {
@@ -25,6 +26,9 @@ describe('MissingMandatoryTrainingResolver', () => {
             snapshot: { paramMap: convertToParamMap({ establishmentuid: 'mock-uid' }) },
           },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

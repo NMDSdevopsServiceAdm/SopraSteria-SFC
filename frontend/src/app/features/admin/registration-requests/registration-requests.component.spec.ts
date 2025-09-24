@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
@@ -9,7 +10,7 @@ import { RegistrationRequestsComponent } from './registration-requests.component
 describe('RegistrationRequestsComponent', () => {
   async function setup() {
     const component = await render(RegistrationRequestsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -39,7 +40,7 @@ describe('RegistrationRequestsComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const fixture = component.fixture;

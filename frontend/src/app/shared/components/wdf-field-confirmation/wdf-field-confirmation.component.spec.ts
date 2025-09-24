@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FundingModule } from '@features/funding/funding.module';
@@ -10,8 +11,8 @@ import { WdfFieldConfirmationComponent } from './wdf-field-confirmation.componen
 describe('WdfFieldConfirmationComponent', async () => {
   const setup = async () => {
     const { fixture, getByText, queryByText } = await render(WdfFieldConfirmationComponent, {
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, FundingModule],
-      providers: [],
+      imports: [SharedModule, RouterTestingModule, BrowserModule, FundingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting(),],
       declarations: [],
       componentProperties: {
         changeLink: ['123', 'nationality'],

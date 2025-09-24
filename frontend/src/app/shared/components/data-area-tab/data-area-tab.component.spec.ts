@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -28,7 +29,7 @@ describe('DataAreaTabComponent', () => {
   const setup = async (newDashboard = true, showBanner = true) => {
     const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaTabComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
         {
@@ -51,7 +52,7 @@ describe('DataAreaTabComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,14 +25,7 @@ describe('ParentWorkplaceAccounts', () => {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
       ParentWorkplaceAccounts,
       {
-        imports: [
-          SharedModule,
-          RegistrationModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RegistrationModule, RouterTestingModule, FormsModule, ReactiveFormsModule],
         providers: [
           BackService,
           BackLinkService,
@@ -62,7 +56,7 @@ describe('ParentWorkplaceAccounts', () => {
             },
           },
           UntypedFormBuilder,
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

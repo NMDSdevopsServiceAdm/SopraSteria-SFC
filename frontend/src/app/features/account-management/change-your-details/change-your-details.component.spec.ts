@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -23,7 +24,7 @@ describe('ChangeYourDetailsComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
       ChangeYourDetailsComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
         providers: [
           AlertService,
           WindowRef,
@@ -40,7 +41,7 @@ describe('ChangeYourDetailsComponent', () => {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

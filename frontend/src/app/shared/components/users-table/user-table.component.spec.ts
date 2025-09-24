@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -18,7 +19,7 @@ describe('UserTableComponent', () => {
 
   const setup = async (admin = false, canViewUser = true) => {
     const setupTools = await render(UserTableComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -28,7 +29,7 @@ describe('UserTableComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: !admin && Establishment,
         users: admin ? adminUserArr : userArr,

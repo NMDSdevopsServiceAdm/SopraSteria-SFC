@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -20,7 +21,7 @@ describe('DeleteAnotherStaffRecordComponent', () => {
     const resetVisitedAndSubmittedPagesSpy = jasmine.createSpy('resetVisitedAndSubmittedPages');
 
     const setupTools = await render(DeleteAnotherStaffRecordComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [RouterTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -34,7 +35,7 @@ describe('DeleteAnotherStaffRecordComponent', () => {
             ...overrides.updateWorkplaceService,
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -52,7 +53,7 @@ describe('MainJobStartDateComponent', () => {
     const { fixture, getByText, getByLabelText, getAllByText, getByTestId, queryByTestId } = await render(
       MainJobStartDateComponent,
       {
-        imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [RouterTestingModule, ReactiveFormsModule],
         declarations: [DatePickerComponent, SubmitButtonComponent, ErrorSummaryComponent, ProgressBarComponent],
         providers: [
           UntypedFormBuilder,
@@ -92,7 +93,7 @@ describe('MainJobStartDateComponent', () => {
             provide: PermissionsService,
             useClass: MockPermissionsService,
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

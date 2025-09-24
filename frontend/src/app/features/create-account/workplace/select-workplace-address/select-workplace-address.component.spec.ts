@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,7 +17,7 @@ import { SelectWorkplaceAddressComponent } from './select-workplace-address.comp
 describe('SelectWorkplaceAddressComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(SelectWorkplaceAddressComponent, {
-      imports: [SharedModule, RegistrationModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
       providers: [
         SelectWorkplaceAddressDirective,
         {
@@ -41,7 +42,7 @@ describe('SelectWorkplaceAddressComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

@@ -1,4 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FundingModule } from '@features/funding/funding.module';
@@ -10,7 +9,7 @@ import { WdfWarningMessageComponent } from './wdf-warning-message.component';
 describe('WdfWarningMessageComponent', () => {
   const setup = async (overrides: any = {}) => {
     const { fixture, getByText, queryByAltText, queryByText } = await render(WdfWarningMessageComponent, {
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, FundingModule],
+      imports: [SharedModule, RouterTestingModule, BrowserModule, FundingModule],
       componentProperties: {
         overallWdfEligibility: false,
         warningMessage: null,

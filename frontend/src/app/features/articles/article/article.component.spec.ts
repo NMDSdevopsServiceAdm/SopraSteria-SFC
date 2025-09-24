@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -21,8 +22,8 @@ describe('ArticleComponent', () => {
   const articles = MockArticlesService.articlesFactory();
 
   async function setup() {
-    const { fixture, getByText} = await render(ArticleComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+    const { fixture, getByText } = await render(ArticleComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         { provide: ArticlesService, useClass: MockArticlesService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -40,7 +41,7 @@ describe('ArticleComponent', () => {
             },
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();
@@ -77,7 +78,7 @@ describe('ArticleComponent', () => {
   });
 
   it('should navigate back to home tab', async () => {
-    const { getByText} = await setup();
+    const { getByText } = await setup();
 
     const returnToHome = getByText('Return to home', { exact: false });
 

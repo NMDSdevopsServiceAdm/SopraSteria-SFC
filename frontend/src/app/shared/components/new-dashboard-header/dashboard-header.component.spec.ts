@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -49,7 +49,7 @@ describe('NewDashboardHeaderComponent', () => {
     const role = override.isAdmin ? Roles.Admin : Roles.Edit;
     const updatedDate = override.updateDate ? '01/02/2023' : null;
     const setupTools = await render(NewDashboardHeaderComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -82,6 +82,8 @@ describe('NewDashboardHeaderComponent', () => {
           provide: ParentSubsidiaryViewService,
           useFactory: MockParentSubsidiaryViewService.factory(override.viewingSubAsParent),
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         tab: override.tab,

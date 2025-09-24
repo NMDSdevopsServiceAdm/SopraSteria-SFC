@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -18,7 +18,7 @@ describe('GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver', () =
 
   const setup = (idInParams = null, permissions = ['canViewWorker']) => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule.withRoutes([])],
       providers: [
         GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
         {
@@ -38,6 +38,9 @@ describe('GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver', () =
           deps: [HttpClient, Router, UserService],
         },
         InternationalRecruitmentService,
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

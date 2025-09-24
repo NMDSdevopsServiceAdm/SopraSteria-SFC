@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -44,7 +45,7 @@ describe('RejectedRegistrationRequestComponent', () => {
           RouterTestingModule.withRoutes([
             { path: 'sfcadmin/registrations', component: RegistrationRequestsComponent },
           ]),
-          HttpClientTestingModule,
+
           FormsModule,
           ReactiveFormsModule,
         ],
@@ -65,7 +66,7 @@ describe('RejectedRegistrationRequestComponent', () => {
               },
             },
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

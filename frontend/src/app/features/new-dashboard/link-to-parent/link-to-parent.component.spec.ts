@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -28,7 +29,7 @@ describe('LinkToParentComponent', () => {
     const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
       LinkToParentComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
         declarations: [],
         providers: [
           AlertService,
@@ -48,7 +49,7 @@ describe('LinkToParentComponent', () => {
             provide: FeatureFlagsService,
             useClass: MockFeatureFlagsService,
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
         componentProperties: {
           linkToParentRequested: false,
           availableParentWorkPlaces: [

@@ -2,16 +2,17 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter, RouterStateSnapshot, UrlTree } from '@angular/router';
 
 import { WorkplaceIsAwareOfCwpGuard } from './workplace-is-aware-of-cwp.guard';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('WorkplaceIsAwareOfCwpGuard', () => {
   const setup = async (overrides: any = {}) => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         WorkplaceIsAwareOfCwpGuard,
         {
@@ -22,6 +23,9 @@ describe('WorkplaceIsAwareOfCwpGuard', () => {
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         provideRouter([]),
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

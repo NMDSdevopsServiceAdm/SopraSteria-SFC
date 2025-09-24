@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -30,7 +31,7 @@ describe('AddEditTrainingComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
         declarations: [CertificationsTableComponent, SelectUploadFileComponent],
         providers: [
           WindowRef,
@@ -61,7 +62,7 @@ describe('AddEditTrainingComponent', () => {
             provide: TrainingCertificateService,
             useClass: MockTrainingCertificateService,
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

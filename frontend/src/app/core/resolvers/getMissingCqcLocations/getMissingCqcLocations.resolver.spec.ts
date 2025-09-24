@@ -1,10 +1,11 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { of } from 'rxjs';
 
 import { GetMissingCqcLocationsResolver } from './getMissingCqcLocations.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('GetMissingCqcLocationsResolver', () => {
   const mockWorkplace = {
@@ -15,7 +16,7 @@ describe('GetMissingCqcLocationsResolver', () => {
 
   const setup = () => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule.withRoutes([])],
       providers: [
         GetMissingCqcLocationsResolver,
         {
@@ -27,6 +28,9 @@ describe('GetMissingCqcLocationsResolver', () => {
             },
           },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     const resolver = TestBed.inject(GetMissingCqcLocationsResolver);

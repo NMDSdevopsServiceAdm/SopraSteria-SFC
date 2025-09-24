@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -16,7 +17,7 @@ import { SecurityQuestionComponent } from './security-question.component';
 describe('SecurityQuestionComponent', () => {
   async function setup(insideActivationFlow = true) {
     const { getByText, getByTestId, fixture, getAllByText } = await render(SecurityQuestionComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ActivateUserAccountModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, ActivateUserAccountModule],
       providers: [
         BackLinkService,
 
@@ -45,7 +46,7 @@ describe('SecurityQuestionComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

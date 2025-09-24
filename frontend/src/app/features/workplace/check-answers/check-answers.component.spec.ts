@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
@@ -20,7 +21,7 @@ import { CheckAnswersComponent } from './check-answers.component';
 describe('CheckAnswersComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId } = await render(CheckAnswersComponent, {
-      imports: [RouterModule, WorkplaceModule, HttpClientTestingModule, SharedModule],
+      imports: [RouterModule, WorkplaceModule, SharedModule],
       providers: [
         BackService,
         AlertService,
@@ -31,7 +32,7 @@ describe('CheckAnswersComponent', () => {
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: WorkerService, useClass: MockWorkerService },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = fixture.componentInstance;

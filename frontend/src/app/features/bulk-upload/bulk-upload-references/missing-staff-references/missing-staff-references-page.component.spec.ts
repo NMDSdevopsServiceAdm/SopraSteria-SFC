@@ -1,6 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
 import 'rxjs/add/observable/from';
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -29,7 +30,7 @@ import { MissingStaffReferencesComponent } from './missing-staff-references-page
 describe('MissingStaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
     const component = await render(MissingStaffReferencesComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, BulkUploadModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -80,7 +81,7 @@ describe('MissingStaffReferencesComponent', () => {
         UntypedFormBuilder,
         ErrorSummaryService,
         AdminSkipService,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

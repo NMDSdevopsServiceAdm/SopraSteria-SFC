@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
@@ -9,8 +10,8 @@ import { ApprovalsTableComponent } from './approvals-table.component';
 describe('ApprovalsTableComponent', () => {
   async function setup() {
     const component = await render(ApprovalsTableComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const fixture = component.fixture;

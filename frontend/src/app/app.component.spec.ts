@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
@@ -21,11 +21,12 @@ import { render } from '@testing-library/angular';
 import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('AppComponent', () => {
   async function setup(overrides: any = {}) {
     const { fixture, getByText, queryByTestId } = await render(AppComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterModule, RouterTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -56,6 +57,8 @@ describe('AppComponent', () => {
         NestedRoutesService,
         WindowRef,
         AlertService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

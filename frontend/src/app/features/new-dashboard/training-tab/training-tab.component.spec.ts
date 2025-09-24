@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -30,7 +31,7 @@ describe('NewTrainingTabComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
 
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewTrainingTabComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
         {
@@ -49,7 +50,7 @@ describe('NewTrainingTabComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
         workplace: establishment,

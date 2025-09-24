@@ -1,9 +1,10 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Roles } from '@core/model/roles.enum';
 
 import { AdminUsersService } from './admin-users.service';
 import { environment } from 'src/environments/environment';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('AdminUsersService', () => {
   let service: AdminUsersService;
@@ -11,8 +12,8 @@ describe('AdminUsersService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [AdminUsersService],
+      imports: [],
+      providers: [AdminUsersService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(AdminUsersService);
     http = TestBed.inject(HttpTestingController);

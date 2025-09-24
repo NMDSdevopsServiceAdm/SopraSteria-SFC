@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -18,7 +19,7 @@ import { getTestBed } from '@angular/core/testing';
 describe('OtherServicesComponent', () => {
   const setup = async () => {
     const setupTools = await render(OtherServicesComponent, {
-      imports: [HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      imports: [BrowserModule, SharedModule, ReactiveFormsModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -30,7 +31,7 @@ describe('OtherServicesComponent', () => {
         SubmitButtonComponent,
         QuestionComponent,
         provideRouter([]),
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
     const component = setupTools.fixture.componentInstance;
 

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -15,13 +16,7 @@ describe('DaysOfSicknessComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       DaysOfSicknessComponent,
       {
-        imports: [
-          SharedModule,
-          RouterModule,
-          HttpClientTestingModule,
-          ReactiveFormsModule,
-          RouterTestingModule.withRoutes([]),
-        ],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule, RouterTestingModule.withRoutes([])],
         providers: [
           UntypedFormBuilder,
           {
@@ -45,7 +40,7 @@ describe('DaysOfSicknessComponent', () => {
             provide: WorkerService,
             useClass: MockWorkerServiceWithoutReturnUrl,
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

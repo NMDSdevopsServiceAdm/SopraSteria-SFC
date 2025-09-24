@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
@@ -39,7 +40,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     }) as Establishment;
 
     const setupTools = await render(WDFWorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, FundingModule],
+      imports: [SharedModule, RouterModule, FundingModule],
       declarations: [WdfStaffMismatchMessageComponent],
       providers: [
         {
@@ -69,7 +70,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           provide: ActivatedRoute,
           useValue: { snapshot: { params: { establishmentuid: 'mock-uid' }, data: {} } },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         wdfView: true,
         workplace,

@@ -1,17 +1,18 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
 
 import { BulkUploadTopTipsListResolver } from './bulk-upload-top-tips-list.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('BulkUploadTopTipsListResolver', () => {
   let resolver: BulkUploadTopTipsListResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      providers: [BulkUploadTopTipsListResolver],
+      imports: [RouterTestingModule.withRoutes([])],
+      providers: [BulkUploadTopTipsListResolver, provideHttpClient(), provideHttpClientTesting()],
     });
     resolver = TestBed.inject(BulkUploadTopTipsListResolver);
   });

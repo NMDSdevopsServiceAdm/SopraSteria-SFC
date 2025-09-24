@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -28,7 +29,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     const existingMandatoryTraining = mockMandatoryTraining();
 
     const setupTools = await render(AddAndManageMandatoryTrainingComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule.withRoutes([]), HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule.withRoutes([])],
       declarations: [],
       providers: [
         {
@@ -59,7 +60,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

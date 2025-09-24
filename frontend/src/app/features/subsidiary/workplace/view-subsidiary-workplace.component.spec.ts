@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -38,7 +39,7 @@ describe('ViewSubsidiaryWorkplaceComponent', () => {
   const setup = async (overrides: any = {}) => {
     const role = Roles.Edit;
     const setupTools = await render(ViewSubsidiaryWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: FeatureFlagsService,
@@ -87,7 +88,7 @@ describe('ViewSubsidiaryWorkplaceComponent', () => {
           },
         },
         { provide: WindowToken, useValue: MockWindow },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       declarations: [NewDashboardHeaderComponent],
     });
 

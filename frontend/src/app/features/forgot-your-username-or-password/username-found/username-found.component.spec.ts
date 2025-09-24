@@ -1,23 +1,24 @@
+import { provideHttpClient } from '@angular/common/http';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { UsernameFoundComponent } from './username-found.component';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FindUsernameService } from '@core/services/find-username.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 
 describe('UsernameFoundComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(UsernameFoundComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterModule, RouterTestingModule],
       declarations: [PageNoLongerAvailableComponent],
       providers: [
         {
           provide: FindUsernameService,
           useValue: { usernameFound: overrides.username },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {},
     });
 

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -24,7 +25,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     const childWorkplaces = 'childWorkplaces' in overrides ? overrides.childWorkplaces : null;
 
     const setupTools = await render(NavigateToWorkplaceDropdownComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [RouterTestingModule, FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -36,7 +37,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
               : {}),
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         maxChildWorkplacesForDropdown,
       },

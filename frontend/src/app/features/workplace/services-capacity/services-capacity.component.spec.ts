@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -23,7 +24,7 @@ describe('ServicesCapacityComponent', () => {
     const { fixture, getByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       ServicesCapacityComponent,
       {
-        imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+        imports: [RouterTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
         providers: [
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           {
@@ -36,7 +37,7 @@ describe('ServicesCapacityComponent', () => {
           ErrorSummaryService,
           SubmitButtonComponent,
           QuestionComponent,
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
     const component = fixture.componentInstance;

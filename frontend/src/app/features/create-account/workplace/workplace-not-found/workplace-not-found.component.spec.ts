@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,7 +16,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found.component';
 describe('WorkplaceNotFoundComponent', () => {
   async function setup(overrides: any = {}) {
     const component = await render(WorkplaceNotFoundComponent, {
-      imports: [SharedModule, RegistrationModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RegistrationModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,
@@ -64,7 +65,7 @@ describe('WorkplaceNotFoundComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

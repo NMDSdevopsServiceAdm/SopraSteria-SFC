@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
@@ -38,7 +39,7 @@ describe('NotificationLinkToParentComponent', () => {
     const { fixture, getByText, getByTestId, queryByText, getAllByText, findByText } = await render(
       NotificationLinkToParentComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule],
         declarations: [NotificationTypePipe],
         providers: [
           AlertService,
@@ -52,7 +53,7 @@ describe('NotificationLinkToParentComponent', () => {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
         componentProperties: {
           events: new Observable<string>(),
           notification: notificationData,

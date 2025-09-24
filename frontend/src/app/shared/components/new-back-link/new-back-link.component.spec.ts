@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -12,9 +13,9 @@ import { NewBackLinkComponent } from './new-back-link.component';
 describe('BackLinkComponent', () => {
   const setup = async () => {
     const { fixture, getByText } = await render(NewBackLinkComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       declarations: [],
-      providers: [BackService],
+      providers: [BackService, provideHttpClient(), provideHttpClientTesting()],
     });
     const component = fixture.componentInstance;
 

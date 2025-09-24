@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -8,11 +8,12 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { of } from 'rxjs';
 
 import { CqcStatusCheckResolver } from './cqcStatusCheck.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('CqcStatusCheckResolver', () => {
   const setup = (establishmentuid = null) => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule.withRoutes([])],
       providers: [
         CqcStatusCheckResolver,
         {
@@ -23,6 +24,9 @@ describe('CqcStatusCheckResolver', () => {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap({ establishmentuid }) } },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

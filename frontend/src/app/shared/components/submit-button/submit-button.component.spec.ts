@@ -1,4 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -7,7 +6,7 @@ import { SubmitButtonComponent } from './submit-button.component';
 describe('SubmitButtonComponent', () => {
   const setup = async (shouldReturn = false, summaryContinue = false) =>
     render(SubmitButtonComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterTestingModule],
       componentProperties: {
         return: shouldReturn,
         callToAction: 'Save and continue',

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -15,7 +16,7 @@ import { RejectedRegistrationRequestsComponent } from './rejected-registration-r
 describe('RejectedRegistrationRequestsComponent', () => {
   async function setup() {
     const component = await render(RejectedRegistrationRequestsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: SwitchWorkplaceService, useClass: MockSwitchWorkplaceService },
@@ -49,7 +50,7 @@ describe('RejectedRegistrationRequestsComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const fixture = component.fixture;

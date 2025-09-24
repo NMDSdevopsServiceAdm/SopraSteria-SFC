@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,14 +19,7 @@ describe('ConfirmAccountDetailsComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       ConfirmAccountDetailsComponent,
       {
-        imports: [
-          SharedModule,
-          RegistrationModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RegistrationModule, RouterTestingModule, FormsModule, ReactiveFormsModule],
         providers: [
           {
             provide: RegistrationService,
@@ -50,7 +44,7 @@ describe('ConfirmAccountDetailsComponent', () => {
             },
           },
           UntypedFormBuilder,
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

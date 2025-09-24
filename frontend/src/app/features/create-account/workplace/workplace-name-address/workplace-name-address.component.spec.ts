@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,7 +14,7 @@ import { BehaviorSubject } from 'rxjs';
 describe('WorkplaceNameAddressComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(WorkplaceNameAddressComponent, {
-      imports: [SharedModule, WorkplaceModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [SharedModule, WorkplaceModule, FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,
@@ -34,7 +35,7 @@ describe('WorkplaceNameAddressComponent', () => {
           },
         },
         UntypedFormBuilder,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

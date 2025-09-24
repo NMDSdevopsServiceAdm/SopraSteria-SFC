@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -33,7 +34,7 @@ describe('StandAloneAccountComponent', () => {
     permissions = ['canViewBenchmarks', 'canViewListOfUsers', 'canViewListOfWorkers', 'canViewEstablishment'],
   ) => {
     const { fixture, getByTestId, queryByTestId, getByRole } = await render(StandAloneAccountComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
         {
@@ -53,6 +54,8 @@ describe('StandAloneAccountComponent', () => {
           useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
           deps: [HttpClient, Router, UserService],
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {

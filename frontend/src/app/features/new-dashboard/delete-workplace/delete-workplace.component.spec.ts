@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -30,7 +31,7 @@ describe('DeleteWorkplaceComponent', async () => {
     const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
       DeleteWorkplaceComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
         declarations: [DeleteWorkplaceComponent],
         providers: [
           WindowRef,
@@ -54,7 +55,7 @@ describe('DeleteWorkplaceComponent', async () => {
             useFactory: MockAuthService.factory(true, isAdmin),
             deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
         componentProperties: {},
       },
     );

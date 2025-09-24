@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -16,7 +17,7 @@ import { PendingRegistrationRequestsComponent } from './pending-registration-req
 describe('PendingRegistrationRequestsComponent', () => {
   async function setup() {
     const component = await render(PendingRegistrationRequestsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: SwitchWorkplaceService, useClass: MockSwitchWorkplaceService },
@@ -52,7 +53,7 @@ describe('PendingRegistrationRequestsComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const fixture = component.fixture;

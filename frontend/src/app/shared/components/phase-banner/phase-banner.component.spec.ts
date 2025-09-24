@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -12,8 +13,13 @@ import { PhaseBannerComponent } from './phase-banner.component';
 describe('PhaseBannerComponent', () => {
   const setup = async () => {
     const { fixture } = await render(PhaseBannerComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
-      providers: [{ provide: BreadcrumbService, useClass: MockBreadcrumbService }, UntypedFormBuilder],
+      imports: [RouterTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      providers: [
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        UntypedFormBuilder,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = fixture.componentInstance;
 

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
@@ -50,7 +51,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
   async function setup(totalRecords = 5) {
     const { fixture, getAllByText, getByText, getByLabelText, queryByLabelText, getByTestId, queryByTestId } =
       await render(TrainingAndQualificationsSummaryComponent, {
-        imports: [HttpClientTestingModule],
+        imports: [],
         declarations: [TablePaginationWrapperComponent, PaginationComponent, SearchInputComponent],
         providers: [
           { provide: PermissionsService, useValue: mockPermissionsService },
@@ -58,7 +59,7 @@ describe('TrainingAndQualificationsSummaryComponent', () => {
             provide: WorkerService,
             useClass: MockWorkerService,
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
         componentProperties: {
           workplace: establishmentBuilder() as Establishment,
           workers: workers as Worker[],

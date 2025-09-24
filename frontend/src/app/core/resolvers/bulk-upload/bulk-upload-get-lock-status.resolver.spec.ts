@@ -1,17 +1,18 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 import { BulkUploadGetLockStatusResolver } from './bulk-upload-get-lock-status.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('BulkUploadGetLockStatusResolver', () => {
   let resolver: BulkUploadGetLockStatusResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule.withRoutes([])],
       providers: [
         BulkUploadGetLockStatusResolver,
         {
@@ -20,6 +21,9 @@ describe('BulkUploadGetLockStatusResolver', () => {
             establishmentId: 'establishmentId',
           },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     resolver = TestBed.inject(BulkUploadGetLockStatusResolver);

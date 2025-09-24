@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -29,7 +30,7 @@ describe('Notification', () => {
     const { fixture, getByText, queryByTestId, queryByText, getByLabelText, getByTestId } = await render(
       NotificationComponent,
       {
-        imports: [SharedModule, RouterModule, HttpClientTestingModule, NotificationsModule],
+        imports: [SharedModule, RouterModule, NotificationsModule],
         declarations: [NotificationTypePipe],
         providers: [
           {
@@ -66,7 +67,7 @@ describe('Notification', () => {
             },
           },
           WindowRef,
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
         componentProperties: {},
       },
     );

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -13,7 +14,7 @@ describe('DataAreaUsefulLinkPayComponent', () => {
 
   async function setup(returnData = true) {
     const { fixture, getByText, queryByTestId } = await render(DataAreaUsefulLinkPayComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -25,7 +26,7 @@ describe('DataAreaUsefulLinkPayComponent', () => {
             },
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = fixture.componentInstance;
@@ -37,7 +38,6 @@ describe('DataAreaUsefulLinkPayComponent', () => {
     };
   }
   it('should create', async () => {
-
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
@@ -54,6 +54,6 @@ describe('DataAreaUsefulLinkPayComponent', () => {
 
   it('should not render when no data', async () => {
     const { queryByTestId } = await setup(false);
-    expect(queryByTestId("usefulLinkPayTestId")).toBeFalsy();
+    expect(queryByTestId('usefulLinkPayTestId')).toBeFalsy();
   });
 });

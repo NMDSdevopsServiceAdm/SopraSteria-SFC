@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -20,7 +21,7 @@ describe('SelectWorkplaceComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       SelectWorkplaceComponent,
       {
-        imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterTestingModule, FormsModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -32,7 +33,7 @@ describe('SelectWorkplaceComponent', () => {
             useFactory: MockWorkplaceService.factory({ value: 'Private Sector' }, manyLocationAddresses),
             deps: [HttpClient],
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

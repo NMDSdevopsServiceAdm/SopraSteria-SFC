@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -15,13 +16,13 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 describe('FeedbackComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(FeedbackComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+      imports: [RouterTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         UntypedFormBuilder,
         ErrorSummaryService,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
     const component = fixture.componentInstance;
 

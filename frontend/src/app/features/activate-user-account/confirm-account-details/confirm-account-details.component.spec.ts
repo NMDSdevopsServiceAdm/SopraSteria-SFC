@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { HttpErrorResponse } from '@angular/common/http';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -20,7 +21,7 @@ describe('ConfirmAccountDetailsComponent', () => {
     const { getByText, getByTestId, fixture, getAllByText, queryByText } = await render(
       ConfirmAccountDetailsComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ActivateUserAccountModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule, ActivateUserAccountModule],
         providers: [
           BackLinkService,
 
@@ -43,7 +44,7 @@ describe('ConfirmAccountDetailsComponent', () => {
               },
             },
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

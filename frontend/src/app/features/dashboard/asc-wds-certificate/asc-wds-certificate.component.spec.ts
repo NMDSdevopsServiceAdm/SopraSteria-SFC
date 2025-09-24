@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -9,14 +10,14 @@ import { AscWdsCertificateComponent } from './asc-wds-certificate.component';
 describe('AscWdsCertificateComponent', () => {
   async function setup() {
     const { fixture, getByTestId, getByText, getByAltText } = await render(AscWdsCertificateComponent, {
-      imports: [HttpClientTestingModule, RouterModule],
+      imports: [RouterModule],
       providers: [
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
         provideRouter([]),
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
@@ -13,13 +14,13 @@ describe('NewComparisonGroupHeaderComponent', () => {
   const setup = async (metaData = {}, canViewFullContent = true) => {
     const meta = metaData ? metaData : null;
     const { fixture, getByText, getByTestId } = await render(NewComparisonGroupHeaderComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         {
           provide: BenchmarksV2Service,
           useClass: MockBenchmarksService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         meta: meta as Meta,
         workplaceID: 'mock-uid',

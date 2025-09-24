@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -20,7 +21,7 @@ import { SearchForUserComponent } from './search-for-user.component';
 describe('SearchForUserComponent', () => {
   async function setup(searchButtonClicked = false, isLocked = false) {
     const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(SearchForUserComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -31,7 +32,7 @@ describe('SearchForUserComponent', () => {
         WindowRef,
         SearchService,
         AlertService,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       declarations: [AdminUnlockConfirmationDialogComponent],
     });
 

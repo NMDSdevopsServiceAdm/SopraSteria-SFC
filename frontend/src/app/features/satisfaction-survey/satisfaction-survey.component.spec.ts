@@ -1,8 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -13,7 +14,7 @@ import { environment } from 'src/environments/environment';
 
 const getSatisfactionSurveyComponent = async () => {
   return render(SatisfactionSurveyComponent, {
-    imports: [FormsModule, ReactiveFormsModule, HttpClientTestingModule, SharedModule],
+    imports: [FormsModule, ReactiveFormsModule, SharedModule],
     providers: [
       {
         provide: ActivatedRoute,
@@ -21,6 +22,8 @@ const getSatisfactionSurveyComponent = async () => {
           queryParams: of({ wid: 'workplace-uid', uid: 'user-uid' }),
         },
       },
+      provideHttpClient(),
+      provideHttpClientTesting(),
     ],
   });
 };

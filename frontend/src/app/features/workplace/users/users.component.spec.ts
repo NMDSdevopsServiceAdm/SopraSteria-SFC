@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -17,7 +18,7 @@ import { UsersComponent } from './users.component';
 describe('UsersComponent', () => {
   const setup = async () => {
     const { fixture } = await render(UsersComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         {
           provide: PermissionsService,
@@ -27,7 +28,8 @@ describe('UsersComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
-        },{
+        },
+        {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
@@ -37,7 +39,7 @@ describe('UsersComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
     const component = fixture.componentInstance;
 

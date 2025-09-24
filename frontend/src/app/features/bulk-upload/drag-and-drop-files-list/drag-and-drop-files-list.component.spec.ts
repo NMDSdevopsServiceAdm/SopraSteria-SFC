@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { BulkUploadFileType, ValidatedFile } from '@core/model/bulk-upload.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -31,7 +30,7 @@ import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.compon
 describe('DragAndDropFilesListComponent', () => {
   const setup = async (overrides: any = {}) => {
     const { fixture, getByTestId, getByText, queryByText, getAllByText } = await render(DragAndDropFilesListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, BulkUploadModule],
       providers: [
         {
           provide: WindowRef,
@@ -51,6 +50,9 @@ describe('DragAndDropFilesListComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         sanitise: true,

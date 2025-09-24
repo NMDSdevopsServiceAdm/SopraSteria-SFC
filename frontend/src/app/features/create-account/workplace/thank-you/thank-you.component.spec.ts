@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LocationService } from '@core/services/location.service';
@@ -12,7 +13,7 @@ import { ThankYouComponent } from './thank-you.component';
 describe('ThankYouComponent', () => {
   async function setup() {
     const component = await render(ThankYouComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
         {
           provide: LocationService,
@@ -32,7 +33,7 @@ describe('ThankYouComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

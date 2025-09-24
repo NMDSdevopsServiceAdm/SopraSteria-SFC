@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -15,7 +16,7 @@ describe('MentalHealtProfessionalComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       MentalHealthProfessionalComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           {
@@ -38,7 +39,7 @@ describe('MentalHealtProfessionalComponent', () => {
             provide: WorkerService,
             useClass: MockWorkerServiceWithUpdateWorker,
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

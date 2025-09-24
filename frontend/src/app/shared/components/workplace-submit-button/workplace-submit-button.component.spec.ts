@@ -1,4 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceSubmitButtonComponent } from './workplace-submit-button.component';
@@ -6,7 +5,7 @@ import { WorkplaceSubmitButtonComponent } from './workplace-submit-button.compon
 describe('WorkplaceSubmitButtonComponent', () => {
   const setup = async (overrides: any = {}) =>
     render(WorkplaceSubmitButtonComponent, {
-      imports: [HttpClientTestingModule],
+      imports: [],
       componentProperties: {
         return: false,
         callToAction: 'Save and continue',

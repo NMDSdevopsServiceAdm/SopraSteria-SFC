@@ -1,6 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
@@ -41,7 +42,7 @@ describe('StaffRecordComponent', () => {
     localStorageGetSpy.and.returnValue(JSON.stringify(listOfWorkerIds));
 
     const setupTools = await render(StaffRecordComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       providers: [
         AlertService,
         WindowRef,
@@ -96,7 +97,7 @@ describe('StaffRecordComponent', () => {
             clearDoYouWantToAddOrDeleteAnswer: clearDoYouWantToAddOrDeleteAnswerSpy,
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

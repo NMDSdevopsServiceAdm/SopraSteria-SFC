@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -18,15 +18,7 @@ import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplac
 describe('CouldNotFindWorkplaceAddressComponent', () => {
   async function setup(addWorkplaceFlow = true) {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(CouldNotFindWorkplaceAddressComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        AddWorkplaceModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
+      imports: [SharedModule, RouterModule, AddWorkplaceModule, FormsModule, ReactiveFormsModule],
       providers: [
         CouldNotFindWorkplaceAddressDirective,
         BackService,
@@ -56,6 +48,8 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

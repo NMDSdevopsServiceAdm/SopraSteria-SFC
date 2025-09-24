@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -30,7 +31,7 @@ describe('CreateUserAccountComponent', () => {
         RouterTestingModule.withRoutes([
           { path: 'workplace/c131232132ab/user/saved/testuid', component: UserAccountSavedComponent },
         ]),
-        HttpClientTestingModule,
+
         FormsModule,
         ReactiveFormsModule,
       ],
@@ -52,7 +53,7 @@ describe('CreateUserAccountComponent', () => {
           },
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -166,5 +167,3 @@ describe('CreateUserAccountComponent', () => {
     });
   });
 });
-
-

@@ -1,17 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { WorkplaceStaffDoDHAGuard } from './workplace-staff-do-dha.guard';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import {
-
-  MockEstablishmentServiceWithOverrides,
-} from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('WorkplaceStaffDoDHAGuard', () => {
   const setup = async (overrides: any = {}) => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         WorkplaceStaffDoDHAGuard,
         {
@@ -19,6 +17,9 @@ describe('WorkplaceStaffDoDHAGuard', () => {
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides.establishmentService ?? {}),
         },
         provideRouter([]),
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -41,7 +42,9 @@ describe('WorkplaceStaffDoDHAGuard', () => {
   });
 
   it('should return true when the workplace staff do DHA', async () => {
-    const { guard, route } = await setup({ establishmentService: { establishment: {staffDoDelegatedHealthcareActivities: "Yes"} }});
+    const { guard, route } = await setup({
+      establishmentService: { establishment: { staffDoDelegatedHealthcareActivities: 'Yes' } },
+    });
 
     const result = await guard.canActivate(route, mockRouterStateSnapshot);
 
@@ -50,12 +53,14 @@ describe('WorkplaceStaffDoDHAGuard', () => {
 
   ["Don't know", null].forEach((answer) => {
     it(`should redirect user to staff do DHA question when the answer is not ${answer}`, async () => {
-    const { guard, route } = await setup({ establishmentService: { establishment: {staffDoDelegatedHealthcareActivities: answer} }});
+      const { guard, route } = await setup({
+        establishmentService: { establishment: { staffDoDelegatedHealthcareActivities: answer } },
+      });
 
-    const result = await guard.canActivate(route, mockRouterStateSnapshot);
+      const result = await guard.canActivate(route, mockRouterStateSnapshot);
 
-    expect(result).toBeInstanceOf(UrlTree);
-    expect(result.toString()).toEqual('/workplace/mock-workplace-uid/staff-do-delegated-healthcare-activities');
+      expect(result).toBeInstanceOf(UrlTree);
+      expect(result.toString()).toEqual('/workplace/mock-workplace-uid/staff-do-delegated-healthcare-activities');
+    });
   });
-  })
 });

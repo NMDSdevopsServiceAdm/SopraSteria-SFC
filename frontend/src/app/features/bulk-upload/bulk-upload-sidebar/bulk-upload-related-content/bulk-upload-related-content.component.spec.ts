@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -17,7 +18,7 @@ describe('BulkUploadRelatedContentComponent', () => {
 
   const setup = async (isAdmin = false, isLoggedIn: boolean = true) => {
     const { fixture, getByText, queryByText, getByTestId } = await render(BulkUploadRelatedContentComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadModule],
+      imports: [RouterTestingModule, BrowserModule, BulkUploadModule],
       providers: [
         {
           provide: AuthService,
@@ -34,7 +35,7 @@ describe('BulkUploadRelatedContentComponent', () => {
             },
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       declarations: [BulkUploadRelatedContentComponent],
     });
     const component = fixture.componentInstance;

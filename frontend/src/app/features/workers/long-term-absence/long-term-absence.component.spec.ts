@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -20,7 +21,7 @@ describe('LongTermAbsenceComponent', () => {
 
   async function setup(qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, queryByText } = await render(LongTermAbsenceComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule, WorkersModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -41,7 +42,7 @@ describe('LongTermAbsenceComponent', () => {
           provide: WorkerService,
           useClass: MockWorkerServiceWithUpdateWorker,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = fixture.componentInstance;

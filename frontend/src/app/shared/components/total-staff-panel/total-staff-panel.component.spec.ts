@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -8,6 +8,7 @@ import { Establishment } from '../../../../mockdata/establishment';
 import { Permissions } from '../../../../mockdata/permissions';
 import { TotalStaffPanelComponent } from './total-staff-panel.component';
 import { SharedModule } from '@shared/shared.module';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('TotalStaffPanelComponent', () => {
   let component: TotalStaffPanelComponent;
@@ -17,8 +18,9 @@ describe('TotalStaffPanelComponent', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [RouterTestingModule, HttpClientTestingModule, SharedModule],
         declarations: [TotalStaffPanelComponent],
+        imports: [RouterTestingModule, SharedModule],
+        providers: [provideHttpClient(), provideHttpClientTesting()],
       }).compileComponents();
     }),
   );

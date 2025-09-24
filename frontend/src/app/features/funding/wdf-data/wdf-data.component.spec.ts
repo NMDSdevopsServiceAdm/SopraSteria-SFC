@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -29,7 +30,7 @@ describe('WdfDataComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfDataComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
+      imports: [RouterTestingModule, BrowserModule, SharedModule, FundingModule],
       declarations: [WdfStaffSummaryComponent],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -60,7 +61,7 @@ describe('WdfDataComponent', () => {
             fragment: of(overrides.fragment ?? undefined),
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workerCount: 1,
       },

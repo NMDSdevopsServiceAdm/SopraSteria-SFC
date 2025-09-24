@@ -1,7 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { fireEvent, render } from '@testing-library/angular';
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './view-subsidiary-training-and-qualifications.component';
 import { WindowRef } from '@core/services/window.ref';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -34,7 +35,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     const workers = override?.withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(ViewSubsidiaryTrainingAndQualificationsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       declarations: [
         NewDashboardHeaderComponent,
         NewTrainingLinkPanelComponent,
@@ -85,7 +86,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
             queryParamMap: { get: () => null },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         canEditEstablishment: override.canEditEstablishment,
       },

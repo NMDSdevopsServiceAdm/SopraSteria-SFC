@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
@@ -19,7 +20,7 @@ describe('NotificationListComponent', () => {
     const { fixture, getByText, queryByTestId, queryByText, getByLabelText, getByTestId } = await render(
       NotificationListComponent,
       {
-        imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule, FormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule, FormsModule],
         declarations: [NotificationTypePipe],
         providers: [
           FormBuilder,
@@ -36,7 +37,7 @@ describe('NotificationListComponent', () => {
             useClass: MockBreadcrumbService,
           },
           provideRouter([]),
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
     const injector = getTestBed();

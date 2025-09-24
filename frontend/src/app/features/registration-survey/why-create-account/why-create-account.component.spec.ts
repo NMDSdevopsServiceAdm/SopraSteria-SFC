@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -12,8 +13,8 @@ import { WhyCreateAccountComponent } from './why-create-account.component';
 describe('WhyCreateAccountComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(WhyCreateAccountComponent, {
-      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [],
+      imports: [SharedModule, RegistrationSurveyModule, RouterTestingModule],
+      providers: [provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = fixture.componentInstance;

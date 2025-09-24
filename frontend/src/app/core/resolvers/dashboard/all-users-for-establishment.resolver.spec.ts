@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -16,7 +16,7 @@ import { AllUsersForEstablishmentResolver } from './all-users-for-establishment.
 describe('AllUsersForEstablishmentResolver', () => {
   function setup(idInParams = null, permissions = ['canViewListOfUsers']) {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterTestingModule.withRoutes([])],
       providers: [
         AllUsersForEstablishmentResolver,
         {
@@ -36,6 +36,9 @@ describe('AllUsersForEstablishmentResolver', () => {
           useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
           deps: [HttpClient, Router, UserService],
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

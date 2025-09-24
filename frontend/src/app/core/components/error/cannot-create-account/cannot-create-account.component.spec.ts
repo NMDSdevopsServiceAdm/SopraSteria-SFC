@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
@@ -10,7 +11,7 @@ import { CannotCreateAccountComponent } from './cannot-create-account.component'
 describe('CannotCreateAccountComponent', () => {
   async function setup(flow = 'registration') {
     const { fixture, getByTestId } = await render(CannotCreateAccountComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         BackService,
         {
@@ -21,6 +22,8 @@ describe('CannotCreateAccountComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

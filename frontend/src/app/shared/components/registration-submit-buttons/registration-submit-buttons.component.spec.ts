@@ -1,4 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
@@ -9,7 +8,7 @@ import { RegistrationSubmitButtonsComponent } from './registration-submit-button
 describe('RegistrationSubmitButtonsComponent', () => {
   const setup = async (insideFlow = true) => {
     const { fixture, getByText } = await render(RegistrationSubmitButtonsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       componentProperties: {
         insideFlow: insideFlow,
         returnRoute: 'add-workplace/confirm-workplace-details',
