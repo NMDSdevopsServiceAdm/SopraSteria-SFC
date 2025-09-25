@@ -18,6 +18,17 @@ import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles.component';
 
 describe('AllOrSelectedJobRolesComponent', () => {
+  const tick = async () => {
+    // Note: usually we use await fixture.whenStable() to wait for async function complete,
+    // but for this component, fixture.whenStable() timeout due to some unknown issue.
+    // as a quick fix, wait for a 0 sec promise instead
+    return new Promise((resolve) =>
+      setTimeout(() => {
+        resolve(true);
+      }, 0),
+    );
+  };
+
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder();
     const selectedTraining = {
@@ -302,7 +313,8 @@ describe('AllOrSelectedJobRolesComponent', () => {
         const { fixture, getByText, alertSpy } = await setup();
 
         selectAllJobRolesAndSubmit(fixture, getByText);
-        await fixture.whenStable();
+
+        await tick();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
@@ -382,13 +394,13 @@ describe('AllOrSelectedJobRolesComponent', () => {
       });
 
       it("should display 'Mandatory training category updated' banner when All job roles selected", async () => {
-        const { fixture, getByText, alertSpy } = await setup({
+        const { getByText, alertSpy } = await setup({
           mandatoryTrainingBeingEdited,
           allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
         });
 
         fireEvent.click(getByText('Continue'));
-        await fixture.whenStable();
+        await tick();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
