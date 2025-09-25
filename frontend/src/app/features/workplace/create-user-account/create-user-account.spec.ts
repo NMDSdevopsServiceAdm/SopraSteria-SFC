@@ -101,62 +101,59 @@ describe('CreateUserAccountComponent', () => {
     const { fixture, getByText, createAccountSpy } = await setup();
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      const radioButton = getByText('Edit');
-      fireEvent.click(radioButton);
+    await fixture.whenStable();
+    const radioButton = getByText('Edit');
+    fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save user');
-      fireEvent.click(saveButton);
+    const saveButton = getByText('Save user');
+    fireEvent.click(saveButton);
 
-      expect(createAccountSpy.calls.mostRecent().args[1].email).toEqual('bob@email.com');
-      expect(createAccountSpy.calls.mostRecent().args[1].jobTitle).toEqual('Care Giver');
-      expect(createAccountSpy.calls.mostRecent().args[1].fullname).toEqual('Bob Bobson');
-      expect(createAccountSpy.calls.mostRecent().args[1].phone).toEqual('01822213131');
-    });
+    expect(createAccountSpy.calls.mostRecent().args[1].email).toEqual('bob@email.com');
+    expect(createAccountSpy.calls.mostRecent().args[1].jobTitle).toEqual('Care Giver');
+    expect(createAccountSpy.calls.mostRecent().args[1].fullname).toEqual('Bob Bobson');
+    expect(createAccountSpy.calls.mostRecent().args[1].phone).toEqual('01822213131');
   });
 
   it('should call createAccount with role Edit', async () => {
     const { fixture, getByText, createAccountSpy } = await setup();
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      const radioButton = getByText('Edit');
-      fireEvent.click(radioButton);
+    await fixture.whenStable();
+    const radioButton = getByText('Edit');
+    fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save user');
-      fireEvent.click(saveButton);
+    const saveButton = getByText('Save user');
+    fireEvent.click(saveButton);
 
-      expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
-    });
+    expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
   });
 
   it('should call createAccount with role Read', async () => {
     const { fixture, getByText, createAccountSpy } = await setup();
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      const radioButton = getByText('Read');
-      fireEvent.click(radioButton);
+    await fixture.whenStable();
+    const radioButton = getByText('Read');
+    fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save user');
-      fireEvent.click(saveButton);
+    const saveButton = getByText('Save user');
+    fireEvent.click(saveButton);
 
-      expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Read');
-    });
+    expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Read');
   });
 
   it('should call router to navigate after saving user', async () => {
     const { component, fixture, getByText, routerSpy } = await setup();
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      const radioButton = getByText('Edit');
-      fireEvent.click(radioButton);
+    await fixture.whenStable();
 
-      const saveButton = getByText('Save user');
-      fireEvent.click(saveButton);
+    const radioButton = getByText('Edit');
+    fireEvent.click(radioButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishmentUid, 'user', 'saved', 'testuid']);
-    });
+    const saveButton = getByText('Save user');
+    fireEvent.click(saveButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishmentUid, 'user', 'saved', 'testuid']);
   });
 });
