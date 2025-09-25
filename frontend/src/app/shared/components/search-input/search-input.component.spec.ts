@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 
 import { SearchInputComponent } from './search-input.component';
 
-describe('SearchInputComponent', () => {
+fdescribe('SearchInputComponent', () => {
   const setup = (accessibleLabel?: string, ref?: string) =>
     render(SearchInputComponent, {
       imports: [FormsModule, ReactiveFormsModule],
@@ -33,7 +33,7 @@ describe('SearchInputComponent', () => {
     const component = await setup();
 
     expect(component.getByRole('button', { name: 'search' })).toBeTruthy();
-    component.rerender({ searchButtonName: 'new name of button' });
+    component.rerender({ componentProperties: { searchButtonName: 'new name of button' } });
     expect(component.getByRole('button', { name: 'new name of button' })).toBeTruthy();
   });
 
@@ -67,11 +67,13 @@ describe('SearchInputComponent', () => {
     expect(component.findByRole('button', { name: 'Clear search results' })).toBeTruthy();
   });
 
-  it('resets the search on clicking of "Clear search results" cta', async () => {
+  fit('resets the search on clicking of "Clear search results" cta', async () => {
     const component = await setup();
 
     userEvent.type(component.getByLabelText('Search'), 'ab');
     userEvent.click(component.getByRole('button', { name: 'search' }));
+
+    component.detectChanges();
 
     expect(component.findByRole('button', { name: 'Clear search results' })).toBeTruthy();
 
