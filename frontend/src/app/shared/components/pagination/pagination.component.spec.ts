@@ -323,7 +323,7 @@ describe('PaginationComponent', () => {
       expect(queryByText('2')).toBeTruthy();
       expect(queryByText('Next')).toBeTruthy();
 
-      rerender({ totalNoOfItems: 4 });
+      rerender({ componentProperties: { totalNoOfItems: 4, itemsPerPage: 5 } });
 
       expect(queryByText('1')).toBeFalsy();
       expect(queryByText('2')).toBeFalsy();
