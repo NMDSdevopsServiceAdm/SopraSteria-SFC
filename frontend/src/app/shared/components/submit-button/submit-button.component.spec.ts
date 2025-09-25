@@ -3,16 +3,22 @@ import { fireEvent, render } from '@testing-library/angular';
 import { SubmitButtonComponent } from './submit-button.component';
 
 describe('SubmitButtonComponent', () => {
+  const defaultComponentProperties = {
+    return: false,
+    callToAction: 'Save and continue',
+    recordSummary: true,
+    canExit: false,
+    exitText: 'Cancel',
+    isExistingStaffRecord: true,
+    summaryContinue: false,
+  };
+
   const setup = async (shouldReturn = false, summaryContinue = false) =>
     render(SubmitButtonComponent, {
       imports: [],
       componentProperties: {
+        ...defaultComponentProperties,
         return: shouldReturn,
-        callToAction: 'Save and continue',
-        recordSummary: true,
-        canExit: false,
-        exitText: 'Cancel',
-        isExistingStaffRecord: true,
         summaryContinue: summaryContinue,
       },
     });
@@ -58,7 +64,15 @@ describe('SubmitButtonComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
 
       // update directive
-      rerender({ callToAction: 'Call to action', exitText: 'Exit' });
+      rerender({
+        componentProperties: {
+          ...defaultComponentProperties,
+          callToAction: 'Call to action',
+          exitText: 'Exit',
+          canExit: true,
+          recordSummary: false,
+        },
+      });
       expect(getByText('Call to action')).toBeTruthy();
       expect(getByText('Exit')).toBeTruthy();
     });
@@ -85,7 +99,7 @@ describe('SubmitButtonComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
 
       // update directive
-      rerender({ exitText: 'Exit' });
+      rerender({ componentProperties: { ...defaultComponentProperties, exitText: 'Exit', return: true } });
       expect(getByText('Exit')).toBeTruthy();
     });
   });

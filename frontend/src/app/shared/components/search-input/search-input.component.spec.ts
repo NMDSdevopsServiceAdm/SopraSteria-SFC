@@ -1,10 +1,10 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { render, waitForElementToBeRemoved } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SearchInputComponent } from './search-input.component';
 
-fdescribe('SearchInputComponent', () => {
+describe('SearchInputComponent', () => {
   const setup = (accessibleLabel?: string, ref?: string) =>
     render(SearchInputComponent, {
       imports: [FormsModule, ReactiveFormsModule],
@@ -67,20 +67,17 @@ fdescribe('SearchInputComponent', () => {
     expect(component.findByRole('button', { name: 'Clear search results' })).toBeTruthy();
   });
 
-  fit('resets the search on clicking of "Clear search results" cta', async () => {
+  it('resets the search on clicking of "Clear search results" cta', async () => {
     const component = await setup();
 
     userEvent.type(component.getByLabelText('Search'), 'ab');
     userEvent.click(component.getByRole('button', { name: 'search' }));
-
-    component.detectChanges();
 
     expect(component.findByRole('button', { name: 'Clear search results' })).toBeTruthy();
 
     const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
     userEvent.click(component.getByRole('button', { name: 'Clear search results' }));
 
-    await waitForElementToBeRemoved(() => component.getByRole('button', { name: 'Clear search results' }));
     expect(component.queryByRole('button', { name: 'Clear search results' })).toBeNull();
 
     expect(emitSpy).toHaveBeenCalledOnceWith('');
