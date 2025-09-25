@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -19,8 +21,7 @@ import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesA
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
@@ -31,8 +32,14 @@ describe('StaffRecordComponent', () => {
     const isParent = overrides.isParent ?? true;
     const permissions = overrides.permissions ?? ['canEditWorker', 'canDeleteWorker'];
     const clearDoYouWantToAddOrDeleteAnswerSpy = jasmine.createSpy('clearDoYouWantToAddOrDeleteAnswer');
+    const thisWorkerId = overrides?.thisWorkerId ?? 'uid2';
+    const listOfWorkerIds = overrides?.listOfWorkerIds ?? ['uid1', 'uid2', 'uid3'];
 
     const workplace = establishmentBuilder() as Establishment;
+
+    const localStorageGetSpy = spyOn(localStorage, 'getItem');
+    localStorageGetSpy.and.returnValue(JSON.stringify(listOfWorkerIds));
+
     const setupTools = await render(StaffRecordComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
       providers: [
@@ -51,7 +58,14 @@ describe('StaffRecordComponent', () => {
                 url: [{ path: 'staff-record-summary' }],
               },
             },
+            params: of({ id: thisWorkerId }),
             snapshot: {
+              params: overrides.establishmentuid ? { establishmentuid: overrides.establishmentuid } : {},
+              paramMap: {
+                get(id) {
+                  return thisWorkerId;
+                },
+              },
               data: {
                 workerHasAnyTrainingOrQualifications: {
                   hasAnyTrainingOrQualifications: overrides?.hasAnyTrainingOrQualifications ?? false,
@@ -112,6 +126,7 @@ describe('StaffRecordComponent', () => {
       workerUid,
       alertSpy,
       clearDoYouWantToAddOrDeleteAnswerSpy,
+      localStorageGetSpy,
     };
   }
 
@@ -128,19 +143,23 @@ describe('StaffRecordComponent', () => {
 
   [true, false].forEach((completedValue) => {
     it(`should render the add training link and flag long term absence link, when worker.completed is ${completedValue}`, async () => {
-      const { queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid } = await setup({
-        workerService: { worker: { completed: completedValue, longTermAbsence: null } },
+      const { queryByText, getByText, getByTestId, getByRole, getAllByTestId } = await setup({
+        workerService: { worker: { uid: '123', completed: completedValue, longTermAbsence: null } },
       });
 
       const button = queryByText('Confirm record details');
       const flagLongTermAbsenceLink = getByText('Flag long-term absence');
       const deleteRecordLink = getByRole('button', { name: 'Delete staff record' });
       const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
+      const pagination = getAllByTestId('worker-pagination');
+      const closeButton = within(pagination[0]).getByText('Close this staff record');
 
       expect(button).toBeFalsy();
       expect(flagLongTermAbsenceLink).toBeTruthy();
       expect(deleteRecordLink).toBeTruthy();
       expect(trainingAndQualsLink).toBeTruthy();
+      expect(closeButton).toBeTruthy();
+      expect(pagination.length).toEqual(2);
     });
   });
 
@@ -250,6 +269,74 @@ describe('StaffRecordComponent', () => {
     });
   });
 
+  describe('Pagination controls', () => {
+    it('should set the Close this staff record buttons to navigate back to workplace staff tab', async () => {
+      const { getAllByText } = await setup({
+        workerService: { worker: { completed: true }, addStaffRecordInProgress: false },
+      });
+
+      const closeRecordButtons = getAllByText('Close this staff record');
+      const expectedLink = `/dashboard#staff-records`;
+
+      expect(closeRecordButtons.length).toEqual(2);
+
+      expect((closeRecordButtons[0] as HTMLAnchorElement).href).toContain(expectedLink);
+      expect((closeRecordButtons[1] as HTMLAnchorElement).href).toContain(expectedLink);
+    });
+
+    it('should set the expected previous link', async () => {
+      const { getAllByText, workplaceUid } = await setup({
+        workerService: { worker: { completed: true }, addStaffRecordInProgress: false },
+      });
+
+      const previousLinks = getAllByText('Previous staff record') as HTMLAnchorElement[];
+      const expectedLink = `${workplaceUid}/staff-record/uid1/staff-record-summary`;
+
+      expect(previousLinks[0].href).toContain(expectedLink);
+      expect(previousLinks[1].href).toContain(expectedLink);
+    });
+
+    it('should set the expected next link', async () => {
+      const { getAllByText, workplaceUid } = await setup({
+        workerService: { worker: { completed: true }, addStaffRecordInProgress: false },
+      });
+
+      const nextLinks = getAllByText('Next staff record') as HTMLAnchorElement[];
+      const expectedLink = `${workplaceUid}/staff-record/uid3/staff-record-summary`;
+
+      expect(nextLinks[0].href).toContain(expectedLink);
+      expect(nextLinks[1].href).toContain(expectedLink);
+    });
+
+    it('should not show a "Previous staff record" link if it is the first worker in list', async () => {
+      const { queryAllByText } = await setup({
+        workerService: { worker: { completed: true }, addStaffRecordInProgress: false },
+        listOfWorkerIds: ['uid1', 'uid2'],
+        thisWorkerId: 'uid1',
+      });
+
+      const previousLinks = queryAllByText('Previous staff record') as HTMLAnchorElement[];
+      expect(previousLinks.length).toEqual(0);
+
+      const nextLinks = queryAllByText('Next staff record') as HTMLAnchorElement[];
+      expect(nextLinks.length).toEqual(2);
+    });
+
+    it('should not show a "Next staff record" link if it is the last worker in list', async () => {
+      const { queryAllByText } = await setup({
+        workerService: { worker: { completed: true }, addStaffRecordInProgress: false },
+        listOfWorkerIds: ['uid1', 'uid2'],
+        thisWorkerId: 'uid2',
+      });
+
+      const previousLinks = queryAllByText('Previous staff record') as HTMLAnchorElement[];
+      expect(previousLinks.length).toEqual(2);
+
+      const nextLinks = queryAllByText('Next staff record') as HTMLAnchorElement[];
+      expect(nextLinks.length).toEqual(0);
+    });
+  });
+
   describe('Add details to worker flow', () => {
     describe('Continue buttons', () => {
       it('should render a Continue button at top and bottom of page when addStaffRecordInProgress is true', async () => {
@@ -306,6 +393,22 @@ describe('StaffRecordComponent', () => {
         });
 
         expect(clearDoYouWantToAddOrDeleteAnswerSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('Pagination controls', () => {
+      it('should not show Pagination controls when addStaffRecordInProgress is true', async () => {
+        const { queryAllByText } = await setup({
+          workerService: { worker: { completed: true }, addStaffRecordInProgress: true },
+        });
+
+        const previousLinks = queryAllByText('Previous staff record') as HTMLAnchorElement[];
+        const nextLinks = queryAllByText('Next staff record') as HTMLAnchorElement[];
+        const closeRecordButtons = queryAllByText('Close this staff record');
+
+        expect(previousLinks.length).toEqual(0);
+        expect(nextLinks.length).toEqual(0);
+        expect(closeRecordButtons.length).toEqual(0);
       });
     });
 

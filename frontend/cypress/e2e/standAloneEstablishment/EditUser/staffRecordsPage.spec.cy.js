@@ -4,13 +4,15 @@
 import lodash from 'lodash';
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
+import { onStaffRecordsPage, onStaffRecordSummaryPage } from '../../../support/page_objects/onStaffRecordsPage';
+import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
 
 describe('Standalone staff records page as edit user', () => {
   const establishmentId = StandAloneEstablishment.id;
   const worker1 = 'Staff 01';
   const worker2 = 'Staff 02';
   const worker3 = 'Staff 03';
-  const testWorkerNames = ['Mr Cool', 'Mr Warm', 'Mr Smith', 'Bob', 'Cypress test worker', worker1, worker2, worker3];
+  const testWorkerNames = ['Cypress test worker', 'Mr Cool', 'Mr Warm', 'Mr Smith', 'Bob', , worker1, worker2, worker3];
 
   before(() => {
     testWorkerNames.forEach((workerName) =>
@@ -563,6 +565,164 @@ describe('Standalone staff records page as edit user', () => {
 
         cy.get('label').contains('Search by name or ID number').should('not.exist');
       });
+    });
+  });
+
+  describe('delegated healthcare activities', () => {
+    const careWorker = 'care worker';
+    const ITManager = 'IT manager';
+
+    const mainServiceThatCanDoDHA = { id: 9, name: 'Day care and day services' };
+    const mainServiceThatCannotDoDHA = { id: 1, name: 'Carers support' };
+
+    before(() => {
+      cy.setWorkplaceMainService(establishmentId, mainServiceThatCanDoDHA.id);
+      cy.resetWorkplaceDHAAnswers(establishmentId);
+    });
+
+    beforeEach(() => {
+      cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: careWorker, mainJobFKValue: 10 });
+      cy.insertTestWorker({
+        establishmentID: StandAloneEstablishment.id,
+        workerName: ITManager,
+        mainJobFKValue: 36,
+      });
+      cy.reload();
+    });
+
+    afterEach(() => {
+      cy.deleteTestWorkerFromDb(careWorker);
+      cy.deleteTestWorkerFromDb(ITManager);
+    });
+
+    describe(`if worker's job role can do DHA`, () => {
+      it('should be able to add / update the answer for DHA worker question', () => {
+        onHomePage.clickTab('Staff records');
+        onStaffRecordsPage.clickIntoWorker(careWorker);
+
+        onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').toHaveValue('-');
+        cy.contains('div', 'Carries out delegated healthcare activities').contains('Add').click();
+
+        // answer the worker DHA question
+        cy.get('h1').should('contain.text', 'Do they carry out delegated healthcare activities?');
+        cy.getByLabel('Yes').click();
+        cy.get('button').contains(/Save/).click();
+
+        // should see the value updated in worker summary
+        onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').toHaveValue('Yes');
+
+        cy.contains('div', 'Carries out delegated healthcare activities').contains('Change').click();
+
+        // change the answer for worker DHA question
+        cy.get('h1').should('contain.text', 'Do they carry out delegated healthcare activities?');
+        cy.getByLabel('I do not know').click();
+        cy.get('button').contains(/Save/).click();
+
+        // should see the value updated in worker summary
+        onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').toHaveValue('Not known');
+      });
+    });
+
+    describe("if worker's job role cannot do DHA", () => {
+      it('should NOT see the delegate healthcare activities worker question', () => {
+        onHomePage.clickTab('Staff records');
+        onStaffRecordsPage.clickIntoWorker(ITManager);
+
+        onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').notExist();
+      });
+    });
+
+    describe('relationship with workplace DHA questions answer', () => {
+      beforeEach(() => {
+        // reset any change to workplace answers between each test
+        cy.setWorkplaceMainService(establishmentId, mainServiceThatCanDoDHA.id);
+        cy.resetWorkplaceDHAAnswers(establishmentId);
+        cy.reload();
+      });
+
+      it('should NOT see the DHA worker question if workplace main service is not compatible with DHA', () => {
+        onHomePage.clickTab('Workplace');
+        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCannotDoDHA.name);
+
+        onHomePage.clickTab('Staff records');
+        onStaffRecordsPage.clickIntoWorker(careWorker);
+        onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').notExist();
+      });
+
+      it('should NOT see the DHA worker question if workplace answered "No" for DHA workplace question 1', () => {
+        onHomePage.clickTab('Workplace');
+        onWorkplacePage.answerDHAQuestions('No');
+
+        onHomePage.clickTab('Staff records');
+        onStaffRecordsPage.clickIntoWorker(careWorker);
+        onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').notExist();
+      });
+
+      ['Yes', 'I do not know'].forEach((value) => {
+        it(`should see the DHA worker question if workplace answered "${value}" for DHA workplace question 1`, () => {
+          onHomePage.clickTab('Workplace');
+          onWorkplacePage.answerDHAQuestions(value);
+
+          onHomePage.clickTab('Staff records');
+          onStaffRecordsPage.clickIntoWorker(careWorker);
+          onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').toHaveValue('-');
+        });
+      });
+
+      it('should see the DHA worker question if workplace did not answer DHA workplace question', () => {
+        onHomePage.clickTab('Staff records');
+        onStaffRecordsPage.clickIntoWorker(careWorker);
+        onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').toHaveValue('-');
+      });
+    });
+  });
+
+  describe('pagination controls in staff record summary page', () => {
+    const testWorkerNames = Array(5)
+      .fill()
+      .map((_, index) => `test worker pagination ${index.toString().padStart(2, 0)}`);
+
+    before(() => {
+      testWorkerNames.forEach((workerName) =>
+        cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName }),
+      );
+    });
+
+    after(() => {
+      testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
+    });
+
+    beforeEach(() => {
+      onHomePage.clickTab('Home');
+      onHomePage.clickTab('Staff records');
+      cy.reload();
+    });
+
+    it('should allow user to cycle between workers by the "Previous staff record" and "Next staff record" links', () => {
+      onStaffRecordsPage.clickIntoWorker(testWorkerNames[2]);
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[2]);
+      cy.get('a').contains('Previous staff record').should('be.visible');
+      cy.get('a').contains('Next staff record').should('be.visible');
+
+      // visit previous worker
+      cy.get('a').contains('Previous staff record').click();
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[1]);
+
+      // visit next worker
+      cy.get('a').contains('Next staff record').click();
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[2]);
+
+      cy.get('a').contains('Next staff record').click();
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[3]);
+    });
+
+    it('should direct user back to staff records page when "Close this staff record" button is clicked', () => {
+      onStaffRecordsPage.clickIntoWorker(testWorkerNames[2]);
+      onStaffRecordSummaryPage.expectRow('Name or ID number').toHaveValue(testWorkerNames[2]);
+
+      cy.get('a').contains('Close this staff record').click();
+
+      cy.get('h1').should('include.text', 'Staff records');
     });
   });
 

@@ -140,9 +140,12 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 import { DetailsDhaExamplesComponent } from './components/details-dha-examples/details-dha-examples.component';
 import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
+import { WorkerPaginationComponent } from './components/worker-pagination/worker-pagination.component';
+import { CookieBannerComponent } from './components/cookie-banner/cookie-banner.component';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule, A11yModule],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,
@@ -190,6 +193,7 @@ import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
     TrainingLinkPanelComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
+    WorkerPaginationComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
@@ -280,6 +284,7 @@ import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
     CareWorkforcePathwayWorkplaceAwarenessTitle,
     DetailsDhaExamplesComponent,
     FormatWhatDhaPipe,
+    CookieBannerComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -324,6 +329,7 @@ import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     UserAccountsSummaryComponent,
+    WorkerPaginationComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
     WorkplacePermissionsBearerPipe,
@@ -411,6 +417,7 @@ import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
     CareWorkforcePathwayWorkplaceAwarenessTitle,
     DetailsDhaExamplesComponent,
     FormatWhatDhaPipe,
+    CookieBannerComponent,
   ],
   providers: [
     DialogService,

@@ -1,8 +1,20 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { SubEstablishmentNotDataOwner } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub staff records page as edit user where parent owns data but sub has view workplace and staff records permissions', () => {
+  const workerName = 'test worker for staff records';
+  const establishmentID = SubEstablishmentNotDataOwner.id;
+
+  before(() => {
+    cy.insertTestWorker({ establishmentID, workerName });
+  });
+
+  after(() => {
+    cy.deleteTestWorkerFromDb(workerName);
+  });
+
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editSubUserNonDataOwner'), Cypress.env('userPassword'));
     onHomePage.clickTab('Staff records');
