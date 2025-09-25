@@ -34,7 +34,7 @@ describe('WorkplaceContinueCancelButtonComponent', () => {
     const { rerender, getByTestId } = await setup();
 
     const container = getByTestId('button-container');
-    rerender({ marginTop4: true });
+    rerender({ componentProperties: { marginTop4: true } });
     expect(container.getAttribute('class')).toContain('govuk-!-margin-top-4');
   });
 
