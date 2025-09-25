@@ -102,7 +102,7 @@ export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestr
         type: [
           {
             name: 'required',
-            message: 'Select yes if you want to download the summary and any certificates',
+            message: 'Select Yes if you want to download the summary and any certificates',
           },
         ],
       },

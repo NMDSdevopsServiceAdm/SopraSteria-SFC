@@ -298,7 +298,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
 
       expect(workerServiceSpy).not.toHaveBeenCalled();
       expect(getByText('There is a problem')).toBeTruthy();
-      expect(getAllByText('Select yes if you want to download the summary and any certificates')).toHaveSize(2);
+      expect(getAllByText('Select Yes if you want to download the summary and any certificates')).toHaveSize(2);
       expect(routerSpy).not.toHaveBeenCalled();
       expect(alertServiceSpy).not.toHaveBeenCalled();
     });
