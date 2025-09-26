@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MandatoryTrainingService } from '@core/services/training.service';
@@ -18,17 +19,6 @@ import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles.component';
 
 describe('AllOrSelectedJobRolesComponent', () => {
-  const tick = async () => {
-    // Note: usually we use await fixture.whenStable() to wait for async function complete,
-    // but for this component, fixture.whenStable() timeout due to some unknown issue.
-    // as a quick fix, wait for a 0 sec promise instead
-    return new Promise((resolve) =>
-      setTimeout(() => {
-        resolve(true);
-      }, 0),
-    );
-  };
-
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder();
     const selectedTraining = {
@@ -65,6 +55,14 @@ describe('AllOrSelectedJobRolesComponent', () => {
         WindowRef,
         provideHttpClient(),
         provideHttpClientTesting(),
+        {
+          // mock the MandatoryTrainingCategoriesResolver,
+          // to avoid dangling subscription causing await fixture.whenStable() to timeout
+          provide: MandatoryTrainingCategoriesResolver,
+          useValue: {
+            resolve: () => {},
+          },
+        },
       ],
     });
 
@@ -314,7 +312,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
 
         selectAllJobRolesAndSubmit(fixture, getByText);
 
-        await tick();
+        await fixture.whenStable();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
@@ -394,13 +392,13 @@ describe('AllOrSelectedJobRolesComponent', () => {
       });
 
       it("should display 'Mandatory training category updated' banner when All job roles selected", async () => {
-        const { getByText, alertSpy } = await setup({
+        const { fixture, getByText, alertSpy } = await setup({
           mandatoryTrainingBeingEdited,
           allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
         });
 
         fireEvent.click(getByText('Continue'));
-        await tick();
+        await fixture.whenStable();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
