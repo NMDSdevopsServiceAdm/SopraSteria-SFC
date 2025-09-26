@@ -9,8 +9,9 @@ import { UserService } from '@core/services/user.service';
 import { SelectPrimaryUserDirective } from '@shared/directives/user/select-primary-user.directive';
 
 @Component({
-  selector: 'app-select-primary-user-delete',
-  templateUrl: './select-primary-user-delete.component.html',
+    selector: 'app-select-primary-user-delete',
+    templateUrl: './select-primary-user-delete.component.html',
+    standalone: false
 })
 export class SelectPrimaryUserDeleteComponent extends SelectPrimaryUserDirective {
   constructor(

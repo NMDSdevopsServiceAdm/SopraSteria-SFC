@@ -456,11 +456,10 @@ describe('AddEditTrainingComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Training record updated',
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Training record updated',
       });
     });
 
@@ -514,11 +513,10 @@ describe('AddEditTrainingComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Training record added',
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Training record added',
       });
     });
 

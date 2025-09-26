@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MessageService } from '@core/services/message.service';
 
 @Component({
-  selector: 'app-messages',
-  templateUrl: './messages.component.html',
+    selector: 'app-messages',
+    templateUrl: './messages.component.html',
+    standalone: false
 })
 export class MessagesComponent implements OnInit, OnDestroy {
   public success: any;

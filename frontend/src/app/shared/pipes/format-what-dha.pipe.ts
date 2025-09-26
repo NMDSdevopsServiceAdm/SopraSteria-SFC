@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { StaffWhatKindDelegatedHealthcareActivities } from '@core/model/delegated-healthcare-activities.model';
 
 @Pipe({
-  name: 'formatWhatDHA',
+    name: 'formatWhatDHA',
+    standalone: false
 })
 export class FormatWhatDhaPipe implements PipeTransform {
   transform(whatDHA: StaffWhatKindDelegatedHealthcareActivities): string | Array<string> {

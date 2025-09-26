@@ -12,8 +12,9 @@ import dayjs from 'dayjs';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-year-arrived-uk',
-  templateUrl: './year-arrived-uk.component.html',
+    selector: 'app-year-arrived-uk',
+    templateUrl: './year-arrived-uk.component.html',
+    standalone: false
 })
 export class YearArrivedUkComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();

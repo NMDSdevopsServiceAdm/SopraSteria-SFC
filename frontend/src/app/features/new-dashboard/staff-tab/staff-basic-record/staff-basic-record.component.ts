@@ -9,8 +9,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import dayjs from 'dayjs';
 
 @Component({
-  selector: 'app-staff-basic-record',
-  templateUrl: './staff-basic-record.component.html',
+    selector: 'app-staff-basic-record',
+    templateUrl: './staff-basic-record.component.html',
+    standalone: false
 })
 export class StaffBasicRecord implements OnInit, OnDestroy {
   public workplace: Establishment;

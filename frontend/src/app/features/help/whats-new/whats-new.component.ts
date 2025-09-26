@@ -5,8 +5,9 @@ import { HelpPage } from '@core/model/help-pages.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-whats-new',
-  templateUrl: './whats-new.component.html',
+    selector: 'app-whats-new',
+    templateUrl: './whats-new.component.html',
+    standalone: false
 })
 export class WhatsNewComponent implements OnInit {
   public helpPage: HelpPage;

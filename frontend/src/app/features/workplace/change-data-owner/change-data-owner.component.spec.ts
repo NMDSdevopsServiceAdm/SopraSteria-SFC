@@ -356,11 +356,10 @@ describe('ChangeDataOwnerComponent', async () => {
       },
     });
 
-    fixture.whenStable().then(() => {
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: "You've sent a change data owner request",
-      });
+    await fixture.whenStable();
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: "You've sent a change data owner request",
     });
   });
 
@@ -388,11 +387,10 @@ describe('ChangeDataOwnerComponent', async () => {
       },
     });
 
-    fixture.whenStable().then(() => {
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: "You've sent a change data owner request",
-      });
+    await fixture.whenStable();
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: "You've sent a change data owner request",
     });
   });
 });

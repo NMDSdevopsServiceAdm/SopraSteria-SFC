@@ -17,8 +17,9 @@ import { Subscription } from 'rxjs';
 import { TabComponent } from './tab.component';
 
 @Component({
-  selector: 'app-tabs',
-  templateUrl: './tabs.component.html',
+    selector: 'app-tabs',
+    templateUrl: './tabs.component.html',
+    standalone: false
 })
 export class TabsComponent implements AfterContentInit, OnDestroy {
   @Output() selectedTabClick = new EventEmitter();

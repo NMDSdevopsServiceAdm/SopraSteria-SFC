@@ -10,8 +10,9 @@ import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 import { AddTotalStaffDirective } from '@shared/directives/create-workplace/add-total-staff/add-total-staff.directive';
 
 @Component({
-  selector: 'app-add-total-staff-create-account',
-  templateUrl: '../../../../shared/directives/create-workplace/add-total-staff/add-total-staff.component.html',
+    selector: 'app-add-total-staff-create-account',
+    templateUrl: '../../../../shared/directives/create-workplace/add-total-staff/add-total-staff.component.html',
+    standalone: false
 })
 export class AddTotalStaffComponent extends AddTotalStaffDirective {
   constructor(

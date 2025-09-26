@@ -9,8 +9,9 @@ import {
 } from '@core/services/vacancies-and-turnover.service';
 
 @Component({
-  selector: 'app-add-another-staff-record',
-  templateUrl: './add-another-staff-record.component.html',
+    selector: 'app-add-another-staff-record',
+    templateUrl: './add-another-staff-record.component.html',
+    standalone: false
 })
 export class AddAnotherStaffRecordComponent implements OnInit {
   public form: UntypedFormGroup;

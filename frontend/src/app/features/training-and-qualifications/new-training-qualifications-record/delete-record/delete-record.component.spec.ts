@@ -169,11 +169,10 @@ describe('DeleteRecordComponent', () => {
 
         expect(routerSpy).toHaveBeenCalledWith([previousUrl]);
 
-        fixture.whenStable().then(() => {
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Training record deleted',
-          });
+        await fixture.whenStable();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Training record deleted',
         });
       });
 
@@ -191,11 +190,10 @@ describe('DeleteRecordComponent', () => {
           'training',
         ]);
 
-        fixture.whenStable().then(() => {
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Training record deleted',
-          });
+        await fixture.whenStable();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Training record deleted',
         });
       });
     });
@@ -277,11 +275,10 @@ describe('DeleteRecordComponent', () => {
 
         expect(routerSpy).toHaveBeenCalledWith([previousUrl]);
 
-        fixture.whenStable().then(() => {
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Qualification record deleted',
-          });
+        await fixture.whenStable();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Qualification record deleted',
         });
       });
 
@@ -299,11 +296,10 @@ describe('DeleteRecordComponent', () => {
           'training',
         ]);
 
-        fixture.whenStable().then(() => {
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Qualification record deleted',
-          });
+        await fixture.whenStable();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Qualification record deleted',
         });
       });
     });

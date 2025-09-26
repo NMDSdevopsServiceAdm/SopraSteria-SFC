@@ -153,11 +153,10 @@ describe('BecomeAParentComponent', () => {
       },
     });
 
-    fixture.whenStable().then(() => {
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'You’ve sent a request to become a parent workplace',
-      });
+    await fixture.whenStable();
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'You’ve sent a request to become a parent workplace',
     });
   });
 
@@ -237,11 +236,10 @@ describe('BecomeAParentComponent', () => {
         },
       });
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: "You've cancelled your request to become a parent workplace",
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: "You've cancelled your request to become a parent workplace",
       });
     });
   });

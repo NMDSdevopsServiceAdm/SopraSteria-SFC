@@ -64,18 +64,16 @@ describe('AboutBulkUploadComponent', () => {
   it('should render related contents and download codes and guidance links', async () => {
     const { fixture, getByText } = await setup();
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByText('Related content')).toBeTruthy();
-      expect(getByText('Download codes and guidance')).toBeTruthy();
-    });
+    await fixture.whenStable();
+    expect(getByText('Related content')).toBeTruthy();
+    expect(getByText('Download codes and guidance')).toBeTruthy();
   });
 
   it('should render get help with bulk uploads and data changes links under the related contents', async () => {
     const { fixture, getByText } = await setup();
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByText('Get help with bulk uploads')).toBeTruthy();
-      expect(getByText('Data changes')).toBeTruthy();
-    });
+    await fixture.whenStable();
+    expect(getByText('Get help with bulk uploads')).toBeTruthy();
+    expect(getByText('Data changes')).toBeTruthy();
   });
 });

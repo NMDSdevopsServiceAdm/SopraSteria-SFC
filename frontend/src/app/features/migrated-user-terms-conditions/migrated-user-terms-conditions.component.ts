@@ -9,9 +9,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({
-  selector: 'app-migrated-user-terms-conditions',
-  templateUrl: './migrated-user-terms-conditions.component.html',
-  styles: [],
+    selector: 'app-migrated-user-terms-conditions',
+    templateUrl: './migrated-user-terms-conditions.component.html',
+    styles: [],
+    standalone: false
 })
 export class MigratedUserTermsConditionsComponent implements OnInit {
   public formErrorsMap: ErrorDetails[];

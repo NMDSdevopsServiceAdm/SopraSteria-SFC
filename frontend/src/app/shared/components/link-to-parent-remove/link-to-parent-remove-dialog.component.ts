@@ -11,8 +11,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-link-to-parent-remove-dialog',
-  templateUrl: './link-to-parent-remove-dialog.component.html',
+    selector: 'app-link-to-parent-remove-dialog',
+    templateUrl: './link-to-parent-remove-dialog.component.html',
+    standalone: false
 })
 export class LinkToParentRemoveDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public workplace: Establishment;

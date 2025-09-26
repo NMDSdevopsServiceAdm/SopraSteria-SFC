@@ -3,18 +3,22 @@ import { fireEvent, render } from '@testing-library/angular';
 import { WorkplaceSubmitButtonComponent } from './workplace-submit-button.component';
 
 describe('WorkplaceSubmitButtonComponent', () => {
+  const defaultComponentProperties = {
+    return: false,
+    callToAction: 'Save and continue',
+    recordSummary: true,
+    canExit: false,
+    exitText: 'Cancel',
+    marginTop2: false,
+    marginTop4: false,
+    continue: false,
+  };
+
   const setup = async (overrides: any = {}) =>
     render(WorkplaceSubmitButtonComponent, {
       imports: [],
       componentProperties: {
-        return: false,
-        callToAction: 'Save and continue',
-        recordSummary: true,
-        canExit: false,
-        exitText: 'Cancel',
-        marginTop2: false,
-        marginTop4: false,
-        continue: false,
+        ...defaultComponentProperties,
         ...overrides,
       },
     });
@@ -36,7 +40,7 @@ describe('WorkplaceSubmitButtonComponent', () => {
     const { rerender, getByTestId } = await setup();
 
     const container = getByTestId('button-container');
-    rerender({ marginTop2: true });
+    rerender({ componentProperties: { ...defaultComponentProperties, marginTop2: true } });
     expect(container.getAttribute('class')).toContain('govuk-!-margin-top-2');
   });
 
@@ -44,7 +48,7 @@ describe('WorkplaceSubmitButtonComponent', () => {
     const { rerender, getByTestId } = await setup();
 
     const container = getByTestId('button-container');
-    rerender({ marginTop4: true });
+    rerender({ componentProperties: { ...defaultComponentProperties, marginTop4: true } });
     expect(container.getAttribute('class')).toContain('govuk-!-margin-top-4');
   });
 
@@ -83,7 +87,15 @@ describe('WorkplaceSubmitButtonComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
 
       // update directive
-      rerender({ callToAction: 'Call to action', exitText: 'Exit' });
+      rerender({
+        componentProperties: {
+          ...defaultComponentProperties,
+          recordSummary: false,
+          canExit: true,
+          callToAction: 'Call to action',
+          exitText: 'Exit',
+        },
+      });
       expect(getByText('Call to action')).toBeTruthy();
       expect(getByText('Exit')).toBeTruthy();
     });
@@ -122,7 +134,7 @@ describe('WorkplaceSubmitButtonComponent', () => {
         expect(getByText('Cancel')).toBeTruthy();
 
         // update directive
-        rerender({ exitText: 'Exit' });
+        rerender({ componentProperties: { ...defaultComponentProperties, ...overrides, exitText: 'Exit' } });
         expect(getByText('Exit')).toBeTruthy();
       });
     });
@@ -142,7 +154,7 @@ describe('WorkplaceSubmitButtonComponent', () => {
         expect(getByText('Cancel')).toBeTruthy();
 
         // update directive
-        rerender({ exitText: 'Exit' });
+        rerender({ componentProperties: { ...defaultComponentProperties, ...overrides, exitText: 'Exit' } });
         expect(getByText('Exit')).toBeTruthy();
       });
     });

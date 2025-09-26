@@ -9,8 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-social-care-qualification',
-  templateUrl: './social-care-qualification.component.html',
+    selector: 'app-social-care-qualification',
+    templateUrl: './social-care-qualification.component.html',
+    standalone: false
 })
 export class SocialCareQualificationComponent extends QuestionComponent {
   public answersAvailable = [

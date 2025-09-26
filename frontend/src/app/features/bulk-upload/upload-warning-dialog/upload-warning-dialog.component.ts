@@ -4,8 +4,9 @@ import { ValidatedFile } from '@core/model/bulk-upload.model';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 
 @Component({
-  selector: 'app-upload-warning-dialog',
-  templateUrl: './upload-warning-dialog.component.html',
+    selector: 'app-upload-warning-dialog',
+    templateUrl: './upload-warning-dialog.component.html',
+    standalone: false
 })
 export class UploadWarningDialogComponent extends DialogComponent {
   constructor(

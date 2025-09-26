@@ -10,8 +10,9 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-training-link-panel',
-  templateUrl: './training-link-panel.component.html',
+    selector: 'app-training-link-panel',
+    templateUrl: './training-link-panel.component.html',
+    standalone: false
 })
 export class TrainingLinkPanelComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

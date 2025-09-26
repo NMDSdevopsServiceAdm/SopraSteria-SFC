@@ -12,8 +12,9 @@ import dayjs from 'dayjs';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-date-of-birth',
-  templateUrl: './date-of-birth.component.html',
+    selector: 'app-date-of-birth',
+    templateUrl: './date-of-birth.component.html',
+    standalone: false
 })
 export class DateOfBirthComponent extends QuestionComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

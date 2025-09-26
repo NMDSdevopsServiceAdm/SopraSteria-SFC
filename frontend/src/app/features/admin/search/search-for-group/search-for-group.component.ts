@@ -8,8 +8,9 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { SearchDirective } from '@shared/directives/admin/search/search.directive';
 
 @Component({
-  selector: 'app-search-for-group',
-  templateUrl: './search-for-group.component.html',
+    selector: 'app-search-for-group',
+    templateUrl: './search-for-group.component.html',
+    standalone: false
 })
 export class SearchForGroupComponent extends SearchDirective {
   public form: UntypedFormGroup;

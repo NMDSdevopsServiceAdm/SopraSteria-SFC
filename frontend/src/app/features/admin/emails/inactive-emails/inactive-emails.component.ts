@@ -13,9 +13,10 @@ import { ConfirmInactiveWorkplaceDeletionComponent } from '../dialogs/confirm-in
 import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
-  selector: 'app-inactive-emails',
-  templateUrl: './inactive-emails.component.html',
-  styleUrls: ['./inactive-emails.component.scss'],
+    selector: 'app-inactive-emails',
+    templateUrl: './inactive-emails.component.html',
+    styleUrls: ['./inactive-emails.component.scss'],
+    standalone: false
 })
 export class InactiveEmailsComponent {
   public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces?.inactiveWorkplaces;

@@ -11,8 +11,9 @@ import isNull from 'lodash/isNull';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-days-of-sickness',
-  templateUrl: './days-of-sickness.component.html',
+    selector: 'app-days-of-sickness',
+    templateUrl: './days-of-sickness.component.html',
+    standalone: false
 })
 export class DaysOfSicknessComponent extends QuestionComponent {
   public daysSicknessMin = 0;

@@ -10,8 +10,9 @@ import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-error-page',
-  templateUrl: './error-page.component.html',
+    selector: 'app-error-page',
+    templateUrl: './error-page.component.html',
+    standalone: false
 })
 export class ErrorPageComponent implements OnInit, OnDestroy {
   public errorReport: ErrorReport = this.route.snapshot.data.buErrors;

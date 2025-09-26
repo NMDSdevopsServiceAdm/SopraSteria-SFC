@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-help-and-tips-button',
-  templateUrl: './help-and-tips-button.component.html',
-  styleUrls: ['./help-and-tips-button.component.scss']
+    selector: 'app-help-and-tips-button',
+    templateUrl: './help-and-tips-button.component.html',
+    styleUrls: ['./help-and-tips-button.component.scss'],
+    standalone: false
 })
 export class HelpAndTipsButtonComponent {
 

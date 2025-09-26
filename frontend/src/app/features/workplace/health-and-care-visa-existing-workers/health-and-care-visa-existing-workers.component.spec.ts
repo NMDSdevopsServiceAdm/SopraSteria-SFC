@@ -344,11 +344,10 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       expect(establishmentServiceSpy).toHaveBeenCalled();
       expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'home' });
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Health and Care Worker visa information saved',
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Health and Care Worker visa information saved',
       });
     });
 

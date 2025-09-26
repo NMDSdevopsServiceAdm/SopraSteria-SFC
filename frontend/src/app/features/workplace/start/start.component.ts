@@ -8,8 +8,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-start',
-  templateUrl: './start.component.html',
+    selector: 'app-start',
+    templateUrl: './start.component.html',
+    standalone: false
 })
 export class StartComponent implements OnInit, OnDestroy {
   public establishment: Establishment;

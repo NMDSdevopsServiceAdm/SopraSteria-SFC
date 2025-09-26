@@ -8,8 +8,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 
 @Component({
-  selector: 'app-notification-list',
-  templateUrl: './notification-list.component.html',
+    selector: 'app-notification-list',
+    templateUrl: './notification-list.component.html',
+    standalone: false
 })
 export class NotificationListComponent implements OnInit {
   public workplace: Establishment;

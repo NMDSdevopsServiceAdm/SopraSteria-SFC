@@ -4,8 +4,9 @@ import { LocationAddress } from '@core/model/location.model';
 import { compact } from 'lodash';
 
 @Component({
-  selector: 'app-select-workplace-dropdown-form',
-  templateUrl: './select-workplace-dropdown-form.component.html',
+    selector: 'app-select-workplace-dropdown-form',
+    templateUrl: './select-workplace-dropdown-form.component.html',
+    standalone: false
 })
 export class SelectWorkplaceDropdownFormComponent {
   @Input() form: UntypedFormGroup;

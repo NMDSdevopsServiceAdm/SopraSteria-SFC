@@ -10,8 +10,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-remove-link-to-parent',
-  templateUrl: './remove-link-to-parent.component.html',
+    selector: 'app-remove-link-to-parent',
+    templateUrl: './remove-link-to-parent.component.html',
+    standalone: false
 })
 export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
   public workplace: Establishment;

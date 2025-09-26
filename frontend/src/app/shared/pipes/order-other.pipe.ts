@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import orderBy from 'lodash/orderBy';
 
 @Pipe({
-  name: 'orderOther',
+    name: 'orderOther',
+    standalone: false
 })
 export class OrderOtherPipe implements PipeTransform {
   transform(array: any[]): any[] {

@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import isNumber from 'lodash/isNumber';
 
 @Pipe({
-  name: 'numericAnswer',
+    name: 'numericAnswer',
+    standalone: false
 })
 export class NumericAnswerPipe implements PipeTransform {
   transform(value: string) {

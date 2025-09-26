@@ -10,8 +10,9 @@ import { UserService } from '@core/services/user.service';
 import { SelectPrimaryUserDirective } from '@shared/directives/user/select-primary-user.directive';
 
 @Component({
-  selector: 'app-select-primary-user',
-  templateUrl: './select-primary-user.component.html',
+    selector: 'app-select-primary-user',
+    templateUrl: './select-primary-user.component.html',
+    standalone: false
 })
 export class SelectPrimaryUserComponent extends SelectPrimaryUserDirective {
   constructor(

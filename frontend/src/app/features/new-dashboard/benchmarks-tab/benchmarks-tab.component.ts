@@ -10,8 +10,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
 
 @Component({
-  selector: 'app-new-benchmarks-tab',
-  templateUrl: './benchmarks-tab.component.html',
+    selector: 'app-new-benchmarks-tab',
+    templateUrl: './benchmarks-tab.component.html',
+    standalone: false
 })
 export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

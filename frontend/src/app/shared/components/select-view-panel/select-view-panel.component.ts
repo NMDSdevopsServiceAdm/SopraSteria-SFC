@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-select-view-panel',
-  templateUrl: './select-view-panel.component.html',
-  styleUrls: ['./select-view-panel.component.scss'],
+    selector: 'app-select-view-panel',
+    templateUrl: './select-view-panel.component.html',
+    styleUrls: ['./select-view-panel.component.scss'],
+    standalone: false
 })
 export class SelectViewPanelComponent {
   @Input() tabs: { name: string; fragment: string }[];

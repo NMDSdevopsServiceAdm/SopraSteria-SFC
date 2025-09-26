@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 
 @Component({
-  selector: 'app-admin',
-  templateUrl: './admin.component.html',
+    selector: 'app-admin',
+    templateUrl: './admin.component.html',
+    standalone: false
 })
 export class AdminComponent implements OnInit {
   constructor(private authService: AuthService) {}

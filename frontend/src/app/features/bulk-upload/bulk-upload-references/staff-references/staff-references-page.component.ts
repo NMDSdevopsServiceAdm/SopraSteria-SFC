@@ -21,10 +21,11 @@ import { take } from 'rxjs/operators';
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
 
 @Component({
-  selector: 'app-bu-staff-references-page',
-  templateUrl: 'staff-references.component.html',
-  styleUrls: ['../references.component.scss'],
-  providers: [I18nPluralPipe],
+    selector: 'app-bu-staff-references-page',
+    templateUrl: 'staff-references.component.html',
+    styleUrls: ['../references.component.scss'],
+    providers: [I18nPluralPipe],
+    standalone: false
 })
 export class StaffReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;

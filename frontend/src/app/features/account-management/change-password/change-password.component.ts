@@ -6,8 +6,9 @@ import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-change-password',
-  templateUrl: './change-password.component.html',
+    selector: 'app-change-password',
+    templateUrl: './change-password.component.html',
+    standalone: false
 })
 export class ChangePasswordComponent implements OnInit, OnDestroy {
   public submitted: boolean;

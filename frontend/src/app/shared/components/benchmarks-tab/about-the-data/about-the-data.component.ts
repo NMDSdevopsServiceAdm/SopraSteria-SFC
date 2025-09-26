@@ -9,8 +9,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-benchmarks-about-the-data',
-  templateUrl: './about-the-data.component.html',
+    selector: 'app-benchmarks-about-the-data',
+    templateUrl: './about-the-data.component.html',
+    standalone: false
 })
 export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

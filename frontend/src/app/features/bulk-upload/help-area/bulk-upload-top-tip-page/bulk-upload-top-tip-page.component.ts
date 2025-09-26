@@ -8,8 +8,9 @@ import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-bulk-upload-top-tip-page',
-  templateUrl: './bulk-upload-top-tip-page.component.html',
+    selector: 'app-bulk-upload-top-tip-page',
+    templateUrl: './bulk-upload-top-tip-page.component.html',
+    standalone: false
 })
 export class BulkUploadTopTipPageComponent implements OnInit, OnDestroy {
   public topTipsList: BulkUploadTopTip[];

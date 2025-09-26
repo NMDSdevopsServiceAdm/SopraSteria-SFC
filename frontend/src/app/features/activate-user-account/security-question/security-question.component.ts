@@ -8,8 +8,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { SecurityQuestionDirective } from '@shared/directives/user/security-question.directive';
 
 @Component({
-  selector: 'app-security-question',
-  templateUrl: './security-question.component.html',
+    selector: 'app-security-question',
+    templateUrl: './security-question.component.html',
+    standalone: false
 })
 export class SecurityQuestionComponent extends SecurityQuestionDirective {
   private activationToken: string;

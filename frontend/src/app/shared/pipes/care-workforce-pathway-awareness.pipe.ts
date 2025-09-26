@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswer } from '@core/model/care-workforce-pathway.model';
 
 @Pipe({
-  name: 'formatCWPWorkplaceAwareness',
+    name: 'formatCWPWorkplaceAwareness',
+    standalone: false
 })
 export class CareWorkforcePathwayWorkplaceAwarenessTitle implements PipeTransform {
   transform(value: CareWorkforcePathwayWorkplaceAwarenessAnswer): string {

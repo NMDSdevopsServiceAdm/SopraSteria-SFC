@@ -9,8 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-british-citizenship',
-  templateUrl: './british-citizenship.component.html',
+    selector: 'app-british-citizenship',
+    templateUrl: './british-citizenship.component.html',
+    standalone: false
 })
 export class BritishCitizenshipComponent extends QuestionComponent {
   public answersAvailable = [

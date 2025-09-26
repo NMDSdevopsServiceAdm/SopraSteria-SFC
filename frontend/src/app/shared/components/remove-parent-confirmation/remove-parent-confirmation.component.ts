@@ -9,8 +9,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-remove-parent-confirmation',
-  templateUrl: './remove-parent-confirmation.component.html',
+    selector: 'app-remove-parent-confirmation',
+    templateUrl: './remove-parent-confirmation.component.html',
+    standalone: false
 })
 export class RemoveParentConfirmationComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];

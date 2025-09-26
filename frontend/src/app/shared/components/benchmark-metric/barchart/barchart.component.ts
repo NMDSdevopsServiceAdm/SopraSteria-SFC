@@ -5,9 +5,10 @@ import * as Highcharts from 'highcharts';
 import { BarchartOptionsBuilder } from './barchart-options-builder';
 
 @Component({
-  selector: 'app-barchart',
-  templateUrl: './barchart.component.html',
-  styleUrls: ['./barchart.component.scss'],
+    selector: 'app-barchart',
+    templateUrl: './barchart.component.html',
+    styleUrls: ['./barchart.component.scss'],
+    standalone: false
 })
 export class BarchartComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;

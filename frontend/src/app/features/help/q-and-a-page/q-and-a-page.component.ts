@@ -5,8 +5,9 @@ import { HelpPage } from '@core/model/help-pages.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-q-and-a-page',
-  templateUrl: './q-and-a-page.component.html',
+    selector: 'app-q-and-a-page',
+    templateUrl: './q-and-a-page.component.html',
+    standalone: false
 })
 export class QAndAPageComponent implements OnInit {
   public helpPage: HelpPage;

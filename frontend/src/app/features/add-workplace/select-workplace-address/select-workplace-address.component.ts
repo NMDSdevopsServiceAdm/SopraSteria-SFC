@@ -8,9 +8,9 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectWorkplaceAddressDirective } from '@shared/directives/create-workplace/select-workplace-address/select-workplace-address.directive';
 
 @Component({
-  selector: 'app-select-workplace-address',
-  templateUrl:
-    '../../../shared/directives/create-workplace/select-workplace-address/select-workplace-address.component.html',
+    selector: 'app-select-workplace-address',
+    templateUrl: '../../../shared/directives/create-workplace/select-workplace-address/select-workplace-address.component.html',
+    standalone: false
 })
 export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddressDirective {
   constructor(

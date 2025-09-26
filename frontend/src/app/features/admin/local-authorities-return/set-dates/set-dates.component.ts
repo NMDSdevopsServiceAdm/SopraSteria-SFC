@@ -11,8 +11,9 @@ import { FormatUtil } from '@core/utils/format-util';
 import { DateValidator } from '@shared/validators/date.validator';
 
 @Component({
-  selector: 'app-set-dates',
-  templateUrl: './set-dates.component.html',
+    selector: 'app-set-dates',
+    templateUrl: './set-dates.component.html',
+    standalone: false
 })
 export class SetDatesComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

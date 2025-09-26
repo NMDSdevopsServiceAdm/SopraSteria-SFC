@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
-  selector: 'app-workplace-added-thank-you',
-  templateUrl: './workplace-added-thank-you.component.html',
+    selector: 'app-workplace-added-thank-you',
+    templateUrl: './workplace-added-thank-you.component.html',
+    standalone: false
 })
 export class WorkplaceAddedThankYouComponent {
   constructor(public workplaceService: WorkplaceService) {

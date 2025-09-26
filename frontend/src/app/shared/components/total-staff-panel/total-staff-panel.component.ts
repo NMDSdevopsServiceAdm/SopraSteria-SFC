@@ -5,9 +5,10 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
-  selector: 'app-total-staff-panel',
-  templateUrl: './total-staff-panel.component.html',
-  providers: [I18nPluralPipe],
+    selector: 'app-total-staff-panel',
+    templateUrl: './total-staff-panel.component.html',
+    providers: [I18nPluralPipe],
+    standalone: false
 })
 export class TotalStaffPanelComponent implements OnInit {
   @Input() workplace: Establishment;

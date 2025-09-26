@@ -3,7 +3,8 @@ import { WorkerDays } from '@core/model/worker.model';
 import isNumber from 'lodash/isNumber';
 
 @Pipe({
-  name: 'workerDays',
+    name: 'workerDays',
+    standalone: false
 })
 export class WorkerDaysPipe implements PipeTransform {
   transform(workderDays: WorkerDays) {

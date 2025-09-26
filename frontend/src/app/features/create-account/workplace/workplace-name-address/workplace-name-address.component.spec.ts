@@ -35,7 +35,9 @@ describe('WorkplaceNameAddressComponent', () => {
           },
         },
         UntypedFormBuilder,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();
@@ -63,9 +65,8 @@ describe('WorkplaceNameAddressComponent', () => {
     const expectedTitle = `What's your workplace name and address?`;
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
-    });
+    await fixture.whenStable();
+    expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
   });
 
   describe('preFillForm()', () => {
@@ -81,17 +82,16 @@ describe('WorkplaceNameAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      fixture.whenStable().then(() => {
-        expect(spy).toHaveBeenCalled();
-        expect(component.form.value).toEqual({
-          workplaceName: 'Workplace Name',
-          address1: '1 Street',
-          address2: 'Second Line',
-          address3: 'Third Line',
-          townOrCity: 'Manchester',
-          county: 'Greater Manchester',
-          postcode: 'ABC 123',
-        });
+      await fixture.whenStable();
+      expect(spy).toHaveBeenCalled();
+      expect(component.form.value).toEqual({
+        workplaceName: 'Workplace Name',
+        address1: '1 Street',
+        address2: 'Second Line',
+        address3: 'Third Line',
+        townOrCity: 'Manchester',
+        county: 'Greater Manchester',
+        postcode: 'ABC 123',
       });
     });
 
@@ -107,17 +107,16 @@ describe('WorkplaceNameAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      fixture.whenStable().then(() => {
-        expect(spy).toHaveBeenCalled();
-        expect(component.form.value).toEqual({
-          workplaceName: 'Workplace Name',
-          address1: '1 Street',
-          address2: 'Second Line',
-          address3: 'Third Line',
-          townOrCity: 'Manchester',
-          county: 'Greater Manchester',
-          postcode: 'ABC 123',
-        });
+      await fixture.whenStable();
+      expect(spy).toHaveBeenCalled();
+      expect(component.form.value).toEqual({
+        workplaceName: 'Workplace Name',
+        address1: '1 Street',
+        address2: 'Second Line',
+        address3: 'Third Line',
+        townOrCity: 'Manchester',
+        county: 'Greater Manchester',
+        postcode: 'ABC 123',
       });
     });
   });

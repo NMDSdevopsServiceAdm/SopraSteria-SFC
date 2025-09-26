@@ -9,8 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-health-and-care-visa',
-  templateUrl: './health-and-care-visa.component.html',
+    selector: 'app-health-and-care-visa',
+    templateUrl: './health-and-care-visa.component.html',
+    standalone: false
 })
 export class HealthAndCareVisaComponent extends QuestionComponent {
   public answersAvailable = [

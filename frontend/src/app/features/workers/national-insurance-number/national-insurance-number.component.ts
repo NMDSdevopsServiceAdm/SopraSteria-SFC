@@ -10,8 +10,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-national-insurance-number',
-  templateUrl: './national-insurance-number.component.html',
+    selector: 'app-national-insurance-number',
+    templateUrl: './national-insurance-number.component.html',
+    standalone: false
 })
 export class NationalInsuranceNumberComponent extends QuestionComponent {
   constructor(

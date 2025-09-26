@@ -32,7 +32,9 @@ describe('CheckAnswersComponent', () => {
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: WorkerService, useClass: MockWorkerService },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = fixture.componentInstance;
@@ -86,12 +88,11 @@ describe('CheckAnswersComponent', () => {
     fireEvent.click(confirmDetailButton);
     fixture.detectChanges();
 
-    fixture.whenStable().then(() => {
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: `You've confirmed the workplace details that you added`,
-      } as Alert);
-    });
+    await fixture.whenStable();
+    expect(alertSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: `You've confirmed the workplace details that you added`,
+    } as Alert);
   });
 
   describe('setBackLink', () => {

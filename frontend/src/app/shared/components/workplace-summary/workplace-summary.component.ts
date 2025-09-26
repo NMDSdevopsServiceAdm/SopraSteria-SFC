@@ -12,9 +12,10 @@ import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-workplace-summary',
-  templateUrl: './workplace-summary.component.html',
-  providers: [I18nPluralPipe],
+    selector: 'app-workplace-summary',
+    templateUrl: './workplace-summary.component.html',
+    providers: [I18nPluralPipe],
+    standalone: false
 })
 export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   private _workplace: any;

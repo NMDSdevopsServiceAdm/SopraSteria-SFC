@@ -6,9 +6,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 @Component({
-  selector: 'app-wdf-staff-mismatch-message',
-  templateUrl: './wdf-staff-mismatch-message.component.html',
-  styleUrls: ['./wdf-staff-mismatch-message.component.scss'],
+    selector: 'app-wdf-staff-mismatch-message',
+    templateUrl: './wdf-staff-mismatch-message.component.html',
+    styleUrls: ['./wdf-staff-mismatch-message.component.scss'],
+    standalone: false
 })
 export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
   @Input() public workplace: Establishment;

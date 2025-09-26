@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.directive';
 
 @Component({
-  selector: 'app-do-you-have-starters',
-  templateUrl:
-    '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
+    selector: 'app-do-you-have-starters',
+    templateUrl: '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
+    standalone: false
 })
 export class DoYouHaveStartersComponent extends DoYouHaveStartersLeaversVacanciesDirective {
   public todayOneYearAgo = this.getDateForOneYearAgo();

@@ -9,8 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-care-certificate',
-  templateUrl: './care-certificate.component.html',
+    selector: 'app-care-certificate',
+    templateUrl: './care-certificate.component.html',
+    standalone: false
 })
 export class CareCertificateComponent extends QuestionComponent {
   public answersAvailable = [

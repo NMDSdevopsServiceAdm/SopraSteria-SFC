@@ -216,11 +216,10 @@ describe('RemoveLinkToParentComponent', () => {
       },
     });
 
-    fixture.whenStable().then(() => {
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: `You've removed your link to ${mockparentsWithPostCode[0].parentName}, ${mockparentsWithPostCode[0].postcode}`,
-      });
+    await fixture.whenStable();
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: `You've removed your link to ${mockparentsWithPostCode[0].parentName}, ${mockparentsWithPostCode[0].postcode}`,
     });
   });
 });

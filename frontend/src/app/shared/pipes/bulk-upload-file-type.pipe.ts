@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 
 @Pipe({
-  name: 'bulkUploadFileTypePipe',
+    name: 'bulkUploadFileTypePipe',
+    standalone: false
 })
 export class BulkUploadFileTypePipePipe implements PipeTransform {
   public bulkUploadFileTypeEnum = BulkUploadFileType;

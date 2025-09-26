@@ -9,8 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-apprenticeship-training',
-  templateUrl: './apprenticeship-training.component.html',
+    selector: 'app-apprenticeship-training',
+    templateUrl: './apprenticeship-training.component.html',
+    standalone: false
 })
 export class ApprenticeshipTrainingComponent extends QuestionComponent {
   public answersAvailable = [

@@ -120,7 +120,7 @@ describe('WorkplaceSummaryComponent', () => {
     const serviceHeading = getByText('Services');
     expect(serviceHeading.getAttribute('class')).toContain('govuk-!-margin-top-5');
 
-    rerender({ removeServiceSectionMargin: true });
+    rerender({ componentProperties: { removeServiceSectionMargin: true } });
     expect(serviceHeading.getAttribute('class')).not.toContain('govuk-!-margin-top-5');
   });
 

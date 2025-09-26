@@ -8,8 +8,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-type-of-employer',
-  templateUrl: './type-of-employer.component.html',
+    selector: 'app-type-of-employer',
+    templateUrl: './type-of-employer.component.html',
+    standalone: false
 })
 export class TypeOfEmployerComponent extends Question {
   public options = [

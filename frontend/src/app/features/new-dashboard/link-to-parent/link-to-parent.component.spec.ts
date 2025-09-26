@@ -337,11 +337,10 @@ describe('LinkToParentComponent', () => {
         },
       });
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: `You've cancelled your request to link to ${returnedEstablishment.requstedParentName}, ${requestedLinkToParent.parentEstablishment.postcode}`,
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `You've cancelled your request to link to ${returnedEstablishment.requstedParentName}, ${requestedLinkToParent.parentEstablishment.postcode}`,
       });
     });
 
@@ -368,11 +367,10 @@ describe('LinkToParentComponent', () => {
         },
       });
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: `You've sent a link request to Test, TW1 452`,
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `You've sent a link request to Test, TW1 452`,
       });
     });
 

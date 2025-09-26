@@ -3,8 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-edit-workplace',
-  templateUrl: './edit-workplace.component.html',
+    selector: 'app-edit-workplace',
+    templateUrl: './edit-workplace.component.html',
+    standalone: false
 })
 export class EditWorkplaceComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute, private establishmentService: EstablishmentService) {}
