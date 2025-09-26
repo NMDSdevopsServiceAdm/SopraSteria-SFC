@@ -1,6 +1,6 @@
 import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal, ComponentType, PortalInjector } from '@angular/cdk/portal';
+import { ComponentPortal, ComponentType } from '@angular/cdk/portal';
 import { Injectable, InjectionToken, Injector } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
@@ -57,13 +57,17 @@ export class Dialog<T, R = any> {
     this.overlayRef.dispose();
   }
 
-  private createInjector(data): PortalInjector {
-    const injectionTokens = new WeakMap();
-
-    injectionTokens.set(Dialog, this);
-    injectionTokens.set(DIALOG_DATA, data);
-
-    return new PortalInjector(this.injector, injectionTokens);
+  private createInjector(data): Injector {
+    return Injector.create({
+      parent: this.injector,
+      providers: [
+        {
+          provide: Dialog,
+          useValue: this,
+        },
+        { provide: DIALOG_DATA, useValue: data },
+      ],
+    });
   }
 }
 
