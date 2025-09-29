@@ -1,6 +1,6 @@
 import { capitalize } from 'lodash';
-import { forkJoin, from, Observable } from 'rxjs';
-import { concatMap, filter, map, mergeAll, mergeMap, tap } from 'rxjs/operators';
+import { forkJoin, from, merge, Observable } from 'rxjs';
+import { concatMap, filter, map, mergeAll, mergeMap, tap, toArray } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { HttpClient } from '@angular/common/http';
@@ -238,5 +238,32 @@ export class QualificationCertificateService extends BaseCertificateService {
 
   protected certificatesInRecord(record: Qualification): QualificationCertificate[] {
     return record?.qualificationCertificates ?? [];
+  }
+}
+
+@Injectable()
+export class DownloadCertificateService {
+  constructor(
+    private trainingCertificateService: TrainingCertificateService,
+    private qualificationCertificateService: QualificationCertificateService,
+  ) {}
+
+  public downloadAllCertificatesForWorker(
+    workplaceUid: string,
+    workerUid: string,
+    zipFileName: string = 'All certificates.zip',
+  ): Promise<void> {
+    const allTrainingCerts$ = this.trainingCertificateService.downloadAllCertificatesAsBlobs(workplaceUid, workerUid);
+    const allQualificationCerts$ = this.qualificationCertificateService.downloadAllCertificatesAsBlobs(
+      workplaceUid,
+      workerUid,
+    );
+
+    const downloadAllCertificatesAsZip$ = merge(allTrainingCerts$, allQualificationCerts$).pipe(
+      toArray(),
+      mergeMap((allFileBlobs) => from(FileUtil.saveFilesAsZip(allFileBlobs, zipFileName))),
+    );
+
+    return downloadAllCertificatesAsZip$.toPromise();
   }
 }

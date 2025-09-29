@@ -82,6 +82,8 @@ import { CarryOutDelegatedHealthcareActivitiesComponent } from './carry-out-dele
 import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-out-delegated-healthcare-activities/who-carry-out-delegated-healthcare-activities.component';
 import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
+import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
+import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 
 const routes: Routes = [
   {
@@ -288,6 +290,7 @@ const routes: Routes = [
           {
             path: '',
             component: StaffRecordComponent,
+            resolve: { workerHasAnyTrainingOrQualifications: WorkerHasAnyTrainingOrQualificationsResolver },
             data: { title: 'Staff Record' },
           },
           {
@@ -872,10 +875,25 @@ const routes: Routes = [
         resolve: {
           reasonsForLeaving: WorkerReasonsForLeavingResolver,
           totalNumberOfStaff: TotalStaffRecordsResolver,
+          workerHasAnyTrainingOrQualifications: WorkerHasAnyTrainingOrQualificationsResolver,
         },
         data: {
           permissions: ['canDeleteWorker'],
           title: 'Delete staff record',
+        },
+      },
+      {
+        path: 'download-staff-training-and-qualifications',
+        component: DoYouWantToDowloadTrainAndQualsComponent,
+        resolve: {
+          worker: WorkerResolver,
+          trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
+          mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
+        },
+
+        data: {
+          permissions: ['canDeleteWorker'],
+          title: 'Download staff training and qualifications',
         },
       },
     ],

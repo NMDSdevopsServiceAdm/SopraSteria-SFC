@@ -35,6 +35,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public staffSummaryBaseUrl: URLStructure;
   public staffSummaryUrlSuffix: string;
   private subscriptions: Subscription = new Subscription();
+  public hasAnyTrainingOrQualifications: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -79,6 +80,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+    this.hasAnyTrainingOrQualifications =
+      this.route.snapshot.data?.workerHasAnyTrainingOrQualifications?.hasAnyTrainingOrQualifications;
 
     this.getListOfWorkers();
     this.setPaginationUrls();
@@ -159,6 +162,20 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       fragment: 'staff-record',
     };
     this.workerService.setReturnTo(this.returnToRecord);
+  }
+
+  public setDeleteRecordNavigation(): void {
+    if (this.hasAnyTrainingOrQualifications) {
+      this.router.navigate([
+        '/workplace',
+        this.workplace.uid,
+        'staff-record',
+        this.worker.uid,
+        'download-staff-training-and-qualifications',
+      ]);
+    } else {
+      this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'delete-staff-record']);
+    }
   }
 
   ngOnDestroy(): void {

@@ -66,6 +66,11 @@ describe('StaffRecordComponent', () => {
                   return thisWorkerId;
                 },
               },
+              data: {
+                workerHasAnyTrainingOrQualifications: {
+                  hasAnyTrainingOrQualifications: overrides?.hasAnyTrainingOrQualifications ?? false,
+                },
+              },
             },
           },
         },
@@ -137,8 +142,8 @@ describe('StaffRecordComponent', () => {
   });
 
   [true, false].forEach((completedValue) => {
-    it(`should render the correct links and navigation, when worker.completed is ${completedValue}`, async () => {
-      const { getAllByTestId, queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid } = await setup({
+    it(`should render the add training link and flag long term absence link, when worker.completed is ${completedValue}`, async () => {
+      const { queryByText, getByText, getByTestId, getByRole, getAllByTestId } = await setup({
         workerService: { worker: { uid: '123', completed: completedValue, longTermAbsence: null } },
       });
 
@@ -152,12 +157,54 @@ describe('StaffRecordComponent', () => {
       expect(button).toBeFalsy();
       expect(flagLongTermAbsenceLink).toBeTruthy();
       expect(deleteRecordLink).toBeTruthy();
-      expect(deleteRecordLink.getAttribute('href')).toEqual(
-        `/workplace/${workplaceUid}/staff-record/${workerUid}/delete-staff-record`,
-      );
       expect(trainingAndQualsLink).toBeTruthy();
       expect(closeButton).toBeTruthy();
       expect(pagination.length).toEqual(2);
+    });
+  });
+
+  describe('delete staff record link', () => {
+    it('should navigate to delete-staff-record page when hasAnyTrainingOrQualifications is false', async () => {
+      const overrides = {
+        hasAnyTrainingOrQualifications: false,
+        workerService: { worker: { completed: true, longTermAbsence: null } },
+      };
+
+      const { getByRole, fixture, routerSpy, workplaceUid, workerUid } = await setup(overrides);
+
+      const deleteRecordLink = getByRole('button', { name: 'Delete staff record' });
+      fireEvent.click(deleteRecordLink);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceUid,
+        'staff-record',
+        workerUid,
+        'delete-staff-record',
+      ]);
+    });
+
+    it('should navigate to download-staff-training-and-qualifications page when hasAnyTrainingOrQualifications is true', async () => {
+      const overrides = {
+        hasAnyTrainingOrQualifications: true,
+        workerService: { worker: { completed: true, longTermAbsence: null } },
+      };
+
+      const { getByRole, fixture, routerSpy, workplaceUid, workerUid } = await setup(overrides);
+
+      const deleteRecordLink = getByRole('button', { name: 'Delete staff record' });
+
+      fireEvent.click(deleteRecordLink);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceUid,
+        'staff-record',
+        workerUid,
+        'download-staff-training-and-qualifications',
+      ]);
     });
   });
 

@@ -11,10 +11,7 @@
     <h1 class="govuk-heading-l">Delete staff record</h1>
 
     <h2 class="govuk-heading-m">Are you sure you want to delete this staff record?</h2>
-    <p>
-      <strong>This action cannot be undone.</strong> It will permanently delete this staff record and any related
-      training and qualification records (and certificates).
-    </p>
+    <p class="asc__negative-margin-right-4"><strong>This action cannot be undone.</strong> {{ this.warningMessage }}</p>
 
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group">
@@ -70,8 +67,11 @@
           </div>
         </fieldset>
       </div>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
       <div
-        class="govuk-form-group govuk-!-margin-top-8"
+        class="govuk-form-group govuk-!-margin-top-6"
         [class.govuk-form-group--error]="submitted && form.get('confirmDelete').invalid"
       >
         <span
@@ -92,9 +92,8 @@
             value="confirmDelete"
             formControlName="confirmDelete"
           />
-          <label class="govuk-label govuk-checkboxes__label" for="confirmDelete">
-            I know that this action will permanently delete this staff record and any training and qualification records
-            (and certificates) related to it.
+          <label class="govuk-label govuk-checkboxes__label govuk-!-margin-left-2" for="confirmDelete">
+            {{ this.confirmationCheckboxLabelText }}
           </label>
         </div>
       </div>
