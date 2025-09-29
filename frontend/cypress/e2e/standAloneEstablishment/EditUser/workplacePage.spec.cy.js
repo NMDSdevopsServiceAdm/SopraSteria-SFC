@@ -45,6 +45,10 @@ describe('Standalone home page as edit user', () => {
     cy.resetWorkplaceDHAAnswers(establishmentId);
   });
 
+  // after(() => {
+  //   cy.deleteTestWorkplaceFromDb()
+  // })
+
   it('should see the standalone establishment workplace page', () => {
     cy.url().should('include', '#workplace');
     cy.contains('Workplace');
@@ -197,6 +201,34 @@ describe('Standalone home page as edit user', () => {
       });
     });
   });
+
+  it('can update the employer type', () => {
+    cy.get('[data-testid="employerType"]').contains('Change').click();
+    cy.getByLabel('Voluntary, charity, not for profit').click();
+    cy.contains('button', 'Save and return').click();
+    cy.get('[data-testid="employerType"]').contains('Voluntary, charity, not for profit');
+  });
+
+  it('can update the main service', () => {
+    cy.get('[data-testid="mainService"]').contains('Change').click();
+
+    //regulated by the CQC
+    cy.getByLabel('No').click();
+    cy.contains('button', 'Continue').click();
+
+    //select main service
+    cy.contains('Select your main service');
+    cy.getByLabel('Domestic services and home help').click();
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('[data-testid="mainService"]').contains('Domestic services and home help');
+  });
+
+  describe('other services', () => {});
+
+  describe('service capacity', () => {});
+
+  describe('service users', () => {});
 
   describe('Care workforce pathway workplace awareness and usage', () => {
     const reasons = [CWPUseReasons[0], CWPUseReasons[2], CWPUseReasons[5], CWPUseReasons[9]];
@@ -358,4 +390,18 @@ describe('Standalone home page as edit user', () => {
       });
     });
   });
+
+  describe('repeat training', () => {});
+
+  describe('accept care certificate', () => {});
+
+  describe('cash loyalty bonus', () => {});
+
+  describe('statutory sick pay', () => {});
+
+  describe('higher pension contributions', () => {});
+
+  describe('number of days leave', () => {});
+
+  describe('data sharing', () => {});
 });
