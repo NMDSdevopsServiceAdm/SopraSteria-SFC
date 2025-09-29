@@ -2,7 +2,6 @@ import { BehaviorSubject } from 'rxjs';
 
 import { DOCUMENT } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Roles } from '@core/model/roles.enum';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
