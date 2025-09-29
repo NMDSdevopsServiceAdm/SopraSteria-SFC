@@ -14,7 +14,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address.component';
 
-describe('CouldNotFindWorkplaceAddressComponent', () => {
+fdescribe('CouldNotFindWorkplaceAddressComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(CouldNotFindWorkplaceAddressComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule, FormsModule, ReactiveFormsModule],
@@ -159,8 +159,8 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
 
   describe('Navigation', () => {
     it('should navigate to the find-workplace-address page when selecting yes', async () => {
-      const { fixture, spy, getByText } = await setup();
-      const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+      const { spy, getByText, getByRole } = await setup();
+      const yesRadioButton = getByRole('radio', { name: 'Yes' });
       fireEvent.click(yesRadioButton);
 
       const continueButton = getByText('Continue');
@@ -170,8 +170,8 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
     });
 
     it('should navigate to the workplace name and address page when selecting no', async () => {
-      const { fixture, spy, getByText } = await setup();
-      const noRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
+      const { spy, getByText, getByRole } = await setup();
+      const noRadioButton = getByRole('radio', { name: /^No/ });
       fireEvent.click(noRadioButton);
 
       const continueButton = getByText('Continue');
