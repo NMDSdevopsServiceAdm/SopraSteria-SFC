@@ -15,9 +15,9 @@ import { BehaviorSubject } from 'rxjs';
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address.component';
 
-describe('CouldNotFindWorkplaceAddressComponent', () => {
+fdescribe('CouldNotFindWorkplaceAddressComponent', () => {
   async function setup(addWorkplaceFlow = true) {
-    const { fixture, getByText, getByTestId, queryByTestId } = await render(CouldNotFindWorkplaceAddressComponent, {
+    const setupTools = await render(CouldNotFindWorkplaceAddressComponent, {
       imports: [SharedModule, RouterModule, AddWorkplaceModule, FormsModule, ReactiveFormsModule],
       providers: [
         CouldNotFindWorkplaceAddressDirective,
@@ -56,17 +56,15 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
 
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
+    const navigateSpy = spyOn(router, 'navigate');
+    navigateSpy.and.returnValue(Promise.resolve(true));
 
+    const { fixture } = setupTools;
     const component = fixture.componentInstance;
     return {
+      ...setupTools,
       component,
-      fixture,
-      spy,
-      getByText,
-      getByTestId,
-      queryByTestId,
+      navigateSpy,
     };
   }
 
@@ -171,25 +169,25 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
 
   describe('Navigation', () => {
     it('should navigate to the find-workplace-address page when selecting yes', async () => {
-      const { fixture, spy, getByText } = await setup();
-      const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+      const { navigateSpy, getByText, getByRole } = await setup();
+      const yesRadioButton = getByRole('radio', { name: 'Yes' });
       fireEvent.click(yesRadioButton);
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['add-workplace', 'find-workplace-address']);
+      expect(navigateSpy).toHaveBeenCalledWith(['add-workplace', 'find-workplace-address']);
     });
 
     it('should navigate to the workplace name and address page when selecting no', async () => {
-      const { fixture, spy, getByText } = await setup();
-      const noRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
+      const { navigateSpy, getByText, getByRole } = await setup();
+      const noRadioButton = getByRole('radio', { name: /No/ });
       fireEvent.click(noRadioButton);
 
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['add-workplace', 'workplace-name-address']);
+      expect(navigateSpy).toHaveBeenCalledWith(['add-workplace', 'workplace-name-address']);
     });
   });
 
