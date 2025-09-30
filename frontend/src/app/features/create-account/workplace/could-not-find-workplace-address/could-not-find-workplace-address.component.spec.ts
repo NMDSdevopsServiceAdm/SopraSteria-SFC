@@ -14,7 +14,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address.component';
 
-fdescribe('CouldNotFindWorkplaceAddressComponent', () => {
+describe('CouldNotFindWorkplaceAddressComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(CouldNotFindWorkplaceAddressComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule, FormsModule, ReactiveFormsModule],

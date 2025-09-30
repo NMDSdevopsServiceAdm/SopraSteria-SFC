@@ -15,7 +15,7 @@ import { BehaviorSubject } from 'rxjs';
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplace-address.component';
 
-fdescribe('CouldNotFindWorkplaceAddressComponent', () => {
+describe('CouldNotFindWorkplaceAddressComponent', () => {
   async function setup(addWorkplaceFlow = true) {
     const setupTools = await render(CouldNotFindWorkplaceAddressComponent, {
       imports: [SharedModule, RouterModule, AddWorkplaceModule, FormsModule, ReactiveFormsModule],

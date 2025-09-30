@@ -12,7 +12,7 @@ import { BehaviorSubject } from 'rxjs';
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
-fdescribe('RegulatedByCqcComponent', () => {
+describe('RegulatedByCqcComponent', () => {
   async function setup(addWorkplaceFlow = true) {
     const setupTools = await render(RegulatedByCqcComponent, {
       imports: [SharedModule, AddWorkplaceModule, ReactiveFormsModule],

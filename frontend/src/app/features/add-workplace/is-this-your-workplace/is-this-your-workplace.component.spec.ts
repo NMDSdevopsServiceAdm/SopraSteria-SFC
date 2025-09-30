@@ -15,7 +15,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
-fdescribe('IsThisYourWorkplaceComponent', () => {
+describe('IsThisYourWorkplaceComponent', () => {
   async function setup(searchMethod = 'locationID', locationId = '1-2123313123', addWorkplaceFlow = true) {
     const primaryWorkplace = { isParent: true };
     const setupTools = await render(IsThisYourWorkplaceComponent, {

@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { AddWorkplaceModule } from '../add-workplace.module';
 import { WorkplaceNotFoundComponent } from './workplace-not-found.component';
 
-fdescribe('WorkplaceNotFoundComponent', () => {
+describe('WorkplaceNotFoundComponent', () => {
   async function setup(
     postcodeOrLocationId = '',
     searchMethod = '',

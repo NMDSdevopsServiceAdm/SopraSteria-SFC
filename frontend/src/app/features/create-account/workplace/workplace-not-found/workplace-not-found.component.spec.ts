@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { RegistrationModule } from '../../../registration/registration.module';
 import { WorkplaceNotFoundComponent } from './workplace-not-found.component';
 
-fdescribe('WorkplaceNotFoundComponent', () => {
+describe('WorkplaceNotFoundComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(WorkplaceNotFoundComponent, {
       imports: [SharedModule, RegistrationModule, ReactiveFormsModule],

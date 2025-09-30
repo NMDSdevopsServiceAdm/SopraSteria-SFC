@@ -12,7 +12,7 @@ import { BehaviorSubject } from 'rxjs';
 import { RegistrationModule } from '../../../registration/registration.module';
 import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
-fdescribe('RegulatedByCqcComponent', () => {
+describe('RegulatedByCqcComponent', () => {
   async function setup(registrationFlow = true) {
     const setupTools = await render(RegulatedByCqcComponent, {
       imports: [SharedModule, RegistrationModule, ReactiveFormsModule],

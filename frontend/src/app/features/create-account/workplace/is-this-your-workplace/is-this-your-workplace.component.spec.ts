@@ -14,7 +14,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 
 import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component';
 
-fdescribe('IsThisYourWorkplaceComponent', () => {
+describe('IsThisYourWorkplaceComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(IsThisYourWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule],
