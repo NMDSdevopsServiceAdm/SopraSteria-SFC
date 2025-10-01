@@ -3,7 +3,8 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { DebugElement } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule, By } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, Router, RouterEvent } from '@angular/router';
+import { NavigationEnd, Router, RouterEvent } from '@angular/router';
+import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 import { WorkerPaginationComponent } from '@shared/components/worker-pagination/worker-pagination.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -14,24 +15,40 @@ describe('WorkerPagination', () => {
     const setupTools = await render(WorkerPaginationComponent, {
       imports: [BrowserModule, SharedModule],
       providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            params: Observable.from([{ id: overrides.id ?? '123' }]),
+        provideActivatedRouteWithRouterLink({
+          params: Observable.from([{ id: overrides.id ?? '123' }]),
 
-            snapshot: {
-              params: {
-                establishmentuid: '',
-              },
-              paramMap: {
-                get(_id) {
-                  return overrides.id ?? '123';
-                },
+          snapshot: {
+            params: {
+              establishmentuid: '',
+            },
+            paramMap: {
+              get(_id) {
+                return overrides.id ?? '123';
               },
             },
           },
-        },
-      provideHttpClient(), provideHttpClientTesting(),],
+        }),
+        // {
+        //   provide: ActivatedRoute,
+        //   useValue: {
+        //     params: Observable.from([{ id: overrides.id ?? '123' }]),
+
+        //     snapshot: {
+        //       params: {
+        //         establishmentuid: '',
+        //       },
+        //       paramMap: {
+        //         get(_id) {
+        //           return overrides.id ?? '123';
+        //         },
+        //       },
+        //     },
+        //   },
+        // },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         workerList: ['1', '2', '3', '4'],
         exitUrl: overrides.exitUrl ?? { url: 'dashboard', fragment: 'staff-records' },
@@ -58,14 +75,14 @@ describe('WorkerPagination', () => {
   it('should be able to find next and previous ids', async () => {
     const { component, fixture } = await setup({ id: '2', staffSummaryBaseUrl: { url: ['..'] } });
     const links = fixture.debugElement.queryAll(By.css('a'));
-    const previousHref = links[1].nativeElement.getAttribute('ng-reflect-router-link');
-    const nextHref = links[2].nativeElement.getAttribute('ng-reflect-router-link');
+    const previousHref = links[1].nativeElement.getAttribute('href');
+    const nextHref = links[2].nativeElement.getAttribute('href');
     fixture.detectChanges();
 
     expect(component.previousID).toEqual('1');
     expect(component.nextID).toEqual('3');
-    expect(previousHref).toEqual('..,1,staff-record-summary');
-    expect(nextHref).toEqual('..,3,staff-record-summary');
+    expect(previousHref).toEqual('/1/staff-record-summary');
+    expect(nextHref).toEqual('/3/staff-record-summary');
   });
 
   it('should only show Next staff record when current staff record is first ID in list', async () => {
@@ -87,12 +104,11 @@ describe('WorkerPagination', () => {
   it('should show a Close this staff record link with refs passed in', async () => {
     const exitUrl = { url: 'dashboard', fragment: 'staff-records' };
 
-    const { component, fixture, getByText } = await setup({ exitUrl });
+    const { fixture } = await setup({ exitUrl });
 
-    const closeLink = getByText('Close this staff record');
     const closeLinkAnchorElement: DebugElement = fixture.debugElement.query(By.css('a.govuk-button'));
 
-    expect(closeLinkAnchorElement.attributes['ng-reflect-router-link']).toContain(exitUrl.url);
-    expect(closeLinkAnchorElement.attributes['ng-reflect-fragment']).toBe(exitUrl.fragment);
+    const expectedHref = `/${exitUrl.url}#${exitUrl.fragment}`;
+    expect(closeLinkAnchorElement.attributes['href']).toEqual(expectedHref);
   });
 });
