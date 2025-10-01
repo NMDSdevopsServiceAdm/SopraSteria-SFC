@@ -14,7 +14,7 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
-import { provideActivatedRoute } from '@core/test-utils/MockActivatedRoute';
+import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 
 describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -40,7 +40,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
           provide: AlertService,
           useValue: { addAlert: alertSpy },
         },
-        provideActivatedRoute({
+        provideActivatedRouteWithRouterLink({
           snapshot: { data: { flowType, totalNumberOfStaff } },
         }),
         {

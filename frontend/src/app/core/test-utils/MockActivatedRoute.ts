@@ -23,7 +23,7 @@ export class MockActivatedRoute {
   }
 }
 
-export function provideActivatedRoute(overrides: any = {}) {
+export function provideActivatedRouteWithRouterLink(overrides: any = {}) {
   const valueFromOverrides = { snapshot: overrides?.snapshot ?? {}, parent: overrides?.parent };
   const patchForRouterLinkToWork = { snapshot: { root: { children: [], url: ['/'] } } };
   const patchValue = lodash.merge(patchForRouterLinkToWork, valueFromOverrides);
