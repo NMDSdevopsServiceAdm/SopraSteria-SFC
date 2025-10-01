@@ -61,10 +61,14 @@ describe('Standalone home page as edit user', () => {
   });
 
   it('can update the number of staff successfully', () => {
-    cy.get('[data-testid="number-of-staff-top-row"]').contains('Change').click();
+    cy.get('[data-testid="number-of-staff-top-row"]').as('testId');
+
+    cy.get('@testId').contains('Change').click();
+
     cy.getByLabel('Number of staff').clear().type(6);
     cy.contains('button', 'Save and return').click();
-    cy.get('[data-testid="number-of-staff-top-row"]').contains(6);
+
+    cy.get('@testId').contains(6);
   });
 
   describe('current staff vacancies', () => {
@@ -201,14 +205,20 @@ describe('Standalone home page as edit user', () => {
   });
 
   it('can update the employer type', () => {
-    cy.get('[data-testid="employerType"]').contains('Change').click();
+    cy.get('[data-testid="employerType"]').as('testId');
+
+    cy.get('@testId').contains('Change').click();
+
     cy.getByLabel('Voluntary, charity, not for profit').click();
     cy.contains('button', 'Save and return').click();
-    cy.get('[data-testid="employerType"]').contains('Voluntary, charity, not for profit');
+
+    cy.get('@testId').contains('Voluntary, charity, not for profit');
   });
 
   it('can update the main service', () => {
-    cy.get('[data-testid="mainService"]').contains('Change').click();
+    cy.get('[data-testid="mainService"]').as('testId');
+
+    cy.get('@testId').contains('Change').click();
 
     //regulated by the CQC
     cy.getByLabel('No').click();
@@ -219,23 +229,27 @@ describe('Standalone home page as edit user', () => {
     cy.getByLabel('Domestic services and home help').click();
     cy.contains('button', 'Save and return').click();
 
-    cy.get('[data-testid="mainService"]').contains('Domestic services and home help');
+    cy.get('@testId').contains('Domestic services and home help');
   });
 
   describe('other services', () => {
     it('updates when there are no other services', () => {
-      cy.get('[data-testid="otherServices"]').contains('Add').click();
+      cy.get('[data-testid="otherServices"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
 
       cy.get('h1').should('contain.text', 'Do you provide any other services?');
 
       cy.getByLabel('No').click();
       cy.contains('button', 'Save and return').click();
 
-      cy.get('[data-testid="otherServices"]').contains('None');
+      cy.get('@testId').contains('None');
     });
 
     it('updates when there are other services', () => {
-      cy.get('[data-testid="otherServices"]').contains('Add').click();
+      cy.get('[data-testid="otherServices"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
 
       cy.get('h1').should('contain.text', 'Do you provide any other services?');
 
@@ -243,7 +257,7 @@ describe('Standalone home page as edit user', () => {
       cy.getByLabel('Other adult community care service').click();
       cy.contains('button', 'Save and return').click();
 
-      cy.get('[data-testid="otherServices"]').contains('Other adult community care service');
+      cy.get('@testId').contains('Other adult community care service');
     });
   });
 
@@ -262,7 +276,10 @@ describe('Standalone home page as edit user', () => {
 
     it(`updates service capacity when main service is ${mainServices[0].text}`, () => {
       cy.setWorkplaceMainService(establishmentId, mainServices[0].id);
-      cy.get('[data-testid="serviceCapacity"]').contains('Add').click();
+
+      cy.get('[data-testid="serviceCapacity"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
 
       cy.get('h1').should('contain.text', "What's the capacity of your services?");
 
@@ -272,38 +289,38 @@ describe('Standalone home page as edit user', () => {
       cy.getByLabel('Number of those places that are being used').clear().type(careAmount);
       cy.contains('button', 'Save and return').click();
 
-      cy.get('[data-testid="serviceCapacity"]').contains(`${mainServices[0].text}: ${careAmount * 2} places`);
-      cy.get('[data-testid="serviceCapacity"]').contains(
-        `${mainServices[0].text}: ${careAmount} people using the service`,
-      );
+      cy.get('@testId').contains(`${mainServices[0].text}: ${careAmount * 2} places`);
+      cy.get('@testId').contains(`${mainServices[0].text}: ${careAmount} people using the service`);
     });
 
     it(`updates service capacity when main service is ${mainServices[1].text}`, () => {
       cy.setWorkplaceMainService(establishmentId, mainServices[1].id);
 
-      cy.get('[data-testid="serviceCapacity"]').contains('Add').click();
+      cy.get('[data-testid="serviceCapacity"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
 
       cy.get('h1').should('contain.text', "What's the capacity of your services?");
       cy.getByLabel('Number of people receiving care at the moment').clear().type(careAmount);
 
       cy.contains('button', 'Save and return').click();
 
-      cy.get('[data-testid="serviceCapacity"]').contains(
-        `${mainServices[1].text}: ${careAmount} people receiving care`,
-      );
+      cy.get('@testId').contains(`${mainServices[1].text}: ${careAmount} people receiving care`);
     });
   });
 
   it('updates service users', () => {
     const serviceUsers = ['Older people with dementia', 'Adults with dementia'];
-    cy.get('[data-testid="serviceUsers"]').contains('Add').click();
+    cy.get('[data-testid="serviceUsers"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
 
     cy.get('h1').should('contain.text', 'Who are your service users?');
     for (const serviceUser of serviceUsers) cy.getByLabel(serviceUser).click();
 
     cy.contains('button', 'Save and return').click();
 
-    for (const serviceUser of serviceUsers) cy.get('[data-testid="serviceUsers"]').contains(serviceUser);
+    for (const serviceUser of serviceUsers) cy.get('@testId').contains(serviceUser);
   });
 
   describe('Care workforce pathway workplace awareness and usage', () => {
@@ -469,7 +486,9 @@ describe('Standalone home page as edit user', () => {
 
   it('updates repeat training', () => {
     const repeatedTrainingAnswer = 'Yes, but not very often';
-    cy.get('[data-testid="repeat-training"]').contains('Add').click();
+    cy.get('[data-testid="repeat-training"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
 
     cy.get('h1').should(
       'contain.text',
@@ -479,7 +498,7 @@ describe('Standalone home page as edit user', () => {
 
     cy.contains('button', 'Save and return').click();
 
-    cy.get('[data-testid="repeat-training"]').contains(repeatedTrainingAnswer);
+    cy.get('@testId').contains(repeatedTrainingAnswer);
   });
 
   it('updates accept care certificate', () => {
