@@ -59,7 +59,7 @@ describe('StaffReferencesComponent', () => {
                 workplaceReferences: [{ uid: 123 }],
               },
               paramMap: {
-                get(uid) {
+                get() {
                   return 123;
                 },
               },
@@ -70,7 +70,9 @@ describe('StaffReferencesComponent', () => {
         UntypedFormBuilder,
         ErrorSummaryService,
         AdminSkipService,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

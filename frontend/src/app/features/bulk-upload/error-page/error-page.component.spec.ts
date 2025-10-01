@@ -15,6 +15,7 @@ import { BulkUploadModule } from '../bulk-upload.module';
 import { ErrorPageComponent } from './error-page.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { AdminSkipService } from '../admin-skip.service';
 
 describe('ErrorPageComponent', () => {
   const getErrorPageComponent = async () => {
@@ -36,6 +37,7 @@ describe('ErrorPageComponent', () => {
             },
           },
         },
+        AdminSkipService,
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

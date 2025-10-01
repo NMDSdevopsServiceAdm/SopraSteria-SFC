@@ -26,6 +26,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.component';
+import { AdminSkipService } from '../admin-skip.service';
 
 describe('DragAndDropFilesListComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -50,6 +51,7 @@ describe('DragAndDropFilesListComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        AdminSkipService,
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),

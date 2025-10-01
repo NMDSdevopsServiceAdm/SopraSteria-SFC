@@ -70,7 +70,7 @@ describe('MissingStaffReferencesComponent', () => {
                 },
               },
               paramMap: {
-                get(uid) {
+                get() {
                   return '123';
                 },
               },
@@ -81,7 +81,9 @@ describe('MissingStaffReferencesComponent', () => {
         UntypedFormBuilder,
         ErrorSummaryService,
         AdminSkipService,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();

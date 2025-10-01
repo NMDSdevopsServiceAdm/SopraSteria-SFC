@@ -11,6 +11,7 @@ import { render } from '@testing-library/angular';
 import { BulkUploadModule } from '../bulk-upload.module';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.component';
 import { environment } from 'src/environments/environment';
+import { AdminSkipService } from '../admin-skip.service';
 
 describe('DragAndDropFilesUploadComponent', () => {
   const getDragAndDropFilesUploadComponent = async () => {
@@ -19,6 +20,7 @@ describe('DragAndDropFilesUploadComponent', () => {
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
+        AdminSkipService,
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

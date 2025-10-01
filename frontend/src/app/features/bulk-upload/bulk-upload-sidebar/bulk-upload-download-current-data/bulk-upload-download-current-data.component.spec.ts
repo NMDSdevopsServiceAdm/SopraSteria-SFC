@@ -11,6 +11,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { BulkUploadDownloadCurrentDataComponent } from './bulk-upload-download-current-data.component';
+import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 
 describe('BulkUploadDownloadCurrentDataComponent', () => {
   let establishmentId;
@@ -27,6 +28,7 @@ describe('BulkUploadDownloadCurrentDataComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        AdminSkipService,
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

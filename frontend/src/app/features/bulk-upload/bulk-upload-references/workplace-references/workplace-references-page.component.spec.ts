@@ -71,7 +71,9 @@ describe('WorkplaceReferencesComponent', () => {
         UntypedFormBuilder,
         ErrorSummaryService,
         AdminSkipService,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();
