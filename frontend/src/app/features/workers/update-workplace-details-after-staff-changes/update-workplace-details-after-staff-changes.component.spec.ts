@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -14,6 +14,7 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
+import { provideActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 
 describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -39,21 +40,18 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
           provide: AlertService,
           useValue: { addAlert: alertSpy },
         },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: { flowType, totalNumberOfStaff },
-            },
-          },
-        },
+        provideActivatedRoute({
+          snapshot: { data: { flowType, totalNumberOfStaff } },
+        }),
         {
           provide: BackLinkService,
           useValue: {
             showBackLink: showBackLinkSpy,
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -66,6 +64,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       ...setupTools,
       component,
       workplace,
+      router,
       routerSpy,
       alertSpy,
       showBackLinkSpy,
@@ -216,7 +215,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const numberOfStaffRow = queryByTestId('numberOfStaff');
       const changeLink = within(numberOfStaffRow).queryByText('Change');
 
-      expect(changeLink.getAttribute('ng-reflect-router-link')).toEqual('update-total-staff');
+      expect(changeLink.getAttribute('href')).toEqual('/update-total-staff');
       expect(within(numberOfStaffRow).queryByText('4')).toBeTruthy();
     });
 
@@ -226,7 +225,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const numberOfStaffRow = queryByTestId('numberOfStaff');
       const addLink = within(numberOfStaffRow).queryByText('Add');
 
-      expect(addLink.getAttribute('ng-reflect-router-link')).toEqual('update-total-staff');
+      expect(addLink.getAttribute('href')).toEqual('/update-total-staff');
       expect(within(numberOfStaffRow).queryByText('-')).toBeTruthy();
     });
 
@@ -236,7 +235,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const numberOfStaffRow = queryByTestId('numberOfStaff');
       const changeLink = within(numberOfStaffRow).queryByText('Change');
 
-      expect(changeLink.getAttribute('ng-reflect-router-link')).toEqual('update-total-staff');
+      expect(changeLink.getAttribute('href')).toEqual('/update-total-staff');
       expect(within(numberOfStaffRow).queryByText('0')).toBeTruthy();
     });
   });
@@ -256,7 +255,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Add');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
+      expect(link.getAttribute('href')).toEqual('/update-vacancies');
       expect(within(vacanciesRow).queryByText('-')).toBeTruthy();
     });
 
@@ -266,7 +265,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
+      expect(link.getAttribute('href')).toEqual('/update-vacancies');
       expect(within(vacanciesRow).queryByText("Don't know")).toBeTruthy();
     });
 
@@ -276,7 +275,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
+      expect(link.getAttribute('href')).toEqual('/update-vacancies');
       expect(within(vacanciesRow).queryByText('None')).toBeTruthy();
     });
 
@@ -287,7 +286,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
+      expect(link.getAttribute('href')).toEqual('/update-vacancies');
       expect(within(vacanciesRow).queryByText('3 x administrative')).toBeTruthy();
     });
 
@@ -302,7 +301,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
+      expect(link.getAttribute('href')).toEqual('/update-vacancies');
       expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
       expect(within(vacanciesRow).queryByText('2 x nursing')).toBeTruthy();
       expect(within(vacanciesRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
@@ -324,7 +323,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Add');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
+      expect(link.getAttribute('href')).toEqual('/update-starters');
       expect(within(startersRow).queryByText('-')).toBeTruthy();
     });
 
@@ -334,7 +333,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
+      expect(link.getAttribute('href')).toEqual('/update-starters');
       expect(within(startersRow).queryByText("Don't know")).toBeTruthy();
     });
 
@@ -344,7 +343,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
+      expect(link.getAttribute('href')).toEqual('/update-starters');
       expect(within(startersRow).queryByText(`None`)).toBeTruthy();
     });
 
@@ -355,7 +354,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
+      expect(link.getAttribute('href')).toEqual('/update-starters');
       expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
     });
 
@@ -370,7 +369,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
+      expect(link.getAttribute('href')).toEqual('/update-starters');
       expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
       expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
       expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
@@ -402,7 +401,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Add');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
+      expect(link.getAttribute('href')).toEqual('/update-leavers');
       expect(within(leaversRow).queryByText('-')).toBeTruthy();
     });
 
@@ -415,7 +414,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
+      expect(link.getAttribute('href')).toEqual('/update-leavers');
       expect(within(leaversRow).queryByText("Don't know")).toBeTruthy();
     });
 
@@ -428,7 +427,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
+      expect(link.getAttribute('href')).toEqual('/update-leavers');
       expect(within(leaversRow).queryByText(`None`)).toBeTruthy();
     });
 
@@ -442,7 +441,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
+      expect(link.getAttribute('href')).toEqual('/update-leavers');
       expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
     });
 
@@ -460,7 +459,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Change');
 
-      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
+      expect(link.getAttribute('href')).toEqual('/update-leavers');
       expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
       expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
       expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
