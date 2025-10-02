@@ -50,10 +50,16 @@ export class AnalyticCookiesService {
     const user$ = this.userService.loggedInUser$;
     const workplace$ = this.establishmentService.establishmentObservable$;
 
+    const userAndWorkplaceAreKnown = ([user, workplace]) => !!user && !!workplace;
+    const onlyActWhenUserChanges = distinctUntilChanged<[user: UserDetails, workplace: Establishment]>(
+      ([prevUser, _wp0], [currUser, _wp1]) => prevUser === currUser,
+    );
+
     combineLatest([user$, workplace$])
       .pipe(
+        filter(userAndWorkplaceAreKnown),
+        onlyActWhenUserChanges,
         map(([user, workplace]) => this.determineUserType(user, workplace)),
-        distinctUntilChanged(),
         filter((userType) => !!userType),
       )
       .subscribe((userType) => this.pushUserType(userType));

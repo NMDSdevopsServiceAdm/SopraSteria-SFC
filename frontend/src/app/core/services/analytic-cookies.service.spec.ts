@@ -143,7 +143,7 @@ describe('AnalyticCookiesService', async () => {
         });
       });
 
-      it('should push an updated userType if user of Parent workplace view a Subsidiary workplace', async () => {
+      it('should not push userType Sub if user of Parent workplace view a Subsidiary workplace', async () => {
         const { service, window } = await setup({ establishment: { ...mockEstablishment, isParent: true } });
 
         service.startGoogleAnalyticsTracking();
@@ -152,8 +152,8 @@ describe('AnalyticCookiesService', async () => {
 
         mockEstablishmentObservable.next({ ...mockEstablishment, isParent: false, parentUid: 'mock-uid' });
 
-        expect(window.dataLayer.length).toBe(3);
-        expect(window.dataLayer.at(2)).toEqual({ userType: 'Sub' });
+        expect(window.dataLayer.length).toBe(2);
+        expect(window.dataLayer).not.toContain({ userType: 'Sub' });
       });
 
       it('should push an updated userType if user logout and login again with another account', async () => {
