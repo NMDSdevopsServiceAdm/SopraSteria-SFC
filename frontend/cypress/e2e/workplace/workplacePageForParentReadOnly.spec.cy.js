@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
+import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 
 describe('Standalone home page as edit user', () => {
   beforeEach(() => {

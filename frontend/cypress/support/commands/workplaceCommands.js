@@ -226,9 +226,31 @@ Cypress.Commands.add('resetEstablishmentServiceUsers', (establishmentID) => {
   cy.task('dbQuery', { queryString, parameters });
 });
 
+Cypress.Commands.add('resetEstablishmentServices', (establishmentID) => {
+  const queryString = `DELETE FROM cqc."EstablishmentServices"
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('resetWorkplaceShareDataWith', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "ShareDataWithLA" = null,
+      "ShareDataWithCQC" = null
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
 Cypress.Commands.add('resetNonMandatoryWorkplaceQuestions', (establishmentID) => {
   cy.resetEstablishmentCapacity(establishmentID);
   cy.resetEstablishmentServiceUsers(establishmentID);
+  cy.resetEstablishmentServices(establishmentID);
+  cy.resetWorkplaceShareDataWith(establishmentID);
 
   const queryString = `UPDATE cqc."Establishment"
       SET "OtherServicesValue" = null,
@@ -237,8 +259,7 @@ Cypress.Commands.add('resetNonMandatoryWorkplaceQuestions', (establishmentID) =>
       "CareWorkersCashLoyaltyForFirstTwoYears" = null,
       "SickPay" = null,
       "PensionContribution" = null,
-      "CareWorkersLeaveDaysPerYear" = null,
-      "ShareDataWithLA" = null
+      "CareWorkersLeaveDaysPerYear" = null
       WHERE "EstablishmentID" = $1;`;
 
   const parameters = [establishmentID];
