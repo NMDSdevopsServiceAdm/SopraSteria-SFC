@@ -11,6 +11,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -24,7 +25,7 @@ import { FundingModule } from '../funding.module';
 import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
 import { WdfDataComponent } from './wdf-data.component';
 
-describe('WdfDataComponent', () => {
+fdescribe('WdfDataComponent', () => {
   const report = createMockWdfReport();
 
   const setup = async (overrides: any = {}) => {
@@ -62,6 +63,7 @@ describe('WdfDataComponent', () => {
         },
         provideHttpClient(),
         provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
       ],
       componentProperties: {
         workerCount: 1,

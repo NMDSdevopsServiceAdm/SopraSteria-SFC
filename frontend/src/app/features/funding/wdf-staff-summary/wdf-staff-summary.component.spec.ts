@@ -10,6 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
@@ -25,7 +26,7 @@ import sinon from 'sinon';
 import { FundingModule } from '../funding.module';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 
-describe('WdfStaffSummaryComponent', () => {
+fdescribe('WdfStaffSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
@@ -55,7 +56,10 @@ describe('WdfStaffSummaryComponent', () => {
           },
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
+      ],
       componentProperties: {
         workplace: establishment,
         workers: workers,

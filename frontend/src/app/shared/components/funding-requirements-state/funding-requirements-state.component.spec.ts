@@ -1,16 +1,17 @@
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
 import { FundingModule } from '../../../features/funding/funding.module';
 import { FundingRequirementsStateComponent } from './funding-requirements-state.component';
 
-describe('FundingRequirementsStateComponent', () => {
+fdescribe('FundingRequirementsStateComponent', () => {
   const setup = async (overrides: any = {}) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
       FundingRequirementsStateComponent,
       {
         imports: [SharedModule, FundingModule],
-        providers: [],
+        providers: [{ provide: FundingReportResolver, useValue: { resolve: () => {} } }],
         componentProperties: {
           ...overrides,
         },

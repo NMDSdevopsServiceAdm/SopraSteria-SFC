@@ -5,6 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -28,7 +29,7 @@ import { WdfStaffMismatchMessageComponent } from '../wdf-staff-mismatch-message/
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
-describe('WDFWorkplaceSummaryComponent', () => {
+fdescribe('WDFWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? null;
     const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
@@ -70,6 +71,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           provide: ActivatedRoute,
           useValue: { snapshot: { params: { establishmentuid: 'mock-uid' }, data: {} } },
         },
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

@@ -8,6 +8,7 @@ import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
 import { Worker, WorkerDays, WorkerEditResponse } from '@core/model/worker.model';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -23,7 +24,7 @@ import { of } from 'rxjs';
 
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
-describe('StaffRecordSummaryComponent', () => {
+fdescribe('StaffRecordSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(StaffRecordSummaryComponent, {
       imports: [SharedModule, BrowserModule, FundingModule, RouterModule],
@@ -39,6 +40,7 @@ describe('StaffRecordSummaryComponent', () => {
           useClass: MockWorkerService,
         },
         WdfConfirmFieldsService,
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),

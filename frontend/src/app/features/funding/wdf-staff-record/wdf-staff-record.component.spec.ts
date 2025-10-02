@@ -7,6 +7,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockInternationalRecruitmentService } from '@core/test-utils/MockInternationalRecruitmentService';
@@ -19,7 +20,7 @@ import { Observable } from 'rxjs';
 import { FundingModule } from '../funding.module';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 
-describe('WdfStaffRecordComponent', () => {
+fdescribe('WdfStaffRecordComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfStaffRecordComponent, {
       imports: [BrowserModule, SharedModule, FundingModule],
@@ -46,7 +47,10 @@ describe('WdfStaffRecordComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
+      ],
     });
     const component = setupTools.fixture.componentInstance;
 

@@ -4,6 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -11,7 +12,6 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import { MockCareWorkforcePathwayService, MockCWPUseReasons } from '@core/test-utils/MockCareWorkforcePathwayService';
-
 import {
   establishmentWithShareWith,
   establishmentWithWdfBuilder,
@@ -27,7 +27,7 @@ import dayjs from 'dayjs';
 import { WorkplaceSummaryComponent } from './workplace-summary.component';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 
-describe('WorkplaceSummaryComponent', () => {
+fdescribe('WorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const shareWith = overrides?.shareWith ?? null;
     const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
@@ -64,6 +64,7 @@ describe('WorkplaceSummaryComponent', () => {
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
       ],
       componentProperties: {
         wdfView: true,

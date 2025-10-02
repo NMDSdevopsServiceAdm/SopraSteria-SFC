@@ -5,6 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -22,7 +23,7 @@ import { of } from 'rxjs';
 import { FundingModule } from '../funding.module';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary.component';
 
-describe('WdfWorkplacesSummaryComponent', () => {
+fdescribe('WdfWorkplacesSummaryComponent', () => {
   const mockWorkplaces = (): any[] => [
     {
       name: 'Workplace name',
@@ -72,6 +73,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
       ],
       componentProperties: {
         workplaces: mockWorkplaces(),

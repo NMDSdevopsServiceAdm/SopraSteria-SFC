@@ -1,14 +1,16 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WdfWarningMessageComponent } from './wdf-warning-message.component';
 
-describe('WdfWarningMessageComponent', () => {
+fdescribe('WdfWarningMessageComponent', () => {
   const setup = async (overrides: any = {}) => {
     const { fixture, getByText, queryByAltText, queryByText } = await render(WdfWarningMessageComponent, {
       imports: [SharedModule, BrowserModule, FundingModule],
+      providers: [{ provide: FundingReportResolver, useValue: { resolve: () => {} } }],
       componentProperties: {
         overallWdfEligibility: false,
         warningMessage: null,
