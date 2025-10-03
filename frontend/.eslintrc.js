@@ -12,7 +12,7 @@ module.exports = {
     'no-unused-vars': ['error', { argsIgnorePattern: '^next$' }],
   },
   parserOptions: {
-    ecmaVersion: 2018,
+    ecmaVersion: 2022,
     sourceType: 'module',
   },
   ignorePatterns: ['/dist', '*.cy.js', '/cypress/*'],
@@ -26,7 +26,14 @@ module.exports = {
       rules: {
         '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 'app', style: 'camelCase' }],
         '@angular-eslint/component-selector': ['error', { type: 'element', prefix: 'app', style: 'kebab-case' }],
-
+        '@typescript-eslint/no-unused-vars': [
+          'warn',
+          {
+            argsIgnorePattern: '^_',
+            varsIgnorePattern: '^_',
+            caughtErrorsIgnorePattern: '^_',
+          },
+        ],
         quotes: ['error', 'single', { allowTemplateLiterals: true }],
       },
     },
