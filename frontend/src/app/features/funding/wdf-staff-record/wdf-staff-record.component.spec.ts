@@ -20,7 +20,7 @@ import { Observable } from 'rxjs';
 import { FundingModule } from '../funding.module';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 
-fdescribe('WdfStaffRecordComponent', () => {
+describe('WdfStaffRecordComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfStaffRecordComponent, {
       imports: [BrowserModule, SharedModule, FundingModule],

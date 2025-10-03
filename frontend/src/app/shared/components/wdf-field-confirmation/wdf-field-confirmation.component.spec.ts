@@ -9,7 +9,7 @@ import { render } from '@testing-library/angular';
 
 import { WdfFieldConfirmationComponent } from './wdf-field-confirmation.component';
 
-fdescribe('WdfFieldConfirmationComponent', async () => {
+describe('WdfFieldConfirmationComponent', async () => {
   const setup = async () => {
     const { fixture, getByText, queryByText } = await render(WdfFieldConfirmationComponent, {
       imports: [SharedModule, RouterModule, BrowserModule, FundingModule],

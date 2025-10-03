@@ -24,7 +24,7 @@ import { of } from 'rxjs';
 
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
-fdescribe('StaffRecordSummaryComponent', () => {
+describe('StaffRecordSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(StaffRecordSummaryComponent, {
       imports: [SharedModule, BrowserModule, FundingModule, RouterModule],

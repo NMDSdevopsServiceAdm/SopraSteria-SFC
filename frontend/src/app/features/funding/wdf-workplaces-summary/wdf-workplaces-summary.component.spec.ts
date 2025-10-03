@@ -23,7 +23,7 @@ import { of } from 'rxjs';
 import { FundingModule } from '../funding.module';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary.component';
 
-fdescribe('WdfWorkplacesSummaryComponent', () => {
+describe('WdfWorkplacesSummaryComponent', () => {
   const mockWorkplaces = (): any[] => [
     {
       name: 'Workplace name',

@@ -6,7 +6,7 @@ import { render } from '@testing-library/angular';
 
 import { WdfWarningMessageComponent } from './wdf-warning-message.component';
 
-fdescribe('WdfWarningMessageComponent', () => {
+describe('WdfWarningMessageComponent', () => {
   const setup = async (overrides: any = {}) => {
     const { fixture, getByText, queryByAltText, queryByText } = await render(WdfWarningMessageComponent, {
       imports: [SharedModule, BrowserModule, FundingModule],

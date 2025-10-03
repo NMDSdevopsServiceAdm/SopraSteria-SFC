@@ -25,7 +25,7 @@ import { FundingModule } from '../funding.module';
 import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
 import { WdfDataComponent } from './wdf-data.component';
 
-fdescribe('WdfDataComponent', () => {
+describe('WdfDataComponent', () => {
   const report = createMockWdfReport();
 
   const setup = async (overrides: any = {}) => {

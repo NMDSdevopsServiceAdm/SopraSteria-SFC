@@ -5,7 +5,7 @@ import { render, within } from '@testing-library/angular';
 import { FundingModule } from '../../../features/funding/funding.module';
 import { FundingRequirementsStateComponent } from './funding-requirements-state.component';
 
-fdescribe('FundingRequirementsStateComponent', () => {
+describe('FundingRequirementsStateComponent', () => {
   const setup = async (overrides: any = {}) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
       FundingRequirementsStateComponent,
