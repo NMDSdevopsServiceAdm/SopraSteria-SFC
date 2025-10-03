@@ -351,11 +351,12 @@ describe('DownloadCertificateService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         DownloadCertificateService,
         { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
         { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     service = TestBed.inject(DownloadCertificateService);

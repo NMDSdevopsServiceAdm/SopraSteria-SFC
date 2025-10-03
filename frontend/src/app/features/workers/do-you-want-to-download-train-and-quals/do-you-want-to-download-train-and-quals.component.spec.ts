@@ -1,8 +1,7 @@
 import { fireEvent, render, within } from '@testing-library/angular';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals.component';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, qualificationsByGroup, workerBuilder } from '@core/test-utils/MockWorkerService';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { WorkersModule } from '../workers.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
@@ -131,6 +130,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
@@ -174,14 +174,14 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
   });
 
   it('should render the radio buttons', async () => {
-    const { component, getByLabelText } = await setup();
+    const { getByLabelText } = await setup();
 
     expect(getByLabelText(yesRadio)).toBeTruthy();
     expect(getByLabelText(noRadio)).toBeTruthy();
   });
 
   it('should render the continue button ', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
 
     expect(getByText('Continue')).toBeTruthy();
   });
@@ -231,7 +231,6 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
         workerService,
         trainingCertificateService,
         qualificationCertificateService,
-        PdfMakeServiceInject,
       } = await setup();
 
       const continueButton = getByText('Continue');
