@@ -17,4 +17,8 @@ describe('Standalone home page as edit user', () => {
   it('should show all sections', () => {
     onWorkplacePage.allSectionsAreVisible();
   });
+
+  it('should not show add or change links', () => {
+    onWorkplacePage.allSectionsAreNotChangeable();
+  });
 });

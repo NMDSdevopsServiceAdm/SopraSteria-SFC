@@ -50,4 +50,8 @@ describe('Standalone home page as edit user', () => {
 
     cy.get('h1').should('contain.text', heading);
   });
+
+  it('should show add or change links', () => {
+    onWorkplacePage.allSectionsAreChangeable();
+  });
 });

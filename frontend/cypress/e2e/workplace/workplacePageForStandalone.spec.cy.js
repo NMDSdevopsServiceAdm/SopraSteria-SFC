@@ -26,12 +26,14 @@ describe('Standalone home page as edit user', () => {
       total: 1,
     },
   ];
+  const workerName = 'Test worker update staff records';
 
   before(() => {
     cy.resetStartersLeaversVacancies(establishmentId);
     cy.resetWorkplaceCWPAnswers(establishmentId);
     cy.resetWorkplaceDHAAnswers(establishmentId);
     cy.resetNonMandatoryWorkplaceQuestions(establishmentId);
+    cy.insertTestWorker({ establishmentID: establishmentId, workerName });
   });
 
   beforeEach(() => {
@@ -45,6 +47,10 @@ describe('Standalone home page as edit user', () => {
     cy.resetWorkplaceCWPAnswers(establishmentId);
     cy.resetWorkplaceDHAAnswers(establishmentId);
     cy.resetNonMandatoryWorkplaceQuestions(establishmentId);
+  });
+
+  after(() => {
+    cy.deleteTestWorkerFromDb(workerName);
   });
 
   it('should see the standalone establishment workplace page', () => {
@@ -61,8 +67,9 @@ describe('Standalone home page as edit user', () => {
   });
 
   describe('number of staff', () => {
+    const staffNumber = 6;
+
     it('can update the number of staff successfully', () => {
-      const staffNumber = 6;
       cy.get('[data-testid="numberOfStaff"]').as('testId');
 
       cy.get('@testId').contains('Change').click();
@@ -74,7 +81,6 @@ describe('Standalone home page as edit user', () => {
     });
 
     it('navigates to staff records when the number of staff does not match staff records', () => {
-      const staffNumber = 10;
       cy.get('[data-testid="numberOfStaff"]').as('testId');
 
       cy.get('@testId').contains('Change').click();
@@ -85,7 +91,7 @@ describe('Standalone home page as edit user', () => {
       cy.get('@testId').contains('View staff records').click();
 
       cy.get('[data-testid="workplaceName"]').contains('Staff records');
-      cy.get('[data-testid="totalStaffNumber"]').contains(staffNumber);
+      cy.get('[data-testid="totalStaffNumber"]').contains(`${staffNumber}`);
     });
   });
 

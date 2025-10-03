@@ -17,4 +17,8 @@ describe('Sub home page as edit user', () => {
   it('should show all sections', () => {
     onWorkplacePage.allSectionsAreVisible();
   });
+
+  it('should show add or change links', () => {
+    onWorkplacePage.allSectionsAreChangeable();
+  });
 });
