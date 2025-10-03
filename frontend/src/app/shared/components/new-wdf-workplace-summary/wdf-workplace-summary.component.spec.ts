@@ -87,9 +87,13 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
     const component = setupTools.fixture.componentInstance;
 
     const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
+    const router = TestBed.inject(Router);
+
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any routes log when clicking routerlink
+
     const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
 
-    return { ...setupTools, component, clearAllSelectedJobRolesSpy };
+    return { ...setupTools, component, clearAllSelectedJobRolesSpy, router };
   };
 
   it('should render a WorkplaceSummaryComponent', async () => {
