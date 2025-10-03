@@ -6,6 +6,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { WorkersModule } from '../workers.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { Establishment } from '@core/model/establishment.model';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -79,7 +81,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
     const workplace = establishmentBuilder() as Establishment;
 
     const setupTools = await render(DoYouWantToDowloadTrainAndQualsComponent, {
-      imports: [RouterModule, HttpClientTestingModule, WorkersModule, ReactiveFormsModule],
+      imports: [RouterModule, WorkersModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         AlertService,
@@ -121,6 +123,8 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
         { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
         { provide: PdfMakeService, useValue: { generateTrainingAndQualifications: () => {} } },
         DownloadCertificateService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
