@@ -54,7 +54,6 @@
     "ngx-cookie-service": "^20.1.0",
     "ngx-dropzone": "^3.1.0",
     "pdfmake": "^0.2.20",
-    "request": "^2.88.2",
     "rxjs": "^6.6.7",
     "rxjs-compat": "^6.6.7",
     "serve-favicon": "^2.5.0",
@@ -86,7 +85,7 @@
     "@types/jasmine": "^3.10.3",
     "@types/jasminewd2": "^2.0.10",
     "@types/lodash": "^4.14.176",
-    "@types/node": "^16.11.6",
+    "@types/node": "^24.6.2",
     "@types/pg": "^8.11.11",
     "@types/sinon": "^10.0.5",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
@@ -95,7 +94,6 @@
     "ajv-formats": "^2.1.0",
     "aws-sdk-mock": "^5.2.1",
     "chai": "^4.3.0",
-    "codelyzer": "^6.0.2",
     "cypress": "^13.17.0",
     "cypress-slow-down": "^1.2.1",
     "dotenv": "^16.4.7",
@@ -123,7 +121,6 @@
     "opener": "^1.5.2",
     "pg": "^8.13.3",
     "prettier": "2.5.1",
-    "protractor": "^7.0.0",
     "puppeteer": "^22.15.0",
     "require-dir": "^1.2.0",
     "rimraf": "^3.0.2",
@@ -142,7 +139,9 @@
     "npm": "^10.9.2"
   },
   "overrides": {
-    "semver": "7.5.2"
+    "semver": "7.5.2",
+    "form-data": "^4.0.4",
+    "tough-cookie": "^5.1.2"
   },
   "nyc": {
     "branches": 22,
