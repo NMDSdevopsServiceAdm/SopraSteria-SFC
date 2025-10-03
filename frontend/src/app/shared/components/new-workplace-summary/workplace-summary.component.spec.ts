@@ -88,6 +88,9 @@ describe('NewWorkplaceSummaryComponent', () => {
     const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
     const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
 
+    const router = TestBed.inject(Router);
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
+
     return {
       component,
       fixture,

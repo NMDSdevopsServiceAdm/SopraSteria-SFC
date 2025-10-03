@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter, RouterModule } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
@@ -8,6 +8,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { NewComparisonGroupHeaderComponent } from './comparison-group-header.component';
+import { getTestBed } from '@angular/core/testing';
 
 describe('NewComparisonGroupHeaderComponent', () => {
   const setup = async (metaData = {}, canViewFullContent = true) => {
@@ -31,6 +32,9 @@ describe('NewComparisonGroupHeaderComponent', () => {
     });
 
     const component = fixture.componentInstance;
+
+    const router = getTestBed().inject(Router);
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
 
     return {
       component,

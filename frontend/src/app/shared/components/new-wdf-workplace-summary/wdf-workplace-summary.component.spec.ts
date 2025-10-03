@@ -29,7 +29,7 @@ import { WdfStaffMismatchMessageComponent } from '../wdf-staff-mismatch-message/
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
-fdescribe('WDFWorkplaceSummaryComponent', () => {
+describe('WDFWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? null;
     const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
@@ -89,7 +89,7 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
     const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
     const router = TestBed.inject(Router);
 
-    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any routes log when clicking routerlink
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any routes when clicking routerlink
 
     const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
 

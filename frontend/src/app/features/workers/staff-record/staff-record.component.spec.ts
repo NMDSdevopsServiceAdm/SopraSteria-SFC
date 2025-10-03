@@ -97,7 +97,9 @@ describe('StaffRecordComponent', () => {
             clearDoYouWantToAddOrDeleteAnswer: clearDoYouWantToAddOrDeleteAnswerSpy,
           }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -106,6 +108,8 @@ describe('StaffRecordComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
+
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
 
     const workerService = injector.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setReturnTo');

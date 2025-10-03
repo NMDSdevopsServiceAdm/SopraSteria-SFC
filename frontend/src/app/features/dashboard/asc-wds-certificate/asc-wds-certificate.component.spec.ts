@@ -17,12 +17,17 @@ describe('AscWdsCertificateComponent', () => {
           useClass: MockBreadcrumbService,
         },
         provideRouter([]),
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
+
     const component = fixture.componentInstance;
 
     return {

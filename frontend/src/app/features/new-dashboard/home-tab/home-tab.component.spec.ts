@@ -94,7 +94,9 @@ describe('NewHomeTabComponent', () => {
           useClass: MockEstablishmentService,
         },
         { provide: WindowToken, useValue: MockWindow },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [
         NewDashboardHeaderComponent,
         NewArticleListComponent,
@@ -123,6 +125,7 @@ describe('NewHomeTabComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
 
     return {
       ...setupTools,
