@@ -126,3 +126,55 @@ Cypress.Commands.add('setWorkplaceMainService', (establishmentID, mainServiceId)
 
   cy.task('dbQuery', { queryString: queryString, parameters: parameters });
 });
+
+Cypress.Commands.add('clearWorkplaceWDFAnswers', (establishmentID) => {
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+        SET
+          "VacanciesValue" = null,
+          "StartersValue" = null,
+          "LeaversValue" = null,
+          "NumberOfStaffValue" = 0
+      WHERE "EstablishmentID" = $1;`,
+
+    `DELETE FROM cqc."EstablishmentJobs"
+      WHERE "EstablishmentID" = $1;`,
+
+    `DELETE FROM cqc."EstablishmentServiceUsers"
+      WHERE "EstablishmentID" = $1;`,
+
+    `DELETE FROM cqc."EstablishmentCapacity"
+      WHERE "EstablishmentID" = $1;`,
+  ];
+
+  const parameters = [establishmentID];
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
+const wdfFieldNames = [
+  'EmployerType',
+  'MainServiceFK',
+  'CapacityServices',
+  'ServiceUsers',
+  'Vacancies',
+  'Starters',
+  'Leavers',
+  'NumberOfStaff',
+];
+
+Cypress.Commands.add('changeWorkplaceWDFAnswersTimestamp', (establishmentID, newDate = '2019-01-01 00:00:00') => {
+  const allDateFields = wdfFieldNames.flatMap((field) => [field + 'SavedAt', field + 'ChangedAt']);
+  const updates = allDateFields.map((field) => `"${field}" = $2`).join(', ');
+
+  const queryString = `
+        UPDATE cqc."Establishment"
+        SET
+          ${updates}
+      WHERE "EstablishmentID" = $1;
+  `;
+
+  const parameters = [establishmentID, newDate];
+  cy.task('dbQuery', { queryString: queryString, parameters: parameters });
+});

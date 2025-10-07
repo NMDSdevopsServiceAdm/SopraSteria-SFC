@@ -42,13 +42,13 @@ export class WorkplacePage {
     });
   }
 
-  expectRow = (testIdForRow) => {
+  expectRow(testIdForRow) {
     return {
       toHaveValue: (expectedValue) => this.expectRowToHaveValue(testIdForRow, expectedValue),
       toHaveMultipleValues: (expectedValues) => this.expectRowToHaveMultipleValues(testIdForRow, expectedValues),
       notExist: () => this.expectRowNotExist(testIdForRow),
     };
-  };
+  }
 
   expectRowExistAndChangable = (testIdForRow) => {
     return cy.get(`[data-testid="${testIdForRow}"]`).within(() => {
@@ -102,6 +102,43 @@ export class WorkplacePage {
     cy.get('button').contains(/Save/).click();
 
     cy.get('h1').should('contain', 'Workplace');
+  };
+
+  answerServiceCapacity = (totalNumber, numberBeingUsed) => {
+    cy.get('[data-testid="serviceCapacity"]').as('row');
+
+    cy.get('@row')
+      .contains(/Add|Change/)
+      .click();
+
+    cy.getByLabel('How many places do you have at the moment?').clear().type(totalNumber);
+    cy.getByLabel('Number of those places that are being used').clear().type(numberBeingUsed);
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@row').contains(`: ${totalNumber} places`);
+    cy.get('@row').contains(`: ${numberBeingUsed} people using the service`);
+    cy.get('@row').contains('a', 'Change');
+  };
+
+  answerServiceUsersQuestion = () => {
+    const serviceUsers = ['Older people with dementia', 'Adults with dementia'];
+    const heading = 'Who are your service users?';
+
+    cy.get('[data-testid="serviceUsers"]').as('row');
+
+    cy.get('@row').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    for (const serviceUser of serviceUsers) {
+      cy.getByLabel(serviceUser).click();
+    }
+
+    cy.contains('button', 'Save and return').click();
+
+    for (const serviceUser of serviceUsers) {
+      cy.get('@row').contains(serviceUser);
+    }
+    cy.get('@row').contains('Change').should('be.visible');
   };
 
   answerDHAQuestion1 = (doStaffCarryOutDHA) => {
