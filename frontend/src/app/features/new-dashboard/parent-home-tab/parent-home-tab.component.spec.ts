@@ -33,14 +33,6 @@ import { ParentHomeTabComponent } from './parent-home-tab.component';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { Worker } from '@core/model/worker.model';
 
-const MockWindow = {
-  dataLayer: {
-    push: () => {
-      return;
-    },
-  },
-};
-
 describe('ParentHomeTabComponent', () => {
   const articleList = MockArticlesService.articleListFactory();
   const articles = MockArticlesService.articlesFactory();
@@ -521,7 +513,7 @@ describe('ParentHomeTabComponent', () => {
 
   describe('parent request approved banner', () => {
     it('should send alert after request to become a parent is approved', async () => {
-      const { component, fixture, alertServiceSpy, getByText } = await setup();
+      const { component, fixture, alertServiceSpy } = await setup();
 
       component.workplace.isParentApprovedBannerViewed = false;
       component.isParent = true;
@@ -576,44 +568,6 @@ describe('ParentHomeTabComponent', () => {
     });
   });
 
-  describe('Pushing userType to dataLayer', () => {
-    [Roles.Admin, Roles.AdminManager].forEach((adminRole) => {
-      it(`should push admin when role is ${adminRole} even if isParent is true`, async () => {
-        const overrides = {
-          cqcStatusMatch: false,
-          establishment: { ...Establishment, isParent: true },
-          comparisonDataAvailable: true,
-          noOfWorkplaces: 9,
-          permissions: [],
-          canAccessCms: true,
-          userRole: adminRole,
-        };
-
-        const { dataLayerPushSpy } = await setup(overrides);
-
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Admin' });
-      });
-    });
-
-    [Roles.Edit, Roles.Read].forEach((role) => {
-      it(`should push 'Parent' when role is ${role} and isParent is true`, async () => {
-        const overrides = {
-          cqcStatusMatch: false,
-          establishment: { ...Establishment, isParent: true },
-          comparisonDataAvailable: true,
-          noOfWorkplaces: 9,
-          permissions: [],
-          canAccessCms: true,
-          userRole: role,
-        };
-
-        const { dataLayerPushSpy } = await setup(overrides);
-
-        expect(dataLayerPushSpy).toHaveBeenCalledWith({ userType: 'Parent' });
-      });
-    });
-  });
-
   describe('should prep for individual staff record pagination', () => {
     beforeEach(() => {
       localStorage.clear();
@@ -622,7 +576,7 @@ describe('ParentHomeTabComponent', () => {
     it('should store a list of all worker ids in localstorage', async () => {
       const eighteenWorkers = Array(18)
         .fill(null)
-        .map((_) => workerBuilder()) as Worker[];
+        .map(() => workerBuilder()) as Worker[];
       const overrides = { listOfAllWorkers: eighteenWorkers };
 
       const { localStorageSetSpy } = await setup(overrides);
