@@ -1,6 +1,21 @@
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
-import { onFundingWorkplacePage } from '../../support/page_objects/onFundingPage';
-import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
+import { FundingWorkplacePage, onFundingPage, onFundingWorkplacePage } from '../../support/page_objects/onFundingPage';
+
+const getFundingEligibilityStartDate = (today = null) => {
+  today = today || new Date();
+  const yearStartMonth = 3; // April
+  if (today.getMonth() < yearStartMonth) {
+    return new Date(Date.UTC(today.getFullYear() - 1, yearStartMonth, 1));
+  } else {
+    return new Date(Date.UTC(today.getFullYear(), yearStartMonth, 1));
+  }
+};
+const periodStartDate = getFundingEligibilityStartDate();
+const yearStart = periodStartDate.getFullYear();
+const currentPeriod = `${yearStart} to ${yearStart + 1}`;
+
+const nonEligibleMessage = `Your data does not meet the funding requirements for ${currentPeriod}`;
+const eligibleMessage = `Your data has met the funding requirements for ${currentPeriod}`;
 
 describe('Funding page', () => {
   const testWorkplace = StandAloneEstablishment;
@@ -9,11 +24,12 @@ describe('Funding page', () => {
   before(() => {
     cy.clearWorkplaceWDFAnswers(testWorkplace.id);
     cy.changeWorkplaceWDFAnswersTimestamp(testWorkplace.id, '2017-01-01 00:00:00');
+
+    cy.archiveAllWorkersInWorkplace(testWorkplace.id);
     cy.insertTestWorker({
       establishmentID: testWorkplace.id,
       workerName: testWorker,
     });
-    cy.reload();
   });
 
   after(() => {
@@ -30,7 +46,7 @@ describe('Funding page', () => {
     it('should contain a link to funding page', () => {
       cy.get('a').contains('Does your data meet funding requirements?').should('be.visible').click();
 
-      cy.get('h1').should('contain.text', 'Does your data meet funding requirements for');
+      cy.get('h1').should('contain.text', `Does your data meet funding requirements for ${currentPeriod}`);
       cy.contains(`(Workplace ID: ${testWorkplace.nmdsId})`).should('be.visible');
       cy.contains(testWorkplace.name).should('be.visible');
     });
@@ -62,55 +78,164 @@ describe('Funding page', () => {
 
       cy.url().should('contain', 'dashboard#home');
       cy.get('a').contains('Does your data meet funding requirements?').click();
+      cy.get('h1').should('contain.text', `Does your data meet funding requirements for ${currentPeriod}`);
     });
 
-    it('should show warning when some workplace answer are not eligible', () => {
-      cy.get('div[data-testid="workplace-row"]').as('workplaceRow');
-      cy.get('@workplaceRow').within(() => {
-        cy.get('img').invoke('attr', 'src').should('include', 'red-flag');
-        cy.get('a').contains('Your data does not meet the funding requirements for').should('be.visible').click();
+    describe('when answers are all filled in and updated', () => {
+      beforeEach(() => {
+        cy.clearWorkplaceWDFAnswers(testWorkplace.id);
+        cy.insertDummyAnswerForWorkplaceWDFAnswers(testWorkplace.id);
+        cy.changeWorkplaceWDFAnswersTimestamp(testWorkplace.id, new Date());
+        cy.reload();
       });
 
-      // on workplace page
-      cy.get('h1').contains('Your data').should('be.visible');
-      onWorkplacePage.expectRow('numberOfStaff').toHaveValue(0);
-
-      onFundingWorkplacePage.expectRow('numberOfStaff').toHaveWarningMessage("You've 1 more staff record than staff.");
-
-      onFundingWorkplacePage.expectRow('mainService').toHaveWarningMessage('Is this still correct?');
-
-      onFundingWorkplacePage.expectRow('serviceCapacity').toHaveWarningMessage('Add the capacity of your main service');
-
-      ['serviceUsers', 'vacancies', 'starters', 'leavers'].forEach((rowTestid) => {
-        onFundingWorkplacePage.expectRow(rowTestid).toHaveWarningMessage('Add this information');
+      it('should show an eligible message for workplace', () => {
+        cy.get('div[data-testid="workplace-row"]').within(() => {
+          cy.get('img[src*="green-tick"]').should('be.visible');
+          cy.contains(eligibleMessage).should('be.visible');
+        });
       });
     });
 
-    it.only('should allow user to update their answers', () => {
-      cy.get('div[data-testid="workplace-row"]').as('workplaceRow');
-      cy.get('@workplaceRow').within(() => {
-        cy.get('a').contains('Your data does not meet the funding requirements for').should('be.visible').click();
+    describe('when answers are missing', () => {
+      before(() => {
+        cy.clearWorkplaceWDFAnswers(testWorkplace.id);
+        cy.reload();
       });
 
-      onFundingWorkplacePage.clickIntoQuestion('numberOfStaff');
-      cy.getByLabel('Number of staff').clear();
-      cy.getByLabel('Number of staff').type(1);
-      cy.get('button').contains('Save and return').click();
+      it('should show non-eligible message for workplace and warnings for the missing answers', () => {
+        cy.get('div[data-testid="workplace-row"]').as('workplaceRow');
+        cy.get('@workplaceRow').within(() => {
+          cy.get('img[src*="red-flag"]').should('be.visible');
+          cy.get('a').contains('Your data does not meet the funding requirements for').should('be.visible').click();
+        });
 
-      onFundingWorkplacePage.expectRow('numberOfStaff').toHaveValue('1');
-      onFundingWorkplacePage.expectRow('numberOfStaff').notToHaveWarning();
+        // skip checking for the rows of numberOfStaff, employerType and mainService,
+        // as those are mandatory when creating new workplace
 
-      onFundingWorkplacePage.answerMainServiceQuestion('Day care and day services');
-      onFundingWorkplacePage.expectRow('mainService').notToHaveWarning();
+        onFundingWorkplacePage
+          .expectRow('serviceCapacity')
+          .toHaveWarningMessage('Add the capacity of your main service');
 
-      onFundingWorkplacePage.answerServiceCapacity(10, 5);
-      onFundingWorkplacePage.expectRow('serviceCapacity').notToHaveWarning();
+        ['serviceUsers', 'vacancies', 'starters', 'leavers'].forEach((rowTestid) => {
+          onFundingWorkplacePage.expectRow(rowTestid).toHaveWarningMessage('Add this information');
+        });
+      });
 
-      onFundingWorkplacePage.answerServiceUsersQuestion();
-      onFundingWorkplacePage.expectRow('serviceUsers').notToHaveWarning();
-      // ['serviceUsers', 'vacancies', 'starters', 'leavers'].forEach((rowTestid) => {
-      //   onFundingWorkplacePage.expectRow(rowTestid).toHaveWarningMessage('Add this information');
-      // });
+      it('should allow user to update their answers', () => {
+        cy.get('div[data-testid="workplace-row"]').as('workplaceRow');
+        cy.get('@workplaceRow').find('a').contains('Your data does not meet the funding requirements for').click();
+
+        onFundingWorkplacePage.clickIntoQuestion('numberOfStaff');
+        onFundingWorkplacePage.answerNumberOfStaffQuestion('1');
+        onFundingWorkplacePage.expectRow('numberOfStaff').toHaveValue('1');
+        onFundingWorkplacePage.expectRow('numberOfStaff').notToHaveWarning();
+
+        onFundingWorkplacePage.clickIntoQuestion('mainService');
+        onFundingWorkplacePage.answerMainServiceQuestion('Day care and day services');
+        onFundingWorkplacePage.expectRow('mainService').notToHaveWarning();
+
+        onFundingWorkplacePage.clickIntoQuestion('serviceCapacity');
+        onFundingWorkplacePage.answerServiceCapacity(10, 5);
+        onFundingWorkplacePage.expectRow('serviceCapacity').notToHaveWarning();
+
+        onFundingWorkplacePage.clickIntoQuestion('serviceUsers');
+        onFundingWorkplacePage.answerServiceUsersQuestion();
+        onFundingWorkplacePage.expectRow('serviceUsers').notToHaveWarning();
+
+        ['vacancies', 'starters', 'leavers'].forEach((testIdForRow) => {
+          onFundingWorkplacePage.clickIntoQuestion(testIdForRow);
+          cy.getByLabel(/I do not know/).click();
+          cy.get('button').contains(/Save/).click();
+          onFundingWorkplacePage.expectRow(testIdForRow).notToHaveWarning();
+        });
+
+        onFundingPage.expectWorkplaceRowToShowEligibilityMessage();
+      });
+    });
+
+    describe('when answers are not updated', () => {
+      beforeEach(() => {
+        cy.clearWorkplaceWDFAnswers(testWorkplace.id);
+        cy.insertDummyAnswerForWorkplaceWDFAnswers(testWorkplace.id);
+        cy.changeWorkplaceWDFAnswersTimestamp(testWorkplace.id, '2017-01-01 00:00:00');
+        cy.reload();
+
+        cy.url().should('contain', 'funding');
+        cy.get('h1').should('contain', `Does your data meet funding requirements for ${currentPeriod}`);
+        cy.get('div[data-testid="workplace-row"]').as('workplaceRow');
+        cy.get('@workplaceRow').find('a').click();
+      });
+
+      it('should show confirmation messages when the answer has not been updated', () => {
+        cy.get('@workplaceRow').contains(nonEligibleMessage).should('be.visible');
+
+        FundingWorkplacePage.testIdsForAllFundingRows.forEach((testId) => {
+          if (testId === 'employerType') {
+            // bypass the check for employerType, as currently WDF page have legacy logic that auto update employerType on page load
+            // see wdf-workplace-summary.component.ts, updateEmployerTypeIfNotUpdatedSinceEffectiveDate()
+            return;
+          }
+          onFundingWorkplacePage.expectRowToHaveConfirmationMessage(testId, 'Is this still correct?');
+        });
+      });
+
+      it('should let user keep previous answer and update by clicking "Yes, it is"', () => {
+        cy.get('@workplaceRow').contains(nonEligibleMessage).should('be.visible');
+
+        FundingWorkplacePage.testIdsForAllFundingRows.forEach((testId) => {
+          if (testId === 'employerType') {
+            // skip employerType as it won't show ConfirmationMessage
+            return;
+          }
+
+          onFundingWorkplacePage.getConfirmationMessageForRow(testId).find('button').contains('Yes, it is').click();
+
+          onFundingWorkplacePage.getConfirmationMessageForRow(testId).within(() => {
+            cy.contains('Meeting requirements').should('be.visible');
+            cy.get('img[src*="tick-icon"]').should('be.visible');
+          });
+        });
+
+        cy.get('@workplaceRow').contains(eligibleMessage).should('be.visible');
+      });
+
+      it('should let user change their answer by clicking "No, change it"', () => {
+        cy.get('@workplaceRow').contains(nonEligibleMessage).should('be.visible');
+
+        onFundingWorkplacePage
+          .getConfirmationMessageForRow('numberOfStaff')
+          .find('a')
+          .contains('No, change it')
+          .click();
+        onFundingWorkplacePage.answerNumberOfStaffQuestion('1');
+        onFundingWorkplacePage.expectRow('numberOfStaff').notToHaveWarning();
+
+        onFundingWorkplacePage.getConfirmationMessageForRow('serviceUsers').find('a').contains('No, change it').click();
+        onFundingWorkplacePage.answerServiceUsersQuestion();
+        onFundingWorkplacePage.expectRow('serviceUsers').notToHaveWarning();
+
+        onFundingWorkplacePage
+          .getConfirmationMessageForRow('serviceCapacity')
+          .find('a')
+          .contains('No, change it')
+          .click();
+        onFundingWorkplacePage.answerServiceCapacity(10, 5);
+        onFundingWorkplacePage.expectRow('serviceCapacity').notToHaveWarning();
+
+        onFundingWorkplacePage.getConfirmationMessageForRow('mainService').find('a').contains('No, change it').click();
+        onFundingWorkplacePage.answerMainServiceQuestion('Day care and day services');
+        onFundingWorkplacePage.expectRow('mainService').notToHaveWarning();
+
+        ['vacancies', 'starters', 'leavers'].forEach((testIdForRow) => {
+          onFundingWorkplacePage.getConfirmationMessageForRow(testIdForRow).find('a').contains('No, change it').click();
+          cy.getByLabel(/I do not know/).click();
+          cy.get('button').contains(/Save/).click();
+          onFundingWorkplacePage.expectRow(testIdForRow).notToHaveWarning();
+        });
+
+        cy.get('@workplaceRow').contains(eligibleMessage).should('be.visible');
+      });
     });
   });
 

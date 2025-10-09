@@ -91,54 +91,45 @@ export class WorkplacePage {
     });
   };
 
-  answerMainServiceQuestion = (nameOfNewMainService) => {
+  answerNumberOfStaffQuestion = (numberOfStaff) => {
+    cy.getByLabel('Number of staff').as('numberOfStaffInput').clear();
+    // wait for .clear() to finish before typing new answer
+    cy.get('@numberOfStaffInput').should('have.value', '').type(numberOfStaff);
+    cy.get('button').contains(/Save/).click();
+  };
+
+  clickIntoMainServiceQuestionAndAnswer = (nameOfNewMainService) => {
     this.clickIntoQuestion(WorkplacePage.mainServiceTestId);
-    cy.get('h1').should('contain', 'Is your new main service regulated by the Care Quality Commission (CQC)?');
+    this.answerMainServiceQuestion(nameOfNewMainService);
+  };
+
+  answerMainServiceQuestion = (nameOfNewMainService) => {
+    const headingForFirstQuestion = 'Is your new main service regulated by the Care Quality Commission (CQC)?';
+
+    cy.get('h1').should('contain', headingForFirstQuestion);
     cy.getByLabel('No').click();
     cy.get('button').contains('Continue').click();
 
     cy.get('h1').should('contain', 'Select your main service');
     cy.getByLabel(nameOfNewMainService).click();
     cy.get('button').contains(/Save/).click();
-
-    cy.get('h1').should('contain', 'Workplace');
   };
 
   answerServiceCapacity = (totalNumber, numberBeingUsed) => {
-    cy.get('[data-testid="serviceCapacity"]').as('row');
-
-    cy.get('@row')
-      .contains(/Add|Change/)
-      .click();
-
     cy.getByLabel('How many places do you have at the moment?').clear().type(totalNumber);
     cy.getByLabel('Number of those places that are being used').clear().type(numberBeingUsed);
     cy.contains('button', 'Save and return').click();
-
-    cy.get('@row').contains(`: ${totalNumber} places`);
-    cy.get('@row').contains(`: ${numberBeingUsed} people using the service`);
-    cy.get('@row').contains('a', 'Change');
   };
 
-  answerServiceUsersQuestion = () => {
-    const serviceUsers = ['Older people with dementia', 'Adults with dementia'];
-    const heading = 'Who are your service users?';
+  answerServiceUsersQuestion = (serviceUsers) => {
+    serviceUsers = serviceUsers ?? ['Older people with dementia', 'Adults with dementia'];
 
-    cy.get('[data-testid="serviceUsers"]').as('row');
-
-    cy.get('@row').contains('Add').click();
-
-    cy.get('h1').should('contain.text', heading);
+    cy.get('h1').should('contain.text', 'Who are your service users?');
     for (const serviceUser of serviceUsers) {
-      cy.getByLabel(serviceUser).click();
+      cy.getByLabel(serviceUser).check();
     }
 
     cy.contains('button', 'Save and return').click();
-
-    for (const serviceUser of serviceUsers) {
-      cy.get('@row').contains(serviceUser);
-    }
-    cy.get('@row').contains('Change').should('be.visible');
   };
 
   answerDHAQuestion1 = (doStaffCarryOutDHA) => {
