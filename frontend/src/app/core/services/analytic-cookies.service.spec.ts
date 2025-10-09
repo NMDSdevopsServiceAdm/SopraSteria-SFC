@@ -1,7 +1,8 @@
 import { BehaviorSubject } from 'rxjs';
 
 import { DOCUMENT } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Roles } from '@core/model/roles.enum';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
@@ -24,7 +25,6 @@ describe('AnalyticCookiesService', async () => {
     const userRole = overrides?.userRole ?? 'Edit';
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         { provide: WindowToken, useValue: {} },
         {
@@ -36,6 +36,8 @@ describe('AnalyticCookiesService', async () => {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory(),
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     const service = TestBed.inject(AnalyticCookiesService);
