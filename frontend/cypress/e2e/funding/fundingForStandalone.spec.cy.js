@@ -1,5 +1,6 @@
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
-import { FundingWorkplacePage, onFundingPage, onFundingWorkplacePage } from '../../support/page_objects/onFundingPage';
+import { FundingWorkplacePage, onFundingWorkplacePage } from '../../support/page_objects/onFundingPage';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 
 const getFundingEligibilityStartDate = (today = null) => {
   today = today || new Date();
@@ -43,8 +44,8 @@ describe('Funding page', () => {
       cy.url().should('contain', 'dashboard#home');
     });
 
-    it('should contain a link to funding page', () => {
-      cy.get('a').contains('Does your data meet funding requirements?').should('be.visible').click();
+    it('should show a heading with workplace name and id', () => {
+      onHomePage.clickIntoFundingSection();
 
       cy.get('h1').should('contain.text', `Does your data meet funding requirements for ${currentPeriod}`);
       cy.contains(`(Workplace ID: ${testWorkplace.nmdsId})`).should('be.visible');
@@ -52,23 +53,23 @@ describe('Funding page', () => {
     });
 
     it('should show the correct financial year in funding page heading (on or after 1/Apr)', () => {
-      patchWdfDate({
+      patchWdfDateInBackendReponse({
         timestamp: '2027-10-06T13:39:15.271Z',
         effectiveFrom: '2027-04-01T00:00:00.000Z',
       });
 
-      cy.get('a').contains('Does your data meet funding requirements?').click();
+      onHomePage.clickIntoFundingSection();
       cy.get('h1').should('contain.text', 'Does your data meet funding requirements for 2027 to 2028?');
     });
 
     it('should show the correct financial year in funding page heading (before 1/Apr)', () => {
-      patchWdfDate({
-        timestamp: '2031-03-06T13:39:15.271Z',
-        effectiveFrom: '2030-04-01T00:00:00.000Z',
+      patchWdfDateInBackendReponse({
+        timestamp: '2027-03-01T13:39:15.271Z',
+        effectiveFrom: '2026-04-01T00:00:00.000Z',
       });
 
-      cy.get('a').contains('Does your data meet funding requirements?').click();
-      cy.get('h1').should('contain.text', 'Does your data meet funding requirements for 2030 to 2031?');
+      onHomePage.clickIntoFundingSection();
+      cy.get('h1').should('contain.text', 'Does your data meet funding requirements for 2026 to 2027?');
     });
   });
 
@@ -77,7 +78,8 @@ describe('Funding page', () => {
       cy.loginAsUser(StandAloneEstablishment.editUserLoginName, Cypress.env('userPassword'));
 
       cy.url().should('contain', 'dashboard#home');
-      cy.get('a').contains('Does your data meet funding requirements?').click();
+
+      onHomePage.clickIntoFundingSection();
       cy.get('h1').should('contain.text', `Does your data meet funding requirements for ${currentPeriod}`);
     });
 
@@ -93,11 +95,61 @@ describe('Funding page', () => {
         cy.get('div[data-testid="workplace-row"]').within(() => {
           cy.get('img[src*="green-tick"]').should('be.visible');
           cy.contains(eligibleMessage).should('be.visible');
+
+          // click into workplace tab of funding
+          cy.get('a').click();
+        });
+
+        FundingWorkplacePage.testIdsForAllFundingRows.forEach((testId) => {
+          onFundingWorkplacePage.expectRow(testId).notToHaveWarning;
         });
       });
     });
 
-    describe('when answers are missing', () => {
+    describe('when number of staff answer is not matching with actual staff records', () => {
+      before(() => {
+        cy.clearWorkplaceWDFAnswers(testWorkplace.id);
+        cy.insertDummyAnswerForWorkplaceWDFAnswers(testWorkplace.id);
+        cy.changeWorkplaceWDFAnswersTimestamp(testWorkplace.id, new Date());
+        cy.reload();
+      });
+
+      const anotherTestWorker = '2nd Test worker for funding page';
+
+      afterEach(() => {
+        cy.deleteTestWorkerFromDb(anotherTestWorker);
+      });
+
+      it('should show the workplace as non eligible', () => {
+        cy.get('div[data-testid="workplace-row"]').as('workplaceRow').should('contain.text', eligibleMessage);
+
+        cy.insertTestWorker({
+          establishmentID: testWorkplace.id,
+          workerName: anotherTestWorker,
+        });
+
+        cy.reload();
+        cy.get('@workplaceRow').should('not.contain.text', eligibleMessage);
+        cy.get('@workplaceRow').should('contain.text', nonEligibleMessage);
+      });
+
+      it('should show a warning at numberOfStaff row', () => {
+        cy.insertTestWorker({
+          establishmentID: testWorkplace.id,
+          workerName: anotherTestWorker,
+        });
+        cy.reload();
+
+        cy.get('div[data-testid="workplace-row"]').find('a').click();
+        cy.get('h1').should('contain.text', 'Your data');
+
+        onFundingWorkplacePage
+          .expectRow('numberOfStaff')
+          .toHaveWarningMessage(`You've 1 more staff record than staff.`);
+      });
+    });
+
+    describe('when some answers are missing', () => {
       before(() => {
         cy.clearWorkplaceWDFAnswers(testWorkplace.id);
         cy.reload();
@@ -150,7 +202,7 @@ describe('Funding page', () => {
           onFundingWorkplacePage.expectRow(testIdForRow).notToHaveWarning();
         });
 
-        onFundingPage.expectWorkplaceRowToShowEligibilityMessage();
+        cy.get('@workplaceRow').should('contain.text', eligibleMessage);
       });
     });
 
@@ -167,25 +219,24 @@ describe('Funding page', () => {
         cy.get('@workplaceRow').find('a').click();
       });
 
-      it('should show confirmation messages when the answer has not been updated', () => {
-        cy.get('@workplaceRow').contains(nonEligibleMessage).should('be.visible');
+      it('should show confirmation message to for outdated fields', () => {
+        cy.get('@workplaceRow').should('contain.text', nonEligibleMessage);
 
-        FundingWorkplacePage.testIdsForAllFundingRows.forEach((testId) => {
-          if (testId === 'employerType') {
-            // bypass the check for employerType, as currently WDF page have legacy logic that auto update employerType on page load
-            // see wdf-workplace-summary.component.ts, updateEmployerTypeIfNotUpdatedSinceEffectiveDate()
-            return;
-          }
+        // skip checking for employerTyp row,, as currently WDF page have legacy logic that auto update employerType on page load
+        // see wdf-workplace-summary.component.ts, updateEmployerTypeIfNotUpdatedSinceEffectiveDate()
+        const rowsToCheck = FundingWorkplacePage.testIdsForAllFundingRows.filter((row) => row !== 'employerType');
+
+        rowsToCheck.forEach((testId) => {
           onFundingWorkplacePage.expectRowToHaveConfirmationMessage(testId, 'Is this still correct?');
         });
       });
 
       it('should let user keep previous answer and update by clicking "Yes, it is"', () => {
-        cy.get('@workplaceRow').contains(nonEligibleMessage).should('be.visible');
+        cy.get('@workplaceRow').should('contain.text', nonEligibleMessage);
 
         FundingWorkplacePage.testIdsForAllFundingRows.forEach((testId) => {
           if (testId === 'employerType') {
-            // skip employerType as it won't show ConfirmationMessage
+            // skip employerType as it won't show confirmation message
             return;
           }
 
@@ -197,11 +248,11 @@ describe('Funding page', () => {
           });
         });
 
-        cy.get('@workplaceRow').contains(eligibleMessage).should('be.visible');
+        cy.get('@workplaceRow').should('contain.text', eligibleMessage);
       });
 
       it('should let user change their answer by clicking "No, change it"', () => {
-        cy.get('@workplaceRow').contains(nonEligibleMessage).should('be.visible');
+        cy.get('@workplaceRow').should('contain.text', nonEligibleMessage);
 
         onFundingWorkplacePage
           .getConfirmationMessageForRow('numberOfStaff')
@@ -234,12 +285,12 @@ describe('Funding page', () => {
           onFundingWorkplacePage.expectRow(testIdForRow).notToHaveWarning();
         });
 
-        cy.get('@workplaceRow').contains(eligibleMessage).should('be.visible');
+        cy.get('@workplaceRow').should('contain.text', eligibleMessage);
       });
     });
   });
 
-  const patchWdfDate = (overrides) => {
+  const patchWdfDateInBackendReponse = (overrides) => {
     cy.intercept('GET', '/api/reports/wdf/establishment/*', (req) => {
       req.continue((res) => {
         const patchedResponseBody = {

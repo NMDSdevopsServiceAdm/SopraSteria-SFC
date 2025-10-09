@@ -3,38 +3,6 @@
 
 import { WorkplacePage } from './onWorkplacePage';
 
-const getFundingEligibilityStartDate = () => {
-  const today = new Date();
-  const yearStartMonth = 3; // April
-  if (today.getMonth() < yearStartMonth) {
-    return new Date(Date.UTC(today.getFullYear() - 1, yearStartMonth, 1));
-  } else {
-    return new Date(Date.UTC(today.getFullYear(), yearStartMonth, 1));
-  }
-};
-const periodStartDate = getFundingEligibilityStartDate();
-const yearStart = periodStartDate.getFullYear();
-
-export class FundingPage {
-  expectWorkplaceToBeEligible() {
-    cy.get('div[data-testid="workplace-row"]').within(() => {
-      cy.contains(`Your data has met the funding requirements for ${yearStart} to ${yearStart + 1}`).should(
-        'be.visible',
-      );
-      cy.get('img[src*="green-tick"]').should('be.visible');
-    });
-  }
-
-  expectWorkplaceRowToShowEligibilityMessage() {
-    cy.get('div[data-testid="workplace-row"]').within(() => {
-      cy.contains(`Your data has met the funding requirements for ${yearStart} to ${yearStart + 1}`).should(
-        'be.visible',
-      );
-      cy.get('img[src*="green-tick"]').should('be.visible');
-    });
-  }
-}
-
 export class FundingWorkplacePage extends WorkplacePage {
   static testIdsForAllFundingRows = [
     'numberOfStaff',
@@ -66,25 +34,21 @@ export class FundingWorkplacePage extends WorkplacePage {
       });
   };
 
+  expectRowNotToHaveWarning = (testIdForRow) => {
+    return cy.get(`[data-testid="${testIdForRow}"]`).next().find('img[src*="red-flag"]').should('not.exist');
+  };
+
   expectRowToHaveConfirmationMessage = (testIdForRow, message = 'Is this still correct?') => {
-    return cy
-      .get(`[data-testid="${testIdForRow}"]`)
-      .next('app-wdf-field-confirmation')
-      .within(() => {
-        cy.contains(message).should('be.visible');
-        cy.get('button').contains('Yes, it is').should('be.visible');
-        cy.get('a').contains('No, change it').should('be.visible');
-      });
+    return this.getConfirmationMessageForRow(testIdForRow).within(() => {
+      cy.contains(message).should('be.visible');
+      cy.get('button').contains('Yes, it is').should('be.visible');
+      cy.get('a').contains('No, change it').should('be.visible');
+    });
   };
 
   getConfirmationMessageForRow = (testIdForRow) => {
     return cy.get(`[data-testid="${testIdForRow}"]`).next('app-wdf-field-confirmation');
   };
-
-  expectRowNotToHaveWarning = (testIdForRow) => {
-    return cy.get(`[data-testid="${testIdForRow}"]`).next().find('img[src*="red-flag"]').should('not.exist');
-  };
 }
 
-export const onFundingPage = new FundingPage();
 export const onFundingWorkplacePage = new FundingWorkplacePage();
