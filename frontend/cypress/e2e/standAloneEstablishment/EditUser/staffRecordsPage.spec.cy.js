@@ -27,6 +27,7 @@ describe('Standalone staff records page as edit user', () => {
 
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     onHomePage.clickTab('Staff records');
+    cy.reload();
   });
 
   afterEach(() => {
