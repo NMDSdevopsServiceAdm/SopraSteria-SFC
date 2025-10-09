@@ -642,7 +642,7 @@ describe('Standalone staff records page as edit user', () => {
 
       it('should NOT see the DHA worker question if workplace main service is not compatible with DHA', () => {
         onHomePage.clickTab('Workplace');
-        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCannotDoDHA.name);
+        onWorkplacePage.clickIntoMainServiceQuestionAndAnswer(mainServiceThatCannotDoDHA.name);
 
         onHomePage.clickTab('Staff records');
         onStaffRecordsPage.clickIntoWorker(careWorker);

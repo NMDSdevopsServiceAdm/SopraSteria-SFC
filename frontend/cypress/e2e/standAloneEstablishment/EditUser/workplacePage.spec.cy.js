@@ -326,13 +326,13 @@ describe('Standalone home page as edit user', () => {
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
 
         // change mainService
-        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCannotDoDHA.name);
+        onWorkplacePage.clickIntoMainServiceQuestionAndAnswer(mainServiceThatCannotDoDHA.name);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).notExist();
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).notExist();
 
         // change it back so that DHA question row appear again
-        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCanDoDHA.name);
+        onWorkplacePage.clickIntoMainServiceQuestionAndAnswer(mainServiceThatCanDoDHA.name);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('-');
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).notExist();
@@ -345,13 +345,13 @@ describe('Standalone home page as edit user', () => {
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
 
         // change mainService
-        onWorkplacePage.answerMainServiceQuestion(anotherMainServiceThatCanDoDHA.name);
+        onWorkplacePage.clickIntoMainServiceQuestionAndAnswer(anotherMainServiceThatCanDoDHA.name);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
 
         // change it back
-        onWorkplacePage.answerMainServiceQuestion(mainServiceThatCanDoDHA.name);
+        onWorkplacePage.clickIntoMainServiceQuestionAndAnswer(mainServiceThatCanDoDHA.name);
 
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion1TestId).toHaveValue('Yes');
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
