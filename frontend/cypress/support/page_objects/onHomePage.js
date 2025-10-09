@@ -18,10 +18,6 @@ export class HomePage {
   clickTab(tab) {
     cy.get('[data-cy="tab-list"]').contains(tab).click();
   }
-
-  clickIntoFundingSection() {
-    cy.get('a').contains('Does your data meet funding requirements?').click();
-  }
 }
 
 export const onHomePage = new HomePage();
