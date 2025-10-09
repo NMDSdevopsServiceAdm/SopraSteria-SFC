@@ -29,23 +29,6 @@ describe('WorkerPagination', () => {
             },
           },
         }),
-        // {
-        //   provide: ActivatedRoute,
-        //   useValue: {
-        //     params: Observable.from([{ id: overrides.id ?? '123' }]),
-
-        //     snapshot: {
-        //       params: {
-        //         establishmentuid: '',
-        //       },
-        //       paramMap: {
-        //         get(_id) {
-        //           return overrides.id ?? '123';
-        //         },
-        //       },
-        //     },
-        //   },
-        // },
         provideHttpClient(),
         provideHttpClientTesting(),
       ],

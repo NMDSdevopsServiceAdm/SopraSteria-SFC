@@ -65,18 +65,6 @@ describe('QuestionsAndAnswersComponent', () => {
             },
           },
         }),
-        // {
-        //   provide: ActivatedRoute,
-        //   useValue: {
-        //     snapshot: {
-        //       data: {
-        //         questionsAndAnswers: {
-        //           data: questionsAndAnswersData,
-        //         },
-        //       },
-        //     },
-        //   },
-        // },
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,

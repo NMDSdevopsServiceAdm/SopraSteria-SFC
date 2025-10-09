@@ -40,14 +40,6 @@ describe('WdfOverviewComponent', () => {
             data: { report: createMockWdfReport(overrides) },
           },
         }),
-        // {
-        //   provide: ActivatedRoute,
-        //   useValue: {
-        //     snapshot: {
-        //       data: { report: createMockWdfReport(overrides) },
-        //     },
-        //   },
-        // },
         {
           provide: UserService,
           useValue: {
