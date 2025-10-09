@@ -695,7 +695,6 @@ describe('Standalone staff records page as edit user', () => {
     beforeEach(() => {
       onHomePage.clickTab('Home');
       onHomePage.clickTab('Staff records');
-      cy.reload();
     });
 
     it('should allow user to cycle between workers by the "Previous staff record" and "Next staff record" links', () => {

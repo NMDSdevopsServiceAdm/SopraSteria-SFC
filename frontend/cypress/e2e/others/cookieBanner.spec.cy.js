@@ -57,7 +57,6 @@ describe('Cookie banner', () => {
   describe('when user has not logged in', () => {
     beforeEach(() => {
       cy.visit('/');
-      cy.reload();
     });
 
     it('should not show the cookie banner on the login page', () => {
