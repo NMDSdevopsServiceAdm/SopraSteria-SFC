@@ -96,9 +96,6 @@ const config = convict({
       format: String,
       default: 'postgres',
     },
-    ssl: {
-      require: 'Boolean',
-    },
     pool: {
       min: {
         doc: 'Minimum number of connections in the pool',
