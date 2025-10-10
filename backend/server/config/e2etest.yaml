@@ -19,10 +19,7 @@ db:
   pool:
     min: 15
     max: 15
-  ssl: {
-    require: true,
-    rejectUnauthorized: false,
-    }
+  ssl: false
   username: sfc-test-user
 
 log:

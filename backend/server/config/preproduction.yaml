@@ -24,7 +24,7 @@ db:
     idle: 200000
   ssl: {
     require: true,
-    rejectUnauthorized: false,
+    # rejectUnauthorized: false,
   }
 
 notify:

@@ -11,8 +11,8 @@ db:
         min: 15
         max: 15
     ssl: {
-      require: true,
-      rejectUnauthorized: false,
+       require: true,
+    #    rejectUnauthorized: false,
     }
     username: sfcdemoadmin
     database: sfcdemodb

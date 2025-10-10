@@ -14,7 +14,7 @@ db:
         max: 10
     ssl: {
        require: true,
-       rejectUnauthorized: false,
+    #    rejectUnauthorized: false,
     }
 
 slack:
