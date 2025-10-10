@@ -42,7 +42,9 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: true,
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
