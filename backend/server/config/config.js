@@ -97,10 +97,7 @@ const config = convict({
       default: 'postgres',
     },
     ssl: {
-      doc: 'Use SSL?',
-      format: 'Boolean',
-      default: true,
-      env: 'DB_SSL',
+      require: 'Boolean',
     },
     pool: {
       min: {

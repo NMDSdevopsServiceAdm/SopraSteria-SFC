@@ -18,7 +18,9 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: false,
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -30,7 +32,9 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: false,
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -56,7 +60,9 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: false,
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -69,7 +75,9 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       migrationStorageTableSchema: 'cqc',
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: false,
+        },
       },
     },
     e2etest: {
@@ -81,7 +89,9 @@ module.exports = async () => {
       dialect: config.get('e2etestdb.dialect'),
       migrationStorageTableSchema: 'cqc',
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: false,
+        },
       },
     },
   };
