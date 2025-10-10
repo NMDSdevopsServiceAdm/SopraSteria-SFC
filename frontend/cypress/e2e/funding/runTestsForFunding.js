@@ -1,6 +1,5 @@
 import { SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { FundingWorkplacePage, onFundingWorkplacePage } from '../../support/page_objects/onFundingPage';
-import { onHomePage } from '../../support/page_objects/onHomePage';
 
 const getFundingEligibilityStartDate = (today = null) => {
   today = today || new Date();
@@ -39,8 +38,8 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
       cy.deleteTestWorkerFromDb(testWorker);
     });
 
-    describe('main page', () => {
-      // skip this part for parent view sub
+    describe('main funding page', () => {
+      // skip this part for parent view sub as it starts from other workplaces tab
       if (isTestingForParentViewSub) {
         return;
       }
@@ -53,7 +52,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
         cy.contains(testWorkplace.name).should('be.visible');
       });
 
-      it('should show the correct financial year in funding page heading (on or after 1/Apr)', () => {
+      it('should show the correct funding period year in funding page heading (when today is on or after 1/Apr)', () => {
         patchWdfDateInBackendReponse({
           timestamp: '2027-10-06T13:39:15.271Z',
           effectiveFrom: '2027-04-01T00:00:00.000Z',
@@ -63,7 +62,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
         cy.get('h1').should('contain.text', 'Does your data meet funding requirements for 2027 to 2028?');
       });
 
-      it('should show the correct financial year in funding page heading (before 1/Apr)', () => {
+      it('should show the correct funding period year in funding page heading (when today is before 1/Apr)', () => {
         patchWdfDateInBackendReponse({
           timestamp: '2027-03-01T13:39:15.271Z',
           effectiveFrom: '2026-04-01T00:00:00.000Z',
@@ -214,7 +213,8 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
         it('should show confirmation message to for outdated fields', () => {
           cy.get('@workplaceRow').should('contain.text', nonEligibleMessage);
 
-          // skip checking for employerTyp row,, as currently WDF page have legacy logic that auto update employerType on page load
+          // skip checking for employerType row,
+          // as currently WDF page have legacy logic that auto update employerType on page load
           // see wdf-workplace-summary.component.ts, updateEmployerTypeIfNotUpdatedSinceEffectiveDate()
           const rowsToCheck = FundingWorkplacePage.testIdsForAllFundingRows.filter((row) => row !== 'employerType');
 
@@ -298,7 +298,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
       cy.get('a').contains('Does your data meet funding requirements?').click();
       cy.get('h1').should('contain.text', `Does your data meet funding requirements for`);
 
-      if (testWorkplace === SubEstablishmentNotDataOwner) {
+      if (isTestingForParentViewSub) {
         // for parent view sub, further click into the sub workplace
 
         cy.get('div[data-testid="workplaces-row"]').as('yourOtherWorkplacesRow');
@@ -312,7 +312,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
       cy.get('div[data-testid="workplace-row"]').as('workplaceRow');
 
       // skip for parent view sub as it start from within workplace tab
-      if (testWorkplace === SubEstablishmentNotDataOwner) {
+      if (isTestingForParentViewSub) {
         return;
       }
       cy.get('@workplaceRow').find('a').click();
