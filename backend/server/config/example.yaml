@@ -19,7 +19,10 @@ db:
   pool:
     min: 15
     max: 15
-  ssl: false
+  ssl: {
+    require: true,
+    rejectUnauthorized: false,
+  }
   username: sfcadmin
 
 redis:
