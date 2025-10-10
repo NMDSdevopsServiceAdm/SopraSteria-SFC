@@ -43,7 +43,7 @@ config.password = environment === 'e2etest' ? appConfig.get('e2etestdb.password'
 config.dialect = appConfig.get('db.dialect');
 config.dialectOptions = {
   ssl: {
-    require: false,
+    require: true,
   },
 };
 config.logging = appConfig.get('log.sequelize');

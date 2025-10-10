@@ -19,7 +19,7 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          require: false,
+          require: true,
         },
       },
       migrationStorageTableSchema: 'cqc',
@@ -33,7 +33,7 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          require: false,
+          require: true,
         },
       },
       migrationStorageTableSchema: 'cqc',
@@ -61,7 +61,7 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          require: false,
+          require: true,
         },
       },
       migrationStorageTableSchema: 'cqc',
@@ -76,7 +76,7 @@ module.exports = async () => {
       migrationStorageTableSchema: 'cqc',
       dialectOptions: {
         ssl: {
-          require: false,
+          require: true,
         },
       },
     },
@@ -90,7 +90,7 @@ module.exports = async () => {
       migrationStorageTableSchema: 'cqc',
       dialectOptions: {
         ssl: {
-          require: false,
+          require: true,
         },
       },
     },
