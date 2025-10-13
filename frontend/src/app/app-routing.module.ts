@@ -36,6 +36,7 @@ import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-
 import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 import { LoginComponent } from '@features/login/login.component';
 import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
+import { WhatsNewLoginMessage } from '@features/login/whats-new-login-message/whats-new-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
@@ -153,6 +154,11 @@ const routes: Routes = [
         path: 'update-your-vacancies-and-turnover-data',
         component: VacanciesAndTurnoverLoginMessage,
         data: { title: 'Update your vacancies and turnover data' },
+      },
+      {
+        path: 'whats-new-in-asc-wds',
+        component: WhatsNewLoginMessage,
+        data: { title: "What's new in ASC-WDS" },
       },
       {
         path: 'help',
