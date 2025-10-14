@@ -75,9 +75,7 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       migrationStorageTableSchema: 'cqc',
       dialectOptions: {
-        ssl: {
-          require: true,
-        },
+        ssl: false,
       },
     },
     e2etest: {
@@ -88,7 +86,9 @@ module.exports = async () => {
       port: config.get('e2etestdb.port'),
       dialect: config.get('e2etestdb.dialect'),
       migrationStorageTableSchema: 'cqc',
-      dialectOptions: {},
+      dialectOptions: {
+        ssl: false,
+      },
     },
   };
 };
