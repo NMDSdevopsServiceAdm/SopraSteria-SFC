@@ -90,7 +90,7 @@ module.exports = async () => {
       migrationStorageTableSchema: 'cqc',
       dialectOptions: {
         ssl: {
-          require: false,
+          require: true,
         },
       },
     },

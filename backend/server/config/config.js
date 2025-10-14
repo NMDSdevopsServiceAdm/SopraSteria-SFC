@@ -163,6 +163,13 @@ const config = convict({
       format: String,
       default: 'postgres',
     },
+    ssl: {
+      require: {
+        doc: 'whether ssl is required to connect to the database',
+        format: Boolean,
+        default: true,
+      },
+    },
   },
   notify: {
     key: {
