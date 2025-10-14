@@ -41,9 +41,9 @@ config.username = environment === 'e2etest' ? appConfig.get('e2etestdb.username'
 config.password = environment === 'e2etest' ? appConfig.get('e2etestdb.password') : appConfig.get('db.password');
 
 config.dialect = appConfig.get('db.dialect');
-config.dialectOptions = {
-  ssl: appConfig.get('db.ssl.require'),
-};
+config.dialectOptions =
+  environment === 'e2etest' ? appConfig.get('e2etestdb.ssl.require') : appConfig.get('db.ssl.require');
+
 config.logging = appConfig.get('log.sequelize');
 
 // setup connection pool
