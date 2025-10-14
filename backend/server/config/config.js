@@ -167,7 +167,7 @@ const config = convict({
       require: {
         doc: 'whether ssl is required to connect to the database',
         format: Boolean,
-        default: true,
+        default: false,
       },
     },
   },
