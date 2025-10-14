@@ -20,7 +20,7 @@ db:
     min: 15
     max: 15
   ssl: {
-    require: true,
+    require: false,
     # rejectUnauthorized: false,
   }
   username: sfc-test-user
