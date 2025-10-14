@@ -88,11 +88,7 @@ module.exports = async () => {
       port: config.get('e2etestdb.port'),
       dialect: config.get('e2etestdb.dialect'),
       migrationStorageTableSchema: 'cqc',
-      dialectOptions: {
-        ssl: {
-          require: false,
-        },
-      },
+      dialectOptions: {},
     },
   };
 };
