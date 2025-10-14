@@ -10,9 +10,7 @@ export const dbConfig = {
   password: process.env.DB_TEST_PASS ?? process.env.POSTGRES_PASSWORD,
   database: process.env.DB_TEST_NAME ?? process.env.POSTGRES_DB,
   port: process.env.DB_TEST_PORT ? parseInt(process.env.DB_TEST_PORT) : 90,
-  dialectOptions: {
-    ssl: { require: false },
-  },
+  dialectOptions: {},
 };
 
 interface DbQueryType {
