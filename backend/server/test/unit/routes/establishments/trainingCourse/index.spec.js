@@ -2,7 +2,10 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 const models = require('../../../../../models');
-const { fetchAllTrainingCourses } = require('../../../../../routes/establishments/trainingCourse/controllers');
+const {
+  fetchAllTrainingCourses,
+  createTrainingCourse,
+} = require('../../../../../routes/establishments/trainingCourse/controllers');
 const { mockTrainingCourses, expectedTrainingCoursesInResponse } = require('../../../mockdata/trainingCourse');
 
 describe.only('/api/establishment/:uid/trainingCourse/', () => {
@@ -11,6 +14,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
   });
   const establishmentUid = 'mock-uid';
   const establishmentId = 'mock-id';
+  const mockUsername = 'workplace edit user';
   const baseEndpoint = `/api/establishment/${establishmentUid}/trainingCourse`;
 
   describe('GET /trainingCourse/ - fetchAllTrainingCourses', () => {
@@ -18,6 +22,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       method: 'GET',
       url: baseEndpoint,
       establishmentId,
+      username: mockUsername,
     };
 
     it('should respond with 200 and a list of all training courses', async () => {
@@ -87,8 +92,51 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
   });
 
   describe('POST /trainingCourse/ - createTrainingCourse', () => {
-    it('should respond with 200 and create the training course');
+    const request = {
+      method: 'GET',
+      url: baseEndpoint,
+      establishmentId,
+      username: mockUsername,
+      body: {
+        trainingCategoryId: 1,
+        name: 'Care skills and knowledge',
+        accredited: 'Yes',
+        deliveredBy: 'In-house staff',
+        externalProviderName: null,
+        howWasItDelivered: 'Face to face',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+      },
+    };
+
+    it('should respond with 200 and create the training course', async () => {
+      sinon.stub(models.TrainingCourse, 'create').resolves({ dataValues: mockTrainingCourses[0] });
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await createTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.deep.equal(expectedTrainingCoursesInResponse[0]);
+
+      expect(models.TrainingCourse.create).to.have.been.calledWith({
+        establishmentFk: establishmentId,
+        categoryFk: 1,
+        name: 'Care skills and knowledge',
+        accredited: 'Yes',
+        deliveredBy: 'In-house staff',
+        externalProviderName: null,
+        howWasItDelivered: 'Face to face',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+        createdBy: mockUsername,
+        updatedBy: mockUsername,
+      });
+    });
+
     it('should respond with 400 if some fields are incorrect');
+
     it('should respond with 500 if other error occured');
   });
 });

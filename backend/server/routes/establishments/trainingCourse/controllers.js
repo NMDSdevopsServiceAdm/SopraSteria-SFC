@@ -1,8 +1,7 @@
 const lodash = require('lodash');
 const models = require('../../../models');
 
-const acceptedFields = [
-  'trainingCategoryId',
+const userChangeableFields = [
   'name',
   'accredited',
   'deliveredBy',
@@ -49,17 +48,19 @@ const renameKeysFromFkToId = (record) => {
 
 const createTrainingCourse = async (req, res) => {
   const establishmentId = req.establishmentId;
-  const fields = lodash.pick(req.body, acceptedFields);
+  const categoryFk = req.body?.trainingCategoryId;
+  const otherProps = lodash.pick(req.body, userChangeableFields);
 
   const newEntry = await models.TrainingCourse.create({
-    ...fields,
+    ...otherProps,
     establishmentFk: establishmentId,
-    categoryFk: fields.trainingCategoryId,
+    categoryFk,
     createdBy: req.username,
     updatedBy: req.username,
   });
+  const responseBody = renameKeysFromFkToId(newEntry.dataValues);
 
-  res.status(200).send(newEntry.dataValues);
+  res.status(200).send(responseBody);
 };
 
 module.exports = { fetchAllTrainingCourses, createTrainingCourse };
