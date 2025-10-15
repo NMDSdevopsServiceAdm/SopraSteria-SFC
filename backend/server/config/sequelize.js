@@ -19,7 +19,8 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          require: true,
+          ca: fs.readFileSync('../../certificate/rds-ca-certificate.pem'),
+          rejectUnauthorized: true,
         },
       },
       migrationStorageTableSchema: 'cqc',
@@ -33,7 +34,8 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          require: true,
+          ca: fs.readFileSync('../../certificate/rds-ca-certificate.pem'),
+          rejectUnauthorized: true,
         },
       },
       migrationStorageTableSchema: 'cqc',
@@ -47,7 +49,8 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          require: true,
+          ca: fs.readFileSync('../../certificate/rds-ca-certificate.pem'),
+          rejectUnauthorized: true,
         },
       },
       migrationStorageTableSchema: 'cqc',
@@ -61,7 +64,8 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          require: true,
+          ca: fs.readFileSync('../../certificate/rds-ca-certificate.pem'),
+          rejectUnauthorized: true,
         },
       },
       migrationStorageTableSchema: 'cqc',
