@@ -1,5 +1,6 @@
 const config = require('./config');
 const AWSSecrets = require('../aws/secrets');
+const fs = require('fs');
 
 module.exports = async () => {
   if (config.get('aws.secrets.use')) {
@@ -19,7 +20,7 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          ca: fs.readFileSync('../../certificate/rds-ca-certificate.pem'),
+          ca: fs.readFileSync('backend/certificate/rds-ca-certificate.pem'),
           rejectUnauthorized: true,
         },
       },
@@ -34,7 +35,8 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          ca: fs.readFileSync('../../certificate/rds-ca-certificate.pem'),
+          require: true,
+          ca: fs.readFileSync('backend/certificate/rds-ca-certificate.pem'),
           rejectUnauthorized: true,
         },
       },
@@ -49,7 +51,8 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          ca: fs.readFileSync('../../certificate/rds-ca-certificate.pem'),
+          require: true,
+          ca: fs.readFileSync('backend/certificate/rds-ca-certificate.pem'),
           rejectUnauthorized: true,
         },
       },
@@ -64,7 +67,8 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          ca: fs.readFileSync('../../certificate/rds-ca-certificate.pem'),
+          require: true,
+          ca: fs.readFileSync('backend/certificate/rds-ca-certificate.pem'),
           rejectUnauthorized: true,
         },
       },
