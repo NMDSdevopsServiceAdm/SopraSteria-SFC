@@ -20,7 +20,11 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: { ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString() },
+        ssl: {
+          require: true,
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString(),
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -32,7 +36,11 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: { ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString() },
+        ssl: {
+          require: true,
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString(),
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -44,7 +52,11 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: { ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString() },
+        ssl: {
+          require: true,
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString(),
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -56,7 +68,11 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: { ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString() },
+        ssl: {
+          require: true,
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString(),
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
