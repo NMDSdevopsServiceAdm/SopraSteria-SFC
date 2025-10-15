@@ -1,6 +1,7 @@
 const config = require('./config');
 const AWSSecrets = require('../aws/secrets');
 const fs = require('fs');
+const path = require('path');
 
 module.exports = async () => {
   if (config.get('aws.secrets.use')) {
@@ -19,10 +20,7 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: {
-          ca: fs.readFileSync(`${process.cwd()}/backend/certificate/rds-ca-certificate.pem`).toString(),
-          rejectUnauthorized: true,
-        },
+        ssl: { ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString() },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -34,11 +32,7 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: {
-          require: true,
-          ca: fs.readFileSync(`${process.cwd()}/backend/certificate/rds-ca-certificate.pem`).toString(),
-          rejectUnauthorized: true,
-        },
+        ssl: { ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString() },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -50,11 +44,7 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: {
-          require: true,
-          ca: fs.readFileSync(`${process.cwd()}/backend/certificate/rds-ca-certificate.pem`).toString(),
-          rejectUnauthorized: true,
-        },
+        ssl: { ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString() },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -66,11 +56,7 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: {
-          require: true,
-          ca: fs.readFileSync(`${process.cwd()}/backend/certificate/rds-ca-certificate.pem`).toString(),
-          rejectUnauthorized: true,
-        },
+        ssl: { ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString() },
       },
       migrationStorageTableSchema: 'cqc',
     },
