@@ -20,7 +20,7 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       dialectOptions: {
         ssl: {
-          ca: fs.readFileSync('/app/backend/certificate/rds-ca-certificate.pem').toString(),
+          ca: fs.readFileSync('/api/backend/certificate/rds-ca-certificate.pem').toString(),
           rejectUnauthorized: true,
         },
       },
@@ -36,7 +36,7 @@ module.exports = async () => {
       dialectOptions: {
         ssl: {
           require: true,
-          ca: fs.readFileSync('/app/backend/certificate/rds-ca-certificate.pem').toString(),
+          ca: fs.readFileSync('/api/backend/certificate/rds-ca-certificate.pem').toString(),
           rejectUnauthorized: true,
         },
       },
@@ -52,7 +52,7 @@ module.exports = async () => {
       dialectOptions: {
         ssl: {
           require: true,
-          ca: fs.readFileSync('/app/backend/certificate/rds-ca-certificate.pem').toString(),
+          ca: fs.readFileSync('/api/backend/certificate/rds-ca-certificate.pem').toString(),
           rejectUnauthorized: true,
         },
       },
@@ -68,7 +68,7 @@ module.exports = async () => {
       dialectOptions: {
         ssl: {
           require: true,
-          ca: fs.readFileSync('/app/backend/certificate/rds-ca-certificate.pem').toString(),
+          ca: fs.readFileSync('/api/backend/certificate/rds-ca-certificate.pem').toString(),
           rejectUnauthorized: true,
         },
       },
