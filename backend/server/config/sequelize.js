@@ -23,7 +23,7 @@ module.exports = async () => {
         ssl: {
           require: true,
           rejectUnauthorized: true,
-          ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString(),
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/global-bundle.pem')).toString(),
         },
       },
       migrationStorageTableSchema: 'cqc',
@@ -39,7 +39,7 @@ module.exports = async () => {
         ssl: {
           require: true,
           rejectUnauthorized: true,
-          ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString(),
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/global-bundle.pem')).toString(),
         },
       },
       migrationStorageTableSchema: 'cqc',
@@ -55,7 +55,7 @@ module.exports = async () => {
         ssl: {
           require: true,
           rejectUnauthorized: true,
-          ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString(),
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/global-bundle.pem')).toString(),
         },
       },
       migrationStorageTableSchema: 'cqc',
@@ -71,7 +71,7 @@ module.exports = async () => {
         ssl: {
           require: true,
           rejectUnauthorized: true,
-          ca: fs.readFileSync(path.join(__dirname, '../../certificate/rds-ca-certificate.pem')).toString(),
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/global-bundle.pem')).toString(),
         },
       },
       migrationStorageTableSchema: 'cqc',
