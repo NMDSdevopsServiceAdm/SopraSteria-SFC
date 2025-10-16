@@ -1,10 +1,13 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
+const sequelize = require('sequelize');
+
 const models = require('../../../../../models');
 const {
   fetchAllTrainingCourses,
   createTrainingCourse,
+  getTrainingCourse,
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
 const { mockTrainingCourses, expectedTrainingCoursesInResponse } = require('../../../mockdata/trainingCourse');
 
@@ -45,7 +48,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       });
     });
 
-    it('should respond with 200 and an empty list if no training courses in the workplace', async () => {
+    it('should respond with 200 and an empty list if no training courses was found', async () => {
       sinon.stub(models.TrainingCourse, 'findAll').resolves([]);
 
       const req = httpMocks.createRequest(request);
@@ -79,7 +82,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should respond with 500 if an error occured during operation', async () => {
-      sinon.stub(models.TrainingCourse, 'findAll').throws(new Error('database error'));
+      sinon.stub(models.TrainingCourse, 'findAll').rejects(new sequelize.ConnectionError('some database error'));
       sinon.stub(console, 'error'); // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
@@ -135,8 +138,84 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       });
     });
 
-    it('should respond with 400 if some fields are incorrect');
+    it('should respond with 400 if trainingCategoryId is incorrect', async () => {
+      sinon.stub(models.TrainingCourse, 'create').rejects(new sequelize.ForeignKeyConstraintError());
+      sinon.stub(console, 'error'); // suppress error msg in test log
 
-    it('should respond with 500 if other error occured');
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await createTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(400);
+    });
+
+    it('should respond with 500 if other error occured', async () => {
+      sinon.stub(models.TrainingCourse, 'create').rejects(new sequelize.ConnectionError('some database error'));
+      sinon.stub(console, 'error'); // suppress error msg in test log
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await createTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
+  describe('GET /trainingCourse/:trainingCourseId - createTrainingCourse', () => {
+    const mockTrainingCourseId = 123;
+    const request = {
+      method: 'GET',
+      url: `${baseEndpoint}/${mockTrainingCourseId}`,
+      establishmentId,
+      username: mockUsername,
+      params: { trainingCourseId: mockTrainingCourseId },
+    };
+
+    it('should respond with 200 and the training course data', async () => {
+      sinon.stub(models.TrainingCourse, 'findOne').resolves(mockTrainingCourses[0]);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.deep.equal(expectedTrainingCoursesInResponse[0]);
+
+      expect(models.TrainingCourse.findOne).to.have.been.calledWith({
+        where: {
+          id: mockTrainingCourseId,
+          establishmentFk: establishmentId,
+          archived: false,
+        },
+        raw: true,
+      });
+    });
+
+    it('should respond with 404 and if the training course is not found', async () => {
+      sinon.stub(models.TrainingCourse, 'findOne').resolves(null);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(404);
+      expect(res._getData()).to.deep.equal({ message: 'Training course not found' });
+    });
+
+    it('should respond with 500 and if an error occurred', async () => {
+      sinon.stub(models.TrainingCourse, 'findOne').rejects(new sequelize.ConnectionError('some database error'));
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
   });
 });
