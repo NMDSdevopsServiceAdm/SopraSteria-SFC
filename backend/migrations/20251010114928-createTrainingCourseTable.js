@@ -14,10 +14,24 @@ module.exports = {
         EstablishmentFK: {
           type: Sequelize.INTEGER,
           allowNull: false,
+          references: {
+            model: {
+              tableName: 'Establishment',
+              schema: 'cqc',
+            },
+            key: 'EstablishmentID',
+          },
         },
         CategoryFK: {
           type: Sequelize.INTEGER,
           allowNull: false,
+          references: {
+            model: {
+              tableName: 'TrainingCategories',
+              schema: 'cqc',
+            },
+            key: 'ID',
+          },
         },
         Name: {
           type: Sequelize.DataTypes.TEXT,
