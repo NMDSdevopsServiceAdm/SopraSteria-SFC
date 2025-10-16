@@ -32,7 +32,7 @@ const fetchAllTrainingCourses = async (req, res) => {
     return res.status(200).send(responseBody);
   } catch (err) {
     console.error('GET /establishment/:uid/trainingCourse  - failed', err);
-    return res.status(500).send('internal server error');
+    return res.status(500).send({ message: 'internal server error' });
   }
 };
 
@@ -54,10 +54,10 @@ const createTrainingCourse = async (req, res) => {
     res.status(200).send(responseBody);
   } catch (err) {
     console.error('POST /establishment/:uid/trainingCourse  - failed', err);
-    if (err instanceof sequelize.DatabaseError) {
-      return res.status(400).send('Invalid request');
+    if (err instanceof sequelize.DatabaseError || err instanceof sequelize.ValidationError) {
+      return res.status(400).send({ message: 'Invalid request' });
     }
-    return res.status(500).send('Internal server error');
+    return res.status(500).send({ message: 'Internal server error' });
   }
 };
 
@@ -83,7 +83,7 @@ const getTrainingCourse = async (req, res) => {
     return res.status(404).send({ message: 'Training course not found' });
   } catch (err) {
     console.error('GET /establishment/:uid/trainingCourse/:id  - failed', err);
-    return res.status(500).send('Internal server error');
+    return res.status(500).send({ message: 'Internal server error' });
   }
 };
 

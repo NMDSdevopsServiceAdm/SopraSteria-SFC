@@ -11,7 +11,7 @@ const {
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
 const { mockTrainingCourses, expectedTrainingCoursesInResponse } = require('../../../mockdata/trainingCourse');
 
-describe.only('/api/establishment/:uid/trainingCourse/', () => {
+describe('/api/establishment/:uid/trainingCourse/', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -142,12 +142,26 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       sinon.stub(models.TrainingCourse, 'create').rejects(new sequelize.ForeignKeyConstraintError());
       sinon.stub(console, 'error'); // suppress error msg in test log
 
+      const req = httpMocks.createRequest({ request, body: { ...request.body, trainingCategoryId: 99999 } });
+      const res = httpMocks.createResponse();
+
+      await createTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(400);
+      expect(res._getData()).to.deep.equal({ message: 'Invalid request' });
+    });
+
+    it('should respond with 400 if the request body contains invalid data', async () => {
+      sinon.stub(models.TrainingCourse, 'create').rejects(new sequelize.ValidationError());
+      sinon.stub(console, 'error'); // suppress error msg in test log
+
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
 
       await createTrainingCourse(req, res);
 
       expect(res.statusCode).to.deep.equal(400);
+      expect(res._getData()).to.deep.equal({ message: 'Invalid request' });
     });
 
     it('should respond with 500 if other error occured', async () => {

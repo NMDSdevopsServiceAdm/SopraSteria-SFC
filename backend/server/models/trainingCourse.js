@@ -30,11 +30,20 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.ENUM(Enum.YesNoDontKnow),
         allowNull: true,
         field: 'Accredited',
+        validate: { isIn: [Enum.YesNoDontKnow] },
       },
       deliveredBy: {
         type: DataTypes.ENUM(Enum.TrainingCourseDeliveredBy),
         allowNull: true,
         field: 'DeliveredBy',
+        validate: {
+          isIn: [Enum.TrainingCourseDeliveredBy],
+          clearExternalProviderName() {
+            if (this.deliveredBy !== 'External provider') {
+              this.externalProviderName = null;
+            }
+          },
+        },
       },
       externalProviderName: {
         type: DataTypes.TEXT,
@@ -45,17 +54,26 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.ENUM(Enum.TrainingCourseDeliveryMode),
         allowNull: true,
         field: 'HowWasItDelivered',
+        validate: { isIn: [Enum.TrainingCourseDeliveryMode] },
       },
       doesNotExpire: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
         field: 'DoesNotExpire',
+        validate: {
+          clearValidityPeriod() {
+            if (this.doesNotExpire === true) {
+              this.validityPeriodInMonth = null;
+            }
+          },
+        },
       },
       validityPeriodInMonth: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'ValidityPeriodInMonth',
+        validate: { min: 1 },
       },
       created: {
         type: DataTypes.DATE,
