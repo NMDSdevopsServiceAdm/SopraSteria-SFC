@@ -23,8 +23,7 @@ db:
     acquire: 240000
     idle: 200000
   ssl:
-    require: true,
-    # rejectUnauthorized: false,
+    require: true
 
 notify:
   replyTo: '73711295-a4da-4303-9127-65be2a409681'

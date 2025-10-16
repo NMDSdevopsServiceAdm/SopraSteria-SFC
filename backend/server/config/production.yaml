@@ -23,8 +23,7 @@ db:
     acquire: 240000
     idle: 200000
   ssl:
-     require: true,
-    # rejectUnauthorized: false,
+     require: true
 
   username: sfcapp
 

@@ -13,8 +13,7 @@ db:
     min: 15
     max: 15
   ssl:
-    require: true,
-    # rejectUnauthorized: false,
+    require: true
 
 slack:
   level: 3 # enables Slack notifications
