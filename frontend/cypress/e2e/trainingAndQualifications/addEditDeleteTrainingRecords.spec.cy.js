@@ -120,6 +120,7 @@ describe('training record', () => {
     cy.deleteTestWorkerFromDb(workerName2);
     cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: workerName2 });
 
+    cy.contains('button', 'Add and manage training').click();
     cy.contains('a', 'Add multiple training records').click();
 
     // select staff
