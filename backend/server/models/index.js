@@ -42,7 +42,12 @@ config.password = environment === 'e2etest' ? appConfig.get('e2etestdb.password'
 
 config.dialect = appConfig.get('db.dialect');
 config.dialectOptions = {
-  ssl: appConfig.get('db.ssl.require'),
+  ssl: appConfig.get('db.ssl.require')
+    ? {
+        rejectUnauthorized: true,
+        ca: fs.readFileSync(path.join(__dirname, '../../certificate/global-bundle.pem')).toString(),
+      }
+    : false,
 };
 config.logging = appConfig.get('log.sequelize');
 
