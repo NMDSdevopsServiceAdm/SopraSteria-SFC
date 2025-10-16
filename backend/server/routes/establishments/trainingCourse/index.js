@@ -6,11 +6,5 @@ const { fetchAllTrainingCourses, createTrainingCourse, getTrainingCourse } = req
 router.route('/').get(hasPermission('canViewWorker'), fetchAllTrainingCourses);
 router.route('/').post(hasPermission('canEditWorker'), createTrainingCourse);
 router.route('/:trainingCourseId').get(hasPermission('canViewWorker'), getTrainingCourse);
-// router
-//   .route('/:trainingCourseId')
-//   .put(hasPermission('canEditWorker'), editTrainingCourse);
-// router
-//   .route('/:trainingCourseId')
-//   .delete(hasPermission('canEditWorker'), deleteTrainingCourse);
 
 module.exports = router;
