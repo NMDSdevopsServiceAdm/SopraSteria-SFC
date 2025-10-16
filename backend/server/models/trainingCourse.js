@@ -78,25 +78,20 @@ module.exports = function (sequelize, DataTypes) {
       created: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
-        field: 'created',
       },
       updated: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
-        field: 'updated',
       },
       createdBy: {
         type: DataTypes.TEXT,
-        field: 'createdBy',
       },
       updatedBy: {
         type: DataTypes.TEXT,
-        field: 'updatedBy',
       },
       archived: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-        field: 'archived',
       },
     },
     {
