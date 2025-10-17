@@ -683,7 +683,9 @@ const routes: Routes = [
       {
         path: 'training-course',
         loadChildren: () =>
-          import('@features/training-course/training-course.module').then((m) => m.TrainingCourseModule),
+          import('@features/training-and-qualifications/training-course/training-course.module').then(
+            (m) => m.TrainingCourseModule,
+          ),
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canEditWorker'],

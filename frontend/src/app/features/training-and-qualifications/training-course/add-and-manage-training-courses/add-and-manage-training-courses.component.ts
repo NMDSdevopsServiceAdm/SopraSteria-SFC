@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TrainingCourseService } from '../../../core/services/training-course.service';
+import { TrainingCourseService } from '../../../../core/services/training-course.service';
 import { TrainingCourse } from '@core/model/training-course.model';
 import { ActivatedRoute } from '@angular/router';
 
@@ -18,7 +18,6 @@ export class AddAndManageTrainingCoursesComponent implements OnInit {
     const establishment = this.route.snapshot.data?.establishment;
     this.trainingCourseService.getTrainingCourses(establishment.uid).subscribe((trainingCourses) => {
       this.trainingCourses = trainingCourses;
-      console.log(this.trainingCourses);
     });
   }
 }
