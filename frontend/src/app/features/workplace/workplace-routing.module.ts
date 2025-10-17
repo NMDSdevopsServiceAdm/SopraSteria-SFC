@@ -77,7 +77,6 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
 import { WorkplaceStaffDoDHAGuard } from '@core/guards/workplace-staff-do-dha/workplace-staff-do-dha.guard';
 import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
-import { AddAndManageTrainingCoursesComponent } from '@features/training-course/add-and-manage-training-courses/add-and-manage-training-courses.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -683,10 +682,12 @@ const routes: Routes = [
       },
       {
         path: 'training-course',
-        component: AddAndManageTrainingCoursesComponent,
+        loadChildren: () =>
+          import('@features/training-course/training-course.module').then((m) => m.TrainingCourseModule),
+        canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canEditWorker'],
-          title: 'Add And Manage Training Course',
+          title: 'Training course',
         },
       },
     ],

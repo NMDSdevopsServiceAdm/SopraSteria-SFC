@@ -1,10 +1,10 @@
-import { getTestBed } from '@angular/core/testing';
-import { render } from '@testing-library/angular';
-import { ActivatedRoute, Router } from '@angular/router';
-
-import { AddAndManageTrainingCoursesComponent } from './add-and-manage-training-courses.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
+import { render } from '@testing-library/angular';
+
+import { AddAndManageTrainingCoursesComponent } from './add-and-manage-training-courses.component';
 
 fdescribe('AddAndManageTrainingCoursesComponent', () => {
   async function setup() {
