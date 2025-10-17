@@ -1,14 +1,27 @@
 import { getTestBed } from '@angular/core/testing';
 import { render } from '@testing-library/angular';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { AddAndManageTrainingCoursesComponent } from './add-and-manage-training-courses.component';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 fdescribe('AddAndManageTrainingCoursesComponent', () => {
   async function setup() {
     const setupTools = await render(AddAndManageTrainingCoursesComponent, {
       imports: [],
-      providers: [],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { establishment: { uid: 'mock-uid' } },
+            },
+          },
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
 
