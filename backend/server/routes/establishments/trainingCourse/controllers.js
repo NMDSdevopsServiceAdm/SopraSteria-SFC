@@ -21,7 +21,7 @@ const fetchAllTrainingCourses = async (req, res) => {
       where: {
         establishmentFk: establishmentId,
         archived: false,
-        ...(trainingCategoryId ? { trainingCategoryFk: trainingCategoryId } : {}),
+        ...(trainingCategoryId ? { categoryFk: trainingCategoryId } : {}),
       },
       raw: true,
     });
