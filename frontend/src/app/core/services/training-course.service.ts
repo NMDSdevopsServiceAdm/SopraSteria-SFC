@@ -12,7 +12,7 @@ import { GetTrainingCoursesResponse, TrainingCourse } from '@core/model/training
 export class TrainingCourseService {
   constructor(private http: HttpClient) {}
 
-  public getTrainingCourses(establishmentUid: string): Observable<Array<TrainingCourse>> {
+  public getAllTrainingCourses(establishmentUid: string): Observable<Array<TrainingCourse>> {
     return this.http
       .get<GetTrainingCoursesResponse>(
         `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse`,

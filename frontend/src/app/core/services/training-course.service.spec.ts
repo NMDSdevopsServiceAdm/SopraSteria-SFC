@@ -25,9 +25,9 @@ fdescribe('TrainingCourseService', () => {
   const trainingCategoryId = 2345;
   const baseEndpoint = `/api/establishment/${establishmentUid}/trainingCourse`;
 
-  describe('getTrainingCourses', () => {
+  describe('getAllTrainingCourses', () => {
     it('should call GET trainingCourse endpoint', async () => {
-      service.getTrainingCourses(establishmentUid).subscribe();
+      service.getAllTrainingCourses(establishmentUid).subscribe();
 
       const req = http.expectOne(baseEndpoint);
       expect(req.request.method).toBe('GET');
