@@ -23,10 +23,12 @@ const fetchAllTrainingCourses = async (req, res) => {
         archived: false,
         ...(trainingCategoryId ? { categoryFk: trainingCategoryId } : {}),
       },
+      attributes: { exclude: ['establishmentFk'] },
+      order: [['updated', 'DESC']],
       raw: true,
     });
 
-    const trainingCourses = recordsFound.map(renameKeysFromFkToId);
+    const trainingCourses = recordsFound.map(renameKeys);
     const responseBody = { trainingCourses };
 
     return res.status(200).send(responseBody);
@@ -49,7 +51,7 @@ const createTrainingCourse = async (req, res) => {
       createdBy: req.username,
       updatedBy: req.username,
     });
-    const responseBody = renameKeysFromFkToId(newEntry.dataValues);
+    const responseBody = renameKeys(newEntry.dataValues);
 
     res.status(200).send(responseBody);
   } catch (err) {
@@ -72,11 +74,18 @@ const getTrainingCourse = async (req, res) => {
         uid: trainingCourseUid,
         archived: false,
       },
+      include: [
+        {
+          model: models.workerTrainingCategories,
+          as: 'category',
+        },
+      ],
+      attributes: { exclude: ['establishmentFk'] },
       raw: true,
     });
 
     if (recordFound) {
-      const responseBody = renameKeysFromFkToId(recordFound);
+      const responseBody = renameKeys(recordFound);
       return res.status(200).send(responseBody);
     }
 
@@ -87,16 +96,17 @@ const getTrainingCourse = async (req, res) => {
   }
 };
 
-const renameKeysFromFkToId = (record) => {
-  const trainingCourse = {
-    ...record,
-    trainingCategoryId: record.categoryFk,
-    establishmentId: record.establishmentFk,
-  };
-
-  delete trainingCourse.categoryFk;
-  delete trainingCourse.establishmentFk;
-  return trainingCourse;
+const renameKeys = (record) => {
+  return lodash.mapKeys(record, (_v, key) => {
+    switch (key) {
+      case 'categoryFk':
+        return 'trainingCategoryId';
+      case 'category.category':
+        return 'trainingCategoryName';
+      default:
+        return key;
+    }
+  });
 };
 
 module.exports = { fetchAllTrainingCourses, createTrainingCourse, getTrainingCourse };

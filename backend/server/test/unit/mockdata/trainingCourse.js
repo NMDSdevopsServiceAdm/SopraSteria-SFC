@@ -4,7 +4,6 @@ const mockTrainingCourses = [
   {
     id: 1,
     uid: 'mock-uid-1',
-    establishmentFk: 1105,
     categoryFk: 1,
     name: 'Care skills and knowledge',
     accredited: 'Yes',
@@ -22,7 +21,6 @@ const mockTrainingCourses = [
   {
     id: 2,
     uid: 'mock-uid-2',
-    establishmentFk: 1105,
     categoryFk: 2,
     name: 'Specific conditions and disabilities',
     accredited: 'Yes',
@@ -40,7 +38,6 @@ const mockTrainingCourses = [
   {
     id: 3,
     uid: 'mock-uid-3',
-    establishmentFk: 1105,
     categoryFk: 1,
     name: 'Care skills and knowledge advanced course',
     accredited: 'Yes',
@@ -60,8 +57,6 @@ const mockTrainingCourses = [
 const expectedTrainingCoursesInResponse = mockTrainingCourses.map((course) => {
   return lodash.mapKeys(course, (_v, key) => {
     switch (key) {
-      case 'establishmentFk':
-        return 'establishmentId';
       case 'categoryFk':
         return 'trainingCategoryId';
       default:
