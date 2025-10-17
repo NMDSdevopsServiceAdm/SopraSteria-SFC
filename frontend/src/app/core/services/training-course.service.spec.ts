@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { TrainingCourseService } from './training-course.service';
 
-fdescribe('TrainingCourseService', () => {
+describe('TrainingCourseService', () => {
   let service: TrainingCourseService;
   let http: HttpTestingController;
 

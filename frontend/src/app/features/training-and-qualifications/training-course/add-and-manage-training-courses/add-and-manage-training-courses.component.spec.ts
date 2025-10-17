@@ -1,21 +1,31 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { render } from '@testing-library/angular';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
+import { render, within } from '@testing-library/angular';
 
 import { AddAndManageTrainingCoursesComponent } from './add-and-manage-training-courses.component';
 
-fdescribe('AddAndManageTrainingCoursesComponent', () => {
-  async function setup() {
+describe('AddAndManageTrainingCoursesComponent', () => {
+  async function setup(overrides: any = {}) {
+    const trainingCourses = overrides?.trainingCourses ?? [];
+
     const setupTools = await render(AddAndManageTrainingCoursesComponent, {
-      imports: [],
+      imports: [RouterModule],
       providers: [
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
+        },
         {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { establishment: { uid: 'mock-uid' } },
+              data: { establishment: { uid: 'mock-uid' }, trainingCourses },
+              root: { children: [], url: ['/'] },
             },
           },
         },
@@ -35,6 +45,7 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
       routerSpy,
     };
   }
+
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -52,5 +63,52 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
     const { getByRole } = await setup();
 
     expect(getByRole('button', { name: 'Add a training course' })).toBeTruthy();
+  });
+
+  describe('training course table', () => {
+    it('should not show the table if workplace dont have any training courses', async () => {
+      const { queryByTestId } = await setup({ trainingCourses: [] });
+      const trainingCourseTable = queryByTestId('training-course-table');
+
+      expect(trainingCourseTable).toBeFalsy();
+    });
+
+    it('should show a row for each training course, which contains the links to modify or delete the course', async () => {
+      const mockTrainingCourses = [trainingCourseBuilder(), trainingCourseBuilder(), trainingCourseBuilder()];
+      const { queryByTestId } = await setup({ trainingCourses: mockTrainingCourses });
+      const trainingCourseTable = queryByTestId('training-course-table');
+
+      expect(trainingCourseTable).toBeTruthy();
+
+      mockTrainingCourses.forEach((course, index) => {
+        const row = queryByTestId(`trainingCourse-${index}`);
+        const courseLink = within(row).getByRole('link', { name: course.name });
+        expect(courseLink).toBeTruthy();
+        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}`);
+
+        const removeLink = within(row).getByText('Remove');
+        expect(removeLink).toBeTruthy();
+        expect(removeLink.getAttribute('href')).toEqual(`/${course.uid}/remove`);
+      });
+    });
+
+    it('should show the link to training courseas "Missing training course name (Add)" if the course name is empty', async () => {
+      const mockTrainingCoursesEmptyNames = [
+        trainingCourseBuilder({ overrides: { name: null } }),
+        trainingCourseBuilder({ overrides: { name: '' } }),
+      ];
+
+      const { queryByTestId } = await setup({ trainingCourses: mockTrainingCoursesEmptyNames });
+      const trainingCourseTable = queryByTestId('training-course-table');
+
+      expect(trainingCourseTable).toBeTruthy();
+
+      mockTrainingCoursesEmptyNames.forEach((course, index) => {
+        const row = queryByTestId(`trainingCourse-${index}`);
+        const courseLink = within(row).getByRole('link', { name: 'Missing training course name (Add)' });
+        expect(courseLink).toBeTruthy();
+        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}`);
+      });
+    });
   });
 });

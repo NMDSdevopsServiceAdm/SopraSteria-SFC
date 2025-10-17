@@ -6,7 +6,7 @@ import { TrainingCourseService } from '@core/services/training-course.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-fdescribe('trainingCourseResolver', () => {
+describe('trainingCourseResolver', () => {
   const mockEstablishmentUid = 'mock-uid';
 
   function setup() {

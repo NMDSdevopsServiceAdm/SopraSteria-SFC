@@ -1,5 +1,6 @@
 export type TrainingCourse = {
   id: number;
+  uid: string;
   trainingCategoryId: number;
   name: string;
   accredited: 'Yes' | 'No' | "Don't know";
