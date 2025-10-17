@@ -11,6 +11,12 @@ module.exports = {
           primaryKey: true,
           autoIncrement: true,
         },
+        UID: {
+          type: Sequelize.DataTypes.UUID,
+          defaultValue: Sequelize.DataTypes.UUIDV4,
+          allowNull: false,
+          unique: true,
+        },
         EstablishmentFK: {
           type: Sequelize.INTEGER,
           allowNull: false,

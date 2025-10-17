@@ -64,12 +64,12 @@ const createTrainingCourse = async (req, res) => {
 const getTrainingCourse = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
-    const trainingCourseId = req?.params?.trainingCourseId;
+    const trainingCourseUid = req?.params?.trainingCourseUid;
 
     const recordFound = await models.TrainingCourse.findOne({
       where: {
         establishmentFk: establishmentId,
-        id: trainingCourseId,
+        uid: trainingCourseUid,
         archived: false,
       },
       raw: true,
@@ -82,7 +82,7 @@ const getTrainingCourse = async (req, res) => {
 
     return res.status(404).send({ message: 'Training course not found' });
   } catch (err) {
-    console.error('GET /establishment/:uid/trainingCourse/:id  - failed', err);
+    console.error('GET /establishment/:uid/trainingCourse/:uid  - failed', err);
     return res.status(500).send({ message: 'Internal server error' });
   }
 };
