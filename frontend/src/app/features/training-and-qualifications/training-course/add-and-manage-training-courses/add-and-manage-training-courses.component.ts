@@ -14,6 +14,6 @@ export class AddAndManageTrainingCoursesComponent implements OnInit {
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
+    this.trainingCourses = this.route.snapshot.data?.trainingCourses ?? [];
   }
 }
