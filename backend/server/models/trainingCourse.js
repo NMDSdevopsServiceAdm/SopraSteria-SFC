@@ -98,6 +98,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       archived: {
         type: DataTypes.BOOLEAN,
+        allowNull: false,
         defaultValue: false,
       },
     },

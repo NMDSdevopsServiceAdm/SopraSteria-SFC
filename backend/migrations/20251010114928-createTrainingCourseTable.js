@@ -13,7 +13,7 @@ module.exports = {
         },
         UID: {
           type: Sequelize.DataTypes.UUID,
-          defaultValue: Sequelize.DataTypes.UUIDV4,
+          defaultValue: Sequelize.literal('uuid_generate_v4()'),
           allowNull: false,
           unique: true,
         },
@@ -81,6 +81,7 @@ module.exports = {
         },
         archived: {
           type: Sequelize.DataTypes.BOOLEAN,
+          defaultValue: false,
         },
       },
       { schema: 'cqc' },
