@@ -92,7 +92,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
       });
     });
 
-    it('should show the link to training courseas "Missing training course name (Add)" if the course name is empty', async () => {
+    it('should show the link to training courseas "Missing training course name" if the course name is empty', async () => {
       const mockTrainingCoursesEmptyNames = [
         trainingCourseBuilder({ overrides: { name: null } }),
         trainingCourseBuilder({ overrides: { name: '' } }),
@@ -105,7 +105,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
 
       mockTrainingCoursesEmptyNames.forEach((course, index) => {
         const row = queryByTestId(`trainingCourse-${index}`);
-        const courseLink = within(row).getByRole('link', { name: 'Missing training course name (Add)' });
+        const courseLink = within(row).getByRole('link', { name: 'Missing training course name' });
         expect(courseLink).toBeTruthy();
         expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}/edit`);
       });
