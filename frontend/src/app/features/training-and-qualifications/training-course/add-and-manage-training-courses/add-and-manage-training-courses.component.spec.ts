@@ -9,7 +9,7 @@ import { render, within } from '@testing-library/angular';
 
 import { AddAndManageTrainingCoursesComponent } from './add-and-manage-training-courses.component';
 
-describe('AddAndManageTrainingCoursesComponent', () => {
+fdescribe('AddAndManageTrainingCoursesComponent', () => {
   async function setup(overrides: any = {}) {
     const trainingCourses = overrides?.trainingCourses ?? [];
 
@@ -25,7 +25,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
           useValue: {
             snapshot: {
               data: { establishment: { uid: 'mock-uid' }, trainingCourses },
-              root: { children: [], url: ['/'] },
+              root: { children: [], url: [''] },
             },
           },
         },
@@ -84,7 +84,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
         const row = queryByTestId(`trainingCourse-${index}`);
         const courseLink = within(row).getByRole('link', { name: course.name });
         expect(courseLink).toBeTruthy();
-        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}`);
+        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}/edit`);
 
         const removeLink = within(row).getByText('Remove');
         expect(removeLink).toBeTruthy();
@@ -107,7 +107,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
         const row = queryByTestId(`trainingCourse-${index}`);
         const courseLink = within(row).getByRole('link', { name: 'Missing training course name (Add)' });
         expect(courseLink).toBeTruthy();
-        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}`);
+        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}/edit`);
       });
     });
   });

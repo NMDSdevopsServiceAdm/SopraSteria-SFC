@@ -33,7 +33,11 @@
           [attr.data-testid]="'trainingCourse-' + index"
         >
           <td class="govuk-table__cell">
-            <a href="#" class="govuk-link govuk-link--no-visited-state" [routerLink]="trainingCourse.uid">
+            <a
+              href="#"
+              class="govuk-link govuk-link--no-visited-state"
+              [routerLink]="['..', trainingCourse.uid, 'edit']"
+            >
               {{ trainingCourse.name?.length > 0 ? trainingCourse.name : 'Missing training course name (Add)' }}
             </a>
           </td>
@@ -43,7 +47,7 @@
               href="#"
               class="govuk-link govuk-link--no-visited-state"
               [attr.data-testid]="'remove-link-' + index"
-              [routerLink]="trainingCourse.uid + '/remove'"
+              [routerLink]="['..', trainingCourse.uid, 'remove']"
             >
               Remove
               <span class="govuk-visually-hidden">{{ trainingCourse.name }}</span>
