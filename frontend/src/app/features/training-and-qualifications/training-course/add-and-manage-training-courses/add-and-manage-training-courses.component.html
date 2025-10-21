@@ -1,0 +1,60 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds" data-testid="heading">
+    <span class="govuk-caption-l">Training and qualifications</span>
+    <h1 class="govuk-heading-l">Add and manage training courses for your workplace</h1>
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-bottom-4">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-!-padding-top-1">
+      You'll only enter the details of each course once, but then you'll be able to select a course whenever you add or
+      update a training record.
+    </p>
+  </div>
+
+  <div class="govuk-grid-column-one-third">
+    <button class="govuk-button govuk-util__float-right" type="button">Add a training course</button>
+  </div>
+</div>
+
+<div id="training-course-table-wrapper" class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <table class="govuk-table" data-testid="training-course-table" *ngIf="trainingCourses?.length > 0">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row" data-testid="training-table-heading">
+          <th class="govuk-table__header" scope="col">Training course name</th>
+          <th class="govuk-table__header govuk-util__align-right" scope="col"></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr
+          class="govuk-table__row govuk-util__vertical-align-top"
+          *ngFor="let trainingCourse of trainingCourses; let index = index"
+          [attr.data-testid]="'trainingCourse-' + index"
+        >
+          <td class="govuk-table__cell">
+            <a
+              href="#"
+              class="govuk-link govuk-link--no-visited-state"
+              [routerLink]="['..', trainingCourse.uid, 'edit']"
+            >
+              {{ trainingCourse.name?.length > 0 ? trainingCourse.name : 'Missing training course name' }}
+            </a>
+          </td>
+
+          <td class="govuk-table__cell govuk-!-padding-right-0 govuk-util__align-right">
+            <a
+              href="#"
+              class="govuk-link govuk-link--no-visited-state"
+              [attr.data-testid]="'remove-link-' + index"
+              [routerLink]="['..', trainingCourse.uid, 'remove']"
+            >
+              Remove
+              <span class="govuk-visually-hidden">{{ trainingCourse.name }}</span>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

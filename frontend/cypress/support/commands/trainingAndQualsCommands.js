@@ -61,3 +61,24 @@ Cypress.Commands.add('deleteWorkerQualificationsRecord', (args) => {
     cy.task('dbQuery', { queryString, parameters });
   });
 });
+
+Cypress.Commands.add('deleteAllTrainingCourses', (establishmentID) => {
+  const queryString = `DELETE FROM cqc."TrainingCourse"
+    WHERE "EstablishmentFK" = $1`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('insertTrainingCourse', (args) => {
+  const { establishmentID, categoryID = 1, name = 'Test training course' } = args;
+
+  const queryString = `INSERT INTO cqc."TrainingCourse"
+  ("EstablishmentFK", "CategoryFK", "Name")
+  VALUES ($1, $2, $3);`;
+
+  const parameters = [establishmentID, categoryID, name];
+
+  cy.task('dbQuery', { queryString, parameters });
+});

@@ -21,12 +21,14 @@ const fetchAllTrainingCourses = async (req, res) => {
       where: {
         establishmentFk: establishmentId,
         archived: false,
-        ...(trainingCategoryId ? { trainingCategoryFk: trainingCategoryId } : {}),
+        ...(trainingCategoryId ? { categoryFk: trainingCategoryId } : {}),
       },
+      attributes: { exclude: ['establishmentFk'] },
+      order: [['updated', 'DESC']],
       raw: true,
     });
 
-    const trainingCourses = recordsFound.map(renameKeysFromFkToId);
+    const trainingCourses = recordsFound.map(renameKeys);
     const responseBody = { trainingCourses };
 
     return res.status(200).send(responseBody);
@@ -49,7 +51,7 @@ const createTrainingCourse = async (req, res) => {
       createdBy: req.username,
       updatedBy: req.username,
     });
-    const responseBody = renameKeysFromFkToId(newEntry.dataValues);
+    const responseBody = renameKeys(newEntry.dataValues);
 
     res.status(200).send(responseBody);
   } catch (err) {
@@ -64,39 +66,47 @@ const createTrainingCourse = async (req, res) => {
 const getTrainingCourse = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
-    const trainingCourseId = req?.params?.trainingCourseId;
+    const trainingCourseUid = req?.params?.trainingCourseUid;
 
     const recordFound = await models.trainingCourse.findOne({
       where: {
         establishmentFk: establishmentId,
-        id: trainingCourseId,
+        uid: trainingCourseUid,
         archived: false,
       },
+      include: [
+        {
+          model: models.workerTrainingCategories,
+          as: 'category',
+        },
+      ],
+      attributes: { exclude: ['establishmentFk'] },
       raw: true,
     });
 
     if (recordFound) {
-      const responseBody = renameKeysFromFkToId(recordFound);
+      const responseBody = renameKeys(recordFound);
       return res.status(200).send(responseBody);
     }
 
     return res.status(404).send({ message: 'Training course not found' });
   } catch (err) {
-    console.error('GET /establishment/:uid/trainingCourse/:id  - failed', err);
+    console.error('GET /establishment/:uid/trainingCourse/:uid  - failed', err);
     return res.status(500).send({ message: 'Internal server error' });
   }
 };
 
-const renameKeysFromFkToId = (record) => {
-  const trainingCourse = {
-    ...record,
-    trainingCategoryId: record.categoryFk,
-    establishmentId: record.establishmentFk,
-  };
-
-  delete trainingCourse.categoryFk;
-  delete trainingCourse.establishmentFk;
-  return trainingCourse;
+const renameKeys = (record) => {
+  return lodash.mapKeys(record, (_v, key) => {
+    switch (key) {
+      case 'categoryFk':
+        return 'trainingCategoryId';
+      case 'category.category':
+        return 'trainingCategoryName';
+      default:
+        return key;
+    }
+  });
 };
 
 module.exports = { fetchAllTrainingCourses, createTrainingCourse, getTrainingCourse };

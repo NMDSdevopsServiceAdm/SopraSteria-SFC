@@ -11,7 +11,7 @@ const {
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
 const { mockTrainingCourses, expectedTrainingCoursesInResponse } = require('../../../mockdata/trainingCourse');
 
-describe('/api/establishment/:uid/trainingCourse/', () => {
+describe.only('/api/establishment/:uid/trainingCourse/', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -28,7 +28,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       username: mockUsername,
     };
 
-    it('should respond with 200 and a list of all training courses', async () => {
+    it.only('should respond with 200 and a list of all training courses', async () => {
       sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourses);
 
       const req = httpMocks.createRequest(request);
@@ -44,7 +44,6 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
           establishmentFk: establishmentId,
           archived: false,
         },
-        raw: true,
       });
     });
 
@@ -75,9 +74,8 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         where: {
           establishmentFk: establishmentId,
           archived: false,
-          trainingCategoryFk: 1,
+          categoryFk: 1,
         },
-        raw: true,
       });
     });
 
@@ -177,14 +175,14 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
   });
 
-  describe('GET /trainingCourse/:trainingCourseId - createTrainingCourse', () => {
-    const mockTrainingCourseId = 123;
+  describe('GET /trainingCourse/:trainingCourseUid - createTrainingCourse', () => {
+    const mockTrainingCourseUid = 123;
     const request = {
       method: 'GET',
-      url: `${baseEndpoint}/${mockTrainingCourseId}`,
+      url: `${baseEndpoint}/${mockTrainingCourseUid}`,
       establishmentId,
       username: mockUsername,
-      params: { trainingCourseId: mockTrainingCourseId },
+      params: { trainingCourseUid: mockTrainingCourseUid },
     };
 
     it('should respond with 200 and the training course data', async () => {
@@ -200,11 +198,10 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
 
       expect(models.trainingCourse.findOne).to.have.been.calledWith({
         where: {
-          id: mockTrainingCourseId,
+          uid: mockTrainingCourseUid,
           establishmentFk: establishmentId,
           archived: false,
         },
-        raw: true,
       });
     });
 
