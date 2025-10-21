@@ -2,7 +2,7 @@ const { Enum } = require('../../reference/databaseEnumTypes');
 
 module.exports = function (sequelize, DataTypes) {
   const TrainingCourse = sequelize.define(
-    'TrainingCourse',
+    'trainingCourse',
     {
       id: {
         type: DataTypes.INTEGER,
