@@ -11,7 +11,7 @@ const {
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
 const { mockTrainingCourses, expectedTrainingCoursesInResponse } = require('../../../mockdata/trainingCourse');
 
-describe.only('/api/establishment/:uid/trainingCourse/', () => {
+describe('/api/establishment/:uid/trainingCourse/', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -28,7 +28,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       username: mockUsername,
     };
 
-    it.only('should respond with 200 and a list of all training courses', async () => {
+    it('should respond with 200 and a list of all training courses', async () => {
       sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourses);
 
       const req = httpMocks.createRequest(request);
@@ -40,10 +40,10 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       expect(res._getData()).to.deep.equal({ trainingCourses: expectedTrainingCoursesInResponse });
 
       expect(models.trainingCourse.findAll).to.have.been.calledWith({
-        where: {
-          establishmentFk: establishmentId,
-          archived: false,
-        },
+        where: { establishmentFk: 'mock-id', archived: false },
+        attributes: { exclude: ['establishmentFk'] },
+        order: [['updated', 'DESC']],
+        raw: true,
       });
     });
 
@@ -71,11 +71,10 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       expect(res._getData()).to.deep.equal({ trainingCourses: expectedTrainingCoursesInResponse });
 
       expect(models.trainingCourse.findAll).to.have.been.calledWith({
-        where: {
-          establishmentFk: establishmentId,
-          archived: false,
-          categoryFk: 1,
-        },
+        where: { establishmentFk: 'mock-id', archived: false, categoryFk: 1 },
+        attributes: { exclude: ['establishmentFk'] },
+        order: [['updated', 'DESC']],
+        raw: true,
       });
     });
 
@@ -197,11 +196,10 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       expect(res._getData()).to.deep.equal(expectedTrainingCoursesInResponse[0]);
 
       expect(models.trainingCourse.findOne).to.have.been.calledWith({
-        where: {
-          uid: mockTrainingCourseUid,
-          establishmentFk: establishmentId,
-          archived: false,
-        },
+        where: { establishmentFk: 'mock-id', uid: 123, archived: false },
+        include: [{ model: models.workerTrainingCategories, as: 'category' }],
+        attributes: { exclude: ['establishmentFk'] },
+        raw: true,
       });
     });
 
