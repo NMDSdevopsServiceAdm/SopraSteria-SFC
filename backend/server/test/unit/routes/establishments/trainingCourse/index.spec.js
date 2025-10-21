@@ -39,12 +39,11 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getData()).to.deep.equal({ trainingCourses: expectedTrainingCoursesInResponse });
 
-      expect(models.TrainingCourse.findAll).to.have.been.calledWith({
+      expect(models.TrainingCourse.findAll).to.have.been.calledWithMatch({
         where: {
           establishmentFk: establishmentId,
           archived: false,
         },
-        raw: true,
       });
     });
 
@@ -71,13 +70,12 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getData()).to.deep.equal({ trainingCourses: expectedTrainingCoursesInResponse });
 
-      expect(models.TrainingCourse.findAll).to.have.been.calledWith({
+      expect(models.TrainingCourse.findAll).to.have.been.calledWithMatch({
         where: {
           establishmentFk: establishmentId,
           archived: false,
-          trainingCategoryFk: 1,
+          categoryFk: 1,
         },
-        raw: true,
       });
     });
 
@@ -177,14 +175,14 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
   });
 
-  describe('GET /trainingCourse/:trainingCourseId - createTrainingCourse', () => {
-    const mockTrainingCourseId = 123;
+  describe('GET /trainingCourse/:trainingCourseUid - createTrainingCourse', () => {
+    const mockTrainingCourseUid = 123;
     const request = {
       method: 'GET',
-      url: `${baseEndpoint}/${mockTrainingCourseId}`,
+      url: `${baseEndpoint}/${mockTrainingCourseUid}`,
       establishmentId,
       username: mockUsername,
-      params: { trainingCourseId: mockTrainingCourseId },
+      params: { trainingCourseUid: mockTrainingCourseUid },
     };
 
     it('should respond with 200 and the training course data', async () => {
@@ -198,13 +196,12 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getData()).to.deep.equal(expectedTrainingCoursesInResponse[0]);
 
-      expect(models.TrainingCourse.findOne).to.have.been.calledWith({
+      expect(models.TrainingCourse.findOne).to.have.been.calledWithMatch({
         where: {
-          id: mockTrainingCourseId,
+          uid: mockTrainingCourseUid,
           establishmentFk: establishmentId,
           archived: false,
         },
-        raw: true,
       });
     });
 

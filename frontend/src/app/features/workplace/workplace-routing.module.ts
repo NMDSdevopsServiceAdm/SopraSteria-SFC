@@ -680,6 +680,18 @@ const routes: Routes = [
         },
         data: { permissions: ['canEditEstablishment'], title: 'Change expires soon alerts' },
       },
+      {
+        path: 'training-course',
+        loadChildren: () =>
+          import('@features/training-and-qualifications/training-course/training-course.module').then(
+            (m) => m.TrainingCourseModule,
+          ),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Training course',
+        },
+      },
     ],
   },
 ];

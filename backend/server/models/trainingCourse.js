@@ -11,6 +11,13 @@ module.exports = function (sequelize, DataTypes) {
         autoIncrement: true,
         field: 'ID',
       },
+      uid: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        unique: true,
+        field: 'UID',
+      },
       establishmentFk: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -91,6 +98,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       archived: {
         type: DataTypes.BOOLEAN,
+        allowNull: false,
         defaultValue: false,
       },
     },

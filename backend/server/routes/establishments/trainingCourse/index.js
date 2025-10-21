@@ -5,6 +5,6 @@ const { fetchAllTrainingCourses, createTrainingCourse, getTrainingCourse } = req
 
 router.route('/').get(hasPermission('canViewWorker'), fetchAllTrainingCourses);
 router.route('/').post(hasPermission('canEditWorker'), createTrainingCourse);
-router.route('/:trainingCourseId').get(hasPermission('canViewWorker'), getTrainingCourse);
+router.route('/:trainingCourseUid').get(hasPermission('canViewWorker'), getTrainingCourse);
 
 module.exports = router;
