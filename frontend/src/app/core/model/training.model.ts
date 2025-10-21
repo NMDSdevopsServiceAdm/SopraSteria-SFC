@@ -135,3 +135,13 @@ export interface TrainingRecordCategories {
   training: Training[];
   isMandatory: boolean;
 }
+
+export enum DeliveredBy {
+  InHouseStaff = 'In-house staff',
+  ExternalProvider = 'External provider',
+}
+
+export enum HowWasItDelivered {
+  FaceToFace = 'Face to face',
+  ELearning = 'E-learning',
+}
