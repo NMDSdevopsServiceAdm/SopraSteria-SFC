@@ -77,6 +77,38 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'updatedby',
       },
+      trainingCourseFK: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"TrainingCourseFK"',
+      },
+      deliveredBy: {
+        type: DataTypes.ENUM,
+        values: ['In-house staff', 'External provider'],
+        allowNull: true,
+        field: '"DeliveredBy"',
+      },
+      externalProviderName: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'ExternalProviderName',
+      },
+      howWasItDelivered: {
+        type: DataTypes.ENUM,
+        values: ['Face to face', 'E-learning'],
+        allowNull: true,
+        field: '"HowWasItDelivered"',
+      },
+      doesNotExpire: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: '"DoesNotExpire"',
+      },
+      validityPeriodInMonth: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"ValidityPeriodInMonth"',
+      },
     },
     {
       tableName: 'WorkerTraining',
@@ -96,6 +128,11 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'categoryFk',
       targetKey: 'id',
       as: 'category',
+    });
+    WorkerTraining.belongsTo(models.trainingCourse, {
+      foreignKey: 'trainingCourseFK',
+      targetKey: 'id',
+      as: 'trainingCourse',
     });
     WorkerTraining.hasMany(models.trainingCertificates, {
       foreignKey: 'workerTrainingFk',
