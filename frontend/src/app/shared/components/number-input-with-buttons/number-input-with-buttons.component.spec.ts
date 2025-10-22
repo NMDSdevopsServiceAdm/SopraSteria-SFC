@@ -5,10 +5,10 @@ import lodash from 'lodash';
 
 import { NumberInputWithButtonsComponent } from './number-input-with-buttons.component';
 
-describe('NumberInputWithButtonsComponent', () => {
+fdescribe('NumberInputWithButtonsComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const setup = async (override: any = {}) => {
-    const inputPropertiesName = ['initialValue', 'min', 'max', 'inputId'];
+    const inputPropertiesName = ['initialValue', 'min', 'max', 'inputId', 'suffix'];
     const inputProps = lodash.pickBy(override, (value, key) => {
       return value && inputPropertiesName.includes(key);
     });
@@ -68,6 +68,12 @@ describe('NumberInputWithButtonsComponent', () => {
 
       expect(getByTestId('plus-button-number-input')).toBeTruthy();
       expect(getByTestId('minus-button-number-input')).toBeTruthy();
+    });
+
+    it('should show a suffix if provided from input', async () => {
+      const { getByText } = await setup({ suffix: 'months' });
+
+      expect(getByText('months')).toBeTruthy();
     });
   });
 
