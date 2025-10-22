@@ -1,0 +1,157 @@
+<!-- <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary> -->
+
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+          <span class="govuk-caption-l" data-testid="section-heading">Add a training course</span>
+          <h1 class="govuk-fieldset__heading">Add training course details</h1>
+        </legend>
+      </fieldset>
+
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('name').invalid">
+        <label class="govuk-label" for="training-course-name">Training course name</label>
+        <input
+          class="govuk-input govuk-!-width-one-half"
+          id="training-course-name"
+          name="training-course-name"
+          type="text"
+        />
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
+      <div class="govuk-form-group govuk-!-margin-bottom-2">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">Is the training course accredited?</legend>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let option of accreditedOptions">
+              <input
+                class="govuk-radios__input"
+                [id]="'accredited-' + option.value"
+                [formControlName]="'accredited'"
+                type="radio"
+                [value]="option.value"
+              />
+              <label class="govuk-label govuk-radios__label" for="'accredited-' + option.value">
+                {{ option.label }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
+      <div class="govuk-form-group govuk-!-margin-bottom-2">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">Who delivers the training course?</legend>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="deliveredBy-InHouseStaff"
+                [formControlName]="'deliveredBy'"
+                type="radio"
+                [value]="deliveredByOptions.InHouseStaff"
+              />
+              <label class="govuk-label govuk-radios__label" for="deliveredBy-InHouseStaff">
+                {{ deliveredByOptions.InHouseStaff }}
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="deliveredBy-ExternalProvider"
+                [formControlName]="'deliveredBy'"
+                type="radio"
+                [value]="deliveredByOptions.ExternalProvider"
+              />
+              <label class="govuk-label govuk-radios__label" for="deliveredBy-ExternalProvider">
+                {{ deliveredByOptions.ExternalProvider }}
+              </label>
+            </div>
+            <div
+              class="govuk-radios__conditional govuk-radios__conditional--hidden"
+              [class.govuk-radios__conditional--hidden]="
+                form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider
+              "
+              id="conditional-external-provider-name"
+            >
+              <label class="govuk-label" for="external-provider-name">Provider name</label>
+              <input
+                class="govuk-input govuk-!-width-one-third"
+                id="external-provider-name"
+                name="externalProviderName"
+                [formControlName]="'externalProviderName'"
+              />
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
+      <div class="govuk-form-group govuk-!-margin-bottom-2">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">How is the training course delivered?</legend>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="howWasItDelivered-FaceToFace"
+                [formControlName]="'howWasItDelivered'"
+                type="radio"
+                [value]="howWasItDeliveredOptions.FaceToFace"
+              />
+              <label class="govuk-label govuk-radios__label" for="howWasItDelivered-FaceToFace">
+                {{ howWasItDeliveredOptions.FaceToFace }}
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="howWasItDelivered-ELearning"
+                [formControlName]="'howWasItDelivered'"
+                type="radio"
+                [value]="howWasItDeliveredOptions.ELearning"
+              />
+              <label class="govuk-label govuk-radios__label" for="howWasItDelivered-ELearning">
+                {{ howWasItDeliveredOptions.ELearning }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
+      <div class="govuk-form-group govuk-!-margin-bottom-2">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">How many months is the training valid for before it expires?</legend>
+          <app-number-input-with-buttons
+            [min]="1"
+            inputId="validity-period"
+            formControlName="validityPeriodInMonth"
+            [hasError]="submitted && form.get('validityPeriodInMonth').invalid"
+          ></app-number-input-with-buttons>
+
+          <div class="govuk-checkboxes__item govuk-!-margin-top-4">
+            <input
+              class="govuk-checkboxes__input"
+              id="doesNotExpire"
+              name="doesNotExpire"
+              type="checkbox"
+              value="doesNotExpire"
+              [formControlName]="'doesNotExpire'"
+            />
+            <label class="govuk-label govuk-checkboxes__label" for="doesNotExpire">
+              This training does not expires
+            </label>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</form>
