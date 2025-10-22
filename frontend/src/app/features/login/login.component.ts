@@ -172,6 +172,13 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
           this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
 
+          if (
+            !response.body.trainingCoursesMessageViewedQuantity ||
+            response.body?.trainingCoursesMessageViewedQuantity < 3
+          ) {
+            return this.router.navigate(['/whats-new-in-asc-wds']);
+          }
+
           if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
             return this.router.navigate(['/migrated-user-terms-and-conditions']);
           }
