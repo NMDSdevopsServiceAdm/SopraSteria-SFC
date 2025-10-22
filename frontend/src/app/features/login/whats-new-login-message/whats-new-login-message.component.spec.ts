@@ -1,13 +1,29 @@
 import { render } from '@testing-library/angular';
 import { WhatsNewLoginMessage } from './whats-new-login-message.component';
 import { provideRouter, RouterModule } from '@angular/router';
+import { UserService } from '@core/services/user.service';
+import { of } from 'rxjs';
 
 describe('WhatsNewLoginMessage', () => {
+  const userUid = 'user-uid';
   async function setup() {
+    const updateTrainingCoursesMessageViewedQuantitySpy = jasmine
+      .createSpy('updateTrainingCoursesMessageViewedQuantity')
+      .and.returnValue(of(null));
+
     const setupTools = await render(WhatsNewLoginMessage, {
       imports: [RouterModule],
       providers: [
-       provideRouter([])
+        {
+          provide: UserService,
+          useValue: {
+            loggedInUser: {
+              uid: userUid,
+            },
+            updateTrainingCoursesMessageViewedQuantity: updateTrainingCoursesMessageViewedQuantitySpy,
+          },
+        },
+        provideRouter([]),
       ],
     });
 
@@ -16,6 +32,7 @@ describe('WhatsNewLoginMessage', () => {
     return {
       ...setupTools,
       component,
+      updateTrainingCoursesMessageViewedQuantitySpy,
     };
   }
 
@@ -33,19 +50,25 @@ describe('WhatsNewLoginMessage', () => {
     expect(heading.textContent).toContain("What's new in ASC-WDS?");
   });
 
-  it('should navigate to the training and qualifications page when the link is clicked', async() => {
-    const { getByText } = await setup()
+  it('should navigate to the training and qualifications page when the link is clicked', async () => {
+    const { getByText } = await setup();
 
-    const link = getByText("training and qualifications")
+    const link = getByText('training and qualifications');
 
     expect(link.getAttribute('href')).toEqual('/dashboard#training-and-qualifications');
-  })
+  });
 
-  it('should navigate to the home page when the button is clicked', async() => {
-    const { getByText } = await setup()
+  it('should navigate to the home page when the button is clicked', async () => {
+    const { getByText } = await setup();
 
-    const button = getByText("Close this page")
+    const button = getByText('Close this page');
 
     expect(button.getAttribute('href')).toEqual('/dashboard');
-  })
+  });
+
+  it('should call updateTrainingCoursesMessageViewedQuantity in UserService on page load', async () => {
+    const { updateTrainingCoursesMessageViewedQuantitySpy } = await setup();
+
+    expect(updateTrainingCoursesMessageViewedQuantitySpy).toHaveBeenCalledWith(userUid);
+  });
 });
