@@ -9,8 +9,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { DeliveredBy } from '@core/model/training.model';
 import { SharedModule } from '../../../../shared/shared.module';
+import userEvent from '@testing-library/user-event';
 
-describe('AddAndManageTrainingCoursesComponent', () => {
+fdescribe('AddAndManageTrainingCoursesComponent', () => {
   async function setup(overrides: any = {}) {
     const trainingCourses = overrides?.trainingCourses ?? [];
 
@@ -23,6 +24,15 @@ describe('AddAndManageTrainingCoursesComponent', () => {
             snapshot: {
               data: { establishment: { uid: 'mock-uid' }, trainingCourses },
               root: { children: [], url: [''] },
+            },
+            parent: {
+              snapshot: {
+                data: {
+                  establishment: {
+                    uid: 'mock-establishment-uid',
+                  },
+                },
+              },
             },
           },
         },
@@ -57,7 +67,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
   });
 
   describe('input form', async () => {
-    it('should show a text input for provider name, if the course is to be delivered by external provider', async () => {
+    it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
       const { getByRole, fixture } = await setup();
 
       const providerName = getByRole('textbox', { name: 'Provider name' });
@@ -65,11 +75,11 @@ describe('AddAndManageTrainingCoursesComponent', () => {
       const providerNameWrapper = providerName.parentElement;
       expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
 
-      getByRole('radio', { name: DeliveredBy.ExternalProvider }).click();
+      userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
       fixture.detectChanges();
       expect(providerNameWrapper).not.toHaveClass('govuk-radios__conditional--hidden');
 
-      getByRole('radio', { name: DeliveredBy.InHouseStaff }).click();
+      userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
       fixture.detectChanges();
       expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
     });
@@ -89,19 +99,42 @@ describe('AddAndManageTrainingCoursesComponent', () => {
       expect(doesNotExpireCheckbox.checked).toBeFalse();
     });
 
-    xit('should clear the validityPeriodInMonth input when doesNotExpire is checked', async () => {
+    it('should clear the validityPeriodInMonth input when doesNotExpire is checked', async () => {
       const { getByRole, getByTestId, fixture } = await setup();
 
+      const validityPeriodInMonth = getByRole('textbox', {
+        name: 'How many months is the training valid for before it expires?',
+      }) as HTMLInputElement;
       const doesNotExpireCheckbox = getByRole('checkbox', {
         name: 'This training does not expires',
       }) as HTMLInputElement;
-      doesNotExpireCheckbox.click();
-      expect(doesNotExpireCheckbox.checked).toBeTrue();
 
       getByTestId('plus-button-validity-period').click();
       fixture.detectChanges();
+      expect(validityPeriodInMonth.value).toEqual('1');
 
-      expect(doesNotExpireCheckbox.checked).toBeFalse();
+      doesNotExpireCheckbox.click();
+      fixture.detectChanges();
+
+      expect(validityPeriodInMonth.value).toEqual('');
+    });
+  });
+
+  describe('when adding new training course', () => {
+    it('should show a Continue button and a Cancel button', async () => {
+      const { getByRole } = await setup();
+
+      expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
+      expect(getByRole('button', { name: 'Cancel' })).toBeTruthy();
+    });
+
+    it('the cancel button should link to the "Add and manage training course" page', async () => {
+      const { getByRole } = await setup();
+
+      const cancelButton = getByRole('button', { name: 'Cancel' });
+      expect(cancelButton.getAttribute('href')).toEqual(
+        '/workplace/mock-establishment-uid/training-course/add-and-manage-training-courses',
+      );
     });
   });
 });

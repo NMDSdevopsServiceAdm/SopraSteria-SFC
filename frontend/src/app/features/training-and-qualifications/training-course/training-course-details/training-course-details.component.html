@@ -34,7 +34,7 @@
                 type="radio"
                 [value]="option.value"
               />
-              <label class="govuk-label govuk-radios__label" for="'accredited-' + option.value">
+              <label class="govuk-label govuk-radios__label" [for]="'accredited-' + option.value">
                 {{ option.label }}
               </label>
             </div>
@@ -129,12 +129,15 @@
 
       <div class="govuk-form-group govuk-!-margin-bottom-2">
         <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend">How many months is the training valid for before it expires?</legend>
+          <label class="govuk-label" for="validity-period"
+            >How many months is the training valid for before it expires?</label
+          >
           <app-number-input-with-buttons
             [min]="1"
             inputId="validity-period"
             formControlName="validityPeriodInMonth"
             [hasError]="submitted && form.get('validityPeriodInMonth').invalid"
+            suffix="months"
           ></app-number-input-with-buttons>
 
           <div class="govuk-checkboxes__item govuk-!-margin-top-4">
@@ -151,6 +154,22 @@
             </label>
           </div>
         </fieldset>
+      </div>
+
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
+      <div class="govuk-button-group govuk-!-margin-top-8">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Continue</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          href="#"
+          [routerLink]="['/workplace', this.workplace.uid, 'training-course', 'add-and-manage-training-courses']"
+        >
+          Cancel
+        </a>
       </div>
     </div>
   </div>

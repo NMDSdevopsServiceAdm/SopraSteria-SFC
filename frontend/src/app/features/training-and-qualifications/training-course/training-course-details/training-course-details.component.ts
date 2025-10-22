@@ -1,10 +1,12 @@
 import { Component, ElementRef, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-training-course-details',
@@ -18,6 +20,8 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   public accreditedOptions = YesNoDontKnowOptions;
   public deliveredByOptions = DeliveredBy;
   public howWasItDeliveredOptions = HowWasItDelivered;
+  private subscriptions: Subscription = new Subscription();
+  public workplace: Establishment;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -28,7 +32,9 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    this.workplace = this.route.parent.snapshot.data.establishment;
     this.setupForm();
+    this.backLinkService.showBackLink();
   }
 
   ngAfterViewInit(): void {
@@ -49,17 +55,21 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     const validityPeriod = this.form.get('validityPeriodInMonth');
     const doesNotExpire = this.form.get('doesNotExpire');
 
-    validityPeriod.valueChanges.subscribe((newValue) => {
-      if (newValue > 0) {
-        doesNotExpire.patchValue(null);
-      }
-    });
+    this.subscriptions.add(
+      validityPeriod.valueChanges.subscribe((newValue) => {
+        if (newValue > 0) {
+          doesNotExpire.patchValue(null);
+        }
+      }),
+    );
 
-    doesNotExpire.valueChanges.subscribe((newValue) => {
-      if (newValue) {
-        validityPeriod.patchValue(null);
-      }
-    });
+    this.subscriptions.add(
+      doesNotExpire.valueChanges.subscribe((newValue) => {
+        if (newValue) {
+          validityPeriod.patchValue(null);
+        }
+      }),
+    );
   }
 
   public onSubmit() {}

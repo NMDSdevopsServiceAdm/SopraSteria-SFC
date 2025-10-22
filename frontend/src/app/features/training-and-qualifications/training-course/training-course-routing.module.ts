@@ -21,12 +21,19 @@ const routes: Routes = [
     resolve: { trainingCourses: TrainingCourseResolver },
   },
   {
-    path: 'add-training-course-details',
-    component: TrainingCourseDetailsComponent,
+    path: 'add-training-course',
     data: {
       permissions: ['canEditWorker'],
-      title: 'Add training course details',
     },
+    children: [
+      {
+        path: 'details',
+        component: TrainingCourseDetailsComponent,
+        data: {
+          title: 'Add training course details',
+        },
+      },
+    ],
   },
 ];
 
