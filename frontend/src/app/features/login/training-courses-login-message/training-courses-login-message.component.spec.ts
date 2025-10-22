@@ -1,17 +1,17 @@
 import { render } from '@testing-library/angular';
-import { WhatsNewLoginMessage } from './whats-new-login-message.component';
+import { TrainingCoursesLoginMessage } from './training-courses-login-message.component';
 import { provideRouter, RouterModule } from '@angular/router';
 import { UserService } from '@core/services/user.service';
 import { of } from 'rxjs';
 
-describe('WhatsNewLoginMessage', () => {
+describe('TrainingCoursesLoginMessage', () => {
   const userUid = 'user-uid';
   async function setup() {
     const updateTrainingCoursesMessageViewedQuantitySpy = jasmine
       .createSpy('updateTrainingCoursesMessageViewedQuantity')
       .and.returnValue(of(null));
 
-    const setupTools = await render(WhatsNewLoginMessage, {
+    const setupTools = await render(TrainingCoursesLoginMessage, {
       imports: [RouterModule],
       providers: [
         {

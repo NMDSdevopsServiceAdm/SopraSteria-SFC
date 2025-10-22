@@ -99,7 +99,7 @@ import { SatisfactionSurveyComponent } from './features/satisfaction-survey/sati
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { SortByService } from '@core/services/sort-by.service';
-import { WhatsNewLoginMessage } from '@features/login/whats-new-login-message/whats-new-login-message.component';
+import { TrainingCoursesLoginMessage } from '@features/login/training-courses-login-message/training-courses-login-message.component';
 
 @NgModule({
   declarations: [
@@ -144,7 +144,7 @@ import { WhatsNewLoginMessage } from '@features/login/whats-new-login-message/wh
     UserAccountNotFoundComponent,
     VacanciesAndTurnoverLoginMessage,
     HelpAndTipsButtonComponent,
-    WhatsNewLoginMessage,
+    TrainingCoursesLoginMessage,
   ],
   imports: [
     AppRoutingModule,

@@ -3,10 +3,10 @@ import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-whats-new-login-message',
-  templateUrl: './whats-new-login-message.component.html',
+  selector: 'app-training-courses-login-message',
+  templateUrl: './training-courses-login-message.component.html',
 })
-export class WhatsNewLoginMessage implements OnInit, OnDestroy {
+export class TrainingCoursesLoginMessage implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(private userService: UserService) {}

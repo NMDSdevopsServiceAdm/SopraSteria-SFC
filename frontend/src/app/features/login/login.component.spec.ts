@@ -305,9 +305,9 @@ describe('LoginComponent', () => {
       });
     });
 
-    describe('whats-new-in-asc-wds', () => {
+    describe('new-training-courses', () => {
       [undefined, null, 0, 1, 2].forEach((login) => {
-        it(`should navigate to whats-new-in-asc-wds when auth response has ${login} for loginAmount`, async () => {
+        it(`should navigate to new-training-courses when auth response has ${login} for loginAmount`, async () => {
           const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
           const authenticateResponse = mockAuthenticateResponse();
           authenticateResponse.body.trainingCoursesMessageViewedQuantity = login;
@@ -316,11 +316,11 @@ describe('LoginComponent', () => {
 
           signIn(getByLabelText, getByRole, fixture);
 
-          expect(routerSpy).toHaveBeenCalledWith(['/whats-new-in-asc-wds']);
+          expect(routerSpy).toHaveBeenCalledWith(['/new-training-courses']);
         });
       });
 
-      it('should not navigate to whats-new-in-asc-wds', async () => {
+      it('should not navigate to new-training-courses', async () => {
         const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
         const authenticateResponse = mockAuthenticateResponse();
         authenticateResponse.body.trainingCoursesMessageViewedQuantity = 3;
