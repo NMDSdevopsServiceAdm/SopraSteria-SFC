@@ -254,6 +254,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'LastViewedVacanciesAndTurnoverMessage',
       },
+      trainingCoursesMessageViewedQuantity: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'TrainingCoursesMessageViewedQuantity',
+      },
     },
     {
       tableName: '"User"',
@@ -517,6 +522,17 @@ module.exports = function (sequelize, DataTypes) {
   User.setDateForLastViewedVacanciesAndTurnoverMessage = async function (userUid) {
     return await this.update(
       { lastViewedVacanciesAndTurnoverMessage: new Date() },
+      {
+        where: {
+          uid: userUid,
+        },
+      },
+    );
+  };
+
+  User.updateTrainingCoursesMessageViewedQuantity = async function (userUid) {
+    return await this.increment(
+      { trainingCoursesMessageViewedQuantity: 1 },
       {
         where: {
           uid: userUid,
