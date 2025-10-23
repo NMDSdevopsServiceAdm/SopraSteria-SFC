@@ -1,12 +1,14 @@
 import { render } from '@testing-library/angular';
 import { TrainingCoursesLoginMessage } from './training-courses-login-message.component';
-import { provideRouter, RouterModule } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { UserService } from '@core/services/user.service';
 import { of } from 'rxjs';
+import { PreviousRouteService } from '@core/services/previous-route.service';
+import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 
 describe('TrainingCoursesLoginMessage', () => {
   const userUid = 'user-uid';
-  async function setup() {
+  async function setup(overrides: any = {}) {
     const updateTrainingCoursesMessageViewedQuantitySpy = jasmine
       .createSpy('updateTrainingCoursesMessageViewedQuantity')
       .and.returnValue(of(null));
@@ -22,6 +24,11 @@ describe('TrainingCoursesLoginMessage', () => {
             },
             updateTrainingCoursesMessageViewedQuantity: updateTrainingCoursesMessageViewedQuantitySpy,
           },
+        },
+        {
+          provide: PreviousRouteService,
+          useFactory: MockPreviousRouteService.factory(overrides.previousUrl),
+          deps: [Router],
         },
         provideRouter([]),
       ],
@@ -63,12 +70,20 @@ describe('TrainingCoursesLoginMessage', () => {
 
     const button = getByText('Close this page');
 
-    expect(button.getAttribute('href')).toEqual('/dashboard');
+    expect(button.getAttribute('href')).toEqual('/dashboard#home');
   });
 
   it('should call updateTrainingCoursesMessageViewedQuantity in UserService on page load', async () => {
-    const { updateTrainingCoursesMessageViewedQuantitySpy } = await setup();
+    const { updateTrainingCoursesMessageViewedQuantitySpy } = await setup({ previousUrl: '/login' });
 
     expect(updateTrainingCoursesMessageViewedQuantitySpy).toHaveBeenCalledWith(userUid);
+  });
+
+  it('should not call updateTrainingCoursesMessageViewedQuantity in UserService on page load', async () => {
+    const { updateTrainingCoursesMessageViewedQuantitySpy } = await setup({
+      previousUrl: 'training-and-qualifications',
+    });
+
+    expect(updateTrainingCoursesMessageViewedQuantitySpy).not.toHaveBeenCalled();
   });
 });

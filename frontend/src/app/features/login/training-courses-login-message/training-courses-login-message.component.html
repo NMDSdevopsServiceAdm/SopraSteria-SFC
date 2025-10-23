@@ -11,12 +11,12 @@
 
     <p class="govuk-body">To add a training course to the list:</p>
     <ul class="govuk-list govuk-list--number">
-      <li>Go to <a [routerLink]="['/dashboard']" [fragment]="'training-and-qualifications'" href="#" class="govuk-link">training and qualifications</a>.</li>
+      <li>Go to <a [routerLink]="['/dashboard']" [fragment]="'training-and-qualifications'" href="#" class="govuk-link govuk-link--no-visited-state">training and qualifications</a>.</li>
       <li>Click the 'Add and manage training' button.</li>
       <li>Select the 'Add and manage training courses' option.</li>
       <li>Click the 'Add a training course' button and add the course details.</li>
     </ul>
 
-    <a [routerLink]="['/dashboard']" class="govuk-button govuk-!-margin-top-6">Close this page</a>
+    <a [routerLink]="['/dashboard']" [fragment]="'home'" class="govuk-button govuk-!-margin-top-5">Close this page</a>
   </div>
 </div>
