@@ -95,3 +95,43 @@ Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
 
   cy.task('multipleDbQueries', dbQueries);
 });
+
+Cypress.Commands.add('revertUserAttributes', (userFullName = 'editstandalone', userId = 769) => {
+  const dateNow = new Date();
+
+  const queryString1 = `UPDATE cqc."User"
+      SET "RegistrationSurveyCompleted" = null,
+          "LastViewedVacanciesAndTurnoverMessage" = $2,
+          "TrainingCoursesMessageViewedQuantity" = 3
+      WHERE "FullNameValue" = $1;`;
+
+  const parameters1 = [userFullName, dateNow];
+
+  const queryString2 = `DELETE FROM cqc."RegistrationSurvey"
+      WHERE "UserFK" = $1;`;
+
+  const parameters2 = [userId];
+
+  cy.task('dbQuery', { queryString: queryString1, parameters: parameters1 });
+  cy.task('dbQuery', { queryString: queryString2, parameters: parameters2 });
+});
+
+Cypress.Commands.add('updateUserFieldForLoginTests', (userFullName, fieldNameToUpdate, fieldValueToUpdate) => {
+  const allowedFields = [
+    'RegistrationSurveyCompleted',
+    'TrainingCoursesMessageViewedQuantity',
+    'LastViewedVacanciesAndTurnoverMessage',
+  ];
+
+  if (allowedFields.includes(fieldNameToUpdate)) {
+    const fieldName = `"${fieldNameToUpdate}"`;
+
+    const queryString = `UPDATE cqc."User"
+      SET ${fieldName} = $2
+      WHERE "FullNameValue" = $1;`;
+
+    const parameters = [userFullName, fieldValueToUpdate];
+
+    cy.task('dbQuery', { queryString: queryString, parameters: parameters });
+  }
+});

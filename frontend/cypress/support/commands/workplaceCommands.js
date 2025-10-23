@@ -126,3 +126,13 @@ Cypress.Commands.add('setWorkplaceMainService', (establishmentID, mainServiceId)
 
   cy.task('dbQuery', { queryString: queryString, parameters: parameters });
 });
+
+Cypress.Commands.add('updateEmployerTypeValue', (establishmentID, employerTypeValue) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "EmployerTypeValue" = $2
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID, employerTypeValue];
+
+  cy.task('dbQuery', { queryString: queryString, parameters: parameters });
+});
