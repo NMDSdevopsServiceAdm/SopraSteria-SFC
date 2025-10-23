@@ -5,6 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { TrainingCourseService } from './training-course.service';
 import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 
 describe('TrainingCourseService', () => {
   let service: TrainingCourseService;
@@ -56,7 +57,7 @@ describe('TrainingCourseService', () => {
         howWasItDelivered: HowWasItDelivered.FaceToFace,
         doesNotExpire: false,
         validityPeriodInMonth: 24,
-      };
+      } as TrainingCourse;
 
       service.createTrainingCourse(establishmentUid, mockTrainingCourse).subscribe();
 
