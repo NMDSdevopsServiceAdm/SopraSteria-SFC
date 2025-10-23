@@ -1,6 +1,7 @@
 /* jshint indent: 2 */
 const moment = require('moment');
 const { QueryTypes } = require('sequelize');
+const { Enum } = require('../../reference/databaseEnumTypes');
 
 module.exports = function (sequelize, DataTypes) {
   const WorkerTraining = sequelize.define(
@@ -84,7 +85,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       deliveredBy: {
         type: DataTypes.ENUM,
-        values: ['In-house staff', 'External provider'],
+        values: Enum.TrainingCourseDeliveredBy,
         allowNull: true,
         field: '"DeliveredBy"',
       },
@@ -95,7 +96,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       howWasItDelivered: {
         type: DataTypes.ENUM,
-        values: ['Face to face', 'E-learning'],
+        values: Enum.TrainingCourseDeliveryMode,
         allowNull: true,
         field: '"HowWasItDelivered"',
       },
