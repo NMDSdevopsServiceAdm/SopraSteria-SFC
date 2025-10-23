@@ -73,8 +73,16 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
     expect(getByText('Add a training course')).toBeTruthy();
   });
 
-  describe('input form', async () => {
-    it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
+  describe('prefill', () => {
+    describe('when adding new training course', () => {
+      it('should prefill the form with data from TrainingCourseService if adding a new course', async () => {
+        throw '';
+      });
+    });
+  });
+
+  describe('input form', () => {
+    it('should show a text input for provider name iff user select "External provider" for delivered by external provider', async () => {
       const { getByRole, fixture } = await setup();
 
       const providerName = getByRole('textbox', { name: 'Provider name' });
@@ -91,7 +99,7 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
       expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
     });
 
-    it('should clear the doesNotExpire checkbox when validityPeriodInMonth is entered', async () => {
+    it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by button', async () => {
       const { getByRole, getByTestId, fixture } = await setup();
 
       const doesNotExpireCheckbox = getByRole('checkbox', {
@@ -106,7 +114,23 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
       expect(doesNotExpireCheckbox.checked).toBeFalse();
     });
 
-    it('should clear the validityPeriodInMonth input when doesNotExpire is checked', async () => {
+    it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by typing value', async () => {
+      const { getByRole, fixture } = await setup();
+
+      const validityPeriodInMonth = getByRole('textbox', {
+        name: 'How many months is the training valid for before it expires?',
+      }) as HTMLInputElement;
+      const doesNotExpireCheckbox = getByRole('checkbox', {
+        name: 'This training does not expire',
+      }) as HTMLInputElement;
+
+      userEvent.type(validityPeriodInMonth, '12');
+      fixture.detectChanges();
+
+      expect(doesNotExpireCheckbox.checked).toBeFalse();
+    });
+
+    it('should clear any value in validityPeriodInMonth when doesNotExpire checkbox is ticked', async () => {
       const { getByRole, getByTestId, fixture } = await setup();
 
       const validityPeriodInMonth = getByRole('textbox', {
@@ -152,51 +176,57 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
         expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
         expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
       });
+
+      it('should show an error if validityPeriodInMonth got an invalid value', async () => {
+        throw '';
+      });
     });
   });
 
-  describe('when adding new training course', () => {
-    it('should show a Continue button and a Cancel button', async () => {
-      const { getByRole } = await setup();
+  describe('form submit', () => {
+    describe('when adding new training course', () => {
+      it('should show a Continue button and a Cancel button', async () => {
+        const { getByRole } = await setup();
 
-      expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
-      expect(getByRole('button', { name: 'Cancel' })).toBeTruthy();
-    });
+        expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
+        expect(getByRole('button', { name: 'Cancel' })).toBeTruthy();
+      });
 
-    it('should save the current training course in trainingCourseService, and navigate to select category page', async () => {
-      const { getByRole, getByLabelText, trainingCourseServiceSpy, routerSpy, component } = await setup();
+      it('should save the current training course in trainingCourseService, and navigate to select category page', async () => {
+        const { getByRole, getByLabelText, trainingCourseServiceSpy, routerSpy, component } = await setup();
 
-      userEvent.type(getByLabelText('Training course name'), 'First aid course');
-      userEvent.click(getByLabelText('Yes'));
-      userEvent.click(getByLabelText('External provider'));
-      userEvent.type(getByLabelText('Provider name'), 'Care skill academy');
-      userEvent.click(getByLabelText('Face to face'));
-      userEvent.type(getByLabelText(/^How many months/), '24');
+        userEvent.type(getByLabelText('Training course name'), 'First aid course');
+        userEvent.click(getByLabelText('Yes'));
+        userEvent.click(getByLabelText('External provider'));
+        userEvent.type(getByLabelText('Provider name'), 'Care skill academy');
+        userEvent.click(getByLabelText('Face to face'));
+        userEvent.type(getByLabelText(/^How many months/), '24');
 
-      userEvent.click(getByRole('button', { name: 'Continue' }));
+        userEvent.click(getByRole('button', { name: 'Continue' }));
 
-      const expectedProps = {
-        name: 'First aid course',
-        accredited: 'Yes',
-        deliveredBy: 'External provider',
-        externalProviderName: 'Care skill academy',
-        howWasItDelivered: 'Face to face',
-        validityPeriodInMonth: 24,
-        doesNotExpire: null,
-      } as Partial<TrainingCourse>;
+        const expectedProps = {
+          name: 'First aid course',
+          accredited: 'Yes',
+          deliveredBy: 'External provider',
+          externalProviderName: 'Care skill academy',
+          howWasItDelivered: 'Face to face',
+          validityPeriodInMonth: 24,
+          doesNotExpire: null,
+        } as Partial<TrainingCourse>;
 
-      expect(trainingCourseServiceSpy).toHaveBeenCalledWith(expectedProps);
-      // @ts-expect-error: TS2341: Property 'route' is private
-      expect(routerSpy).toHaveBeenCalledWith(['../select-category'], { relativeTo: component.route });
-    });
+        expect(trainingCourseServiceSpy).toHaveBeenCalledWith(expectedProps);
+        // @ts-expect-error: TS2341: Property 'route' is private
+        expect(routerSpy).toHaveBeenCalledWith(['../select-category'], { relativeTo: component.route });
+      });
 
-    it('the cancel button should link to the "Add and manage training course" page', async () => {
-      const { getByRole } = await setup();
+      it('the cancel button should link to the "Add and manage training course" page', async () => {
+        const { getByRole } = await setup();
 
-      const cancelButton = getByRole('button', { name: 'Cancel' });
-      expect(cancelButton.getAttribute('href')).toEqual(
-        '/workplace/mock-establishment-uid/training-course/add-and-manage-training-courses',
-      );
+        const cancelButton = getByRole('button', { name: 'Cancel' });
+        expect(cancelButton.getAttribute('href')).toEqual(
+          '/workplace/mock-establishment-uid/training-course/add-and-manage-training-courses',
+        );
+      });
     });
   });
 });
