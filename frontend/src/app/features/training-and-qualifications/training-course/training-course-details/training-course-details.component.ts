@@ -6,6 +6,7 @@ import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingCourseService } from '@core/services/training-course.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -29,6 +30,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     protected router: Router,
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
+    protected trainingCourseService: TrainingCourseService,
   ) {}
 
   ngOnInit(): void {
@@ -72,5 +74,21 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     );
   }
 
-  public onSubmit() {}
+  public onSubmit() {
+    this.submitted = true;
+    // this.serverError = null;
+
+    if (!this.form.valid) {
+      return;
+    }
+
+    this.storeDetailsAndContinueToNextPage();
+  }
+
+  private storeDetailsAndContinueToNextPage() {
+    const newTrainingCourseToBeAdded = this.form.value;
+
+    this.trainingCourseService.newTrainingCourseToBeAdded = newTrainingCourseToBeAdded;
+    this.router.navigate(['../select-category'], { relativeTo: this.route });
+  }
 }

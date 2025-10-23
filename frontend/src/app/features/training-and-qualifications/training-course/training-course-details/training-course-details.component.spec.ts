@@ -10,6 +10,8 @@ import { CommonModule } from '@angular/common';
 import { DeliveredBy } from '@core/model/training.model';
 import { SharedModule } from '../../../../shared/shared.module';
 import userEvent from '@testing-library/user-event';
+import { TrainingCourseService } from '@core/services/training-course.service';
+import { TrainingCourse } from '@core/model/training-course.model';
 
 fdescribe('AddAndManageTrainingCoursesComponent', () => {
   async function setup(overrides: any = {}) {
@@ -46,10 +48,13 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const trainingCourseService = injector.inject(TrainingCourseService);
+
     return {
       ...setupTools,
       component,
       routerSpy,
+      trainingCourseService,
     };
   }
 
@@ -126,6 +131,35 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
 
       expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
       expect(getByRole('button', { name: 'Cancel' })).toBeTruthy();
+    });
+
+    it('should save the current training course in trainingCourseService, and navigate to select category page', async () => {
+      const { getByRole, getByLabelText, trainingCourseService, routerSpy, component } = await setup();
+
+      const trainingCourseServiceSpy = spyOnProperty(trainingCourseService, 'newTrainingCourseToBeAdded', 'set');
+
+      userEvent.type(getByLabelText('Training course name'), 'test training course');
+      userEvent.click(getByLabelText('Yes'));
+      userEvent.click(getByLabelText('External provider'));
+      userEvent.type(getByLabelText('Provider name'), 'Care skill academy');
+      userEvent.click(getByLabelText('Face to face'));
+      userEvent.type(getByLabelText(/^How many months/), '24');
+
+      userEvent.click(getByRole('button', { name: 'Continue' }));
+
+      const expectedProps = {
+        name: 'test training course',
+        accredited: 'Yes',
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skill academy',
+        howWasItDelivered: 'Face to face',
+        validityPeriodInMonth: 24,
+        doesNotExpire: null,
+      } as Partial<TrainingCourse>;
+
+      expect(trainingCourseServiceSpy).toHaveBeenCalledWith(expectedProps);
+      // @ts-expect-error: TS2341: Property 'route' is private
+      expect(routerSpy).toHaveBeenCalledWith(['../select-category'], { relativeTo: component.route });
     });
 
     it('the cancel button should link to the "Add and manage training course" page', async () => {
