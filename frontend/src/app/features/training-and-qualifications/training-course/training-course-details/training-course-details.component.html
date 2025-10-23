@@ -1,6 +1,6 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl novalidate>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <fieldset class="govuk-fieldset">
@@ -11,15 +11,16 @@
       </fieldset>
 
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('name').invalid">
+        <label class="govuk-label" for="training-course-name">Training course name</label>
         <span *ngIf="submitted && form.get('name').invalid" id="name-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('name') }}
         </span>
-        <label class="govuk-label" for="training-course-name">Training course name</label>
         <input
           class="govuk-input govuk-!-width-one-half"
           id="training-course-name"
           name="training-course-name"
           [formControlName]="'name'"
+          [class.govuk-input--error]="submitted && form.get('name').invalid"
           type="text"
         />
       </div>
@@ -131,17 +132,29 @@
 
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
 
-      <div class="govuk-form-group govuk-!-margin-bottom-2">
+      <div
+        class="govuk-form-group govuk-!-margin-bottom-2"
+        [class.govuk-form-group--error]="submitted && form.get('validityPeriodInMonth').invalid"
+      >
         <fieldset class="govuk-fieldset">
           <label class="govuk-label" for="validity-period"
             >How many months is the training valid for before it expires?</label
           >
+          <span
+            *ngIf="submitted && form.get('validityPeriodInMonth').invalid"
+            id="validityPeriodInMonth-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('validityPeriodInMonth') }}
+          </span>
           <app-number-input-with-buttons
+            #validityPeriodInMonthRef
             [min]="1"
             inputId="validity-period"
             formControlName="validityPeriodInMonth"
             [hasError]="submitted && form.get('validityPeriodInMonth').invalid"
             suffix="months"
+            (change)="handleValidityPeriodChange($event)"
           ></app-number-input-with-buttons>
 
           <div class="govuk-checkboxes__item govuk-!-margin-top-4">
@@ -150,11 +163,11 @@
               id="doesNotExpire"
               name="doesNotExpire"
               type="checkbox"
-              value="doesNotExpire"
               [formControlName]="'doesNotExpire'"
+              (click)="handleDoesNotExpireChange($event)"
             />
             <label class="govuk-label govuk-checkboxes__label" for="doesNotExpire">
-              This training does not expires
+              This training does not expire
             </label>
           </div>
         </fieldset>

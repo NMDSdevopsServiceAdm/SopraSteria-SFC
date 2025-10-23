@@ -193,4 +193,18 @@ export class CustomValidators extends Validators {
     };
     return validatorFunction;
   }
+
+  static crossCheckTrainingCourseValidityPeriod(): ValidatorFn {
+    const validatorFunction = (rootFormControl: AbstractControl) => {
+      const validityPeriodInMonth: AbstractControl<number> = rootFormControl.get('validityPeriodInMonth');
+      const doesNotExpire: AbstractControl<boolean> = rootFormControl.get('doesNotExpire');
+
+      if (doesNotExpire.value === null && validityPeriodInMonth.value === null) {
+        validityPeriodInMonth.setErrors({ required: true });
+        return null;
+      }
+    };
+
+    return validatorFunction;
+  }
 }

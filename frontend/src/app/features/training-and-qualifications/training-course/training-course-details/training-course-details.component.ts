@@ -1,4 +1,6 @@
-import { Component, ElementRef, ViewChild, OnInit, AfterViewInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -8,7 +10,8 @@ import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
-import { Subscription } from 'rxjs';
+import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-training-course-details',
@@ -17,6 +20,7 @@ import { Subscription } from 'rxjs';
 })
 export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
+  @ViewChild('validityPeriodInMonthRef') validityPeriodInMonth: NumberInputWithButtonsComponent;
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
@@ -45,36 +49,24 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+    this.validityPeriodInMonth.registerOnChange((newValue) => this.handleValidityPeriodChange(newValue));
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group({
-      name: [null, { validators: Validators.required, updateOn: 'submit' }],
-      accredited: null,
-      deliveredBy: null,
-      externalProviderName: null,
-      howWasItDelivered: null,
-      validityPeriodInMonth: null,
-      doesNotExpire: null,
-    });
-
-    const validityPeriod = this.form.get('validityPeriodInMonth');
-    const doesNotExpire = this.form.get('doesNotExpire');
-
-    this.subscriptions.add(
-      validityPeriod.valueChanges.subscribe((newValue) => {
-        if (newValue > 0) {
-          doesNotExpire.patchValue(null);
-        }
-      }),
-    );
-
-    this.subscriptions.add(
-      doesNotExpire.valueChanges.subscribe((newValue) => {
-        if (newValue) {
-          validityPeriod.patchValue(null);
-        }
-      }),
+    this.form = this.formBuilder.group(
+      {
+        name: [null, { validators: [Validators.required] }],
+        accredited: null,
+        deliveredBy: [null, { updateOn: 'change' }],
+        externalProviderName: null,
+        howWasItDelivered: null,
+        validityPeriodInMonth: [null],
+        doesNotExpire: null,
+      },
+      {
+        validators: [CustomValidators.crossCheckTrainingCourseValidityPeriod()],
+        updateOn: 'submit',
+      },
     );
   }
 
@@ -84,7 +76,24 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
         item: 'name',
         type: [{ name: 'required', message: 'Enter the training course name' }],
       },
+      {
+        item: 'validityPeriodInMonth',
+        type: [{ name: 'required', message: 'Enter the number of months or select this training does not expire' }],
+      },
     ];
+  }
+
+  public handleValidityPeriodChange(newValue: string | number): void {
+    if (Number(newValue) > 0) {
+      this.form.patchValue({ doesNotExpire: null });
+    }
+  }
+
+  public handleDoesNotExpireChange(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (checked) {
+      this.form.patchValue({ validityPeriodInMonth: null });
+    }
   }
 
   public getFirstErrorMessage(item: string): string {
@@ -94,7 +103,6 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   public onSubmit() {
     this.submitted = true;
-    // this.serverError = null;
 
     if (!this.form.valid) {
       return;

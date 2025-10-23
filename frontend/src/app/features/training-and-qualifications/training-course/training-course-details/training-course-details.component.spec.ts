@@ -1,17 +1,17 @@
+import { CommonModule } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { render } from '@testing-library/angular';
-
-import { TrainingCourseDetailsComponent } from './training-course-details.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { DeliveredBy } from '@core/model/training.model';
-import { SharedModule } from '../../../../shared/shared.module';
-import userEvent from '@testing-library/user-event';
-import { TrainingCourseService } from '@core/services/training-course.service';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TrainingCourse } from '@core/model/training-course.model';
+import { DeliveredBy } from '@core/model/training.model';
+import { TrainingCourseService } from '@core/services/training-course.service';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+
+import { SharedModule } from '../../../../shared/shared.module';
+import { TrainingCourseDetailsComponent } from './training-course-details.component';
 
 fdescribe('AddAndManageTrainingCoursesComponent', () => {
   async function setup(overrides: any = {}) {
@@ -95,7 +95,7 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
       const { getByRole, getByTestId, fixture } = await setup();
 
       const doesNotExpireCheckbox = getByRole('checkbox', {
-        name: 'This training does not expires',
+        name: 'This training does not expire',
       }) as HTMLInputElement;
       doesNotExpireCheckbox.click();
       expect(doesNotExpireCheckbox.checked).toBeTrue();
@@ -113,7 +113,7 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
         name: 'How many months is the training valid for before it expires?',
       }) as HTMLInputElement;
       const doesNotExpireCheckbox = getByRole('checkbox', {
-        name: 'This training does not expires',
+        name: 'This training does not expire',
       }) as HTMLInputElement;
 
       getByTestId('plus-button-validity-period').click();
@@ -128,14 +128,29 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
 
     describe('validations', () => {
       it('should show an error on submit if training course name is empty', async () => {
-        const { getByRole, fixture, getByText, getAllByText } = await setup();
+        const { getByRole, fixture, getByText, getByLabelText, getAllByText, trainingCourseServiceSpy } = await setup();
+        const expectedErrorMsg = 'Enter the training course name';
 
+        userEvent.type(getByLabelText(/^How many months/), '24');
         userEvent.click(getByRole('button', { name: 'Continue' }));
         fixture.detectChanges();
 
         expect(getByText('There is a problem')).toBeTruthy();
-        expect(getAllByText('Enter the training course name')).toHaveSize(2);
-        expect();
+        expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
+      });
+
+      it('should show an error on submit if validityPeriodInMonth and doesNotExpire are both empty', async () => {
+        const { getByRole, fixture, getByText, getByLabelText, getAllByText, trainingCourseServiceSpy } = await setup();
+        const expectedErrorMsg = 'Enter the number of months or select this training does not expire';
+
+        userEvent.type(getByLabelText('Training course name'), 'First aid course');
+        userEvent.click(getByRole('button', { name: 'Continue' }));
+        fixture.detectChanges();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
       });
     });
   });
@@ -151,7 +166,7 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
     it('should save the current training course in trainingCourseService, and navigate to select category page', async () => {
       const { getByRole, getByLabelText, trainingCourseServiceSpy, routerSpy, component } = await setup();
 
-      userEvent.type(getByLabelText('Training course name'), 'test training course');
+      userEvent.type(getByLabelText('Training course name'), 'First aid course');
       userEvent.click(getByLabelText('Yes'));
       userEvent.click(getByLabelText('External provider'));
       userEvent.type(getByLabelText('Provider name'), 'Care skill academy');
@@ -161,7 +176,7 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
       userEvent.click(getByRole('button', { name: 'Continue' }));
 
       const expectedProps = {
-        name: 'test training course',
+        name: 'First aid course',
         accredited: 'Yes',
         deliveredBy: 'External provider',
         externalProviderName: 'Care skill academy',
