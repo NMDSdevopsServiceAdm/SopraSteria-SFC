@@ -49,12 +49,14 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     const trainingCourseService = injector.inject(TrainingCourseService);
+    const trainingCourseServiceSpy = spyOnProperty(trainingCourseService, 'newTrainingCourseToBeAdded', 'set');
 
     return {
       ...setupTools,
       component,
       routerSpy,
       trainingCourseService,
+      trainingCourseServiceSpy,
     };
   }
 
@@ -123,6 +125,19 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
 
       expect(validityPeriodInMonth.value).toEqual('');
     });
+
+    describe('validations', () => {
+      it('should show an error on submit if training course name is empty', async () => {
+        const { getByRole, fixture, getByText, getAllByText } = await setup();
+
+        userEvent.click(getByRole('button', { name: 'Continue' }));
+        fixture.detectChanges();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText('Enter the training course name')).toHaveSize(2);
+        expect();
+      });
+    });
   });
 
   describe('when adding new training course', () => {
@@ -134,9 +149,7 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
     });
 
     it('should save the current training course in trainingCourseService, and navigate to select category page', async () => {
-      const { getByRole, getByLabelText, trainingCourseService, routerSpy, component } = await setup();
-
-      const trainingCourseServiceSpy = spyOnProperty(trainingCourseService, 'newTrainingCourseToBeAdded', 'set');
+      const { getByRole, getByLabelText, trainingCourseServiceSpy, routerSpy, component } = await setup();
 
       userEvent.type(getByLabelText('Training course name'), 'test training course');
       userEvent.click(getByLabelText('Yes'));

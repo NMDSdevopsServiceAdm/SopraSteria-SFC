@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild, OnInit, AfterViewInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
@@ -17,12 +18,14 @@ import { Subscription } from 'rxjs';
 export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
+  public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
+  public workplace: Establishment;
+  private subscriptions: Subscription = new Subscription();
+
   public accreditedOptions = YesNoDontKnowOptions;
   public deliveredByOptions = DeliveredBy;
   public howWasItDeliveredOptions = HowWasItDelivered;
-  private subscriptions: Subscription = new Subscription();
-  public workplace: Establishment;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -36,6 +39,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.setupForm();
+    this.setupFormErrorsMap();
     this.backLinkService.showBackLink();
   }
 
@@ -45,7 +49,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      name: [null, { updateOn: 'submit' }],
+      name: [null, { validators: Validators.required, updateOn: 'submit' }],
       accredited: null,
       deliveredBy: null,
       externalProviderName: null,
@@ -72,6 +76,20 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
         }
       }),
     );
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'name',
+        type: [{ name: 'required', message: 'Enter the training course name' }],
+      },
+    ];
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   public onSubmit() {
