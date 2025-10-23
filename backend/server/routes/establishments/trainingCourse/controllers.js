@@ -17,7 +17,7 @@ const fetchAllTrainingCourses = async (req, res) => {
     const establishmentId = req.establishmentId;
     const trainingCategoryId = req?.query?.trainingCategoryId;
 
-    const recordsFound = await models.TrainingCourse.findAll({
+    const recordsFound = await models.trainingCourse.findAll({
       where: {
         establishmentFk: establishmentId,
         archived: false,
@@ -44,7 +44,7 @@ const createTrainingCourse = async (req, res) => {
     const categoryFk = req.body?.trainingCategoryId;
     const otherProps = lodash.pick(req.body, userChangeableFields);
 
-    const newEntry = await models.TrainingCourse.create({
+    const newEntry = await models.trainingCourse.create({
       ...otherProps,
       establishmentFk: establishmentId,
       categoryFk,
@@ -68,7 +68,7 @@ const getTrainingCourse = async (req, res) => {
     const establishmentId = req.establishmentId;
     const trainingCourseUid = req?.params?.trainingCourseUid;
 
-    const recordFound = await models.TrainingCourse.findOne({
+    const recordFound = await models.trainingCourse.findOne({
       where: {
         establishmentFk: establishmentId,
         uid: trainingCourseUid,

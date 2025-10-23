@@ -29,7 +29,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     };
 
     it('should respond with 200 and a list of all training courses', async () => {
-      sinon.stub(models.TrainingCourse, 'findAll').resolves(mockTrainingCourses);
+      sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourses);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -39,16 +39,16 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getData()).to.deep.equal({ trainingCourses: expectedTrainingCoursesInResponse });
 
-      expect(models.TrainingCourse.findAll).to.have.been.calledWithMatch({
-        where: {
-          establishmentFk: establishmentId,
-          archived: false,
-        },
+      expect(models.trainingCourse.findAll).to.have.been.calledWith({
+        where: { establishmentFk: 'mock-id', archived: false },
+        attributes: { exclude: ['establishmentFk'] },
+        order: [['updated', 'DESC']],
+        raw: true,
       });
     });
 
     it('should respond with 200 and an empty list if no training courses was found', async () => {
-      sinon.stub(models.TrainingCourse, 'findAll').resolves([]);
+      sinon.stub(models.trainingCourse, 'findAll').resolves([]);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -60,7 +60,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should be able to accept a query of categoryId and return the training courses of that category', async () => {
-      sinon.stub(models.TrainingCourse, 'findAll').resolves(mockTrainingCourses);
+      sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourses);
 
       const req = httpMocks.createRequest({ ...request, query: { trainingCategoryId: 1 } });
       const res = httpMocks.createResponse();
@@ -70,17 +70,16 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getData()).to.deep.equal({ trainingCourses: expectedTrainingCoursesInResponse });
 
-      expect(models.TrainingCourse.findAll).to.have.been.calledWithMatch({
-        where: {
-          establishmentFk: establishmentId,
-          archived: false,
-          categoryFk: 1,
-        },
+      expect(models.trainingCourse.findAll).to.have.been.calledWith({
+        where: { establishmentFk: 'mock-id', archived: false, categoryFk: 1 },
+        attributes: { exclude: ['establishmentFk'] },
+        order: [['updated', 'DESC']],
+        raw: true,
       });
     });
 
     it('should respond with 500 if an error occured during operation', async () => {
-      sinon.stub(models.TrainingCourse, 'findAll').rejects(new sequelize.ConnectionError('some database error'));
+      sinon.stub(models.trainingCourse, 'findAll').rejects(new sequelize.ConnectionError('some database error'));
       sinon.stub(console, 'error'); // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
@@ -111,7 +110,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     };
 
     it('should respond with 200 and create the training course', async () => {
-      sinon.stub(models.TrainingCourse, 'create').resolves({ dataValues: mockTrainingCourses[0] });
+      sinon.stub(models.trainingCourse, 'create').resolves({ dataValues: mockTrainingCourses[0] });
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -121,7 +120,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getData()).to.deep.equal(expectedTrainingCoursesInResponse[0]);
 
-      expect(models.TrainingCourse.create).to.have.been.calledWith({
+      expect(models.trainingCourse.create).to.have.been.calledWith({
         establishmentFk: establishmentId,
         categoryFk: 1,
         name: 'Care skills and knowledge',
@@ -137,7 +136,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should respond with 400 if trainingCategoryId is incorrect', async () => {
-      sinon.stub(models.TrainingCourse, 'create').rejects(new sequelize.ForeignKeyConstraintError());
+      sinon.stub(models.trainingCourse, 'create').rejects(new sequelize.ForeignKeyConstraintError());
       sinon.stub(console, 'error'); // suppress error msg in test log
 
       const req = httpMocks.createRequest({ request, body: { ...request.body, trainingCategoryId: 99999 } });
@@ -150,7 +149,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should respond with 400 if the request body contains invalid data', async () => {
-      sinon.stub(models.TrainingCourse, 'create').rejects(new sequelize.ValidationError());
+      sinon.stub(models.trainingCourse, 'create').rejects(new sequelize.ValidationError());
       sinon.stub(console, 'error'); // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
@@ -163,7 +162,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should respond with 500 if other error occured', async () => {
-      sinon.stub(models.TrainingCourse, 'create').rejects(new sequelize.ConnectionError('some database error'));
+      sinon.stub(models.trainingCourse, 'create').rejects(new sequelize.ConnectionError('some database error'));
       sinon.stub(console, 'error'); // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
@@ -186,7 +185,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     };
 
     it('should respond with 200 and the training course data', async () => {
-      sinon.stub(models.TrainingCourse, 'findOne').resolves(mockTrainingCourses[0]);
+      sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourses[0]);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -196,17 +195,16 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getData()).to.deep.equal(expectedTrainingCoursesInResponse[0]);
 
-      expect(models.TrainingCourse.findOne).to.have.been.calledWithMatch({
-        where: {
-          uid: mockTrainingCourseUid,
-          establishmentFk: establishmentId,
-          archived: false,
-        },
+      expect(models.trainingCourse.findOne).to.have.been.calledWith({
+        where: { establishmentFk: 'mock-id', uid: 123, archived: false },
+        include: [{ model: models.workerTrainingCategories, as: 'category' }],
+        attributes: { exclude: ['establishmentFk'] },
+        raw: true,
       });
     });
 
     it('should respond with 404 and if the training course is not found', async () => {
-      sinon.stub(models.TrainingCourse, 'findOne').resolves(null);
+      sinon.stub(models.trainingCourse, 'findOne').resolves(null);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -218,7 +216,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should respond with 500 and if an error occurred', async () => {
-      sinon.stub(models.TrainingCourse, 'findOne').rejects(new sequelize.ConnectionError('some database error'));
+      sinon.stub(models.trainingCourse, 'findOne').rejects(new sequelize.ConnectionError('some database error'));
       sinon.stub(console, 'error');
 
       const req = httpMocks.createRequest(request);
