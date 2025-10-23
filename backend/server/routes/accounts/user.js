@@ -947,14 +947,14 @@ const updateLastViewedVacanciesAndTurnoverMessage = async (req, res) => {
     const userUid = req.params?.userUid;
 
     if (!validate(userUid)) {
-      return res.status(400).send('User UID invalid');
+      return res.status(400).send({ message: 'User UID invalid' });
     }
 
     await models.user.setDateForLastViewedVacanciesAndTurnoverMessage(userUid);
 
-    return res.status(200).send('Last viewed date updated');
+    return res.status(200).send({ message: 'Last viewed date updated' });
   } catch (error) {
-    return res.status(500).send('Failed to update last viewed date');
+    return res.status(500).send({ message: 'Failed to update last viewed date' });
   }
 };
 
@@ -963,14 +963,14 @@ const updateTrainingCoursesMessageViewedQuantity = async (req, res) => {
     const userUid = req.params?.userUid;
 
     if (!validate(userUid)) {
-      return res.status(400).send('User UID invalid');
+      return res.status(400).send({ message: 'User UID invalid' });
     }
 
     await models.user.updateTrainingCoursesMessageViewedQuantity(userUid);
 
-    return res.status(200).send('Training courses message viewed quantity updated');
+    return res.status(200).send({ message: 'Training courses message viewed quantity updated' });
   } catch (error) {
-    return res.status(500).send('Failed to update training courses message viewed quantity');
+    return res.status(500).send({ message: 'Failed to update training courses message viewed quantity' });
   }
 };
 

@@ -520,7 +520,7 @@ describe('user.js', () => {
       await updateLastViewedVacanciesAndTurnoverMessage(req, res);
 
       expect(res.statusCode).to.equal(200);
-      expect(res._getData()).to.deep.equal('Last viewed date updated');
+      expect(res._getData()).to.deep.equal({ message: 'Last viewed date updated' });
     });
 
     it('should return 400 response if userUid in params invalid', async () => {
@@ -530,7 +530,7 @@ describe('user.js', () => {
       await updateLastViewedVacanciesAndTurnoverMessage(req, res);
 
       expect(res.statusCode).to.equal(400);
-      expect(res._getData()).to.deep.equal('User UID invalid');
+      expect(res._getData()).to.deep.equal({ message: 'User UID invalid' });
     });
 
     it('should return 500 response if unexpected error', async () => {
@@ -540,7 +540,7 @@ describe('user.js', () => {
       await updateLastViewedVacanciesAndTurnoverMessage(req, res);
 
       expect(res.statusCode).to.equal(500);
-      expect(res._getData()).to.deep.equal('Failed to update last viewed date');
+      expect(res._getData()).to.deep.equal({ message: 'Failed to update last viewed date' });
     });
   });
 
@@ -601,7 +601,7 @@ describe('user.js', () => {
     });
   });
 
-  describe.only('updateTrainingCoursesMessageViewedQuantity', () => {
+  describe('updateTrainingCoursesMessageViewedQuantity', () => {
     let req;
     let res;
 
@@ -617,7 +617,7 @@ describe('user.js', () => {
       await updateTrainingCoursesMessageViewedQuantity(req, res);
 
       expect(res.statusCode).to.equal(200);
-      expect(res._getData()).to.deep.equal('Training courses message viewed quantity updated');
+      expect(res._getData()).to.deep.equal({ message: 'Training courses message viewed quantity updated' });
     });
 
     it('should return 400 response if userUid in params invalid', async () => {
@@ -627,7 +627,7 @@ describe('user.js', () => {
       await updateTrainingCoursesMessageViewedQuantity(req, res);
 
       expect(res.statusCode).to.equal(400);
-      expect(res._getData()).to.deep.equal('User UID invalid');
+      expect(res._getData()).to.deep.equal({ message: 'User UID invalid' });
     });
 
     it('should return 500 response if unexpected error', async () => {
@@ -637,7 +637,7 @@ describe('user.js', () => {
       await updateTrainingCoursesMessageViewedQuantity(req, res);
 
       expect(res.statusCode).to.equal(500);
-      expect(res._getData()).to.deep.equal('Failed to update training courses message viewed quantity');
+      expect(res._getData()).to.deep.equal({ message: 'Failed to update training courses message viewed quantity' });
     });
   });
 });
