@@ -18,6 +18,18 @@ Cypress.Commands.add('loginAsAdmin', () => {
 Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.intercept('POST', '/api/login').as('login');
 
+  cy.updateUserFieldForLoginTests(username, 'TrainingCoursesMessageViewedQuantity', 3);
+  cy.setCookie('cookies_preferences_set', 'true');
+  cy.visit('/');
+  cy.get('[data-cy="username"]').type(username);
+  cy.get('[data-cy="password"]').type(password);
+  cy.get('[data-testid="signinButton"]').click();
+  cy.wait('@login');
+});
+
+Cypress.Commands.add('loginAsUserForInterstitialPages', (username, password) => {
+  cy.intercept('POST', '/api/login').as('login');
+
   cy.setCookie('cookies_preferences_set', 'true');
   cy.visit('/');
   cy.get('[data-cy="username"]').type(username);
@@ -100,7 +112,7 @@ Cypress.Commands.add('revertUserAttributes', (userFullName = 'editstandalone', u
   const dateNow = new Date();
 
   const queryString1 = `UPDATE cqc."User"
-      SET "RegistrationSurveyCompleted" = null,
+      SET "RegistrationSurveyCompleted" = true,
           "LastViewedVacanciesAndTurnoverMessage" = $2,
           "TrainingCoursesMessageViewedQuantity" = 3
       WHERE "FullNameValue" = $1;`;

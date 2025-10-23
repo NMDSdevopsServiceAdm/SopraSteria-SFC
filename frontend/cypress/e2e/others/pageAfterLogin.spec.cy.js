@@ -11,7 +11,7 @@ describe('page after login', () => {
   const setUpUserAttributes = (property, value) => {
     cy.updateUserFieldForLoginTests(fullUserName, property, value);
     cy.reload();
-    cy.loginAsUser(fullUserName, Cypress.env('userPassword'));
+    cy.loginAsUserForInterstitialPages(fullUserName, Cypress.env('userPassword'));
   };
 
   beforeEach(() => {
