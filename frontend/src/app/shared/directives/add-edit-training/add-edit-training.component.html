@@ -56,8 +56,9 @@
                 </div>
               </div>
             </ng-container>
+
             <ng-template #singleRecord>
-              <p class="govuk-body govuk-!-margin-bottom-6" data-testid="trainingCategoryDisplay">
+              <p class="govuk-body govuk-!-margin-bottom-1" data-testid="trainingCategoryDisplay">
                 <span class="govuk-util__block"><b>Training category</b></span>
                 <span class="govuk-util__block govuk-!-margin-top-2"
                   >{{ category }}
@@ -70,26 +71,28 @@
                   >
                 </span>
               </p>
+            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 " style="width: 150%"/>
             </ng-template>
 
-            <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
+            <div class="govuk-form-group govuk-!-margin-top-4" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
               <label class="govuk-label" for="title"> Training name </label>
               <span *ngIf="submitted && form.get('title').invalid" id="title-error" class="govuk-error-message">
                 <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('title') }}
               </span>
               <input
-                class="govuk-input govuk-date-input__input govuk-!-margin-bottom-2"
+                class="govuk-input govuk-date-input__input govuk-!-margin-bottom-3"
                 [class.govuk-input--error]="submitted && form.get('title').invalid"
                 [formControlName]="'title'"
                 id="title"
                 name="title"
                 type="text"
               />
+              <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-2" style="width: 150%"/>
             </div>
 
             <div class="govuk-form-group">
               <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend">Is the training accredited?</legend>
+                <legend class="govuk-fieldset__legend">Is the training course accredited?</legend>
                 <div class="govuk-radios govuk-!-margin-bottom-2">
                   <div class="govuk-radios__item">
                     <input
@@ -123,16 +126,21 @@
                   </div>
                 </div>
               </fieldset>
+               <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4" style="width: 150%"/>
             </div>
+          <div class="govuk-form-group">
 
-            <div
+            <div class="govuk-grid-row ">
+
+            <div class="govuk-grid-column-one-half">
+                 <div
               data-testid="completedDate"
-              class="govuk-form-group govuk-!-margin-bottom-7"
+              class=" govuk-form-group"
               [class.govuk-form-group--error]="submitted && form.get('completed').invalid"
             >
               <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
-                <legend class="govuk-fieldset__legend">Date completed</legend>
-                <span id="completed-hint" class="govuk-hint govuk-!-margin-bottom-4"> For example, 31 3 1980 </span>
+                <legend class="govuk-fieldset__legend">Training completion date</legend>
+                <legend id="completed-hint" class="govuk-hint govuk-!-margin-bottom-3"> For example, 31 3 2024 </legend>
                 <span
                   *ngIf="submitted && form.get('completed').invalid"
                   id="completed-error"
@@ -146,16 +154,17 @@
                   [submitted]="submitted"
                 ></app-date-picker>
               </fieldset>
-            </div>
-
-            <div
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-half">
+          <div
               data-testid="expiresDate"
-              class="govuk-form-group govuk-!-margin-bottom-7"
+              class="govuk-form-group"
               [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
             >
               <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
-                <legend class="govuk-fieldset__legend">Expiry date</legend>
-                <span id="expires-hint" class="govuk-hint govuk-!-margin-bottom-4"> For example, 31 3 1980 </span>
+                <legend class="govuk-fieldset__legend">Training expiry date</legend>
+                <legend id="expires-hint" class="govuk-hint  govuk-!-margin-bottom-3"> For example, 31 3 2025 </legend>
                 <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
                 </span>
@@ -166,7 +175,14 @@
                 ></app-date-picker>
               </fieldset>
             </div>
-          </div>
+              </div>
+
+             </div>
+               <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3" style="width: 150%"/>
+             </div>
+
+     </div>
+
           <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
             <a
               class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
@@ -183,6 +199,7 @@
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
           <div class="govuk-grid-column-full">
             <app-select-upload-certificate [filesToUpload]="filesToUpload" (selectFiles)="onSelectFiles($event)" [certificateErrors]="certificateErrors" />
+             <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 "/>
             <app-certifications-table
               *ngIf="trainingCertificates?.length > 0 || filesToUpload?.length > 0"
               data-testid="trainingCertificatesTable"
@@ -192,9 +209,11 @@
               (removeSavedFile)="removeSavedFile($event)"
               (downloadCertificate)="downloadCertificates($event)"
             ></app-certifications-table>
+
           </div>
+
         </div>
-        <div class="govuk-grid-row">
+        <div class="govuk-grid-row govuk-!-margin-top-4">
           <div class="govuk-grid-column-two-thirds-from-desktop">
             <div class="govuk-character-count govuk-!-margin-bottom-4">
               <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
