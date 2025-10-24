@@ -257,6 +257,7 @@ module.exports = function (sequelize, DataTypes) {
       trainingCoursesMessageViewedQuantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue: 0,
         field: 'TrainingCoursesMessageViewedQuantity',
       },
     },
