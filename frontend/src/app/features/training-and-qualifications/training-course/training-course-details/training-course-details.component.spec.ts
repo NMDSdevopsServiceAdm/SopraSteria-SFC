@@ -1,3 +1,5 @@
+import lodash from 'lodash';
+
 import { CommonModule } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -7,24 +9,30 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TrainingCourse } from '@core/model/training-course.model';
 import { DeliveredBy } from '@core/model/training.model';
 import { TrainingCourseService } from '@core/services/training-course.service';
+import { MockTrainingCourseService } from '@core/test-utils/MockTrainingCourseService';
+import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { SharedModule } from '../../../../shared/shared.module';
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
 
 fdescribe('AddAndManageTrainingCoursesComponent', () => {
   async function setup(overrides: any = {}) {
-    const trainingCourses = overrides?.trainingCourses ?? [];
+    const newTrainingCourseToBeAdded = overrides?.newTrainingCourseToBeAdded;
+    const journeyType = overrides?.journeyType ?? 'Add';
 
     const setupTools = await render(TrainingCourseDetailsComponent, {
       imports: [CommonModule, SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
+          provide: TrainingCourseService,
+          useFactory: MockTrainingCourseService.factory({ newTrainingCourseToBeAdded }),
+        },
+        {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { establishment: { uid: 'mock-uid' }, trainingCourses },
+              data: { establishment: { uid: 'mock-uid' }, journeyType },
               root: { children: [], url: [''] },
             },
             parent: {
@@ -75,8 +83,34 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
 
   describe('prefill', () => {
     describe('when adding new training course', () => {
+      // for the case when user return from select category page to this page
       it('should prefill the form with data from TrainingCourseService if adding a new course', async () => {
-        throw '';
+        const mockTrainingCourse = {
+          name: 'First aid course',
+          accredited: 'No',
+          deliveredBy: 'External provider',
+          externalProviderName: 'Care skills academy',
+          howWasItDelivered: 'E-learning',
+          doesNotExpire: false,
+          validityPeriodInMonth: 24,
+        };
+
+        const { getByLabelText, getByRole, fixture } = await setup({
+          journeyType: 'Add',
+          newTrainingCourseToBeAdded: mockTrainingCourse,
+        });
+
+        const getInputByLabelText = (label: any) => getByLabelText(label) as HTMLInputElement;
+        const getInputByRole = (role: any, options: any) => getByRole(role, options) as HTMLInputElement;
+        fixture.detectChanges();
+
+        expect(getInputByLabelText('Training course name').value).toEqual('First aid course');
+        expect(getInputByRole('radio', { name: 'No' }).checked).toBeTrue();
+        expect(getInputByRole('radio', { name: 'External provider' }).checked).toBeTrue();
+        expect(getInputByLabelText('Provider name').value).toEqual('Care skills academy');
+        expect(getInputByRole('radio', { name: 'E-learning' }).checked).toBeTrue();
+        expect(getInputByLabelText(/How many months is/).value).toEqual('24');
+        expect(getInputByRole('checkbox', { name: 'This training does not expire' }).checked).toBeFalse();
       });
     });
   });
@@ -97,6 +131,18 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
       userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
       fixture.detectChanges();
       expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
+    });
+
+    it('should clear the value in provider name textbox if External provider is not chosen anymore', async () => {
+      const { getByRole, fixture } = await setup();
+
+      const providerName = getByRole('textbox', { name: 'Provider name' }) as HTMLInputElement;
+      userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
+      userEvent.type(providerName, 'Care skills academy');
+
+      userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
+      fixture.detectChanges();
+      expect(providerName.value).toBe('');
     });
 
     it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by button', async () => {
@@ -164,6 +210,32 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
         expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
       });
 
+      it('should show an error message on submit if training course name is less then 3 characters', async () => {
+        const { getByRole, fixture, getByText, getByLabelText, getAllByText, trainingCourseServiceSpy } = await setup();
+        const expectedErrorMsg = 'Training course name must be between 3 and 120 characters';
+
+        userEvent.type(getByLabelText('Training course name'), 'a');
+        userEvent.click(getByRole('button', { name: 'Continue' }));
+        fixture.detectChanges();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
+      });
+
+      it('should show an error message on submit if training course name is more then 120 characters', async () => {
+        const { getByRole, fixture, getByText, getByLabelText, getAllByText, trainingCourseServiceSpy } = await setup();
+        const expectedErrorMsg = 'Training course name must be between 3 and 120 characters';
+
+        userEvent.type(getByLabelText('Training course name'), lodash.repeat('a', 121));
+        userEvent.click(getByRole('button', { name: 'Continue' }));
+        fixture.detectChanges();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
+      });
+
       it('should show an error message on submit if validityPeriodInMonth and doesNotExpire are both empty', async () => {
         const { getByRole, fixture, getByText, getByLabelText, getAllByText, trainingCourseServiceSpy } = await setup();
         const expectedErrorMsg1 = 'Enter the number of months';
@@ -180,6 +252,7 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
       });
 
       const invalidValuesForTesting = ['-10', '0', '99999', 'apple', '   '];
+
       invalidValuesForTesting.forEach((invalidValue) => {
         it(`should show an error message if validityPeriodInMonth got an invalid value - ${invalidValue}`, async () => {
           const { getByRole, fixture, getByText, getByLabelText, getAllByText, trainingCourseServiceSpy } =
@@ -204,14 +277,16 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
   describe('form submit', () => {
     describe('when adding new training course', () => {
       it('should show a Continue button and a Cancel button', async () => {
-        const { getByRole } = await setup();
+        const { getByRole } = await setup({ journeyType: 'Add' });
 
         expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
         expect(getByRole('button', { name: 'Cancel' })).toBeTruthy();
       });
 
       it('should save the current training course in trainingCourseService, and navigate to select category page', async () => {
-        const { getByRole, getByLabelText, trainingCourseServiceSpy, routerSpy, component } = await setup();
+        const { getByRole, getByLabelText, trainingCourseServiceSpy, routerSpy, component } = await setup({
+          journeyType: 'Add',
+        });
 
         userEvent.type(getByLabelText('Training course name'), 'First aid course');
         userEvent.click(getByLabelText('Yes'));
@@ -238,7 +313,7 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
       });
 
       it('the cancel button should link to the "Add and manage training course" page', async () => {
-        const { getByRole } = await setup();
+        const { getByRole } = await setup({ journeyType: 'Add' });
 
         const cancelButton = getByRole('button', { name: 'Cancel' });
         expect(cancelButton.getAttribute('href')).toEqual(

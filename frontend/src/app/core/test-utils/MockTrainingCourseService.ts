@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TrainingCourse } from '@core/model/training-course.model';
 import { DeliveredBy } from '@core/model/training.model';
@@ -21,4 +22,16 @@ export const trainingCourseBuilder = build('TrainingCourse', {
 }) as unknown as (buildTimeConfig?: BuildTimeConfig<any>) => TrainingCourse;
 
 @Injectable()
-export class MockTrainingCourseService extends TrainingCourseService {}
+export class MockTrainingCourseService extends TrainingCourseService {
+  public static factory(overrides = {}) {
+    return (http: HttpClient) => {
+      const service = new MockTrainingCourseService(http);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        service[overrideName] = overrides[overrideName];
+      });
+
+      return service;
+    };
+  }
+}

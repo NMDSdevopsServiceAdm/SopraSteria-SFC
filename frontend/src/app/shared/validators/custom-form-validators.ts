@@ -199,22 +199,20 @@ export class CustomValidators extends Validators {
       const validityPeriodInMonth: AbstractControl<number | string> = rootFormControl.get('validityPeriodInMonth');
       const doesNotExpire: AbstractControl<boolean> = rootFormControl.get('doesNotExpire');
 
-      const doesNotExpireIsTicked = doesNotExpire.value === true;
-
-      if (doesNotExpireIsTicked) {
+      if (doesNotExpire?.value === true) {
         validityPeriodInMonth.setErrors(null);
         doesNotExpire.setErrors(null);
         return null;
       }
 
-      const validityPeriodIsEmpty = validityPeriodInMonth.value === null || validityPeriodInMonth.value === '';
+      const validityPeriodIsEmpty = validityPeriodInMonth?.value === null || validityPeriodInMonth?.value === '';
       if (validityPeriodIsEmpty) {
         validityPeriodInMonth.setErrors({ required: true });
         doesNotExpire.setErrors({ required: true });
         return null;
       }
 
-      const numberOfMonths = Number(validityPeriodInMonth.value);
+      const numberOfMonths = Number(validityPeriodInMonth?.value);
       const numberOfMonthsIsValid = numberOfMonths > 0 && numberOfMonths <= 999;
 
       if (numberOfMonthsIsValid) {

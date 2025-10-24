@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
@@ -10,6 +10,10 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
+
+type JourneyType = 'Add' | 'Edit';
 
 @Component({
   selector: 'app-training-course-details',
@@ -24,7 +28,8 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   public submitted = false;
   public workplace: Establishment;
   public isAddingNewTrainingCourse: boolean;
-  public journeyType: 'Add' | 'Edit';
+  public journeyType: JourneyType;
+  private subscriptions: Subscription = new Subscription();
 
   public accreditedOptions = YesNoDontKnowOptions;
   public deliveredByOptions = DeliveredBy;
@@ -44,6 +49,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     this.determineJourneyType();
     this.setupForm();
     this.setupFormErrorsMap();
+    this.prefill();
     this.backLinkService.showBackLink();
   }
 
@@ -59,7 +65,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
-        name: [null, { validators: [Validators.required] }],
+        name: [null, { validators: [Validators.required, Validators.minLength(3), Validators.maxLength(120)] }],
         accredited: null,
         deliveredBy: [null, { updateOn: 'change' }],
         externalProviderName: null,
@@ -71,13 +77,25 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
         updateOn: 'submit',
       },
     );
+
+    this.subscriptions.add(
+      this.form.get('deliveredBy').valueChanges.subscribe((newValue) => {
+        if (newValue !== this.deliveredByOptions.ExternalProvider) {
+          this.form.patchValue({ externalProviderName: null });
+        }
+      }),
+    );
   }
 
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'name',
-        type: [{ name: 'required', message: 'Enter the training course name' }],
+        type: [
+          { name: 'required', message: 'Enter the training course name' },
+          { name: 'maxlength', message: 'Training course name must be between 3 and 120 characters' },
+          { name: 'minlength', message: 'Training course name must be between 3 and 120 characters' },
+        ],
       },
       {
         item: 'validityPeriodInMonth',
@@ -93,24 +111,35 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     ];
   }
 
+  private prefill(): void {
+    if (this.journeyType === 'Add' && this.trainingCourseService.newTrainingCourseToBeAdded) {
+      this.prefillFromLocalData();
+    }
+  }
+
+  private prefillFromLocalData() {
+    const data = this.trainingCourseService.newTrainingCourseToBeAdded;
+    this.form.patchValue(data);
+  }
+
   public handleValidityPeriodChange(newValue: string | number): void {
-    if (newValue && newValue != '') {
-      this.clearFormControl('doesNotExpire');
+    if (newValue && newValue !== '') {
+      this.clearFormControlAndKeepErrorMessages('doesNotExpire');
     }
   }
 
   public handleDoesNotExpireChange(event: Event): void {
     const checkboxTicked = (event.target as HTMLInputElement).checked;
     if (checkboxTicked) {
-      this.clearFormControl('validityPeriodInMonth');
+      this.clearFormControlAndKeepErrorMessages('validityPeriodInMonth');
     }
   }
 
-  private clearFormControl(formControlName: string): void {
+  private clearFormControlAndKeepErrorMessages(formControlName: string): void {
     const formControl = this.form.get(formControlName);
     const existingErrors = formControl.errors;
-    formControl.patchValue(null, { emitEvent: false });
-    formControl.setErrors(existingErrors, { emitEvent: false });
+    formControl.patchValue(null);
+    formControl.setErrors(existingErrors);
   }
 
   public getFirstErrorMessage(item: string): string {
@@ -119,8 +148,8 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private runCrossValidation(): void {
-    // only set the validator on submit,
-    // to avoid the interaction between validityPeriodInMonth and doesNotExpire triggering validator.
+    // manually run the cross validation and remove the validator right afterward,
+    // to avoid side effects from the interaction between validityPeriodInMonth and doesNotExpire
     this.form.setValidators([CustomValidators.crossCheckTrainingCourseValidityPeriod()]);
     this.form.updateValueAndValidity();
     this.form.clearValidators();
@@ -134,13 +163,29 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.storeDetailsAndContinueToNextPage();
+    if (this.journeyType === 'Add') {
+      this.storeDetailsAndContinueToNextPage();
+    }
   }
 
   private storeDetailsAndContinueToNextPage() {
     const newTrainingCourseToBeAdded = this.form.value;
 
     this.trainingCourseService.newTrainingCourseToBeAdded = newTrainingCourseToBeAdded;
+    this.clearLocalTrainingCourseDataWhenClickedAway();
+
     this.router.navigate(['../select-category'], { relativeTo: this.route });
+  }
+
+  private clearLocalTrainingCourseDataWhenClickedAway(): void {
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes('add-training-course')),
+        take(1),
+      )
+      .subscribe(() => {
+        this.trainingCourseService.newTrainingCourseToBeAdded = null;
+      });
   }
 }
