@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -18,12 +18,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Directive({})
 export class AddEditTrainingDirective implements OnInit, AfterViewInit {
+  @ViewChildren('numberInputRef') numberInputs: QueryList<NumberInputWithButtonsComponent>;
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public submitted = false;
@@ -51,6 +53,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public multipleTrainingDetails: boolean;
   public trainingCertificates: TrainingCertificate[] = [];
   public submitButtonDisabled: boolean = false;
+  public showExternalProviderInputField = false;
+  public minNumberPerJobRole = 1;
+  public maxNumberPerJobRole = 999;
+  public totalNumber = 0;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -330,5 +336,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   public toggleNotesOpen(): void {
     this.notesOpen = !this.notesOpen;
+  }
+
+  protected onExternalProviderSelect(radioValue: string): void {
+    this.showExternalProviderInputField = radioValue === 'External provider';
   }
 }
