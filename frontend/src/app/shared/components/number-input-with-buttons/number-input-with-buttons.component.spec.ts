@@ -5,7 +5,7 @@ import lodash from 'lodash';
 
 import { NumberInputWithButtonsComponent } from './number-input-with-buttons.component';
 
-fdescribe('NumberInputWithButtonsComponent', () => {
+describe('NumberInputWithButtonsComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const setup = async (override: any = {}) => {
     const inputPropertiesName = ['initialValue', 'min', 'max', 'inputId', 'suffix'];
