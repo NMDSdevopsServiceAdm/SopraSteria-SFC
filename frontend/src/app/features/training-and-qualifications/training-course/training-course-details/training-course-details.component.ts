@@ -1,5 +1,3 @@
-import { Subscription } from 'rxjs';
-
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -66,20 +64,16 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
         deliveredBy: [null, { updateOn: 'change' }],
         externalProviderName: null,
         howWasItDelivered: null,
-        validityPeriodInMonth: [
-          null,
-          { validators: [Validators.min(1), Validators.max(999), Validators.pattern('^[0-9]+$')] },
-        ],
+        validityPeriodInMonth: null,
         doesNotExpire: null,
       },
       {
-        validators: [CustomValidators.crossCheckTrainingCourseValidityPeriod()],
         updateOn: 'submit',
       },
     );
   }
 
-  protected setupFormErrorsMap(): void {
+  private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'name',
@@ -88,26 +82,35 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
       {
         item: 'validityPeriodInMonth',
         type: [
-          { name: 'requireEitherOne', message: 'Enter the number of months or select this training does not expire' },
-          { name: 'min', message: 'Number of months must be between 1 and 999' },
-          { name: 'max', message: 'Number of months must be between 1 and 999' },
+          { name: 'required', message: 'Enter the number of months' },
           { name: 'pattern', message: 'Number of months must be between 1 and 999' },
         ],
+      },
+      {
+        item: 'doesNotExpire',
+        type: [{ name: 'required', message: 'Confirm the training does not expire' }],
       },
     ];
   }
 
   public handleValidityPeriodChange(newValue: string | number): void {
-    if (Number(newValue) > 0) {
-      this.form.patchValue({ doesNotExpire: null });
+    if (newValue && newValue != '') {
+      this.clearFormControl('doesNotExpire');
     }
   }
 
   public handleDoesNotExpireChange(event: Event): void {
     const checkboxTicked = (event.target as HTMLInputElement).checked;
     if (checkboxTicked) {
-      this.form.patchValue({ validityPeriodInMonth: null });
+      this.clearFormControl('validityPeriodInMonth');
     }
+  }
+
+  private clearFormControl(formControlName: string): void {
+    const formControl = this.form.get(formControlName);
+    const existingErrors = formControl.errors;
+    formControl.patchValue(null, { emitEvent: false });
+    formControl.setErrors(existingErrors, { emitEvent: false });
   }
 
   public getFirstErrorMessage(item: string): string {
@@ -115,8 +118,17 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
+  private runCrossValidation(): void {
+    // only set the validator on submit,
+    // to avoid the interaction between validityPeriodInMonth and doesNotExpire triggering validator.
+    this.form.setValidators([CustomValidators.crossCheckTrainingCourseValidityPeriod()]);
+    this.form.updateValueAndValidity();
+    this.form.clearValidators();
+  }
+
   public onSubmit() {
     this.submitted = true;
+    this.runCrossValidation();
 
     if (!this.form.valid) {
       return;

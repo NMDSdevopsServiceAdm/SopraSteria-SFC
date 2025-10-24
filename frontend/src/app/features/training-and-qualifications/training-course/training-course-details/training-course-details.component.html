@@ -136,41 +136,46 @@
         class="govuk-form-group govuk-!-margin-bottom-2"
         [class.govuk-form-group--error]="submitted && form.get('validityPeriodInMonth').invalid"
       >
-        <fieldset class="govuk-fieldset">
-          <label class="govuk-label" for="validity-period"
-            >How many months is the training valid for before it expires?</label
-          >
-          <span
-            *ngIf="submitted && form.get('validityPeriodInMonth').invalid"
-            id="validityPeriodInMonth-error"
-            class="govuk-error-message"
-          >
-            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('validityPeriodInMonth') }}
-          </span>
-          <app-number-input-with-buttons
-            #validityPeriodInMonthRef
-            [min]="1"
-            inputId="validity-period"
-            formControlName="validityPeriodInMonth"
-            [hasError]="submitted && form.get('validityPeriodInMonth').invalid"
-            suffix="months"
-            (change)="handleValidityPeriodChange($event)"
-          ></app-number-input-with-buttons>
+        <label class="govuk-label" for="validity-period"
+          >How many months is the training valid for before it expires?</label
+        >
+        <span
+          *ngIf="submitted && form.get('validityPeriodInMonth').invalid"
+          id="validityPeriodInMonth-error"
+          class="govuk-error-message"
+        >
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('validityPeriodInMonth') }}
+        </span>
+        <app-number-input-with-buttons
+          #validityPeriodInMonthRef
+          [min]="1"
+          inputId="validity-period"
+          formControlName="validityPeriodInMonth"
+          [hasError]="submitted && form.get('validityPeriodInMonth').invalid"
+          suffix="months"
+          (change)="handleValidityPeriodChange($event)"
+        ></app-number-input-with-buttons>
+      </div>
 
-          <div class="govuk-checkboxes__item govuk-!-margin-top-4">
-            <input
-              class="govuk-checkboxes__input"
-              id="doesNotExpire"
-              name="doesNotExpire"
-              type="checkbox"
-              [formControlName]="'doesNotExpire'"
-              (click)="handleDoesNotExpireChange($event)"
-            />
-            <label class="govuk-label govuk-checkboxes__label" for="doesNotExpire">
-              This training does not expire
-            </label>
-          </div>
-        </fieldset>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('doesNotExpire').invalid">
+        <span
+          *ngIf="submitted && form.get('doesNotExpire').invalid"
+          id="doesNotExpire-error"
+          class="govuk-error-message asc__govuk-error-message__connect_red_line_with_above"
+        >
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('doesNotExpire') }}
+        </span>
+        <div class="govuk-checkboxes__item govuk-!-margin-top-4">
+          <input
+            class="govuk-checkboxes__input"
+            id="doesNotExpire"
+            name="doesNotExpire"
+            type="checkbox"
+            [formControlName]="'doesNotExpire'"
+            (click)="handleDoesNotExpireChange($event)"
+          />
+          <label class="govuk-label govuk-checkboxes__label" for="doesNotExpire"> This training does not expire </label>
+        </div>
       </div>
 
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />

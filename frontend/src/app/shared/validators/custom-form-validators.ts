@@ -196,16 +196,36 @@ export class CustomValidators extends Validators {
 
   static crossCheckTrainingCourseValidityPeriod(): ValidatorFn {
     const validatorFunction = (rootFormControl: AbstractControl) => {
-      const validityPeriodInMonth: AbstractControl<number> = rootFormControl.get('validityPeriodInMonth');
+      const validityPeriodInMonth: AbstractControl<number | string> = rootFormControl.get('validityPeriodInMonth');
       const doesNotExpire: AbstractControl<boolean> = rootFormControl.get('doesNotExpire');
 
-      const choseDoesNotExpire = doesNotExpire.value === true;
-      const enteredAValidNumber = Number(validityPeriodInMonth.value) > 0;
+      const doesNotExpireIsTicked = doesNotExpire.value === true;
 
-      if (!choseDoesNotExpire && !enteredAValidNumber) {
-        validityPeriodInMonth.setErrors({ requireEitherOne: true });
+      if (doesNotExpireIsTicked) {
+        validityPeriodInMonth.setErrors(null);
+        doesNotExpire.setErrors(null);
         return null;
       }
+
+      const validityPeriodIsEmpty = validityPeriodInMonth.value === null || validityPeriodInMonth.value === '';
+      if (validityPeriodIsEmpty) {
+        validityPeriodInMonth.setErrors({ required: true });
+        doesNotExpire.setErrors({ required: true });
+        return null;
+      }
+
+      const numberOfMonths = Number(validityPeriodInMonth.value);
+      const numberOfMonthsIsValid = numberOfMonths > 0 && numberOfMonths <= 999;
+
+      if (numberOfMonthsIsValid) {
+        validityPeriodInMonth.setErrors(null);
+        doesNotExpire.setErrors(null);
+        return null;
+      }
+
+      validityPeriodInMonth.setErrors({ pattern: true });
+      doesNotExpire.setErrors({ required: true });
+      return;
     };
 
     return validatorFunction;

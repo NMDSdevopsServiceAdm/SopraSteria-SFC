@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 import { SharedModule } from '../../../../shared/shared.module';
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
 
-describe('AddAndManageTrainingCoursesComponent', () => {
+fdescribe('AddAndManageTrainingCoursesComponent', () => {
   async function setup(overrides: any = {}) {
     const trainingCourses = overrides?.trainingCourses ?? [];
 
@@ -151,7 +151,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
     });
 
     describe('validations', () => {
-      it('should show an error on submit if training course name is empty', async () => {
+      it('should show an error message on submit if training course name is empty', async () => {
         const { getByRole, fixture, getByText, getByLabelText, getAllByText, trainingCourseServiceSpy } = await setup();
         const expectedErrorMsg = 'Enter the training course name';
 
@@ -164,21 +164,39 @@ describe('AddAndManageTrainingCoursesComponent', () => {
         expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
       });
 
-      it('should show an error on submit if validityPeriodInMonth and doesNotExpire are both empty', async () => {
+      it('should show an error message on submit if validityPeriodInMonth and doesNotExpire are both empty', async () => {
         const { getByRole, fixture, getByText, getByLabelText, getAllByText, trainingCourseServiceSpy } = await setup();
-        const expectedErrorMsg = 'Enter the number of months or select this training does not expire';
+        const expectedErrorMsg1 = 'Enter the number of months';
+        const expectedErrorMsg2 = 'Confirm the training does not expire';
 
         userEvent.type(getByLabelText('Training course name'), 'First aid course');
         userEvent.click(getByRole('button', { name: 'Continue' }));
         fixture.detectChanges();
 
         expect(getByText('There is a problem')).toBeTruthy();
-        expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        expect(getAllByText(expectedErrorMsg1)).toHaveSize(2);
+        expect(getAllByText(expectedErrorMsg2)).toHaveSize(2);
         expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
       });
 
-      it('should show an error if validityPeriodInMonth got an invalid value', async () => {
-        throw '';
+      const invalidValuesForTesting = ['-10', '0', '99999', 'apple', '   '];
+      invalidValuesForTesting.forEach((invalidValue) => {
+        it(`should show an error message if validityPeriodInMonth got an invalid value - ${invalidValue}`, async () => {
+          const { getByRole, fixture, getByText, getByLabelText, getAllByText, trainingCourseServiceSpy } =
+            await setup();
+          const expectedErrorMsg1 = 'Number of months must be between 1 and 999';
+          const expectedErrorMsg2 = 'Confirm the training does not expire';
+
+          userEvent.type(getByLabelText('Training course name'), 'First aid course');
+          userEvent.type(getByLabelText(/^How many months/), invalidValue);
+          userEvent.click(getByRole('button', { name: 'Continue' }));
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+          expect(getAllByText(expectedErrorMsg1)).toHaveSize(2);
+          expect(getAllByText(expectedErrorMsg2)).toHaveSize(2);
+          expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
+        });
       });
     });
   });

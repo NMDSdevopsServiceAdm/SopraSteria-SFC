@@ -31,6 +31,7 @@ const routes: Routes = [
         component: TrainingCourseDetailsComponent,
         data: {
           title: 'Add training course details',
+          journeyType: 'Add',
         },
       },
     ],
