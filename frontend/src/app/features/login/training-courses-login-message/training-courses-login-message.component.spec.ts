@@ -8,10 +8,13 @@ import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteServ
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import {
+  MockEstablishmentService,
+  MockEstablishmentServiceWithOverrides,
+} from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { BrowserModule } from '@angular/platform-browser';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 
 describe('TrainingCoursesLoginMessage', () => {
   const userUid = 'user-uid';
@@ -39,7 +42,12 @@ describe('TrainingCoursesLoginMessage', () => {
         },
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useFactory: MockEstablishmentServiceWithOverrides.factory({
+            establishment: {
+              dataOwner: overrides.dataOwner ?? WorkplaceDataOwner.Workplace,
+            },
+          }),
+          deps: [HttpClient],
         },
         {
           provide: PermissionsService,
@@ -74,19 +82,27 @@ describe('TrainingCoursesLoginMessage', () => {
     expect(heading.textContent).toContain("What's new in ASC-WDS?");
   });
 
-  it('should show a link to the training and qualifications page', async () => {
-    const { getByText, getByRole } = await setup();
+  describe('training and qualifications link', () => {
+    it('should show if the user has permissions to edit worker and the workplace is the data owner', async () => {
+      const { getByText, getByRole } = await setup();
 
-    const link = getByText('training and qualifications');
+      const link = getByText('training and qualifications');
 
-    expect(getByRole('link', { name: 'training and qualifications' })).toBeTruthy();
-    expect(link.getAttribute('href')).toEqual('/dashboard#training-and-qualifications');
-  });
+      expect(getByRole('link', { name: 'training and qualifications' })).toBeTruthy();
+      expect(link.getAttribute('href')).toEqual('/dashboard#training-and-qualifications');
+    });
 
-  it('should not show a link to the training and qualifications page', async () => {
-    const { queryByRole } = await setup({ permissions: [] });
+    it('should not show if the user does not have permissions to edit worker', async () => {
+      const { queryByRole } = await setup({ permissions: [] });
 
-    expect(queryByRole('link', { name: 'training and qualifications' })).toBeFalsy();
+      expect(queryByRole('link', { name: 'training and qualifications' })).toBeFalsy();
+    });
+
+    it('should not show if the data owner is the parent', async () => {
+      const { queryByRole } = await setup({ permissions: [], dataOwner: 'Parent' });
+
+      expect(queryByRole('link', { name: 'training and qualifications' })).toBeFalsy();
+    });
   });
 
   it('should navigate to the home page when the button is clicked', async () => {
@@ -97,13 +113,13 @@ describe('TrainingCoursesLoginMessage', () => {
     expect(button.getAttribute('href')).toEqual('/dashboard#home');
   });
 
-  it('should call updateTrainingCoursesMessageViewedQuantity in UserService on page load', async () => {
+  it('should call updateTrainingCoursesMessageViewedQuantity in UserService on page load if the previous url is "login"', async () => {
     const { updateTrainingCoursesMessageViewedQuantitySpy } = await setup({ previousUrl: '/login' });
 
     expect(updateTrainingCoursesMessageViewedQuantitySpy).toHaveBeenCalledWith(userUid);
   });
 
-  it('should not call updateTrainingCoursesMessageViewedQuantity in UserService on page load', async () => {
+  it('should not call updateTrainingCoursesMessageViewedQuantity in UserService if the previous url is not "login"', async () => {
     const { updateTrainingCoursesMessageViewedQuantitySpy } = await setup({
       previousUrl: 'training-and-qualifications',
     });
@@ -111,5 +127,3 @@ describe('TrainingCoursesLoginMessage', () => {
     expect(updateTrainingCoursesMessageViewedQuantitySpy).not.toHaveBeenCalled();
   });
 });
-
-
