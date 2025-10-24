@@ -947,14 +947,30 @@ const updateLastViewedVacanciesAndTurnoverMessage = async (req, res) => {
     const userUid = req.params?.userUid;
 
     if (!validate(userUid)) {
-      return res.status(400).send('User UID invalid');
+      return res.status(400).send({ message: 'User UID invalid' });
     }
 
     await models.user.setDateForLastViewedVacanciesAndTurnoverMessage(userUid);
 
-    return res.status(200).send('Last viewed date updated');
+    return res.status(200).send({ message: 'Last viewed date updated' });
   } catch (error) {
-    return res.status(500).send('Failed to update last viewed date');
+    return res.status(500).send({ message: 'Failed to update last viewed date' });
+  }
+};
+
+const updateTrainingCoursesMessageViewedQuantity = async (req, res) => {
+  try {
+    const userUid = req.params?.userUid;
+
+    if (!validate(userUid)) {
+      return res.status(400).send({ message: 'User UID invalid' });
+    }
+
+    await models.user.updateTrainingCoursesMessageViewedQuantity(userUid);
+
+    return res.status(200).send({ message: 'Training courses message viewed quantity updated' });
+  } catch (error) {
+    return res.status(500).send({ message: 'Failed to update training courses message viewed quantity' });
   }
 };
 
@@ -998,7 +1014,9 @@ router.route('/my/notifications').get(listNotifications);
 router
   .route('/update-last-viewed-vacancies-and-turnover-message/:userUid')
   .post(Authorization.isAuthorised, updateLastViewedVacanciesAndTurnoverMessage);
-
+router
+  .route('/update-training-courses-message-viewed-quantity/:userUid')
+  .post(Authorization.isAuthorised, updateTrainingCoursesMessageViewedQuantity);
 router.use('/swap/establishment/:id', authLimiter);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
 
@@ -1011,4 +1029,5 @@ module.exports.listAdminUsers = listAdminUsers;
 module.exports.updateAdminUser = updateAdminUser;
 module.exports.updateNormalUser = updateNormalUser;
 module.exports.updateLastViewedVacanciesAndTurnoverMessage = updateLastViewedVacanciesAndTurnoverMessage;
+module.exports.updateTrainingCoursesMessageViewedQuantity = updateTrainingCoursesMessageViewedQuantity;
 module.exports.addUser = addUser;

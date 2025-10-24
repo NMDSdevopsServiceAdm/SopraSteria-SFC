@@ -2,8 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
@@ -23,7 +22,7 @@ describe('LoginComponent', () => {
     const employerTypeSet: boolean = ('employerTypeSet' in overrides ? overrides.employerTypeSet : true) as boolean;
 
     const setupTools = await render(LoginComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -34,6 +33,7 @@ describe('LoginComponent', () => {
           provide: UserService,
           useClass: MockUserService,
         },
+        provideRouter([]),
       ],
     });
 
@@ -302,6 +302,34 @@ describe('LoginComponent', () => {
 
         expect(routerSpy).not.toHaveBeenCalledWith(['/update-your-vacancies-and-turnover-data']);
         expect(routerSpy).toHaveBeenCalledWith(['/registration-survey']);
+      });
+    });
+
+    describe('new-training-courses', () => {
+      [undefined, null, 0, 1, 2].forEach((login) => {
+        it(`should navigate to new-training-courses when auth response has ${login} for loginAmount`, async () => {
+          const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+          const authenticateResponse = mockAuthenticateResponse();
+          authenticateResponse.body.trainingCoursesMessageViewedQuantity = login;
+
+          authSpy.and.returnValue(of(authenticateResponse));
+
+          signIn(getByLabelText, getByRole, fixture);
+
+          expect(routerSpy).toHaveBeenCalledWith(['/new-training-courses']);
+        });
+      });
+
+      it('should not navigate to new-training-courses', async () => {
+        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+        const authenticateResponse = mockAuthenticateResponse();
+        authenticateResponse.body.trainingCoursesMessageViewedQuantity = 3;
+
+        authSpy.and.returnValue(of(authenticateResponse));
+
+        signIn(getByLabelText, getByRole, fixture);
+
+        expect(routerSpy).not.toHaveBeenCalledWith(['/whats-new-in-asc-wds']);
       });
     });
   });

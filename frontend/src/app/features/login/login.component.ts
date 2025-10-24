@@ -190,6 +190,13 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           }
 
           if (
+            !response.body.trainingCoursesMessageViewedQuantity ||
+            response.body?.trainingCoursesMessageViewedQuantity < 3
+          ) {
+            return this.router.navigate(['/new-training-courses']);
+          }
+
+          if (
             (!response.body.lastViewedVacanciesAndTurnoverMessage ||
               this.isOverSixMonthsAgo(response.body.lastViewedVacanciesAndTurnoverMessage)) &&
             response.body.role === Roles.Edit &&
