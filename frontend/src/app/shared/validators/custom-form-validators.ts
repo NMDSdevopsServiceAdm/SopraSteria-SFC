@@ -199,8 +199,11 @@ export class CustomValidators extends Validators {
       const validityPeriodInMonth: AbstractControl<number> = rootFormControl.get('validityPeriodInMonth');
       const doesNotExpire: AbstractControl<boolean> = rootFormControl.get('doesNotExpire');
 
-      if (doesNotExpire.value === null && validityPeriodInMonth.value === null) {
-        validityPeriodInMonth.setErrors({ required: true });
+      const choseDoesNotExpire = doesNotExpire.value === true;
+      const enteredAValidNumber = Number(validityPeriodInMonth.value) > 0;
+
+      if (!choseDoesNotExpire && !enteredAValidNumber) {
+        validityPeriodInMonth.setErrors({ requireEitherOne: true });
         return null;
       }
     };

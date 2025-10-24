@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 import { SharedModule } from '../../../../shared/shared.module';
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
 
-fdescribe('AddAndManageTrainingCoursesComponent', () => {
+describe('AddAndManageTrainingCoursesComponent', () => {
   async function setup(overrides: any = {}) {
     const trainingCourses = overrides?.trainingCourses ?? [];
 

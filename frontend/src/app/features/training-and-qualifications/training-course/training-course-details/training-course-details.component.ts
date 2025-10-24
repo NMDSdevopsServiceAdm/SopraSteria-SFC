@@ -25,7 +25,8 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
   public workplace: Establishment;
-  private subscriptions: Subscription = new Subscription();
+  public isAddingNewTrainingCourse: boolean;
+  public journeyType: 'Add' | 'Edit';
 
   public accreditedOptions = YesNoDontKnowOptions;
   public deliveredByOptions = DeliveredBy;
@@ -42,6 +43,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.determineJourneyType();
     this.setupForm();
     this.setupFormErrorsMap();
     this.backLinkService.showBackLink();
@@ -52,6 +54,10 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     this.validityPeriodInMonth.registerOnChange((newValue) => this.handleValidityPeriodChange(newValue));
   }
 
+  private determineJourneyType() {
+    this.journeyType = this.route.snapshot?.data?.journeyType ?? 'Add';
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
@@ -60,7 +66,10 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
         deliveredBy: [null, { updateOn: 'change' }],
         externalProviderName: null,
         howWasItDelivered: null,
-        validityPeriodInMonth: [null],
+        validityPeriodInMonth: [
+          null,
+          { validators: [Validators.min(1), Validators.max(999), Validators.pattern('^[0-9]+$')] },
+        ],
         doesNotExpire: null,
       },
       {
@@ -78,7 +87,12 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
       },
       {
         item: 'validityPeriodInMonth',
-        type: [{ name: 'required', message: 'Enter the number of months or select this training does not expire' }],
+        type: [
+          { name: 'requireEitherOne', message: 'Enter the number of months or select this training does not expire' },
+          { name: 'min', message: 'Number of months must be between 1 and 999' },
+          { name: 'max', message: 'Number of months must be between 1 and 999' },
+          { name: 'pattern', message: 'Number of months must be between 1 and 999' },
+        ],
       },
     ];
   }
@@ -90,8 +104,8 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   }
 
   public handleDoesNotExpireChange(event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
-    if (checked) {
+    const checkboxTicked = (event.target as HTMLInputElement).checked;
+    if (checkboxTicked) {
       this.form.patchValue({ validityPeriodInMonth: null });
     }
   }
