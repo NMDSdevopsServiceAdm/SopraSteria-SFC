@@ -172,13 +172,6 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
           this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
 
-          if (
-            !response.body.trainingCoursesMessageViewedQuantity ||
-            response.body?.trainingCoursesMessageViewedQuantity < 3
-          ) {
-            return this.router.navigate(['/new-training-courses']);
-          }
-
           if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
             return this.router.navigate(['/migrated-user-terms-and-conditions']);
           }
@@ -194,6 +187,13 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           if (response.body.establishment.employerTypeSet === false) {
             this.establishmentService.setEmployerTypeHasValue(false);
             return this.router.navigate(['workplace', response.body.establishment.uid, 'type-of-employer']);
+          }
+
+          if (
+            !response.body.trainingCoursesMessageViewedQuantity ||
+            response.body?.trainingCoursesMessageViewedQuantity < 3
+          ) {
+            return this.router.navigate(['/new-training-courses']);
           }
 
           if (
