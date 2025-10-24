@@ -105,18 +105,57 @@
                 </a>
               </div>
             </ng-container>
-
             <ng-container *ngSwitchCase="'training-and-qualifications'">
               <div *ngIf="hasWorkers && canEditWorker" class="govuk-util__align-right">
-                <a
-                  role="button"
-                  href="#"
-                  class="govuk-button govuk-!-margin-bottom-5"
-                  data-cy="add-multiple-training-records-button"
-                  [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
-                >
-                  Add multiple training records
-                </a>
+                <app-button-menu buttonText="Add and manage training">
+                  <li>
+                    <a
+                      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
+                      type="button"
+                      class="asc-button-menu__item"
+                      data-module="govuk-button"
+                      data-govuk-button-init=""
+                      tabindex="-1"
+                    >
+                      Add multiple training records
+                    </a>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      class="asc-button-menu__item"
+                      data-module="govuk-button"
+                      data-govuk-button-init=""
+                      tabindex="-1"
+                    >
+                      Add and manage training courses
+                    </button>
+                  </li>
+                  <li>
+                    <a
+                      [routerLink]="['/workplace', workplace.uid, 'add-and-manage-mandatory-training']"
+                      type="button"
+                      class="asc-button-menu__item"
+                      data-module="govuk-button"
+                      data-govuk-button-init=""
+                      tabindex="-1"
+                    >
+                      Add a mandatory training category
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
+                      type="button"
+                      class="asc-button-menu__item"
+                      data-module="govuk-button"
+                      data-govuk-button-init=""
+                      tabindex="-1"
+                    >
+                      Manage expiry alerts
+                    </a>
+                  </li>
+                </app-button-menu>
               </div>
             </ng-container>
           </ng-container>
