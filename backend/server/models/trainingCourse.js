@@ -122,6 +122,12 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'category',
     });
+
+    TrainingCourse.hasMany(models.workerTraining, {
+      foreignKey: 'trainingCourseFK',
+      targetKey: 'id',
+      as: 'workerTraining',
+    });
   };
 
   return TrainingCourse;
