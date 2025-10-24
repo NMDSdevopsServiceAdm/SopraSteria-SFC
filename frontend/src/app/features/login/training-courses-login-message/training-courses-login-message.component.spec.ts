@@ -5,6 +5,13 @@ import { UserService } from '@core/services/user.service';
 import { of } from 'rxjs';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { BrowserModule } from '@angular/platform-browser';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('TrainingCoursesLoginMessage', () => {
   const userUid = 'user-uid';
@@ -14,7 +21,7 @@ describe('TrainingCoursesLoginMessage', () => {
       .and.returnValue(of(null));
 
     const setupTools = await render(TrainingCoursesLoginMessage, {
-      imports: [RouterModule],
+      imports: [RouterModule, BrowserModule],
       providers: [
         {
           provide: UserService,
@@ -30,7 +37,17 @@ describe('TrainingCoursesLoginMessage', () => {
           useFactory: MockPreviousRouteService.factory(overrides.previousUrl),
           deps: [Router],
         },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(overrides.permissions ?? ['canEditWorker']),
+          deps: [HttpClient, Router, UserService],
+        },
         provideRouter([]),
+        provideHttpClient(),
       ],
     });
 
@@ -57,12 +74,19 @@ describe('TrainingCoursesLoginMessage', () => {
     expect(heading.textContent).toContain("What's new in ASC-WDS?");
   });
 
-  it('should navigate to the training and qualifications page when the link is clicked', async () => {
-    const { getByText } = await setup();
+  it('should show a link to the training and qualifications page', async () => {
+    const { getByText, getByRole } = await setup();
 
     const link = getByText('training and qualifications');
 
+    expect(getByRole('link', { name: 'training and qualifications' })).toBeTruthy();
     expect(link.getAttribute('href')).toEqual('/dashboard#training-and-qualifications');
+  });
+
+  it('should not show a link to the training and qualifications page', async () => {
+    const { queryByRole } = await setup({ permissions: [] });
+
+    expect(queryByRole('link', { name: 'training and qualifications' })).toBeFalsy();
   });
 
   it('should navigate to the home page when the button is clicked', async () => {
@@ -87,3 +111,5 @@ describe('TrainingCoursesLoginMessage', () => {
     expect(updateTrainingCoursesMessageViewedQuantitySpy).not.toHaveBeenCalled();
   });
 });
+
+
