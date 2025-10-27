@@ -31,7 +31,7 @@ const MockWindow = {
   },
 };
 
-describe('NewDashboardHeaderComponent', () => {
+fdescribe('NewDashboardHeaderComponent', () => {
   const establishment = establishmentBuilder() as Establishment;
   const setup = async (
     override: any = {
@@ -129,7 +129,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not show parent above workplace name if it is not a parent', async () => {
-      const { component, queryByTestId } = await setup();
+      const { queryByTestId } = await setup();
 
       expect(queryByTestId('parentLabel')).toBeFalsy();
     });
@@ -478,18 +478,27 @@ describe('NewDashboardHeaderComponent', () => {
 
         const addMultipleTrainingRecordsSubMenu = getByText('Add multiple training records');
         expect(addMultipleTrainingRecordsSubMenu).toBeTruthy();
-        expect(addMultipleTrainingRecordsSubMenu.getAttribute('href')).toEqual(`/workplace/${workplaceUid}/add-multiple-training/select-staff`);
+        expect(addMultipleTrainingRecordsSubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/add-multiple-training/select-staff`,
+        );
 
         const addAndManageTrainingCoursesSubMenu = getByText('Add and manage training courses');
         expect(addAndManageTrainingCoursesSubMenu).toBeTruthy();
+        expect(addAndManageTrainingCoursesSubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/training-course/add-and-manage-training-courses`,
+        );
 
         const addAMandatoryTrainingCategorySubMenu = getByText('Add a mandatory training category');
         expect(addAMandatoryTrainingCategorySubMenu).toBeTruthy();
-        expect(addAMandatoryTrainingCategorySubMenu.getAttribute('href')).toEqual(`/workplace/${workplaceUid}/add-and-manage-mandatory-training`);
+        expect(addAMandatoryTrainingCategorySubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/add-and-manage-mandatory-training`,
+        );
 
         const manageExpiryAlertsSubMenu = getByText('Manage expiry alerts');
         expect(manageExpiryAlertsSubMenu).toBeTruthy();
-        expect(manageExpiryAlertsSubMenu.getAttribute('href')).toEqual(`/workplace/${workplaceUid}/change-expires-soon-alerts`);
+        expect(manageExpiryAlertsSubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/change-expires-soon-alerts`,
+        );
       });
     });
 
