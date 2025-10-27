@@ -150,7 +150,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       ...options,
     };
 
-    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
+    const { fixture, getByText, getAllByText, getByRole, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
@@ -396,6 +396,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       trainingService,
       getByText,
       getAllByText,
+      getByRole,
       getByTestId,
       queryByText,
       workplaceUid,
@@ -464,6 +465,37 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
       expect(getByText('Not answered', { exact: false })).toBeTruthy();
+    });
+
+    it('should display the "Add a training record" button', async () => {
+      const { getByRole } = await setup();
+      const button = getByRole('button', { name: 'Add a training record' });
+
+      expect(button).toBeTruthy();
+    });
+
+    it('should have correct href on the "Add a training record" button', async () => {
+      const { workplaceUid, workerUid, getByRole } = await setup();
+      const button = getByRole('button', { name: 'Add a training record' });
+
+      expect(button.getAttribute('href')).toEqual(
+        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/add-qualification`,
+      );
+    });
+
+    it('should display the "Add a qualification record" button', async () => {
+      const { getByRole } = await setup();
+      const button = getByRole('button', { name: 'Add a qualification record' });
+
+      expect(button).toBeTruthy();
+    });
+
+    it('should have correct href on the "Add a qualification record" button', async () => {
+      const { workplaceUid, workerUid, getByRole } = await setup();
+      const button = getByRole('button', { name: 'Add a qualification record' });
+      const expectedHref = `workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/add-qualification`
+
+      expect(button.getAttribute('href')).toEqual(expectedHref);
     });
   });
 

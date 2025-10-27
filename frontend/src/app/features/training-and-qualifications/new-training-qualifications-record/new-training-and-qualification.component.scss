@@ -32,3 +32,7 @@
     border-bottom: 1px solid $govuk-border-colour;
   }
 }
+
+.govuk-button.govuk-button--secondary {
+  color: $govuk-link-colour;
+}
