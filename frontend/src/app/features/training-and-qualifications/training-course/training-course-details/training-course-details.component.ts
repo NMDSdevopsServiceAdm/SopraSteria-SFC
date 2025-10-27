@@ -138,7 +138,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   private clearFormControlAndKeepErrorMessages(formControlName: string): void {
     const formControl = this.form.get(formControlName);
     const existingErrors = formControl.errors;
-    formControl.patchValue(null);
+    formControl.patchValue(null, { emitEvent: false });
     formControl.setErrors(existingErrors);
   }
 
@@ -160,6 +160,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     this.runCrossValidation();
 
     if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
       return;
     }
 
