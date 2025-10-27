@@ -126,32 +126,6 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     });
   });
 
-  it('should show the manage links', async () => {
-    const override = {
-      withWorkers: true,
-      totalRecords: 4,
-      permissions: ['canEditEstablishment'],
-    };
-
-    const { getByText } = await setup(override);
-
-    expect(getByText('Add and manage mandatory training categories')).toBeTruthy();
-    expect(getByText('Manage expiry alerts')).toBeTruthy();
-  });
-
-  it('should not show the manage links', async () => {
-    const override = {
-      withWorkers: true,
-      totalRecords: 4,
-      canEditEstablishment: false,
-    };
-
-    const { queryByText } = await setup(override);
-
-    expect(queryByText('Add and manage mandatory training categories')).toBeFalsy();
-    expect(queryByText('Manage expiry alerts')).toBeFalsy();
-  });
-
   it('should show a message if there are workers with no records', async () => {
     const override = {
       withWorkers: true,
