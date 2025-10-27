@@ -111,7 +111,7 @@ describe('ChangeDataPermissionsComponent', () => {
   });
 
   it('should show with the correct href back to the your other workplaces for the "Cancel" link', async () => {
-    const { component, getByTestId } = await setup();
+    const { getByTestId } = await setup();
 
     const cancelLink = getByTestId('cancelLink');
 
@@ -202,17 +202,13 @@ describe('ChangeDataPermissionsComponent', () => {
             },
           };
 
-          const { component, fixture, getByText, getByTestId } = await setup(overrides);
+          const { getByTestId } = await setup(overrides);
 
           const permissionTextContent = getByTestId('current-permission');
 
           expect(permissionTextContent.textContent).toContain(permissionText[index]);
         });
-      },
-    );
 
-    [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None].forEach(
-      (permission: string, index: number) => {
         const listText = [
           [
             'can view their workplace details and their staff records',
@@ -235,11 +231,7 @@ describe('ChangeDataPermissionsComponent', () => {
             expect(getByText(listItem)).toBeTruthy();
           });
         });
-      },
-    );
 
-    [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None].forEach(
-      (permission: string) => {
         it(`should call setDataPermission with ${permission}`, async () => {
           overrides = {
             ...overrides,
@@ -260,6 +252,24 @@ describe('ChangeDataPermissionsComponent', () => {
           expect(setDataPermissionSpy).toHaveBeenCalledWith(subsidiaryWorkplace.uid, {
             permissionToSet: permission,
           });
+        });
+
+        it(`should prefill the correct radio button when permission is ${permission}`, async () => {
+          overrides = {
+            ...overrides,
+            establishmentService: {
+              establishment: { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
+            },
+          };
+
+          const { component, fixture } = await setup(overrides);
+
+          const form = component.form;
+
+          const radioButton = fixture.nativeElement.querySelector(`input[id="dataPermission-${index}"]`);
+
+          expect(radioButton.checked).toBeTruthy();
+          expect(form.value).toEqual({ dataPermission: permission });
         });
       },
     );
@@ -295,7 +305,7 @@ describe('ChangeDataPermissionsComponent', () => {
     };
 
     it('should show the heading and caption', async () => {
-      const { component, getByTestId } = await setup(overrides);
+      const { getByTestId } = await setup(overrides);
 
       const heading = getByTestId('heading');
 
@@ -304,7 +314,7 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the name of the workplace to change data permissions for', async () => {
-      const { component, getAllByText } = await setup(overrides);
+      const { getAllByText } = await setup(overrides);
 
       expect(getAllByText(parentWorkplace.name).length).toEqual(2);
     });
@@ -350,11 +360,7 @@ describe('ChangeDataPermissionsComponent', () => {
 
           expect(permissionTextContent.textContent).toContain(permissionText[index]);
         });
-      },
-    );
 
-    [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None].forEach(
-      (permission: string, index: number) => {
         const listText = [
           [
             'can view your workplace details and your staff records',
@@ -379,11 +385,7 @@ describe('ChangeDataPermissionsComponent', () => {
             expect(getByText(listItem)).toBeTruthy();
           });
         });
-      },
-    );
 
-    [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None].forEach(
-      (permission: string) => {
         it(`should call setDataPermission with ${permission}`, async () => {
           overrides = {
             ...overrides,
@@ -406,6 +408,26 @@ describe('ChangeDataPermissionsComponent', () => {
           expect(setDataPermissionSpy).toHaveBeenCalledWith(subsidiaryWorkplace.uid, {
             permissionToSet: permission,
           });
+        });
+
+        it(`should prefill the correct radio button when permission is ${permission}`, async () => {
+          overrides = {
+            ...overrides,
+            workplaceChangingPermission: {
+              ...subsidiaryWorkplace,
+              dataOwner: 'Workplace',
+              dataPermissions: permission,
+            },
+          };
+
+          const { component, fixture } = await setup(overrides);
+
+          const form = component.form;
+
+          const radioButton = fixture.nativeElement.querySelector(`input[id="dataPermission-${index}"]`);
+
+          expect(radioButton.checked).toBeTruthy();
+          expect(form.value).toEqual({ dataPermission: permission });
         });
       },
     );

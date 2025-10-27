@@ -57,8 +57,8 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit {
     this.isParent = this.workplace?.isParent;
     this.posssesivePronounText = this.isParent ? 'their' : 'your';
     this.setPreviousRoute();
-    this.getWorkplaceToChangeDataPermissionsFor();
     this.setupForm();
+    this.getWorkplaceToChangeDataPermissionsFor();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.setDataPermissions();
@@ -69,6 +69,14 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group({
       dataPermission: ['', { validators: [Validators.required], updateOn: 'submit' }],
     });
+  }
+
+  public prefill(currentDataPermission: string): void {
+    if (currentDataPermission) {
+      this.form.setValue({
+        dataPermission: currentDataPermission,
+      });
+    }
   }
 
   public setPreviousRoute(): void {
@@ -86,7 +94,7 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit {
     this.currentDataOwner = workplace.dataOwner;
     this.parentName = workplace.parentName;
     this.parentUid = workplace.parentUid;
-
+    this.prefill(this.currentDataPermission);
     if (this.uidToChangeDataPermissionsFor) {
       this.workplaceNameToChangeDataPermissionsFor = workplace.name;
     } else {
