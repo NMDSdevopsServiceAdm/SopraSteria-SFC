@@ -8,7 +8,7 @@ import {
 } from '../../support/page_objects/createNewWorkplaceForms';
 
 describe('Parent changing data permissions for a subsidiary', () => {
-  const subsidiaryWorkplaceName = MockNewEstablishment.name;
+  const subsidiaryWorkplaceName = 'Test workplace for data permissions';
 
   before(() => {
     cy.deleteTestWorkplaceFromDb(subsidiaryWorkplaceName);
@@ -47,6 +47,7 @@ describe('Parent changing data permissions for a subsidiary', () => {
   });
 
   beforeEach(() => {
+    cy.reload();
     cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     cy.get('a').contains('Your other workplaces').click();
   });

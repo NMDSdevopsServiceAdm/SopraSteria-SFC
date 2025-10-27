@@ -4,8 +4,8 @@ import { SubEstablishment } from '../../support/mockEstablishmentData';
 
 describe('Subsidiary changing data permissions for their parent to view their workplace', () => {
   beforeEach(() => {
+    cy.reload();
     cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
-    cy.get('[data-cy="tab-list"]').contains('Home').click();
   });
 
   const parentName = SubEstablishment.parentName;
