@@ -3,6 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -10,7 +11,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
 type JourneyType = 'Add' | 'Edit';
@@ -29,7 +29,6 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   public workplace: Establishment;
   public isAddingNewTrainingCourse: boolean;
   public journeyType: JourneyType;
-  private subscriptions: Subscription = new Subscription();
 
   public accreditedOptions = YesNoDontKnowOptions;
   public deliveredByOptions = DeliveredBy;
@@ -76,14 +75,6 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
       {
         updateOn: 'submit',
       },
-    );
-
-    this.subscriptions.add(
-      this.form.get('deliveredBy').valueChanges.subscribe((newValue) => {
-        if (newValue !== this.deliveredByOptions.ExternalProvider) {
-          this.form.patchValue({ externalProviderName: null });
-        }
-      }),
     );
   }
 
@@ -170,7 +161,10 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private storeDetailsAndContinueToNextPage() {
-    const newTrainingCourseToBeAdded = this.form.value;
+    const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.form.value;
+    if (newTrainingCourseToBeAdded.deliveredBy !== this.deliveredByOptions.ExternalProvider) {
+      newTrainingCourseToBeAdded.externalProviderName = null;
+    }
 
     this.trainingCourseService.newTrainingCourseToBeAdded = newTrainingCourseToBeAdded;
     this.clearLocalTrainingCourseDataWhenClickedAway();

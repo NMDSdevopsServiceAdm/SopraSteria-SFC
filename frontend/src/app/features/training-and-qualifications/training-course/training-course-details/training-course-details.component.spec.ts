@@ -59,8 +59,13 @@ describe('AddAndManageTrainingCoursesComponent', () => {
     const trainingCourseService = injector.inject(TrainingCourseService);
     const trainingCourseServiceSpy = spyOnProperty(trainingCourseService, 'newTrainingCourseToBeAdded', 'set');
 
+    const getInputByLabelText = (label: any) => setupTools.getByLabelText(label) as HTMLInputElement;
+    const getInputByRole = (role: any, options: any) => setupTools.getByRole(role, options) as HTMLInputElement;
+
     return {
       ...setupTools,
+      getInputByLabelText,
+      getInputByRole,
       component,
       routerSpy,
       trainingCourseService,
@@ -95,13 +100,11 @@ describe('AddAndManageTrainingCoursesComponent', () => {
           validityPeriodInMonth: 24,
         };
 
-        const { getByLabelText, getByRole, fixture } = await setup({
+        const { getInputByRole, getInputByLabelText, fixture } = await setup({
           journeyType: 'Add',
           newTrainingCourseToBeAdded: mockTrainingCourse,
         });
 
-        const getInputByLabelText = (label: any) => getByLabelText(label) as HTMLInputElement;
-        const getInputByRole = (role: any, options: any) => getByRole(role, options) as HTMLInputElement;
         fixture.detectChanges();
 
         expect(getInputByLabelText('Training course name').value).toEqual('First aid course');
@@ -133,24 +136,10 @@ describe('AddAndManageTrainingCoursesComponent', () => {
       expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
     });
 
-    it('should clear the value in provider name textbox if External provider is not chosen anymore', async () => {
-      const { getByRole, fixture } = await setup();
-
-      const providerName = getByRole('textbox', { name: 'Provider name' }) as HTMLInputElement;
-      userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
-      userEvent.type(providerName, 'Care skills academy');
-
-      userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
-      fixture.detectChanges();
-      expect(providerName.value).toBe('');
-    });
-
     it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by button', async () => {
-      const { getByRole, getByTestId, fixture } = await setup();
+      const { getInputByRole, getByTestId, fixture } = await setup();
 
-      const doesNotExpireCheckbox = getByRole('checkbox', {
-        name: 'This training does not expire',
-      }) as HTMLInputElement;
+      const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
       doesNotExpireCheckbox.click();
       expect(doesNotExpireCheckbox.checked).toBeTrue();
 
@@ -161,14 +150,12 @@ describe('AddAndManageTrainingCoursesComponent', () => {
     });
 
     it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by typing value', async () => {
-      const { getByRole, fixture } = await setup();
+      const { getInputByRole, fixture } = await setup();
 
-      const validityPeriodInMonth = getByRole('textbox', {
+      const validityPeriodInMonth = getInputByRole('textbox', {
         name: 'How many months is the training valid for before it expires?',
-      }) as HTMLInputElement;
-      const doesNotExpireCheckbox = getByRole('checkbox', {
-        name: 'This training does not expire',
-      }) as HTMLInputElement;
+      });
+      const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
 
       userEvent.type(validityPeriodInMonth, '12');
       fixture.detectChanges();
@@ -177,14 +164,12 @@ describe('AddAndManageTrainingCoursesComponent', () => {
     });
 
     it('should clear any value in validityPeriodInMonth when doesNotExpire checkbox is ticked', async () => {
-      const { getByRole, getByTestId, fixture } = await setup();
+      const { getInputByRole, getByTestId, fixture } = await setup();
 
-      const validityPeriodInMonth = getByRole('textbox', {
+      const validityPeriodInMonth = getInputByRole('textbox', {
         name: 'How many months is the training valid for before it expires?',
-      }) as HTMLInputElement;
-      const doesNotExpireCheckbox = getByRole('checkbox', {
-        name: 'This training does not expire',
-      }) as HTMLInputElement;
+      });
+      const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
 
       getByTestId('plus-button-validity-period').click();
       fixture.detectChanges();
@@ -310,6 +295,22 @@ describe('AddAndManageTrainingCoursesComponent', () => {
         expect(trainingCourseServiceSpy).toHaveBeenCalledWith(expectedProps);
         // @ts-expect-error: TS2341: Property 'route' is private
         expect(routerSpy).toHaveBeenCalledWith(['../select-category'], { relativeTo: component.route });
+      });
+
+      it('should set externalProviderName to null on submit if user changed deliveredBy to In-house staff', async () => {
+        const { getByRole, getByLabelText, trainingCourseServiceSpy } = await setup();
+
+        userEvent.type(getByLabelText('Training course name'), 'First aid course');
+        userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
+        userEvent.type(getByRole('textbox', { name: 'Provider name' }), 'Care skills academy');
+        userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
+        userEvent.click(getByLabelText('This training does not expire'));
+
+        userEvent.click(getByRole('button', { name: 'Continue' }));
+
+        expect(trainingCourseServiceSpy).toHaveBeenCalledWith(
+          jasmine.objectContaining({ deliveredBy: 'In-house staff', externalProviderName: null }),
+        );
       });
 
       it('the cancel button should link to the "Add and manage training course" page', async () => {
