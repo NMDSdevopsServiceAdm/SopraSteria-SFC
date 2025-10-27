@@ -10,7 +10,10 @@
         </legend>
       </fieldset>
 
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('name').invalid">
+      <div
+        class="govuk-form-group govuk-!-margin-bottom-4"
+        [class.govuk-form-group--error]="submitted && form.get('name').invalid"
+      >
         <label class="govuk-label" for="training-course-name">Training course name</label>
         <span *ngIf="submitted && form.get('name').invalid" id="name-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('name') }}
@@ -25,9 +28,9 @@
         />
       </div>
 
-      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+      <app-seperator-line></app-seperator-line>
 
-      <div class="govuk-form-group govuk-!-margin-bottom-2">
+      <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend">Is the training course accredited?</legend>
           <div class="govuk-radios">
@@ -47,9 +50,9 @@
         </fieldset>
       </div>
 
-      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+      <app-seperator-line></app-seperator-line>
 
-      <div class="govuk-form-group govuk-!-margin-bottom-2">
+      <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend">Who delivers the training course?</legend>
           <div class="govuk-radios">
@@ -65,7 +68,7 @@
                 {{ deliveredByOptions.InHouseStaff }}
               </label>
             </div>
-            <div class="govuk-radios__item">
+            <div class="govuk-radios__item govuk-!-margin-bottom-0">
               <input
                 class="govuk-radios__input"
                 id="deliveredBy-ExternalProvider"
@@ -78,7 +81,7 @@
               </label>
             </div>
             <div
-              class="govuk-radios__conditional govuk-radios__conditional--hidden"
+              class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-1"
               [class.govuk-radios__conditional--hidden]="
                 form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider
               "
@@ -96,9 +99,9 @@
         </fieldset>
       </div>
 
-      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+      <app-seperator-line></app-seperator-line>
 
-      <div class="govuk-form-group govuk-!-margin-bottom-2">
+      <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend">How is the training course delivered?</legend>
           <div class="govuk-radios">
@@ -130,7 +133,7 @@
         </fieldset>
       </div>
 
-      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+      <app-seperator-line></app-seperator-line>
 
       <div
         class="govuk-form-group govuk-!-margin-bottom-2"
@@ -165,7 +168,7 @@
         >
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('doesNotExpire') }}
         </span>
-        <div class="govuk-checkboxes__item govuk-!-margin-top-4">
+        <div class="govuk-checkboxes__item govuk-!-margin-top-4 govuk-!-margin-bottom-4">
           <input
             class="govuk-checkboxes__input"
             id="doesNotExpire"
@@ -178,7 +181,7 @@
         </div>
       </div>
 
-      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+      <app-seperator-line></app-seperator-line>
 
       <div class="govuk-button-group govuk-!-margin-top-8">
         <button type="submit" class="govuk-button govuk-!-margin-right-9">Continue</button>
