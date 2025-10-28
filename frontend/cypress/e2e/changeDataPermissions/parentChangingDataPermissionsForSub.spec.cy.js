@@ -65,6 +65,8 @@ describe('Parent changing data permissions for a subsidiary', () => {
 
   radioButtonLabels.forEach((radioButtonLabel, index) => {
     it(`subsidiary permission is changed to ${radioButtonLabel}`, () => {
+      cy.intercept('POST', '/api/establishment/*/dataPermissions').as('dataPermissions');
+
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-owner"]`).contains('Parent');
 
       cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data permissions').click();
@@ -75,6 +77,8 @@ describe('Parent changing data permissions for a subsidiary', () => {
 
       cy.getByLabel(radioButtonLabel).click();
       cy.contains('Save and return').click();
+
+      cy.wait('@dataPermissions');
 
       cy.contains(`You've changed data permissions for ${subsidiaryWorkplaceName}`);
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-permission"]`).contains(dataPermissions[index]);

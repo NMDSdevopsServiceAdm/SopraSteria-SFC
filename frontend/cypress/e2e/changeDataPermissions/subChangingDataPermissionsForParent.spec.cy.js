@@ -17,6 +17,8 @@ describe('Subsidiary changing data permissions for their parent to view their wo
 
   radioButtonLabels.forEach((radioButtonLabel, index) => {
     it(`parent permission is changed to ${radioButtonLabel}`, () => {
+      cy.intercept('POST', '/api/establishment/*/dataPermissions').as('dataPermissions');
+
       cy.get('a').contains('Change data permissions').click();
 
       //Change data permissions
@@ -25,6 +27,8 @@ describe('Subsidiary changing data permissions for their parent to view their wo
 
       cy.getByLabel(radioButtonLabel).click();
       cy.contains('Save and return').click();
+
+      cy.wait('@dataPermissions');
 
       cy.contains(`You've changed data permissions for ${parentName}`);
     });
