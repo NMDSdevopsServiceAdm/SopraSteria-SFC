@@ -8,7 +8,7 @@ import {
 } from '../../support/page_objects/createNewWorkplaceForms';
 
 describe('Parent changing data permissions for a subsidiary', () => {
-  const subsidiaryWorkplaceName = 'Test workplace for data permissions';
+  const subsidiaryWorkplaceName = 'Workplace for data permissions';
 
   before(() => {
     cy.deleteTestWorkplaceFromDb(subsidiaryWorkplaceName);
@@ -67,7 +67,7 @@ describe('Parent changing data permissions for a subsidiary', () => {
     it(`subsidiary permission is changed to ${radioButtonLabel}`, () => {
       cy.get('[data-cy="workplace-data-owner"]').contains('Parent');
 
-      const workplacePanel = cy.get('[ng-reflect-sub-workplace-number="0"]');
+      const workplacePanel = cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`);
 
       workplacePanel.contains('Change data permissions').click();
 
