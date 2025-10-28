@@ -47,7 +47,6 @@ describe('Parent changing data permissions for a subsidiary', () => {
   });
 
   beforeEach(() => {
-    cy.reload();
     cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     cy.get('a').contains('Your other workplaces').click();
   });
@@ -66,6 +65,7 @@ describe('Parent changing data permissions for a subsidiary', () => {
   radioButtonLabels.forEach((radioButtonLabel, index) => {
     it(`subsidiary permission is changed to ${radioButtonLabel}`, () => {
       cy.intercept('POST', '/api/establishment/*/dataPermissions').as('dataPermissions');
+      cy.intercept('GET', '/api/establishment/*/childWorkplaces*').as('childWorkplaces');
 
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-owner"]`).contains('Parent');
 
@@ -79,6 +79,7 @@ describe('Parent changing data permissions for a subsidiary', () => {
       cy.contains('Save and return').click();
 
       cy.wait('@dataPermissions');
+      cy.wait('@childWorkplaces');
 
       cy.contains(`You've changed data permissions for ${subsidiaryWorkplaceName}`);
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-permission"]`).contains(dataPermissions[index]);

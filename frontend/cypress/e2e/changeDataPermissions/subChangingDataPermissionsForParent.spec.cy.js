@@ -4,7 +4,6 @@ import { SubEstablishment } from '../../support/mockEstablishmentData';
 
 describe('Subsidiary changing data permissions for their parent to view their workplace', () => {
   beforeEach(() => {
-    cy.reload();
     cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
   });
 
@@ -15,7 +14,7 @@ describe('Subsidiary changing data permissions for their parent to view their wo
     'No access to your data, linked only',
   ];
 
-  radioButtonLabels.forEach((radioButtonLabel, index) => {
+  radioButtonLabels.forEach((radioButtonLabel) => {
     it(`parent permission is changed to ${radioButtonLabel}`, () => {
       cy.intercept('POST', '/api/establishment/*/dataPermissions').as('dataPermissions');
 
