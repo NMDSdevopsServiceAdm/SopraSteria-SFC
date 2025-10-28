@@ -2,6 +2,7 @@
 
 .asc-number-input {
   display: flex;
+  position: relative;
   flex-direction: row;
   align-items: center;
 
@@ -18,6 +19,11 @@
     &:first-of-type {
       margin-left: -2.5em;
     }
+  }
+
+  span.asc-number-input--suffix {
+    position: absolute;
+    left: 8em;
   }
 
   input {

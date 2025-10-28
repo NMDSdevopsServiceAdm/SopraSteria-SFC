@@ -5,10 +5,11 @@ import { SharedModule } from '@shared/shared.module';
 import { AddAndManageTrainingCoursesComponent } from './add-and-manage-training-courses/add-and-manage-training-courses.component';
 import { TrainingCourseRoutingModule } from './training-course-routing.module';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
+import { TrainingCourseDetailsComponent } from './training-course-details/training-course-details.component';
 
 @NgModule({
   imports: [CommonModule, TrainingCourseRoutingModule, ReactiveFormsModule, SharedModule],
-  declarations: [AddAndManageTrainingCoursesComponent],
+  declarations: [AddAndManageTrainingCoursesComponent, TrainingCourseDetailsComponent],
   providers: [TrainingCourseResolver],
 })
 export class TrainingCourseModule {}

@@ -1,12 +1,15 @@
+import { DeliveredBy, HowWasItDelivered } from './training.model';
+import { YesNoDontKnow } from './YesNoDontKnow.enum';
+
 export type TrainingCourse = {
   id: number;
   uid: string;
   trainingCategoryId: number;
   name: string;
-  accredited: 'Yes' | 'No' | "Don't know";
-  deliveredBy: 'In-house staff' | 'External provider';
+  accredited: YesNoDontKnow;
+  deliveredBy: DeliveredBy;
   externalProviderName: string;
-  howWasItDelivered: 'Face to face' | 'Online';
+  howWasItDelivered: HowWasItDelivered;
   doesNotExpire: boolean;
   validityPeriodInMonth: number;
 };

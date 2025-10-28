@@ -10,6 +10,7 @@ import { GetTrainingCoursesResponse, TrainingCourse } from '@core/model/training
   providedIn: 'root',
 })
 export class TrainingCourseService {
+  private _newTrainingCourseToBeAdded: Partial<TrainingCourse>;
   constructor(private http: HttpClient) {}
 
   public getAllTrainingCourses(establishmentUid: string): Observable<Array<TrainingCourse>> {
@@ -39,5 +40,13 @@ export class TrainingCourseService {
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse`,
       props,
     );
+  }
+
+  public get newTrainingCourseToBeAdded(): Partial<TrainingCourse> {
+    return this._newTrainingCourseToBeAdded;
+  }
+
+  public set newTrainingCourseToBeAdded(props: Partial<TrainingCourse>) {
+    this._newTrainingCourseToBeAdded = props;
   }
 }

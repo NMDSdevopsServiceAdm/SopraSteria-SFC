@@ -53,7 +53,7 @@
               <div class="govuk-util__float-right" *ngIf="tab === 'home'" data-testid="contact-info">
                 <div
                   *ngIf="
-                    (workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING') ||
+                    (workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus !== 'PENDING') ||
                     (canDeleteEstablishment && isParentSubsidiaryView)
                   "
                 >
@@ -111,34 +111,27 @@
                   <li>
                     <a
                       [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
-                      type="button"
+                      role="button"
                       class="asc-button-menu__item"
-                      data-module="govuk-button"
-                      data-govuk-button-init=""
-                      tabindex="-1"
                     >
                       Add multiple training records
                     </a>
                   </li>
                   <li>
-                    <button
-                      type="button"
+                    <a
+                      [routerLink]="['/workplace', workplace.uid, 'training-course', 'add-and-manage-training-courses']"
+                      href="#"
+                      role="button"
                       class="asc-button-menu__item"
-                      data-module="govuk-button"
-                      data-govuk-button-init=""
-                      tabindex="-1"
                     >
                       Add and manage training courses
-                    </button>
+                    </a>
                   </li>
                   <li>
                     <a
                       [routerLink]="['/workplace', workplace.uid, 'add-and-manage-mandatory-training']"
-                      type="button"
+                      role="button"
                       class="asc-button-menu__item"
-                      data-module="govuk-button"
-                      data-govuk-button-init=""
-                      tabindex="-1"
                     >
                       Add a mandatory training category
                     </a>
@@ -146,11 +139,8 @@
                   <li>
                     <a
                       [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
-                      type="button"
+                      role="button"
                       class="asc-button-menu__item"
-                      data-module="govuk-button"
-                      data-govuk-button-init=""
-                      tabindex="-1"
                     >
                       Manage expiry alerts
                     </a>

@@ -2,15 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ButtonMenuComponent } from './button-menu.component';
 
-fdescribe('ButtonMenuComponent', () => {
+describe('ButtonMenuComponent', () => {
   let component: ButtonMenuComponent;
   let fixture: ComponentFixture<ButtonMenuComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ButtonMenuComponent]
-    })
-    .compileComponents();
+      declarations: [ButtonMenuComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ButtonMenuComponent);
     component = fixture.componentInstance;
@@ -23,13 +22,13 @@ fdescribe('ButtonMenuComponent', () => {
 
   it('should initially set the sub-menu to be closed', () => {
     const buttonMenu = fixture.nativeElement.querySelector('button');
-    expect(buttonMenu.getAttribute('aria-expanded')).toEqual("false");
+    expect(buttonMenu.getAttribute('aria-expanded')).toEqual('false');
   });
 
   it('should open the sub-menu when clicked', () => {
     const buttonMenu = fixture.nativeElement.querySelector('button');
     buttonMenu.click();
     fixture.detectChanges();
-    expect(buttonMenu.getAttribute('aria-expanded')).toEqual("true");
+    expect(buttonMenu.getAttribute('aria-expanded')).toEqual('true');
   });
 });

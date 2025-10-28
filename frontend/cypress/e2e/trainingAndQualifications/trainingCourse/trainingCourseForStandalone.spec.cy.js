@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
+import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Training course for standalone workplace edit user', () => {
   const establishmentID = StandAloneEstablishment.id;
@@ -20,11 +21,10 @@ describe('Training course for standalone workplace edit user', () => {
     cy.loginAsUser(StandAloneEstablishment.editUserLoginName, Cypress.env('userPassword'));
   });
 
-  // TODO: enable this test after the link to training course page is added to new button
-  it.skip('should let user visit the training course main page from training and qualification tab', () => {
+  it('should let user visit the training course main page from training and qualification tab', () => {
     onHomePage.clickTab('Training and qualifications');
-    cy.get('button').contains('Add and manage training').click();
-    cy.get('a').contains('Add and manager training courses').click();
+    cy.contains('Add and manage training').click();
+    cy.get('a').contains('Add and manage training courses').click();
 
     cy.get('h1').should('contain.text', 'Add and manage training courses for your workplace');
     cy.get('[data-testid="training-course-table"]')
