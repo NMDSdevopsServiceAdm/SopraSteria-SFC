@@ -58,7 +58,7 @@
             </ng-container>
 
             <ng-template #singleRecord>
-              <p class="govuk-body govuk-!-margin-bottom-1" data-testid="trainingCategoryDisplay">
+              <p class="govuk-body govuk-!-margin-bottom-4" data-testid="trainingCategoryDisplay">
                 <span class="govuk-util__block"><b>Training category</b></span>
                 <span class="govuk-util__block govuk-!-margin-top-2"
                   >{{ category }}
@@ -71,10 +71,10 @@
                   >
                 </span>
               </p>
-            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 " style="width: 150%"/>
+            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 " style="width: 150%"/>
             </ng-template>
 
-            <div class="govuk-form-group govuk-!-margin-top-4" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
+            <div class="govuk-form-group govuk-!-margin-bottom-4" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
               <label class="govuk-label" for="title"> Training name </label>
               <span *ngIf="submitted && form.get('title').invalid" id="title-error" class="govuk-error-message">
                 <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('title') }}
@@ -87,13 +87,13 @@
                 name="title"
                 type="text"
               />
-              <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-2" style="width: 150%"/>
-            </div>
 
-            <div class="govuk-form-group">
+            </div>
+           <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+            <div class="govuk-form-group govuk-!-margin-bottom-4">
               <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend">Is the training course accredited?</legend>
-                <div class="govuk-radios govuk-!-margin-bottom-2">
+                <div class="govuk-radios ">
                   <div class="govuk-radios__item">
                     <input
                       class="govuk-radios__input"
@@ -126,14 +126,14 @@
                   </div>
                 </div>
               </fieldset>
-               <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4" style="width: 150%"/>
+
             </div>
+   <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
 
 
-
-          <div class="govuk-form-group">
+          <div class="govuk-form-group govuk-!-margin-bottom-4">
           <legend class="govuk-fieldset__legend">Who delivered the training course?</legend>
-           <div class="govuk-radios govuk-radios--conditional govuk-!-margin-bottom-2">
+           <div class="govuk-radios govuk-radios--conditional ">
             <ng-container *ngFor="let option of options; let idx = index">
               <div class="govuk-radios__item">
                 <input
@@ -170,10 +170,10 @@
               </div>
             </ng-container>
           </div>
-               <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4" style="width: 150%"/>
-            </div>
 
-              <div class="govuk-form-group">
+            </div>
+       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+              <div class="govuk-form-group govuk-!-margin-bottom-4">
               <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend"> How was this training course delivered?</legend>
                 <div class="govuk-radios govuk-!-margin-bottom-2">
@@ -199,9 +199,10 @@
                   </div>
                 </div>
               </fieldset>
-               <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4" style="width: 150%"/>
+
             </div>
-           <div class="govuk-form-group govuk-!-margin-top-4">
+                <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+           <div class="govuk-form-group govuk-!-margin-bottom-4">
               <label class="govuk-label" for="title"> How many months is the training valid for before it expires? </label>
             <app-number-input-with-buttons
             #numberInputRef
@@ -210,8 +211,9 @@
 
           >
           </app-number-input-with-buttons>
-            </div>
-    <div class="govuk-form-group ">
+         </div>
+
+    <div class="govuk-form-group govuk-!-margin-bottom-4">
         <div class="govuk-checkboxes">
         <div class="govuk-checkboxes__item">
           <input
@@ -227,12 +229,14 @@
             This training does not expire
           </label>
         </div>
-         <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-2" style="width: 150%"/>
+
       </div>
     </div>
 
+         <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
 
-          <div class="govuk-form-group">
+
+          <div class="govuk-form-group govuk-!-margin-bottom-4">
             <div class="govuk-grid-row ">
             <div class="govuk-grid-column-one-half">
                  <div
@@ -280,8 +284,9 @@
               </div>
 
              </div>
-               <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-top-3" style="width: 150%"/>
+
              </div>
+                        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
 
      </div>
 
