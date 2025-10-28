@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails, ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { DataPermissions } from '@core/model/my-workplaces.model';
+import { DataPermissions, Workplace } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -35,6 +35,7 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
   public parentName: string;
   public parentUid: string;
   public posssesivePronounText: string;
+  public childWorkplaces: Workplace[];
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
@@ -53,6 +54,7 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
 
   ngOnInit() {
     this.uidToChangeDataPermissionsFor = this.route.snapshot?.queryParams?.changeDataPermissionsFor;
+    this.childWorkplaces = this.route.snapshot.data?.childWorkplaces?.childWorkplaces;
     this.workplace = this.route.snapshot.data.establishment;
     this.isParent = this.workplace?.isParent;
     this.posssesivePronounText = this.isParent ? 'their' : 'your';
@@ -124,14 +126,11 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
   }
 
   public getWorkplaceToChangeDataPermissionsFor(): void {
-    if (this.uidToChangeDataPermissionsFor) {
-      this.subscriptions.add(
-        this.establishmentService.getEstablishment(this.uidToChangeDataPermissionsFor).subscribe((workplace) => {
-          if (workplace) {
-            this.setupVariables(workplace);
-          }
-        }),
-      );
+    if (this.uidToChangeDataPermissionsFor && this.childWorkplaces.length > 0) {
+      let childWorkplace: Workplace;
+
+      childWorkplace = this.childWorkplaces.find((workplace) => workplace?.uid === this.uidToChangeDataPermissionsFor);
+      this.setupVariables(childWorkplace);
     } else {
       this.setupVariables(this.workplace);
     }

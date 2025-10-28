@@ -97,7 +97,7 @@ const routes: Routes = [
   {
     path: 'change-data-permissions',
     component: ChangeDataPermissionsComponent,
-    resolve: { establishment: WorkplaceResolver },
+    resolve: { establishment: WorkplaceResolver, childWorkplaces: ChildWorkplacesResolver },
     data: { title: 'Change Data Permissions' },
   },
   {

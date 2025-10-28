@@ -27,8 +27,16 @@ describe('ChangeDataPermissionsComponent', () => {
     parentName: parentWorkplace.name,
     parentUid: parentWorkplace.uid,
   };
+  const subsidiaryWorkplace2 = {
+    ...establishment,
+    name: 'Subsidiary Workplace 2',
+    uid: 'subsidiary-workplace-2-uid',
+    parentName: parentWorkplace.name,
+    parentUid: parentWorkplace.uid,
+  };
 
   const setup = async (overrides: any = {}) => {
+    const childWorkplaces = overrides.childWorkplaces ?? null;
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
     const setupTools = await render(ChangeDataPermissionsComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -60,6 +68,7 @@ describe('ChangeDataPermissionsComponent', () => {
               },
               data: {
                 establishment: overrides?.workplaceChangingPermission ?? parentWorkplace,
+                childWorkplaces: { childWorkplaces },
               },
             },
           },
@@ -72,10 +81,6 @@ describe('ChangeDataPermissionsComponent', () => {
     const injector = getTestBed();
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-
-    const getEstablishmentSpy = spyOn(establishmentService, 'getEstablishment').and.callFake(() =>
-      of(subsidiaryWorkplace),
-    );
 
     const setDataPermissionSpy = spyOn(establishmentService, 'setDataPermission').and.callFake(() =>
       of(subsidiaryWorkplace),
@@ -91,7 +96,6 @@ describe('ChangeDataPermissionsComponent', () => {
       ...setupTools,
       component,
       backServiceSpy,
-      getEstablishmentSpy,
       alertSpy,
       routerSpy,
       setDataPermissionSpy,
@@ -138,23 +142,13 @@ describe('ChangeDataPermissionsComponent', () => {
     const previousUrl = '/workplace/view-all-workplaces';
     let overrides = {
       previousUrl,
-      establishmentService: {
-        establishment: { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: 'Workplace' },
-      },
       workplaceChangingPermission: parentWorkplace,
       uidToChangeDataPermissionsFor: subsidiaryWorkplace?.uid,
+      childWorkplaces: [subsidiaryWorkplace, subsidiaryWorkplace2],
     };
 
-    it('should call getEstablishment to get the sub workplace to change data permissions for', async () => {
-      const { component, getEstablishmentSpy } = await setup(overrides);
-
-      component.ngOnInit();
-
-      expect(getEstablishmentSpy).toHaveBeenCalledWith(subsidiaryWorkplace.uid);
-    });
-
     it('should show the heading and caption', async () => {
-      const { component, getByTestId } = await setup(overrides);
+      const { getByTestId } = await setup(overrides);
 
       const heading = getByTestId('heading');
 
@@ -163,7 +157,7 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the name of the workplace to change data permissions for', async () => {
-      const { component, getAllByText } = await setup(overrides);
+      const { getAllByText } = await setup(overrides);
 
       expect(getAllByText(subsidiaryWorkplace.name).length).toEqual(2);
     });
@@ -197,9 +191,10 @@ describe('ChangeDataPermissionsComponent', () => {
         it(`should show the correct text when the subsidiary has ${permission} as the data permission`, async () => {
           overrides = {
             ...overrides,
-            establishmentService: {
-              establishment: { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
-            },
+            childWorkplaces: [
+              { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
+              subsidiaryWorkplace2,
+            ],
           };
 
           const { getByTestId } = await setup(overrides);
@@ -217,12 +212,14 @@ describe('ChangeDataPermissionsComponent', () => {
           ['can only view their workplace details', 'are linked by name only and are unable to view any of their data'],
           ['can only view their workplace details', 'can view their workplace details and their staff records'],
         ];
+
         it(`should show the correct bullet list when the data permission on the subsidiary is ${permission}`, async () => {
           overrides = {
             ...overrides,
-            establishmentService: {
-              establishment: { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
-            },
+            childWorkplaces: [
+              { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
+              subsidiaryWorkplace2,
+            ],
           };
 
           const { getByText } = await setup(overrides);
@@ -235,9 +232,10 @@ describe('ChangeDataPermissionsComponent', () => {
         it(`should call setDataPermission with ${permission}`, async () => {
           overrides = {
             ...overrides,
-            establishmentService: {
-              establishment: { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
-            },
+            childWorkplaces: [
+              { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
+              subsidiaryWorkplace2,
+            ],
           };
 
           const { fixture, setDataPermissionSpy, getByText } = await setup(overrides);
@@ -257,9 +255,10 @@ describe('ChangeDataPermissionsComponent', () => {
         it(`should prefill the correct radio button when permission is ${permission}`, async () => {
           overrides = {
             ...overrides,
-            establishmentService: {
-              establishment: { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
-            },
+            childWorkplaces: [
+              { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
+              subsidiaryWorkplace2,
+            ],
           };
 
           const { component, fixture } = await setup(overrides);
