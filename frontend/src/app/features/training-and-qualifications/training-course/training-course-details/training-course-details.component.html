@@ -81,7 +81,7 @@
               </label>
             </div>
             <div
-              class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-1"
+              class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-1 govuk-!-margin-bottom-1"
               [class.govuk-radios__conditional--hidden]="
                 form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider
               "
@@ -160,7 +160,10 @@
         ></app-number-input-with-buttons>
       </div>
 
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('doesNotExpire').invalid">
+      <div
+        class="govuk-form-group govuk-!-margin-bottom-4"
+        [class.govuk-form-group--error]="submitted && form.get('doesNotExpire').invalid"
+      >
         <span
           *ngIf="submitted && form.get('doesNotExpire').invalid"
           id="doesNotExpire-error"
@@ -168,7 +171,7 @@
         >
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('doesNotExpire') }}
         </span>
-        <div class="govuk-checkboxes__item govuk-!-margin-top-4 govuk-!-margin-bottom-4">
+        <div class="govuk-checkboxes__item govuk-!-margin-top-4">
           <input
             class="govuk-checkboxes__input"
             id="doesNotExpire"
