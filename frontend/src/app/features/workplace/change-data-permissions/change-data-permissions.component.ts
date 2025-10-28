@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails, ErrorDefinition } from '@core/model/errorSummary.model';
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-change-data-permissions',
   templateUrl: './change-data-permissions.component.html',
 })
-export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit {
+export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   protected subscriptions: Subscription = new Subscription();
   public form: UntypedFormGroup;
@@ -94,7 +94,9 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit {
     this.currentDataOwner = workplace.dataOwner;
     this.parentName = workplace.parentName;
     this.parentUid = workplace.parentUid;
+
     this.prefill(this.currentDataPermission);
+
     if (this.uidToChangeDataPermissionsFor) {
       this.workplaceNameToChangeDataPermissionsFor = workplace.name;
     } else {
