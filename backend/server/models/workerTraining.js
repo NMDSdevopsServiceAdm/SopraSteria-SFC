@@ -130,7 +130,7 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'category',
     });
-    WorkerTraining.hasMany(models.trainingCourse, {
+    WorkerTraining.belongsTo(models.trainingCourse, {
       foreignKey: 'trainingCourseFK',
       sourceKey: 'id',
       as: 'trainingCourse',

@@ -22,6 +22,7 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor, On
   @Input() max: number = 999;
   @Input() inputId: string = 'number-input';
   @Input() hasError: boolean = false;
+  @Input() suffix: string = null;
 
   @ViewChild('inputEl', { static: true }) inputEl: ElementRef<HTMLInputElement>;
 

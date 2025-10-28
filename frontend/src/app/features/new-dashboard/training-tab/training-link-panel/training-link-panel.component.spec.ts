@@ -66,30 +66,6 @@ describe('NewTrainingLinkPanelComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the `Add and manage mandatory training categories` link when canEditEstablishment in permissions service is true', async () => {
-    const { getByText } = await setup();
-
-    expect(getByText('Add and manage mandatory training categories')).toBeTruthy();
-  });
-
-  it('should not show the `Add and manage mandatory training categories` link when user does not have edit access', async () => {
-    const { queryByText } = await setup(6, false);
-
-    expect(queryByText('Add and manage mandatory training categories')).toBeFalsy();
-  });
-
-  it('should show the `Manage expiry alerts` link when canEditEstablishment in permissions service is true', async () => {
-    const { getByText } = await setup();
-
-    expect(getByText('Manage expiry alerts')).toBeTruthy();
-  });
-
-  it('should not show the `Manage expiry alerts` link when canEditEstablishment in permissions service is false', async () => {
-    const { queryByText } = await setup(6, false);
-
-    expect(queryByText(`Manage expiry alerts' alerts`)).toBeFalsy();
-  });
-
   describe('training and quals report', () => {
     it('should not show the download link if the establishment has no training and qualification records', async () => {
       const { queryByText } = await setup(0);

@@ -143,6 +143,8 @@ import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
 import { WorkerPaginationComponent } from './components/worker-pagination/worker-pagination.component';
 import { CookieBannerComponent } from './components/cookie-banner/cookie-banner.component';
 import { A11yModule } from '@angular/cdk/a11y';
+import { ButtonMenuComponent } from '@shared/components/button-menu/button-menu.component';
+import { SeperatorLineComponent } from './components/seperator-line/seperator-line.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule, A11yModule],
@@ -285,6 +287,8 @@ import { A11yModule } from '@angular/cdk/a11y';
     DetailsDhaExamplesComponent,
     FormatWhatDhaPipe,
     CookieBannerComponent,
+    ButtonMenuComponent,
+    SeperatorLineComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -418,6 +422,7 @@ import { A11yModule } from '@angular/cdk/a11y';
     DetailsDhaExamplesComponent,
     FormatWhatDhaPipe,
     CookieBannerComponent,
+    SeperatorLineComponent,
   ],
   providers: [
     DialogService,

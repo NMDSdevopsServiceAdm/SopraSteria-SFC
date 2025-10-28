@@ -99,6 +99,7 @@ import { SatisfactionSurveyComponent } from './features/satisfaction-survey/sati
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { SortByService } from '@core/services/sort-by.service';
+import { TrainingCoursesLoginMessage } from '@features/login/training-courses-login-message/training-courses-login-message.component';
 
 @NgModule({
   declarations: [
@@ -143,6 +144,7 @@ import { SortByService } from '@core/services/sort-by.service';
     UserAccountNotFoundComponent,
     VacanciesAndTurnoverLoginMessage,
     HelpAndTipsButtonComponent,
+    TrainingCoursesLoginMessage,
   ],
   imports: [
     AppRoutingModule,

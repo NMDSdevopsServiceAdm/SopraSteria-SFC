@@ -3,6 +3,9 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 
 import { TrainingCourseService } from './training-course.service';
+import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
+import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 
 describe('TrainingCourseService', () => {
   let service: TrainingCourseService;
@@ -48,13 +51,13 @@ describe('TrainingCourseService', () => {
       const mockTrainingCourse = {
         trainingCategoryId: 1,
         name: 'Care skills and knowledge',
-        accredited: 'Yes' as const,
-        deliveredBy: 'In-house staff' as const,
+        accredited: YesNoDontKnow.Yes,
+        deliveredBy: DeliveredBy.InHouseStaff,
         externalProviderName: null,
-        howWasItDelivered: 'Face to face' as const,
+        howWasItDelivered: HowWasItDelivered.FaceToFace,
         doesNotExpire: false,
         validityPeriodInMonth: 24,
-      };
+      } as TrainingCourse;
 
       service.createTrainingCourse(establishmentUid, mockTrainingCourse).subscribe();
 
