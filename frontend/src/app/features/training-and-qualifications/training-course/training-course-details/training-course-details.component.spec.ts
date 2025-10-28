@@ -16,7 +16,7 @@ import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
 
-describe('AddAndManageTrainingCoursesComponent', () => {
+describe('TrainingCourseDetailsComponent', () => {
   async function setup(overrides: any = {}) {
     const newTrainingCourseToBeAdded = overrides?.newTrainingCourseToBeAdded;
     const journeyType = overrides?.journeyType ?? 'Add';
