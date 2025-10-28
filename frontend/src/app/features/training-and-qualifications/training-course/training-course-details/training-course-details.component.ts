@@ -18,7 +18,6 @@ type JourneyType = 'Add' | 'Edit';
 @Component({
   selector: 'app-training-course-details',
   templateUrl: './training-course-details.component.html',
-  styleUrl: './training-course-details.component.scss',
 })
 export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
