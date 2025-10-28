@@ -58,6 +58,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public maxNumberPerJobRole = 999;
   public totalNumber = 0;
 
+  public options = [
+    { value: 'In-house staff', text: 'In-house staff' },
+    { value: 'External provider', text: 'External provider' },
+  ];
+
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected route: ActivatedRoute,

@@ -128,45 +128,36 @@
               </fieldset>
                <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4" style="width: 150%"/>
             </div>
-<!--
-            <div class="govuk-radios govuk-radios--conditional">
-              <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend">Who delivered the training course?</legend>
-                <div class="govuk-radios govuk-!-margin-bottom-2">
-                  <div class="govuk-radios__item">
-                    <input
-                      class="govuk-radios__input"
-                      id="accredited-yes"
-                      [formControlName]="'accredited'"
-                      type="radio"
-                      value="Yes"
-                    />
-                    <label class="govuk-label govuk-radios__label" for="accredited-yes">In-house staff </label>
-                  </div>
-                  <div class="govuk-radios__item">
-                    <input
-                      class="govuk-radios__input"
-                      id="accredited-no"
-                      [formControlName]="'accredited'"
-                      type="radio"
-                      value="No"
-                        (click)="onExternalProviderSelect('External provider')"
-                    />
-                    <label class="govuk-label govuk-radios__label" for="accredited-no">External provider</label>
-                  </div>
-                </div>
 
-                       <div
-                *ngIf="option.value === 'Other'"
+
+
+          <div class="govuk-form-group">
+          <legend class="govuk-fieldset__legend">Who delivered the training course?</legend>
+           <div class="govuk-radios govuk-radios--conditional govuk-!-margin-bottom-2">
+            <ng-container *ngFor="let option of options; let idx = index">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [formControlName]="'employerType'"
+                  id="employerType-{{ idx }}"
+                  name="employerType"
+                  type="radio"
+                  [value]="option.value"
+                   (click)="onExternalProviderSelect(option.value)"
+                />
+                <label class="govuk-label govuk-radios__label" for="employerType-{{ idx }}">
+                  {{ option.text }}
+                </label>
+              </div>
+
+              <div
+                *ngIf="option.value === 'External provider'"
                 class="govuk-radios__conditional"
-                [class.govuk-radios__conditional--hidden]="!showOtherInputField"
+                [class.govuk-radios__conditional--hidden]="!showExternalProviderInputField"
                 id="conditional-employerType-conditional-1"
+                data-testid="conditionalTextBox"
               >
                 <div class="govuk-form-group">
-                  <label class="govuk-label" for="other"> Other employer type (optional)</label>
-                  <span *ngIf="submitted && form.get('other').invalid" id="other-error" class="govuk-error-message">
-                    <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('other') }}
-                  </span>
                   <input
                     class="govuk-input govuk-input--width-20"
                     [class.govuk-input--error]="submitted && form.get('other').invalid"
@@ -177,11 +168,10 @@
                   />
                 </div>
               </div>
-              </fieldset>
+            </ng-container>
+          </div>
                <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4" style="width: 150%"/>
-            </div> -->
-
-
+            </div>
 
               <div class="govuk-form-group">
               <fieldset class="govuk-fieldset">
@@ -297,9 +287,8 @@
 
           <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
             <a
-              class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
+              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center"
               *ngIf="trainingRecordId"
-              draggable="false"
               (click)="navigateToDeleteTrainingRecord()"
               data-testid="deleteButton"
             >
@@ -307,6 +296,21 @@
               <span class="govuk-!-margin-left-1"> Delete this training record </span></a
             >
           </div>
+          <div class="govuk-grid-column-one-third">
+            <a
+              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center govuk-link--no-visited-state"
+              draggable="false"
+              data-testid="deleteButton"
+            >
+              <img src="/assets/images/Addtraining.svg" alt="" />
+              <span class="govuk-!-margin-left-1 govuk__nowrap">Include training course details </span>
+              </a
+            >
+          </div>
+
+
+
+
         </div>
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
           <div class="govuk-grid-column-full">
