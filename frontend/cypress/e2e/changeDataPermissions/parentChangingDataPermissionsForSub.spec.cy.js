@@ -78,7 +78,7 @@ describe('Parent changing data permissions for a subsidiary', () => {
       cy.getByLabel(radioButtonLabel).click();
       cy.contains('Save and return').click();
 
-      cy.get('[data-cy="workplace-data-permission"]').contains(dataPermissions[index]);
+      cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-permission"]`).contains(dataPermissions[index]);
       cy.contains(`You've changed data permissions for ${subsidiaryWorkplaceName}`);
     });
   });

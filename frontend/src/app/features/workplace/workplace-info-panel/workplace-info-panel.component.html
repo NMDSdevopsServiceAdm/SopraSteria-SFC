@@ -27,7 +27,7 @@
               data-testid="red-flag"
             />
             <a
-              *ngIf="!(workplace.dataPermissions === 'None' && workplace.dataOwner == 'Workplace'); else linkedOnly"
+              *ngIf="!(workplace.dataPermissions === 'None' && workplace.dataOwner === 'Workplace'); else linkedOnly"
               href="#"
               (click)="setEmployerType($event)"
               class="govuk-util__float-right"
@@ -61,7 +61,7 @@
         <p class="govuk-!-margin-bottom-0">{{ workplace.dataOwner }}</p>
       </div>
 
-      <div class="govuk-grid-column-one-half" style="width: 45%" data-cy="workplace-data-permission">
+      <div class="govuk-grid-column-one-half" style="width: 45%" [attr.data-cy]="workplace.name + '-data-permission'">
         <p class="govuk-!-margin-bottom-1">
           <strong>{{ workplace.dataOwner | workplacePermissionsBearer }} view only permissions</strong>
         </p>
