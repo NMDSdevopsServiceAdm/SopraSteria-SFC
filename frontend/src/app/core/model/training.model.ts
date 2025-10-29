@@ -7,6 +7,12 @@ export interface TrainingCategory {
   trainingCategoryGroup: string;
 }
 
+export type TrainingCategorySortedByGroup = Array<{
+  title: string;
+  descriptionText: string;
+  items: Array<{ label: string; id: number; seq: number }>;
+}>;
+
 export interface TrainingCategoryResponse {
   trainingCategories: TrainingCategory[];
 }
