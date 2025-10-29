@@ -38,6 +38,12 @@ class Training extends EntityValidator {
     this._category = null;
     this._title = null;
     this._accredited = null;
+    this._trainingCourseFK = null;
+    this._deliveredBy = null;
+    this._externalProviderName = null;
+    this._howWasItDelivered = null;
+    this._validityPeriodInMonth = null;
+    this._doesNotExpire = null;
     this._completed = null;
     this._expires = null;
     this._notes = null;
@@ -143,6 +149,25 @@ class Training extends EntityValidator {
   get accredited() {
     return this._accredited;
   }
+  get trainingCourseFK() {
+    return this._trainingCourseFK;
+  }
+  get deliveredBy() {
+    return this._deliveredBy;
+  }
+  get externalProviderName() {
+    return this._externalProviderName;
+  }
+  get howWasItDelivered() {
+    return this._howWasItDelivered;
+  }
+  get validityPeriodInMonth() {
+    return this._validityPeriodInMonth;
+  }
+  get doesNotExpire() {
+    return this._doesNotExpire;
+  }
+
   get completed() {
     return this._completed;
   }
@@ -171,6 +196,26 @@ class Training extends EntityValidator {
   set accredited(accredited) {
     this._accredited = accredited;
   }
+
+  set trainingCourseFK(trainingCourseFK) {
+    return (this._trainingCourseFK = trainingCourseFK);
+  }
+  set deliveredBy(deliveredBy) {
+    return (this._deliveredBy = deliveredBy);
+  }
+  set externalProviderName(externalProviderName) {
+    return (this._externalProviderName = externalProviderName);
+  }
+  set howWasItDelivered(howWasItDelivered) {
+    return (this._howWasItDelivered = howWasItDelivered);
+  }
+  set validityPeriodInMonth(validityPeriodInMonth) {
+    return (this._validityPeriodInMonth = validityPeriodInMonth);
+  }
+  set doesNotExpire(doesNotExpire) {
+    return (this._doesNotExpire = doesNotExpire);
+  }
+
   set completed(completed) {
     this._completed = completed;
   }
@@ -327,6 +372,68 @@ class Training extends EntityValidator {
     } else {
       validatedTrainingRecord.accredited = null;
     }
+    //deliveredBy
+    if (document.deliveredBy) {
+      const ALLOWED_VALUES = ['In-house staff', 'External provider'];
+      if (!ALLOWED_VALUES.includes(document.deliveredBy)) {
+        this._validations.push(
+          new ValidationMessage(ValidationMessage.WARNING, 120, `unexpected value - ${document.deliveredBy}`, [
+            'DeliveredBy',
+          ]),
+        );
+        this._log(
+          Training.LOG_ERROR,
+          `deliveredBy failed validation: deliveredBy failed validation: unexpected value - ${document.deliveredBy}`,
+        );
+        returnStatus = false;
+      }
+
+      validatedTrainingRecord.deliveredBy = document.deliveredBy;
+    } else {
+      validatedTrainingRecord.deliveredBy = null;
+    }
+
+    // externalProviderName
+    if (document.externalProviderName) {
+      validatedTrainingRecord.externalProviderName = document.externalProviderName;
+    } else {
+      validatedTrainingRecord.externalProviderName = null;
+    }
+
+    //howWasItDelivered
+    if (document.howWasItDelivered) {
+      const ALLOWED_VALUES = ['Face to face', 'E-learning'];
+      if (!ALLOWED_VALUES.includes(document.howWasItDelivered)) {
+        this._validations.push(
+          new ValidationMessage(ValidationMessage.WARNING, 120, `unexpected value - ${document.howWasItDelivered}`, [
+            'HowWasItDelivered',
+          ]),
+        );
+        this._log(
+          Training.LOG_ERROR,
+          `howWasItDelivered failed validation: howWasItDelivered failed validation: unexpected value - ${document.howWasItDelivered}`,
+        );
+        returnStatus = false;
+      }
+
+      validatedTrainingRecord.howWasItDelivered = document.howWasItDelivered;
+    } else {
+      validatedTrainingRecord.howWasItDelivered = null;
+    }
+
+    // doesNotExpire
+    if (document.doesNotExpire) {
+      validatedTrainingRecord.doesNotExpire = document.doesNotExpire;
+    } else {
+      validatedTrainingRecord.doesNotExpire = null;
+    }
+
+    // validityPeriodInMonth
+    if (document.validityPeriodInMonth) {
+      validatedTrainingRecord.validityPeriodInMonth = document.validityPeriodInMonth;
+    } else {
+      validatedTrainingRecord.validityPeriodInMonth = null;
+    }
 
     // completed
     if (document.completed) {
@@ -420,6 +527,11 @@ class Training extends EntityValidator {
         this.category = validatedTrainingRecord.trainingCategory;
         this.title = validatedTrainingRecord.title;
         this.accredited = validatedTrainingRecord.accredited;
+        this.deliveredBy = validatedTrainingRecord.deliveredBy;
+        this.externalProviderName = validatedTrainingRecord.externalProviderName;
+        this.howWasItDelivered = validatedTrainingRecord.howWasItDelivered;
+        this.validityPeriodInMonth = validatedTrainingRecord.validityPeriodInMonth;
+        this.doesNotExpire = validatedTrainingRecord.doesNotExpire;
         this.completed = validatedTrainingRecord.completed
           ? validatedTrainingRecord.completed.toJSON().slice(0, 10)
           : null;
@@ -489,6 +601,11 @@ class Training extends EntityValidator {
             categoryFk: this._category.id,
             title: this.title,
             accredited: this._accredited,
+            deliveredBy: this._deliveredBy,
+            externalProviderName: this._externalProviderName,
+            howWasItDelivered: this._howWasItDelivered,
+            validityPeriodInMonth: this._validityPeriodInMonth,
+            doesNotExpire: this._doesNotExpire,
             completed: this._completed,
             expires: this._expires,
             notes: this._notes,
@@ -538,6 +655,11 @@ class Training extends EntityValidator {
             categoryFk: this._category.id,
             title: this.title,
             accredited: this._accredited,
+            deliveredBy: this._deliveredBy,
+            externalProviderName: this._externalProviderName,
+            howWasItDelivered: this._howWasItDelivered,
+            validityPeriodInMonth: this._validityPeriodInMonth,
+            doesNotExpire: this._doesNotExpire,
             completed: this._completed,
             expires: this._expires,
             notes: this._notes,
@@ -637,6 +759,12 @@ class Training extends EntityValidator {
         };
         this._title = fetchResults.title;
         this._accredited = fetchResults.accredited;
+        this._deliveredBy = fetchResults.deliveredBy;
+        this._trainingCourseFK = fetchResults.trainingCourseFK;
+        this._externalProviderName = fetchResults.externalProviderName;
+        this._howWasItDelivered = fetchResults.howWasItDelivered;
+        this._validityPeriodInMonth = fetchResults.validityPeriodInMonth;
+        this._doesNotExpire = fetchResults.doesNotExpire;
         this._completed = fetchResults.completed ? new Date(fetchResults.completed).toISOString().slice(0, 10) : null;
         this._expires =
           fetchResults.expires !== null ? new Date(fetchResults.expires).toISOString().slice(0, 10) : null;
@@ -885,6 +1013,11 @@ class Training extends EntityValidator {
       trainingCategory: this.category,
       title: this.title ? this.title : undefined,
       accredited: this.accredited ? this.accredited : undefined,
+      deliveredBy: this.deliveredBy ? this.deliveredBy : undefined,
+      externalProviderName: this.externalProviderName ? this.externalProviderName : undefined,
+      howWasItDelivered: this.howWasItDelivered ? this.howWasItDelivered : undefined,
+      validityPeriodInMonth: this.validityPeriodInMonth ? this.validityPeriodInMonth : undefined,
+      doesNotExpire: this.doesNotExpire ? this.doesNotExpire : undefined,
       completed: this.completed ? this.completed : undefined,
       expires: this._expires !== null ? this.expires : undefined,
       notes: this._notes !== null ? this.notes : undefined,
