@@ -18,8 +18,8 @@ import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseCategoryComponent } from './training-course-category.component';
 
-fdescribe('TrainingCourseCategoryComponent', () => {
-  const mockTrainingCourse = {
+describe('TrainingCourseCategoryComponent', () => {
+  const mockTrainingCourseToBeAdded = {
     name: 'First aid course',
     accredited: YesNoDontKnow.Yes,
     deliveredBy: DeliveredBy.ExternalProvider,
@@ -31,7 +31,7 @@ fdescribe('TrainingCourseCategoryComponent', () => {
   const mockEstablishmentUid = 'mock-establishment-uid';
 
   async function setup(overrides: any = {}) {
-    const newTrainingCourseToBeAdded = overrides?.newTrainingCourseToBeAdded ?? mockTrainingCourse;
+    const newTrainingCourseToBeAdded = overrides?.newTrainingCourseToBeAdded ?? mockTrainingCourseToBeAdded;
     const journeyType = overrides?.journeyType ?? 'Add';
 
     const setupTools = await render(TrainingCourseCategoryComponent, {
@@ -50,7 +50,6 @@ fdescribe('TrainingCourseCategoryComponent', () => {
                 journeyType,
                 trainingCategories: trainingCategories,
               },
-
               root: { children: [], url: [''] },
             },
             parent: {
@@ -108,7 +107,7 @@ fdescribe('TrainingCourseCategoryComponent', () => {
     const { getByText } = await setup();
 
     expect(getByText('Training course name')).toBeTruthy();
-    expect(getByText(mockTrainingCourse.name)).toBeTruthy();
+    expect(getByText(mockTrainingCourseToBeAdded.name)).toBeTruthy();
 
     expect(getByText('Change').getAttribute('href')).toEqual('/details');
   });
@@ -179,7 +178,7 @@ fdescribe('TrainingCourseCategoryComponent', () => {
         userEvent.click(getByRole('button', { name: 'Save training course' }));
 
         const expectedProps = {
-          ...mockTrainingCourse,
+          ...mockTrainingCourseToBeAdded,
           trainingCategoryId: trainingCategories[0].id,
         };
         expect(createTrainingCourseSpy).toHaveBeenCalledWith(mockEstablishmentUid, expectedProps);
