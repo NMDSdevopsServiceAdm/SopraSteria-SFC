@@ -21,6 +21,11 @@ export interface TrainingRecordRequest {
   };
   title: string;
   accredited?: string;
+  deliveredBy?: string;
+  externalProviderName?: string;
+  howWasItDelivered?: string;
+  validityPeriodInMonth?: number;
+  doesNotExpire?: boolean;
   completed?: string;
   expires?: string;
   notes?: string;

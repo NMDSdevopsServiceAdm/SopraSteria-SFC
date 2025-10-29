@@ -6,6 +6,8 @@ import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import {
+  DeliveredBy,
+  HowWasItDelivered,
   TrainingCategory,
   TrainingCertificate,
   TrainingRecord,
@@ -25,7 +27,7 @@ import { Subscription } from 'rxjs';
 
 @Directive({})
 export class AddEditTrainingDirective implements OnInit, AfterViewInit {
-  @ViewChildren('numberInputRef') numberInputs: QueryList<NumberInputWithButtonsComponent>;
+  @ViewChild('validityPeriodInMonthRef') validityPeriodInMonth: NumberInputWithButtonsComponent;
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public submitted = false;
@@ -53,15 +55,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public multipleTrainingDetails: boolean;
   public trainingCertificates: TrainingCertificate[] = [];
   public submitButtonDisabled: boolean = false;
-  public showExternalProviderInputField = false;
-  public minNumberPerJobRole = 1;
-  public maxNumberPerJobRole = 999;
-  public totalNumber = 0;
-
-  public options = [
-    { value: 'In-house staff', text: 'In-house staff' },
-    { value: 'External provider', text: 'External provider' },
-  ];
+  public deliveredByOptions = DeliveredBy;
+  public howWasItDeliveredOptions = HowWasItDelivered;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -92,6 +87,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+    this.validityPeriodInMonth.registerOnChange((newValue) => this.handleValidityPeriodChange(newValue));
   }
 
   public checkForCategoryId(): void {
@@ -124,6 +120,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
         accredited: null,
+        deliveredBy: [null, { updateOn: 'change' }],
+        externalProviderName: null,
+        howWasItDelivered: null,
+        validityPeriodInMonth: null,
+        doesNotExpire: null,
         completed: this.formBuilder.group({
           day: null,
           month: null,
@@ -168,6 +169,26 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     );
   }
 
+  public handleValidityPeriodChange(newValue: string | number): void {
+    if (newValue && newValue !== '') {
+      this.clearFormControlAndKeepErrorMessages('doesNotExpire');
+    }
+  }
+
+  public handleDoesNotExpireChange(event: Event): void {
+    const checkboxTicked = (event.target as HTMLInputElement).checked;
+    if (checkboxTicked) {
+      this.clearFormControlAndKeepErrorMessages('validityPeriodInMonth');
+    }
+  }
+
+  private clearFormControlAndKeepErrorMessages(formControlName: string): void {
+    const formControl = this.form.get(formControlName);
+    const existingErrors = formControl.errors;
+    formControl.patchValue(null, { emitEvent: false });
+    formControl.setErrors(existingErrors);
+  }
+
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -182,6 +203,18 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
             message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
           },
         ],
+      },
+
+      {
+        item: 'validityPeriodInMonth',
+        type: [
+          { name: 'required', message: 'Enter the number of months' },
+          { name: 'pattern', message: 'Number of months must be between 1 and 999' },
+        ],
+      },
+      {
+        item: 'doesNotExpire',
+        type: [{ name: 'required', message: 'Confirm the training does not expire' }],
       },
       {
         item: 'completed',
@@ -251,7 +284,18 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     const trainingCategorySelected = this.trainingCategory;
 
-    const { title, accredited, completed, expires, notes } = this.form.controls;
+    const {
+      title,
+      accredited,
+      deliveredBy,
+      externalProviderName,
+      howWasItDelivered,
+      validityPeriodInMonth,
+      doesNotExpire,
+      completed,
+      expires,
+      notes,
+    } = this.form.controls;
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
     const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
 
@@ -261,6 +305,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       },
       title: title.value,
       accredited: accredited.value,
+      deliveredBy: deliveredBy.value,
+      externalProviderName: externalProviderName.value,
+      howWasItDelivered: howWasItDelivered.value,
+      validityPeriodInMonth: validityPeriodInMonth.value,
+      doesNotExpire: doesNotExpire.value,
       completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
       expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
       notes: notes.value,
@@ -341,9 +390,5 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   public toggleNotesOpen(): void {
     this.notesOpen = !this.notesOpen;
-  }
-
-  protected onExternalProviderSelect(radioValue: string): void {
-    this.showExternalProviderInputField = radioValue === 'External provider';
   }
 }
