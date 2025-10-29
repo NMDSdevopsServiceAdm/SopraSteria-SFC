@@ -73,7 +73,7 @@ fdescribe('TrainingCourseCategoryComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
     const trainingCourseService = injector.inject(TrainingCourseService);
     const createTrainingCourseSpy = spyOn(trainingCourseService, 'createTrainingCourse').and.returnValue(of(null));
@@ -156,7 +156,14 @@ fdescribe('TrainingCourseCategoryComponent', () => {
       expect(createTrainingCourseSpy).not.toHaveBeenCalled();
     });
 
-    it('should return to "Add and manage training courses" main page when Cancel button is clicked', async () => {});
+    it('should return to "Add and manage training courses" main page when Cancel button is clicked', async () => {
+      const { getByRole } = await setup();
+
+      const cancelButton = getByRole('button', { name: 'Cancel' });
+      expect(cancelButton.getAttribute('href')).toEqual(
+        '/workplace/mock-establishment-uid/training-course/add-and-manage-training-courses',
+      );
+    });
 
     describe('when adding new training course', () => {
       it('should show a "Save training course" button and a "Cancel button"', async () => {
