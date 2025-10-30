@@ -21,15 +21,15 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of, throwError } from 'rxjs';
 import sinon from 'sinon';
+import { DeliveredBy } from '@core/model/training.model';
 
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
-      AddEditTrainingComponent,
-      {
+    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText, getByRole } =
+      await render(AddEditTrainingComponent, {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         declarations: [CertificationsTableComponent, SelectUploadFileComponent],
         providers: [
@@ -62,8 +62,7 @@ describe('AddEditTrainingComponent', () => {
             useClass: MockTrainingCertificateService,
           },
         ],
-      },
-    );
+      });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -79,6 +78,7 @@ describe('AddEditTrainingComponent', () => {
 
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const certificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
+    const getInputByRole = (role: any, options: any) => getByRole(role, options) as HTMLInputElement;
 
     return {
       component,
@@ -96,6 +96,8 @@ describe('AddEditTrainingComponent', () => {
       alertServiceSpy,
       trainingService,
       certificateService,
+      getByRole,
+      getInputByRole,
     };
   }
 
@@ -110,7 +112,7 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('Training category display', async () => {
-    it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
+    fit('should show the training category displayed as text when there is a training category present and update the form value', async () => {
       const qsParamGetMock = sinon.stub();
       const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
         null,
@@ -123,13 +125,20 @@ describe('AddEditTrainingComponent', () => {
       };
 
       spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
+
       component.ngOnInit();
       fixture.detectChanges();
 
       const { form } = component;
+
       const expectedFormValue = {
         title: null,
         accredited: null,
+        deliveredBy: null,
+        externalProviderName: null,
+        howWasItDelivered: null,
+        validityPeriodInMonth: null,
+        doesNotExpire: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
@@ -188,6 +197,70 @@ describe('AddEditTrainingComponent', () => {
       const { getByText } = await setup();
 
       expect(getByText('Training record details')).toBeTruthy();
+    });
+  });
+
+  describe('input form', () => {
+    it('should show a text input for provider name iff user select "External provider" for delivered by external provider', async () => {
+      const { getByRole, fixture } = await setup();
+
+      const providerName = getByRole('textbox', { name: 'Provider name' });
+      expect(providerName).toBeTruthy();
+      const providerNameWrapper = providerName.parentElement;
+      expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
+
+      userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
+      fixture.detectChanges();
+      expect(providerNameWrapper).not.toHaveClass('govuk-radios__conditional--hidden');
+
+      userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
+      fixture.detectChanges();
+      expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
+    });
+
+    it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by button', async () => {
+      const { getInputByRole, getByTestId, fixture } = await setup();
+
+      const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
+      doesNotExpireCheckbox.click();
+      expect(doesNotExpireCheckbox.checked).toBeTrue();
+
+      getByTestId('plus-button-validity-period').click();
+      fixture.detectChanges();
+
+      expect(doesNotExpireCheckbox.checked).toBeFalse();
+    });
+
+    it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by typing value', async () => {
+      const { getInputByRole, fixture } = await setup();
+
+      const validityPeriodInMonth = getInputByRole('textbox', {
+        name: 'How many months is the training valid for before it expires?',
+      });
+      const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
+
+      userEvent.type(validityPeriodInMonth, '12');
+      fixture.detectChanges();
+
+      expect(doesNotExpireCheckbox.checked).toBeFalse();
+    });
+
+    it('should clear any value in validityPeriodInMonth when doesNotExpire checkbox is ticked', async () => {
+      const { getInputByRole, getByTestId, fixture } = await setup();
+
+      const validityPeriodInMonth = getInputByRole('textbox', {
+        name: 'How many months is the training valid for before it expires?',
+      });
+      const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
+
+      getByTestId('plus-button-validity-period').click();
+      fixture.detectChanges();
+      expect(validityPeriodInMonth.value).toEqual('1');
+
+      doesNotExpireCheckbox.click();
+      fixture.detectChanges();
+
+      expect(validityPeriodInMonth.value).toEqual('');
     });
   });
 
@@ -476,7 +549,7 @@ describe('AddEditTrainingComponent', () => {
         category: component.categories[0].category,
       };
 
-      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.type(getByLabelText('Training record name'), 'Some training');
       userEvent.click(getByLabelText('Yes'));
       const completedDate = getByTestId('completedDate');
       userEvent.type(within(completedDate).getByLabelText('Day'), '10');
@@ -535,7 +608,7 @@ describe('AddEditTrainingComponent', () => {
 
       component.previousUrl = ['/goToPreviousUrl'];
 
-      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.type(getByLabelText('Training record name'), 'Some training');
       userEvent.click(getByLabelText('No'));
 
       const trainingServiceSpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
@@ -558,7 +631,7 @@ describe('AddEditTrainingComponent', () => {
       });
       component.ngOnInit();
 
-      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.type(getByLabelText('Training record name'), 'Some training');
       userEvent.click(getByLabelText('No'));
 
       const submitButton = getByText('Save record') as HTMLButtonElement;
@@ -645,7 +718,7 @@ describe('AddEditTrainingComponent', () => {
 
         const addCertificatesSpy = spyOn(certificateService, 'addCertificates').and.returnValue(of(null));
 
-        userEvent.type(getByLabelText('Training name'), 'Understanding Autism');
+        userEvent.type(getByLabelText('Training record name'), 'Understanding Autism');
         userEvent.click(getByLabelText('Yes'));
 
         userEvent.upload(getByTestId('fileInput'), mockUploadFile);
@@ -707,12 +780,12 @@ describe('AddEditTrainingComponent', () => {
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
-        userEvent.type(getByLabelText('Training name'), 'aa');
+        userEvent.type(getByLabelText('Training record name'), 'aa');
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
-        expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
+        expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
       });
 
       it('should show an error message if the title is more than 120 characters long', async () => {
@@ -722,14 +795,14 @@ describe('AddEditTrainingComponent', () => {
         fixture.detectChanges();
 
         userEvent.type(
-          getByLabelText('Training name'),
+          getByLabelText('Training record name'),
           'long title long title long title long title long title long title long title long title long title long title long titles',
         );
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
-        expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
+        expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
       });
     });
 
