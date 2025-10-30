@@ -7,7 +7,7 @@ import { TrainingCategory, TrainingCategorySortedByGroup } from '@core/model/tra
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
-import { TrainingCategoryService } from '../../../../core/services/training-category.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { AlertService } from '@core/services/alert.service';
 
 type JourneyType = 'Add' | 'Edit';
@@ -42,7 +42,6 @@ export class TrainingCourseCategoryComponent implements OnInit {
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingCourseService: TrainingCourseService,
-    protected trainingCategoryService: TrainingCategoryService,
   ) {}
 
   ngOnInit(): void {
@@ -69,7 +68,7 @@ export class TrainingCourseCategoryComponent implements OnInit {
 
   private getCategories(): void {
     this.categories = this.route.snapshot.data.trainingCategories;
-    this.trainingGroups = this.trainingCategoryService.sortTrainingCategoryByGroups(this.categories);
+    this.trainingGroups = TrainingCategoryService.sortTrainingCategoryByGroups(this.categories);
     this.otherCategory = this.categories.find((category) => category.trainingCategoryGroup === null);
   }
 

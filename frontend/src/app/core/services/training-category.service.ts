@@ -38,7 +38,7 @@ export class TrainingCategoryService {
     );
   }
 
-  private summaryText = {
+  public static summaryText = {
     'Care skills and knowledge': "'duty of care', 'safeguarding adults'",
     'Health and safety in the workplace': "'fire safety', 'first aid'",
     'IT, digital and data in the workplace': "'online safety and security', 'working with digital technology'",
@@ -46,13 +46,13 @@ export class TrainingCategoryService {
     'Staff development': "'communication', 'leadership and management' ",
   };
 
-  public sortTrainingCategoryByGroups(trainingCategories: TrainingCategory[]): TrainingCategorySortedByGroup {
-    const groupTitles = Object.keys(this.summaryText);
+  public static sortTrainingCategoryByGroups(trainingCategories: TrainingCategory[]): TrainingCategorySortedByGroup {
+    const groupTitles = Object.keys(TrainingCategoryService.summaryText);
 
     return groupTitles.map((groupTitle) => {
       const currentTrainingGroup = {
         title: groupTitle,
-        descriptionText: `Training like ${this.summaryText[groupTitle]}`,
+        descriptionText: `Training like ${TrainingCategoryService.summaryText[groupTitle]}`,
         items: [],
       };
 
