@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { CWPAwarenessAnswers, CWPUseReasons } from '../../../support/careWorkforcePathwayData';
-import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
-import { onWorkplacePage, WorkplacePage } from '../../../support/page_objects/onWorkplacePage';
-import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../../support/page_objects/workplaceQuestionPages';
+import { CWPAwarenessAnswers, CWPUseReasons } from '../../support/careWorkforcePathwayData';
+import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { onWorkplacePage, WorkplacePage } from '../../support/page_objects/onWorkplacePage';
+import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../support/page_objects/workplaceQuestionPages';
 
 const workplaceSummaryPath = 'dashboard#workplace';
 
@@ -26,11 +26,14 @@ describe('Standalone home page as edit user', () => {
       total: 1,
     },
   ];
+  const workerName = 'Test worker update staff records';
 
   before(() => {
     cy.resetStartersLeaversVacancies(establishmentId);
     cy.resetWorkplaceCWPAnswers(establishmentId);
     cy.resetWorkplaceDHAAnswers(establishmentId);
+    cy.resetNonMandatoryWorkplaceQuestions(establishmentId);
+    cy.insertTestWorker({ establishmentID: establishmentId, workerName });
   });
 
   beforeEach(() => {
@@ -43,6 +46,11 @@ describe('Standalone home page as edit user', () => {
     cy.resetStartersLeaversVacancies(establishmentId);
     cy.resetWorkplaceCWPAnswers(establishmentId);
     cy.resetWorkplaceDHAAnswers(establishmentId);
+    cy.resetNonMandatoryWorkplaceQuestions(establishmentId);
+  });
+
+  after(() => {
+    cy.deleteTestWorkerFromDb(workerName);
   });
 
   it('should see the standalone establishment workplace page', () => {
@@ -58,11 +66,33 @@ describe('Standalone home page as edit user', () => {
     onWorkplacePage.allSectionsAreChangeable();
   });
 
-  it('can update the number of staff successfully', () => {
-    cy.get('[data-testid="number-of-staff-top-row"]').contains('Change').click();
-    cy.getByLabel('Number of staff').clear().type(6);
-    cy.contains('button', 'Save and return').click();
-    cy.get('[data-testid="number-of-staff-top-row"]').contains(6);
+  describe('number of staff', () => {
+    const staffNumber = 6;
+
+    it('can update the number of staff successfully', () => {
+      cy.get('[data-testid="numberOfStaff"]').as('testId');
+
+      cy.get('@testId').contains('Change').click();
+
+      cy.getByLabel('Number of staff').clear().type(staffNumber);
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains(staffNumber);
+    });
+
+    it('navigates to staff records when the number of staff does not match staff records', () => {
+      cy.get('[data-testid="numberOfStaff"]').as('testId');
+
+      cy.get('@testId').contains('Change').click();
+
+      cy.getByLabel('Number of staff').clear().type(staffNumber);
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains('View staff records').click();
+
+      cy.get('[data-testid="workplaceName"]').contains('Staff records');
+      cy.get('[data-testid="totalStaffNumber"]').contains(`${staffNumber}`);
+    });
   });
 
   describe('current staff vacancies', () => {
@@ -196,6 +226,139 @@ describe('Standalone home page as edit user', () => {
         cy.get('[data-testid="leavers"]').contains(`${jobRole.total} x ${jobRole.job.toLocaleLowerCase()}`);
       });
     });
+  });
+
+  it('can update the employer type', () => {
+    cy.get('[data-testid="employerType"]').as('testId');
+
+    cy.get('@testId').contains('Change').click();
+
+    cy.getByLabel('Voluntary, charity, not for profit').click();
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains('Voluntary, charity, not for profit');
+  });
+
+  it('can update the main service', () => {
+    cy.get('[data-testid="mainService"]').as('testId');
+
+    cy.get('@testId').contains('Change').click();
+
+    //regulated by the CQC
+    cy.getByLabel('No').click();
+    cy.contains('button', 'Continue').click();
+
+    //select main service
+    cy.contains('Select your main service');
+    cy.getByLabel('Domestic services and home help').click();
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains('Domestic services and home help');
+  });
+
+  describe('other services', () => {
+    const heading = 'Do you provide any other services?';
+    it('updates when there are no other services', () => {
+      cy.get('[data-testid="otherServices"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+      cy.getByLabel('No').click();
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains('None');
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
+    });
+
+    it('updates when there are other services', () => {
+      cy.get('[data-testid="otherServices"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+
+      cy.getByLabel('Yes, we provide other services').click();
+      cy.getByLabel('Other adult community care service').click();
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains('Other adult community care service');
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
+    });
+  });
+
+  describe('service capacity', () => {
+    const careAmount = 5;
+    const mainServices = [
+      {
+        id: 9,
+        text: 'Day care and day services',
+      },
+      {
+        id: 11,
+        text: 'Domestic services and home help',
+      },
+    ];
+    const heading = "What's the capacity of your services?";
+
+    it(`can add service capacity when main service is ${mainServices[0].text}`, () => {
+      cy.setWorkplaceMainService(establishmentId, mainServices[0].id);
+
+      cy.get('[data-testid="serviceCapacity"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+
+      cy.getByLabel('How many places do you have at the moment?')
+        .clear()
+        .type(careAmount * 2);
+      cy.getByLabel('Number of those places that are being used').clear().type(careAmount);
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains(`${mainServices[0].text}: ${careAmount * 2} places`);
+      cy.get('@testId').contains(`${mainServices[0].text}: ${careAmount} people using the service`);
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
+    });
+
+    it(`can add service capacity when main service is ${mainServices[1].text}`, () => {
+      cy.setWorkplaceMainService(establishmentId, mainServices[1].id);
+
+      cy.get('[data-testid="serviceCapacity"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+      cy.getByLabel('Number of people receiving care at the moment').clear().type(careAmount);
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains(`${mainServices[1].text}: ${careAmount} people receiving care`);
+    });
+  });
+
+  it('updates service users', () => {
+    const serviceUsers = ['Older people with dementia', 'Adults with dementia'];
+    const heading = 'Who are your service users?';
+
+    cy.get('[data-testid="serviceUsers"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    for (const serviceUser of serviceUsers) cy.getByLabel(serviceUser).click();
+
+    cy.contains('button', 'Save and return').click();
+
+    for (const serviceUser of serviceUsers) cy.get('@testId').contains(serviceUser);
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
   });
 
   describe('Care workforce pathway workplace awareness and usage', () => {
@@ -357,5 +520,132 @@ describe('Standalone home page as edit user', () => {
         onWorkplacePage.expectRow(WorkplacePage.DHAQuestion2TestId).toHaveMultipleValues(mockDHAs);
       });
     });
+  });
+
+  it('updates repeat training', () => {
+    const repeatedTrainingAnswer = 'Yes, but not very often';
+    const heading = "Do new care workers have to repeat training they've done with previous employers?";
+
+    cy.get('[data-testid="repeat-training"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel(repeatedTrainingAnswer).click();
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains(repeatedTrainingAnswer);
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
+  });
+
+  it('updates accept care certificate', () => {
+    const answer = 'Yes, but not very often';
+    const heading = "Would you accept a Care Certificate from a worker's previous employer?";
+
+    cy.get('[data-testid="accept-care-certificate"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel(answer).click();
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains(answer);
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
+  });
+
+  it('updates cash loyalty bonus', () => {
+    const answer = 'Yes';
+    const amount = 100;
+    const heading = 'Do you pay care workers a cash loyalty bonus within their first 2 years of employment?';
+
+    cy.get('[data-testid="cash-loyalty-bonus-spend"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel(answer).click();
+    cy.getByLabel('Amount').clear().type(amount);
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains(`£${amount}`);
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
+  });
+
+  it('updates statutory sick pay', () => {
+    const answer = 'Yes';
+    const heading = 'Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?';
+
+    cy.get('[data-testid="offer-more-than-statutory-sick-pay"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel(answer).click();
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains(answer);
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
+  });
+
+  it('updates higher pension contributions', () => {
+    const answer = 'Yes';
+    const heading = 'Do you contribute more than the minimum 3% into workplace pensions for your care workers?';
+
+    cy.get('[data-testid="higher-pension-contributions"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel(answer).click();
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains(answer);
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
+  });
+
+  it('updates number of days leave', () => {
+    const answer = 5;
+    const heading = 'How many days leave do your full-time care workers get each year?';
+
+    cy.get('[data-testid="number-of-days-leave"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel('Number of days').clear().type(answer);
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains(answer);
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
+  });
+
+  it('updates data sharing', () => {
+    const heading = 'Share your data';
+
+    cy.get('[data-testid="data-sharing"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel('Yes, I agree to you sharing our data with local authorities').click();
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains('Local authorities');
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
   });
 });

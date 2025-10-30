@@ -207,3 +207,62 @@ Cypress.Commands.add('insertDummyAnswerForWorkplaceWDFAnswers', (establishmentID
 
   cy.task('multipleDbQueries', dbQueries);
 });
+
+Cypress.Commands.add('resetEstablishmentCapacity', (establishmentID) => {
+  const queryString = `DELETE FROM cqc."EstablishmentCapacity"
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('resetEstablishmentServiceUsers', (establishmentID) => {
+  const queryString = `DELETE FROM cqc."EstablishmentServiceUsers"
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('resetEstablishmentServices', (establishmentID) => {
+  const queryString = `DELETE FROM cqc."EstablishmentServices"
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('resetWorkplaceShareDataWith', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "ShareDataWithLA" = null,
+      "ShareDataWithCQC" = null
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('resetNonMandatoryWorkplaceQuestions', (establishmentID) => {
+  cy.resetEstablishmentCapacity(establishmentID);
+  cy.resetEstablishmentServiceUsers(establishmentID);
+  cy.resetEstablishmentServices(establishmentID);
+  cy.resetWorkplaceShareDataWith(establishmentID);
+
+  const queryString = `UPDATE cqc."Establishment"
+      SET "OtherServicesValue" = null,
+      "DoNewStartersRepeatMandatoryTrainingFromPreviousEmployment" = null,
+      "WouldYouAcceptCareCertificatesFromPreviousEmployment" = null,
+      "CareWorkersCashLoyaltyForFirstTwoYears" = null,
+      "SickPay" = null,
+      "PensionContribution" = null,
+      "CareWorkersLeaveDaysPerYear" = null
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
