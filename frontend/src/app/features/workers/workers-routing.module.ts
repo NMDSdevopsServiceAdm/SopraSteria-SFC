@@ -85,6 +85,7 @@ import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delega
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
+import { AddATrainingRecord } from '@features/training-and-qualifications/add-a-training-record/add-a-training-record.component';
 
 const routes: Routes = [
   {
@@ -567,6 +568,11 @@ const routes: Routes = [
             data: { title: 'Training and qualification record' },
           },
           {
+            path: 'add-a-training-record',
+            component: AddATrainingRecord,
+            data: { title: 'Add a Training Record' },
+          },
+          {
             path: 'long-term-absence',
             component: LongTermAbsenceComponent,
             resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
@@ -865,6 +871,11 @@ const routes: Routes = [
           trainingCourses: TrainingCourseResolver,
         },
         data: { title: 'Training and qualification record' },
+      },
+      {
+        path: 'add-a-training-record',
+        component: AddATrainingRecord,
+        data: { title: 'Add a Training Record' },
       },
       {
         path: 'long-term-absence',
