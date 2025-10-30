@@ -357,48 +357,26 @@ describe('NewHomeTabComponent', () => {
       });
     });
 
-    describe('set data permissions', () => {
-      it('does not show the set data permissions link if canViewDataPermissionsLink is false', async () => {
+    describe('change data permissions', () => {
+      it('does not show the change data permissions link if canViewDataPermissionsLink is false', async () => {
         const { component, fixture, queryByText } = await setup();
 
         component.canViewDataPermissionsLink = false;
         fixture.detectChanges();
-        const setDataPermissionsLink = queryByText('Set data permissions');
+        const changeDataPermissionsLink = queryByText('Change data permissions');
 
-        expect(setDataPermissionsLink).toBeFalsy();
+        expect(changeDataPermissionsLink).toBeFalsy();
       });
 
-      it('shows the set data permissions link if canViewDataPermissionsLink is true', async () => {
+      it('shows the change data permissions link if canViewDataPermissionsLink is true', async () => {
         const { component, fixture, getByText } = await setup();
 
         component.canViewDataPermissionsLink = true;
         fixture.detectChanges();
-        const setDataPermissionsLink = getByText('Set data permissions');
+        const changeDataPermissionsLink = getByText('Change data permissions');
 
-        expect(setDataPermissionsLink).toBeTruthy();
-      });
-
-      it('should show a dialog to set data permissions', async () => {
-        const { component, fixture, getByText } = await setup();
-
-        component.canViewDataPermissionsLink = true;
-        fixture.detectChanges();
-
-        const setDataPermissionsLink = getByText('Set data permissions');
-
-        fireEvent.click(setDataPermissionsLink);
-        fixture.detectChanges();
-
-        const dialog = await within(document.body).findByRole('dialog');
-
-        const dialogMessage = within(dialog).getByText('Set data permissions', { exact: false });
-        const setPermissionsButton = within(dialog).getByText('Set Permissions');
-        const cancelLink = within(dialog).getByText('Cancel');
-
-        expect(dialog).toBeTruthy();
-        expect(dialogMessage).toBeTruthy();
-        expect(setPermissionsButton).toBeTruthy();
-        expect(cancelLink).toBeTruthy();
+        expect(changeDataPermissionsLink).toBeTruthy();
+        expect(changeDataPermissionsLink.getAttribute('href')).toEqual('/workplace/change-data-permissions');
       });
     });
 

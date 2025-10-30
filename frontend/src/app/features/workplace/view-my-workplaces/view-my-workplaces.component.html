@@ -61,26 +61,25 @@
     </div>
 
     <div
-      class="govuk-grid-column-one-quarter govuk-!-padding-top-2 govuk-!-margin-right-0 "
+      class="govuk-grid-column-one-quarter govuk-!-padding-top-2 govuk-!-margin-right-0"
       data-testid="sortBy"
       *ngIf="totalWorkplaceCount > 1"
       style="width: fit-content !important"
-      [ngClass]="{ 'sort-column' : totalWorkplaceCount > itemsPerPage, 'govuk-util__float-right' : totalWorkplaceCount <= itemsPerPage}"
+      [ngClass]="{
+        'sort-column': totalWorkplaceCount > itemsPerPage,
+        'govuk-util__float-right': totalWorkplaceCount <= itemsPerPage
+      }"
     >
       <div class="govuk-form-group">
         <label class="govuk-label" for="sortBy"> Sort by </label>
-        <select
-          class="govuk-select"
-
-          id="sortBy"
-          name="sortBy"
-          (change)="sortBy($event.target.value)"
-        >
+        <select class="govuk-select" id="sortBy" name="sortBy" (change)="sortBy($event.target.value)">
           <option
             *ngFor="let option of sortOptions | keyvalue"
             value="{{ option.key }}"
             [selected]="option.key === sortBySelectedKey"
-          >{{ option.value }}</option>
+          >
+            {{ option.value }}
+          </option>
         </select>
       </div>
     </div>
@@ -102,6 +101,7 @@
         </li>
         <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngIf="workplace.ustatus === null">
           <app-workplace-info-panel
+            [attr.data-cy]="workplace.name"
             [workplace]="workplace"
             [subWorkplaceNumber]="indexOfelement"
             (changeOwnershipAndPermissionsEvent)="changeOwnershipAndPermissions($event)"

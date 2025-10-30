@@ -74,6 +74,7 @@ import { WorkplaceNameAddressComponent } from './workplace-name-address/workplac
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
+import { ChangeDataPermissionsComponent } from './change-data-permissions/change-data-permissions.component';
 
 @NgModule({
   imports: [
@@ -138,6 +139,7 @@ import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-w
     CareWorkforcePathwayUseComponent,
     StaffDoDelegatedHealthcareActivitiesComponent,
     StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
+    ChangeDataPermissionsComponent,
   ],
   providers: [
     DialogService,

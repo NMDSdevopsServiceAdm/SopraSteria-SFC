@@ -30,7 +30,7 @@ describe('Create account', () => {
     cy.openLoginPage();
   });
 
-  it('should show the create acount start page', () => {
+  it('should show the create account start page', () => {
     cy.contains('Create an account').click({ force: true });
     cy.location('pathname').should('eq', '/registration/create-account');
     cy.get('[data-cy="account-heading"]').should('contain', 'Create an Adult Social Care Workforce Data Set account');
