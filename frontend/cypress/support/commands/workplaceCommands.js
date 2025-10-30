@@ -126,3 +126,84 @@ Cypress.Commands.add('setWorkplaceMainService', (establishmentID, mainServiceId)
 
   cy.task('dbQuery', { queryString: queryString, parameters: parameters });
 });
+
+Cypress.Commands.add('clearWorkplaceWDFAnswers', (establishmentID) => {
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+        SET
+          "VacanciesValue" = null,
+          "StartersValue" = null,
+          "LeaversValue" = null,
+          "NumberOfStaffValue" = 0
+      WHERE "EstablishmentID" = $1;`,
+
+    `DELETE FROM cqc."EstablishmentJobs"
+      WHERE "EstablishmentID" = $1;`,
+
+    `DELETE FROM cqc."EstablishmentServiceUsers"
+      WHERE "EstablishmentID" = $1;`,
+
+    `DELETE FROM cqc."EstablishmentCapacity"
+      WHERE "EstablishmentID" = $1;`,
+  ];
+
+  const parameters = [establishmentID];
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
+
+const wdfFieldNames = [
+  'EmployerType',
+  'MainServiceFK',
+  'CapacityServices',
+  'ServiceUsers',
+  'Vacancies',
+  'Starters',
+  'Leavers',
+  'NumberOfStaff',
+];
+
+Cypress.Commands.add('changeWorkplaceWDFAnswersTimestamp', (establishmentID, newDate = '2019-01-01 00:00:00') => {
+  let allDateFields = wdfFieldNames.flatMap((field) => [field + 'SavedAt', field + 'ChangedAt']);
+  allDateFields.push('EstablishmentWdfEligibility');
+
+  const fieldUpdates = allDateFields.map((field) => `"${field}" = $2`).join(', ');
+
+  const queryString = `
+        UPDATE cqc."Establishment"
+        SET
+          ${fieldUpdates}
+      WHERE "EstablishmentID" = $1;
+  `;
+
+  const parameters = [establishmentID, newDate];
+  cy.task('dbQuery', { queryString: queryString, parameters: parameters });
+});
+
+Cypress.Commands.add('insertDummyAnswerForWorkplaceWDFAnswers', (establishmentID) => {
+  const queryStrings = [
+    `UPDATE cqc."Establishment"
+        SET
+          "VacanciesValue" = 'None',
+          "StartersValue" = 'None',
+          "LeaversValue" = 'None',
+          "NumberOfStaffValue" = 1
+      WHERE "EstablishmentID" = $1;`,
+
+    `INSERT INTO cqc."EstablishmentServiceUsers" ("EstablishmentID", "ServiceUserID")
+      VALUES
+        ($1, 1),
+        ($1, 10);`,
+
+    `INSERT INTO cqc."EstablishmentCapacity" ("EstablishmentID", "ServiceCapacityID", "Answer")
+      VALUES
+      ($1, 8, 10),
+      ($1, 9, 5);`,
+  ];
+
+  const parameters = [establishmentID];
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
+});
