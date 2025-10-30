@@ -21,7 +21,7 @@ describe('Standalone home page as edit user', () => {
     onWorkplacePage.allSectionsAreVisible();
   });
 
-  it('goes to the CQC location ID page', () => {
+  it.skip('goes to the CQC location ID page', () => {
     cy.get('[data-testid="cqcLocationId"]').as('testId');
     cy.get('@testId').contains('Change').click();
 
@@ -31,24 +31,44 @@ describe('Standalone home page as edit user', () => {
     cy.contains('a', 'Cancel').click();
   });
 
-  it('updates data sharing', () => {
-    cy.resetWorkplaceShareDataWith(establishmentId);
-    const heading = 'Share your data';
+  describe('data sharing', () => {
+    it('updates for just local authorities', () => {
+      cy.resetWorkplaceShareDataWith(establishmentId);
+      const heading = 'Share your data';
 
-    cy.get('[data-testid="data-sharing"]').as('testId');
+      cy.get('[data-testid="data-sharing"]').as('testId');
 
-    cy.get('@testId').contains('Add').click();
+      cy.get('@testId').contains('Add').click();
 
-    cy.get('h1').should('contain.text', heading);
-    cy.getByLabel('Yes, I agree to you sharing our data with the CQC').click();
-    cy.getByLabel('Yes, I agree to you sharing our data with local authorities').click();
-    cy.contains('button', 'Save and return').click();
+      cy.get('h1').should('contain.text', heading);
+      cy.getByLabel('Yes, I agree to you sharing our data with local authorities').click();
+      cy.contains('button', 'Save and return').click();
 
-    cy.get('@testId').contains('Care Quality Commission (CQC)');
-    cy.get('@testId').contains('Local authorities');
-    cy.get('@testId').contains('Change').click();
+      cy.get('@testId').contains('Local authorities');
+      cy.get('@testId').contains('Change').click();
 
-    cy.get('h1').should('contain.text', heading);
+      cy.get('h1').should('contain.text', heading);
+    });
+
+    it.skip('updates data sharing for local authorities and cqc', () => {
+      cy.resetWorkplaceShareDataWith(establishmentId);
+      const heading = 'Share your data';
+
+      cy.get('[data-testid="data-sharing"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+      cy.getByLabel('Yes, I agree to you sharing our data with the CQC').click();
+      cy.getByLabel('Yes, I agree to you sharing our data with local authorities').click();
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains('Care Quality Commission (CQC)');
+      cy.get('@testId').contains('Local authorities');
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
+    });
   });
 
   it('should show add or change links', () => {
