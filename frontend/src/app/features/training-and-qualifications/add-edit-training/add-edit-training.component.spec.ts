@@ -112,7 +112,7 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('Training category display', async () => {
-    fit('should show the training category displayed as text when there is a training category present and update the form value', async () => {
+    it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
       const qsParamGetMock = sinon.stub();
       const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
         null,
@@ -298,6 +298,11 @@ describe('AddEditTrainingComponent', () => {
       const expectedFormValue = {
         title: 'Communication Training 1',
         accredited: 'Yes',
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skills academy',
+        howWasItDelivered: 'E-learning',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
         notes: undefined,
@@ -350,6 +355,11 @@ describe('AddEditTrainingComponent', () => {
       const expectedFormValue = {
         title: null,
         accredited: null,
+        deliveredBy: null,
+        externalProviderName: null,
+        howWasItDelivered: null,
+        doesNotExpire: null,
+        validityPeriodInMonth: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
@@ -504,6 +514,11 @@ describe('AddEditTrainingComponent', () => {
       const expectedFormValue = {
         title: 'Communication Training 1',
         accredited: 'Yes',
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skills academy',
+        howWasItDelivered: 'E-learning',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
         notes: 'Some notes added to this training',
@@ -519,6 +534,11 @@ describe('AddEditTrainingComponent', () => {
           trainingCategory: { id: 1 },
           title: 'Communication Training 1',
           accredited: 'Yes',
+          deliveredBy: 'External provider',
+          externalProviderName: 'Care skills academy',
+          howWasItDelivered: 'E-learning',
+          doesNotExpire: false,
+          validityPeriodInMonth: 24,
           completed: '2020-01-02',
           expires: '2021-01-02',
           notes: 'Some notes added to this training',
