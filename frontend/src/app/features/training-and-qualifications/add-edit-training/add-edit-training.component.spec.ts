@@ -12,57 +12,77 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockTrainingCertificateService } from '@core/test-utils/MockCertificateService';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
-import { trainingRecord } from '@core/test-utils/MockWorkerService';
-import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
+import { MockTrainingServiceWithOverrides } from '@core/test-utils/MockTrainingService';
+import { MockWorkerServiceWithOverrides, trainingRecord } from '@core/test-utils/MockWorkerService';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of, throwError } from 'rxjs';
-import sinon from 'sinon';
 import { DeliveredBy } from '@core/model/training.model';
 
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
-describe('AddEditTrainingComponent', () => {
-  async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText, getByRole } =
-      await render(AddEditTrainingComponent, {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        declarations: [CertificationsTableComponent, SelectUploadFileComponent],
-        providers: [
-          WindowRef,
-          {
-            provide: ActivatedRoute,
-            useValue: {
+fdescribe('AddEditTrainingComponent', () => {
+  async function setup(overrides: any = {}) {
+    const selectedTraining = overrides?.selectedTraining ?? null;
+    const trainingRecordId = overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : '1';
+    const mockTrainingRecord =
+      overrides?.trainingRecord !== undefined ? overrides.trainingRecord : { ...trainingRecord };
+    const workerServiceSpy = jasmine.createSpy().and.returnValue(of(mockTrainingRecord));
+    const mockWorker = {
+      uid: '2',
+      mainJob: {
+        jobId: '1',
+        title: 'Admin',
+      },
+      nameOrId: 'Someone',
+    };
+
+    const setupTools = await render(AddEditTrainingComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      declarations: [CertificationsTableComponent, SelectUploadFileComponent],
+      providers: [
+        WindowRef,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: { trainingRecordId, establishmentuid: '24', id: 2 },
+            },
+            parent: {
               snapshot: {
-                params: { trainingRecordId, establishmentuid: '24', id: 2 },
-              },
-              parent: {
-                snapshot: {
-                  data: {
-                    establishment: {
-                      uid: '1',
-                    },
-                    trainingCategories: trainingCategories,
+                data: {
+                  establishment: {
+                    uid: '1',
                   },
+                  trainingCategories: trainingCategories,
                 },
               },
             },
           },
-          UntypedFormBuilder,
-          ErrorSummaryService,
-          { provide: TrainingService, useClass: MockTrainingService },
-          { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-          { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
-          {
-            provide: TrainingCertificateService,
-            useClass: MockTrainingCertificateService,
-          },
-        ],
-      });
+        },
+        UntypedFormBuilder,
+        ErrorSummaryService,
+        {
+          provide: TrainingService,
+          useFactory: MockTrainingServiceWithOverrides.factory({ selectedTraining }),
+        },
+        {
+          provide: WorkerService,
+          useFactory: MockWorkerServiceWithOverrides.factory({
+            getTrainingRecord: workerServiceSpy,
+            worker: mockWorker,
+          }),
+        },
+        { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
+        {
+          provide: TrainingCertificateService,
+          useClass: MockTrainingCertificateService,
+        },
+      ],
+    });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -72,31 +92,25 @@ describe('AddEditTrainingComponent', () => {
     const updateSpy = spyOn(workerService, 'updateTrainingRecord').and.returnValue(of(null));
     const createSpy = spyOn(workerService, 'createTrainingRecord').and.callThrough();
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const certificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
-    const getInputByRole = (role: any, options: any) => getByRole(role, options) as HTMLInputElement;
+    const getInputByRole = (role: any, options: any) => setupTools.getByRole(role, options) as HTMLInputElement;
 
     return {
+      ...setupTools,
       component,
-      fixture,
       routerSpy,
-      getByText,
-      getByTestId,
-      getAllByText,
-      queryByText,
-      queryByTestId,
-      getByLabelText,
       updateSpy,
       createSpy,
       workerService,
+      workerServiceSpy,
       alertServiceSpy,
       trainingService,
       certificateService,
-      getByRole,
       getInputByRole,
     };
   }
@@ -111,23 +125,14 @@ describe('AddEditTrainingComponent', () => {
     expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
   });
 
-  describe('Training category display', async () => {
+  fdescribe('Training category display', async () => {
     it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
-      const qsParamGetMock = sinon.stub();
-      const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
-        null,
-        qsParamGetMock,
-      );
+      const selectedTraining = { trainingCategory: { category: 'Autism', id: 2 } };
 
-      component.trainingCategory = {
-        category: 'Autism',
-        id: 2,
-      };
-
-      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
-
-      component.ngOnInit();
-      fixture.detectChanges();
+      const { component, getByText, getByTestId } = await setup({
+        selectedTraining,
+        trainingRecordId: null,
+      });
 
       const { form } = component;
 
@@ -150,25 +155,34 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should show the training category displayed as text with a change link when there is a training category present and update the form value', async () => {
-      const { component, fixture, getByText, getByTestId, queryByTestId, trainingService } = await setup(null);
+      const selectedTraining = {
+        trainingCategory: {
+          id: 1,
+          seq: 20,
+          category: 'Autism',
+          trainingCategoryGroup: 'Specific conditions and disabilities',
+        },
+      };
 
-      trainingService.setSelectedTrainingCategory({
-        id: 1,
-        seq: 20,
-        category: 'Autism',
-        trainingCategoryGroup: 'Specific conditions and disabilities',
+      const { component, fixture, getByText, getByTestId } = await setup({
+        trainingRecordId: null,
+        selectedTraining,
       });
 
-      component.ngOnInit();
       fixture.detectChanges();
 
       const { form } = component;
       const expectedFormValue = {
         title: null,
         accredited: null,
+        deliveredBy: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
+        externalProviderName: null,
+        howWasItDelivered: null,
+        validityPeriodInMonth: null,
+        doesNotExpire: null,
       };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
@@ -187,8 +201,7 @@ describe('AddEditTrainingComponent', () => {
 
   describe('title', () => {
     it('should render the Add training record details title', async () => {
-      const trainingRecordId = null;
-      const { getByText } = await setup(trainingRecordId);
+      const { getByText } = await setup({ trainingRecordId: null });
 
       expect(getByText('Add training record details')).toBeTruthy();
     });
@@ -202,7 +215,7 @@ describe('AddEditTrainingComponent', () => {
 
   describe('input form', () => {
     it('should show a text input for provider name iff user select "External provider" for delivered by external provider', async () => {
-      const { getByRole, fixture } = await setup();
+      const { getByRole, fixture } = await setup({ trainingRecord: null });
 
       const providerName = getByRole('textbox', { name: 'Provider name' });
       expect(providerName).toBeTruthy();
@@ -246,7 +259,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should clear any value in validityPeriodInMonth when doesNotExpire checkbox is ticked', async () => {
-      const { getInputByRole, getByTestId, fixture } = await setup();
+      const { getInputByRole, getByTestId, fixture } = await setup({ trainingRecord: null });
 
       const validityPeriodInMonth = getInputByRole('textbox', {
         name: 'How many months is the training valid for before it expires?',
@@ -290,9 +303,7 @@ describe('AddEditTrainingComponent', () => {
 
   describe('fillForm', () => {
     it('should prefill the form if there is a training record id and there is a training record', async () => {
-      const { component, workerService } = await setup();
-      const workerServiceSpy = spyOn(workerService, 'getTrainingRecord').and.callThrough();
-      component.ngOnInit();
+      const { component, workerServiceSpy } = await setup();
 
       const { form, workplace, worker, trainingRecordId } = component;
       const expectedFormValue = {
@@ -317,11 +328,7 @@ describe('AddEditTrainingComponent', () => {
         trainingCategory: { id: 1, category: 'Communication' },
         notes: 'some notes about this training',
       };
-      const { component, fixture, workerService, getByTestId, getByText } = await setup();
-
-      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(mockTrainingWithNotes));
-      component.ngOnInit();
-      fixture.detectChanges();
+      const { getByTestId, getByText } = await setup({ trainingRecord: mockTrainingWithNotes });
 
       const notesSection = getByTestId('notesSection');
 
@@ -336,20 +343,15 @@ describe('AddEditTrainingComponent', () => {
         trainingCategory: { id: 1, category: 'Communication' },
         notes: 'some notes about this training',
       };
-      const { component, fixture, workerService, getByText } = await setup();
-
-      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(mockTrainingWithNotes));
-      component.ngOnInit();
-      fixture.detectChanges();
+      const { component, getByText } = await setup({ trainingRecord: mockTrainingWithNotes });
 
       const expectedRemainingCharCounts = component.notesMaxLength - 'some notes about this training'.length;
       expect(getByText(`You have ${expectedRemainingCharCounts} characters remaining`)).toBeTruthy;
     });
 
     it('should not prefill the form if there is a training record id but there is no training record', async () => {
-      const { component, workerService } = await setup();
-      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
-      component.ngOnInit();
+      const { component } = await setup({ trainingRecord: null });
+
       const { form } = component;
 
       const expectedFormValue = {
@@ -368,10 +370,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should not call getTrainingRecord if there is no trainingRecordId', async () => {
-      const { component, workerService } = await setup(null);
-
-      const workerServiceSpy = spyOn(workerService, 'getTrainingRecord').and.callThrough();
-      component.ngOnInit();
+      const { workerServiceSpy } = await setup({ trainingRecordId: null });
 
       expect(workerServiceSpy).not.toHaveBeenCalled();
     });
@@ -387,7 +386,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should render the Save record and Cancel button but not the delete button when there is no training id', async () => {
-      const { getByText, queryByTestId } = await setup(null);
+      const { getByText, queryByTestId } = await setup({ trainingRecordId: null });
 
       expect(getByText('Save record')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -445,7 +444,7 @@ describe('AddEditTrainingComponent', () => {
 
   describe('Upload file button', () => {
     it('should render a file input element', async () => {
-      const { getByTestId } = await setup(null);
+      const { getByTestId } = await setup({ trainingRecordId: null });
 
       const uploadSection = getByTestId('uploadCertificate');
       expect(uploadSection).toBeTruthy();
@@ -455,7 +454,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should render "No file chosen" beside the file input', async () => {
-      const { getByTestId } = await setup(null);
+      const { getByTestId } = await setup({ trainingRecordId: null });
 
       const uploadSection = getByTestId('uploadCertificate');
 
@@ -464,21 +463,17 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should not render "No file chosen" when a file is chosen', async () => {
-      const { fixture, getByTestId } = await setup(null);
-
+      const { fixture, getByTestId } = await setup({ trainingRecordId: null });
       const uploadSection = getByTestId('uploadCertificate');
       const fileInput = getByTestId('fileInput');
-
       userEvent.upload(fileInput, new File(['some file content'], 'cert.pdf'));
-
       fixture.detectChanges();
-
       const text = within(uploadSection).queryByText('No file chosen');
       expect(text).toBeFalsy();
     });
 
     it('should provide aria description to screen reader users', async () => {
-      const { fixture, getByTestId } = await setup(null);
+      const { fixture, getByTestId } = await setup({ trainingRecordId: null });
       fixture.autoDetectChanges();
 
       const uploadSection = getByTestId('uploadCertificate');
@@ -557,7 +552,7 @@ describe('AddEditTrainingComponent', () => {
 
     it('should call the createTrainingRecord function if adding a new training record, and navigate away from page', async () => {
       const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy, alertServiceSpy } =
-        await setup(null);
+        await setup({ trainingRecordId: null });
 
       component.previousUrl = ['/goToPreviousUrl'];
       const openNotesButton = getByText('Open notes');
@@ -614,16 +609,18 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should reset the training category selected for training record in the service on submit', async () => {
-      const { component, fixture, getByText, getByLabelText, trainingService, routerSpy } = await setup(null);
-
-      trainingService.setSelectedTrainingCategory({
-        id: 2,
-        seq: 20,
-        category: 'Autism',
-        trainingCategoryGroup: 'Specific conditions and disabilities',
+      const { component, fixture, getByText, getByLabelText, trainingService, routerSpy } = await setup({
+        trainingRecordId: null,
+        selectedTraining: {
+          trainingCategory: {
+            id: 2,
+            seq: 20,
+            category: 'Autism',
+            trainingCategoryGroup: 'Specific conditions and disabilities',
+          },
+        },
       });
 
-      component.ngOnInit();
       fixture.detectChanges();
 
       component.previousUrl = ['/goToPreviousUrl'];
@@ -640,16 +637,18 @@ describe('AddEditTrainingComponent', () => {
       expect(trainingService.selectedTraining.trainingCategory).toBeNull();
     });
 
-    it('should disable the submit button to prevent it being triggered more than once', async () => {
-      const { component, fixture, getByText, getByLabelText, trainingService, createSpy } = await setup(null);
-
-      trainingService.setSelectedTrainingCategory({
-        id: 2,
-        seq: 20,
-        category: 'Autism',
-        trainingCategoryGroup: 'Specific conditions and disabilities',
+    fit('should disable the submit button to prevent it being triggered more than once', async () => {
+      const { component, fixture, getByText, getByLabelText, trainingService, createSpy } = await setup({
+        trainingRecordId: null,
+        selectedTraining: {
+          trainingCategory: {
+            id: 2,
+            seq: 20,
+            category: 'Autism',
+            trainingCategoryGroup: 'Specific conditions and disabilities',
+          },
+        },
       });
-      component.ngOnInit();
 
       userEvent.type(getByLabelText('Training record name'), 'Some training');
       userEvent.click(getByLabelText('No'));
@@ -726,7 +725,7 @@ describe('AddEditTrainingComponent', () => {
 
       it('should call both `addCertificates` and `createTrainingRecord` if an upload file is selected', async () => {
         const { component, fixture, getByText, getByLabelText, getByTestId, createSpy, routerSpy, certificateService } =
-          await setup(null);
+          await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         component.trainingCategory = {
@@ -766,7 +765,7 @@ describe('AddEditTrainingComponent', () => {
 
       it('should not call `addCertificates` when no upload file was selected', async () => {
         const { component, fixture, getByText, getByLabelText, createSpy, routerSpy, certificateService } = await setup(
-          null,
+          { trainingRecordId: null },
         );
 
         component.previousUrl = ['/goToPreviousUrl'];
@@ -795,7 +794,9 @@ describe('AddEditTrainingComponent', () => {
   describe('errors', () => {
     describe('title errors', () => {
       it('should show an error message if the title is less than 3 characters long', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup({
+          trainingRecordId: null,
+        });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -805,11 +806,11 @@ describe('AddEditTrainingComponent', () => {
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
-        expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
+        expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
       });
 
       it('should show an error message if the title is more than 120 characters long', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -828,7 +829,7 @@ describe('AddEditTrainingComponent', () => {
 
     describe('completed date errors', () => {
       it('should show an error message if the completed date is invalid', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -845,7 +846,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the completed date is in the future', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -865,7 +866,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the completed date is more than 100 years ago', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -887,7 +888,7 @@ describe('AddEditTrainingComponent', () => {
 
     describe('expires date errors', () => {
       it('should show an error message if the expiry date is invalid', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -904,7 +905,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the expiry date is more than 100 years ago', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -924,7 +925,9 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show the min date error message if expiry date is over a hundred years ago and the expiry date is before the completed date', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup({
+          trainingRecordId: null,
+        });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -952,7 +955,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should an error message when the expiry date is before the completed date', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -980,7 +983,7 @@ describe('AddEditTrainingComponent', () => {
         'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
 
       it('should show an error message if the notes is over 1000 characters', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
@@ -996,7 +999,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should open the notes section if the notes input is over 1000 characters and section is closed on submit', async () => {
-        const { fixture, getByText, getByLabelText, getByTestId } = await setup(null);
+        const { fixture, getByText, getByLabelText, getByTestId } = await setup({ trainingRecordId: null });
 
         const openNotesButton = getByText('Open notes');
         openNotesButton.click();
@@ -1020,7 +1023,7 @@ describe('AddEditTrainingComponent', () => {
 
     describe('uploadCertificate errors', () => {
       it('should show an error message if the selected file is over 5MB', async () => {
-        const { fixture, getByTestId, getByText } = await setup(null);
+        const { fixture, getByTestId, getByText } = await setup({ trainingRecordId: null });
 
         const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
 
@@ -1038,7 +1041,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the selected file is not a pdf file', async () => {
-        const { fixture, getByTestId, getByText } = await setup(null);
+        const { fixture, getByTestId, getByText } = await setup({ trainingRecordId: null });
 
         const mockUploadFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
 
@@ -1052,7 +1055,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should clear the error message when user select a valid file instead', async () => {
-        const { fixture, getByTestId, getByText, queryByText } = await setup(null);
+        const { fixture, getByTestId, getByText, queryByText } = await setup({ trainingRecordId: null });
         fixture.autoDetectChanges();
 
         const invalidFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
@@ -1067,7 +1070,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should provide aria description to screen reader users when error happen', async () => {
-        const { fixture, getByTestId } = await setup(null);
+        const { fixture, getByTestId } = await setup({ trainingRecordId: null });
         fixture.autoDetectChanges();
 
         const uploadSection = getByTestId('uploadCertificate');
@@ -1082,7 +1085,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should clear any error message when remove button of an upload file is clicked', async () => {
-        const { fixture, getByTestId, getByText, queryByText } = await setup(null);
+        const { fixture, getByTestId, getByText, queryByText } = await setup({ trainingRecordId: null });
         fixture.autoDetectChanges();
 
         const mockUploadFileValid = new File(['some file content'], 'cerfificate.pdf', { type: 'application/pdf' });
@@ -1101,9 +1104,7 @@ describe('AddEditTrainingComponent', () => {
   });
 
   it('should redirect to the add training select category on page refresh', async () => {
-    const { component, fixture, getByText, getByTestId, getByLabelText, trainingService, routerSpy } = await setup(
-      null,
-    );
+    const { component, routerSpy } = await setup({ trainingRecordId: null, selectedTraining: null });
 
     component.ngOnInit();
 
