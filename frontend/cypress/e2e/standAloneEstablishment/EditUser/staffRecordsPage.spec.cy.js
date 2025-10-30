@@ -641,29 +641,41 @@ describe('Standalone staff records page as edit user', () => {
       });
 
       it('should NOT see the DHA worker question if workplace main service is not compatible with DHA', () => {
+        cy.intercept('GET', 'api/establishment/*/worker').as('worker');
+
         onHomePage.clickTab('Workplace');
         onWorkplacePage.clickIntoMainServiceQuestionAndAnswer(mainServiceThatCannotDoDHA.name);
 
         onHomePage.clickTab('Staff records');
+
+        cy.wait('@worker');
         onStaffRecordsPage.clickIntoWorker(careWorker);
         onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').notExist();
       });
 
       it('should NOT see the DHA worker question if workplace answered "No" for DHA workplace question 1', () => {
+        cy.intercept('GET', 'api/establishment/*/worker').as('worker');
+
         onHomePage.clickTab('Workplace');
         onWorkplacePage.answerDHAQuestions('No');
 
         onHomePage.clickTab('Staff records');
+
+        cy.wait('@worker');
         onStaffRecordsPage.clickIntoWorker(careWorker);
         onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').notExist();
       });
 
       ['Yes', 'I do not know'].forEach((value) => {
         it(`should see the DHA worker question if workplace answered "${value}" for DHA workplace question 1`, () => {
+          cy.intercept('GET', 'api/establishment/*/worker').as('worker');
+
           onHomePage.clickTab('Workplace');
           onWorkplacePage.answerDHAQuestions(value);
 
           onHomePage.clickTab('Staff records');
+
+          cy.wait('@worker');
           onStaffRecordsPage.clickIntoWorker(careWorker);
           onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').toHaveValue('-');
         });
