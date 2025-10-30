@@ -9,7 +9,6 @@ describe('Standalone training and qualifications page as edit user', () => {
 
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
-    cy.reload();
   });
 
   after(() => {

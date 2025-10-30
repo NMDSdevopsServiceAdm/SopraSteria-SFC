@@ -6,7 +6,6 @@ describe('Standalone home page as edit user', () => {
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('readOnlyStandAloneUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-    cy.reload();
   });
 
   it('should see the standalone establishment workplace page', () => {

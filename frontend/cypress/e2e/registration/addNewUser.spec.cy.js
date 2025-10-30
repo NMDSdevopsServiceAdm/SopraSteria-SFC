@@ -41,10 +41,10 @@ describe('As a workplace primary user I want to register a new user', () => {
       cy.contains('a', 'Add a user').click();
       cy.get('h1').should('be.visible').and('contain.text', 'Add a user');
 
-      cy.getByLabel('Full name').type(userFullName);
-      cy.getByLabel('Job title ').type('Manager');
-      cy.getByLabel('Email address').type('test@example.com');
-      cy.getByLabel('Phone number').type('0123456789');
+      cy.getByLabel('Full name').type(userFullName, { delay: 0 });
+      cy.getByLabel('Job title ').type('Manager', { delay: 0 });
+      cy.getByLabel('Email address').type('test@example.com', { delay: 0 });
+      cy.getByLabel('Phone number').type('0123456789', { delay: 0 });
 
       const checkboxLabelForUserType = userType[0].toUpperCase() + userType.slice(1);
       cy.getByLabel(checkboxLabelForUserType).check();

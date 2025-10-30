@@ -36,7 +36,6 @@ describe('Standalone home page as edit user', () => {
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-    cy.reload();
   });
 
   afterEach(() => {
