@@ -1016,7 +1016,7 @@ class Training extends EntityValidator {
       deliveredBy: this.deliveredBy ? this.deliveredBy : undefined,
       externalProviderName: this.externalProviderName ? this.externalProviderName : undefined,
       howWasItDelivered: this.howWasItDelivered ? this.howWasItDelivered : undefined,
-      validityPeriodInMonth: this.validityPeriodInMonth ? this.validityPeriodInMonth : undefined,
+      validityPeriodInMonth: this.validityPeriodInMonth ? this.validityPeriodInMonth : null,
       doesNotExpire: this.doesNotExpire ? this.doesNotExpire : undefined,
       completed: this.completed ? this.completed : undefined,
       expires: this._expires !== null ? this.expires : undefined,
