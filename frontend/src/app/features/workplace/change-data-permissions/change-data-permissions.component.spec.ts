@@ -4,7 +4,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { establishmentBuilder, MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '../../../../mockdata/establishment';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -16,6 +16,7 @@ import { AlertService } from '@core/services/alert.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 import { DataPermissions } from '@core/model/my-workplaces.model';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('ChangeDataPermissionsComponent', () => {
   const establishment = establishmentBuilder() as Establishment;
@@ -39,7 +40,7 @@ describe('ChangeDataPermissionsComponent', () => {
     const childWorkplaces = overrides.childWorkplaces ?? null;
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
     const setupTools = await render(ChangeDataPermissionsComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       declarations: [ChangeDataPermissionsComponent],
       providers: [
         UntypedFormBuilder,
@@ -73,6 +74,8 @@ describe('ChangeDataPermissionsComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -140,7 +143,14 @@ describe('ChangeDataPermissionsComponent', () => {
 
   describe('parent changing subsidiary workplace permissions', () => {
     const previousUrl = '/workplace/view-all-workplaces';
-    let overrides = {
+
+    const radioButtonLabels = {
+      [DataPermissions.Workplace]: 'Only their workplace details',
+      [DataPermissions.WorkplaceAndStaff]: 'Their workplace details and their staff records',
+      [DataPermissions.None]: 'No access to their data, linked only',
+    };
+
+    const defaultOverrides = {
       previousUrl,
       workplaceChangingPermission: parentWorkplace,
       uidToChangeDataPermissionsFor: subsidiaryWorkplace?.uid,
@@ -148,7 +158,7 @@ describe('ChangeDataPermissionsComponent', () => {
     };
 
     it('should show the heading and caption', async () => {
-      const { getByTestId } = await setup(overrides);
+      const { getByTestId } = await setup(defaultOverrides);
 
       const heading = getByTestId('heading');
 
@@ -157,7 +167,7 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the name of the workplace to change data permissions for', async () => {
-      const { getAllByText } = await setup(overrides);
+      const { getAllByText } = await setup(defaultOverrides);
 
       expect(getAllByText(subsidiaryWorkplace.name).length).toEqual(2);
     });
@@ -171,7 +181,7 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the correct labels for the radio buttons', async () => {
-      const { component, fixture, getByLabelText } = await setup(overrides);
+      const { component, fixture, getByLabelText } = await setup(defaultOverrides);
 
       component.ngOnInit();
       fixture.detectChanges();
@@ -189,8 +199,8 @@ describe('ChangeDataPermissionsComponent', () => {
           'cannot currently view any of their data (they are linked by name only).',
         ];
         it(`should show the correct text when the subsidiary has ${permission} as the data permission`, async () => {
-          overrides = {
-            ...overrides,
+          const overrides = {
+            ...defaultOverrides,
             childWorkplaces: [
               { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
               subsidiaryWorkplace2,
@@ -214,8 +224,8 @@ describe('ChangeDataPermissionsComponent', () => {
         ];
 
         it(`should show the correct bullet list when the data permission on the subsidiary is ${permission}`, async () => {
-          overrides = {
-            ...overrides,
+          const overrides = {
+            ...defaultOverrides,
             childWorkplaces: [
               { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
               subsidiaryWorkplace2,
@@ -230,17 +240,17 @@ describe('ChangeDataPermissionsComponent', () => {
         });
 
         it(`should call setDataPermission with ${permission}`, async () => {
-          overrides = {
-            ...overrides,
+          const overrides = {
+            ...defaultOverrides,
             childWorkplaces: [
               { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
               subsidiaryWorkplace2,
             ],
           };
 
-          const { fixture, setDataPermissionSpy, getByText } = await setup(overrides);
+          const { fixture, setDataPermissionSpy, getByText, getByRole } = await setup(overrides);
 
-          const radioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="${permission}"]`);
+          const radioButton = getByRole('radio', { name: radioButtonLabels[permission] });
 
           const saveButton = getByText('Save and return');
           fireEvent.click(radioButton);
@@ -253,8 +263,8 @@ describe('ChangeDataPermissionsComponent', () => {
         });
 
         it(`should prefill the correct radio button when permission is ${permission}`, async () => {
-          overrides = {
-            ...overrides,
+          const overrides = {
+            ...defaultOverrides,
             childWorkplaces: [
               { ...subsidiaryWorkplace, dataOwner: 'Parent', dataPermissions: permission },
               subsidiaryWorkplace2,
@@ -274,7 +284,7 @@ describe('ChangeDataPermissionsComponent', () => {
     );
 
     it('should navigate to "All your workplaces" page and call the alert service when set permissions is successful', async () => {
-      const { fixture, alertSpy, getByText, routerSpy } = await setup(overrides);
+      const { fixture, alertSpy, getByText, routerSpy } = await setup(defaultOverrides);
 
       const radioButton = getByText('Only their workplace details');
       const saveButton = getByText('Save and return');
@@ -293,7 +303,13 @@ describe('ChangeDataPermissionsComponent', () => {
 
   describe('subsidiary changing parent permission on their own workplace', () => {
     const previousUrl = '/';
-    let overrides = {
+    const radioButtonLabels = {
+      [DataPermissions.Workplace]: 'Only your workplace details',
+      [DataPermissions.WorkplaceAndStaff]: 'Your workplace details and your staff records',
+      [DataPermissions.None]: 'No access to your data, linked only',
+    };
+
+    const defaultOverrides = {
       previousUrl,
       workplaceChangingPermission: {
         ...subsidiaryWorkplace,
@@ -304,7 +320,7 @@ describe('ChangeDataPermissionsComponent', () => {
     };
 
     it('should show the heading and caption', async () => {
-      const { getByTestId } = await setup(overrides);
+      const { getByTestId } = await setup(defaultOverrides);
 
       const heading = getByTestId('heading');
 
@@ -313,7 +329,7 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the name of the workplace to change data permissions for', async () => {
-      const { getAllByText } = await setup(overrides);
+      const { getAllByText } = await setup(defaultOverrides);
 
       expect(getAllByText(parentWorkplace.name).length).toEqual(2);
     });
@@ -327,7 +343,7 @@ describe('ChangeDataPermissionsComponent', () => {
     });
 
     it('should show the correct labels for the radio buttons', async () => {
-      const { component, fixture, getByLabelText } = await setup(overrides);
+      const { component, fixture, getByLabelText } = await setup(defaultOverrides);
 
       component.ngOnInit();
       fixture.detectChanges();
@@ -344,9 +360,10 @@ describe('ChangeDataPermissionsComponent', () => {
           'can currently view your workplace details and your staff records, but cannot edit them (they have view only access).',
           'cannot currently view any of your data (they are linked by name only).',
         ];
+
         it(`should show the correct text when the subsidiary has ${permission} as the data permission`, async () => {
-          overrides = {
-            ...overrides,
+          const overrides = {
+            ...defaultOverrides,
             workplaceChangingPermission: {
               ...subsidiaryWorkplace,
               dataOwner: 'Workplace',
@@ -370,8 +387,8 @@ describe('ChangeDataPermissionsComponent', () => {
         ];
 
         it(`should show the correct bullet list when the data permission on the subsidiary is ${permission}`, async () => {
-          overrides = {
-            ...overrides,
+          const overrides = {
+            ...defaultOverrides,
             workplaceChangingPermission: {
               ...subsidiaryWorkplace,
               dataOwner: 'Workplace',
@@ -386,8 +403,8 @@ describe('ChangeDataPermissionsComponent', () => {
         });
 
         it(`should call setDataPermission with ${permission}`, async () => {
-          overrides = {
-            ...overrides,
+          const overrides = {
+            ...defaultOverrides,
             workplaceChangingPermission: {
               ...subsidiaryWorkplace,
               dataOwner: 'Workplace',
@@ -395,9 +412,9 @@ describe('ChangeDataPermissionsComponent', () => {
             },
           };
 
-          const { fixture, setDataPermissionSpy, getByText } = await setup(overrides);
+          const { fixture, setDataPermissionSpy, getByText, getByRole } = await setup(overrides);
 
-          const radioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="${permission}"]`);
+          const radioButton = getByRole('radio', { name: radioButtonLabels[permission] });
 
           const saveButton = getByText('Save and return');
           fireEvent.click(radioButton);
@@ -410,8 +427,8 @@ describe('ChangeDataPermissionsComponent', () => {
         });
 
         it(`should prefill the correct radio button when permission is ${permission}`, async () => {
-          overrides = {
-            ...overrides,
+          const overrides = {
+            ...defaultOverrides,
             workplaceChangingPermission: {
               ...subsidiaryWorkplace,
               dataOwner: 'Workplace',
@@ -432,7 +449,7 @@ describe('ChangeDataPermissionsComponent', () => {
     );
 
     it('should navigate to "All your workplaces" page and call the alert service when set permissions is successful', async () => {
-      const { fixture, alertSpy, getByText, routerSpy } = await setup(overrides);
+      const { fixture, alertSpy, getByText, routerSpy } = await setup(defaultOverrides);
 
       const radioButton = getByText('Only your workplace details');
       const saveButton = getByText('Save and return');
