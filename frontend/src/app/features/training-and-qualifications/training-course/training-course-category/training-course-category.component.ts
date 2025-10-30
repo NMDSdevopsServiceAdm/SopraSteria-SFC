@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, AfterViewInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -16,7 +16,7 @@ type JourneyType = 'Add' | 'Edit';
   selector: 'app-training-course-category',
   templateUrl: './training-course-category.component.html',
 })
-export class TrainingCourseCategoryComponent implements OnInit {
+export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
   public form: UntypedFormGroup;
@@ -56,6 +56,10 @@ export class TrainingCourseCategoryComponent implements OnInit {
     this.setupFormErrorsMap();
     this.prefill();
     this.backLinkService.showBackLink();
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   private determineJourneyType() {
