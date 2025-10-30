@@ -15,6 +15,7 @@ describe('Training course for standalone workplace edit user', () => {
 
   after(() => {
     cy.deleteTestWorkerFromDb(workerName);
+    cy.deleteAllTrainingCourses(establishmentID);
   });
 
   beforeEach(() => {
@@ -30,5 +31,34 @@ describe('Training course for standalone workplace edit user', () => {
     cy.get('[data-testid="training-course-table"]')
       .as('training-course-table')
       .should('contain.text', 'Test training course');
+  });
+
+  it.only('should allow user add a new training course', () => {
+    onHomePage.clickTab('Training and qualifications');
+    cy.contains('Add and manage training').click();
+    cy.get('a').contains('Add and manage training courses').click();
+
+    cy.get('a').contains('Add a training course').click();
+
+    cy.get('h1').should('contain', 'Add training course details');
+    cy.getByLabel('Training course name').type('Test add new training course');
+    cy.getByLabel('Yes').click();
+    cy.getByLabel('External provider').click();
+    cy.getByLabel('Provider name').type('Care skill academy');
+    cy.getByLabel('Face to face').click();
+    cy.getByLabel('This training does not expire').click();
+
+    cy.get('button').contains('Continue').click();
+
+    cy.get('h1').should('contain', 'Select a category that best matches this training course');
+
+    cy.contains('Show all categories').click();
+    cy.getByLabel('Medication management').click();
+    cy.get('button').contains('Save training course').click();
+
+    cy.get('h1').should('contain', 'Add and manage training courses');
+    cy.get('app-alert span').should('contain', 'Training course added');
+
+    cy.get('[data-testid="training-course-table"]').should('contain.text', 'Test add new training course');
   });
 });
