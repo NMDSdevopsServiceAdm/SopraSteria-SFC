@@ -184,9 +184,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   private clearFormControlAndKeepErrorMessages(formControlName: string): void {
     const formControl = this.form.get(formControlName);
-    const existingErrors = formControl.errors;
     formControl.patchValue(null, { emitEvent: false });
-    formControl.setErrors(existingErrors);
   }
 
   private setupFormErrorsMap(): void {
@@ -205,17 +203,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         ],
       },
 
-      {
-        item: 'validityPeriodInMonth',
-        type: [
-          { name: 'required', message: 'Enter the number of months' },
-          { name: 'pattern', message: 'Number of months must be between 1 and 999' },
-        ],
-      },
-      {
-        item: 'doesNotExpire',
-        type: [{ name: 'required', message: 'Confirm the training does not expire' }],
-      },
       {
         item: 'completed',
         type: [
