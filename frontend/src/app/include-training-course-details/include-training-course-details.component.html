@@ -1,0 +1,124 @@
+<div class="govuk-width-container">
+  <main class="govuk-main-wrapper">
+    <div class="govuk-grid-row first-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <span data-testid="workerName" class="govuk-caption-l">{{ worker.nameOrId }}</span>
+        <h1 data-testid="page-heading" class="govuk-heading-l">Select a training course</h1>
+      </div>
+    </div>
+    <div class="govuk-grid-row second-grid-row">
+      <div class="govuk-grid-column-four-fifths">
+        <details data-testid="additional-details" class="govuk-details">
+          <summary  class="govuk-details__summary">
+          <span data-testid="details-toggle" class="govuk-details__summary-text">
+           Why is it a good idea to update records with training course details?
+          </span>
+          </summary>
+          <div data-testid="details-text" class="govuk-details__text">
+            <p class="govuk-body govuk-!-margin-bottom-0">It's a good idea because your training records will then be consistent with</p>
+            <p class="govuk-body govuk-!-margin-bottom-0">each other, sharing the same details, like course name and validity. We</p>
+            <p class="govuk-body govuk-!-margin-bottom-5">match records to courses by category and when you update them they’ll:</p>
+            <li class="govuk-body govuk-!-margin-bottom-1 govuk-!-margin-left-3">take the name of the training course</li>
+            <li class="govuk-body govuk-!-margin-bottom-1 govuk-!-margin-left-3">say whether the training is accredited</li>
+            <li class="govuk-body govuk-!-margin-bottom-1 govuk-!-margin-left-3">say how the training was delivered and who delivered it</li>
+            <li class="govuk-body govuk-!-margin-bottom-1 govuk-!-margin-left-3">show how long the training is valid for</li>
+            <li class="govuk-body govuk-!-margin-bottom-1 govuk-!-margin-left-3">still generate alerts when the training is due to expire</li>
+            <li class="govuk-body govuk-!-margin-bottom-0 govuk-!-margin-left-3">keep any certification and notes that were added</li>
+          </div>
+        </details>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div>
+          <h2 data-testid="training-record-heading" class="govuk-heading-s govuk-!-margin-bottom-1">Training record name</h2>
+          <p data-testid="training-record-name" class="govuk-body-m govuk-!-margin-bottom-5">{{ trainingRecord.title }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-form-group govuk-!-margin-bottom-1">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              <h1 data-testid="training-course-heading" class="govuk-fieldset__heading training-course-heading">
+                Training course name
+              </h1>
+            </legend>
+          </fieldset>
+        </div>
+        <div class="govuk-form-group">
+          <div *ngIf="trainingCourses.length < 2">
+            <div class="shaded-background">
+              <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input class="govuk-checkboxes__input"
+                         data-testid="training-course-name-checkbox"
+                         id="course"
+                         [formControl]="selectedTrainingCourse"
+                         name="course"
+                         type="checkbox"
+                         [value]="trainingCourses[0].name"
+                  >
+                  <label class="govuk-body-m govuk-checkboxes__label"
+                         data-testid="checkbox-label"
+                         for="course"
+                  >
+                    {{ trainingCourses[0].name }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="trainingCourses.length > 1">
+          <div class="radio-background">
+            <div class="govuk-radios" data-module="govuk-radios">
+              <div class="govuk-radios__item"  *ngFor="let course of trainingCourses">
+                <input
+                  class="govuk-radios__input"
+                  [attr.data-testid]="'radio-' + course.id"
+                  [id]="course.id"
+                  name="trainingCourses"
+                  [formControl]="selectedTrainingCourse"
+                  type="radio"
+                  [value]="course.name"
+                />
+                <label class="govuk-label govuk-radios__label" [for]="course.id">
+                  {{ course.name }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-row last-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-button-group">
+          <a
+            data-testid="continue-button"
+            type="submit"
+            class="govuk-button govuk-!-margin-right-9"
+            data-module="govuk-button"
+            [routerLink]="selectedTrainingCourse.value ? ['.'] :
+            ['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'training', trainingRecord.uid]"
+          >
+            Continue
+          </a>
+          <a class="govuk-link cancel-link"
+             data-testid="cancel-link"
+             [routerLink]="[
+             '/workplace',
+             workplace.uid,
+             'training-and-qualifications-record',
+             worker.uid,
+             'training',
+             trainingRecord.uid
+             ]"
+          >Cancel</a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

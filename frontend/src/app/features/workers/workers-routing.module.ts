@@ -23,7 +23,6 @@ import { ViewTrainingComponent } from '@shared/components/training-and-qualifica
 import { UpdateLeaversComponent } from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
 import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
 import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
-
 import {
   JobRoleType,
   SelectJobRolesToAddComponent,
@@ -85,7 +84,7 @@ import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delega
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
-import { AddATrainingRecord } from '@features/training-and-qualifications/add-a-training-record/add-a-training-record.component';
+
 
 const routes: Routes = [
   {
@@ -545,6 +544,11 @@ const routes: Routes = [
                 component: AddEditTrainingComponent,
                 data: { title: 'Training' },
               },
+              // {
+              //   path: 'include-training-course-details',
+              //   component: IncludeTrainingCourseDetailsComponent,
+              //   data: { title: 'Include training course details' },
+              // },
               {
                 path: 'delete',
                 component: DeleteRecordComponent,
@@ -845,11 +849,26 @@ const routes: Routes = [
       },
       {
         path: 'training/:trainingRecordId',
+        resolve: { trainingRecord: TrainingRecordResolver },
         children: [
           {
             path: '',
             component: AddEditTrainingComponent,
             data: { title: 'Training' },
+          },
+          {
+            path: 'include-training-course-details',
+            component: IncludeTrainingCourseDetailsComponent,
+            data: {
+              title: 'Include training course details',
+              // trainingCoursesToLoad: {
+              //   categoryId: 2,
+              // },
+            },
+            resolve: {
+              // trainingRecord: TrainingRecordResolver,
+              trainingCourses: TrainingCourseResolver,
+            },
           },
           {
             path: 'delete',
