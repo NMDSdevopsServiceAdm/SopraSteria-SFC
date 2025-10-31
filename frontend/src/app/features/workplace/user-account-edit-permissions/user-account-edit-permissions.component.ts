@@ -17,8 +17,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
 
 @Component({
-  selector: 'app-user-account-edit-permissions',
-  templateUrl: './user-account-edit-permissions.component.html',
+    selector: 'app-user-account-edit-permissions',
+    templateUrl: './user-account-edit-permissions.component.html',
+    standalone: false
 })
 export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

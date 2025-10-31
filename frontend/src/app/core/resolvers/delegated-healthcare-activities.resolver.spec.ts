@@ -1,14 +1,21 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { DelegatedHealthcareActivitiesResolver } from './delegated-healthcare-activities.resolver';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('getCareWorkforcePathwayWorkplaceAwarenessAnswersResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [DelegatedHealthcareActivitiesResolver, DelegatedHealthcareActivitiesService],
+      imports: [],
+      providers: [
+        DelegatedHealthcareActivitiesResolver,
+        DelegatedHealthcareActivitiesService,
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const resolver = TestBed.inject(DelegatedHealthcareActivitiesResolver);

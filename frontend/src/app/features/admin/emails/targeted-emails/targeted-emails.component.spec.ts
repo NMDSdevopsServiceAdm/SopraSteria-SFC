@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -20,14 +21,7 @@ describe('TargetedEmailsComponent', () => {
   async function setup() {
     return render(TargetedEmailsComponent, {
       declarations: [DragAndDropUploadComponent, SendEmailsConfirmationDialogComponent],
-      imports: [
-        SharedModule,
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-        NgxDropzoneModule,
-        AdminModule,
-      ],
+      imports: [SharedModule, FormsModule, ReactiveFormsModule, NgxDropzoneModule, AdminModule],
       providers: [
         EmailCampaignService,
         DecimalPipe,
@@ -57,7 +51,7 @@ describe('TargetedEmailsComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
   }
 

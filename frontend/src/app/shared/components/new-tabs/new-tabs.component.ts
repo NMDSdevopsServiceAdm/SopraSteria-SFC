@@ -7,9 +7,10 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-new-tabs',
-  templateUrl: './new-tabs.component.html',
-  styleUrls: ['./new-tabs.component.scss'],
+    selector: 'app-new-tabs',
+    templateUrl: './new-tabs.component.html',
+    styleUrls: ['./new-tabs.component.scss'],
+    standalone: false
 })
 export class NewTabsComponent implements OnInit, OnDestroy {
   @Output() selectedTabClick = new EventEmitter<{ tabSlug: string }>();

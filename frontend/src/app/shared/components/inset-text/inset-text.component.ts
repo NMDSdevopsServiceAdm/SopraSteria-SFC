@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-inset-text',
-  templateUrl: './inset-text.component.html',
-  styleUrls: ['./inset-text.component.scss'],
+    selector: 'app-inset-text',
+    templateUrl: './inset-text.component.html',
+    styleUrls: ['./inset-text.component.scss'],
+    standalone: false
 })
 export class InsetTextComponent {
   @Input() color: string;

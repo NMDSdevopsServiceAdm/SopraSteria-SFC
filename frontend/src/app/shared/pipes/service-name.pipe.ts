@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'serviceName',
+    name: 'serviceName',
+    standalone: false
 })
 export class ServiceNamePipe implements PipeTransform {
   transform(value: string) {

@@ -1,12 +1,14 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { provideRouter, Router } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
 import { Worker, WorkerDays, WorkerEditResponse } from '@core/model/worker.model';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -25,7 +27,7 @@ import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 describe('StaffRecordSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(StaffRecordSummaryComponent, {
-      imports: [SharedModule, HttpClientTestingModule, BrowserModule, FundingModule],
+      imports: [SharedModule, BrowserModule, FundingModule, RouterModule],
       providers: [
         InternationalRecruitmentService,
         {
@@ -38,7 +40,10 @@ describe('StaffRecordSummaryComponent', () => {
           useClass: MockWorkerService,
         },
         WdfConfirmFieldsService,
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         wdfView: overrides.wdfView ?? true,

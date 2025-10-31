@@ -6,8 +6,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-tailored-seminars',
-  templateUrl: './benefit-tailored-seminars.component.html',
+    selector: 'app-tailored-seminars',
+    templateUrl: './benefit-tailored-seminars.component.html',
+    standalone: false
 })
 export class TailoredSeminarsComponent implements OnInit {
   public pages: Page;

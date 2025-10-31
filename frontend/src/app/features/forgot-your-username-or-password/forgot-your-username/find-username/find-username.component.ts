@@ -8,9 +8,10 @@ import { FindUsernameResponse, FindUsernameService } from '@core/services/find-u
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-find-username',
-  templateUrl: './find-username.component.html',
-  styleUrls: ['./find-username.component.scss'],
+    selector: 'app-find-username',
+    templateUrl: './find-username.component.html',
+    styleUrls: ['./find-username.component.scss'],
+    standalone: false
 })
 export class FindUsernameComponent implements OnInit, OnDestroy {
   @Input() accountUid: string;

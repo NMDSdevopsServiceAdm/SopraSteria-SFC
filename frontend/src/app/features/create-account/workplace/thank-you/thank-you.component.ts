@@ -3,8 +3,9 @@ import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({
-  selector: 'app-thank-you-create-account',
-  templateUrl: './thank-you.component.html',
+    selector: 'app-thank-you-create-account',
+    templateUrl: './thank-you.component.html',
+    standalone: false
 })
 export class ThankYouComponent {
   constructor(public registrationService: RegistrationService, private userService: UserService) {

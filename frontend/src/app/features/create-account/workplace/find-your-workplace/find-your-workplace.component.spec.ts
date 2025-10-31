@@ -1,5 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { LocationService } from '@core/services/location.service';
@@ -16,7 +16,7 @@ import { FindYourWorkplaceComponent } from './find-your-workplace.component';
 describe('FindYourWorkplaceComponent', () => {
   async function setup(registrationFlow = true) {
     const component = await render(FindYourWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
         {
           provide: LocationService,
@@ -40,6 +40,8 @@ describe('FindYourWorkplaceComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

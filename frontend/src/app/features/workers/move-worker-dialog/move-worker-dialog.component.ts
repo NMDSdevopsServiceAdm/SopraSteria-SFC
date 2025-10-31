@@ -13,8 +13,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-move-worker-dialog',
-  templateUrl: './move-worker-dialog.component.html',
+    selector: 'app-move-worker-dialog',
+    templateUrl: './move-worker-dialog.component.html',
+    standalone: false
 })
 export class MoveWorkerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public form: UntypedFormGroup;

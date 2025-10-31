@@ -14,8 +14,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-new-training-tab',
-  templateUrl: './training-tab.component.html',
+    selector: 'app-new-training-tab',
+    templateUrl: './training-tab.component.html',
+    standalone: false
 })
 export class NewTrainingTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

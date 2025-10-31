@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BackService } from '@core/services/back.service';
@@ -15,8 +16,8 @@ import { IsThisYourWorkplaceComponent } from './is-this-your-workplace.component
 
 describe('IsThisYourWorkplaceComponent', () => {
   async function setup(overrides: any = {}) {
-    const component = await render(IsThisYourWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
+    const setupTools = await render(IsThisYourWorkplaceComponent, {
+      imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
         BackService,
         {
@@ -74,6 +75,8 @@ describe('IsThisYourWorkplaceComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -84,7 +87,10 @@ describe('IsThisYourWorkplaceComponent', () => {
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
 
+    const component = setupTools.fixture.componentInstance;
+
     return {
+      ...setupTools,
       component,
       router,
       spy,
@@ -98,48 +104,48 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should render the workplace and user account progress bars', async () => {
-    const { component } = await setup();
+    const { getByTestId } = await setup();
 
-    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
-    expect(component.getByTestId('progress-bar-2')).toBeTruthy();
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
+    expect(getByTestId('progress-bar-2')).toBeTruthy();
   });
 
   it('should not render the progress bars when accessed from outside the flow', async () => {
     const overrides = { searchMethod: 'locationID', locationId: '1-2123313123', registrationFlow: false };
-    const { component } = await setup(overrides);
+    const { queryByTestId } = await setup(overrides);
 
-    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
-    expect(component.queryByTestId('progress-bar-2')).toBeFalsy();
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(queryByTestId('progress-bar-2')).toBeFalsy();
   });
 
   it('should render the correct heading when in the registration journey', async () => {
-    const { component } = await setup();
+    const { queryByText } = await setup();
 
-    const registrationHeading = component.queryByText('Is this your workplace?');
-    const parentHeading = component.queryByText('Is this the workplace you want to add?');
+    const registrationHeading = queryByText('Is this your workplace?');
+    const parentHeading = queryByText('Is this the workplace you want to add?');
 
     expect(registrationHeading).toBeTruthy();
     expect(parentHeading).toBeFalsy();
   });
 
   it('should render the correct reveal title when in the registration journey', async () => {
-    const { component } = await setup();
+    const { queryByText } = await setup();
 
     const revealTitle = 'Spotted a mistake in your workplace details?';
 
-    expect(component.queryByText(revealTitle)).toBeTruthy();
+    expect(queryByText(revealTitle)).toBeTruthy();
   });
 
   it('should show the id and address when given the locationId', async () => {
-    const { component } = await setup();
+    const { queryByText } = await setup();
 
-    const messageText = component.queryByText('CQC location ID entered:');
-    const locationIdText = component.queryByText('1-2123313123');
-    const locationName = component.queryByText('Hello Care');
-    const addressLine1 = component.queryByText('123 Fake Ave');
-    const county = component.queryByText('West Yorkshire');
-    const townCity = component.queryByText('Leeds');
-    const postalCode = component.queryByText('LS1 1AA');
+    const messageText = queryByText('CQC location ID entered:');
+    const locationIdText = queryByText('1-2123313123');
+    const locationName = queryByText('Hello Care');
+    const addressLine1 = queryByText('123 Fake Ave');
+    const county = queryByText('West Yorkshire');
+    const townCity = queryByText('Leeds');
+    const postalCode = queryByText('LS1 1AA');
 
     expect(messageText).toBeTruthy();
     expect(locationIdText).toBeTruthy();
@@ -151,14 +157,14 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should show the postcode and address when given the postcode', async () => {
-    const { component } = await setup({ searchMethod: 'postcode' });
+    const { queryByText, queryAllByText } = await setup({ searchMethod: 'postcode' });
 
-    const messageText = component.queryByText('Postcode entered:');
-    const locationName = component.queryByText('Hello Care');
-    const addressLine1 = component.queryByText('123 Fake Ave');
-    const county = component.queryByText('West Yorkshire');
-    const townCity = component.queryByText('Leeds');
-    const postalCode = component.queryAllByText('LS1 1AA');
+    const messageText = queryByText('Postcode entered:');
+    const locationName = queryByText('Hello Care');
+    const addressLine1 = queryByText('123 Fake Ave');
+    const county = queryByText('West Yorkshire');
+    const townCity = queryByText('Leeds');
+    const postalCode = queryAllByText('LS1 1AA');
 
     expect(messageText).toBeTruthy();
     expect(locationName).toBeTruthy();
@@ -171,41 +177,41 @@ describe('IsThisYourWorkplaceComponent', () => {
   it('should preselect the "Yes" radio button if selectedLocationAddress is the same as the location data', async () => {
     const { component } = await setup();
 
-    component.fixture.componentInstance.registrationService.selectedLocationAddress$.value.locationId = '123';
-    component.fixture.componentInstance.locationData.locationId = '123';
-    component.fixture.componentInstance.ngOnInit();
+    component.registrationService.selectedLocationAddress$.value.locationId = '123';
+    component.locationData.locationId = '123';
+    component.ngOnInit();
 
-    const form = component.fixture.componentInstance.form;
+    const form = component.form;
     expect(form.valid).toBeTruthy();
     expect(form.value.yourWorkplace).toBe('yes');
   });
 
   it('should call the establishmentExistsCheck when selecting yes', async () => {
-    const { component, registrationService } = await setup();
+    const { registrationService, getByRole, fixture, getByText } = await setup();
 
     const registrationSpy = spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(
       of({ exists: false }),
     );
 
-    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    const yesRadioButton = getByRole('radio', { name: 'Yes' });
     fireEvent.click(yesRadioButton);
 
-    const continueButton = component.getByText('Continue');
+    const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
-    component.fixture.detectChanges();
+    fixture.detectChanges();
     expect(registrationSpy).toHaveBeenCalledWith('1-2123313123');
   });
 
   it('should navigate to the cannot-create-account url when selecting yes, if the establishment already exists in the service', async () => {
-    const { component, spy, registrationService } = await setup();
+    const { spy, registrationService, getByRole, getByText } = await setup();
 
     spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: true }));
 
-    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    const yesRadioButton = getByRole('radio', { name: 'Yes' });
     fireEvent.click(yesRadioButton);
 
-    const continueButton = component.getByText('Continue');
+    const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['registration', 'cannot-create-account'], {
@@ -214,14 +220,14 @@ describe('IsThisYourWorkplaceComponent', () => {
   });
 
   it('should navigate to the type-of-employer url when selecting yes and the establishment does not already exist in the service', async () => {
-    const { component, spy, registrationService } = await setup();
+    const { spy, registrationService, getByRole, getByText } = await setup();
 
     spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
-    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    const yesRadioButton = getByRole('radio', { name: 'Yes' });
     fireEvent.click(yesRadioButton);
 
-    const continueButton = component.getByText('Continue');
+    const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['registration', 'type-of-employer']);
@@ -229,42 +235,42 @@ describe('IsThisYourWorkplaceComponent', () => {
 
   it('should navigate to the confirm-details page when selecting yes when returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {
     const overrides = { searchMethod: 'locationID', locationId: '1-2123313123', registrationFlow: false };
-    const { component, spy, registrationService } = await setup(overrides);
+    const { component, spy, registrationService, getByRole, getByText } = await setup(overrides);
 
-    component.fixture.componentInstance.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
+    component.returnToConfirmDetails = { url: ['registration', 'confirm-details'] };
 
     spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
-    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    const yesRadioButton = getByRole('radio', { name: 'Yes' });
     fireEvent.click(yesRadioButton);
 
-    const continueButton = component.getByText('Continue');
+    const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['registration/confirm-details']);
   });
 
   it('should navigate to the problem-with-the-service url when there is a problem with the checkIfEstablishmentExists call', async () => {
-    const { component, spy, registrationService } = await setup();
+    const { getByText, spy, registrationService, getByRole } = await setup();
 
     spyOn(registrationService, 'checkIfEstablishmentExists').and.returnValue(throwError('error'));
 
-    const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+    const yesRadioButton = getByRole('radio', { name: 'Yes' });
     fireEvent.click(yesRadioButton);
 
-    const continueButton = component.getByText('Continue');
+    const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['/problem-with-the-service']);
   });
 
   it('should navigate back to find-workplace url when selecting no', async () => {
-    const { component, spy } = await setup();
+    const { getByText, getByRole, spy } = await setup();
 
-    const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
+    const noRadioButton = getByRole('radio', { name: /No/ });
     fireEvent.click(noRadioButton);
 
-    const continueButton = component.getByText('Continue');
+    const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
     expect(spy).toHaveBeenCalledWith(['registration', 'find-workplace']);
@@ -272,14 +278,14 @@ describe('IsThisYourWorkplaceComponent', () => {
 
   it('should display an error when continue is clicked without selecting anything', async () => {
     const overrides = { searchMethod: 'locationID', locationId: null };
-    const { component } = await setup(overrides);
+    const { component, getAllByText, getByText } = await setup(overrides);
 
-    const form = component.fixture.componentInstance.form;
-    const continueButton = component.getByText('Continue');
+    const form = component.form;
+    const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
     const errorMessage = 'Select yes if this is your workplace';
 
     expect(form.invalid).toBeTruthy();
-    expect(component.getAllByText(errorMessage).length).toBe(2);
+    expect(getAllByText(errorMessage).length).toBe(2);
   });
 });

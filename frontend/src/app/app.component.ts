@@ -13,8 +13,9 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { filter, take, takeWhile } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    standalone: false
 })
 export class AppComponent implements OnInit {
   private baseTitle = 'Skills for Care';

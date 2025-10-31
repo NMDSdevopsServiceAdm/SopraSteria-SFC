@@ -9,8 +9,9 @@ import { Location } from '@angular/common';
 import { PreviousRouteService } from '../../../core/services/previous-route.service';
 
 @Component({
-  selector: 'app-about-parents',
-  templateUrl: './about-parents.component.html',
+    selector: 'app-about-parents',
+    templateUrl: './about-parents.component.html',
+    standalone: false
 })
 export class AboutParentsComponent implements OnInit {
   public workplace: Establishment;

@@ -9,8 +9,9 @@ import { RegistrationsService } from '@core/services/registrations.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-admin-unlock-confirmation',
-  templateUrl: './admin-unlock-confirmation.html',
+    selector: 'app-admin-unlock-confirmation',
+    templateUrl: './admin-unlock-confirmation.html',
+    standalone: false
 })
 export class AdminUnlockConfirmationDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];

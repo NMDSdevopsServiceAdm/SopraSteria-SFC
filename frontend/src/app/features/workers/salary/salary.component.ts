@@ -11,9 +11,10 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-salary',
-  templateUrl: './salary.component.html',
-  providers: [DecimalPipe],
+    selector: 'app-salary',
+    templateUrl: './salary.component.html',
+    providers: [DecimalPipe],
+    standalone: false
 })
 export class SalaryComponent extends QuestionComponent {
   public hourly = { min: 2.5, max: 200 };

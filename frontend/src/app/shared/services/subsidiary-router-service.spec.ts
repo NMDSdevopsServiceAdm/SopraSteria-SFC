@@ -1,9 +1,10 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router, UrlTree } from '@angular/router';
 
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 import { SubsidiaryRouterService } from './subsidiary-router-service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('SubsidiaryRouterService', () => {
   let service: SubsidiaryRouterService;
@@ -19,13 +20,16 @@ describe('SubsidiaryRouterService', () => {
     routerSpy = spyOn(Router.prototype, 'navigateByUrl');
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         SubsidiaryRouterService,
         {
           provide: ParentSubsidiaryViewService,
           useValue: parentSubViewSpy,
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

@@ -16,8 +16,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-view-subsidiary-training-and-qualifications',
-  templateUrl: './view-subsidiary-training-and-qualifications.component.html',
+    selector: 'app-view-subsidiary-training-and-qualifications',
+    templateUrl: './view-subsidiary-training-and-qualifications.component.html',
+    standalone: false
 })
 export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit {
   public workplace: Establishment;

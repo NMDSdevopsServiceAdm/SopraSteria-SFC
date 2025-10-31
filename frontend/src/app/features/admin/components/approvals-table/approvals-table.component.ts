@@ -1,8 +1,9 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-approvals-table',
-  templateUrl: './approvals-table.component.html',
+    selector: 'app-approvals-table',
+    templateUrl: './approvals-table.component.html',
+    standalone: false
 })
 export class ApprovalsTableComponent {
   @Input() pendingApprovals: any;

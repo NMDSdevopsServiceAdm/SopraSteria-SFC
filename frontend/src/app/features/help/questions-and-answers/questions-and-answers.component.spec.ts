@@ -1,5 +1,4 @@
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Router, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { render, within } from '@testing-library/angular';
@@ -11,6 +10,7 @@ import userEvent from '@testing-library/user-event';
 import { getTestBed } from '@angular/core/testing';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
+import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 
 describe('QuestionsAndAnswersComponent', () => {
   async function setup(override: any = {}) {
@@ -53,21 +53,18 @@ describe('QuestionsAndAnswersComponent', () => {
     ];
 
     const setupTools = await render(QuestionsAndAnswersComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {
-                questionsAndAnswers: {
-                  data: questionsAndAnswersData,
-                },
+        provideActivatedRouteWithRouterLink({
+          snapshot: {
+            data: {
+              questionsAndAnswers: {
+                data: questionsAndAnswersData,
               },
             },
           },
-        },
+        }),
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
@@ -129,7 +126,7 @@ describe('QuestionsAndAnswersComponent', () => {
       questionsAndAnswersData.forEach((section) => {
         section.q_and_a_pages?.forEach((page) => {
           const link = getByText(page.title, { selector: 'a' }) as HTMLAnchorElement;
-          expect(link.getAttribute('ng-reflect-router-link')).toEqual(page.slug);
+          expect(link.getAttribute('href')).toEqual(`/${page.slug}`);
         });
       });
     });
@@ -141,7 +138,7 @@ describe('QuestionsAndAnswersComponent', () => {
         section.sub_sections?.forEach((sub_section) => {
           sub_section.q_and_a_pages?.forEach((page) => {
             const link = getByText(page.title, { selector: 'a' }) as HTMLAnchorElement;
-            expect(link.getAttribute('ng-reflect-router-link')).toEqual(page.slug);
+            expect(link.getAttribute('href')).toEqual(`/${page.slug}`);
           });
         });
       });
@@ -202,7 +199,7 @@ describe('QuestionsAndAnswersComponent', () => {
         userEvent.click(button);
         fixture.detectChanges();
         expect(getByTestId('no-matching-results')).toBeTruthy();
-      })
+      });
     });
 
     describe('results found', () => {
@@ -227,7 +224,7 @@ describe('QuestionsAndAnswersComponent', () => {
         fixture.detectChanges();
 
         const link = getByText('How do you add a staff record?', { selector: 'a' }) as HTMLAnchorElement;
-        expect(link.getAttribute('ng-reflect-router-link')).toEqual('how-to-add-staff-records');
+        expect(link.getAttribute('href')).toEqual('/how-to-add-staff-records');
       });
 
       it('should call localstorage', async () => {

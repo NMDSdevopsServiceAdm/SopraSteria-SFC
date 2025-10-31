@@ -4,8 +4,9 @@ import { Meta } from '@core/model/benchmarks.model';
 import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 
 @Component({
-  selector: 'app-new-comparison-group-header',
-  templateUrl: './comparison-group-header.component.html',
+    selector: 'app-new-comparison-group-header',
+    templateUrl: './comparison-group-header.component.html',
+    standalone: false
 })
 export class NewComparisonGroupHeaderComponent {
   @Input() meta: Meta;

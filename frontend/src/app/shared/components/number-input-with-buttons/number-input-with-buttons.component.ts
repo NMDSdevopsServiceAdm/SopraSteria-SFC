@@ -5,16 +5,17 @@ import { inRange } from 'lodash';
 type OnChangeFunction = (newValue: number | string) => void;
 
 @Component({
-  selector: 'app-number-input-with-buttons',
-  templateUrl: './number-input-with-buttons.component.html',
-  styleUrls: ['./number-input-with-buttons.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: NumberInputWithButtonsComponent,
-    },
-  ],
+    selector: 'app-number-input-with-buttons',
+    templateUrl: './number-input-with-buttons.component.html',
+    styleUrls: ['./number-input-with-buttons.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            multi: true,
+            useExisting: NumberInputWithButtonsComponent,
+        },
+    ],
+    standalone: false
 })
 export class NumberInputWithButtonsComponent implements ControlValueAccessor, OnInit {
   @Input() initialValue: number = null;

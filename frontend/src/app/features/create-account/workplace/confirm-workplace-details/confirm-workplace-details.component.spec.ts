@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter } from '@angular/router';
 import { EmployerType } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -20,14 +20,7 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       ConfirmWorkplaceDetailsComponent,
       {
-        imports: [
-          SharedModule,
-          RegistrationModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
         providers: [
           {
             provide: RegistrationService,
@@ -42,6 +35,9 @@ describe('ConfirmWorkplaceDetailsComponent', () => {
             provide: UserService,
             useClass: MockUserService,
           },
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

@@ -1,20 +1,24 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
 import { ChildWorkplacesResolver } from './child-workplaces.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('ChildWorkplacesResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         ChildWorkplacesResolver,
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

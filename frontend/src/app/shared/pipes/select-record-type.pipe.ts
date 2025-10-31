@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { SelectRecordTypes } from '@core/model/worker.model';
 
 @Pipe({
-  name: 'SelectRecordTypesName',
+    name: 'SelectRecordTypesName',
+    standalone: false
 })
 export class SelectRecordTypePipe implements PipeTransform {
   transform(value: SelectRecordTypes): string {

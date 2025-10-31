@@ -9,8 +9,9 @@ import { filter } from 'rxjs/operators';
 const DefaultQuerySelector = 'input,select,textarea';
 
 @Component({
-  selector: 'app-error-summary',
-  templateUrl: './error-summary.component.html',
+    selector: 'app-error-summary',
+    templateUrl: './error-summary.component.html',
+    standalone: false
 })
 export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public form: UntypedFormGroup;

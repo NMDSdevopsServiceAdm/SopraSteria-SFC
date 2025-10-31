@@ -1,10 +1,10 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Metric } from '@core/model/benchmarks.model';
 
 import { BenchmarkTileComponent } from './benchmark-tile.component';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('BenchmarkTileComponent', () => {
   let component: BenchmarkTileComponent;
@@ -12,9 +12,9 @@ describe('BenchmarkTileComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [],
-      providers: [],
+      imports: [],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
     fixture = TestBed.createComponent(BenchmarkTileComponent);
 

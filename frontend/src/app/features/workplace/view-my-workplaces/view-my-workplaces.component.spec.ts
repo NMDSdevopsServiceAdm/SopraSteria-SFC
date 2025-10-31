@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
@@ -29,7 +30,7 @@ import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 describe('ViewMyWorkplacesComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(ViewMyWorkplacesComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [WorkplaceInfoPanelComponent],
       providers: [
         AlertService,
@@ -89,7 +90,7 @@ describe('ViewMyWorkplacesComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

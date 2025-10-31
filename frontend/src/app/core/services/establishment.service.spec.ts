@@ -1,10 +1,11 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { UpdateCareWorkforcePathwayUsePayload } from '@core/model/care-workforce-pathway.model';
 import { environment } from 'src/environments/environment';
 
 import { EstablishmentService } from './establishment.service';
 import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
+import { provideHttpClient } from '@angular/common/http';
 describe('EstablishmentService', () => {
   let service: EstablishmentService;
   let http: HttpTestingController;
@@ -12,8 +13,8 @@ describe('EstablishmentService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [EstablishmentService],
+      imports: [],
+      providers: [EstablishmentService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(EstablishmentService);
 

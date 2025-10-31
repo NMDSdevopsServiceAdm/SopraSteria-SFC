@@ -12,8 +12,9 @@ import { TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-new-dashboard',
-  templateUrl: './dashboard.component.html',
+    selector: 'app-new-dashboard',
+    templateUrl: './dashboard.component.html',
+    standalone: false
 })
 export class NewDashboardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

@@ -1,9 +1,10 @@
+import { build, fake, oneOf } from '@jackfranklin/test-data-bot';
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { StaffSummaryComponent } from '@shared/components/staff-summary/staff-summary.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -11,8 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { WorkerService } from '../../../core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '../../../core/test-utils/MockWorkerService';
 import { NursingSpecialismComponent } from './nursing-specialism.component';
-
-const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
+import { Worker } from '@core/model/worker.model';
 
 const workerBuilder = build('Worker', {
   fields: {
@@ -25,8 +25,8 @@ const workerBuilder = build('Worker', {
   },
 });
 
-const workerWithNurseSpecialisms = (hasSpecialisms) =>
-  workerBuilder({
+const workerWithNurseSpecialisms = (hasSpecialisms: boolean) => {
+  return workerBuilder({
     overrides: {
       nurseSpecialisms: {
         value: hasSpecialisms ? 'Yes' : oneOf(`Don't know`, 'No'),
@@ -44,47 +44,42 @@ const workerWithNurseSpecialisms = (hasSpecialisms) =>
           : [],
       },
     },
-  });
+  }) as unknown as Worker;
+};
 
 describe('NursingSpecialismComponent', () => {
   async function setup(worker, insideFlow = true) {
-    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, getAllByRole } = await render(
-      NursingSpecialismComponent,
-      {
-        imports: [
-          FormsModule,
-          ReactiveFormsModule,
-          HttpClientTestingModule,
-          SharedModule,
-          RouterTestingModule.withRoutes([{ path: 'dashboard', component: StaffSummaryComponent }]),
-        ],
-        providers: [
-          {
-            provide: WorkerService,
-            useFactory: MockWorkerServiceWithUpdateWorker.factory(worker),
-            deps: [HttpClient],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              parent: {
-                snapshot: {
-                  data: {
-                    establishment: { uid: 'mocked-uid' },
-                  },
-                  url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
-                },
-              },
+    const setupTools = await render(NursingSpecialismComponent, {
+      imports: [FormsModule, ReactiveFormsModule, RouterModule, SharedModule],
+      providers: [
+        {
+          provide: WorkerService,
+          useFactory: MockWorkerServiceWithUpdateWorker.factory(worker),
+          deps: [HttpClient],
+        },
+        provideRouter([{ path: 'dashboard', component: StaffSummaryComponent }]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
               snapshot: {
-                params: {},
+                data: {
+                  establishment: { uid: 'mocked-uid' },
+                },
+                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
               },
             },
+            snapshot: {
+              params: {},
+            },
           },
-        ],
-      },
-    );
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -94,20 +89,7 @@ describe('NursingSpecialismComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
-    return {
-      component,
-      fixture,
-      router,
-      getByText,
-      getAllByText,
-      getByLabelText,
-      routerSpy,
-      getByTestId,
-      queryByTestId,
-      getAllByRole,
-      submitSpy,
-      workerServiceSpy,
-    };
+    return { ...setupTools, component, router, routerSpy, submitSpy, workerServiceSpy };
   }
 
   it('should render the component', async () => {
@@ -116,40 +98,57 @@ describe('NursingSpecialismComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should pre-select the radio button when worker has answered question', async () => {
+  it('should pre-select the radio button when worker has no NurseSpecialisms', async () => {
     const worker = workerWithNurseSpecialisms(false);
-    const { fixture } = await setup(worker);
+    worker.nurseSpecialisms.value = 'No';
 
-    const selectedRadioButton = fixture.nativeElement.querySelector(
-      `input[ng-reflect-value="${worker.nurseSpecialisms.value}"]`,
-    );
+    const { getByRole } = await setup(worker);
+
+    const selectedRadioButton = getByRole('radio', { name: /^No/ }) as HTMLInputElement;
+
+    expect(selectedRadioButton.checked).toBeTruthy();
+  });
+
+  it('should pre-select the radio button when worker NurseSpecialisms is answered as I do not know', async () => {
+    const worker = workerWithNurseSpecialisms(false);
+    worker.nurseSpecialisms.value = "Don't know";
+
+    const { getByRole } = await setup(worker);
+
+    const selectedRadioButton = getByRole('radio', { name: /^I do not know/ }) as HTMLInputElement;
 
     expect(selectedRadioButton.checked).toBeTruthy();
   });
 
   it('should pre-select checkboxes when worker has nurse specialisms', async () => {
     const worker = workerWithNurseSpecialisms(true);
-    const { fixture } = await setup(worker);
+    const { getByRole } = await setup(worker);
+
+    const yesRadioButton = getByRole('radio', { name: 'Yes' }) as HTMLInputElement;
+
+    expect(yesRadioButton.checked).toBeTrue();
 
     const selectedCheckboxes = worker.nurseSpecialisms.specialisms.map((thisSpecialism) => {
-      return fixture.nativeElement.querySelector(`input[value="${thisSpecialism.specialism}"]`);
+      return getByRole('checkbox', { name: thisSpecialism.specialism }) as HTMLInputElement;
     });
 
-    selectedCheckboxes.forEach((checkbox) => expect(checkbox.checked).toBeTruthy());
+    selectedCheckboxes.forEach((checkbox) => expect(checkbox.checked).toBeTrue());
   });
 
   it('should put updated worker nurse specialisms', async () => {
     const worker = workerWithNurseSpecialisms(false);
     const newNurseSpecialisms = workerWithNurseSpecialisms(true).nurseSpecialisms;
-    const { component, fixture, getByText, submitSpy, workerServiceSpy } = await setup(worker);
 
-    const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="Yes"]`);
+    const { component, fixture, getByText, getByRole, submitSpy, workerServiceSpy } = await setup(worker);
+
+    const yesRadioButton = getByRole('radio', { name: 'Yes' });
     fireEvent.click(yesRadioButton);
 
-    const nurseSpecialismArr = newNurseSpecialisms.specialisms.map((thisSpecialism) => {
-      const checkbox = fixture.nativeElement.querySelector(`input[value="${thisSpecialism.specialism}"]`);
+    const nurseSpecialismArr = newNurseSpecialisms.specialisms.map((thisSpecialism) => thisSpecialism.specialism);
+
+    nurseSpecialismArr.forEach((label) => {
+      const checkbox = getByRole('checkbox', { name: label });
       fireEvent.click(checkbox);
-      return thisSpecialism.specialism;
     });
 
     const submit = getByText('Save and continue');

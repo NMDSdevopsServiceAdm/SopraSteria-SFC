@@ -1,8 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
 
 import { DataChangeService } from './data-change.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('DataChangeService', () => {
   let service: DataChangeService;
@@ -10,8 +11,8 @@ describe('DataChangeService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [DataChangeService],
+      imports: [],
+      providers: [DataChangeService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(DataChangeService);
     http = TestBed.inject(HttpTestingController);

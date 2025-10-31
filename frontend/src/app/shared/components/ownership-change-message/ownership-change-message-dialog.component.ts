@@ -6,8 +6,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-ownership-change-message-dialog',
-  templateUrl: './ownership-change-message-dialog.component.html',
+    selector: 'app-ownership-change-message-dialog',
+    templateUrl: './ownership-change-message-dialog.component.html',
+    standalone: false
 })
 export class OwnershipChangeMessageDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public workplace: Workplace;

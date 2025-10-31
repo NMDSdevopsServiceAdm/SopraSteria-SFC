@@ -12,8 +12,9 @@ import { SearchInputComponent } from '@shared/components/search-input/search-inp
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-select-staff',
-  templateUrl: './select-staff.component.html',
+    selector: 'app-select-staff',
+    templateUrl: './select-staff.component.html',
+    standalone: false
 })
 export class SelectStaffComponent implements OnInit, AfterViewInit {
   @ViewChild('table') table: ElementRef;

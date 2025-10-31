@@ -6,8 +6,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
-  selector: 'app-questions-and-answers',
-  templateUrl: './questions-and-answers.component.html',
+    selector: 'app-questions-and-answers',
+    templateUrl: './questions-and-answers.component.html',
+    standalone: false
 })
 export class QuestionsAndAnswersComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;

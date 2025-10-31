@@ -8,8 +8,9 @@ import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-remove-all-selections-dialog',
-  templateUrl: './delete-all-mandatory-training.component.html',
+    selector: 'app-remove-all-selections-dialog',
+    templateUrl: './delete-all-mandatory-training.component.html',
+    standalone: false
 })
 export class RemoveAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   public establishment: Establishment;

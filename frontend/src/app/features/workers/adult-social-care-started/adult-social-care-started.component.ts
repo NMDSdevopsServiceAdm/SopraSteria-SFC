@@ -13,8 +13,9 @@ import dayjs from 'dayjs';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-adult-social-care-started',
-  templateUrl: './adult-social-care-started.component.html',
+    selector: 'app-adult-social-care-started',
+    templateUrl: './adult-social-care-started.component.html',
+    standalone: false
 })
 export class AdultSocialCareStartedComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();

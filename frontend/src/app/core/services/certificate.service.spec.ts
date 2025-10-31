@@ -1,7 +1,7 @@
 import { toArray } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
   mockQualificationRecordsResponse,
@@ -23,6 +23,7 @@ import {
 } from './certificate.service';
 import { mockCertificateFileBlob } from '../test-utils/MockCertificateService';
 import { FileUtil } from '@core/utils/file-util';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('CertificateService', () => {
   const testConfigs = [
@@ -42,8 +43,8 @@ describe('CertificateService', () => {
 
       beforeEach(() => {
         TestBed.configureTestingModule({
-          imports: [HttpClientTestingModule],
-          providers: [serviceClass],
+          imports: [],
+          providers: [serviceClass, provideHttpClient(), provideHttpClientTesting()],
         });
         if (certificateType === 'training') {
           service = TestBed.inject(TrainingCertificateService);
@@ -350,11 +351,12 @@ describe('DownloadCertificateService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         DownloadCertificateService,
         { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
         { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     service = TestBed.inject(DownloadCertificateService);

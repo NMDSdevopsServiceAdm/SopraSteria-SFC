@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule, By } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -17,7 +18,7 @@ import { Establishment as MockEstablishment } from '../../../../../mockdata/esta
 describe('BenchmarksAboutTheDataComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(BenchmarksAboutTheDataComponent, {
-      imports: [HttpClientTestingModule, BrowserModule, BenchmarksModule, RouterModule],
+      imports: [BrowserModule, BenchmarksModule, RouterModule],
       declarations: [],
       providers: [
         {
@@ -49,7 +50,7 @@ describe('BenchmarksAboutTheDataComponent', () => {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(overrides.permissions ?? ['canViewBenchmarks']),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: MockEstablishment as Establishment,
       },

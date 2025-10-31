@@ -3,8 +3,9 @@ import { URLStructure } from '@core/model/url.model';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 
 @Component({
-  selector: 'app-thank-you',
-  templateUrl: './thank-you.component.html',
+    selector: 'app-thank-you',
+    templateUrl: './thank-you.component.html',
+    standalone: false
 })
 export class ThankYouComponent implements OnInit {
   public nextPage: URLStructure;

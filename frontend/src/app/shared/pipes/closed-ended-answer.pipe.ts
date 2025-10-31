@@ -6,7 +6,8 @@ import isNull from 'lodash/isNull';
  * e.g: q: What is xxxx? a: Don't know
  */
 @Pipe({
-  name: 'closedEndedAnswer',
+    name: 'closedEndedAnswer',
+    standalone: false
 })
 export class ClosedEndedAnswerPipe implements PipeTransform {
   transform(value: string): any {

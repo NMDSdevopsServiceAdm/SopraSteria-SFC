@@ -3,8 +3,9 @@ import { DialogComponent } from '@core/components/dialog.component';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 
 @Component({
-  selector: 'app-reset-dialog',
-  templateUrl: './reset-dialog.component.html',
+    selector: 'app-reset-dialog',
+    templateUrl: './reset-dialog.component.html',
+    standalone: false
 })
 export class ResetDialogComponent extends DialogComponent {
   constructor(

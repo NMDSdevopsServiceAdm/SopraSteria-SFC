@@ -1,9 +1,11 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -39,7 +41,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     }) as Establishment;
 
     const setupTools = await render(WDFWorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, FundingModule],
+      imports: [SharedModule, RouterModule, FundingModule],
       declarations: [WdfStaffMismatchMessageComponent],
       providers: [
         {
@@ -69,6 +71,9 @@ describe('WDFWorkplaceSummaryComponent', () => {
           provide: ActivatedRoute,
           useValue: { snapshot: { params: { establishmentuid: 'mock-uid' }, data: {} } },
         },
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         wdfView: true,
@@ -82,9 +87,13 @@ describe('WDFWorkplaceSummaryComponent', () => {
     const component = setupTools.fixture.componentInstance;
 
     const vacanciesAndTurnoverService = TestBed.inject(VacanciesAndTurnoverService);
+    const router = TestBed.inject(Router);
+
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any routes when clicking routerlink
+
     const clearAllSelectedJobRolesSpy = spyOn(vacanciesAndTurnoverService, 'clearAllSelectedJobRoles');
 
-    return { ...setupTools, component, clearAllSelectedJobRolesSpy };
+    return { ...setupTools, component, clearAllSelectedJobRolesSpy, router };
   };
 
   it('should render a WorkplaceSummaryComponent', async () => {
@@ -122,7 +131,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     const serviceHeading = getByText('Services');
     expect(serviceHeading.getAttribute('class')).toContain('govuk-!-margin-top-5');
 
-    rerender({ removeServiceSectionMargin: true });
+    rerender({ componentProperties: { removeServiceSectionMargin: true } });
     expect(serviceHeading.getAttribute('class')).not.toContain('govuk-!-margin-top-5');
   });
 

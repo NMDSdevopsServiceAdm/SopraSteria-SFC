@@ -1,5 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceContinueCancelButtonComponent } from './workplace-continue-cancel-button.component';
@@ -7,7 +5,7 @@ import { WorkplaceContinueCancelButtonComponent } from './workplace-continue-can
 describe('WorkplaceContinueCancelButtonComponent', () => {
   const setup = async () =>
     render(WorkplaceContinueCancelButtonComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [],
       componentProperties: {
         marginTop4: false,
       },
@@ -36,7 +34,7 @@ describe('WorkplaceContinueCancelButtonComponent', () => {
     const { rerender, getByTestId } = await setup();
 
     const container = getByTestId('button-container');
-    rerender({ marginTop4: true });
+    rerender({ componentProperties: { marginTop4: true } });
     expect(container.getAttribute('class')).toContain('govuk-!-margin-top-4');
   });
 

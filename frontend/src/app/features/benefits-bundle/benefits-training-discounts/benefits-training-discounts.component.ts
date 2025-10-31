@@ -6,8 +6,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-benefits-training-discounts',
-  templateUrl: './benefits-training-discounts.component.html',
+    selector: 'app-benefits-training-discounts',
+    templateUrl: './benefits-training-discounts.component.html',
+    standalone: false
 })
 export class BenefitsTrainingDiscountsComponent implements OnInit {
   public pages: Page;

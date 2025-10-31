@@ -10,8 +10,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 
 @Component({
-  selector: 'app-new-workplace-tab',
-  templateUrl: './workplace-tab.component.html',
+    selector: 'app-new-workplace-tab',
+    templateUrl: './workplace-tab.component.html',
+    standalone: false
 })
 export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

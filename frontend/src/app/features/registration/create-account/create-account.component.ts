@@ -3,8 +3,9 @@ import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({
-  selector: 'app-create-account',
-  templateUrl: './create-account.component.html',
+    selector: 'app-create-account',
+    templateUrl: './create-account.component.html',
+    standalone: false
 })
 export class CreateAccountComponent implements OnInit {
   constructor(private registrationService: RegistrationService, private userService: UserService) {}

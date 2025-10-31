@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
@@ -21,7 +22,7 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
 
     const setupTools = await render(StaffWhatKindOfDelegatedHealthcareActivitiesComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -50,7 +51,7 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
         Router,
         AlertService,
         WindowRef,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

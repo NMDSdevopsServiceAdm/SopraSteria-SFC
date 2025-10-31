@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
 
 import { EmailCampaignHistoryResolver } from './email-campaign-history.resolver';
@@ -11,8 +11,14 @@ describe('EmailCampaignHistoryResolver', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      providers: [EmailCampaignHistoryResolver, EmailCampaignService],
+      imports: [],
+      providers: [
+        EmailCampaignHistoryResolver,
+        EmailCampaignService,
+        provideHttpClient(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     resolver = TestBed.inject(EmailCampaignHistoryResolver);
   });

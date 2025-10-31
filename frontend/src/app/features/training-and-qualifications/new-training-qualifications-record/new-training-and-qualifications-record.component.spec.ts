@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
@@ -153,7 +153,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
+        imports: [SharedModule, RouterModule, WorkersModule],
         providers: [
           AlertService,
           WindowRef,
@@ -353,6 +353,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           // suppress the distracting error msg of "reading 'nativeElement'" from PdfTrainingAndQualificationService
           { provide: PdfTrainingAndQualificationService, useValue: { BuildTrainingAndQualsPdf: () => {} } },
           DownloadCertificateService,
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

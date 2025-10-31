@@ -9,8 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { SelectTrainingCategoryDirective } from '../../../../shared/directives/select-training-category/select-training-category.directive';
 
 @Component({
-  selector: 'app-select-training-category-mandatory',
-  templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
+    selector: 'app-select-training-category-mandatory',
+    templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
+    standalone: false
 })
 export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCategoryDirective {
   public requiredErrorMessage: string = 'Select the training category that you want to make mandatory';

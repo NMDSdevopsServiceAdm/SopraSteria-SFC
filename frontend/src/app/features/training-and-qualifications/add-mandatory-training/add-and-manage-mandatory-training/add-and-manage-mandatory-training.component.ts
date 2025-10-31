@@ -8,8 +8,9 @@ import { JobService } from '@core/services/job.service';
 import { MandatoryTrainingService } from '@core/services/training.service';
 
 @Component({
-  selector: 'app-add-and-manage-mandatory-training',
-  templateUrl: './add-and-manage-mandatory-training.component.html',
+    selector: 'app-add-and-manage-mandatory-training',
+    templateUrl: './add-and-manage-mandatory-training.component.html',
+    standalone: false
 })
 export class AddAndManageMandatoryTrainingComponent implements OnInit {
   public establishment: Establishment;

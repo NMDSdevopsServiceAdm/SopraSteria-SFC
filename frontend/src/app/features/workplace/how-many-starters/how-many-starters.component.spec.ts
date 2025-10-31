@@ -1,7 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import dayjs from 'dayjs';
 
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -40,7 +41,7 @@ describe('HowManyStartersComponent', () => {
     const selectedJobRoles = override.noLocalStorageData ? null : override.selectedJobRoles ?? mockSelectedJobRoles;
 
     const renderResults = await render(HowManyStartersComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -63,7 +64,7 @@ describe('HowManyStartersComponent', () => {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedStarters: selectedJobRoles }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = renderResults.fixture.componentInstance;

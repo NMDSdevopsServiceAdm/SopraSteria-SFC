@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -15,7 +16,7 @@ import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 describe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(DoYouHaveVacanciesComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         WindowRef,
         UntypedFormBuilder,
@@ -37,7 +38,7 @@ describe('DoYouHaveVacanciesComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
     const component = setupTools.fixture.componentInstance;
 

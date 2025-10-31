@@ -1,7 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { RegistrationService } from '@core/services/registration.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -11,13 +11,16 @@ import { CreateAccountComponent } from './create-account.component';
 describe('CreateAccountComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(CreateAccountComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: RegistrationService,
           useClass: RegistrationService,
           deps: [HttpClient],
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

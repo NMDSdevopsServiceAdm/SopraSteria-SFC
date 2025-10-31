@@ -6,8 +6,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({
-  selector: 'app-users',
-  templateUrl: './users.component.html',
+    selector: 'app-users',
+    templateUrl: './users.component.html',
+    standalone: false
 })
 export class UsersComponent implements OnInit {
   public workplace: Establishment;

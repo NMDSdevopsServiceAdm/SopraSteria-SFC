@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -26,7 +27,7 @@ import { StaffReferencesComponent } from './staff-references-page.component';
 describe('StaffReferencesComponent', () => {
   async function setup(references: Worker[] = []) {
     const component = await render(StaffReferencesComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, BulkUploadModule],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -58,7 +59,7 @@ describe('StaffReferencesComponent', () => {
                 workplaceReferences: [{ uid: 123 }],
               },
               paramMap: {
-                get(uid) {
+                get() {
                   return 123;
                 },
               },
@@ -69,6 +70,8 @@ describe('StaffReferencesComponent', () => {
         UntypedFormBuilder,
         ErrorSummaryService,
         AdminSkipService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

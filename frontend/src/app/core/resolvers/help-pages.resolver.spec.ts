@@ -1,14 +1,14 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { HelpPagesService } from '@core/services/help-pages.service';
 import { HelpPageResolver } from './help-pages.resolver';
-import { ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, provideRouter, RouterModule } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('HelpPageResolver', () => {
   function setup(overrides: any = {}) {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterModule],
       providers: [
         HelpPageResolver,
         {
@@ -17,6 +17,10 @@ describe('HelpPageResolver', () => {
             url: [{ path: overrides.path ?? null }],
           },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
       ],
     });
 

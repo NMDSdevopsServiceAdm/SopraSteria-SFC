@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { UserService } from '@core/services/user.service';
@@ -14,14 +15,14 @@ import { WorkplaceDropdownComponent } from './workplace-dropdown.component';
 describe('WorkplaceDropdownComponent', () => {
   async function setup() {
     const { fixture } = await render(WorkplaceDropdownComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [WorkplaceDropdownComponent],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         RegistrationsService,
         WindowRef,
         UserService,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         item: buildMockAdminSearchWorkplace(),
       },

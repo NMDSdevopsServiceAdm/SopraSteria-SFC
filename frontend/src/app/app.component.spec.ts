@@ -1,9 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
-import { NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { NavigationEnd, provideRouter, Router, RouterEvent, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -21,11 +20,12 @@ import { render } from '@testing-library/angular';
 import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('AppComponent', () => {
   async function setup(overrides: any = {}) {
     const { fixture, getByText, queryByTestId } = await render(AppComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterModule],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -56,6 +56,9 @@ describe('AppComponent', () => {
         NestedRoutesService,
         WindowRef,
         AlertService,
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

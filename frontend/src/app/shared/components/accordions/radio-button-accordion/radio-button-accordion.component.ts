@@ -2,16 +2,17 @@ import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/cor
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: 'app-radio-button-accordion',
-  templateUrl: './radio-button-accordion.component.html',
-  styleUrls: ['./radio-button-accordion.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => RadioButtonAccordionComponent),
-      multi: true,
-    },
-  ],
+    selector: 'app-radio-button-accordion',
+    templateUrl: './radio-button-accordion.component.html',
+    styleUrls: ['./radio-button-accordion.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => RadioButtonAccordionComponent),
+            multi: true,
+        },
+    ],
+    standalone: false
 })
 export class RadioButtonAccordionComponent implements ControlValueAccessor {
   @Input() title: string;

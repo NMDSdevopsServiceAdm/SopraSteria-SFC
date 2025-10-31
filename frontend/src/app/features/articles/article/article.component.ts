@@ -9,9 +9,10 @@ import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-article',
-  templateUrl: './article.component.html',
-  providers: [],
+    selector: 'app-article',
+    templateUrl: './article.component.html',
+    providers: [],
+    standalone: false
 })
 export class ArticleComponent implements OnInit, OnDestroy {
   public subscriptions = new Subscription();

@@ -1,8 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
 
 import { WizardService } from './wizard.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('WizardService', () => {
   let service: WizardService;
@@ -10,8 +11,8 @@ describe('WizardService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [WizardService],
+      imports: [],
+      providers: [WizardService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(WizardService);
     http = TestBed.inject(HttpTestingController);

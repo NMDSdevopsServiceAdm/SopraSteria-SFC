@@ -4,8 +4,9 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-local-authorities-return',
-  templateUrl: './local-authorities-return.component.html',
+    selector: 'app-local-authorities-return',
+    templateUrl: './local-authorities-return.component.html',
+    standalone: false
 })
 export class LocalAuthoritiesReturnComponent implements OnInit {
   public startDate: Date;

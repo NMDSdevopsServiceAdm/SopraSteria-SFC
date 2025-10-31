@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-table-pagination-wrapper',
-  templateUrl: './table-pagination-wrapper.component.html',
+    selector: 'app-table-pagination-wrapper',
+    templateUrl: './table-pagination-wrapper.component.html',
+    standalone: false
 })
 export class TablePaginationWrapperComponent implements OnInit {
   @Input() maintainedPageIndex: number;

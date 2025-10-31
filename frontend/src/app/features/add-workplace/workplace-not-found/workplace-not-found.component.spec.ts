@@ -1,9 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SanitizePostcodeUtil } from '@core/utils/sanitize-postcode-util';
@@ -21,8 +21,8 @@ describe('WorkplaceNotFoundComponent', () => {
     useDifferentLocationIdOrPostcode = null,
     addWorkplaceFlow = true,
   ) {
-    const component = await render(WorkplaceNotFoundComponent, {
-      imports: [SharedModule, AddWorkplaceModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+    const setupTools = await render(WorkplaceNotFoundComponent, {
+      imports: [SharedModule, AddWorkplaceModule, ReactiveFormsModule],
       providers: [
         {
           provide: WorkplaceService,
@@ -71,18 +71,23 @@ describe('WorkplaceNotFoundComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
 
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
+    const navigateSpy = spyOn(router, 'navigate');
+    navigateSpy.and.returnValue(Promise.resolve(true));
+
+    const component = setupTools.fixture.componentInstance;
 
     return {
+      ...setupTools,
       component,
-      spy,
+      navigateSpy,
     };
   }
 
@@ -93,98 +98,98 @@ describe('WorkplaceNotFoundComponent', () => {
 
   it('should display the CQC location id or postcode entered in the previous page', async () => {
     const inputtedPostcode = 'SE1 1AA';
-    const { component } = await setup(inputtedPostcode);
+    const { getByText } = await setup(inputtedPostcode);
 
-    expect(component.getByText(inputtedPostcode)).toBeTruthy();
+    expect(getByText(inputtedPostcode)).toBeTruthy();
   });
 
   it('should render the workplace progress bar and the user progress bar', async () => {
-    const { component } = await setup();
+    const { getByTestId } = await setup();
 
-    expect(component.getByTestId('progress-bar-1')).toBeTruthy();
+    expect(getByTestId('progress-bar-1')).toBeTruthy();
   });
 
   it('should not render the progress bars when accessed from outside the flow', async () => {
-    const { component } = await setup('', '', false, null, false);
+    const { queryByTestId } = await setup('', '', false, null, false);
 
-    expect(component.queryByTestId('progress-bar-1')).toBeFalsy();
+    expect(queryByTestId('progress-bar-1')).toBeFalsy();
   });
 
   describe('Parent messages', () => {
     it('should display add workplace version of heading', async () => {
-      const { component } = await setup();
+      const { getByText } = await setup();
       const expectedHeading = 'We could not find the workplace';
 
-      expect(component.getByText(expectedHeading)).toBeTruthy();
+      expect(getByText(expectedHeading)).toBeTruthy();
     });
 
     it('should display add workplace version of question', async () => {
-      const { component } = await setup();
+      const { getByText } = await setup();
       const expectedQuestion = 'Do you want to try find the workplace with a different CQC location ID or postcode?';
 
-      expect(component.getByText(expectedQuestion)).toBeTruthy();
+      expect(getByText(expectedQuestion)).toBeTruthy();
     });
 
     it('should display add workplace version of No answer', async () => {
-      const { component } = await setup();
+      const { getByText } = await setup();
       const expectedNoAnswer = `No, I'll enter the workplace details myself`;
 
-      expect(component.getByText(expectedNoAnswer)).toBeTruthy();
+      expect(getByText(expectedNoAnswer)).toBeTruthy();
     });
   });
 
   describe('Parent journey', () => {
     it('should navigate to add-workplace/find-workplace when selecting yes', async () => {
-      const { component, spy } = await setup();
-      const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+      const { getByText, navigateSpy, getByRole } = await setup();
+      const yesRadioButton = getByRole('radio', { name: 'Yes' });
       fireEvent.click(yesRadioButton);
 
-      const continueButton = component.getByText('Continue');
+      const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/add-workplace', 'find-workplace']);
     });
 
     it('should navigate to add-workplace/confirm-workplace-details/find-workplace when selecting yes when outside the flow', async () => {
-      const { component, spy } = await setup('', '', false, null, false);
-      const yesRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+      const { getByText, navigateSpy, getByRole } = await setup('', '', false, null, false);
+      const yesRadioButton = getByRole('radio', { name: 'Yes' });
       fireEvent.click(yesRadioButton);
 
-      const continueButton = component.getByText('Continue');
+      const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace/confirm-workplace-details', 'find-workplace']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/add-workplace/confirm-workplace-details', 'find-workplace']);
     });
 
     it('should navigate to add-workplace/workplace-name-address when selecting no', async () => {
-      const { component, spy } = await setup();
-      const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
+      const { getByText, getByRole, navigateSpy } = await setup();
+      const noRadioButton = getByRole('radio', { name: /^No/ });
       fireEvent.click(noRadioButton);
 
-      const continueButton = component.getByText('Continue');
+      const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace', 'workplace-name-address']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/add-workplace', 'workplace-name-address']);
     });
 
     it('should navigate to add-workplace/confirm-workplace-details/workplace-name-address when selecting no', async () => {
-      const { component, spy } = await setup('', '', false, null, false);
-      const noRadioButton = component.fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
+      const { getByText, getByRole, navigateSpy } = await setup('', '', false, null, false);
+      const noRadioButton = getByRole('radio', { name: /^No/ });
       fireEvent.click(noRadioButton);
 
-      const continueButton = component.getByText('Continue');
+      const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(['/add-workplace/confirm-workplace-details', 'workplace-name-address']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/add-workplace/confirm-workplace-details', 'workplace-name-address']);
     });
 
     it('should display the correct heading', async () => {
-      const { component } = await setup();
+      const { component, fixture, getByText } = await setup();
       const expectedHeading = 'We could not find the workplace';
-      component.fixture.componentInstance.isParent = true;
-      component.fixture.detectChanges();
+      component.isParent = true;
+      fixture.detectChanges();
 
-      expect(component.getByText(expectedHeading)).toBeTruthy();
+      expect(getByText(expectedHeading)).toBeTruthy();
     });
   });
 
@@ -192,7 +197,7 @@ describe('WorkplaceNotFoundComponent', () => {
     it('should preselect the "Yes" radio button if useDifferentLocationIdOrPostcode has been set to true in the service', async () => {
       const { component } = await setup('', '', false, true);
 
-      const form = component.fixture.componentInstance.form;
+      const form = component.form;
       expect(form.valid).toBeTruthy();
       expect(form.value.useDifferentLocationIdOrPostcode).toBe('yes');
     });
@@ -200,7 +205,7 @@ describe('WorkplaceNotFoundComponent', () => {
     it('should preselect the "No" radio button if useDifferentLocationIdOrPostcode has been set to false in the service', async () => {
       const { component } = await setup('', '', false, false);
 
-      const form = component.fixture.componentInstance.form;
+      const form = component.form;
       expect(form.valid).toBeTruthy();
       expect(form.value.useDifferentLocationIdOrPostcode).toBe('no');
     });
@@ -208,7 +213,7 @@ describe('WorkplaceNotFoundComponent', () => {
     it('should not preselect any radio buttons if useDifferentLocationIdOrPostcode has not been set in the service', async () => {
       const { component } = await setup('', '', false, null);
 
-      const form = component.fixture.componentInstance.form;
+      const form = component.form;
       expect(form.invalid).toBeTruthy();
       expect(form.value.useDifferentLocationIdOrPostcode).not.toBe('yes');
       expect(form.value.useDifferentLocationIdOrPostcode).not.toBe('no');
@@ -219,7 +224,7 @@ describe('WorkplaceNotFoundComponent', () => {
     it('should only sanitize the postcode if the search method is postcode', async () => {
       const { component } = await setup('se11aa', 'postcode');
       const sanitizePostcodeSpy = spyOn(SanitizePostcodeUtil, 'sanitizePostcode');
-      component.fixture.componentInstance.sanitizePostcode();
+      component.sanitizePostcode();
 
       expect(sanitizePostcodeSpy).toHaveBeenCalled();
     });
@@ -227,17 +232,17 @@ describe('WorkplaceNotFoundComponent', () => {
     it('should not sanitize the postcode if the search method is locationID', async () => {
       const { component } = await setup('se11aa', 'locationID');
       const sanitizePostcodeSpy = spyOn(SanitizePostcodeUtil, 'sanitizePostcode');
-      component.fixture.componentInstance.sanitizePostcode();
+      component.sanitizePostcode();
 
       expect(sanitizePostcodeSpy).not.toHaveBeenCalled();
     });
 
     it('should display the sanitized postcode entered in the previous page', async () => {
-      const { component } = await setup('se11aa', 'postcode');
-      component.fixture.componentInstance.sanitizePostcode();
-      component.fixture.detectChanges();
+      const { getByText, component, fixture } = await setup('se11aa', 'postcode');
+      component.sanitizePostcode();
+      fixture.detectChanges();
 
-      expect(component.getByText('SE1 1AA')).toBeTruthy();
+      expect(getByText('SE1 1AA')).toBeTruthy();
     });
   });
 });

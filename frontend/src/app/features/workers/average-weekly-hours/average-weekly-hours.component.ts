@@ -11,8 +11,9 @@ import isNull from 'lodash/isNull';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-average-weekly-hours',
-  templateUrl: './average-weekly-hours.component.html',
+    selector: 'app-average-weekly-hours',
+    templateUrl: './average-weekly-hours.component.html',
+    standalone: false
 })
 export class AverageWeeklyHoursComponent extends QuestionComponent {
   public floatPattern = FLOAT_PATTERN.toString();

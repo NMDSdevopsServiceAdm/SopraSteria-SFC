@@ -1,9 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -17,24 +17,24 @@ import { SelectWorkplaceComponent } from './select-workplace.component';
 
 describe('SelectWorkplaceComponent', () => {
   async function setup(manyLocationAddresses = false) {
-    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
-      SelectWorkplaceComponent,
-      {
-        imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: WorkplaceService,
-            useFactory: MockWorkplaceService.factory({ value: 'Private Sector' }, manyLocationAddresses),
-            deps: [HttpClient],
-          },
-        ],
-      },
-    );
+    const setupTools = await render(SelectWorkplaceComponent, {
+      imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: WorkplaceService,
+          useFactory: MockWorkplaceService.factory({ value: 'Private Sector' }, manyLocationAddresses),
+          deps: [HttpClient],
+        },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -43,17 +43,12 @@ describe('SelectWorkplaceComponent', () => {
 
     const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
-      fixture,
+      ...setupTools,
       component,
       spy,
-      getAllByText,
-      queryByText,
-      getByText,
-      getByTestId,
-      queryByTestId,
       workplaceService,
       establishmentService,
     };
@@ -109,12 +104,13 @@ describe('SelectWorkplaceComponent', () => {
 
   describe('submitting data', () => {
     it('should call the establishmentExistsCheck when selecting workplace', async () => {
-      const { component, fixture, getByText, workplaceService } = await setup();
+      const { component, getByText, getAllByRole, workplaceService } = await setup();
 
       const workplaceSpy = spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
       const locationId = component.locationAddresses[0].locationId;
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
+
+      const workplaceRadioButton = getAllByRole('radio')[0];
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Save and return');
@@ -124,11 +120,12 @@ describe('SelectWorkplaceComponent', () => {
     });
 
     it('should navigate to the cannot-create-account url when selecting the workplace, if the establishment already exists in the service', async () => {
-      const { component, fixture, getByText, spy, workplaceService } = await setup();
+      const { component, getAllByRole, getByText, spy, workplaceService } = await setup();
 
       spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: true }));
 
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
+      const workplaceRadioButton = getAllByRole('radio')[0];
+
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Save and return');
@@ -140,10 +137,10 @@ describe('SelectWorkplaceComponent', () => {
     });
 
     it('should navigate to the back to the workplace page when workplace selected and the establishment does not already exists in the service', async () => {
-      const { getByText, fixture, spy, establishmentService } = await setup();
+      const { getByText, getAllByRole, spy, establishmentService } = await setup();
 
       const establishmentServiceSpy = spyOn(establishmentService, 'updateLocationDetails').and.returnValue(of({}));
-      const firstWorkplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
+      const firstWorkplaceRadioButton = getAllByRole('radio')[0];
       fireEvent.click(firstWorkplaceRadioButton);
 
       const continueButton = getByText('Save and return');

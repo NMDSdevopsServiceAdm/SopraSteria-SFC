@@ -10,8 +10,9 @@ import { RankingContent } from '@shared/components/benchmark-metric/ranking-cont
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-benchmarks-rankings',
-  templateUrl: './rankings.component.html',
+    selector: 'app-benchmarks-rankings',
+    templateUrl: './rankings.component.html',
+    standalone: false
 })
 export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

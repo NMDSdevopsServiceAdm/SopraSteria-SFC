@@ -1,10 +1,10 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
@@ -22,7 +22,7 @@ import { MoveWorkerDialogComponent } from './move-worker-dialog.component';
 describe('MoveWorkerDialog', () => {
   async function setup(role = Roles.Admin, subsidiaries = 2) {
     const component = await render(MoveWorkerDialogComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -54,6 +54,8 @@ describe('MoveWorkerDialog', () => {
           provide: WindowRef,
           useValue: WindowRef,
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     const injector = getTestBed();

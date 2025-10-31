@@ -16,8 +16,9 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-delete-workplace',
-  templateUrl: './delete-workplace.component.html',
+    selector: 'app-delete-workplace',
+    templateUrl: './delete-workplace.component.html',
+    standalone: false
 })
 export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;

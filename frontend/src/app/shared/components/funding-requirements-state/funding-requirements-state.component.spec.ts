@@ -1,3 +1,4 @@
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
@@ -10,7 +11,7 @@ describe('FundingRequirementsStateComponent', () => {
       FundingRequirementsStateComponent,
       {
         imports: [SharedModule, FundingModule],
-        providers: [],
+        providers: [{ provide: FundingReportResolver, useValue: { resolve: () => {} } }],
         componentProperties: {
           ...overrides,
         },

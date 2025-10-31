@@ -3,8 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 
 @Component({
-  selector: 'app-view-subsidiary-benchmarks',
-  templateUrl: './view-subsidiary-benchmarks.component.html',
+    selector: 'app-view-subsidiary-benchmarks',
+    templateUrl: './view-subsidiary-benchmarks.component.html',
+    standalone: false
 })
 export class ViewSubsidiaryBenchmarksComponent implements OnInit {
   public workplace: Establishment;

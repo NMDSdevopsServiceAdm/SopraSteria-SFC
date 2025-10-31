@@ -1,6 +1,6 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -12,12 +12,15 @@ describe('AboutTheDataLinkComponent', () => {
     const workplaceUid = 'mockUid';
 
     const { fixture, getByText, getByTestId, queryByTestId, queryByText } = await render(AboutTheDataLinkComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: EstablishmentService,
           useValue: { establishment: { uid: workplaceUid } },
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       schemas: [],
       componentProperties: {},

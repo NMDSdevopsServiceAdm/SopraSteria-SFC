@@ -1,9 +1,9 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { establishmentBuilder, MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
@@ -24,7 +24,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     const childWorkplaces = 'childWorkplaces' in overrides ? overrides.childWorkplaces : null;
 
     const setupTools = await render(NavigateToWorkplaceDropdownComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -36,6 +36,8 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
               : {}),
           }),
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         maxChildWorkplacesForDropdown,
@@ -48,6 +50,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
 
     const parentSubService = injector.inject(ParentSubsidiaryViewService);
     const clearViewingSubSpy = spyOn(parentSubService, 'clearViewingSubAsParent').and.callThrough();
@@ -111,9 +114,8 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       const selectObject = getByText(component.parentWorkplace.name);
       fireEvent.change(selectObject, { target: { value: component.parentWorkplace.uid } });
 
-      fixture.whenStable().then(() => {
-        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
-      });
+      await fixture.whenStable();
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
     });
 
     it('should go to route of selected sub (first) when selecting sub workplace', async () => {
@@ -122,9 +124,8 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       const selectObject = getByText(component.parentWorkplace.name);
       fireEvent.change(selectObject, { target: { value: component.childWorkplaces[0].uid } });
 
-      fixture.whenStable().then(() => {
-        expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.childWorkplaces[0].uid, 'home']);
-      });
+      await fixture.whenStable();
+      expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.childWorkplaces[0].uid, 'home']);
     });
 
     it('should go to route of selected sub (second) when selecting sub workplace', async () => {
@@ -133,9 +134,8 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       const selectObject = getByText(component.parentWorkplace.name);
       fireEvent.change(selectObject, { target: { value: component.childWorkplaces[1].uid } });
 
-      fixture.whenStable().then(() => {
-        expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.childWorkplaces[1].uid, 'home']);
-      });
+      await fixture.whenStable();
+      expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.childWorkplaces[1].uid, 'home']);
     });
 
     describe('Displaying workplaces with different permissions/data owners', () => {
@@ -234,9 +234,8 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       const backToParentLink = getByText(`Back to ${parentWorkplaceName}`);
       fireEvent.click(backToParentLink);
 
-      fixture.whenStable().then(() => {
-        expect(routerSpy).toHaveBeenCalledOnceWith(['/dashboard'], { fragment: 'home' });
-      });
+      await fixture.whenStable();
+      expect(routerSpy).toHaveBeenCalledOnceWith(['/dashboard'], { fragment: 'home' });
     });
 
     it('should clear viewing sub view on click of back link', async () => {

@@ -1,7 +1,7 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule, By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BulkUploadService, BulkUploadServiceV2 } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -11,14 +11,18 @@ import { render } from '@testing-library/angular';
 import { BulkUploadModule } from '../bulk-upload.module';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.component';
 import { environment } from 'src/environments/environment';
+import { AdminSkipService } from '../admin-skip.service';
 
 describe('DragAndDropFilesUploadComponent', () => {
   const getDragAndDropFilesUploadComponent = async () => {
     return await render(DragAndDropFilesUploadComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, BulkUploadModule],
+      imports: [BrowserModule, SharedModule, BulkUploadModule],
       providers: [
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BulkUploadService, useClass: BulkUploadServiceV2 },
+        AdminSkipService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       declarations: [DragAndDropFilesUploadComponent],
     });
@@ -116,7 +120,9 @@ describe('DragAndDropFilesUploadComponent', () => {
       triggerFileInput();
 
       const establishmentId = TestBed.inject(EstablishmentService).primaryWorkplace.uid;
-      const requests = http.match(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
+      const requests = http.match(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkupload/uploadFiles`,
+      );
       expect(requests.length).toEqual(1);
     });
   });

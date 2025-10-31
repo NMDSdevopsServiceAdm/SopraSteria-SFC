@@ -5,9 +5,10 @@ import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turno
 import { DateUtil } from '@core/utils/date-util';
 
 @Component({
-  selector: 'app-how-many-leavers',
-  templateUrl: '../vacancies-and-turnover/how-many-starters-leavers-vacancies.html',
-  styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
+    selector: 'app-how-many-leavers',
+    templateUrl: '../vacancies-and-turnover/how-many-starters-leavers-vacancies.html',
+    styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
+    standalone: false
 })
 export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDirective {
   public heading = `How many leavers have you had SINCE ${DateUtil.getDateForOneYearAgo()}?`;

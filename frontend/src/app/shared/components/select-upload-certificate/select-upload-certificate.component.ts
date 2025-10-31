@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-select-upload-certificate',
-  templateUrl: './select-upload-certificate.component.html',
-  styleUrls: ['./select-upload-certificate.component.scss'],
+    selector: 'app-select-upload-certificate',
+    templateUrl: './select-upload-certificate.component.html',
+    styleUrls: ['./select-upload-certificate.component.scss'],
+    standalone: false
 })
 export class SelectUploadCertificateComponent {
   @Input() filesToUpload: File[];

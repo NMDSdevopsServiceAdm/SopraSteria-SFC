@@ -9,8 +9,9 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { NameOfWorkplaceDirective } from '@shared/directives/create-workplace/name-of-workplace/name-of-workplace.directive';
 
 @Component({
-  selector: 'app-name-of-workplace',
-  templateUrl: '../../../shared/directives/create-workplace/name-of-workplace/name-of-workplace.component.html',
+    selector: 'app-name-of-workplace',
+    templateUrl: '../../../shared/directives/create-workplace/name-of-workplace/name-of-workplace.component.html',
+    standalone: false
 })
 export class NameOfWorkplaceComponent extends NameOfWorkplaceDirective {
   constructor(

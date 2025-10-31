@@ -1,9 +1,10 @@
 import { environment } from 'src/environments/environment';
 
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { FindUsernameService } from './find-username.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('FindUsernameService', () => {
   let service: FindUsernameService;
@@ -12,7 +13,8 @@ describe('FindUsernameService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(FindUsernameService);
     http = TestBed.inject(HttpTestingController);

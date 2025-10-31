@@ -1,9 +1,10 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -11,7 +12,6 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import { MockCareWorkforcePathwayService, MockCWPUseReasons } from '@core/test-utils/MockCareWorkforcePathwayService';
-
 import {
   establishmentWithShareWith,
   establishmentWithWdfBuilder,
@@ -35,7 +35,7 @@ describe('WorkplaceSummaryComponent', () => {
       ? establishmentWithShareWith(shareWith)
       : (establishmentWithWdfBuilder({ careWorkforcePathwayUse }) as Establishment);
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WorkplaceSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, FundingModule],
+      imports: [SharedModule, RouterModule, FundingModule],
       declarations: [],
       providers: [
         {
@@ -61,6 +61,10 @@ describe('WorkplaceSummaryComponent', () => {
           provide: CqcStatusChangeService,
           useClass: MockCqcStatusChangeService,
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
       ],
       componentProperties: {
         wdfView: true,
@@ -117,7 +121,7 @@ describe('WorkplaceSummaryComponent', () => {
     const serviceHeading = getByText('Services');
     expect(serviceHeading.getAttribute('class')).toContain('govuk-!-margin-top-5');
 
-    rerender({ removeServiceSectionMargin: true });
+    rerender({ componentProperties: { removeServiceSectionMargin: true } });
     expect(serviceHeading.getAttribute('class')).not.toContain('govuk-!-margin-top-5');
   });
 

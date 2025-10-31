@@ -1,6 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -9,7 +7,8 @@ import { AdminMenuComponent } from './admin-menu.component';
 describe('AdminMenuComponent', () => {
   async function setup() {
     const component = await render(AdminMenuComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
+      providers: [provideRouter([])],
     });
 
     return {

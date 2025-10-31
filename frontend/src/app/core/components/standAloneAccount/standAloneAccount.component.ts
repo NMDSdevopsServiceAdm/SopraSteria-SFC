@@ -6,9 +6,10 @@ import { Tab, TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-stand-alone-account',
-  templateUrl: './standAloneAccount.component.html',
-  styleUrls: ['./standAloneAccount.component.scss'],
+    selector: 'app-stand-alone-account',
+    templateUrl: './standAloneAccount.component.html',
+    styleUrls: ['./standAloneAccount.component.scss'],
+    standalone: false
 })
 export class StandAloneAccountComponent implements OnInit, OnDestroy {
   @Input() dashboardView: boolean;

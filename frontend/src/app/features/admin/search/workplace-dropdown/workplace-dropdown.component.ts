@@ -7,8 +7,9 @@ import {
 } from '@shared/components/remove-parent-confirmation/remove-parent-confirmation.component';
 
 @Component({
-  selector: 'app-workplace-dropdown',
-  templateUrl: './workplace-dropdown.component.html',
+    selector: 'app-workplace-dropdown',
+    templateUrl: './workplace-dropdown.component.html',
+    standalone: false
 })
 export class WorkplaceDropdownComponent {
   @Input() item: WorkplaceSearchItem;

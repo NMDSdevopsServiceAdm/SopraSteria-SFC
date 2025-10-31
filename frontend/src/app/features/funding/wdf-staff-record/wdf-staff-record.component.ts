@@ -15,8 +15,9 @@ import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-wdf-staff-record',
-  templateUrl: './wdf-staff-record.component.html',
+    selector: 'app-wdf-staff-record',
+    templateUrl: './wdf-staff-record.component.html',
+    standalone: false
 })
 export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   public worker: Worker;

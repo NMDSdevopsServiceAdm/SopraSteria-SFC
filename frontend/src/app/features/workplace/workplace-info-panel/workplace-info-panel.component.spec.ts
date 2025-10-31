@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
@@ -29,7 +30,7 @@ describe('workplace-info-panel', () => {
     const establishment = workplaceBuilder() as Workplace;
 
     const setupTools = await render(WorkplaceInfoPanelComponent, {
-      imports: [RouterModule, SharedModule, HttpClientTestingModule],
+      imports: [RouterModule, SharedModule],
       providers: [
         WindowRef,
         {
@@ -57,7 +58,7 @@ describe('workplace-info-panel', () => {
           provide: ParentSubsidiaryViewService,
           useClass: MockParentSubsidiaryViewService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: {
           ...establishment,

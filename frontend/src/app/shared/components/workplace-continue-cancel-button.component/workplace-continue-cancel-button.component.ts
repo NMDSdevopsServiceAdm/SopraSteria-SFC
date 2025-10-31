@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-workplace-continue-cancel-button',
-  templateUrl: './workplace-continue-cancel-button.component.html',
+    selector: 'app-workplace-continue-cancel-button',
+    templateUrl: './workplace-continue-cancel-button.component.html',
+    standalone: false
 })
 export class WorkplaceContinueCancelButtonComponent {
   @Input() marginTop4 = false;

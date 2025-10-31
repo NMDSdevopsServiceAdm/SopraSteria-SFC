@@ -9,8 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-gender',
-  templateUrl: './gender.component.html',
+    selector: 'app-gender',
+    templateUrl: './gender.component.html',
+    standalone: false
 })
 export class GenderComponent extends QuestionComponent {
   public answersAvailable = [

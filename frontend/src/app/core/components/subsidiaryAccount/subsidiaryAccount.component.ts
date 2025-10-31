@@ -7,9 +7,10 @@ import { Tab, TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-subsidiary-account',
-  templateUrl: './subsidiaryAccount.component.html',
-  styleUrls: ['./subsidiaryAccount.component.scss'],
+    selector: 'app-subsidiary-account',
+    templateUrl: './subsidiaryAccount.component.html',
+    styleUrls: ['./subsidiaryAccount.component.scss'],
+    standalone: false
 })
 export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
   @Input() dashboardView: boolean;

@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class MandatoryTrainingCategoriesResolver  {
+export class MandatoryTrainingCategoriesResolver {
   constructor(private router: Router, private trainingService: TrainingService) {}
 
   resolve(route: ActivatedRouteSnapshot) {

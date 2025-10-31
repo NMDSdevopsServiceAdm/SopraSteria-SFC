@@ -1,19 +1,24 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRouteSnapshot, provideRouter, RouterModule } from '@angular/router';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { AdminModule } from '@features/admin/admin.module';
 
 import { GetIndividualParentRequestResolver } from './get-parent-individual-request.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('GetIndividualParentRequestResolver', () => {
   let resolver: GetIndividualParentRequestResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AdminModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      providers: [GetIndividualParentRequestResolver],
+      imports: [AdminModule, RouterModule],
+      providers: [
+        GetIndividualParentRequestResolver,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
+      ],
     });
     resolver = TestBed.inject(GetIndividualParentRequestResolver);
   });

@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-workplace-submit-button',
-  templateUrl: './workplace-submit-button.component.html',
+    selector: 'app-workplace-submit-button',
+    templateUrl: './workplace-submit-button.component.html',
+    standalone: false
 })
 export class WorkplaceSubmitButtonComponent {
   @Input() return: boolean;

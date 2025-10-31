@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -16,13 +16,15 @@ describe('StartComponent (workplace)', () => {
     navigatedFromFragment ? history.pushState({ navigatedFromFragment }, '') : history.replaceState({}, '');
 
     const { fixture, getByText } = await render(StartComponent, {
-      imports: [RouterModule, RouterTestingModule, WorkplaceModule, HttpClientTestingModule],
+      imports: [RouterModule, WorkplaceModule],
       providers: [
         BackService,
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

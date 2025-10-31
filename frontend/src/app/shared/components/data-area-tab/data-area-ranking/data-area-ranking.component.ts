@@ -4,9 +4,10 @@ import * as Highcharts from 'highcharts';
 import { GaugeOptionsBuilder } from './data-area-ranking-options-builder';
 
 @Component({
-  selector: 'app-data-area-ranking',
-  templateUrl: './data-area-ranking.component.html',
-  styleUrls: ['./data-area-ranking.component.scss'],
+    selector: 'app-data-area-ranking',
+    templateUrl: './data-area-ranking.component.html',
+    styleUrls: ['./data-area-ranking.component.scss'],
+    standalone: false
 })
 export class DataAreaRankingComponent implements OnInit, OnChanges {
   Highcharts: typeof Highcharts = Highcharts;

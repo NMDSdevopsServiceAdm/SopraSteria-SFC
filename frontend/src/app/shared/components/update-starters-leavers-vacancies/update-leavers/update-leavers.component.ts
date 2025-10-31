@@ -6,8 +6,9 @@ import {
 } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
-  selector: 'app-update-leavers',
-  templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+    selector: 'app-update-leavers',
+    templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+    standalone: false
 })
 export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirective {
   protected slvField = 'leavers';

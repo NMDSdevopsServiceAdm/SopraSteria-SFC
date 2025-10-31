@@ -7,7 +7,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 18
+      nodejs: 22
   build:
     commands:
       - echo $CODEBUILD_RESOLVED_SOURCE_VERSION > commit_hash.txt

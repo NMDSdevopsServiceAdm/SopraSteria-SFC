@@ -10,8 +10,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-pensions',
-  templateUrl: './pensions.component.html',
+    selector: 'app-pensions',
+    templateUrl: './pensions.component.html',
+    standalone: false
 })
 export class PensionsComponent extends Question implements OnInit, OnDestroy {
   public pensionsOptions = [

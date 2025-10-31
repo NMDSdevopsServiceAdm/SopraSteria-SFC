@@ -11,8 +11,9 @@ import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceNotFound } from '@features/workplace-find-and-select/workplace-not-found/workplace-not-found';
 
 @Component({
-  selector: 'app-workplace-not-found',
-  templateUrl: './workplace-not-found.component.html',
+    selector: 'app-workplace-not-found',
+    templateUrl: './workplace-not-found.component.html',
+    standalone: false
 })
 export class WorkplaceNotFoundComponent extends WorkplaceNotFound {
   public workplace: Establishment;

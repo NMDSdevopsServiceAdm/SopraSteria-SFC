@@ -1,8 +1,9 @@
 import { Component, Input, OnInit, OnChanges } from '@angular/core';
 
 @Component({
-  selector: 'app-other-links',
-  templateUrl: './other-links.component.html',
+    selector: 'app-other-links',
+    templateUrl: './other-links.component.html',
+    standalone: false
 })
 export class OtherLinksComponent implements OnInit {
   @Input() canBulkUpload: boolean;

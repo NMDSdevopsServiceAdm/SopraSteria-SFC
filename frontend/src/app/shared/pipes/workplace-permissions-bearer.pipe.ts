@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 
 @Pipe({
-  name: 'workplacePermissionsBearer',
+    name: 'workplacePermissionsBearer',
+    standalone: false
 })
 export class WorkplacePermissionsBearerPipe implements PipeTransform {
   transform(value: WorkplaceDataOwner): any {

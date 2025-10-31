@@ -1,9 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { Note } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
@@ -40,21 +40,13 @@ describe('ParentRequestIndividualComponent', () => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId, getAllByText, queryAllByText } = await render(
       ParentRequestIndividualComponent,
       {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule.withRoutes([
-            { path: 'sfcadmin/parent-requests', component: ParentRequestIndividualComponent },
-          ]),
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
         providers: [
           WindowRef,
           { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
           { provide: SwitchWorkplaceService, useClasee: MockSwitchWorkplaceService },
           { provide: RegistrationsService, useClass: MockRegistrationsService },
+          provideRouter([{ path: 'sfcadmin/parent-requests', component: ParentRequestIndividualComponent }]),
           {
             provide: ActivatedRoute,
             useValue: {
@@ -67,6 +59,8 @@ describe('ParentRequestIndividualComponent', () => {
               },
             },
           },
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

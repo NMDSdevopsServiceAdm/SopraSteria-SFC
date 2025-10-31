@@ -12,8 +12,9 @@ import { VacanciesAndTurnoverService, WorkplaceUpdatePage } from '@core/services
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-update-total-number-of-staff',
-  templateUrl: './update-total-number-of-staff.component.html',
+    selector: 'app-update-total-number-of-staff',
+    templateUrl: './update-total-number-of-staff.component.html',
+    standalone: false
 })
 export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

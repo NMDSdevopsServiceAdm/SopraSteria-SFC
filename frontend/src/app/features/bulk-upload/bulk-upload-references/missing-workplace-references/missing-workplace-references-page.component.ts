@@ -18,10 +18,11 @@ import { take } from 'rxjs/operators';
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
 
 @Component({
-  selector: 'app-bu-missing-workplace-references-page',
-  templateUrl: 'missing-workplace-references.component.html',
-  styleUrls: ['../references.component.scss'],
-  providers: [I18nPluralPipe],
+    selector: 'app-bu-missing-workplace-references-page',
+    templateUrl: 'missing-workplace-references.component.html',
+    styleUrls: ['../references.component.scss'],
+    providers: [I18nPluralPipe],
+    standalone: false
 })
 export class MissingWorkplaceReferencesComponent extends BulkUploadReferencesDirective implements OnInit {
   private primaryWorkplace: Establishment;

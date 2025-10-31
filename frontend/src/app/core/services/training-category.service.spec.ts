@@ -1,8 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { TrainingCategoryService } from './training-category.service';
 import { environment } from 'src/environments/environment';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('TrainingCategoryService', () => {
   let service: TrainingCategoryService;
@@ -10,8 +11,8 @@ describe('TrainingCategoryService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [TrainingCategoryService],
+      imports: [],
+      providers: [TrainingCategoryService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(TrainingCategoryService);
 
@@ -29,7 +30,9 @@ describe('TrainingCategoryService', () => {
 
       service.getTrainingCategory(establishmentUid, trainingCategoryId).subscribe();
 
-      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/trainingCategories/${establishmentUid}/${trainingCategoryId}`);
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/trainingCategories/${establishmentUid}/${trainingCategoryId}`,
+      );
       expect(req.request.method).toBe('GET');
     });
 

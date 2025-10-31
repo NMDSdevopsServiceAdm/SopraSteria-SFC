@@ -11,7 +11,9 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-@Directive({})
+@Directive({
+    standalone: false
+})
 export class StaffSummaryDirective implements OnInit {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;

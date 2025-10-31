@@ -4,8 +4,9 @@ import { Worker } from '@core/model/worker.model';
 import { PdfComponent } from '@core/services/pdf.service';
 
 @Component({
-  selector: 'app-training-and-qualification-title',
-  templateUrl: './pdf-training-and-qualification-title.component.html',
+    selector: 'app-training-and-qualification-title',
+    templateUrl: './pdf-training-and-qualification-title.component.html',
+    standalone: false
 })
 export class PdfTrainingAndQualificationTitleComponent implements PdfComponent {
   @ViewChild('content') public content: ElementRef;

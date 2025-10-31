@@ -4,9 +4,10 @@ import { UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turnover/how-many-starters-leavers-vacancies.directive';
 
 @Component({
-  selector: 'app-how-many-vacancies',
-  templateUrl: '../vacancies-and-turnover/how-many-starters-leavers-vacancies.html',
-  styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
+    selector: 'app-how-many-vacancies',
+    templateUrl: '../vacancies-and-turnover/how-many-starters-leavers-vacancies.html',
+    styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
+    standalone: false
 })
 export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDirective {
   public heading = 'How many current staff vacancies do you have?';

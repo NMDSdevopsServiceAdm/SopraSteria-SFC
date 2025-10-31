@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-problem-with-the-service',
-  templateUrl: './problem-with-the-service.component.html',
+    selector: 'app-problem-with-the-service',
+    templateUrl: './problem-with-the-service.component.html',
+    standalone: false
 })
 export class ProblemWithTheServiceComponent {
   constructor() {}

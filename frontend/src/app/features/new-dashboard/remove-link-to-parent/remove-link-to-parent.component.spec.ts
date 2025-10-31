@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -24,7 +24,7 @@ describe('RemoveLinkToParentComponent', () => {
     const { getByRole, getByText, getByLabelText, getByTestId, fixture, getAllByText } = await render(
       RemoveLinkToParentComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        imports: [SharedModule, RouterModule],
         declarations: [],
         providers: [
           AlertService,
@@ -42,6 +42,9 @@ describe('RemoveLinkToParentComponent', () => {
             provide: FeatureFlagsService,
             useClass: MockFeatureFlagsService,
           },
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
         componentProperties: {},
       },
@@ -213,11 +216,10 @@ describe('RemoveLinkToParentComponent', () => {
       },
     });
 
-    fixture.whenStable().then(() => {
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: `You've removed your link to ${mockparentsWithPostCode[0].parentName}, ${mockparentsWithPostCode[0].postcode}`,
-      });
+    await fixture.whenStable();
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: `You've removed your link to ${mockparentsWithPostCode[0].parentName}, ${mockparentsWithPostCode[0].postcode}`,
     });
   });
 });

@@ -1,9 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { LocationService } from '@core/services/location.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockLocationService } from '@core/test-utils/MockLocationService';
@@ -18,14 +17,7 @@ import { FindYourWorkplaceComponent } from './find-your-workplace.component';
 describe('FindYourWorkplaceComponent', () => {
   async function setup(addWorkplaceFlow = true) {
     const component = await render(FindYourWorkplaceComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        AddWorkplaceModule,
-        ReactiveFormsModule,
-      ],
+      imports: [SharedModule, RouterModule, AddWorkplaceModule, ReactiveFormsModule],
       providers: [
         {
           provide: LocationService,
@@ -49,6 +41,8 @@ describe('FindYourWorkplaceComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

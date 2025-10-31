@@ -14,8 +14,9 @@ import { UserService } from '@core/services/user.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 
 @Component({
-  selector: 'app-edit-admin-user',
-  templateUrl: 'edit-admin-user.component.html',
+    selector: 'app-edit-admin-user',
+    templateUrl: 'edit-admin-user.component.html',
+    standalone: false
 })
 export class EditAdminUserComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save and return';

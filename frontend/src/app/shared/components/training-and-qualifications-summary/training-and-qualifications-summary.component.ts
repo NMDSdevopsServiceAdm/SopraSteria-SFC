@@ -7,8 +7,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-training-and-qualifications-summary',
-  templateUrl: './training-and-qualifications-summary.component.html',
+    selector: 'app-training-and-qualifications-summary',
+    templateUrl: './training-and-qualifications-summary.component.html',
+    standalone: false
 })
 export class TrainingAndQualificationsSummaryComponent implements OnInit {
   @Input() workplace: Establishment;

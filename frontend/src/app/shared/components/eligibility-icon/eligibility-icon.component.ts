@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-eligibility-icon',
-  templateUrl: './eligibility-icon.component.html',
+    selector: 'app-eligibility-icon',
+    templateUrl: './eligibility-icon.component.html',
+    standalone: false
 })
 export class EligibilityIconComponent implements OnInit {
   @Input() overallEligibility = false;

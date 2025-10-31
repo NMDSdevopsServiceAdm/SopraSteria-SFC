@@ -12,8 +12,9 @@ import dayjs from 'dayjs';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-main-job-start-date',
-  templateUrl: './main-job-start-date.component.html',
+    selector: 'app-main-job-start-date',
+    templateUrl: './main-job-start-date.component.html',
+    standalone: false
 })
 export class MainJobStartDateComponent extends QuestionComponent {
   private dateMin = dayjs().subtract(100, 'years');

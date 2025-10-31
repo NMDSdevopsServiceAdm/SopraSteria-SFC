@@ -5,8 +5,9 @@ import { Registration } from '@core/model/registrations.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-registration-requests',
-  templateUrl: './rejected-registration-requests.component.html',
+    selector: 'app-registration-requests',
+    templateUrl: './rejected-registration-requests.component.html',
+    standalone: false
 })
 export class RejectedRegistrationRequestsComponent implements OnInit {
   public rejectedRegistrations: Registration[];

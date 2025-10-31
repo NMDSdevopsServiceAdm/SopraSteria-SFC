@@ -1,3 +1,6 @@
+import { ActivatedRoute } from '@angular/router';
+import lodash from 'lodash';
+
 export class MockActivatedRoute {
   parent: any;
   params: any;
@@ -18,4 +21,14 @@ export class MockActivatedRoute {
       this.url = options.url;
     }
   }
+}
+
+export function provideActivatedRouteWithRouterLink(overrides: any = {}) {
+  const patchForRouterLinkToWork = { snapshot: { root: { children: [], url: ['/'] } } };
+  const patchValue = lodash.merge(patchForRouterLinkToWork, overrides);
+
+  return {
+    provide: ActivatedRoute,
+    useValue: patchValue,
+  };
 }

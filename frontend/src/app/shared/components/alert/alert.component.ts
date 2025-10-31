@@ -4,8 +4,9 @@ import { AlertService } from '@core/services/alert.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-alert',
-  templateUrl: './alert.component.html',
+    selector: 'app-alert',
+    templateUrl: './alert.component.html',
+    standalone: false
 })
 export class AlertComponent implements OnInit, OnDestroy {
   @Input() isAlertPositionInside: boolean;

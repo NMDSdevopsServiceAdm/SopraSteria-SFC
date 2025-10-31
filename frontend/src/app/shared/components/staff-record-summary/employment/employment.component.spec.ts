@@ -1,6 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
 import lodash from 'lodash';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
@@ -21,7 +22,7 @@ describe('EmploymentComponent', () => {
     const workplaceOverrides = overrides.workplace ?? {};
 
     const setupTools = await render(EmploymentComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [SummaryRecordChangeComponent],
       providers: [
         InternationalRecruitmentService,
@@ -31,7 +32,7 @@ describe('EmploymentComponent', () => {
           deps: [HttpClient],
         },
         provideRouter([]),
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         canEditWorker: true,
         workplace: establishmentBuilder({ overrides: workplaceOverrides }) as Establishment,

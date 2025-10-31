@@ -6,9 +6,10 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-get-started',
-  templateUrl: './get-started.component.html',
-  styleUrls: ['./get-started.component.scss'],
+    selector: 'app-get-started',
+    templateUrl: './get-started.component.html',
+    styleUrls: ['./get-started.component.scss'],
+    standalone: false
 })
 export class GetStartedComponent {
   public wizards: Wizard[];

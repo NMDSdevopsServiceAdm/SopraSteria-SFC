@@ -9,9 +9,9 @@ import { RegistrationService } from '@core/services/registration.service';
 import { IsThisYourWorkplaceDirective } from '@shared/directives/create-workplace/is-this-your-workplace/is-this-your-workplace.directive';
 
 @Component({
-  selector: 'app-is-this-your-workplace-create-account',
-  templateUrl:
-    '../../../../shared/directives/create-workplace/is-this-your-workplace/is-this-your-workplace.component.html',
+    selector: 'app-is-this-your-workplace-create-account',
+    templateUrl: '../../../../shared/directives/create-workplace/is-this-your-workplace/is-this-your-workplace.component.html',
+    standalone: false
 })
 export class IsThisYourWorkplaceComponent extends IsThisYourWorkplaceDirective {
   constructor(

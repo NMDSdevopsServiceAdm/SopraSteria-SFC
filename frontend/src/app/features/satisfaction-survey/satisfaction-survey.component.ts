@@ -7,8 +7,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-satisfaction-survey',
-  templateUrl: './satisfaction-survey.component.html',
+    selector: 'app-satisfaction-survey',
+    templateUrl: './satisfaction-survey.component.html',
+    standalone: false
 })
 export class SatisfactionSurveyComponent implements AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

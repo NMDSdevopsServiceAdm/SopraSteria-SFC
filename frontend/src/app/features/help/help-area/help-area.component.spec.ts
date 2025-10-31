@@ -1,14 +1,11 @@
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { HelpAreaComponent } from './help-area.component';
-import { MockRouter } from '@core/test-utils/MockRouter';
 
 describe('HelpAreaComponent', () => {
   async function setup(overrides: any = {}) {
@@ -16,7 +13,7 @@ describe('HelpAreaComponent', () => {
     const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(HelpAreaComponent, {
-      imports: [RouterTestingModule],
+      imports: [RouterModule],
       providers: [
         {
           provide: ActivatedRoute,

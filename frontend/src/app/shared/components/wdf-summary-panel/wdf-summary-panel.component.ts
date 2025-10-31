@@ -3,10 +3,11 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-wdf-summary-panel',
-  templateUrl: './wdf-summary-panel.component.html',
-  styleUrls: ['../summary-section/summary-section.component.scss', './wdf-summary-panel.component.scss'],
-  providers: [DatePipe],
+    selector: 'app-wdf-summary-panel',
+    templateUrl: './wdf-summary-panel.component.html',
+    styleUrls: ['../summary-section/summary-section.component.scss', './wdf-summary-panel.component.scss'],
+    providers: [DatePipe],
+    standalone: false
 })
 export class WdfSummaryPanel implements OnInit, OnChanges {
   @Input() workplaceWdfEligibilityStatus: boolean;

@@ -5,8 +5,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-confirm-starters',
-  templateUrl: './confirm-starters.component.html',
+    selector: 'app-confirm-starters',
+    templateUrl: './confirm-starters.component.html',
+    standalone: false
 })
 export class ConfirmStartersComponent implements OnInit, OnDestroy {
   public establishment: Establishment;

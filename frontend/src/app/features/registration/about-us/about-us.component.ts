@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { BackService } from '@core/services/back.service';
 
 @Component({
-  selector: 'app-about-us-registration',
-  templateUrl: './about-us.component.html',
+    selector: 'app-about-us-registration',
+    templateUrl: './about-us.component.html',
+    standalone: false
 })
 export class AboutUsRegistrationComponent implements OnInit {
   constructor(private backService: BackService) {}

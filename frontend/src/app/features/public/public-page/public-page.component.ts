@@ -5,8 +5,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-public-page',
-  templateUrl: './public-page.component.html',
+    selector: 'app-public-page',
+    templateUrl: './public-page.component.html',
+    standalone: false
 })
 export class PublicPageComponent implements OnInit, OnDestroy {
   public returnToHomeButton: boolean;

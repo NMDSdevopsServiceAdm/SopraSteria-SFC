@@ -6,8 +6,9 @@ import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-training-and-qualifications-categories',
-  templateUrl: './training-and-qualifications-categories.component.html',
+    selector: 'app-training-and-qualifications-categories',
+    templateUrl: './training-and-qualifications-categories.component.html',
+    standalone: false
 })
 export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

@@ -12,8 +12,9 @@ import { AddEditTrainingDirective } from '../../../../shared/directives/add-edit
 import { TrainingCategoryService } from '@core/services/training-category.service';
 
 @Component({
-  selector: 'app-add-edit-training',
-  templateUrl: '../../../../shared/directives/add-edit-training/add-edit-training.component.html',
+    selector: 'app-add-edit-training',
+    templateUrl: '../../../../shared/directives/add-edit-training/add-edit-training.component.html',
+    standalone: false
 })
 export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public showWorkerCount = true;

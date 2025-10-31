@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
@@ -20,7 +21,7 @@ describe('NewTabsComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const { fixture, getByTestId } = await render(NewTabsComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         TabsService,
         {
@@ -35,7 +36,7 @@ describe('NewTabsComponent', () => {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({}),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       declarations: [],
       componentProperties: {
         tabs: allTabs,

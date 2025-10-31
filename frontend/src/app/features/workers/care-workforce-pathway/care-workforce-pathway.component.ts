@@ -12,8 +12,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { FinalQuestionComponent } from '../final-question/final-question.component';
 
 @Component({
-  selector: 'app-care-workforce-pathway',
-  templateUrl: './care-workforce-pathway.component.html',
+    selector: 'app-care-workforce-pathway',
+    templateUrl: './care-workforce-pathway.component.html',
+    standalone: false
 })
 export class CareWorkforcePathwayRoleComponent extends FinalQuestionComponent {
   public section = 'Training and qualifications';

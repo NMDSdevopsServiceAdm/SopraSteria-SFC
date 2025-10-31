@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
@@ -23,7 +24,7 @@ describe('QualificationsAndTrainingComponent', () => {
     const mockWorker = { ...workerWithWdf(), ...(overrides.workerOverrides ?? {}) };
 
     const setupTools = await render(QualificationsAndTrainingComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [SummaryRecordChangeComponent],
       providers: [
         InternationalRecruitmentService,
@@ -38,7 +39,7 @@ describe('QualificationsAndTrainingComponent', () => {
             snapshot: { params: {} },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         canEditWorker: canEditWorker,
         workplace: establishmentBuilder() as Establishment,

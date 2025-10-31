@@ -1,6 +1,5 @@
 import { getTestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -9,8 +8,8 @@ import { UserAccountNotFoundComponent } from './user-account-not-found.component
 describe('UserAccountNotFoundComponent', () => {
   const setup = async () => {
     const setupTools = await render(UserAccountNotFoundComponent, {
-      imports: [SharedModule, RouterTestingModule],
-      providers: [],
+      imports: [SharedModule, RouterModule],
+      providers: [provideRouter([])],
     });
 
     const component = setupTools.fixture.componentInstance;

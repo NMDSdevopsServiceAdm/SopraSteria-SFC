@@ -3,8 +3,9 @@ import { DialogComponent } from '@core/components/dialog.component';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 
 @Component({
-  selector: 'app-delete-admin-user-dialog',
-  templateUrl: './delete-admin-user.component.html',
+    selector: 'app-delete-admin-user-dialog',
+    templateUrl: './delete-admin-user.component.html',
+    standalone: false
 })
 export class DeleteAdminUserComponent extends DialogComponent {
   constructor(

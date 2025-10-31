@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-@Pipe({name: 'getFirstError'})
+@Pipe({
+    name: 'getFirstError',
+    standalone: false
+})
 export class FirstErrorPipe implements PipeTransform {
   transform(errors: any, error?: any): boolean {
     if (!errors) {

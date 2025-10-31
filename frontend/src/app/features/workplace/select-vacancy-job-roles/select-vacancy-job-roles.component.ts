@@ -4,8 +4,9 @@ import { Vacancy } from '@core/model/establishment.model';
 import { SelectJobRolesDirective } from '../vacancies-and-turnover/select-job-roles.directive';
 
 @Component({
-  selector: 'app-select-vacancy-job-roles',
-  templateUrl: '../vacancies-and-turnover/select-job-roles.html',
+    selector: 'app-select-vacancy-job-roles',
+    templateUrl: '../vacancies-and-turnover/select-job-roles.html',
+    standalone: false
 })
 export class SelectVacancyJobRolesComponent extends SelectJobRolesDirective implements OnInit, OnDestroy {
   public errorMessageOnEmptyInput = 'Select job roles for the vacancies you want to add';

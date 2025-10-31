@@ -1,4 +1,3 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -16,7 +15,7 @@ describe('TablePaginationWrapperCompnent', () => {
     const setQueryInParams = overrides.setQueryInParams ?? false;
 
     const setupTools = await render(TablePaginationWrapperComponent, {
-      imports: [HttpClientTestingModule, RouterModule, ReactiveFormsModule],
+      imports: [RouterModule, ReactiveFormsModule],
       declarations: [PaginationComponent, SearchInputComponent],
       componentProperties: {
         totalCount,
