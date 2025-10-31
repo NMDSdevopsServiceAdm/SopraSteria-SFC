@@ -257,6 +257,8 @@ describe('Standalone home page as edit user', () => {
   });
 
   describe('other services', () => {
+    // for some unknown reason, the radio buttons in this page sometimes need more than one click to trigger
+
     const heading = 'Do you provide any other services?';
     it('updates when there are no other services', () => {
       cy.get('[data-testid="otherServices"]').as('testId');
@@ -264,7 +266,10 @@ describe('Standalone home page as edit user', () => {
       cy.get('@testId').contains('Add').click();
 
       cy.get('h1').should('contain.text', heading);
-      cy.getByLabel('No').click();
+      cy.getByLabel('No').as('NoButton');
+      cy.get('@NoButton').click();
+      cy.get('@NoButton').click();
+      cy.get('@NoButton').should('be.checked');
       cy.contains('button', 'Save and return').click();
 
       cy.get('@testId').contains('None');
@@ -280,7 +285,9 @@ describe('Standalone home page as edit user', () => {
 
       cy.get('h1').should('contain.text', heading);
 
-      cy.getByLabel('Yes, we provide other services').click();
+      cy.getByLabel('Yes, we provide other services').as('YesButton');
+      cy.get('@YesButton').click();
+      cy.get('@YesButton').click();
       cy.getByLabel('Other adult community care service').click();
       cy.contains('button', 'Save and return').click();
 
