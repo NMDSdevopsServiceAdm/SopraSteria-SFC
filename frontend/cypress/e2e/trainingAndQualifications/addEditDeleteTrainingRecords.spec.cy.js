@@ -36,11 +36,7 @@ describe('training record', () => {
 
   it('should add successfully', () => {
     cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
-    cy.contains('a', 'Add a record').click();
-
-    // select type of record
-    cy.getByLabel('Training record name').click();
-    cy.contains('button', 'Continue').click();
+    cy.contains('a', 'Add a training record').click();
 
     // select training category
     cy.contains('button', 'Show all categories').click();

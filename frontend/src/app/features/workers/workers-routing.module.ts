@@ -84,6 +84,7 @@ import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from 
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
+import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 
 const routes: Routes = [
   {
@@ -561,6 +562,7 @@ const routes: Routes = [
               trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
               expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
               mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
+              trainingCourses: TrainingCourseResolver,
             },
             data: { title: 'Training and qualification record' },
           },
@@ -860,6 +862,7 @@ const routes: Routes = [
           trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
           expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
           mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
+          trainingCourses: TrainingCourseResolver,
         },
         data: { title: 'Training and qualification record' },
       },
