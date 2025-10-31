@@ -19,7 +19,10 @@ export class TrainingCourseResolver {
 
   resolve(routeSnapshot: ActivatedRouteSnapshot): Observable<TrainingCourse[]> {
     const workplaceUid = routeSnapshot.paramMap.get('establishmentuid') || this.establishmentService.establishmentId;
-    const categoryId = routeSnapshot?.data?.trainingCoursesToLoad?.categoryId;
+    // const categoryId = routeSnapshot?.data?.trainingCoursesToLoad?.categoryId;
+    const categoryId = routeSnapshot?.parent?.data?.trainingRecord?.trainingCategory?.id;
+    // const categoryId = routeSnapshot?.parent?.data?.trainingRecord?.category?.id;
+    console.log(routeSnapshot.parent)
 
     if (categoryId) {
       return this.trainingCourseService.getTrainingCoursesByCategory(workplaceUid, categoryId);
