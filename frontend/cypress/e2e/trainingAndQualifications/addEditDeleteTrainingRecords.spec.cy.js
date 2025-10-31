@@ -39,7 +39,7 @@ describe('training record', () => {
     cy.contains('a', 'Add a record').click();
 
     // select type of record
-    cy.getByLabel('Training record').click();
+    cy.getByLabel('Training record name').click();
     cy.contains('button', 'Continue').click();
 
     // select training category
@@ -50,8 +50,15 @@ describe('training record', () => {
     // add training record details
     cy.get('[data-testid="trainingCategoryDisplay"]').contains(trainingCategory);
     cy.contains('a', 'Change');
-    cy.getByLabel('Training name').clear().type(trainingName);
-    cy.getByLabel('Yes').click();
+    cy.getByLabel('Training record name').clear().type(trainingName);
+
+    cy.get('#accredited-yes').should('be.visible').check().should('be.checked');
+    cy.get('#deliveredBy-ExternalProvider').check().should('be.checked');
+    cy.get('#conditional-external-provider-name').should('not.have.class', 'govuk-radios__conditional--hidden');
+    cy.get('#external-provider-name').type('Care skills academy');
+    cy.get('#howWasItDelivered-FaceToFace').check().should('be.checked');
+    cy.get('#validity-period').clear().type('12');
+    cy.get('#doesNotExpire').check().should('be.checked');
 
     cy.get('[data-testid="completedDate"]').within(() => {
       cy.getByLabel('Day').clear().type(31);
