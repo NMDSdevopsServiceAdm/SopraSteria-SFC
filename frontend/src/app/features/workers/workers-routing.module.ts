@@ -545,6 +545,11 @@ const routes: Routes = [
                 data: { title: 'Training' },
               },
               {
+                path: 'include-training-course-details',
+                // component: AddEditTrainingComponent,
+                // data: { title: 'Training' },
+              },
+              {
                 path: 'delete',
                 component: DeleteRecordComponent,
                 data: { title: 'Delete Training' },
@@ -564,6 +569,8 @@ const routes: Routes = [
               mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
               trainingCourses: TrainingCourseResolver,
             },
+            //Title rendered on browser tab
+            // Can also set permissions here
             data: { title: 'Training and qualification record' },
           },
           {
