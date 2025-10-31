@@ -75,6 +75,9 @@ module.exports = function (sequelize, DataTypes) {
             }
           },
         },
+        set(value) {
+          this.setDataValue('doesNotExpire', Boolean(value));
+        },
       },
       validityPeriodInMonth: {
         type: DataTypes.INTEGER,

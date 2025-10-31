@@ -1,0 +1,72 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" novalidate>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+          <span class="govuk-caption-l" data-testid="section-heading">Add a training course</span>
+          <h1 class="govuk-fieldset__heading">Select a category that best matches this training course</h1>
+        </legend>
+      </fieldset>
+
+      <dl class="govuk-!-margin-bottom-0 govuk-!-margin-top-0" data-testid="training-course-name">
+        <dt class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Training course name</dt>
+        <dd
+          class="govuk-body govuk-util__inline-block govuk-!-margin-left-0 govuk-!-margin-right-4 govuk-!-margin-bottom-0"
+        >
+          {{ trainingCourseName }}
+        </dd>
+        <dd class="govuk-body govuk-util__inline-block govuk-!-margin-left-0 govuk-!-margin-bottom-0">
+          <a class="govuk-link--no-visited-state" href="#" [routerLink]="['../details']"
+            >Change <span class="govuk-visually-hidden">training course details</span></a
+          >
+        </dd>
+      </dl>
+
+      <app-seperator-line></app-seperator-line>
+
+      <app-grouped-radio-button-accordion
+        formControlName="category"
+        [accordions]="trainingGroups"
+        textShowHideAll="categories"
+        [preFilledId]="preFilledId"
+        data-testid="groupedAccordion"
+        [hasError]="submitted && form.invalid"
+        [errorMessage]="requiredErrorMessage"
+      ></app-grouped-radio-button-accordion>
+
+      <div class="asc__negative-margin-right-4" [class.govuk-form-group--error]="submitted && form.invalid">
+        <div class="govuk-checkboxes govuk-!-margin-bottom-6">
+          <div class="govuk-checkboxes__item">
+            <input
+              type="radio"
+              name="category"
+              formControlName="category"
+              class="govuk-checkboxes__input"
+              id="otherCheckbox"
+              [value]="otherCategory.id"
+            />
+            <label for="otherCheckbox" class="govuk-label govuk-checkboxes__label">
+              The training course does not match with any of these categories
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="govuk-button-group govuk-!-margin-top-8">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Save training course</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          href="#"
+          [routerLink]="['/workplace', this.workplace.uid, 'training-course', 'add-and-manage-training-courses']"
+        >
+          Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</form>

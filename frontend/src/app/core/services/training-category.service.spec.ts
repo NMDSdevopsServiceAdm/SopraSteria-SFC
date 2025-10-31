@@ -1,8 +1,13 @@
+import { environment } from 'src/environments/environment';
+
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import {
+  expectedTrainingCategoryGroupsAfterSorting,
+  mockTrainingCategoriesWithAllGroups,
+} from '@core/test-utils/MockTrainingCategoriesService';
 
 import { TrainingCategoryService } from './training-category.service';
-import { environment } from 'src/environments/environment';
 
 describe('TrainingCategoryService', () => {
   let service: TrainingCategoryService;
@@ -29,7 +34,9 @@ describe('TrainingCategoryService', () => {
 
       service.getTrainingCategory(establishmentUid, trainingCategoryId).subscribe();
 
-      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/trainingCategories/${establishmentUid}/${trainingCategoryId}`);
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/trainingCategories/${establishmentUid}/${trainingCategoryId}`,
+      );
       expect(req.request.method).toBe('GET');
     });
 
@@ -49,6 +56,16 @@ describe('TrainingCategoryService', () => {
         `${environment.appRunnerEndpoint}/api/trainingCategories/${establishmentUid}/${trainingCategoryId}?sortBy=staffNameAsc&searchTerm=&pageIndex=1&itemsPerPage=15`,
       );
       expect(req.request.method).toBe('GET');
+    });
+  });
+
+  describe('sortTrainingCategoryByGroups', () => {
+    it('should sort a list of training category by group, to be passed into accordion component', async () => {
+      const inputTrainingCategories = mockTrainingCategoriesWithAllGroups;
+      const expected = expectedTrainingCategoryGroupsAfterSorting;
+
+      const actual = TrainingCategoryService.sortTrainingCategoryByGroups(inputTrainingCategories);
+      expect(actual).toEqual(expected);
     });
   });
 });

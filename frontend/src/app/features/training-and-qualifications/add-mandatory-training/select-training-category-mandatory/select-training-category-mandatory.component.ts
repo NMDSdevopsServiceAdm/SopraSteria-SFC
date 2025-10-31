@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { MandatoryTrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -74,7 +75,7 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
       this.categories = allTrainingCategories;
     }
 
-    this.sortCategoriesByTrainingGroup(this.categories);
+    this.trainingGroups = TrainingCategoryService.sortTrainingCategoryByGroups(this.categories);
   }
 
   protected prefillForm(): void {
