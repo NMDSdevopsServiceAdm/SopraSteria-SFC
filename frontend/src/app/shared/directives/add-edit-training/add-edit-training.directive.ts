@@ -194,11 +194,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         type: [
           {
             name: 'minlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
+            message: `Training record name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
           },
           {
             name: 'maxlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
+            message: `Training record name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
           },
         ],
       },

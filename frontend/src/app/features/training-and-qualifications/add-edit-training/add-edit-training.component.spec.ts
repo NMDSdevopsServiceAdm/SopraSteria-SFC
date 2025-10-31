@@ -24,7 +24,7 @@ import { DeliveredBy } from '@core/model/training.model';
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
-fdescribe('AddEditTrainingComponent', () => {
+describe('AddEditTrainingComponent', () => {
   async function setup(overrides: any = {}) {
     const selectedTraining = overrides?.selectedTraining ?? null;
     const trainingRecordId = overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : '1';
@@ -125,7 +125,7 @@ fdescribe('AddEditTrainingComponent', () => {
     expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
   });
 
-  fdescribe('Training category display', async () => {
+  describe('Training category display', async () => {
     it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
       const selectedTraining = { trainingCategory: { category: 'Autism', id: 2 } };
 
@@ -214,7 +214,7 @@ fdescribe('AddEditTrainingComponent', () => {
   });
 
   describe('input form', () => {
-    it('should show a text input for provider name iff user select "External provider" for delivered by external provider', async () => {
+    it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
       const { getByRole, fixture } = await setup({ trainingRecord: null });
 
       const providerName = getByRole('textbox', { name: 'Provider name' });
@@ -566,6 +566,11 @@ fdescribe('AddEditTrainingComponent', () => {
 
       userEvent.type(getByLabelText('Training record name'), 'Some training');
       userEvent.click(getByLabelText('Yes'));
+      userEvent.click(getByLabelText('External provider'));
+      userEvent.type(getByLabelText('Provider name'), 'Care skills academy');
+      userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '');
+      userEvent.type(getByLabelText('This training does not expire'), 'true');
+      userEvent.click(getByLabelText('E-learning'));
       const completedDate = getByTestId('completedDate');
       userEvent.type(within(completedDate).getByLabelText('Day'), '10');
       userEvent.type(within(completedDate).getByLabelText('Month'), '4');
@@ -582,6 +587,11 @@ fdescribe('AddEditTrainingComponent', () => {
       const expectedFormValue = {
         title: 'Some training',
         accredited: 'Yes',
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skills academy',
+        howWasItDelivered: 'E-learning',
+        validityPeriodInMonth: null,
+        doesNotExpire: true,
         completed: { day: 10, month: 4, year: 2020 },
         expires: { day: 10, month: 4, year: 2022 },
         notes: 'Some notes for this training',
@@ -593,6 +603,11 @@ fdescribe('AddEditTrainingComponent', () => {
         trainingCategory: { id: 1 },
         title: 'Some training',
         accredited: 'Yes',
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skills academy',
+        howWasItDelivered: 'E-learning',
+        validityPeriodInMonth: null,
+        doesNotExpire: true,
         completed: '2020-04-10',
         expires: '2022-04-10',
         notes: 'Some notes for this training',
@@ -637,7 +652,7 @@ fdescribe('AddEditTrainingComponent', () => {
       expect(trainingService.selectedTraining.trainingCategory).toBeNull();
     });
 
-    fit('should disable the submit button to prevent it being triggered more than once', async () => {
+    it('should disable the submit button to prevent it being triggered more than once', async () => {
       const { component, fixture, getByText, getByLabelText, trainingService, createSpy } = await setup({
         trainingRecordId: null,
         selectedTraining: {
@@ -687,6 +702,11 @@ fdescribe('AddEditTrainingComponent', () => {
             trainingCategory: { id: 1 },
             title: 'Communication Training 1',
             accredited: 'Yes',
+            deliveredBy: 'External provider',
+            externalProviderName: 'Care skills academy',
+            howWasItDelivered: 'E-learning',
+            validityPeriodInMonth: 24,
+            doesNotExpire: false,
             completed: '2020-01-02',
             expires: '2021-01-02',
             notes: 'Some notes added to this training',
@@ -748,6 +768,11 @@ fdescribe('AddEditTrainingComponent', () => {
           trainingCategory: { id: 2 },
           title: 'Understanding Autism',
           accredited: 'Yes',
+          deliveredBy: null,
+          externalProviderName: null,
+          howWasItDelivered: null,
+          validityPeriodInMonth: null,
+          doesNotExpire: null,
           completed: null,
           expires: null,
           notes: null,
@@ -806,7 +831,7 @@ fdescribe('AddEditTrainingComponent', () => {
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
-        expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
+        expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
       });
 
       it('should show an error message if the title is more than 120 characters long', async () => {

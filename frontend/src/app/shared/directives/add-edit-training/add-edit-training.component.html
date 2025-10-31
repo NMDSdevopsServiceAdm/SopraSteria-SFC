@@ -34,7 +34,6 @@
                 </div>
               </div>
             </div>
-
             <ng-container *ngIf="multipleTrainingDetails; else singleRecord">
               <div *ngIf="showCategory" class="govuk-body" data-testid="trainingCategoryDisplay">
                 <span class="govuk-util__block govuk-!-font-weight-bold">Training category</span>
@@ -56,7 +55,6 @@
                 </div>
               </div>
             </ng-container>
-
             <ng-template #singleRecord>
               <p class="govuk-body govuk-!-margin-bottom-4" data-testid="trainingCategoryDisplay">
                 <span class="govuk-util__block"><b>Training category</b></span>
@@ -73,7 +71,6 @@
               </p>
             <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 " style="width: 150%"/>
             </ng-template>
-
             <div class="govuk-form-group govuk-!-margin-bottom-4" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
               <label class="govuk-label" for="title"> Training record name </label>
               <span *ngIf="submitted && form.get('title').invalid" id="title-error" class="govuk-error-message">
@@ -87,7 +84,6 @@
                 name="title"
                 type="text"
               />
-
             </div>
            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
             <div class="govuk-form-group govuk-!-margin-bottom-4">
@@ -126,11 +122,8 @@
                   </div>
                 </div>
               </fieldset>
-
             </div>
    <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
-
-
 <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend">Who delivered the training course?</legend>
@@ -207,9 +200,7 @@
           </div>
         </fieldset>
       </div>
-
-
-          <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
      <div
         class="govuk-form-group govuk-!-margin-bottom-1"
         [class.govuk-form-group--error]="submitted && form.get('validityPeriodInMonth').invalid"
@@ -234,7 +225,6 @@
           (change)="handleValidityPeriodChange($event)"
         ></app-number-input-with-buttons>
       </div>
-
      <div
         class="govuk-form-group govuk-!-margin-bottom-4"
         [class.govuk-form-group--error]="submitted && form.get('doesNotExpire').invalid"
@@ -308,9 +298,7 @@
               </fieldset>
             </div>
               </div>
-
              </div>
-
              </div>
          <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
 
@@ -337,10 +325,6 @@
               </a
             >
           </div>
-
-
-
-
         </div>
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
           <div class="govuk-grid-column-full">
@@ -355,9 +339,7 @@
               (removeSavedFile)="removeSavedFile($event)"
               (downloadCertificate)="downloadCertificates($event)"
             ></app-certifications-table>
-
           </div>
-
         </div>
         <div class="govuk-grid-row govuk-!-margin-top-4">
           <div class="govuk-grid-column-two-thirds-from-desktop">
