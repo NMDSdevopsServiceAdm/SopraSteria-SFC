@@ -4,9 +4,14 @@ import { SubEstablishment } from '../../../support/mockEstablishmentData';
 import { runTestsForTrainingCourseJourney } from './runTestsForTrainingCourse';
 
 describe('Training course for subsidiary workplace edit user', () => {
+  const testEstablishment = SubEstablishment;
+
   beforeEach(() => {
-    cy.loginAsUser(SubEstablishment.editUserLoginName, Cypress.env('userPassword'));
+    cy.loginAsUser(testEstablishment.editUserLoginName, Cypress.env('userPassword'));
+
+    cy.url().should('contain', 'dashboard#home');
+    cy.get('h1').should('contain', testEstablishment.name);
   });
 
-  runTestsForTrainingCourseJourney(SubEstablishment);
+  runTestsForTrainingCourseJourney(testEstablishment);
 });
