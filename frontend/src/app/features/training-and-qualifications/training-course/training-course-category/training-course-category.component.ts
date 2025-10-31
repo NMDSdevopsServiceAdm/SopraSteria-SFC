@@ -49,8 +49,7 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
 
     this.determineJourneyType();
     this.getCategories();
-    this.trainingCourseName =
-      this.trainingCourseService?.newTrainingCourseToBeAdded?.name ?? 'temp training course name';
+    this.trainingCourseName = this.trainingCourseService.newTrainingCourseToBeAdded.name;
 
     this.setupForm();
     this.setupFormErrorsMap();
