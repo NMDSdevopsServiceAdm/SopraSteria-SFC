@@ -108,6 +108,12 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
             this.form.patchValue({
               title: this.trainingRecord.title,
               accredited: this.trainingRecord.accredited,
+              deliveredBy: this.trainingRecord.deliveredBy,
+              externalProviderName: this.trainingRecord.externalProviderName,
+              howWasItDelivered: this.trainingRecord.howWasItDelivered,
+              validityPeriodInMonth: this.trainingRecord.validityPeriodInMonth,
+              doesNotExpire: this.trainingRecord.doesNotExpire,
+
               ...(completed && {
                 completed: {
                   day: completed.date(),

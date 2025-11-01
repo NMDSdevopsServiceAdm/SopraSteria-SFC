@@ -143,8 +143,13 @@ describe('MultipleTrainingDetailsComponent', () => {
     openNotesButton.click();
     fixture.detectChanges();
 
-    userEvent.type(getByLabelText('Training name'), 'Training');
+    userEvent.type(getByLabelText('Training record name'), 'Training');
     userEvent.click(getByLabelText('Yes'));
+    userEvent.click(getByLabelText('External provider'));
+    userEvent.type(getByLabelText('Provider name'), 'Care skills academy');
+    userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '');
+    userEvent.type(getByLabelText('This training does not expire'), 'true');
+    userEvent.click(getByLabelText('E-learning'));
     const completedDate = getByTestId('completedDate');
     userEvent.type(within(completedDate).getByLabelText('Day'), '1');
     userEvent.type(within(completedDate).getByLabelText('Month'), '1');
@@ -164,6 +169,11 @@ describe('MultipleTrainingDetailsComponent', () => {
       trainingCategory: component.categories[0],
       title: 'Training',
       accredited: 'Yes',
+      deliveredBy: 'External provider',
+      externalProviderName: 'Care skills academy',
+      howWasItDelivered: 'E-learning',
+      validityPeriodInMonth: null,
+      doesNotExpire: true,
       completed: '2020-01-01',
       expires: '2022-01-01',
       notes: 'Notes for training',
@@ -192,6 +202,11 @@ describe('MultipleTrainingDetailsComponent', () => {
       trainingCategory: component.categories[0],
       title: 'Title',
       accredited: 'Yes',
+      deliveredBy: null,
+      externalProviderName: null,
+      howWasItDelivered: null,
+      validityPeriodInMonth: null,
+      doesNotExpire: null,
       completed: '2020-01-01',
       expires: '2021-01-01',
       notes: 'This is a note',
@@ -228,13 +243,29 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { component } = await setup(false, true);
 
     const form = component.form;
-    const { title, accredited, completed, expires, notes } = component.trainingService.selectedTraining;
+    const {
+      title,
+      accredited,
+      deliveredBy = null,
+      externalProviderName = null,
+      howWasItDelivered = null,
+      validityPeriodInMonth = null,
+      doesNotExpire = null,
+      completed,
+      expires,
+      notes,
+    } = component.trainingService.selectedTraining;
     const completedArr = completed.split('-');
     const expiresArr = expires.split('-');
 
     expect(form.value).toEqual({
       title,
       accredited,
+      deliveredBy,
+      externalProviderName,
+      howWasItDelivered,
+      validityPeriodInMonth,
+      doesNotExpire,
       completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
       expires: { day: +expiresArr[2], month: +expiresArr[1], year: +expiresArr[0] },
       notes,
@@ -294,7 +325,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   describe('errors', () => {
-    it('should show an error when training name less than 3 characters', async () => {
+    it('should show an error when Training record name less than 3 characters', async () => {
       const { component, getByText, fixture, getAllByText } = await setup();
       component.form.markAsDirty();
       component.form.get('title').setValue('a');
@@ -302,10 +333,10 @@ describe('MultipleTrainingDetailsComponent', () => {
       const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
+      expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
     });
 
-    it('should show an error when training name more than 120 characters', async () => {
+    it('should show an error when Training record name more than 120 characters', async () => {
       const { component, getByText, fixture, getAllByText } = await setup();
       component.form.markAsDirty();
       component.form
@@ -317,7 +348,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
+      expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
     });
 
     it('should show an error when completed date not valid', async () => {

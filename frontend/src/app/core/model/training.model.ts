@@ -21,6 +21,11 @@ export interface TrainingRecordRequest {
   };
   title: string;
   accredited?: string;
+  deliveredBy?: string;
+  externalProviderName?: string;
+  howWasItDelivered?: string;
+  validityPeriodInMonth?: number;
+  doesNotExpire?: boolean;
   completed?: string;
   expires?: string;
   notes?: string;
@@ -61,6 +66,11 @@ export interface TrainingRecord {
     category: string;
   };
   trainingCertificates: TrainingCertificate[];
+  deliveredBy?: string;
+  externalProviderName?: string;
+  howWasItDelivered?: string;
+  validityPeriodInMonth?: number;
+  doesNotExpire?: boolean;
   completed?: Date;
   created: Date;
   expires?: Date;
