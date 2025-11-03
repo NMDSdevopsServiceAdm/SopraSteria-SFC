@@ -42,6 +42,12 @@ export class WorkplacePage {
     });
   }
 
+  allSectionsAreNotChangeable() {
+    WorkplacePage.testIdsForRows.forEach((testId) => {
+      this.expectRowExistAndNotChangable(testId);
+    });
+  }
+
   expectRow(testIdForRow) {
     return {
       toHaveValue: (expectedValue) => this.expectRowToHaveValue(testIdForRow, expectedValue),
@@ -60,6 +66,23 @@ export class WorkplacePage {
             cy.get('a').should('contain', 'Add');
           } else {
             cy.get('a').should('contain', 'Change');
+          }
+        });
+    });
+  };
+
+  expectRowExistAndNotChangable = (testIdForRow) => {
+    cy.get(`[data-testid="${testIdForRow}"]`).as('testId');
+
+    return cy.get('@testId').within(() => {
+      return cy
+        .get('.govuk-summary-list__value')
+        .invoke('text')
+        .then((rowValue) => {
+          if (rowValue.trim() === '-') {
+            cy.get('@testId').should('not.contain', 'Add');
+          } else {
+            cy.get('@testId').should('not.contain', 'Change');
           }
         });
     });

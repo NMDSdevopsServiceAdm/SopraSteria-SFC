@@ -1,5 +1,7 @@
 const config = require('./config');
 const AWSSecrets = require('../aws/secrets');
+const fs = require('fs');
+const path = require('path');
 
 module.exports = async () => {
   if (config.get('aws.secrets.use')) {
@@ -18,7 +20,11 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: true,
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/global-bundle.pem')).toString(),
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -30,7 +36,11 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: true,
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/global-bundle.pem')).toString(),
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -42,7 +52,11 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: true,
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/global-bundle.pem')).toString(),
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -54,7 +68,11 @@ module.exports = async () => {
       port: config.get('db.port'),
       dialect: config.get('db.dialect'),
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: {
+          require: true,
+          rejectUnauthorized: true,
+          ca: fs.readFileSync(path.join(__dirname, '../../certificate/global-bundle.pem')).toString(),
+        },
       },
       migrationStorageTableSchema: 'cqc',
     },
@@ -67,7 +85,7 @@ module.exports = async () => {
       dialect: config.get('db.dialect'),
       migrationStorageTableSchema: 'cqc',
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: false,
       },
     },
     e2etest: {
@@ -79,7 +97,7 @@ module.exports = async () => {
       dialect: config.get('e2etestdb.dialect'),
       migrationStorageTableSchema: 'cqc',
       dialectOptions: {
-        ssl: config.get('db.ssl'),
+        ssl: false,
       },
     },
   };
