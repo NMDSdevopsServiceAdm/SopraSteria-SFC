@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-do-you-want-to-download-train-and-quals',
   templateUrl: './do-you-want-to-download-train-and-quals.component.html',
+  standalone: false,
 })
 export class DoYouWantToDowloadTrainAndQualsComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

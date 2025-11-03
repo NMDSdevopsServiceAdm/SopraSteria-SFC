@@ -12,8 +12,9 @@ import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/a
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
-  selector: 'app-parent-request-individual',
-  templateUrl: './parent-request-individual.component.html',
+    selector: 'app-parent-request-individual',
+    templateUrl: './parent-request-individual.component.html',
+    standalone: false
 })
 export class ParentRequestIndividualComponent implements OnInit, OnDestroy {
   public registration: any;

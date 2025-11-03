@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Router, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -14,13 +14,14 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { WdfOverviewComponent } from './wdf-overview.component';
+import { provideActivatedRouteWithRouterLink } from '@core/test-utils/MockActivatedRoute';
 
 describe('WdfOverviewComponent', () => {
   const setup = async (overrides: any = {}) => {
     const currentYear = new Date().getFullYear();
 
     const setupTools = await render(WdfOverviewComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+      imports: [BrowserModule, RouterModule, SharedModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -34,20 +35,19 @@ describe('WdfOverviewComponent', () => {
             },
           },
         },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: { report: createMockWdfReport(overrides) },
-            },
+        provideActivatedRouteWithRouterLink({
+          snapshot: {
+            data: { report: createMockWdfReport(overrides) },
           },
-        },
+        }),
         {
           provide: UserService,
           useValue: {
             getEstablishments: () => of(overrides.getParentAndSubs ?? null),
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         wdfStartDate: `1 April ${currentYear}`,
@@ -138,7 +138,7 @@ describe('WdfOverviewComponent', () => {
       const keepYourDataCurrentLink = getByText('Keep your data current');
 
       expect(dataMetFundingParagraph).toBeTruthy();
-      expect(keepYourDataCurrentLink.getAttribute('ng-reflect-router-link')).toEqual('data');
+      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/data');
     });
 
     it('should navigate to your data when Check your data is clicked', async () => {
@@ -158,7 +158,7 @@ describe('WdfOverviewComponent', () => {
       const learnMoreLink = getByText('Learn more about the funds that you can claim from');
 
       expect(learnMoreLink).toBeTruthy();
-      expect(learnMoreLink.getAttribute('ng-reflect-router-link')).toEqual('learn-more');
+      expect(learnMoreLink.getAttribute('href')).toEqual('/learn-more');
     });
 
     it('should show the funding requirements link', async () => {
@@ -170,7 +170,7 @@ describe('WdfOverviewComponent', () => {
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
-      expect(fundingRequirementsLink.getAttribute('ng-reflect-router-link')).toEqual('funding-requirements');
+      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/funding-requirements');
     });
   });
 
@@ -194,7 +194,7 @@ describe('WdfOverviewComponent', () => {
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
-      expect(fundingRequirementsLink.getAttribute('ng-reflect-router-link')).toEqual('funding-requirements');
+      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/funding-requirements');
     });
   });
 
@@ -245,7 +245,7 @@ describe('WdfOverviewComponent', () => {
         const keepYourDataCurrentLink = getByText('Keep your data current');
 
         expect(dataMetFundingParagraph).toBeTruthy();
-        expect(keepYourDataCurrentLink.getAttribute('ng-reflect-router-link')).toEqual('data');
+        expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/data');
       });
 
       it('should display overall eligibility date from parent when parent has latest eligibility date', async () => {
@@ -338,7 +338,7 @@ describe('WdfOverviewComponent', () => {
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
-      expect(fundingRequirementsLink.getAttribute('ng-reflect-router-link')).toEqual('funding-requirements');
+      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/funding-requirements');
     });
 
     it('should display some data not meeting message when not eligible overall but some sub workplaces are eligible', async () => {

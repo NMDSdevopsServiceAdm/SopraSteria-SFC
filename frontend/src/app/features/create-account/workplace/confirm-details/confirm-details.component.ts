@@ -20,8 +20,9 @@ import { combineLatest, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-confirm-details',
-  templateUrl: './confirm-details.component.html',
+    selector: 'app-confirm-details',
+    templateUrl: './confirm-details.component.html',
+    standalone: false
 })
 export class ConfirmDetailsComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;

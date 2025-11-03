@@ -6,8 +6,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-data-area-about-the-data',
-  templateUrl: './about-the-data.component.html',
+    selector: 'app-data-area-about-the-data',
+    templateUrl: './about-the-data.component.html',
+    standalone: false
 })
 export class DataAreaAboutTheDataComponent implements OnInit {
   public workplace: Establishment;

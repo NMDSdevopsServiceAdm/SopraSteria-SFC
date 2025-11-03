@@ -1,9 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, RouterModule } from '@angular/router';
 import { Note, Registration } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -45,16 +45,7 @@ describe('RegistrationRequestComponent', () => {
     const { fixture, getByText, getAllByText, queryAllByText, queryByText, getByTestId, queryByTestId } = await render(
       RegistrationRequestComponent,
       {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule.withRoutes([
-            { path: 'sfcadmin/registrations', component: RegistrationRequestsComponent },
-          ]),
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
         providers: [
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           { provide: RegistrationsService, useClass: MockRegistrationsService },
@@ -62,6 +53,7 @@ describe('RegistrationRequestComponent', () => {
           { provide: SwitchWorkplaceService, useClass: MockSwitchWorkplaceService },
           AlertService,
           WindowRef,
+          provideRouter([{ path: 'sfcadmin/registrations', component: RegistrationRequestsComponent }]),
           {
             provide: ActivatedRoute,
             useValue: {
@@ -74,6 +66,8 @@ describe('RegistrationRequestComponent', () => {
               },
             },
           },
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );
@@ -363,7 +357,6 @@ describe('RegistrationRequestComponent', () => {
         message: 'The Postcode has been successfully updated to LA9 4DQ',
       });
     });
-
   });
   describe('Checkbox component', () => {
     it('should show a PENDING banner when no one is reviewing the registration', async () => {

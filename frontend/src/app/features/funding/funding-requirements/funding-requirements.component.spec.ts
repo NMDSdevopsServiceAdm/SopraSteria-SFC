@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -20,7 +21,7 @@ describe('FundingRequirementsComponent', () => {
 
   async function setup() {
     const setupTools = await render(FundingRequirementsComponent, {
-      imports: [RouterModule, HttpClientTestingModule, SharedModule],
+      imports: [RouterModule, SharedModule],
       providers: [
         { provide: PagesService, useClass: MockPagesService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -36,7 +37,7 @@ describe('FundingRequirementsComponent', () => {
             },
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

@@ -20,10 +20,11 @@ import { filter, map, take } from 'rxjs/operators';
 import { BulkUploadReferencesDirective } from '../bulk-upload-references.directive';
 
 @Component({
-  selector: 'app-bu-missing-staff-references-page',
-  templateUrl: 'missing-staff-references.component.html',
-  styleUrls: ['../references.component.scss'],
-  providers: [I18nPluralPipe],
+    selector: 'app-bu-missing-staff-references-page',
+    templateUrl: 'missing-staff-references.component.html',
+    styleUrls: ['../references.component.scss'],
+    providers: [I18nPluralPipe],
+    standalone: false
 })
 export class MissingStaffReferencesComponent extends BulkUploadReferencesDirective implements OnDestroy, OnInit {
   private subscriptions: Subscription = new Subscription();

@@ -3,8 +3,9 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
-  selector: 'app-start',
-  templateUrl: './start.component.html',
+    selector: 'app-start',
+    templateUrl: './start.component.html',
+    standalone: false
 })
 export class StartComponent implements OnInit {
   constructor(public backLinkService: BackLinkService, private workplaceService: WorkplaceService) {}

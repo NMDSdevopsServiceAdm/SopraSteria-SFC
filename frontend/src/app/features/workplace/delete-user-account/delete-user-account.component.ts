@@ -10,8 +10,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-delete-user-account',
-  templateUrl: './delete-user-account.component.html',
+    selector: 'app-delete-user-account',
+    templateUrl: './delete-user-account.component.html',
+    standalone: false
 })
 export class DeleteUserAccountComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

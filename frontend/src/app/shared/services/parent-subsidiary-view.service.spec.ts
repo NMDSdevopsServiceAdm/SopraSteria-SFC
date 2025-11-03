@@ -1,15 +1,16 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('ParentSubsidiaryViewService', () => {
   let service: ParentSubsidiaryViewService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [ParentSubsidiaryViewService],
+      imports: [],
+      providers: [ParentSubsidiaryViewService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(ParentSubsidiaryViewService);
   });

@@ -1,6 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -9,7 +7,7 @@ import { EligibilityIconComponent } from './eligibility-icon.component';
 describe('EligibilityIconComponent', () => {
   const setup = async (overallEligibility: boolean, currentRowEligible: boolean) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(EligibilityIconComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+      imports: [BrowserModule, SharedModule],
       componentProperties: { overallEligibility: overallEligibility, eligible: currentRowEligible },
     });
     const component = fixture.componentInstance;

@@ -9,8 +9,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-missing-mandatory-training-status',
-  templateUrl: './missing-mandatory-training-status.component.html',
+    selector: 'app-missing-mandatory-training-status',
+    templateUrl: './missing-mandatory-training-status.component.html',
+    standalone: false
 })
 export class MissingMandatoryTrainingStatusComponent implements OnInit {
   public workplace: Establishment;

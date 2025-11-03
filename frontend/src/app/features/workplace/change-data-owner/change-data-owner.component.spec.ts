@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
@@ -81,41 +81,40 @@ const parent = {
 
 describe('ChangeDataOwnerComponent', async () => {
   async function setup(establishment = subsidiaryDoesNotOwnData) {
-    const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
-      ChangeDataOwnerComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        declarations: [ChangeDataOwnerComponent],
-        providers: [
-          AlertService,
-          WindowRef,
-          UntypedFormBuilder,
-          ErrorSummaryService,
-          { provide: PermissionsService, useClass: MockPermissionsService },
-          {
-            provide: BreadcrumbService,
-            useClass: MockBreadcrumbService,
-          },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                queryParams: establishment.isParent ? { changeDataOwnerFrom: subValues.uid } : null,
-                data: {
-                  establishment: establishment,
-                },
+    const setupTools = await render(ChangeDataOwnerComponent, {
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
+      declarations: [ChangeDataOwnerComponent],
+      providers: [
+        AlertService,
+        WindowRef,
+        UntypedFormBuilder,
+        ErrorSummaryService,
+        { provide: PermissionsService, useClass: MockPermissionsService },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParams: establishment.isParent ? { changeDataOwnerFrom: subValues.uid } : null,
+              data: {
+                establishment: establishment,
               },
             },
           },
-        ],
-        componentProperties: {},
-      },
-    );
-    const component = fixture.componentInstance;
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+      componentProperties: {},
+    });
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
 
@@ -128,13 +127,7 @@ describe('ChangeDataOwnerComponent', async () => {
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     return {
-      getAllByText,
-      getByRole,
-      getByText,
-      getByLabelText,
-      getByTestId,
-      queryByText,
-      fixture,
+      ...setupTools,
       component,
       routerSpy,
       establishmentService,
@@ -236,13 +229,13 @@ describe('ChangeDataOwnerComponent', async () => {
 
   describe('radio buttons', () => {
     it('should show the radio buttons', async () => {
-      const { component, fixture } = await setup();
+      const { getByRole } = await setup();
 
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="Workplace"]`);
-      const workplaceAndStaffRadioButton = fixture.nativeElement.querySelector(
-        `input[ng-reflect-value="Workplace and Staff"]`,
-      );
-      const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+      const workplaceRadioButton = getByRole('radio', { name: 'Only your workplace details' });
+      const workplaceAndStaffRadioButton = getByRole('radio', {
+        name: 'Your workplace details and your staff records',
+      });
+      const noneRadioButton = getByRole('radio', { name: 'No access to your data, linked only' });
 
       expect(workplaceRadioButton).toBeTruthy();
       expect(noneRadioButton).toBeTruthy();
@@ -250,7 +243,7 @@ describe('ChangeDataOwnerComponent', async () => {
     });
 
     it('should show the correct labels when a sub is requesting', async () => {
-      const { component, fixture } = await setup(subsidiaryDoesNotOwnData);
+      await setup(subsidiaryDoesNotOwnData);
 
       expect(within(document.body).getByLabelText('Only your workplace details')).toBeTruthy();
       expect(within(document.body).getByLabelText('Your workplace details and your staff records')).toBeTruthy();
@@ -272,7 +265,7 @@ describe('ChangeDataOwnerComponent', async () => {
   });
 
   it('should show the send change request button', async () => {
-    const { component, fixture } = await setup();
+    await setup();
 
     const sendChangeRequestbutton = within(document.body).getByRole('button', {
       name: /send change request/i,
@@ -283,7 +276,7 @@ describe('ChangeDataOwnerComponent', async () => {
 
   describe('cancel link', () => {
     it('should show with the correct href back to the home tab if sub is requesting', async () => {
-      const { component, fixture } = await setup();
+      await setup();
       const cancelLink = within(document.body).getByTestId('cancelLink');
 
       expect(cancelLink).toBeTruthy();
@@ -291,7 +284,7 @@ describe('ChangeDataOwnerComponent', async () => {
     });
 
     it('should show with the correct href back to the your other workplaces if parent is requesting', async () => {
-      const { component, fixture } = await setup(parent);
+      await setup(parent);
 
       const cancelLink = within(document.body).getByTestId('cancelLink');
 
@@ -316,14 +309,14 @@ describe('ChangeDataOwnerComponent', async () => {
   });
 
   it('should submit the change data owner request', async () => {
-    const { component, fixture, establishmentService } = await setup();
+    const { component, fixture, getByRole, establishmentService } = await setup();
 
     const establishmentServiceSpy = spyOn(establishmentService, 'changeOwnership').and.callThrough();
 
     component.ngOnInit();
     fixture.detectChanges();
 
-    const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+    const noneRadioButton = getByRole('radio', { name: 'No access to your data, linked only' });
     fireEvent.click(noneRadioButton);
 
     const sendChangeRequestbutton = within(document.body).getByText('Send change request');
@@ -334,14 +327,14 @@ describe('ChangeDataOwnerComponent', async () => {
   });
 
   it('should navigate back to the home page if they are a sub', async () => {
-    const { component, fixture, establishmentService, alertServiceSpy, routerSpy } = await setup();
+    const { component, fixture, establishmentService, alertServiceSpy, routerSpy, getByRole } = await setup();
 
     spyOn(establishmentService, 'changeOwnership').and.callThrough();
 
     component.ngOnInit();
     fixture.detectChanges();
 
-    const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+    const noneRadioButton = getByRole('radio', { name: 'No access to your data, linked only' });
     fireEvent.click(noneRadioButton);
 
     const sendChangeRequestbutton = within(document.body).getByText('Send change request');
@@ -354,16 +347,15 @@ describe('ChangeDataOwnerComponent', async () => {
       },
     });
 
-    fixture.whenStable().then(() => {
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: "You've sent a change data owner request",
-      });
+    await fixture.whenStable();
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: "You've sent a change data owner request",
     });
   });
 
   it('should navigate back to the home page if they are a parent', async () => {
-    const { component, fixture, alertServiceSpy, routerSpy, establishmentService } = await setup(parent);
+    const { component, fixture, alertServiceSpy, routerSpy, establishmentService, getByRole } = await setup(parent);
 
     spyOn(establishmentService, 'getEstablishment').and.callFake(() => of(subsidiaryOwnsData));
 
@@ -374,7 +366,7 @@ describe('ChangeDataOwnerComponent', async () => {
 
     fixture.detectChanges();
 
-    const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+    const noneRadioButton = getByRole('radio', { name: 'No access to their data, linked only' });
     fireEvent.click(noneRadioButton);
 
     const sendChangeRequestbutton = within(document.body).getByText('Send change request');
@@ -386,11 +378,10 @@ describe('ChangeDataOwnerComponent', async () => {
       },
     });
 
-    fixture.whenStable().then(() => {
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: "You've sent a change data owner request",
-      });
+    await fixture.whenStable();
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: "You've sent a change data owner request",
     });
   });
 });

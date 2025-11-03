@@ -1,16 +1,17 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { LocalAuthoritiesReturnService } from './local-authorities-return.service';
 import { environment } from 'src/environments/environment';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('LocalAuthoriesReturnService', () => {
   let service: LocalAuthoritiesReturnService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [LocalAuthoritiesReturnService],
+      imports: [],
+      providers: [LocalAuthoritiesReturnService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(LocalAuthoritiesReturnService);
   });

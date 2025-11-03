@@ -11,8 +11,9 @@ import { FeedbackService } from '@core/services/feedback.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-feedback',
-  templateUrl: './feedback.component.html',
+    selector: 'app-feedback',
+    templateUrl: './feedback.component.html',
+    standalone: false
 })
 export class FeedbackComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

@@ -1,7 +1,7 @@
 import { of } from 'rxjs';
 
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
@@ -21,7 +21,7 @@ import { WorkersResolver } from './workers.resolver';
 describe('WorkersResolver', () => {
   function setup(overrides: any = {}) {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         WorkersResolver,
         {
@@ -51,6 +51,9 @@ describe('WorkersResolver', () => {
             },
           },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

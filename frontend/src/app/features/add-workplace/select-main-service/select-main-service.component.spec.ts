@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -18,14 +18,7 @@ describe('SelectMainServiceComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
       SelectMainServiceComponent,
       {
-        imports: [
-          SharedModule,
-          AddWorkplaceModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, AddWorkplaceModule, FormsModule, ReactiveFormsModule],
         providers: [
           {
             provide: WorkplaceService,
@@ -50,6 +43,8 @@ describe('SelectMainServiceComponent', () => {
             },
           },
           UntypedFormBuilder,
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

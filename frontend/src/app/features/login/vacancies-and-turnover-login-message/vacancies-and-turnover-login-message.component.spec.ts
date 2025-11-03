@@ -1,5 +1,4 @@
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { UserService } from '@core/services/user.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -14,7 +13,7 @@ describe('VacanciesAndTurnoverLoginMessage', () => {
       .and.returnValue(of(null));
 
     const setupTools = await render(VacanciesAndTurnoverLoginMessage, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: UserService,
@@ -25,6 +24,7 @@ describe('VacanciesAndTurnoverLoginMessage', () => {
             updateLastViewedVacanciesAndTurnoverMessage: updateLastViewedVacanciesAndTurnoverMessageSpy,
           },
         },
+        provideRouter([]),
       ],
     });
 

@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-select-job-roles-mandatory',
   templateUrl: './select-job-roles-mandatory.component.html',
+  standalone: false,
 })
 export class SelectJobRolesMandatoryComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(

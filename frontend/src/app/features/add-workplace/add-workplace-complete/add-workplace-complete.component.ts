@@ -3,8 +3,9 @@ import { AddWorkplaceFlow } from '@core/model/workplace.model';
 import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
-  selector: 'app-add-workplace-complete',
-  templateUrl: './add-workplace-complete.component.html',
+    selector: 'app-add-workplace-complete',
+    templateUrl: './add-workplace-complete.component.html',
+    standalone: false
 })
 export class AddWorkplaceCompleteComponent implements OnInit {
   public addWorkplaceFlow: string;

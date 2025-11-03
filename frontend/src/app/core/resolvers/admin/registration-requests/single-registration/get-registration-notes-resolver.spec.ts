@@ -1,19 +1,19 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRouteSnapshot, provideRouter, RouterModule } from '@angular/router';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { AdminModule } from '@features/admin/admin.module';
 
 import { GetRegistrationNotesResolver } from './get-registration-notes.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('GetRegistrationNotesResolver', () => {
   let resolver: GetRegistrationNotesResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AdminModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      providers: [GetRegistrationNotesResolver],
+      imports: [AdminModule, RouterModule],
+      providers: [GetRegistrationNotesResolver, provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
     resolver = TestBed.inject(GetRegistrationNotesResolver);
   });

@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, convertToParamMap, provideRouter, Router, RouterModule } from '@angular/router';
 import { PermissionType } from '@core/model/permissions.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -17,7 +16,7 @@ import { TotalStaffRecordsResolver } from './total-staff-records.resolver';
 describe('TotalStaffRecordsResolver', () => {
   function setup(idInParams = null, permissions = ['canViewListOfWorkers']) {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterModule],
       providers: [
         TotalStaffRecordsResolver,
         {
@@ -28,6 +27,7 @@ describe('TotalStaffRecordsResolver', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        provideRouter([]),
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap({ establishmentuid: idInParams }) } },
@@ -37,6 +37,8 @@ describe('TotalStaffRecordsResolver', () => {
           useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
           deps: [HttpClient, Router, UserService],
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

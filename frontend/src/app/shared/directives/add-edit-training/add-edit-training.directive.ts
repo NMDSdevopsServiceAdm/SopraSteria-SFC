@@ -22,7 +22,9 @@ import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
-@Directive({})
+@Directive({
+    standalone: false
+})
 export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;

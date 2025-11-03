@@ -1,6 +1,5 @@
 // import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -9,7 +8,7 @@ import { ExternalLinkComponent } from './external-link.component';
 describe('ExternalLinkComponent', () => {
   async function setup() {
     const component = await render(ExternalLinkComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule],
+      imports: [SharedModule, RouterModule],
     });
 
     return {

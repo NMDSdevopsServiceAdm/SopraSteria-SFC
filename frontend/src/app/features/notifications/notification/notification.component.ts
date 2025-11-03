@@ -15,9 +15,10 @@ const OWNERSHIP_APPROVED = 'OWNERCHANGEAPPROVED';
 const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 
 @Component({
-  selector: 'app-notification',
-  templateUrl: './notification.component.html',
-  styleUrls: ['./notification.component.scss'],
+    selector: 'app-notification',
+    templateUrl: './notification.component.html',
+    styleUrls: ['./notification.component.scss'],
+    standalone: false
 })
 export class NotificationComponent implements OnInit, OnDestroy {
   public workplace: Establishment;

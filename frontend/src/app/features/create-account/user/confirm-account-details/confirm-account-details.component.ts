@@ -11,8 +11,9 @@ import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-
 import { combineLatest } from 'rxjs';
 
 @Component({
-  selector: 'app-confirm-account-details',
-  templateUrl: './confirm-account-details.component.html',
+    selector: 'app-confirm-account-details',
+    templateUrl: './confirm-account-details.component.html',
+    standalone: false
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirective {
   public flow: any;

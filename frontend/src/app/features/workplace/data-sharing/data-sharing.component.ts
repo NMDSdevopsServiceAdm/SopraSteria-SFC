@@ -10,8 +10,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-data-sharing',
-  templateUrl: './data-sharing.component.html',
+    selector: 'app-data-sharing',
+    templateUrl: './data-sharing.component.html',
+    standalone: false
 })
 export class DataSharingComponent extends Question {
   public section = WorkplaceFlowSections.PERMISSIONS;

@@ -14,8 +14,9 @@ import { RegistrationRequestDirective } from '@shared/directives/admin/registrat
 import { ApprovalOrRejectionDialogComponent } from '../../components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
-  selector: 'app-registration-request',
-  templateUrl: './registration-request.component.html',
+    selector: 'app-registration-request',
+    templateUrl: './registration-request.component.html',
+    standalone: false
 })
 export class RegistrationRequestComponent extends RegistrationRequestDirective {
   public workplaceIdForm: UntypedFormGroup;

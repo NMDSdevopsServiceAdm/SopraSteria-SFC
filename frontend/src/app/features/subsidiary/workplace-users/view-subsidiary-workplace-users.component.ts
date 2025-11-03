@@ -6,8 +6,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({
-  selector: 'app-view-subsidiary-workplace-users',
-  templateUrl: './view-subsidiary-workplace-users.component.html',
+    selector: 'app-view-subsidiary-workplace-users',
+    templateUrl: './view-subsidiary-workplace-users.component.html',
+    standalone: false
 })
 export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
   public workplace: Establishment;

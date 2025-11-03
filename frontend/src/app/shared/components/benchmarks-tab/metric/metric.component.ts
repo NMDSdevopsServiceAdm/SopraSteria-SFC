@@ -20,8 +20,9 @@ import { Subscription } from 'rxjs';
 import { map, mergeMap, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-benchmarks-metric',
-  templateUrl: './metric.component.html',
+    selector: 'app-benchmarks-metric',
+    templateUrl: './metric.component.html',
+    standalone: false
 })
 export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

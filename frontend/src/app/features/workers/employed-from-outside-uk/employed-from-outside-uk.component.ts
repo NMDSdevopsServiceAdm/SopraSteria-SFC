@@ -10,8 +10,9 @@ import { QuestionComponent } from '../question/question.component';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 @Component({
-  selector: 'app-employed-from-outside-uk',
-  templateUrl: './employed-from-outside-uk.component.html',
+    selector: 'app-employed-from-outside-uk',
+    templateUrl: './employed-from-outside-uk.component.html',
+    standalone: false
 })
 export class EmployedFromOutsideUkComponent extends QuestionComponent {
   public answersAvailable = this.internationalRecruitmentService.getEmployedFromOutsideUkAnswers();

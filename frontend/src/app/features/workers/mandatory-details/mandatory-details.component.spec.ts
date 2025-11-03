@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { PermissionType } from '@core/model/permissions.model';
@@ -27,7 +28,7 @@ describe('MandatoryDetailsComponent', () => {
   const setup = async (canEditWorker = true, primaryUid = 123) => {
     const permissions = canEditWorker ? ['canEditWorker'] : [];
     const setupTools = await render(MandatoryDetailsComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [
         InsetTextComponent,
         BasicRecordComponent,
@@ -70,7 +71,7 @@ describe('MandatoryDetailsComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

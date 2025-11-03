@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DataChangeService } from '@core/services/data-change.service';
@@ -26,7 +26,7 @@ describe('BulkUploadDataChangeComponent', () => {
   const dataChangeLastUpdated = MockDataChangeService.dataChangeLastUpdatedFactory();
   async function setup() {
     const { fixture, getByText } = await render(BulkUploadDataChangeComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         WindowRef,
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -45,6 +45,8 @@ describe('BulkUploadDataChangeComponent', () => {
             },
           }),
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       declarations: [BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });

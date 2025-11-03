@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
@@ -10,6 +10,7 @@ import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { render } from '@testing-library/angular';
 
 import { BulkUploadRelatedContentComponent } from './bulk-upload-related-content.component';
+import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 
 describe('BulkUploadRelatedContentComponent', () => {
   const dataChange = MockDataChangeService.dataChangeFactory();
@@ -17,7 +18,7 @@ describe('BulkUploadRelatedContentComponent', () => {
 
   const setup = async (isAdmin = false, isLoggedIn: boolean = true) => {
     const { fixture, getByText, queryByText, getByTestId } = await render(BulkUploadRelatedContentComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BulkUploadModule],
+      imports: [BrowserModule, BulkUploadModule],
       providers: [
         {
           provide: AuthService,
@@ -34,6 +35,9 @@ describe('BulkUploadRelatedContentComponent', () => {
             },
           }),
         },
+        AdminSkipService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       declarations: [BulkUploadRelatedContentComponent],
     });
@@ -114,7 +118,7 @@ describe('BulkUploadRelatedContentComponent', () => {
   });
 
   it('should not render Data changes when passed a false flag', async () => {
-    const { component, fixture, queryByText } = await setup();
+    const { component, fixture } = await setup();
 
     component.getShowFlagForBUDataChanges();
     fixture.detectChanges();

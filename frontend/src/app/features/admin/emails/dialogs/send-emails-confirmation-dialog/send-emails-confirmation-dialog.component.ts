@@ -3,8 +3,9 @@ import { DialogComponent } from '@core/components/dialog.component';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 
 @Component({
-  selector: 'app-send-emails-confirmation-dialog',
-  templateUrl: './send-emails-confirmation-dialog.component.html',
+    selector: 'app-send-emails-confirmation-dialog',
+    templateUrl: './send-emails-confirmation-dialog.component.html',
+    standalone: false
 })
 export class SendEmailsConfirmationDialogComponent extends DialogComponent {
   constructor(

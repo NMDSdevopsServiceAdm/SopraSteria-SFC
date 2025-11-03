@@ -1,7 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -18,7 +18,7 @@ describe('UserAccountsSummaryComponent', () => {
     const workplace = Establishment;
 
     const setupTools = await render(UserAccountsSummaryComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [],
       componentProperties: {
         workplace,
@@ -43,6 +43,8 @@ describe('UserAccountsSummaryComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     const component = setupTools.fixture.componentInstance;

@@ -3,15 +3,13 @@ import { render, fireEvent } from '@testing-library/angular';
 import { Component } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 
 describe('HelpAndTipsButtonComponent', () => {
   async function setup() {
     const setupTools = await render(HelpAndTipsButtonComponent, {
-      imports: [RouterModule, RouterTestingModule],
-      providers: []
+      imports: [RouterModule],
+      providers: [],
     });
-
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -20,8 +18,8 @@ describe('HelpAndTipsButtonComponent', () => {
     return {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
-      routerSpy
-    }
+      routerSpy,
+    };
   }
 
   it('should create', async () => {
@@ -44,5 +42,4 @@ describe('HelpAndTipsButtonComponent', () => {
 
     expect(routerSpy).toHaveBeenCalledWith(['/help', 'get-started']);
   });
-
 });

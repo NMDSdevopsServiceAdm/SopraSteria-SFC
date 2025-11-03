@@ -13,16 +13,17 @@ export interface AccordionGroup {
 }
 
 @Component({
-  selector: 'app-grouped-radio-button-accordion',
-  templateUrl: './grouped-radio-button-accordion.component.html',
-  styleUrls: ['../radio-button-accordion.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => GroupedRadioButtonAccordionComponent),
-      multi: true,
-    },
-  ],
+    selector: 'app-grouped-radio-button-accordion',
+    templateUrl: './grouped-radio-button-accordion.component.html',
+    styleUrls: ['../radio-button-accordion.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => GroupedRadioButtonAccordionComponent),
+            multi: true,
+        },
+    ],
+    standalone: false
 })
 export class GroupedRadioButtonAccordionComponent implements ControlValueAccessor, OnInit {
   @Input() preFilledId: number;

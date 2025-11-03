@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -42,7 +43,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
 
     const setupTools = await render(CareWorkforcePathwayUseComponent, {
-      imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -69,7 +70,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
         },
         AlertService,
         WindowRef,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

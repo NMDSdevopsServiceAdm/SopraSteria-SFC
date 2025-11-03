@@ -19,8 +19,9 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { take } from 'rxjs/internal/operators/take';
 
 @Component({
-  selector: 'app-create-account',
-  templateUrl: './create-user-account.component.html',
+    selector: 'app-create-account',
+    templateUrl: './create-user-account.component.html',
+    standalone: false
 })
 export class CreateUserAccountComponent extends AccountDetailsDirective {
   public callToActionLabel = 'Save user';

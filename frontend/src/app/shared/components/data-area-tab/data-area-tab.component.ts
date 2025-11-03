@@ -11,9 +11,10 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.component';
 
 @Component({
-  selector: 'app-data-area-tab',
-  templateUrl: './data-area-tab.component.html',
-  styleUrls: ['./data-area-tab.component.scss'],
+    selector: 'app-data-area-tab',
+    templateUrl: './data-area-tab.component.html',
+    styleUrls: ['./data-area-tab.component.scss'],
+    standalone: false
 })
 export class DataAreaTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

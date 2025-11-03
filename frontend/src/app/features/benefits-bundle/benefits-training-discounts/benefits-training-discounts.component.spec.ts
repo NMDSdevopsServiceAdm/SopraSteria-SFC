@@ -1,6 +1,6 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PagesService } from '@core/services/pages.service';
@@ -18,7 +18,7 @@ describe('BenefitsTrainingDiscountsComponent', () => {
 
   async function setup() {
     const { fixture, getByText, queryByText } = await render(BenefitsTrainingDiscountsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         { provide: PagesService, useClass: MockPagesService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -33,6 +33,8 @@ describe('BenefitsTrainingDiscountsComponent', () => {
             },
           }),
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

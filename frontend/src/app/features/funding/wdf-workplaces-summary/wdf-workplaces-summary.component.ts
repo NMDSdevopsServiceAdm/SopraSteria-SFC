@@ -10,8 +10,9 @@ import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-wdf-workplaces-summary',
-  templateUrl: './wdf-workplaces-summary.component.html',
+    selector: 'app-wdf-workplaces-summary',
+    templateUrl: './wdf-workplaces-summary.component.html',
+    standalone: false
 })
 export class WdfWorkplacesSummaryComponent implements OnInit, OnDestroy {
   @Input() workplaces = [];

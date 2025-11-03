@@ -1,9 +1,9 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
@@ -28,7 +28,7 @@ describe('DataAreaTabComponent', () => {
   const setup = async (newDashboard = true, showBanner = true) => {
     const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaTabComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         WindowRef,
         {
@@ -51,6 +51,9 @@ describe('DataAreaTabComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],

@@ -1,7 +1,8 @@
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CareWorkforcePathwayService } from './care-workforce-pathway.service';
 import { environment } from 'src/environments/environment';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('CareWorkforcePathwayService', () => {
   let service: CareWorkforcePathwayService;
@@ -10,8 +11,8 @@ describe('CareWorkforcePathwayService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CareWorkforcePathwayService],
+      imports: [],
+      providers: [CareWorkforcePathwayService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(CareWorkforcePathwayService);
 

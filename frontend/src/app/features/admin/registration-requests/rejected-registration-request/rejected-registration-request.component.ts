@@ -8,8 +8,9 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { RegistrationRequestDirective } from '@shared/directives/admin/registration-requests/registration-request.directive';
 
 @Component({
-  selector: 'app-rejected-registration-request',
-  templateUrl: './rejected-registration-request.component.html',
+    selector: 'app-rejected-registration-request',
+    templateUrl: './rejected-registration-request.component.html',
+    standalone: false
 })
 export class RejectedRegistrationRequestComponent extends RegistrationRequestDirective {
   constructor(

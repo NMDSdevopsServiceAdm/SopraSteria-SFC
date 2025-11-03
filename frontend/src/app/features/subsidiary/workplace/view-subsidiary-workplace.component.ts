@@ -9,8 +9,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 @Component({
-  selector: 'app-view-subsidiary-workplace',
-  templateUrl: './view-subsidiary-workplace.component.html',
+    selector: 'app-view-subsidiary-workplace',
+    templateUrl: './view-subsidiary-workplace.component.html',
+    standalone: false
 })
 export class ViewSubsidiaryWorkplaceComponent implements OnInit {
   public summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };

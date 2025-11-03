@@ -11,8 +11,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-staff-benefit-cash-loyalty',
-  templateUrl: './staff-benefit-cash-loyalty.component.html',
+    selector: 'app-staff-benefit-cash-loyalty',
+    templateUrl: './staff-benefit-cash-loyalty.component.html',
+    standalone: false
 })
 export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit, OnDestroy {
   public cashLoyaltyRequiredOptions = [

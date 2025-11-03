@@ -2,16 +2,17 @@ import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, ResolveFn } from '@angular/router';
 
 import { CheckIfAnyWorkerHasDHAAnsweredResolver } from './check-if-any-worker-has-dha-answered.resolver';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { of } from 'rxjs';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('checkIfAnyWorkerHasDHAAnsweredResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         CheckIfAnyWorkerHasDHAAnsweredResolver,
         {
@@ -22,6 +23,9 @@ describe('checkIfAnyWorkerHasDHAAnsweredResolver', () => {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap({ establishmentuid: 'mock-uid' }) } },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

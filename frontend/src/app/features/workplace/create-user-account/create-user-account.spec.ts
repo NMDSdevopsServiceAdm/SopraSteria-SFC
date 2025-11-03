@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
@@ -24,16 +24,7 @@ import { CreateUserAccountComponent } from './create-user-account.component';
 describe('CreateUserAccountComponent', () => {
   async function setup() {
     const setupTools = await render(CreateUserAccountComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule.withRoutes([
-          { path: 'workplace/c131232132ab/user/saved/testuid', component: UserAccountSavedComponent },
-        ]),
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
+      imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
       providers: [
         ErrorSummaryService,
         BackService,
@@ -45,6 +36,7 @@ describe('CreateUserAccountComponent', () => {
           provide: UserService,
           useClass: MockUserService,
         },
+        provideRouter([{ path: 'workplace/c131232132ab/user/saved/testuid', component: UserAccountSavedComponent }]),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -52,6 +44,8 @@ describe('CreateUserAccountComponent', () => {
           },
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -107,64 +101,59 @@ describe('CreateUserAccountComponent', () => {
     const { fixture, getByText, createAccountSpy } = await setup();
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      const radioButton = getByText('Edit');
-      fireEvent.click(radioButton);
+    await fixture.whenStable();
+    const radioButton = getByText('Edit');
+    fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save user');
-      fireEvent.click(saveButton);
+    const saveButton = getByText('Save user');
+    fireEvent.click(saveButton);
 
-      expect(createAccountSpy.calls.mostRecent().args[1].email).toEqual('bob@email.com');
-      expect(createAccountSpy.calls.mostRecent().args[1].jobTitle).toEqual('Care Giver');
-      expect(createAccountSpy.calls.mostRecent().args[1].fullname).toEqual('Bob Bobson');
-      expect(createAccountSpy.calls.mostRecent().args[1].phone).toEqual('01822213131');
-    });
+    expect(createAccountSpy.calls.mostRecent().args[1].email).toEqual('bob@email.com');
+    expect(createAccountSpy.calls.mostRecent().args[1].jobTitle).toEqual('Care Giver');
+    expect(createAccountSpy.calls.mostRecent().args[1].fullname).toEqual('Bob Bobson');
+    expect(createAccountSpy.calls.mostRecent().args[1].phone).toEqual('01822213131');
   });
 
   it('should call createAccount with role Edit', async () => {
     const { fixture, getByText, createAccountSpy } = await setup();
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      const radioButton = getByText('Edit');
-      fireEvent.click(radioButton);
+    await fixture.whenStable();
+    const radioButton = getByText('Edit');
+    fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save user');
-      fireEvent.click(saveButton);
+    const saveButton = getByText('Save user');
+    fireEvent.click(saveButton);
 
-      expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
-    });
+    expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Edit');
   });
 
   it('should call createAccount with role Read', async () => {
     const { fixture, getByText, createAccountSpy } = await setup();
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      const radioButton = getByText('Read');
-      fireEvent.click(radioButton);
+    await fixture.whenStable();
+    const radioButton = getByText('Read');
+    fireEvent.click(radioButton);
 
-      const saveButton = getByText('Save user');
-      fireEvent.click(saveButton);
+    const saveButton = getByText('Save user');
+    fireEvent.click(saveButton);
 
-      expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Read');
-    });
+    expect(createAccountSpy.calls.mostRecent().args[1].role).toEqual('Read');
   });
 
   it('should call router to navigate after saving user', async () => {
     const { component, fixture, getByText, routerSpy } = await setup();
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      const radioButton = getByText('Edit');
-      fireEvent.click(radioButton);
+    await fixture.whenStable();
 
-      const saveButton = getByText('Save user');
-      fireEvent.click(saveButton);
+    const radioButton = getByText('Edit');
+    fireEvent.click(radioButton);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishmentUid, 'user', 'saved', 'testuid']);
-    });
+    const saveButton = getByText('Save user');
+    fireEvent.click(saveButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishmentUid, 'user', 'saved', 'testuid']);
   });
 });
-
-

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
@@ -28,7 +29,7 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
     const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
 
     const setuptools = await render(CareWorkforcePathwayWorkersSummaryComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -55,7 +56,7 @@ describe('CareWorkforcePathwayWorkersSummaryComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const fixture = setuptools.fixture;

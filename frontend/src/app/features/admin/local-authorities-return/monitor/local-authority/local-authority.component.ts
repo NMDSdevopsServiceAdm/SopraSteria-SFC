@@ -7,8 +7,9 @@ import { LocalAuthoritiesReturnService } from '@core/services/admin/local-author
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-local-authority',
-  templateUrl: './local-authority.component.html',
+    selector: 'app-local-authority',
+    templateUrl: './local-authority.component.html',
+    standalone: false
 })
 export class LocalAuthorityComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;

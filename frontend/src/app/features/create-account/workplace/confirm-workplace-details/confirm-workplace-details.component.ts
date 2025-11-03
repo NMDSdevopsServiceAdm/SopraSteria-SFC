@@ -5,8 +5,9 @@ import { RegistrationService } from '@core/services/registration.service';
 import { ConfirmWorkplaceDetailsDirective } from '@shared/directives/create-workplace/confirm-workplace-details/confirm-workplace-details.directive';
 
 @Component({
-  selector: 'app-confirm-workplace-details',
-  templateUrl: './confirm-workplace-details.component.html',
+    selector: 'app-confirm-workplace-details',
+    templateUrl: './confirm-workplace-details.component.html',
+    standalone: false
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetailsDirective {
   constructor(

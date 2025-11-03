@@ -12,9 +12,10 @@ import { isAdminRole } from '@core/utils/check-role-util';
 import { AdminSkipService } from '../admin-skip.service';
 
 @Component({
-  selector: 'app-bulk-upload-page',
-  templateUrl: './bulk-upload-page.component.html',
-  providers: [I18nPluralPipe, { provide: BulkUploadService, useClass: BulkUploadServiceV2 }],
+    selector: 'app-bulk-upload-page',
+    templateUrl: './bulk-upload-page.component.html',
+    providers: [I18nPluralPipe, { provide: BulkUploadService, useClass: BulkUploadServiceV2 }],
+    standalone: false
 })
 export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public establishment: Establishment;

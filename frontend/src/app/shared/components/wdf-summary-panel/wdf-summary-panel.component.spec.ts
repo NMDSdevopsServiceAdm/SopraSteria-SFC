@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
@@ -19,8 +19,8 @@ describe('WdfSummaryPanel', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfSummaryPanel, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
-      providers: [],
+      imports: [BrowserModule, SharedModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         wdfStartDate: `1 April ${currentYear}`,
         wdfEndDate: `31 March ${currentYear + 1}`,

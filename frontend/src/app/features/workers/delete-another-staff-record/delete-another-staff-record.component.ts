@@ -8,8 +8,9 @@ import {
 } from '@core/services/vacancies-and-turnover.service';
 
 @Component({
-  selector: 'app-delete-add-another-staff-record',
-  templateUrl: './delete-another-staff-record.component.html',
+    selector: 'app-delete-add-another-staff-record',
+    templateUrl: './delete-another-staff-record.component.html',
+    standalone: false
 })
 export class DeleteAnotherStaffRecordComponent implements OnInit {
   public form: UntypedFormGroup;

@@ -1,8 +1,8 @@
 import { of } from 'rxjs';
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, provideRouter, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRoute, provideRouter, RouterModule, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockCareWorkforcePathwayService } from '@core/test-utils/MockCareWorkforcePathwayService';
@@ -11,17 +11,20 @@ import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubs
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 import { RequireCWPAnswerForSomeWorkersGuard } from './require-cwp-answer-for-some-workers.guard';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('RequireCWPAnswerForSomeWorkersGuard', () => {
   const setup = async (overrides: any = {}) => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [RouterModule],
       providers: [
         RequireCWPAnswerForSomeWorkersGuard,
         { provide: CareWorkforcePathwayService, useClass: MockCareWorkforcePathwayService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: ParentSubsidiaryViewService, useClass: MockParentSubsidiaryViewService },
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

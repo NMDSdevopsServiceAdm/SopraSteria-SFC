@@ -4,9 +4,10 @@ import * as Highcharts from 'highcharts';
 import { GaugeOptionsBuilder } from './gauge-options-builder';
 
 @Component({
-  selector: 'app-gauge',
-  templateUrl: './gauge.component.html',
-  styleUrls: ['./gauge.component.scss'],
+    selector: 'app-gauge',
+    templateUrl: './gauge.component.html',
+    styleUrls: ['./gauge.component.scss'],
+    standalone: false
 })
 export class GaugeComponent implements OnInit {
   Highcharts: typeof Highcharts = Highcharts;

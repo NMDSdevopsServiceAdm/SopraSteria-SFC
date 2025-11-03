@@ -8,8 +8,9 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { TypeOfEmployerDirective } from '@shared/directives/create-workplace/type-of-employer/type-of-employer.directive';
 
 @Component({
-  selector: 'app-type-of-employer',
-  templateUrl: '../../../shared/directives/create-workplace/type-of-employer/type-of-employer.component.html',
+    selector: 'app-type-of-employer',
+    templateUrl: '../../../shared/directives/create-workplace/type-of-employer/type-of-employer.component.html',
+    standalone: false
 })
 export class TypeOfEmployerComponent extends TypeOfEmployerDirective {
   public question = 'What type of employer are they?';

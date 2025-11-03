@@ -12,9 +12,10 @@ import { Subscription } from 'rxjs';
 import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-confirmation-dialog/send-emails-confirmation-dialog.component';
 
 @Component({
-  selector: 'app-targeted-emails',
-  templateUrl: './targeted-emails.component.html',
-  styleUrls: ['./targeted-emails.component.scss'],
+    selector: 'app-targeted-emails',
+    templateUrl: './targeted-emails.component.html',
+    styleUrls: ['./targeted-emails.component.scss'],
+    standalone: false
 })
 export class TargetedEmailsComponent implements OnDestroy {
   public totalEmails = 0;

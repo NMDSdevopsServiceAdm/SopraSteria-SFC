@@ -10,8 +10,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-weekly-contracted-hours',
-  templateUrl: './weekly-contracted-hours.component.html',
+    selector: 'app-weekly-contracted-hours',
+    templateUrl: './weekly-contracted-hours.component.html',
+    standalone: false
 })
 export class WeeklyContractedHoursComponent extends QuestionComponent {
   public floatPattern = FLOAT_PATTERN.toString();

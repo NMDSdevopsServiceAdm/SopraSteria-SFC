@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SummaryList } from '@core/model/summary-list.model';
 
 @Component({
-  selector: 'app-summary-list',
-  templateUrl: './summary-list.component.html',
+    selector: 'app-summary-list',
+    templateUrl: './summary-list.component.html',
+    standalone: false
 })
 export class SummaryListComponent {
   @Input() public summaryList: SummaryList[];

@@ -1,15 +1,15 @@
 import { render } from '@testing-library/angular';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideRouter, RouterModule } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PageNoLongerAvailableComponent } from './page-no-longer-available.component';
 
 describe('PageNoLongerAvailableComponent', () => {
   const setup = async () => {
     const setupTools = await render(PageNoLongerAvailableComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterModule],
       declarations: [],
-      providers: [],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {},
     });
 

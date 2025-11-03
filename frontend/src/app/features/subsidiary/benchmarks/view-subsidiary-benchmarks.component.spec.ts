@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -12,7 +13,7 @@ import { ViewSubsidiaryBenchmarksComponent } from './view-subsidiary-benchmarks.
 describe('ViewSubsidiaryBenchmarksComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(ViewSubsidiaryBenchmarksComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -22,7 +23,7 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       schemas: [NO_ERRORS_SCHEMA],
     });
 

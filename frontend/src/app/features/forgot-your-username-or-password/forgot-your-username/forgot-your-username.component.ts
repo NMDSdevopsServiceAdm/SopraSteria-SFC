@@ -5,8 +5,9 @@ import { FindAccountComponent } from './find-account/find-account.component';
 import { FindUsernameComponent } from './find-username/find-username.component';
 
 @Component({
-  selector: 'app-forgot-your-username',
-  templateUrl: './forgot-your-username.component.html',
+    selector: 'app-forgot-your-username',
+    templateUrl: './forgot-your-username.component.html',
+    standalone: false
 })
 export class ForgotYourUsernameComponent implements OnInit {
   public currentForm: FindAccountComponent | FindUsernameComponent;

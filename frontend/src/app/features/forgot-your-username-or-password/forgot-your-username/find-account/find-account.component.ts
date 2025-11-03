@@ -25,8 +25,9 @@ const InputFields = [
 ];
 
 @Component({
-  selector: 'app-find-account',
-  templateUrl: './find-account.component.html',
+    selector: 'app-find-account',
+    templateUrl: './find-account.component.html',
+    standalone: false
 })
 export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

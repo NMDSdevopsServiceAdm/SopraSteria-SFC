@@ -10,8 +10,9 @@ import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
-  selector: 'app-user-accounts-summary',
-  templateUrl: './user-accounts-summary.component.html',
+    selector: 'app-user-accounts-summary',
+    templateUrl: './user-accounts-summary.component.html',
+    standalone: false
 })
 export class UserAccountsSummaryComponent implements OnInit {
   @Input() workplace: Establishment;

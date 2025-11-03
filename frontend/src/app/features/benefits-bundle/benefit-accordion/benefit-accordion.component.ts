@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-benefit-accordion',
-  templateUrl: './benefit-accordion.component.html',
+    selector: 'app-benefit-accordion',
+    templateUrl: './benefit-accordion.component.html',
+    standalone: false
 })
 export class BenefitAccordionComponent {
   @Input() index: number;

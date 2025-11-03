@@ -4,8 +4,9 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-new-back-link',
-  templateUrl: './new-back-link.component.html',
+    selector: 'app-new-back-link',
+    templateUrl: './new-back-link.component.html',
+    standalone: false
 })
 export class NewBackLinkComponent implements OnInit, OnDestroy {
   public showBackLink = false;

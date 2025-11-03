@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 import { MockRegistrationSurveyService } from '@core/test-utils/MockRegistrationSurveyService';
 import { SharedModule } from '@shared/shared.module';
@@ -15,24 +15,21 @@ import { environment } from 'src/environments/environment';
 describe('HowDidYouHearAboutComponent', () => {
   async function setup() {
     return render(HowDidYouHearAboutComponent, {
-      imports: [
-        SharedModule,
-        RegistrationSurveyModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        RouterTestingModule.withRoutes([
-          {
-            path: 'registration-survey/thank-you',
-            component: ThankYouComponent,
-          },
-        ]),
-      ],
+      imports: [SharedModule, RegistrationSurveyModule, RouterModule],
       providers: [
         {
           provide: RegistrationSurveyService,
           useClass: MockRegistrationSurveyService,
           deps: [HttpClient],
         },
+        provideRouter([
+          {
+            path: 'registration-survey/thank-you',
+            component: ThankYouComponent,
+          },
+        ]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
   }
@@ -80,7 +77,9 @@ describe('HowDidYouHearAboutComponent', () => {
       const component = await setup();
       const submit = component.getByRole('button');
       fireEvent.click(submit);
-      const req = TestBed.inject(HttpTestingController).expectOne(`${environment.appRunnerEndpoint}/api/registrationSurvey`);
+      const req = TestBed.inject(HttpTestingController).expectOne(
+        `${environment.appRunnerEndpoint}/api/registrationSurvey`,
+      );
       req.flush({});
       expect(req.request.body).toEqual(expectedRequestBody);
     });

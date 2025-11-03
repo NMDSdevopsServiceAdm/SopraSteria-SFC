@@ -16,8 +16,9 @@ import { take } from 'rxjs/operators';
 import { DeleteAdminUserComponent } from '../delete-admin-user/delete-admin-user.component';
 
 @Component({
-  selector: 'app-admin-account-view',
-  templateUrl: './admin-account-view.component.html',
+    selector: 'app-admin-account-view',
+    templateUrl: './admin-account-view.component.html',
+    standalone: false
 })
 export class AdminAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

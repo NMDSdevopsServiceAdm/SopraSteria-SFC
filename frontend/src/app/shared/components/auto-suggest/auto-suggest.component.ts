@@ -3,16 +3,17 @@ import { ControlValueAccessor, UntypedFormGroup, NG_VALUE_ACCESSOR } from '@angu
 // TODO: Update Auto Suggest to use CDK Overlay and scroll results
 
 @Component({
-  selector: 'app-auto-suggest',
-  templateUrl: './auto-suggest.component.html',
-  styleUrls: ['./../search-input/search-input.component.scss', './auto-suggest.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => AutoSuggestComponent),
-      multi: true,
-    },
-  ],
+    selector: 'app-auto-suggest',
+    templateUrl: './auto-suggest.component.html',
+    styleUrls: ['./../search-input/search-input.component.scss', './auto-suggest.component.scss'],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => AutoSuggestComponent),
+            multi: true,
+        },
+    ],
+    standalone: false
 })
 export class AutoSuggestComponent implements ControlValueAccessor {
   onChange: Function;

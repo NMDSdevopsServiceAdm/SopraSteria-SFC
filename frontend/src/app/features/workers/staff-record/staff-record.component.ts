@@ -18,8 +18,9 @@ import { filter, skip } from 'rxjs/operators';
 import { MoveWorkerDialogComponent } from '../move-worker-dialog/move-worker-dialog.component';
 
 @Component({
-  selector: 'app-staff-record',
-  templateUrl: './staff-record.component.html',
+    selector: 'app-staff-record',
+    templateUrl: './staff-record.component.html',
+    standalone: false
 })
 export class StaffRecordComponent implements OnInit, OnDestroy {
   public canDeleteWorker: boolean;

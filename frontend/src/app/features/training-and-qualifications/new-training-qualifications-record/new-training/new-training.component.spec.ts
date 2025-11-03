@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { TrainingCertificateDownloadEvent, TrainingCertificateUploadEvent } from '@core/model/training.model';
 import { SharedModule } from '@shared/shared.module';
@@ -97,8 +98,8 @@ describe('NewTrainingComponent', async () => {
 
   async function setup(override: any = {}) {
     const { fixture, getByTestId, getByLabelText } = await render(NewTrainingComponent, {
-      imports: [HttpClientTestingModule, SharedModule, RouterModule],
-      providers: [provideRouter([])],
+      imports: [SharedModule, RouterModule],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         canEditWorker: true,
         trainingCategories: trainingCategories,

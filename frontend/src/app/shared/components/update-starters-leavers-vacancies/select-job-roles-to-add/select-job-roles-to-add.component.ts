@@ -9,8 +9,9 @@ import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnov
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
 
 @Component({
-  selector: 'app-select-job-roles-to-add',
-  templateUrl: './select-job-roles-to-add.component.html',
+    selector: 'app-select-job-roles-to-add',
+    templateUrl: './select-job-roles-to-add.component.html',
+    standalone: false
 })
 export class SelectJobRolesToAddComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;

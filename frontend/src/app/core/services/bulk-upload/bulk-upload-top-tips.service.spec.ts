@@ -1,16 +1,17 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
 
 import { BulkUploadTopTipsService } from './bulk-upload-top-tips.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('BulkUploadTopTipsService', () => {
   let service: BulkUploadTopTipsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [BulkUploadTopTipsService],
+      imports: [],
+      providers: [BulkUploadTopTipsService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(BulkUploadTopTipsService);
   });

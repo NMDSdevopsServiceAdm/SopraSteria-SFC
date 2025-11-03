@@ -1,8 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
 
 import { UsefulLinksService } from './useful-links.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('UsefulLinksService', () => {
   let service: UsefulLinksService;
@@ -10,8 +11,8 @@ describe('UsefulLinksService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [UsefulLinksService],
+      imports: [],
+      providers: [UsefulLinksService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(UsefulLinksService);
     http = TestBed.inject(HttpTestingController);
