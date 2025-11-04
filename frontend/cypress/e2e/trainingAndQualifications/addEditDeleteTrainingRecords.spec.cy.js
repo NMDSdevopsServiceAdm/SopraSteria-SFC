@@ -7,15 +7,16 @@ describe('training record', () => {
   const workerName2 = 'Test worker 2';
   const trainingCategory = 'Health and safety awareness';
   const trainingName = 'Test Training';
+  const establishmentID = StandAloneEstablishment.id;
 
   before(() => {
-    cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName1 });
-    cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName2 });
+    cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName1 });
+    cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName2 });
 
     cy.deleteTestWorkerFromDb(workerName1);
     cy.deleteTestWorkerFromDb(workerName2);
 
-    cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: workerName1 });
+    cy.insertTestWorker({ establishmentID, workerName: workerName1 });
   });
 
   beforeEach(() => {
@@ -30,11 +31,11 @@ describe('training record', () => {
   });
 
   afterEach(() => {
-    cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName1 });
-    cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName2 });
+    cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName1 });
+    cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName2 });
   });
 
-  it('should add successfully', () => {
+  it('should add successfully when there are no training courses saved', () => {
     cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
     cy.contains('a', 'Add a training record').click();
 
@@ -70,8 +71,74 @@ describe('training record', () => {
     cy.contains(trainingName);
   });
 
+  describe('when there are training courses', () => {
+    const trainingCourseName = 'Test training course';
+    before(() => {
+      cy.deleteAllTrainingCourses(establishmentID);
+      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: trainingCourseName });
+      cy.reload();
+    });
+
+    after(() => {
+      cy.deleteAllTrainingCourses(establishmentID);
+    });
+
+    it('should add successfully when no training course is picked', () => {
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', 'Add a training record').click();
+
+      // add a training record
+      cy.get('h1').should('contain', 'Add a training record');
+      cy.getByLabel('Continue without selecting a saved course').click();
+      cy.contains('button', 'Continue').click();
+
+      // select training category
+      cy.contains('button', 'Show all categories').click();
+      cy.getByLabel(trainingCategory).click();
+      cy.contains('button', 'Continue').click();
+
+      // add training record details
+      cy.get('[data-testid="trainingCategoryDisplay"]').contains(trainingCategory);
+      cy.contains('a', 'Change');
+      cy.getByLabel('Training name').clear().type(trainingName);
+      cy.getByLabel('Yes').click();
+
+      cy.get('[data-testid="completedDate"]').within(() => {
+        cy.getByLabel('Day').clear().type(31);
+        cy.getByLabel('Month').clear().type(3);
+        cy.getByLabel('Year').clear().type(2025);
+      });
+
+      cy.get('[data-testid="expiresDate"]').within(() => {
+        cy.getByLabel('Day').clear().type(31);
+        cy.getByLabel('Month').clear().type(3);
+        cy.getByLabel('Year').clear().type(2026);
+      });
+
+      cy.contains('button', 'Open notes').click();
+      cy.get('[data-testid="notesSection"]').clear().type('Refresh');
+      cy.contains('button', 'Save record').click();
+
+      // staff training and qualifications page
+      cy.get('[data-testid="generic_alert"]').contains('Training record added');
+      cy.contains(trainingName);
+    });
+
+    it('should add successfully when a training course is picked', () => {
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', 'Add a training record').click();
+
+      // add a training record
+      cy.get('h1').should('contain', 'Add a training record');
+      cy.getByLabel(trainingCourseName).click();
+      cy.contains('button', 'Continue').click();
+
+      // this needs finishing off once the journey is complete
+    });
+  });
+
   it('should update successfully', () => {
-    cy.addWorkerTraining({ establishmentID: StandAloneEstablishment.id, workerName: workerName1, categoryId: 4 });
+    cy.addWorkerTraining({ establishmentID, workerName: workerName1, categoryId: 4 });
     cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
     cy.contains('a', trainingName).click();
 
@@ -97,7 +164,7 @@ describe('training record', () => {
   });
 
   it('should delete successfully', () => {
-    cy.addWorkerTraining({ establishmentID: StandAloneEstablishment.id, workerName: workerName1, categoryId: 4 });
+    cy.addWorkerTraining({ establishmentID, workerName: workerName1, categoryId: 4 });
     cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
     cy.contains('a', trainingName).click();
 
@@ -112,9 +179,9 @@ describe('training record', () => {
   });
 
   it('should add multiple training records successfully', () => {
-    cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName2 });
+    cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName2 });
     cy.deleteTestWorkerFromDb(workerName2);
-    cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: workerName2 });
+    cy.insertTestWorker({ establishmentID, workerName: workerName2 });
 
     cy.contains('button', 'Add and manage training').click();
     cy.contains('a', 'Add multiple training records').click();
