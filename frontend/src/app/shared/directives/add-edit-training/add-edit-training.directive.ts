@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import {
+  DeliveredBy,
+  HowWasItDelivered,
   TrainingCategory,
   TrainingCertificate,
   TrainingRecord,
@@ -18,12 +20,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Directive({})
 export class AddEditTrainingDirective implements OnInit, AfterViewInit {
+  @ViewChild('validityPeriodInMonthRef') validityPeriodInMonth: NumberInputWithButtonsComponent;
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public submitted = false;
@@ -51,6 +55,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public multipleTrainingDetails: boolean;
   public trainingCertificates: TrainingCertificate[] = [];
   public submitButtonDisabled: boolean = false;
+  public deliveredByOptions = DeliveredBy;
+  public howWasItDeliveredOptions = HowWasItDelivered;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -81,6 +87,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+    this.validityPeriodInMonth.registerOnChange((newValue) => this.handleValidityPeriodChange(newValue));
   }
 
   public checkForCategoryId(): void {
@@ -113,6 +120,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
         accredited: null,
+        deliveredBy: [null, { updateOn: 'change' }],
+        externalProviderName: null,
+        howWasItDelivered: null,
+        validityPeriodInMonth: null,
+        doesNotExpire: null,
         completed: this.formBuilder.group({
           day: null,
           month: null,
@@ -157,6 +169,24 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     );
   }
 
+  public handleValidityPeriodChange(newValue: string | number): void {
+    if (newValue && newValue !== '') {
+      this.clearFormControlAndKeepErrorMessages('doesNotExpire');
+    }
+  }
+
+  public handleDoesNotExpireChange(event: Event): void {
+    const checkboxTicked = (event.target as HTMLInputElement).checked;
+    if (checkboxTicked) {
+      this.clearFormControlAndKeepErrorMessages('validityPeriodInMonth');
+    }
+  }
+
+  private clearFormControlAndKeepErrorMessages(formControlName: string): void {
+    const formControl = this.form.get(formControlName);
+    formControl.patchValue(null, { emitEvent: false });
+  }
+
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -164,14 +194,15 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         type: [
           {
             name: 'minlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
+            message: `Training record name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
           },
           {
             name: 'maxlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
+            message: `Training record name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
           },
         ],
       },
+
       {
         item: 'completed',
         type: [
@@ -240,7 +271,18 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     const trainingCategorySelected = this.trainingCategory;
 
-    const { title, accredited, completed, expires, notes } = this.form.controls;
+    const {
+      title,
+      accredited,
+      deliveredBy,
+      externalProviderName,
+      howWasItDelivered,
+      validityPeriodInMonth,
+      doesNotExpire,
+      completed,
+      expires,
+      notes,
+    } = this.form.controls;
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
     const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
 
@@ -250,6 +292,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       },
       title: title.value,
       accredited: accredited.value,
+      deliveredBy: deliveredBy.value,
+      externalProviderName: externalProviderName.value,
+      howWasItDelivered: howWasItDelivered.value,
+      validityPeriodInMonth: validityPeriodInMonth.value,
+      doesNotExpire: doesNotExpire.value,
       completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
       expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
       notes: notes.value,

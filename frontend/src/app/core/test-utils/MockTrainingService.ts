@@ -80,6 +80,21 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
 }
 
 @Injectable()
+export class MockTrainingServiceWithOverrides extends TrainingService {
+  public static factory(overrides: any = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockTrainingServiceWithOverrides(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        service[overrideName] = overrides[overrideName];
+      });
+
+      return service;
+    };
+  }
+}
+
+@Injectable()
 export class MockMandatoryTrainingService extends MandatoryTrainingService {
   public static factory(overrides = {}) {
     return (http: HttpClient) => {
