@@ -425,7 +425,7 @@ class Training extends EntityValidator {
     if (document.doesNotExpire) {
       validatedTrainingRecord.doesNotExpire = document.doesNotExpire;
     } else {
-      validatedTrainingRecord.doesNotExpire = null;
+      validatedTrainingRecord.doesNotExpire = false;
     }
 
     // validityPeriodInMonth
