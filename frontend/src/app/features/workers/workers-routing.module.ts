@@ -570,6 +570,7 @@ const routes: Routes = [
           {
             path: 'add-a-training-record',
             component: AddATrainingRecord,
+            resolve: { trainingCourses: TrainingCourseResolver },
             data: { title: 'Add a Training Record' },
           },
           {
@@ -875,6 +876,7 @@ const routes: Routes = [
       {
         path: 'add-a-training-record',
         component: AddATrainingRecord,
+        resolve: { trainingCourses: TrainingCourseResolver },
         data: { title: 'Add a Training Record' },
       },
       {
