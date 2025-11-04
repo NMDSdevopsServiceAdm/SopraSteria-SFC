@@ -3,6 +3,8 @@ import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
 
 import { TrainingService } from './training.service';
+import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
+import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 
 describe('TrainingService', () => {
   let service: TrainingService;
@@ -98,6 +100,47 @@ describe('TrainingService', () => {
       service.clearUpdatingSelectedStaffForMultipleTraining();
 
       expect(service.getUpdatingSelectedStaffForMultipleTraining()).toBe(null);
+    });
+  });
+
+  describe('isTrainingCourseSelected', () => {
+    it('sets isTrainingCourseSelected when a boolean is passed', async () => {
+      service.setIsTrainingCourseSelected(true);
+
+      expect(service.getIsTrainingCourseSelected()).toEqual(true);
+    });
+
+    it('clears isSelectStaffChange', async () => {
+      service.clearIsTrainingCourseSelected();
+
+      expect(service.getIsTrainingCourseSelected()).toBe(null);
+    });
+  });
+
+  describe('selectedTrainingCourse', () => {
+    it('sets isTrainingCourseSelected when a boolean is passed', async () => {
+      const trainingCourse = {
+        id: 1,
+        uid: 'uid-1',
+        trainingCategoryId: 1,
+        name: 'Care skills and knowledge',
+        accredited: YesNoDontKnow.Yes,
+        deliveredBy: DeliveredBy.InHouseStaff,
+        externalProviderName: null,
+        howWasItDelivered: HowWasItDelivered.FaceToFace,
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+      };
+
+      service.setSelectedTrainingCourse(trainingCourse);
+
+      expect(service.getSelectedTrainingCourse()).toEqual(trainingCourse);
+    });
+
+    it('clears isSelectStaffChange', async () => {
+      service.clearSelectedTrainingCourse();
+
+      expect(service.getSelectedTrainingCourse()).toBe(null);
     });
   });
 });
