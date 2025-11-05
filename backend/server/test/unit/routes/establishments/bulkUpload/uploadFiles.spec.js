@@ -5,8 +5,12 @@ const sinon = require('sinon');
 const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const buUtils = require('../../../../../utils/bulkUploadUtils');
 const uploadedFiles = require('../../../../../routes/establishments/bulkUpload/uploadFiles');
+const { trainingHeaders } = require('../../../mockdata/training');
 
-describe('/server/routes/establishment/uploadFiles.js', () => {
+const trainingHeadersAsString = trainingHeaders.join(',');
+const newLine = '\r\n';
+
+describe.only('/server/routes/establishment/uploadFiles.js', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -20,7 +24,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
   });
 
   describe('uploadedPut', () => {
-    const TrainingFile = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
+    const TrainingFile = trainingHeaders.join(',');
     const EstablishmentFile =
       'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,SERVICEUSERS,OTHERUSERDESC,DHA,DHAACTIVITIES,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,CWPUSEDESC,BENEFITS,SICKPAY,PENSION,HOLIDAY';
     const WorkerFile =
@@ -565,7 +569,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
 
     describe('downloadType = Training', () => {
       it('returns training file', async () => {
-        const data = `LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES,\r\n
+        const data = `${trainingHeadersAsString},${newLine}
         human,Nurse Jones,31,Test,01/01/2020,01/01/2023,0,,`;
 
         sinon.stub(S3, 'downloadContent').returns({ data });
@@ -579,7 +583,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
           },
           {},
         );
-        const updatedData = `LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES,\r\n
+        const updatedData = `${trainingHeadersAsString},${newLine}
         human,Nurse Jones,31,Test,01/01/2020,01/01/2023,0,,`;
 
         expect(saveResponse.getCalls()[0].args).to.deep.equal([

@@ -1,4 +1,4 @@
-exports.knownHeaders = [
+exports.trainingHeaders = [
   'LOCALESTID',
   'UNIQUEWORKERID',
   'CATEGORY',
@@ -6,6 +6,20 @@ exports.knownHeaders = [
   'DATECOMPLETED',
   'EXPIRYDATE',
   'ACCREDITED',
+  'NOTES',
+];
+
+const newTrainingHeaders = [
+  'LOCALESTID',
+  'UNIQUEWORKERID',
+  'CATEGORY',
+  'TRAININGNAME',
+  'ACCREDITED',
+  'WHODELIVERED',
+  'HOWDELIVERED',
+  'VALIDITY',
+  'DATECOMPLETED',
+  'EXPIRYDATE',
   'NOTES',
 ];
 
