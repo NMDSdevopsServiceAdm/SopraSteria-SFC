@@ -1,20 +1,21 @@
 const {
   validateTrainingHeaders,
 } = require('../../../../../../../routes/establishments/bulkUpload/validate/headers/training');
+const { trainingHeaders } = require('../../../../../mockdata/training');
 const expect = require('chai').expect;
 
-const trainingHeaders = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
+const trainingHeadersAsString = trainingHeaders.join(',');
 
-describe('server/routes/establishments/bulkUpload/validate/headers/training', () => {
+describe.only('server/routes/establishments/bulkUpload/validate/headers/training', () => {
   describe('validateTrainingHeaders()', () => {
     it('should return true when headings match', async () => {
-      expect(await validateTrainingHeaders(trainingHeaders)).to.deep.equal(true);
+      expect(validateTrainingHeaders(trainingHeadersAsString)).to.deep.equal(true);
     });
 
     it('should return false when header (CATEGORY) missing', async () => {
-      const invalidHeaders = trainingHeaders.replace('CATEGORY', '');
+      const invalidHeaders = trainingHeadersAsString.replace('CATEGORY', '');
 
-      expect(await validateTrainingHeaders(invalidHeaders)).to.deep.equal(false);
+      expect(validateTrainingHeaders(invalidHeaders)).to.deep.equal(false);
     });
   });
 });

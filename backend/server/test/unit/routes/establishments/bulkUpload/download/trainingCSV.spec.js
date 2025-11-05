@@ -12,7 +12,7 @@ const { apiTrainingBuilder } = require('../../../../../integration/utils/trainin
 
 const trainingRecords = [apiTrainingBuilder(), apiTrainingBuilder(), apiTrainingBuilder()];
 
-describe('trainingCSV', () => {
+describe.only('trainingCSV', () => {
   describe('toCSV()', () => {
     beforeEach(() => {
       sandbox.stub(BUDI, 'trainingCategory').callsFake((method, value) => value);

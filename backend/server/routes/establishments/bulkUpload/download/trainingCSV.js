@@ -3,17 +3,18 @@ const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const toCSV = (establishmentId, workerId, entity) => {
   // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
+  // new colums : LOCALESTID UNIQUEWORKERID CATEGORY TRAININGNAME ACCREDITED WHODELIVERED HOWDELIVERED VALIDITY DATECOMPLETED EXPIRYDATE NOTES
 
-  const columns = [
-    csvQuote(establishmentId),
-    csvQuote(workerId),
-    BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id),
-    entity.title ? csvQuote(entity.title) : '',
-    convertDateFormatToDayMonthYearWithSlashes(entity.completed),
-    convertDateFormatToDayMonthYearWithSlashes(entity.expires),
-    convertAccredited(entity.accredited),
-    entity.notes ? csvQuote(unescape(entity.notes)) : '',
-  ];
+  const localEstId = csvQuote(establishmentId);
+  const uniqueWorkerId = csvQuote(workerId);
+  const category = BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id);
+  const trainingName = entity.title ? csvQuote(entity.title) : '';
+  const dateCompleted = convertDateFormatToDayMonthYearWithSlashes(entity.completed);
+  const expiryDate = convertDateFormatToDayMonthYearWithSlashes(entity.expires);
+  const accredited = convertAccredited(entity.accredited);
+  const notes = entity.notes ? csvQuote(unescape(entity.notes)) : '';
+
+  const columns = [localEstId, uniqueWorkerId, category, trainingName, dateCompleted, expiryDate, accredited, notes];
 
   return columns.join(',');
 };
