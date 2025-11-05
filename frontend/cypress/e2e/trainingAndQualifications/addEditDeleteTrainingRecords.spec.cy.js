@@ -10,6 +10,7 @@ describe('training record', () => {
   const establishmentID = StandAloneEstablishment.id;
 
   before(() => {
+    cy.deleteAllTrainingCourses(establishmentID);
     cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName1 });
     cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName2 });
 
@@ -107,7 +108,7 @@ describe('training record', () => {
       // add training record details
       cy.get('[data-testid="trainingCategoryDisplay"]').contains(trainingCategory);
       cy.contains('a', 'Change');
-      cy.getByLabel('Training name').clear().type(trainingName);
+      cy.getByLabel('Training record name').clear().type(trainingName);
       cy.getByLabel('Yes').click();
 
       cy.get('[data-testid="completedDate"]').within(() => {
