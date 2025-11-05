@@ -1713,7 +1713,18 @@ module.exports = function (sequelize, DataTypes) {
           },
           include: [
             {
-              attributes: ['title', 'completed', 'expires', 'accredited', 'notes'],
+              attributes: [
+                'title',
+                'completed',
+                'expires',
+                'accredited',
+                'notes',
+                'deliveredBy',
+                'externalProviderName',
+                'howWasItDelivered',
+                'doesNotExpire',
+                'validityPeriodInMonth',
+              ],
               model: sequelize.models.workerTraining,
               as: 'workerTraining',
               include: {
@@ -2670,4 +2681,4 @@ module.exports = function (sequelize, DataTypes) {
   Establishment.addHook('beforeSave', 'clearDoDHAWorkplaceOnMainServiceChange', clearDoDHAWorkplaceOnMainServiceChange);
 
   return Establishment;
-};;
+};
