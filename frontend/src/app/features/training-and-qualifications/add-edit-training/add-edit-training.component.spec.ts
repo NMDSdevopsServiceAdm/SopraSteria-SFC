@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -30,7 +29,7 @@ describe('AddEditTrainingComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
         declarations: [CertificationsTableComponent, SelectUploadFileComponent],
         providers: [
           WindowRef,
@@ -539,10 +538,15 @@ describe('AddEditTrainingComponent', () => {
       userEvent.click(getByLabelText('No'));
 
       const trainingServiceSpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
+      const trainingServiceIsTrainingCourseSelectedSpy = spyOn(
+        trainingService,
+        'clearIsTrainingCourseSelected',
+      ).and.callThrough();
       fireEvent.click(getByText('Save record'));
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       expect(trainingServiceSpy).toHaveBeenCalled();
+      expect(trainingServiceIsTrainingCourseSelectedSpy).toHaveBeenCalled();
 
       expect(trainingService.selectedTraining.trainingCategory).toBeNull();
     });
