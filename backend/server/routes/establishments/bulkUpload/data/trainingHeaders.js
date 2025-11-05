@@ -2,7 +2,7 @@ const trainingHeadersAsArray = [
   'LOCALESTID',
   'UNIQUEWORKERID',
   'CATEGORY',
-  'DESCRIPTION',
+  'TRAININGNAME',
   'DATECOMPLETED',
   'EXPIRYDATE',
   'ACCREDITED',

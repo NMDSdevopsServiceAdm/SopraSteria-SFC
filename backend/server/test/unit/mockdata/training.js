@@ -1,8 +1,8 @@
-exports.trainingHeaders = [
+exports.trainingHeadersAsArray = [
   'LOCALESTID',
   'UNIQUEWORKERID',
   'CATEGORY',
-  'DESCRIPTION',
+  'TRAININGNAME',
   'DATECOMPLETED',
   'EXPIRYDATE',
   'ACCREDITED',

@@ -3,9 +3,9 @@ const sinon = require('sinon');
 const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const buUtils = require('../../../../../utils/bulkUploadUtils');
 const { uploadedStarGet } = require('../../../../../routes/establishments/bulkUpload/uploaded');
-const { trainingHeaders } = require('../../../mockdata/training');
+const { trainingHeadersAsArray } = require('../../../mockdata/training');
 
-const trainingHeadersAsString = trainingHeaders.join(',');
+const trainingHeaders = trainingHeadersAsArray.join(',');
 const newLine = '\r\n';
 
 describe('/server/routes/establishment/uploaded.js', () => {
@@ -269,9 +269,9 @@ describe('/server/routes/establishment/uploaded.js', () => {
       });
     });
 
-    describe.only('downloadType = Training', () => {
+    describe('downloadType = Training', () => {
       it('returns training file', async () => {
-        const data = `${trainingHeadersAsString},${newLine}
+        const data = `${trainingHeaders},${newLine}
         human,Nurse Jones,31,Test,01/01/2020,01/01/2023,0,,`;
 
         sinon.stub(S3, 'downloadContent').returns({ data });
@@ -285,7 +285,7 @@ describe('/server/routes/establishment/uploaded.js', () => {
           },
           {},
         );
-        const updatedData = `${trainingHeadersAsString},${newLine}
+        const updatedData = `${trainingHeaders},${newLine}
         human,Nurse Jones,31,Test,01/01/2020,01/01/2023,0,,`;
 
         expect(saveResponse.getCalls()[0].args).to.deep.equal([
