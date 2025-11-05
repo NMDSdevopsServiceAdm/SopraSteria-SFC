@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
+import { SubEstablishment } from '../../../support/mockEstablishmentData';
 import { runTestsForTrainingCourseJourney } from './runTestsForTrainingCourse';
 
-describe('Training course for standalone workplace edit user', () => {
-  const testEstablishment = StandAloneEstablishment;
+describe('Training course for subsidiary workplace edit user', () => {
+  const testEstablishment = SubEstablishment;
 
   beforeEach(() => {
     cy.loginAsUser(testEstablishment.editUserLoginName, Cypress.env('userPassword'));

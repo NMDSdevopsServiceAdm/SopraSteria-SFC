@@ -34,7 +34,6 @@
                 </div>
               </div>
             </div>
-
             <ng-container *ngIf="multipleTrainingDetails; else singleRecord">
               <div *ngIf="showCategory" class="govuk-body" data-testid="trainingCategoryDisplay">
                 <span class="govuk-util__block govuk-!-font-weight-bold">Training category</span>
@@ -57,7 +56,7 @@
               </div>
             </ng-container>
             <ng-template #singleRecord>
-              <p class="govuk-body govuk-!-margin-bottom-6" data-testid="trainingCategoryDisplay">
+              <p class="govuk-body govuk-!-margin-bottom-4" data-testid="trainingCategoryDisplay">
                 <span class="govuk-util__block"><b>Training category</b></span>
                 <span class="govuk-util__block govuk-!-margin-top-2"
                   >{{ category }}
@@ -70,15 +69,15 @@
                   >
                 </span>
               </p>
+            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 " style="width: 150%"/>
             </ng-template>
-
-            <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
-              <label class="govuk-label" for="title"> Training name </label>
+            <div class="govuk-form-group govuk-!-margin-bottom-4" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
+              <label class="govuk-label" for="title"> Training record name </label>
               <span *ngIf="submitted && form.get('title').invalid" id="title-error" class="govuk-error-message">
                 <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('title') }}
               </span>
               <input
-                class="govuk-input govuk-date-input__input govuk-!-margin-bottom-2"
+                class="govuk-input govuk-date-input__input"
                 [class.govuk-input--error]="submitted && form.get('title').invalid"
                 [formControlName]="'title'"
                 id="title"
@@ -86,11 +85,11 @@
                 type="text"
               />
             </div>
-
-            <div class="govuk-form-group">
+           <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+            <div class="govuk-form-group govuk-!-margin-bottom-4">
               <fieldset class="govuk-fieldset">
-                <legend class="govuk-fieldset__legend">Is the training accredited?</legend>
-                <div class="govuk-radios govuk-!-margin-bottom-2">
+                <legend class="govuk-fieldset__legend">Is the training course accredited?</legend>
+                <div class="govuk-radios ">
                   <div class="govuk-radios__item">
                     <input
                       class="govuk-radios__input"
@@ -124,15 +123,146 @@
                 </div>
               </fieldset>
             </div>
-
+   <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+<div class="govuk-form-group govuk-!-margin-bottom-4">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">Who delivered the training course?</legend>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="deliveredBy-InHouseStaff"
+                [formControlName]="'deliveredBy'"
+                type="radio"
+                [value]="deliveredByOptions.InHouseStaff"
+              />
+              <label class="govuk-label govuk-radios__label" for="deliveredBy-InHouseStaff">
+                {{ deliveredByOptions.InHouseStaff }}
+              </label>
+            </div>
+            <div class="govuk-radios__item govuk-!-margin-bottom-0">
+              <input
+                class="govuk-radios__input"
+                id="deliveredBy-ExternalProvider"
+                [formControlName]="'deliveredBy'"
+                type="radio"
+                [value]="deliveredByOptions.ExternalProvider"
+              />
+              <label class="govuk-label govuk-radios__label" for="deliveredBy-ExternalProvider">
+                {{ deliveredByOptions.ExternalProvider }}
+              </label>
+            </div>
             <div
+              class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-2 govuk-!-margin-bottom-1"
+              [class.govuk-radios__conditional--hidden]="form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider"
+              id="conditional-external-provider-name"
+            >
+              <label class="govuk-label" for="external-provider-name">Provider name</label>
+              <input
+                class="govuk-input govuk-!-width-one-third"
+                id="external-provider-name"
+                name="externalProviderName"
+                [formControlName]="'externalProviderName'"
+              />
+            </div>
+          </div>
+        </fieldset>
+      </div>
+       <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+           <div class="govuk-form-group govuk-!-margin-bottom-4">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend">How was this training course delivered?</legend>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="howWasItDelivered-FaceToFace"
+                [formControlName]="'howWasItDelivered'"
+                type="radio"
+                [value]="howWasItDeliveredOptions.FaceToFace"
+              />
+              <label class="govuk-label govuk-radios__label" for="howWasItDelivered-FaceToFace">
+                {{ howWasItDeliveredOptions.FaceToFace }}
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="howWasItDelivered-ELearning"
+                [formControlName]="'howWasItDelivered'"
+                type="radio"
+                [value]="howWasItDeliveredOptions.ELearning"
+              />
+              <label class="govuk-label govuk-radios__label" for="howWasItDelivered-ELearning">
+                {{ howWasItDeliveredOptions.ELearning }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+        <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+     <div
+        class="govuk-form-group govuk-!-margin-bottom-1"
+        [class.govuk-form-group--error]="submitted && form.get('validityPeriodInMonth').invalid"
+      >
+        <label class="govuk-label" for="validity-period"
+          >How many months is the training valid for before it expires?</label
+        >
+        <span
+          *ngIf="submitted && form.get('validityPeriodInMonth').invalid"
+          id="validityPeriodInMonth-error"
+          class="govuk-error-message"
+        >
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('validityPeriodInMonth') }}
+        </span>
+        <app-number-input-with-buttons
+          #validityPeriodInMonthRef
+          [min]="1"
+          inputId="validity-period"
+          formControlName="validityPeriodInMonth"
+          [hasError]="submitted && form.get('validityPeriodInMonth').invalid"
+          suffix="months"
+          (change)="handleValidityPeriodChange($event)"
+        ></app-number-input-with-buttons>
+      </div>
+     <div
+        class="govuk-form-group govuk-!-margin-bottom-4"
+        [class.govuk-form-group--error]="submitted && form.get('doesNotExpire').invalid"
+      >
+        <span
+          *ngIf="submitted && form.get('doesNotExpire').invalid"
+          id="doesNotExpire-error"
+          class="govuk-error-message asc__govuk-error-message__connect_red_line_with_above"
+        >
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('doesNotExpire') }}
+        </span>
+        <div class="govuk-checkboxes__item govuk-!-margin-top-3">
+          <input
+            class="govuk-checkboxes__input"
+            id="doesNotExpire"
+            name="doesNotExpire"
+            type="checkbox"
+            [formControlName]="'doesNotExpire'"
+            (click)="handleDoesNotExpireChange($event)"
+          />
+          <label class="govuk-label govuk-checkboxes__label" for="doesNotExpire"> This training does not expire </label>
+        </div>
+      </div>
+
+         <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+
+
+          <div class="govuk-form-group govuk-!-margin-bottom-4">
+            <div class="govuk-grid-row ">
+            <div class="govuk-grid-column-one-half">
+                 <div
               data-testid="completedDate"
-              class="govuk-form-group govuk-!-margin-bottom-7"
+              class=" govuk-form-group"
               [class.govuk-form-group--error]="submitted && form.get('completed').invalid"
             >
               <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
-                <legend class="govuk-fieldset__legend">Date completed</legend>
-                <span id="completed-hint" class="govuk-hint govuk-!-margin-bottom-4"> For example, 31 3 1980 </span>
+                <legend class="govuk-fieldset__legend">Training completion date</legend>
+                <legend id="completed-hint" class="govuk-hint govuk-!-margin-bottom-3"> For example, 31 3 2024 </legend>
                 <span
                   *ngIf="submitted && form.get('completed').invalid"
                   id="completed-error"
@@ -146,16 +276,17 @@
                   [submitted]="submitted"
                 ></app-date-picker>
               </fieldset>
-            </div>
-
-            <div
+                </div>
+              </div>
+              <div class="govuk-grid-column-one-half">
+          <div
               data-testid="expiresDate"
-              class="govuk-form-group govuk-!-margin-bottom-7"
+              class="govuk-form-group"
               [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
             >
               <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
-                <legend class="govuk-fieldset__legend">Expiry date</legend>
-                <span id="expires-hint" class="govuk-hint govuk-!-margin-bottom-4"> For example, 31 3 1980 </span>
+                <legend class="govuk-fieldset__legend">Training expiry date</legend>
+                <legend id="expires-hint" class="govuk-hint  govuk-!-margin-bottom-3"> For example, 31 3 2025 </legend>
                 <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
                 </span>
@@ -166,12 +297,16 @@
                 ></app-date-picker>
               </fieldset>
             </div>
-          </div>
+              </div>
+             </div>
+             </div>
+         <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
+
+         </div>
           <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
             <a
-              class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
+              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center"
               *ngIf="trainingRecordId"
-              draggable="false"
               (click)="navigateToDeleteTrainingRecord()"
               data-testid="deleteButton"
             >
@@ -179,10 +314,22 @@
               <span class="govuk-!-margin-left-1"> Delete this training record </span></a
             >
           </div>
+          <div class="govuk-grid-column-one-third">
+            <a
+              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center govuk-link--no-visited-state"
+              draggable="false"
+              data-testid="includeTraining"
+            >
+              <img src="/assets/images/Addtraining.svg" alt="" />
+              <span class="govuk-!-margin-left-1 govuk__nowrap">Include training course details </span>
+              </a
+            >
+          </div>
         </div>
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
           <div class="govuk-grid-column-full">
             <app-select-upload-certificate [filesToUpload]="filesToUpload" (selectFiles)="onSelectFiles($event)" [certificateErrors]="certificateErrors" />
+             <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 "/>
             <app-certifications-table
               *ngIf="trainingCertificates?.length > 0 || filesToUpload?.length > 0"
               data-testid="trainingCertificatesTable"
@@ -194,7 +341,7 @@
             ></app-certifications-table>
           </div>
         </div>
-        <div class="govuk-grid-row">
+        <div class="govuk-grid-row govuk-!-margin-top-4">
           <div class="govuk-grid-column-two-thirds-from-desktop">
             <div class="govuk-character-count govuk-!-margin-bottom-4">
               <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">

@@ -398,6 +398,11 @@ export const trainingRecord = {
   accredited: 'Yes',
   completed: '01/02/2020',
   expires: '01/02/2021',
+  deliveredBy: 'External provider',
+  externalProviderName: 'Care skills academy',
+  howWasItDelivered: 'E-learning',
+  validityPeriodInMonth: 24,
+  doesNotExpire: false,
 };
 
 export const qualificationRecord = {
