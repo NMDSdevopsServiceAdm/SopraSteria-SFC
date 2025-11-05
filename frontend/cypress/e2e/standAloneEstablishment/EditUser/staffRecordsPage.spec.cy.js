@@ -664,6 +664,8 @@ describe('Standalone staff records page as edit user', () => {
           onWorkplacePage.answerDHAQuestions(value);
 
           onHomePage.clickTab('Staff records');
+          cy.intercept('GET', '/api/establishment/*/worker').as('getWorker');
+          cy.wait('@getWorker');
           onStaffRecordsPage.clickIntoWorker(careWorker);
           onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').toHaveValue('-');
         });
