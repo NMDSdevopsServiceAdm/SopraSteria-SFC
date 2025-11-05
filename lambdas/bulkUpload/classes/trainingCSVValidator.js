@@ -12,7 +12,7 @@ class TrainingCsvValidator {
     this.uniqueWorkerId = null;
     this.dateCompleted = null;
     this.expiry = null;
-    this.description = null;
+    this.trainingName = null;
     this.category = null;
     this.accredited = null;
     this.notes = null;
@@ -32,7 +32,7 @@ class TrainingCsvValidator {
   static get EXPIRY_DATE_ERROR() {
     return 1030;
   }
-  static get DESCRIPTION_ERROR() {
+  static get TRAININGNAME_ERROR() {
     return 1040;
   }
   static get CATEGORY_ERROR() {
@@ -50,7 +50,7 @@ class TrainingCsvValidator {
   static get EXPIRY_DATE_WARNING() {
     return 2030;
   }
-  static get DESCRIPTION_WARNING() {
+  static get TRAININGNAME_WARNING() {
     return 2040;
   }
   static get CATEGORY_WARNING() {
@@ -80,7 +80,7 @@ class TrainingCsvValidator {
       uniqueWorkerId: this.uniqueWorkerId,
       completed: this.dateCompleted ? this.dateCompleted.format('DD/MM/YYYY') : undefined,
       expiry: this.expiry ? this.expiry.format('DD/MM/YYYY') : undefined,
-      description: this.description,
+      trainingName: this.trainingName,
       category: this.category,
       accredited: this.accredited,
       notes: this.notes,
@@ -95,7 +95,7 @@ class TrainingCsvValidator {
       },
       completed: this.dateCompleted ? this.dateCompleted.format('YYYY-MM-DD') : undefined,
       expires: this.expiry ? this.expiry.format('YYYY-MM-DD') : undefined,
-      title: this.description ? this.description : undefined,
+      title: this.trainingName ? this.trainingName : undefined,
       notes: this.notes ? this.notes : undefined,
       accredited: this.accredited ? this.accredited : undefined,
     };
@@ -164,14 +164,14 @@ class TrainingCsvValidator {
   }
 
   _validateDescription() {
-    const description = this.currentLine.DESCRIPTION;
+    const trainingName = this.currentLine.TRAININGNAME;
     const MAX_LENGTH = 120;
-    const errMessage = errors._getValidateDescriptionErrMessage(description, MAX_LENGTH);
+    const errMessage = errors._getValidateTrainingNameErrMessage(trainingName, MAX_LENGTH);
     if (!errMessage) {
-      this.description = description;
+      this.trainingName = trainingName;
       return;
     }
-    this._addValidationError('DESCRIPTION_ERROR', errMessage, this.currentLine.DESCRIPTION, 'DESCRIPTION');
+    this._addValidationError('TRAININGNAME_ERROR', errMessage, this.currentLine.TRAININGNAME, 'TRAININGNAME');
   }
 
   _validateCategory() {

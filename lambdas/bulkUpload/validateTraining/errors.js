@@ -32,8 +32,8 @@ exports._getValidateExpiryErrDetails = (expiredDate, dateCompleted) => {
   }
 };
 
-exports._getValidateDescriptionErrMessage = (description, MAX_LENGTH) => {
-  if (description.length > MAX_LENGTH) {
-    return `DESCRIPTION is longer than ${MAX_LENGTH} characters`;
+exports._getValidateTrainingNameErrMessage = (trainingName, MAX_LENGTH) => {
+  if (trainingName.length > MAX_LENGTH) {
+    return `TRAININGNAME is longer than ${MAX_LENGTH} characters`;
   }
 };

@@ -16,7 +16,7 @@ describe('trainingCSVValidator', () => {
         LOCALESTID: 'foo',
         UNIQUEWORKERID: 'bar',
         CATEGORY: 1,
-        DESCRIPTION: 'training',
+        TRAININGNAME: 'training',
         DATECOMPLETED: '01/01/2022',
         EXPIRYDATE: '15/04/2022',
         ACCREDITED: '',
@@ -538,34 +538,34 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_validateDescription()', async () => {
-      it('should pass validation and set description to DESCRIPTION if a valid DESCRIPTION is provided', async () => {
+      it('should pass validation and set description to TRAININGNAME if a valid TRAININGNAME is provided', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
         await validator._validateDescription();
 
         expect(validator.validationErrors).to.deep.equal([]);
-        expect(validator.description).to.equal('training');
+        expect(validator.trainingName).to.equal('training');
       });
     });
 
     describe('_getValidateDescriptionErrMessage()', async () => {
-      it('should add DESCRIPTION_ERROR to validationErrors and set description as null if DESCRIPTION is longer than MAX_LENGTH', async () => {
-        trainingCsv.DESCRIPTION =
+      it('should add TRAININGNAME_ERROR to validationErrors and set description as null if TRAININGNAME is longer than MAX_LENGTH', async () => {
+        trainingCsv.TRAININGNAME =
           'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis nato';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
         await validator._validateDescription();
 
-        expect(validator.description).to.equal(null);
+        expect(validator.trainingName).to.equal(null);
         expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1040,
-            errType: 'DESCRIPTION_ERROR',
-            error: 'DESCRIPTION is longer than 120 characters',
-            source: trainingCsv.DESCRIPTION,
-            column: 'DESCRIPTION',
+            errType: 'TRAININGNAME_ERROR',
+            error: 'TRAININGNAME is longer than 120 characters',
+            source: trainingCsv.TRAININGNAME,
+            column: 'TRAININGNAME',
             lineNumber: 1,
             name: 'foo',
             worker: 'bar',

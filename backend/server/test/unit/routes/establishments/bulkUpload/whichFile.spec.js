@@ -35,13 +35,13 @@ describe('whichFile', () => {
 
   describe('isTrainingFile()', () => {
     it('return true when headings match start of training headers', async () => {
-      const header = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT';
+      const header = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,TRAININGNAME,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
       expect(isTrainingFile(header)).to.deep.equal(true);
     });
 
     it("return false when headings don't match", async () => {
-      const header = 'LOCALESTID,UNIQUEWORKERID,CATS,DESCRIPTION,DAT';
-      expect(isWorkerFile(header)).to.deep.equal(false);
+      const header = 'LOCALESTID,UNIQUEWORKERID,CAT,TRAININGNAME,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
+      expect(isTrainingFile(header)).to.deep.equal(false);
     });
   });
 
@@ -65,7 +65,9 @@ describe('whichFile', () => {
     });
 
     it('should return the correct file type for training', () => {
-      const fileType = getFileType('LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT');
+      const fileType = getFileType(
+        'LOCALESTID,UNIQUEWORKERID,CATEGORY,TRAININGNAME,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES',
+      );
 
       expect(fileType).to.deep.equal('Training');
     });
