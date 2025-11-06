@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { mandatoryTraining } from '@core/model/establishment.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 import { allMandatoryTrainingCategories, SelectedTraining, TrainingCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -16,6 +17,8 @@ export class TrainingService {
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
   public updatingSelectedStaffForMultipleTraining: boolean = null;
+  private _isTrainingCourseSelected: boolean = null;
+  private _selectedTrainingCourse: TrainingCourse;
 
   constructor(private http: HttpClient) {}
 
@@ -124,6 +127,30 @@ export class TrainingService {
 
   public clearUpdatingSelectedStaffForMultipleTraining(): void {
     this.updatingSelectedStaffForMultipleTraining = null;
+  }
+
+  public setIsTrainingCourseSelected(isCourseSelected: boolean): void {
+    this._isTrainingCourseSelected = isCourseSelected;
+  }
+
+  public getIsTrainingCourseSelected(): boolean {
+    return this._isTrainingCourseSelected;
+  }
+
+  public clearIsTrainingCourseSelected(): void {
+    this._isTrainingCourseSelected = null;
+  }
+
+  public setSelectedTrainingCourse(selectedTrainingCourse: TrainingCourse): void {
+    this._selectedTrainingCourse = selectedTrainingCourse;
+  }
+
+  public getSelectedTrainingCourse(): TrainingCourse {
+    return this._selectedTrainingCourse;
+  }
+
+  public clearSelectedTrainingCourse(): void {
+    this._selectedTrainingCourse = null;
   }
 }
 

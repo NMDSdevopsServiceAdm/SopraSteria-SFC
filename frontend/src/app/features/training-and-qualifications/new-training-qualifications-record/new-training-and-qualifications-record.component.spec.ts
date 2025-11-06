@@ -149,7 +149,16 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   };
 
   async function setup(options: Partial<SetupOptions> = {}) {
-    const { otherJob, careCert, mandatoryTraining, nonMandatoryTraining, trainingCourses, fragment, isOwnWorkplace, qualifications } = {
+    const {
+      otherJob,
+      careCert,
+      mandatoryTraining,
+      nonMandatoryTraining,
+      trainingCourses,
+      fragment,
+      isOwnWorkplace,
+      qualifications,
+    } = {
       ...defaults,
       ...options,
     };
@@ -480,10 +489,12 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should have correct href on the "Add a training record" button when courses have been added', async () => {
-      const { getByRole } = await setup({ trainingCourses: [trainingCourseBuilder()] });
+      const { workplaceUid, workerUid, getByRole } = await setup({ trainingCourses: [trainingCourseBuilder()] });
       const button = getByRole('button', { name: 'Add a training record' });
 
-      expect(button.getAttribute('href')).toEqual(`/`);
+      expect(button.getAttribute('href')).toEqual(
+        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/add-a-training-record`,
+      );
     });
 
     it('should have correct href on the "Add a training record" button when no courses have been added', async () => {
