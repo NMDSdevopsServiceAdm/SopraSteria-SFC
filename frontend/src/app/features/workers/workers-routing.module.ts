@@ -86,6 +86,7 @@ import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/wo
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
+import { AddATrainingRecord } from '@features/training-and-qualifications/add-a-training-record/add-a-training-record.component';
 
 const routes: Routes = [
   {
@@ -568,6 +569,12 @@ const routes: Routes = [
             data: { title: 'Training and qualification record' },
           },
           {
+            path: 'add-a-training-record',
+            component: AddATrainingRecord,
+            resolve: { trainingCourses: TrainingCourseResolver },
+            data: { title: 'Add a Training Record' },
+          },
+          {
             path: 'long-term-absence',
             component: LongTermAbsenceComponent,
             resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
@@ -866,6 +873,12 @@ const routes: Routes = [
           trainingCourses: TrainingCourseResolver,
         },
         data: { title: 'Training and qualification record' },
+      },
+      {
+        path: 'add-a-training-record',
+        component: AddATrainingRecord,
+        resolve: { trainingCourses: TrainingCourseResolver },
+        data: { title: 'Add a Training Record' },
       },
       {
         path: 'long-term-absence',
