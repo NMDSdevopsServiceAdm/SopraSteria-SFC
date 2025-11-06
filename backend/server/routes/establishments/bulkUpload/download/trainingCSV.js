@@ -1,5 +1,5 @@
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
-const { TrainingCourseDeliveredBy } = require('../../../../../reference/databaseEnumTypes');
+const { TrainingCourseDeliveredBy, TrainingCourseDeliveryMode } = require('../../../../../reference/databaseEnumTypes');
 const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const toCSV = (establishmentId, workerId, entity) => {
@@ -18,6 +18,7 @@ const toCSV = (establishmentId, workerId, entity) => {
 
   const validity = convertValidity(entity.doesNotExpire, entity.validityPeriodInMonth);
   const whoDelivered = convertWhoDelivered(entity.deliveredBy, entity.externalProviderName);
+  const howDelivered = convertHowDelivered(entity.howWasItDelivered);
 
   const columns = [localEstId, uniqueWorkerId, category, trainingName, dateCompleted, expiryDate, accredited, notes];
 
@@ -70,10 +71,25 @@ const convertWhoDelivered = (deliveredBy, externalProviderName) => {
   }
 };
 
+const convertHowDelivered = (howWasItDelivered) => {
+  switch (howWasItDelivered) {
+    case TrainingCourseDeliveryMode.FaceToFace: {
+      return '1';
+    }
+    case TrainingCourseDeliveryMode.ELearning: {
+      return '2';
+    }
+    default: {
+      return '';
+    }
+  }
+};
+
 module.exports = {
   toCSV,
   convertDateFormatToDayMonthYearWithSlashes,
   convertAccredited,
   convertValidity,
   convertWhoDelivered,
+  convertHowDelivered,
 };
