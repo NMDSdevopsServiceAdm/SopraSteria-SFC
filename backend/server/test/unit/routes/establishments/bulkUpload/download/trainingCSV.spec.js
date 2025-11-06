@@ -3,16 +3,19 @@ const expect = require('chai').expect;
 const BUDI = require('../../../../../../models/BulkImport/BUDI').BUDI;
 const sandbox = require('sinon').createSandbox();
 const yesNoDontKnow = require('../../../../mockdata/workers').yesNoDontKnow;
+const { Enum } = require('../../../../../../../reference/databaseEnumTypes');
 const {
   toCSV,
   convertDateFormatToDayMonthYearWithSlashes,
   convertAccredited,
+  convertValidity,
+  convertWhoDelivered,
 } = require('../../../../../../routes/establishments/bulkUpload/download/trainingCSV');
 const { apiTrainingBuilder } = require('../../../../../integration/utils/training');
 
 const trainingRecords = [apiTrainingBuilder(), apiTrainingBuilder(), apiTrainingBuilder()];
 
-describe('trainingCSV', () => {
+describe.only('trainingCSV', () => {
   describe('toCSV()', () => {
     beforeEach(() => {
       sandbox.stub(BUDI, 'trainingCategory').callsFake((method, value) => value);
@@ -187,6 +190,71 @@ describe('trainingCSV', () => {
       const result = convertAccredited("Don't know");
 
       expect(result).to.equal(999);
+    });
+  });
+
+  describe('convertValidity()', () => {
+    it('should return the string "none" if doesNotExpire is true', () => {
+      const expected = 'none';
+      const actual = convertValidity(true, 24);
+
+      expect(actual).to.equal(expected);
+    });
+
+    it('should return validityPeriodInMonth in string, if doesNotExpire is false and validityPeriodInMonth is a valid number', () => {
+      const expected = '24';
+      const actual = convertValidity(false, 24);
+
+      expect(actual).to.equal(expected);
+    });
+
+    const invalidValuesToTest = [null, undefined, 'apple', 0, -10];
+
+    invalidValuesToTest.forEach((value) => {
+      it(`should return an empty string "" if doesNotExpire is false and validityPeriodInMonth is not valid: ${value}`, () => {
+        const expected = '';
+        const actual = convertValidity(false, value);
+
+        expect(actual).to.equal(expected);
+      });
+    });
+  });
+
+  describe('convertWhoDelivered', () => {
+    const [inHouseStaff, externalProvider] = Enum.TrainingCourseDeliveredBy;
+    it('should return "1" when deliveredBy is "In-house staff"', () => {
+      const expected = '1';
+      const actual = convertWhoDelivered(inHouseStaff, null);
+
+      expect(actual).to.equal(expected);
+    });
+
+    it('should return "2" when deliveredBy is "External provider" and the provider name is not known', () => {
+      const expected = '2';
+      const actual = convertWhoDelivered(externalProvider, null);
+
+      expect(actual).to.equal(expected);
+    });
+
+    it('should return "2;(provider name)" when deliveredBy is "External provider" and the provider name is known', () => {
+      const expected = '2;Care Skills Academy';
+      const actual = convertWhoDelivered(externalProvider, 'Care Skills Academy');
+
+      expect(actual).to.equal(expected);
+    });
+
+    it('should properly escape special chars in training course name', () => {
+      const expected = '"2;""Care Skills Academy"", year 2025"';
+      const actual = convertWhoDelivered(externalProvider, '"Care Skills Academy", year 2025');
+
+      expect(actual).to.equal(expected);
+    });
+
+    it('should return an empty string when deliveredBy is other values', () => {
+      const expected = '';
+      const actual = convertWhoDelivered(null, 'Care Skills Academy');
+
+      expect(actual).to.equal(expected);
     });
   });
 });
