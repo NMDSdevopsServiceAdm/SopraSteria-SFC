@@ -85,6 +85,7 @@ import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delega
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
+import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
 
 const routes: Routes = [
   {
@@ -897,6 +898,16 @@ const routes: Routes = [
         data: {
           permissions: ['canDeleteWorker'],
           title: 'Download staff training and qualifications',
+        },
+      },
+      {
+        path: 'matching-layout',
+        component: TrainingCourseMatchingLayoutComponent,
+        resolve: {
+          trainingCategories: TrainingCategoriesResolver,
+        },
+        data: {
+          title: 'Match the training record',
         },
       },
     ],
