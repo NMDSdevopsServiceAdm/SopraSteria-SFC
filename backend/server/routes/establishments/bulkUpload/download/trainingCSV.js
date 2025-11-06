@@ -1,9 +1,11 @@
 const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
+const { TrainingCourseDeliveredBy } = require('../../../../../reference/databaseEnumTypes');
 const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const toCSV = (establishmentId, workerId, entity) => {
   // old columns : ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
   // new columns : LOCALESTID UNIQUEWORKERID CATEGORY TRAININGNAME ACCREDITED WHODELIVERED HOWDELIVERED VALIDITY DATECOMPLETED EXPIRYDATE NOTES
+  // columns to add: WHODELIVERED HOWDELIVERED VALIDITY
 
   const localEstId = csvQuote(establishmentId);
   const uniqueWorkerId = csvQuote(workerId);
@@ -13,6 +15,9 @@ const toCSV = (establishmentId, workerId, entity) => {
   const expiryDate = convertDateFormatToDayMonthYearWithSlashes(entity.expires);
   const accredited = convertAccredited(entity.accredited);
   const notes = entity.notes ? csvQuote(unescape(entity.notes)) : '';
+
+  const validity = convertValidity(entity.doesNotExpire, entity.validityPeriodInMonth);
+  const whoDelivered = convertWhoDelivered(entity.deliveredBy, entity.externalProviderName);
 
   const columns = [localEstId, uniqueWorkerId, category, trainingName, dateCompleted, expiryDate, accredited, notes];
 
@@ -37,8 +42,38 @@ const convertAccredited = (accredited) => {
   return '';
 };
 
+const convertValidity = (doesNotExpire, validityPeriodInMonth) => {
+  if (doesNotExpire) {
+    return 'none';
+  }
+
+  if (validityPeriodInMonth && validityPeriodInMonth > 0) {
+    return validityPeriodInMonth.toString();
+  }
+  return '';
+};
+
+const convertWhoDelivered = (deliveredBy, externalProviderName) => {
+  switch (deliveredBy) {
+    case TrainingCourseDeliveredBy.InHouseStaff: {
+      return '1';
+    }
+    case TrainingCourseDeliveredBy.ExternalProvider: {
+      if (externalProviderName) {
+        return csvQuote(`2;${externalProviderName}`);
+      }
+      return '2';
+    }
+    default: {
+      return '';
+    }
+  }
+};
+
 module.exports = {
   toCSV,
   convertDateFormatToDayMonthYearWithSlashes,
   convertAccredited,
+  convertValidity,
+  convertWhoDelivered,
 };
