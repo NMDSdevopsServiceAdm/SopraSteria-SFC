@@ -3,13 +3,13 @@ const expect = require('chai').expect;
 const BUDI = require('../../../../../../models/BulkImport/BUDI').BUDI;
 const sandbox = require('sinon').createSandbox();
 const yesNoDontKnow = require('../../../../mockdata/workers').yesNoDontKnow;
-const { Enum } = require('../../../../../../../reference/databaseEnumTypes');
 const {
   toCSV,
   convertDateFormatToDayMonthYearWithSlashes,
   convertAccredited,
   convertValidity,
   convertWhoDelivered,
+  convertHowDelivered,
 } = require('../../../../../../routes/establishments/bulkUpload/download/trainingCSV');
 const { apiTrainingBuilder } = require('../../../../../integration/utils/training');
 
@@ -221,7 +221,9 @@ describe.only('trainingCSV', () => {
   });
 
   describe('convertWhoDelivered', () => {
-    const [inHouseStaff, externalProvider] = Enum.TrainingCourseDeliveredBy;
+    const inHouseStaff = 'In-house staff';
+    const externalProvider = 'External provider';
+
     it('should return "1" when deliveredBy is "In-house staff"', () => {
       const expected = '1';
       const actual = convertWhoDelivered(inHouseStaff, null);
@@ -243,18 +245,46 @@ describe.only('trainingCSV', () => {
       expect(actual).to.equal(expected);
     });
 
-    it('should properly escape special chars in training course name', () => {
+    it('should properly escape special chars in provider name', () => {
       const expected = '"2;""Care Skills Academy"", year 2025"';
       const actual = convertWhoDelivered(externalProvider, '"Care Skills Academy", year 2025');
 
       expect(actual).to.equal(expected);
     });
 
-    it('should return an empty string when deliveredBy is other values', () => {
+    it('should return an empty string when deliveredBy is other value', () => {
       const expected = '';
       const actual = convertWhoDelivered(null, 'Care Skills Academy');
 
       expect(actual).to.equal(expected);
+    });
+  });
+
+  describe('convertHowDelivered', () => {
+    const faceToFace = 'Face to face';
+    const eLearning = 'E-learning';
+
+    it('should return "1" when howWasItDelivered is "Face to face"', () => {
+      const expected = '1';
+      const actual = convertHowDelivered(faceToFace);
+
+      expect(actual).to.equal(expected);
+    });
+    it('should return "2" when howWasItDelivered is "E-learning"', () => {
+      const expected = '2';
+      const actual = convertHowDelivered(eLearning);
+
+      expect(actual).to.equal(expected);
+    });
+
+    const testCaseForOtherValues = [null, undefined, 'test', ''];
+    testCaseForOtherValues.forEach((value) => {
+      it(`should return an empty string when howWasItDelivered is other value: ${value}`, () => {
+        const expected = '';
+        const actual = convertHowDelivered(value);
+
+        expect(actual).to.equal(expected);
+      });
     });
   });
 });

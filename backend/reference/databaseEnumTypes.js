@@ -9,4 +9,9 @@ const TrainingCourseDeliveredBy = {
   ExternalProvider: Enum.TrainingCourseDeliveredBy[1],
 };
 
-module.exports = { Enum, TrainingCourseDeliveredBy };
+const TrainingCourseDeliveryMode = {
+  FaceToFace: Enum.TrainingCourseDeliveryMode[0],
+  ELearning: Enum.TrainingCourseDeliveryMode[1],
+};
+
+module.exports = { Enum, TrainingCourseDeliveredBy, TrainingCourseDeliveryMode };
