@@ -42,9 +42,7 @@ export class SelectTrainingCourseForMultipleTrainingRecords
     );
   }
 
-  protected init(): void {
-
-  }
+  protected init(): void {}
 
   public setUpVariables(): void {
     this.continueWithOutCourseOptionText = 'Continue without selecting a training course';
