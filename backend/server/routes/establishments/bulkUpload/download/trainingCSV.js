@@ -4,8 +4,8 @@ const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const toCSV = (establishmentId, workerId, entity) => {
   // old columns : ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
-  // new columns : LOCALESTID UNIQUEWORKERID CATEGORY TRAININGNAME ACCREDITED WHODELIVERED HOWDELIVERED VALIDITY DATECOMPLETED EXPIRYDATE NOTES
-  // columns to add: WHODELIVERED HOWDELIVERED VALIDITY
+  // new columns : LOCALESTID UNIQUEWORKERID CATEGORY TRAININGNAME ACCREDITED WHODELIVERED PROVIDERNAME HOWDELIVERED VALIDITY DATECOMPLETED EXPIRYDATE NOTES
+  // columns to add: WHODELIVERED HOWDELIVERED VALIDITY PROVIDERNAME
 
   const localEstId = csvQuote(establishmentId);
   const uniqueWorkerId = csvQuote(workerId);
@@ -17,7 +17,8 @@ const toCSV = (establishmentId, workerId, entity) => {
   const notes = entity.notes ? csvQuote(unescape(entity.notes)) : '';
 
   const validity = convertValidity(entity.doesNotExpire, entity.validityPeriodInMonth);
-  const whoDelivered = convertWhoDelivered(entity.deliveredBy, entity.externalProviderName);
+  const whoDelivered = convertWhoDelivered(entity.deliveredBy);
+  const providerName = convertProviderName(entity.deliveredBy, entity.externalProviderName);
   const howDelivered = convertHowDelivered(entity.howWasItDelivered);
 
   const columns = [localEstId, uniqueWorkerId, category, trainingName, dateCompleted, expiryDate, accredited, notes];
@@ -54,21 +55,25 @@ const convertValidity = (doesNotExpire, validityPeriodInMonth) => {
   return '';
 };
 
-const convertWhoDelivered = (deliveredBy, externalProviderName) => {
+const convertWhoDelivered = (deliveredBy) => {
   switch (deliveredBy) {
-    case TrainingCourseDeliveredBy.InHouseStaff: {
+    case TrainingCourseDeliveredBy.InHouseStaff:
       return '1';
-    }
-    case TrainingCourseDeliveredBy.ExternalProvider: {
-      if (externalProviderName) {
-        return csvQuote(`2;${externalProviderName}`);
-      }
+
+    case TrainingCourseDeliveredBy.ExternalProvider:
       return '2';
-    }
-    default: {
+
+    default:
       return '';
-    }
   }
+};
+
+const convertProviderName = (deliveredBy, externalProviderName) => {
+  if (deliveredBy !== TrainingCourseDeliveredBy.ExternalProvider) {
+    return '';
+  }
+
+  return csvQuote(externalProviderName);
 };
 
 const convertHowDelivered = (howWasItDelivered) => {
@@ -91,5 +96,6 @@ module.exports = {
   convertAccredited,
   convertValidity,
   convertWhoDelivered,
+  convertProviderName,
   convertHowDelivered,
 };
