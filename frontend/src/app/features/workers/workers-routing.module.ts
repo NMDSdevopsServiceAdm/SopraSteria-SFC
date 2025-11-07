@@ -575,6 +575,13 @@ const routes: Routes = [
             data: { title: 'Add a Training Record' },
           },
           {
+            path: 'matching-layout',
+            component: TrainingCourseMatchingLayoutComponent,
+            data: {
+              title: 'Match the training record',
+            },
+          },
+          {
             path: 'long-term-absence',
             component: LongTermAbsenceComponent,
             resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
@@ -881,6 +888,13 @@ const routes: Routes = [
         data: { title: 'Add a Training Record' },
       },
       {
+        path: 'matching-layout',
+        component: TrainingCourseMatchingLayoutComponent,
+        data: {
+          title: 'Match the training record',
+        },
+      },
+      {
         path: 'long-term-absence',
         component: LongTermAbsenceComponent,
         resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
@@ -911,16 +925,6 @@ const routes: Routes = [
         data: {
           permissions: ['canDeleteWorker'],
           title: 'Download staff training and qualifications',
-        },
-      },
-      {
-        path: 'matching-layout',
-        component: TrainingCourseMatchingLayoutComponent,
-        resolve: {
-          trainingCategories: TrainingCategoriesResolver,
-        },
-        data: {
-          title: 'Match the training record',
         },
       },
     ],
