@@ -41,7 +41,7 @@
               </div>
 
               <div class="govuk-radios__divider">or</div>
-              <p class="govuk-!-margin-top-2">Select a saved course for this record</p>
+              <p class="govuk-!-margin-top-2">{{courseOptionsSubText}}</p>
 
               @for(trainingCourse of trainingCourses; track trainingCourse.name; let index = $index){
               <div class="govuk-radios__item">

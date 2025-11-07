@@ -1,10 +1,6 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment } from '@core/model/establishment.model';
-import { TrainingCourse } from '@core/model/training-course.model';
-import { Worker } from '@core/model/worker.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -52,6 +48,7 @@ export class SelectTrainingCourseForWorkerTraining
     this.sectionText = this.workerService.worker.nameOrId;
     this.previousPageToCheckWithoutTrainingCourse = 'add-training';
     this.previousPageToCheckWithTrainingCourse = 'matching-layout';
+    this.courseOptionsSubText = 'Select a saved course for this record';
     this.routeWithoutTrainingCourse = [
       '/workplace',
       this.workplace.uid,
