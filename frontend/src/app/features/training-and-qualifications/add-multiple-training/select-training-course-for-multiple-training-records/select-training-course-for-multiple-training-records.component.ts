@@ -50,6 +50,7 @@ export class SelectTrainingCourseForMultipleTrainingRecords
     this.sectionText = 'Add multiple training records';
     this.previousPageToCheckWithoutTrainingCourse = 'select-training-category';
     this.previousPageToCheckWithTrainingCourse = 'update-url';
+    this.courseOptionsSubText = 'Select the training course taken';
     this.routeWithoutTrainingCourse = [
       '/workplace',
       this.workplace.uid,

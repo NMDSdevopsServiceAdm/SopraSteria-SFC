@@ -31,6 +31,7 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
   public routeWithTrainingCourse = [];
   public previousPageToCheckWithoutTrainingCourse: string;
   public previousPageToCheckWithTrainingCourse: string;
+  public courseOptionsSubText: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

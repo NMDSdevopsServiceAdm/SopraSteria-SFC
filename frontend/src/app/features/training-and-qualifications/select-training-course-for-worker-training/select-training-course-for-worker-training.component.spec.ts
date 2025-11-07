@@ -142,6 +142,12 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
     });
   });
 
+  it('should show the sub text above the course radio buttons', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Select a saved course for this record')).toBeTruthy();
+  });
+
   it('should show a "Continue" button', async () => {
     const { getByRole } = await setup();
 
@@ -151,7 +157,15 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
   });
 
   it(`should navigate to "add-training" selecting ${continueWithOutCourseOptionText}`, async () => {
-    const { component, fixture, getByText, getByRole, routerSpy } = await setup();
+    const {
+      component,
+      fixture,
+      getByText,
+      getByRole,
+      routerSpy,
+      setIsTrainingCourseSelectedSpy,
+      setSelectedTrainingCourseSpy,
+    } = await setup();
 
     const button = getByRole('button', { name: 'Continue' });
     const option = getByText(continueWithOutCourseOptionText);
@@ -167,10 +181,20 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       component.worker.uid,
       'add-training',
     ]);
+    expect(setIsTrainingCourseSelectedSpy).toHaveBeenCalledWith(false);
+    expect(setSelectedTrainingCourseSpy).not.toHaveBeenCalled();
   });
 
   it(`should navigate to "add-training" after selecting a training course`, async () => {
-    const { component, fixture, getByText, getByRole, routerSpy } = await setup();
+    const {
+      component,
+      fixture,
+      getByText,
+      getByRole,
+      routerSpy,
+      setIsTrainingCourseSelectedSpy,
+      setSelectedTrainingCourseSpy,
+    } = await setup();
 
     const button = getByRole('button', { name: 'Continue' });
     const option = getByText(trainingCourses[0].name);
@@ -186,6 +210,8 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       component.worker.uid,
       'matching-layout',
     ]);
+    expect(setIsTrainingCourseSelectedSpy).toHaveBeenCalledWith(true);
+    expect(setSelectedTrainingCourseSpy).toHaveBeenCalledWith(trainingCourses[0]);
   });
 
   it('should show a "Cancel" link and go back to the staff training page', async () => {
@@ -206,7 +232,6 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       'training',
     ]);
   });
-
 
   it('should show an error message if "Continue" is clicked without selecting a radio option', async () => {
     const { fixture, getByRole, getAllByText } = await setup();

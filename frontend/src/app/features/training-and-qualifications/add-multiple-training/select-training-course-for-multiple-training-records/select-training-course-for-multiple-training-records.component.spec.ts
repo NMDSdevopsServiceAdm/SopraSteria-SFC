@@ -18,7 +18,7 @@ import { TrainingService } from '@core/services/training.service';
 
 describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
   const continueWithOutCourseOptionText = 'Continue without selecting a training course';
-  const trainingCourses = [trainingCourseBuilder(), trainingCourseBuilder()]
+  const trainingCourses = [trainingCourseBuilder(), trainingCourseBuilder()];
 
   async function setup(overrides: any = {}) {
     const setupTools = await render(SelectTrainingCourseForMultipleTrainingRecords, {
@@ -62,7 +62,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
           },
         },
         provideHttpClient(),
-        provideHttpClientTesting()
+        provideHttpClientTesting(),
       ],
     });
 
@@ -117,6 +117,12 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
     });
   });
 
+  it('should show the sub text above the course radio buttons', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Select the training course taken')).toBeTruthy();
+  });
+
   it('should show a "Cancel" link and go back to the training and qualifications page', async () => {
     const { getByRole, routerSpy, fixture } = await setup();
 
@@ -139,7 +145,15 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
   });
 
   it(`should navigate to "select-training-category" when selecting ${continueWithOutCourseOptionText}`, async () => {
-    const { component, fixture, getByText, getByRole, routerSpy } = await setup();
+    const {
+      component,
+      fixture,
+      getByText,
+      getByRole,
+      routerSpy,
+      setIsTrainingCourseSelectedSpy,
+      setSelectedTrainingCourseSpy,
+    } = await setup();
 
     const button = getByRole('button', { name: 'Continue' });
     const option = getByText(continueWithOutCourseOptionText);
@@ -154,10 +168,20 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
       'add-multiple-training',
       'select-training-category',
     ]);
+    expect(setIsTrainingCourseSelectedSpy).toHaveBeenCalledWith(false);
+    expect(setSelectedTrainingCourseSpy).not.toHaveBeenCalled();
   });
 
   it(`should navigate to "update-url" after selecting a training course`, async () => {
-    const { component, fixture, getByText, getByRole, routerSpy } = await setup();
+    const {
+      component,
+      fixture,
+      getByText,
+      getByRole,
+      routerSpy,
+      setIsTrainingCourseSelectedSpy,
+      setSelectedTrainingCourseSpy,
+    } = await setup();
 
     const button = getByRole('button', { name: 'Continue' });
     const option = getByText(trainingCourses[0].name);
@@ -172,6 +196,8 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
       'add-multiple-training',
       'update-url',
     ]);
+    expect(setIsTrainingCourseSelectedSpy).toHaveBeenCalledWith(true);
+    expect(setSelectedTrainingCourseSpy).toHaveBeenCalledWith(trainingCourses[0]);
   });
 
   it('should show an error message if "Continue" is clicked without selecting a radio option', async () => {
