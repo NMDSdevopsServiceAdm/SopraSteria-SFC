@@ -3,25 +3,35 @@ const { TrainingCourseDeliveredBy, TrainingCourseDeliveryMode } = require('../..
 const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const toCSV = (establishmentId, workerId, entity) => {
-  // old columns : ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
-  // new columns : LOCALESTID UNIQUEWORKERID CATEGORY TRAININGNAME ACCREDITED WHODELIVERED PROVIDERNAME HOWDELIVERED VALIDITY DATECOMPLETED EXPIRYDATE NOTES
-  // columns to add: WHODELIVERED HOWDELIVERED VALIDITY PROVIDERNAME
+  // columns : LOCALESTID UNIQUEWORKERID CATEGORY TRAININGNAME ACCREDITED WHODELIVERED PROVIDERNAME HOWDELIVERED VALIDITY DATECOMPLETED EXPIRYDATE NOTES
 
   const localEstId = csvQuote(establishmentId);
   const uniqueWorkerId = csvQuote(workerId);
   const category = BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id);
   const trainingName = entity.title ? csvQuote(entity.title) : '';
-  const dateCompleted = convertDateFormatToDayMonthYearWithSlashes(entity.completed);
-  const expiryDate = convertDateFormatToDayMonthYearWithSlashes(entity.expires);
   const accredited = convertAccredited(entity.accredited);
-  const notes = entity.notes ? csvQuote(unescape(entity.notes)) : '';
-
-  const validity = convertValidity(entity.doesNotExpire, entity.validityPeriodInMonth);
   const whoDelivered = convertWhoDelivered(entity.deliveredBy);
   const providerName = convertProviderName(entity.deliveredBy, entity.externalProviderName);
   const howDelivered = convertHowDelivered(entity.howWasItDelivered);
+  const validity = convertValidity(entity.doesNotExpire, entity.validityPeriodInMonth);
+  const dateCompleted = convertDateFormatToDayMonthYearWithSlashes(entity.completed);
+  const expiryDate = convertDateFormatToDayMonthYearWithSlashes(entity.expires);
+  const notes = entity.notes ? csvQuote(unescape(entity.notes)) : '';
 
-  const columns = [localEstId, uniqueWorkerId, category, trainingName, dateCompleted, expiryDate, accredited, notes];
+  const columns = [
+    localEstId,
+    uniqueWorkerId,
+    category,
+    trainingName,
+    accredited,
+    whoDelivered,
+    providerName,
+    howDelivered,
+    validity,
+    dateCompleted,
+    expiryDate,
+    notes,
+  ];
 
   return columns.join(',');
 };

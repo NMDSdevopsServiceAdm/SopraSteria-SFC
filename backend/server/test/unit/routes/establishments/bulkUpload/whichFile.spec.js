@@ -3,6 +3,7 @@ const {
   isTrainingFile,
   getFileType,
 } = require('../../../../../routes/establishments/bulkUpload/whichFile');
+const { trainingHeadersAsArray } = require('../../../mockdata/training');
 const expect = require('chai').expect;
 
 describe('whichFile', () => {
@@ -34,8 +35,8 @@ describe('whichFile', () => {
   });
 
   describe('isTrainingFile()', () => {
-    it('return true when headings match start of training headers', async () => {
-      const header = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,TRAININGNAME,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
+    it('return true when headings match training headers', async () => {
+      const header = trainingHeadersAsArray.join(',');
       expect(isTrainingFile(header)).to.deep.equal(true);
     });
 
@@ -65,9 +66,7 @@ describe('whichFile', () => {
     });
 
     it('should return the correct file type for training', () => {
-      const fileType = getFileType(
-        'LOCALESTID,UNIQUEWORKERID,CATEGORY,TRAININGNAME,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES',
-      );
+      const fileType = getFileType(trainingHeadersAsArray.join(','));
 
       expect(fileType).to.deep.equal('Training');
     });
