@@ -23,7 +23,9 @@ const isWorkerFile = (fileAsString) => {
 
 const isTrainingFile = (fileAsString) => {
   const headerRow = fileAsString.split('\n')[0];
+  console.log(headerRow, '<--- headerRow');
   const contentRegex = new RegExp(trainingHeaders);
+  console.log(trainingHeaders, '<--- trainingHeaders');
   return contentRegex.test(headerRow);
 };
 

@@ -3,19 +3,9 @@ exports.trainingHeadersAsArray = [
   'UNIQUEWORKERID',
   'CATEGORY',
   'TRAININGNAME',
-  'DATECOMPLETED',
-  'EXPIRYDATE',
-  'ACCREDITED',
-  'NOTES',
-];
-
-const newTrainingHeaders = [
-  'LOCALESTID',
-  'UNIQUEWORKERID',
-  'CATEGORY',
-  'TRAININGNAME',
   'ACCREDITED',
   'WHODELIVERED',
+  'PROVIDERNAME',
   'HOWDELIVERED',
   'VALIDITY',
   'DATECOMPLETED',

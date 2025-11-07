@@ -21,7 +21,7 @@ const externalProvider = 'External provider';
 const faceToFace = 'Face to face';
 const eLearning = 'E-learning';
 
-describe.only('trainingCSV', () => {
+describe('trainingCSV', () => {
   describe('toCSV()', () => {
     beforeEach(() => {
       sandbox.stub(BUDI, 'trainingCategory').callsFake((method, value) => value);
@@ -42,84 +42,96 @@ describe.only('trainingCSV', () => {
 
     trainingRecords.forEach((trainingRecord, index) => {
       describe('training record ' + index, () => {
-        it('should return basic CSV info in expected order', async () => {
+        it('should return workplace and worker identifier in expected order', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-
           expect(csvAsArray[0]).to.equal(establishment.LocalIdentifierValue);
           expect(csvAsArray[1]).to.equal(worker.LocalIdentifierValue);
         });
         it('should return training category', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-
           expect(csvAsArray[2]).to.equal(String(trainingRecord.category.id));
         });
         it('should return training title', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-
           expect(csvAsArray[3]).to.equal(trainingRecord.title);
         });
-        it('should not return training title', async () => {
+        it('should return training title as empty string if null', async () => {
           trainingRecord.title = null;
-
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-
           expect(csvAsArray[3]).to.equal('');
+        });
+        describe('accredited', () => {
+          yesNoDontKnow.forEach((value) => {
+            it('should return accredited value for ' + value.value, async () => {
+              trainingRecord.accredited = value.value;
+              let accredited = '';
+              switch (trainingRecord.accredited) {
+                case 'Yes':
+                  accredited = '1';
+                  break;
+                case 'No':
+                  accredited = '0';
+                  break;
+                case "Don't know":
+                  accredited = '999';
+                  break;
+              }
+              const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
+              const csvAsArray = csv.split(',');
+              expect(csvAsArray[4]).to.equal(accredited);
+            });
+          });
+        });
+        it('should return deliveredBy as WhoDelivered', () => async () => {
+          const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
+          const csvAsArray = csv.split(',');
+          expect(csvAsArray[5]).to.equal(trainingRecord.deliveredBy);
+        });
+        it('should return externalProviderName as ProviderName', () => async () => {
+          const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
+          const csvAsArray = csv.split(',');
+          expect(csvAsArray[6]).to.equal(trainingRecord.externalProviderName);
+        });
+        it('should return howWasItDelivered as HowDelivered', () => async () => {
+          const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
+          const csvAsArray = csv.split(',');
+          expect(csvAsArray[7]).to.equal(trainingRecord.howWasItDelivered);
+        });
+        it('should return validityPeriodInMonth as Validity', () => async () => {
+          const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
+          const csvAsArray = csv.split(',');
+          expect(csvAsArray[8]).to.equal(trainingRecord.validityPeriodInMonth.toString());
+        });
+        it('should return validityPeriodInMonth as "none" if training does not expire', () => async () => {
+          trainingRecord.doesNotExpire = true;
+          const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
+          const csvAsArray = csv.split(',');
+          expect(csvAsArray[8]).to.equal('none');
         });
         it('should return training completed date', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[4]).to.equal(convertDateFormatToDayMonthYearWithSlashes(trainingRecord.completed));
+          expect(csvAsArray[9]).to.equal(convertDateFormatToDayMonthYearWithSlashes(trainingRecord.completed));
         });
         it('should return training expiry date', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[5]).to.equal(convertDateFormatToDayMonthYearWithSlashes(trainingRecord.expires));
+          expect(csvAsArray[10]).to.equal(convertDateFormatToDayMonthYearWithSlashes(trainingRecord.expires));
         });
-        yesNoDontKnow.forEach((value) => {
-          it('should return accredited value for ' + value.value, async () => {
-            trainingRecord.accredited = value.value;
-
-            let accredited = '';
-            switch (trainingRecord.accredited) {
-              case 'Yes':
-                accredited = '1';
-                break;
-
-              case 'No':
-                accredited = '0';
-                break;
-
-              case "Don't know":
-                accredited = '999';
-                break;
-            }
-
-            const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
-            const csvAsArray = csv.split(',');
-
-            expect(csvAsArray[6]).to.equal(accredited);
-          });
-        });
-
         it('should return training notes', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[7]).to.equal(trainingRecord.notes);
+          expect(csvAsArray[11]).to.equal(trainingRecord.notes);
         });
-
-        it('should not return training notes', async () => {
+        it('should return training notes as empty string if null', async () => {
           trainingRecord.notes = null;
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[7]).to.equal('');
+          expect(csvAsArray[11]).to.equal('');
         });
       });
     });
@@ -132,7 +144,7 @@ describe.only('trainingCSV', () => {
         const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
         const csvAsArray = csv.split(',');
 
-        expect(csvAsArray[7]).to.equal(trainingRecord.notes);
+        expect(csvAsArray[11]).to.equal(trainingRecord.notes);
       });
 
       it('should convert %20s into spaces', () => {
@@ -142,7 +154,7 @@ describe.only('trainingCSV', () => {
         const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
         const csvAsArray = csv.split(',');
 
-        expect(csvAsArray[7]).to.equal('Fire safety training');
+        expect(csvAsArray[11]).to.equal('Fire safety training');
       });
 
       it('should convert hexadecimal codes of unusual characters into original characters', () => {
@@ -153,7 +165,7 @@ describe.only('trainingCSV', () => {
         const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
         const csvAsArray = csv.split(',');
 
-        expect(csvAsArray[7]).to.equal("A very important note's hard to find - this saying is such a cliché");
+        expect(csvAsArray[11]).to.equal("A very important note's hard to find - this saying is such a cliché");
       });
     });
   });
