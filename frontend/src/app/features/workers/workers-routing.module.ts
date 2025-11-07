@@ -574,13 +574,7 @@ const routes: Routes = [
             resolve: { trainingCourses: TrainingCourseResolver },
             data: { title: 'Add a Training Record' },
           },
-          {
-            path: 'matching-layout',
-            component: TrainingCourseMatchingLayoutComponent,
-            data: {
-              title: 'Match the training record',
-            },
-          },
+
           {
             path: 'long-term-absence',
             component: LongTermAbsenceComponent,
@@ -867,6 +861,16 @@ const routes: Routes = [
               trainingRecord: TrainingRecordResolver,
             },
           },
+          {
+            path: 'matching-layout',
+            component: TrainingCourseMatchingLayoutComponent,
+            data: {
+              title: 'Match the training record',
+            },
+            resolve: {
+              trainingRecord: TrainingRecordResolver,
+            },
+          },
         ],
       },
       {
@@ -887,13 +891,7 @@ const routes: Routes = [
         resolve: { trainingCourses: TrainingCourseResolver },
         data: { title: 'Add a Training Record' },
       },
-      {
-        path: 'matching-layout',
-        component: TrainingCourseMatchingLayoutComponent,
-        data: {
-          title: 'Match the training record',
-        },
-      },
+
       {
         path: 'long-term-absence',
         component: LongTermAbsenceComponent,
