@@ -8,6 +8,8 @@ import { SelectStaffComponent } from './select-staff/select-staff.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
 import { SelectTrainingCategoryMultipleComponent } from './select-training-category-multiple/select-training-category-multiple.component';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
+import { SelectTrainingCourseForMultipleTrainingRecords } from './select-training-course-for-multiple-training-records/select-training-course-for-multiple-training-records.component';
+import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 
 const selectStaffRoute = {
   path: 'select-staff',
@@ -15,6 +17,16 @@ const selectStaffRoute = {
   data: { title: 'Select staff', workerPagination: false },
   resolve: {
     workers: WorkersResolver,
+    trainingCourses: TrainingCourseResolver,
+  },
+};
+
+const selectTrainingCourseRoute = {
+  path: 'select-training-course',
+  component: SelectTrainingCourseForMultipleTrainingRecords,
+  data: { title: 'How do you want to continue' },
+  resolve: {
+    trainingCourses: TrainingCourseResolver,
   },
 };
 
@@ -47,6 +59,7 @@ const trainingDetailsRouteWithGuard = {
 
 const routes: Routes = [
   selectStaffRoute,
+  selectTrainingCourseRoute,
   selectTrainingCategoryRouteWithGuard,
   trainingDetailsRouteWithGuard,
   {
@@ -59,6 +72,7 @@ const routes: Routes = [
         data: { title: 'Confirm multiple training' },
       },
       selectStaffRoute,
+      selectTrainingCourseRoute,
       selectTrainingCategoryRoute,
       trainingDetailsRoute,
     ],
