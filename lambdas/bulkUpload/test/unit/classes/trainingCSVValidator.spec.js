@@ -6,6 +6,7 @@ const dbmodels = require('../../../../../backend/server/models');
 sinon.stub(dbmodels.status, 'ready').value(false);
 const TrainingCsvValidator = require('../../../classes/trainingCSVValidator').TrainingCsvValidator;
 const mappings = require('../../../../../backend/reference/BUDIMappings').mappings;
+const { TrainingCourseDeliveredBy } = require('../../../../../backend/reference/databaseEnumTypes');
 
 describe('trainingCSVValidator', () => {
   describe('Validation', () => {
@@ -17,9 +18,13 @@ describe('trainingCSVValidator', () => {
         UNIQUEWORKERID: 'bar',
         CATEGORY: 1,
         TRAININGNAME: 'training',
+        ACCREDITED: '',
+        WHODELIVERED: '',
+        PROVIDERNAME: '',
+        HOWDELIVERED: '',
+        VALIDITY: '',
         DATECOMPLETED: '01/01/2022',
         EXPIRYDATE: '15/04/2022',
-        ACCREDITED: '',
         NOTES: '',
       };
     });
@@ -573,5 +578,107 @@ describe('trainingCSVValidator', () => {
         ]);
       });
     });
+
+    describe('_validateWhoDelivered()', () => {
+      it('should pass validation if WHODELIVERED is empty', () => {
+        trainingCsv.WHODELIVERED = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      const validValues = [
+        { WHODELIVERED: '1', deliveredBy: TrainingCourseDeliveredBy.InHouseStaff },
+        { WHODELIVERED: '2', deliveredBy: TrainingCourseDeliveredBy.ExternalProvider },
+      ];
+
+      validValues.forEach(({ WHODELIVERED, deliveredBy }) => {
+        it('should pass validation and set deliveredBy if a valid WHODELIVERED is provided', () => {
+          trainingCsv.WHODELIVERED = WHODELIVERED;
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator._validateWhoDelivered();
+
+          expect(validator.deliveredBy).to.equal(deliveredBy);
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+      });
+
+      it('should add WHODELIVERED_WARNING if WHODELIVERED is invalid', () => {
+        trainingCsv.WHODELIVERED = 'some invalid value';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+
+        expect(validator.deliveredBy).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            warnCode: 2070,
+            warnType: 'WHODELIVERED_WARNING',
+            warning: 'WHODELIVERED is invalid and will be ignored',
+            source: trainingCsv.WHODELIVERED,
+            column: 'WHODELIVERED',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
+
+    describe('_validateProviderName()', () => {
+      it('should pass validation if PROVIDERNAME is empty', () => {
+        trainingCsv.PROVIDERNAME = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+        validator._validateProviderName();
+
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      it('should pass validation set externalProviderName if WHODELIVERED is "2" and PROVIDERNAME is given', () => {
+        trainingCsv.WHODELIVERED = '2'; // external provider
+        trainingCsv.PROVIDERNAME = 'Care skill academy';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+        validator._validateProviderName();
+
+        expect(validator.externalProviderName).to.deep.equal('Care skill academy');
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            warnCode: 2080,
+            warnType: 'PROVIDERNAME_WARNING',
+            warning: 'PROVIDERNAME will be ignored as WHODELIVERED is not 2 (External provider)',
+            source: trainingCsv.PROVIDERNAME,
+            column: 'PROVIDERNAME',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add a warning if PROVIDERNAME is given and WHODELIVERED is not 2', () => {
+        trainingCsv.WHODELIVERED = '1'; // in-house staff
+        trainingCsv.PROVIDERNAME = 'Care skill academy';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+        validator._validateProviderName();
+
+        expect(validator.externalProviderName).to.deep.equal(null);
+        expect(validator.validationErrors).to.deep.equal([{}]);
+      });
+    });
+
+    describe('_validateHowDelivered()', () => {});
+
+    describe('_validateValidity()', () => {});
   });
 });

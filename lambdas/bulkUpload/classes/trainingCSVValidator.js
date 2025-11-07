@@ -62,6 +62,9 @@ class TrainingCsvValidator {
   static get NOTES_WARNING() {
     return 2070;
   }
+  static get WHODELIVERED_WARNING() {
+    return 2070;
+  }
 
   validate() {
     this._validateLocaleStId();
@@ -72,6 +75,10 @@ class TrainingCsvValidator {
     this._validateCategory();
     this._validateAccredited();
     this._validateNotes();
+    this._validateWhoDelivered();
+    this._validateProviderName();
+    this._validateHowDelivered();
+    this._validateValidity();
   }
 
   toJSON() {
@@ -123,44 +130,6 @@ class TrainingCsvValidator {
       return;
     }
     this._addValidationError('UNIQUE_WORKER_ID_ERROR', errMessage, this.currentLine.UNIQUEWORKERID, 'UNIQUEWORKERID');
-  }
-
-  _validateDateCompleted() {
-    if (!this.currentLine.DATECOMPLETED) {
-      this.dateCompleted = this.currentLine.DATECOMPLETED;
-      return;
-    }
-
-    const dateCompleted = moment.utc(this.currentLine.DATECOMPLETED, 'DD/MM/YYYY', true);
-    const errMessage = errors._getValidateDateCompletedErrMessage(dateCompleted);
-
-    if (!errMessage) {
-      this.dateCompleted = dateCompleted;
-      return;
-    }
-    this._addValidationError('DATE_COMPLETED_ERROR', errMessage, this.currentLine.DATECOMPLETED, 'DATECOMPLETED');
-  }
-
-  _validateExpiry() {
-    if (!this.currentLine.EXPIRYDATE) {
-      this.expiry = this.currentLine.EXPIRYDATE;
-      return;
-    }
-
-    const expiredDate = moment.utc(this.currentLine.EXPIRYDATE, 'DD/MM/YYYY', true);
-    const validationErrorDetails = errors._getValidateExpiryErrDetails(expiredDate, this.dateCompleted);
-
-    if (!validationErrorDetails) {
-      this.expiry = expiredDate;
-      return;
-    }
-
-    this._addValidationError(
-      'EXPIRY_DATE_ERROR',
-      validationErrorDetails.errMessage,
-      this.currentLine.EXPIRYDATE,
-      validationErrorDetails.errColumnName,
-    );
   }
 
   _validateDescription() {
@@ -218,6 +187,81 @@ class TrainingCsvValidator {
     return accreditedValues[key] || '';
   }
 
+  _validateWhoDelivered() {
+    if (!this.currentLine.WHODELIVERED) {
+      return;
+    }
+    const deliveredBy = this._convertWhoDelivered(this.currentLine.WHODELIVERED);
+
+    if (!deliveredBy) {
+      this._addValidationWarning(
+        'WHODELIVERED_WARNING',
+        'WHODELIVERED is invalid and will be ignored',
+        this.currentLine.WHODELIVERED,
+        'WHODELIVERED',
+      );
+    }
+
+    this.deliveredBy = deliveredBy;
+  }
+
+  _convertWhoDelivered(key) {
+    const whoDeliveredValues = {
+      1: 'In-house staff',
+      2: 'External provider',
+    };
+
+    return whoDeliveredValues[key];
+  }
+
+  _validateProviderName() {
+    // if (this.deliveredBy !== 'External provider') {
+    //   return;
+    // }
+  }
+
+  _validateHowDelivered() {}
+
+  _validateValidity() {}
+
+  _validateDateCompleted() {
+    if (!this.currentLine.DATECOMPLETED) {
+      this.dateCompleted = this.currentLine.DATECOMPLETED;
+      return;
+    }
+
+    const dateCompleted = moment.utc(this.currentLine.DATECOMPLETED, 'DD/MM/YYYY', true);
+    const errMessage = errors._getValidateDateCompletedErrMessage(dateCompleted);
+
+    if (!errMessage) {
+      this.dateCompleted = dateCompleted;
+      return;
+    }
+    this._addValidationError('DATE_COMPLETED_ERROR', errMessage, this.currentLine.DATECOMPLETED, 'DATECOMPLETED');
+  }
+
+  _validateExpiry() {
+    if (!this.currentLine.EXPIRYDATE) {
+      this.expiry = this.currentLine.EXPIRYDATE;
+      return;
+    }
+
+    const expiredDate = moment.utc(this.currentLine.EXPIRYDATE, 'DD/MM/YYYY', true);
+    const validationErrorDetails = errors._getValidateExpiryErrDetails(expiredDate, this.dateCompleted);
+
+    if (!validationErrorDetails) {
+      this.expiry = expiredDate;
+      return;
+    }
+
+    this._addValidationError(
+      'EXPIRY_DATE_ERROR',
+      validationErrorDetails.errMessage,
+      this.currentLine.EXPIRYDATE,
+      validationErrorDetails.errColumnName,
+    );
+  }
+
   _validateNotes() {
     const notes = this.currentLine.NOTES;
     const MAX_LENGTH = 1000;
@@ -247,6 +291,20 @@ class TrainingCsvValidator {
       errType: errorType,
       error: errorMessage,
       source: errorSource,
+      column: columnName,
+    });
+  }
+
+  _addValidationWarning(warnType, warning, warnSource, columnName) {
+    this.validationErrors.push({
+      origin: 'Training',
+      worker: this.currentLine.UNIQUEWORKERID,
+      name: this.currentLine.LOCALESTID,
+      lineNumber: this.lineNumber,
+      warnCode: TrainingCsvValidator[warnType],
+      warnType: warnType,
+      warning: warning,
+      source: warnSource,
       column: columnName,
     });
   }
