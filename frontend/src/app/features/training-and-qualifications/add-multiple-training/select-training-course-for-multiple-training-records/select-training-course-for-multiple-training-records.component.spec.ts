@@ -117,7 +117,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
     });
   });
 
-  it('should show a "Cancel" link and go back to the staff training page', async () => {
+  it('should show a "Cancel" link and go back to the training and qualifications page', async () => {
     const { getByRole, routerSpy, fixture } = await setup();
 
     const link = getByRole('link', { name: 'Cancel' });
@@ -127,7 +127,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
     fireEvent.click(link);
     fixture.detectChanges();
 
-    expect(routerSpy).toHaveBeenCalledWith(["dashboard"], {fragment: "training-and-qualifications"});
+    expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'training-and-qualifications' });
   });
 
   it('should show a "Continue" button', async () => {

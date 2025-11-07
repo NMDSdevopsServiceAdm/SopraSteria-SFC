@@ -431,7 +431,7 @@ describe('SelectStaffComponent', () => {
     });
   });
 
-  fdescribe('Continue', () => {
+  describe('Continue', () => {
     it('should store the selected staff in the training service when selecting all staff and pressing continue', async () => {
       const { component, fixture, getByText, workers, updateSelectedStaffSpy } = await setup();
 
