@@ -11,7 +11,7 @@ const {
   TrainingCourseDeliveryMode,
 } = require('../../../../../backend/reference/databaseEnumTypes');
 
-describe('trainingCSVValidator', () => {
+describe.only('trainingCSVValidator', () => {
   describe('Validation', () => {
     let trainingCsv;
 
@@ -598,7 +598,7 @@ describe('trainingCSVValidator', () => {
       ];
 
       validValues.forEach(({ WHODELIVERED, expected }) => {
-        it('should pass validation and set deliveredBy if a valid WHODELIVERED is provided', () => {
+        it(`should pass validation and set deliveredBy if a valid WHODELIVERED is provided: ${WHODELIVERED}`, () => {
           trainingCsv.WHODELIVERED = WHODELIVERED;
           const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
@@ -609,7 +609,7 @@ describe('trainingCSVValidator', () => {
         });
       });
 
-      it('should add WHODELIVERED_WARNING if WHODELIVERED is invalid', () => {
+      it('should add WHODELIVERED_ERROR if WHODELIVERED is invalid', () => {
         trainingCsv.WHODELIVERED = 'some invalid value';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
@@ -619,9 +619,9 @@ describe('trainingCSVValidator', () => {
         expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
-            warnCode: 2070,
-            warnType: 'WHODELIVERED_WARNING',
-            warning: 'WHODELIVERED is invalid and will be ignored',
+            errCode: 1080,
+            errType: 'WHODELIVERED_ERROR',
+            error: 'The code you have entered for WHODELIVERED is invalid',
             source: trainingCsv.WHODELIVERED,
             column: 'WHODELIVERED',
             lineNumber: 1,
@@ -655,7 +655,7 @@ describe('trainingCSVValidator', () => {
         expect(validator.validationErrors).to.deep.equal([]);
       });
 
-      it('should add a PROVIDERNAME_WARNING if PROVIDERNAME is given and WHODELIVERED is not 2', () => {
+      it('should add a PROVIDERNAME_ERROR if PROVIDERNAME is given and WHODELIVERED is not 2', () => {
         trainingCsv.WHODELIVERED = '1'; // in-house staff
         trainingCsv.PROVIDERNAME = 'Care skill academy';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -667,11 +667,11 @@ describe('trainingCSVValidator', () => {
         expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
-            warnCode: 2080,
+            warnCode: 2090,
             warnType: 'PROVIDERNAME_WARNING',
             warning: 'PROVIDERNAME will be ignored as WHODELIVERED is not 2 (External provider)',
             source: trainingCsv.PROVIDERNAME,
-            column: 'PROVIDERNAME',
+            column: 'WHODELIVERED/PROVIDERNAME',
             lineNumber: 1,
             name: 'foo',
             worker: 'bar',
@@ -697,7 +697,7 @@ describe('trainingCSVValidator', () => {
       ];
 
       validValues.forEach(({ HOWDELIVERED, expected }) => {
-        it('should pass validation and set howWasItDelivered if a valid HOWDELIVERED is provided', () => {
+        it(`should pass validation and set howWasItDelivered if a valid HOWDELIVERED is provided: ${HOWDELIVERED}`, () => {
           trainingCsv.HOWDELIVERED = HOWDELIVERED;
           const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
@@ -708,7 +708,7 @@ describe('trainingCSVValidator', () => {
         });
       });
 
-      it('should add a HOWDELIVERED_WARNING if HOWDELIVERED is invalid', () => {
+      it('should add a HOWDELIVERED_ERROR if HOWDELIVERED is invalid', () => {
         trainingCsv.HOWDELIVERED = 'some invalid value';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
@@ -718,9 +718,9 @@ describe('trainingCSVValidator', () => {
         expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
-            warnCode: 2090,
-            warnType: 'HOWDELIVERED_WARNING',
-            warning: 'HOWDELIVERED is invalid and will be ignored',
+            errCode: 1100,
+            errType: 'HOWDELIVERED_ERROR',
+            error: 'The code you have entered for HOWDELIVERED is invalid',
             source: trainingCsv.HOWDELIVERED,
             column: 'HOWDELIVERED',
             lineNumber: 1,
@@ -736,49 +736,66 @@ describe('trainingCSVValidator', () => {
         trainingCsv.VALIDITY = '';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
-        validator._validateValidity();
+        validator.validate();
 
         expect(validator.doesNotExpire).to.equal(undefined);
         expect(validator.validityPeriodInMonth).to.equal(undefined);
         expect(validator.validationErrors).to.deep.equal([]);
       });
 
-      it('should set doesNotExpire to true if VALIDITY is none', () => {
+      it('should set doesNotExpire to true if VALIDITY is "none"', () => {
+        trainingCsv.DATECOMPLETED = '';
+        trainingCsv.EXPIRYDATE = '';
         trainingCsv.VALIDITY = 'none';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
-        validator._validateValidity();
+        validator.validate();
 
         expect(validator.doesNotExpire).to.equal(true);
-        expect(validator.validityPeriodInMonth).to.equal(undefined);
+        expect(validator.validityPeriodInMonth).to.equal(null);
         expect(validator.validationErrors).to.deep.equal([]);
       });
 
-      it('should set doesNotExpire to false and validityPeriodInMonth to VALIDITY, if VALIDITY is a valid number', () => {
-        trainingCsv.VALIDITY = '24';
+      it('should add a warning if VALIDITY is "none" and expiry date is given', () => {
+        trainingCsv.VALIDITY = 'none';
+        trainingCsv.DATECOMPLETED = '01/04/2024';
+        trainingCsv.EXPIRYDATE = '01/04/2026';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
-        validator._validateValidity();
+        validator.validate();
 
-        expect(validator.doesNotExpire).to.equal(false);
-        expect(validator.validityPeriodInMonth).to.equal(24);
-        expect(validator.validationErrors).to.deep.equal([]);
+        expect(validator.doesNotExpire).to.equal(true);
+        expect(validator.validityPeriodInMonth).to.equal(null);
+        expect(validator.expiry?.format('YYYY-MM-DD')).to.deep.equal('2026-04-01');
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            warnCode: 2110,
+            warnType: 'VALIDITY_WARNING',
+            warning: 'The VALIDITY you have entered does not match the EXPIRYDATE',
+            source: trainingCsv.VALIDITY,
+            column: 'EXPIRYDATE/VALIDITY',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
       });
 
-      it('should add a VALIDITY_WARNING, if VALIDITY is not a number', () => {
+      it('should add a VALIDITY_ERROR if VALIDITY is not none and is not a number', () => {
         trainingCsv.VALIDITY = 'some invalid value';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
-        validator._validateValidity();
+        validator.validate();
 
         expect(validator.doesNotExpire).to.equal(undefined);
         expect(validator.validityPeriodInMonth).to.equal(undefined);
         expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
-            warnCode: 2100,
-            warnType: 'VALIDITY_WARNING',
-            warning: 'VALIDITY is invalid and will be ignored',
+            errCode: 1110,
+            errType: 'VALIDITY_ERROR',
+            error: 'VALIDITY should be either "none" or a number between 1 and 999',
             source: trainingCsv.VALIDITY,
             column: 'VALIDITY',
             lineNumber: 1,
@@ -790,28 +807,149 @@ describe('trainingCSVValidator', () => {
 
       const invalidNumbers = ['0', '-1', '1000'];
 
-      it('should add a VALIDITY_WARNING, if VALIDITY is an invalid number', () => {
-        trainingCsv.VALIDITY = 'some invalid value';
-        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+      invalidNumbers.forEach((invalidNumber) => {
+        it(`should add a VALIDITY_ERROR, if VALIDITY is out of the range 1-999: ${invalidNumber}`, () => {
+          trainingCsv.VALIDITY = invalidNumber;
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
-        validator._validateValidity();
+          validator.validate();
 
-        expect(validator.doesNotExpire).to.equal(undefined);
-        expect(validator.validityPeriodInMonth).to.equal(undefined);
-        expect(validator.validationErrors).to.deep.equal([
-          {
-            origin: 'Training',
-            warnCode: 2100,
-            warnType: 'VALIDITY_WARNING',
-            warning: 'VALIDITY is invalid and will be ignored',
-            source: trainingCsv.VALIDITY,
-            column: 'VALIDITY',
-            lineNumber: 1,
-            name: 'foo',
-            worker: 'bar',
-          },
-        ]);
+          expect(validator.doesNotExpire).to.equal(undefined);
+          expect(validator.validityPeriodInMonth).to.equal(undefined);
+          expect(validator.validationErrors).to.deep.equal([
+            {
+              origin: 'Training',
+              errCode: 1110,
+              errType: 'VALIDITY_ERROR',
+              error: 'VALIDITY should be either "none" or a number between 1 and 999',
+              source: trainingCsv.VALIDITY,
+              column: 'VALIDITY',
+              lineNumber: 1,
+              name: 'foo',
+              worker: 'bar',
+            },
+          ]);
+        });
       });
+
+      describe('when VALIDITY given as a valid number of month', () => {
+        it('should set doesNotExpire to false and validityPeriodInMonth to VALIDITY', () => {
+          trainingCsv.VALIDITY = '24';
+          trainingCsv.DATECOMPLETED = '';
+          trainingCsv.EXPIRYDATE = '';
+
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator.validate();
+
+          expect(validator.doesNotExpire).to.equal(false);
+          expect(validator.validityPeriodInMonth).to.equal(24);
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+
+        it('should set the expiry date if expiry date is empty and completion date is given', () => {
+          trainingCsv.VALIDITY = '24';
+          trainingCsv.DATECOMPLETED = '21/04/2024';
+          trainingCsv.EXPIRYDATE = '';
+
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator.validate();
+
+          expect(validator.doesNotExpire).to.equal(false);
+          expect(validator.validityPeriodInMonth).to.equal(24);
+          expect(validator.dateCompleted?.format('YYYY-MM-DD')).to.deep.equal('2024-04-21');
+          expect(validator.expiry?.format('YYYY-MM-DD')).to.deep.equal('2026-04-20');
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+
+        it('should add a soft warning but still accept both values, if EXPIRYDATE does not agree with VALIDITY', () => {
+          trainingCsv.VALIDITY = '24';
+          trainingCsv.DATECOMPLETED = '21/04/2024';
+          trainingCsv.EXPIRYDATE = '31/12/2030';
+
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator.validate();
+
+          expect(validator.doesNotExpire).to.equal(false);
+          expect(validator.validityPeriodInMonth).to.equal(24);
+          expect(validator.dateCompleted?.format('YYYY-MM-DD')).to.deep.equal('2024-04-21');
+          expect(validator.expiry?.format('YYYY-MM-DD')).to.deep.equal('2030-12-31');
+
+          expect(validator.validationErrors).to.deep.equal([
+            {
+              origin: 'Training',
+              warnCode: 2110,
+              warnType: 'VALIDITY_WARNING',
+              warning: 'The EXPIRYDATE you have entered does not match the VALIDITY',
+              source: trainingCsv.VALIDITY,
+              column: 'EXPIRYDATE/VALIDITY',
+              lineNumber: 1,
+              name: 'foo',
+              worker: 'bar',
+            },
+          ]);
+        });
+
+        it('should not add the soft warning if EXPIRYDATE agree with VALIDITY', () => {
+          trainingCsv.VALIDITY = '24';
+          trainingCsv.DATECOMPLETED = '21/04/2024';
+          trainingCsv.EXPIRYDATE = '20/04/2026';
+
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator.validate();
+
+          expect(validator.doesNotExpire).to.equal(false);
+          expect(validator.validityPeriodInMonth).to.equal(24);
+          expect(validator.dateCompleted?.format('YYYY-MM-DD')).to.deep.equal('2024-04-21');
+          expect(validator.expiry?.format('YYYY-MM-DD')).to.deep.equal('2026-04-20');
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+      });
+    });
+  });
+
+  describe('toAPI', () => {
+    it('should return the training record values in a suitable format', () => {
+      trainingCsv = {
+        LOCALESTID: 'foo',
+        UNIQUEWORKERID: 'bar',
+        CATEGORY: 1,
+        TRAININGNAME: 'training',
+        ACCREDITED: '1',
+        WHODELIVERED: '2',
+        PROVIDERNAME: 'Care skill academy',
+        HOWDELIVERED: '1',
+        VALIDITY: '24',
+        DATECOMPLETED: '01/01/2022',
+        EXPIRYDATE: '15/04/2022',
+        NOTES: 'some notes',
+      };
+
+      const expectedOutput = {
+        trainingCategory: {
+          id: 8, // because of mapping { ASC: 8, BUDI: 1 },
+        },
+        completed: '2022-01-01',
+        expires: '2022-04-15',
+        title: 'training',
+        notes: 'some notes',
+        accredited: 'Yes',
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skill academy',
+        howWasItDelivered: 'Face to face',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+      };
+
+      const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+      validator.validate();
+
+      const actual = validator.toAPI();
+
+      expect(actual).to.deep.equal(expectedOutput);
     });
   });
 });

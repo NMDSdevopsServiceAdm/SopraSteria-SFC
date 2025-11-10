@@ -44,6 +44,19 @@ class TrainingCsvValidator {
   static get NOTES_ERROR() {
     return 1070;
   }
+  static get WHODELIVERED_ERROR() {
+    return 1080;
+  }
+  static get PROVIDERNAME_ERROR() {
+    return 1090;
+  }
+  static get HOWDELIVERED_ERROR() {
+    return 1100;
+  }
+  static get VALIDITY_ERROR() {
+    return 1110;
+  }
+
   static get DATE_COMPLETED_WARNING() {
     return 2020;
   }
@@ -63,13 +76,16 @@ class TrainingCsvValidator {
     return 2070;
   }
   static get WHODELIVERED_WARNING() {
-    return 2070;
+    return 2090;
   }
   static get PROVIDERNAME_WARNING() {
-    return 2080;
+    return 2090;
   }
   static get HOWDELIVERED_WARNING() {
-    return 2090;
+    return 2100;
+  }
+  static get VALIDITY_WARNING() {
+    return 2110;
   }
 
   validate() {
@@ -98,6 +114,11 @@ class TrainingCsvValidator {
       accredited: this.accredited,
       notes: this.notes,
       lineNumber: this.lineNumber,
+      // deliveredBy: this.deliveredBy,
+      // externalProviderName: this.externalProviderName,
+      // howWasItDelivered: this.howWasItDelivered,
+      // doesNotExpire: this.doesNotExpire,
+      // validityPeriodInMonth: this.validityPeriodInMonth,
     };
   }
 
@@ -111,6 +132,11 @@ class TrainingCsvValidator {
       title: this.trainingName ? this.trainingName : undefined,
       notes: this.notes ? this.notes : undefined,
       accredited: this.accredited ? this.accredited : undefined,
+      deliveredBy: this.deliveredBy,
+      externalProviderName: this.externalProviderName,
+      howWasItDelivered: this.howWasItDelivered,
+      doesNotExpire: this.doesNotExpire,
+      validityPeriodInMonth: this.validityPeriodInMonth,
     };
 
     return changeProperties;
@@ -200,9 +226,9 @@ class TrainingCsvValidator {
     const deliveredBy = this._convertWhoDelivered(this.currentLine.WHODELIVERED);
 
     if (!deliveredBy) {
-      this._addValidationWarning(
-        'WHODELIVERED_WARNING',
-        'WHODELIVERED is invalid and will be ignored',
+      this._addValidationError(
+        'WHODELIVERED_ERROR',
+        'The code you have entered for WHODELIVERED is invalid',
         this.currentLine.WHODELIVERED,
         'WHODELIVERED',
       );
@@ -230,7 +256,7 @@ class TrainingCsvValidator {
         'PROVIDERNAME_WARNING',
         'PROVIDERNAME will be ignored as WHODELIVERED is not 2 (External provider)',
         this.currentLine.PROVIDERNAME,
-        'PROVIDERNAME',
+        'WHODELIVERED/PROVIDERNAME',
       );
       return;
     }
@@ -246,9 +272,9 @@ class TrainingCsvValidator {
     const howWasItDelivered = this._convertHowDelivered(this.currentLine.HOWDELIVERED);
 
     if (!howWasItDelivered) {
-      this._addValidationWarning(
-        'HOWDELIVERED_WARNING',
-        'HOWDELIVERED is invalid and will be ignored',
+      this._addValidationError(
+        'HOWDELIVERED_ERROR',
+        'The code you have entered for HOWDELIVERED is invalid',
         this.currentLine.HOWDELIVERED,
         'HOWDELIVERED',
       );
@@ -267,7 +293,70 @@ class TrainingCsvValidator {
     return howDeliveredValues[key];
   }
 
-  _validateValidity() {}
+  _validateValidity() {
+    const validity = this.currentLine.VALIDITY;
+    if (!validity) {
+      return;
+    }
+
+    if (validity === 'none') {
+      this._handleValidityAsNone();
+      return;
+    }
+
+    const validityInMonth = parseInt(validity);
+
+    if (validityInMonth > 1 && validityInMonth <= 999) {
+      this.doesNotExpire = false;
+      this.validityPeriodInMonth = validityInMonth;
+      this._matchUpWithExpiryDate();
+      return;
+    }
+
+    this._addValidationError(
+      'VALIDITY_ERROR',
+      'VALIDITY should be either "none" or a number between 1 and 999',
+      this.currentLine.VALIDITY,
+      'VALIDITY',
+    );
+  }
+
+  _handleValidityAsNone() {
+    this.doesNotExpire = true;
+    this.validityPeriodInMonth = null;
+    if (this.expiry) {
+      this._addValidationWarning(
+        'VALIDITY_WARNING',
+        'The VALIDITY you have entered does not match the EXPIRYDATE',
+        this.currentLine.VALIDITY,
+        'EXPIRYDATE/VALIDITY',
+      );
+    }
+    return;
+  }
+
+  _matchUpWithExpiryDate() {
+    if (!this.dateCompleted) {
+      return;
+    }
+
+    const expectedExpiryDate = this.dateCompleted.clone().add(this.validityPeriodInMonth, 'months').subtract(1, 'day');
+
+    if (!this.expiry) {
+      this.expiry = expectedExpiryDate;
+      return;
+    }
+
+    const expiryDateMatchExpected = expectedExpiryDate.isSame(this.expiry, 'day');
+    if (!expiryDateMatchExpected) {
+      this._addValidationWarning(
+        'VALIDITY_WARNING',
+        'The EXPIRYDATE you have entered does not match the VALIDITY',
+        this.currentLine.VALIDITY,
+        'EXPIRYDATE/VALIDITY',
+      );
+    }
+  }
 
   _validateDateCompleted() {
     if (!this.currentLine.DATECOMPLETED) {
