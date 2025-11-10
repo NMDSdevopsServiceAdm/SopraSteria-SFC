@@ -680,7 +680,7 @@ describe('trainingCSVValidator', () => {
       });
     });
 
-    describe.only('_validateHowDelivered()', () => {
+    describe('_validateHowDelivered()', () => {
       it('should pass validation if HOWDELIVERED is empty', () => {
         trainingCsv.HOWDELIVERED = '';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -731,6 +731,87 @@ describe('trainingCSVValidator', () => {
       });
     });
 
-    describe('_validateValidity()', () => {});
+    describe('_validateValidity()', () => {
+      it('should pass validation if VALIDITY is empty', () => {
+        trainingCsv.VALIDITY = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateValidity();
+
+        expect(validator.doesNotExpire).to.equal(undefined);
+        expect(validator.validityPeriodInMonth).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      it('should set doesNotExpire to true if VALIDITY is none', () => {
+        trainingCsv.VALIDITY = 'none';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateValidity();
+
+        expect(validator.doesNotExpire).to.equal(true);
+        expect(validator.validityPeriodInMonth).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      it('should set doesNotExpire to false and validityPeriodInMonth to VALIDITY, if VALIDITY is a valid number', () => {
+        trainingCsv.VALIDITY = '24';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateValidity();
+
+        expect(validator.doesNotExpire).to.equal(false);
+        expect(validator.validityPeriodInMonth).to.equal(24);
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      it('should add a VALIDITY_WARNING, if VALIDITY is not a number', () => {
+        trainingCsv.VALIDITY = 'some invalid value';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateValidity();
+
+        expect(validator.doesNotExpire).to.equal(undefined);
+        expect(validator.validityPeriodInMonth).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            warnCode: 2100,
+            warnType: 'VALIDITY_WARNING',
+            warning: 'VALIDITY is invalid and will be ignored',
+            source: trainingCsv.VALIDITY,
+            column: 'VALIDITY',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      const invalidNumbers = ['0', '-1', '1000'];
+
+      it('should add a VALIDITY_WARNING, if VALIDITY is an invalid number', () => {
+        trainingCsv.VALIDITY = 'some invalid value';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateValidity();
+
+        expect(validator.doesNotExpire).to.equal(undefined);
+        expect(validator.validityPeriodInMonth).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            warnCode: 2100,
+            warnType: 'VALIDITY_WARNING',
+            warning: 'VALIDITY is invalid and will be ignored',
+            source: trainingCsv.VALIDITY,
+            column: 'VALIDITY',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
   });
 });
