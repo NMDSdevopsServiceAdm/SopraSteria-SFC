@@ -6,7 +6,10 @@ const dbmodels = require('../../../../../backend/server/models');
 sinon.stub(dbmodels.status, 'ready').value(false);
 const TrainingCsvValidator = require('../../../classes/trainingCSVValidator').TrainingCsvValidator;
 const mappings = require('../../../../../backend/reference/BUDIMappings').mappings;
-const { TrainingCourseDeliveredBy } = require('../../../../../backend/reference/databaseEnumTypes');
+const {
+  TrainingCourseDeliveredBy,
+  TrainingCourseDeliveryMode,
+} = require('../../../../../backend/reference/databaseEnumTypes');
 
 describe('trainingCSVValidator', () => {
   describe('Validation', () => {
@@ -590,18 +593,18 @@ describe('trainingCSVValidator', () => {
       });
 
       const validValues = [
-        { WHODELIVERED: '1', deliveredBy: TrainingCourseDeliveredBy.InHouseStaff },
-        { WHODELIVERED: '2', deliveredBy: TrainingCourseDeliveredBy.ExternalProvider },
+        { WHODELIVERED: '1', expected: TrainingCourseDeliveredBy.InHouseStaff },
+        { WHODELIVERED: '2', expected: TrainingCourseDeliveredBy.ExternalProvider },
       ];
 
-      validValues.forEach(({ WHODELIVERED, deliveredBy }) => {
+      validValues.forEach(({ WHODELIVERED, expected }) => {
         it('should pass validation and set deliveredBy if a valid WHODELIVERED is provided', () => {
           trainingCsv.WHODELIVERED = WHODELIVERED;
           const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
           validator._validateWhoDelivered();
 
-          expect(validator.deliveredBy).to.equal(deliveredBy);
+          expect(validator.deliveredBy).to.equal(expected);
           expect(validator.validationErrors).to.deep.equal([]);
         });
       });
@@ -649,6 +652,18 @@ describe('trainingCSVValidator', () => {
         validator._validateProviderName();
 
         expect(validator.externalProviderName).to.deep.equal('Care skill academy');
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      it('should add a PROVIDERNAME_WARNING if PROVIDERNAME is given and WHODELIVERED is not 2', () => {
+        trainingCsv.WHODELIVERED = '1'; // in-house staff
+        trainingCsv.PROVIDERNAME = 'Care skill academy';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+        validator._validateProviderName();
+
+        expect(validator.externalProviderName).to.equal(undefined);
         expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
@@ -663,21 +678,58 @@ describe('trainingCSVValidator', () => {
           },
         ]);
       });
-
-      it('should add a warning if PROVIDERNAME is given and WHODELIVERED is not 2', () => {
-        trainingCsv.WHODELIVERED = '1'; // in-house staff
-        trainingCsv.PROVIDERNAME = 'Care skill academy';
-        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
-
-        validator._validateWhoDelivered();
-        validator._validateProviderName();
-
-        expect(validator.externalProviderName).to.deep.equal(null);
-        expect(validator.validationErrors).to.deep.equal([{}]);
-      });
     });
 
-    describe('_validateHowDelivered()', () => {});
+    describe.only('_validateHowDelivered()', () => {
+      it('should pass validation if HOWDELIVERED is empty', () => {
+        trainingCsv.HOWDELIVERED = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateHowDelivered();
+
+        expect(validator.howWasItDelivered).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      const validValues = [
+        { HOWDELIVERED: '1', expected: TrainingCourseDeliveryMode.FaceToFace },
+        { HOWDELIVERED: '2', expected: TrainingCourseDeliveryMode.ELearning },
+      ];
+
+      validValues.forEach(({ HOWDELIVERED, expected }) => {
+        it('should pass validation and set howWasItDelivered if a valid HOWDELIVERED is provided', () => {
+          trainingCsv.HOWDELIVERED = HOWDELIVERED;
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator._validateHowDelivered();
+
+          expect(validator.howWasItDelivered).to.equal(expected);
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+      });
+
+      it('should add a HOWDELIVERED_WARNING if HOWDELIVERED is invalid', () => {
+        trainingCsv.HOWDELIVERED = 'some invalid value';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateHowDelivered();
+
+        expect(validator.howWasItDelivered).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            warnCode: 2090,
+            warnType: 'HOWDELIVERED_WARNING',
+            warning: 'HOWDELIVERED is invalid and will be ignored',
+            source: trainingCsv.HOWDELIVERED,
+            column: 'HOWDELIVERED',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
 
     describe('_validateValidity()', () => {});
   });

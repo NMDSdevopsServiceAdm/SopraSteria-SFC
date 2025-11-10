@@ -65,6 +65,12 @@ class TrainingCsvValidator {
   static get WHODELIVERED_WARNING() {
     return 2070;
   }
+  static get PROVIDERNAME_WARNING() {
+    return 2080;
+  }
+  static get HOWDELIVERED_WARNING() {
+    return 2090;
+  }
 
   validate() {
     this._validateLocaleStId();
@@ -215,12 +221,51 @@ class TrainingCsvValidator {
   }
 
   _validateProviderName() {
-    // if (this.deliveredBy !== 'External provider') {
-    //   return;
-    // }
+    if (!this.currentLine.PROVIDERNAME) {
+      return;
+    }
+
+    if (this.deliveredBy !== 'External provider') {
+      this._addValidationWarning(
+        'PROVIDERNAME_WARNING',
+        'PROVIDERNAME will be ignored as WHODELIVERED is not 2 (External provider)',
+        this.currentLine.PROVIDERNAME,
+        'PROVIDERNAME',
+      );
+      return;
+    }
+
+    this.externalProviderName = this.currentLine.PROVIDERNAME;
   }
 
-  _validateHowDelivered() {}
+  _validateHowDelivered() {
+    if (!this.currentLine.HOWDELIVERED) {
+      return;
+    }
+
+    const howWasItDelivered = this._convertHowDelivered(this.currentLine.HOWDELIVERED);
+
+    if (!howWasItDelivered) {
+      this._addValidationWarning(
+        'HOWDELIVERED_WARNING',
+        'HOWDELIVERED is invalid and will be ignored',
+        this.currentLine.HOWDELIVERED,
+        'HOWDELIVERED',
+      );
+      return;
+    }
+
+    this.howWasItDelivered = howWasItDelivered;
+  }
+
+  _convertHowDelivered(key) {
+    const howDeliveredValues = {
+      1: 'Face to face',
+      2: 'E-learning',
+    };
+
+    return howDeliveredValues[key];
+  }
 
   _validateValidity() {}
 
