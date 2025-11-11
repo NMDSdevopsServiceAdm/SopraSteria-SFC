@@ -458,6 +458,21 @@ describe('StaffRecordComponent', () => {
 
         expect(updateWorkerSpy).not.toHaveBeenCalled();
       });
+
+      it('should not call updateWorker even if completed is false, if user does not have permission to edit worker', async () => {
+        const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
+
+        await setup({
+          permissions: [],
+          workerService: {
+            addStaffRecordInProgress: false,
+            updateWorker: updateWorkerSpy,
+            worker: { completed: false },
+          },
+        });
+
+        expect(updateWorkerSpy).not.toHaveBeenCalled();
+      });
     });
   });
 
