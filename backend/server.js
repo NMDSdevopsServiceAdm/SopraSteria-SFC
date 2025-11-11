@@ -62,6 +62,7 @@ var careWorkforcePathwayWorkplaceAwarenessAnswers = require('./server/routes/car
 const { careWorkforcePathwayRouter } = require('./server/routes/careWorkforcePathway');
 const { dhaRouter } = require('./server/routes/delegatedHealthcareActivities');
 const { cmsRouter } = require('./server/routes/cms');
+const { trainingProviders } = require('./server/routes/trainingProviders');
 
 // admin route
 var admin = require('./server/routes/admin');
