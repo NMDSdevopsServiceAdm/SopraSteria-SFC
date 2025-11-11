@@ -11,7 +11,7 @@ const {
   TrainingCourseDeliveryMode,
 } = require('../../../../../backend/reference/databaseEnumTypes');
 
-describe.only('trainingCSVValidator', () => {
+describe('trainingCSVValidator', () => {
   describe('Validation', () => {
     let trainingCsv;
 
@@ -911,9 +911,52 @@ describe.only('trainingCSVValidator', () => {
     });
   });
 
+  describe('toJSON', () => {
+    it('should return the training record values in a suitable format', () => {
+      const trainingCsv = {
+        LOCALESTID: 'foo',
+        UNIQUEWORKERID: 'bar',
+        CATEGORY: 1,
+        TRAININGNAME: 'training',
+        ACCREDITED: '1',
+        WHODELIVERED: '2',
+        PROVIDERNAME: 'Care skill academy',
+        HOWDELIVERED: '1',
+        VALIDITY: '24',
+        DATECOMPLETED: '01/01/2022',
+        EXPIRYDATE: '15/04/2022',
+        NOTES: 'some notes',
+      };
+
+      const expectedOutput = {
+        localId: 'foo',
+        uniqueWorkerId: 'bar',
+        lineNumber: 1,
+        category: 8,
+        completed: '01/01/2022',
+        expiry: '15/04/2022',
+        trainingName: 'training',
+        notes: 'some notes',
+        accredited: 'Yes',
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skill academy',
+        howWasItDelivered: 'Face to face',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+      };
+
+      const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+      validator.validate();
+
+      const actual = validator.toJSON();
+
+      expect(actual).to.deep.equal(expectedOutput);
+    });
+  });
+
   describe('toAPI', () => {
     it('should return the training record values in a suitable format', () => {
-      trainingCsv = {
+      const trainingCsv = {
         LOCALESTID: 'foo',
         UNIQUEWORKERID: 'bar',
         CATEGORY: 1,

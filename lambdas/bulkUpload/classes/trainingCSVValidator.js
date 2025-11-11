@@ -114,11 +114,11 @@ class TrainingCsvValidator {
       accredited: this.accredited,
       notes: this.notes,
       lineNumber: this.lineNumber,
-      // deliveredBy: this.deliveredBy,
-      // externalProviderName: this.externalProviderName,
-      // howWasItDelivered: this.howWasItDelivered,
-      // doesNotExpire: this.doesNotExpire,
-      // validityPeriodInMonth: this.validityPeriodInMonth,
+      deliveredBy: this.deliveredBy,
+      externalProviderName: this.externalProviderName,
+      howWasItDelivered: this.howWasItDelivered,
+      doesNotExpire: this.doesNotExpire,
+      validityPeriodInMonth: this.validityPeriodInMonth,
     };
   }
 
