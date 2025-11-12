@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { DecimalPipe } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { EmailCampaignService } from '@core/services/admin/email-campaign.service';
@@ -14,7 +15,7 @@ import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-co
 describe('InactiveEmailsComponent', () => {
   async function setup() {
     return render(InactiveEmailsComponent, {
-      imports: [SharedModule, HttpClientTestingModule],
+      imports: [SharedModule],
       declarations: [SendEmailsConfirmationDialogComponent],
       providers: [
         EmailCampaignService,
@@ -38,7 +39,7 @@ describe('InactiveEmailsComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
   }
 

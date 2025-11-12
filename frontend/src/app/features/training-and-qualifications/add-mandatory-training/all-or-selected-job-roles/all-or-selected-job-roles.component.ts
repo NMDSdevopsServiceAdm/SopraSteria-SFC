@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-all-or-selected-job-roles',
   templateUrl: './all-or-selected-job-roles.component.html',
+  standalone: false,
 })
 export class AllOrSelectedJobRolesComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

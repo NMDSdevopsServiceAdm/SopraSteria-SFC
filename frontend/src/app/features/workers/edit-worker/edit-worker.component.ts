@@ -4,7 +4,8 @@ import { Establishment } from '@core/model/establishment.model';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
-  templateUrl: './edit-worker.component.html',
+    templateUrl: './edit-worker.component.html',
+    standalone: false
 })
 export class EditWorkerComponent implements OnInit, OnDestroy {
   public workplace: Establishment;

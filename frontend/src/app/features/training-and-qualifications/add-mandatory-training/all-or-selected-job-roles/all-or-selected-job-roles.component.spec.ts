@@ -1,7 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MandatoryTrainingService } from '@core/services/training.service';
@@ -31,7 +32,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
     const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(AllOrSelectedJobRolesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMandatoryTrainingModule],
+      imports: [SharedModule, RouterModule, AddMandatoryTrainingModule],
       providers: [
         {
           provide: MandatoryTrainingService,
@@ -52,6 +53,16 @@ describe('AllOrSelectedJobRolesComponent', () => {
         },
         AlertService,
         WindowRef,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          // mock the MandatoryTrainingCategoriesResolver,
+          // to avoid dangling subscription causing await fixture.whenStable() to timeout
+          provide: MandatoryTrainingCategoriesResolver,
+          useValue: {
+            resolve: () => {},
+          },
+        },
       ],
     });
 
@@ -300,6 +311,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
         const { fixture, getByText, alertSpy } = await setup();
 
         selectAllJobRolesAndSubmit(fixture, getByText);
+
         await fixture.whenStable();
 
         expect(alertSpy).toHaveBeenCalledWith({

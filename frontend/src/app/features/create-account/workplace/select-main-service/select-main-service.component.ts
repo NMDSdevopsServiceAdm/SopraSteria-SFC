@@ -12,8 +12,9 @@ import {
 } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
-  selector: 'app-select-main-service-create-account',
-  templateUrl: '../../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
+    selector: 'app-select-main-service-create-account',
+    templateUrl: '../../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
+    standalone: false
 })
 export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;

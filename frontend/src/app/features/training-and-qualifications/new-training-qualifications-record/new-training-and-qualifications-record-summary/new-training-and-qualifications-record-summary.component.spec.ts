@@ -1,9 +1,9 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import { NewTrainingAndQualificationsRecordSummaryComponent } from './new-training-and-qualifications-record-summary.component';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
   let component: NewTrainingAndQualificationsRecordSummaryComponent;
@@ -11,9 +11,9 @@ describe('NewTrainingAndQualificationsRecordSummaryComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [],
-      providers: [],
+      imports: [],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(NewTrainingAndQualificationsRecordSummaryComponent);

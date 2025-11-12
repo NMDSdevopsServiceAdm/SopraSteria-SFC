@@ -13,8 +13,9 @@ import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-h
 import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
-  selector: 'app-staff-what-kind-of-delegated-healthcare-activities',
-  templateUrl: './staff-what-kind-of-delegated-healthcare-activities.component.html',
+    selector: 'app-staff-what-kind-of-delegated-healthcare-activities',
+    templateUrl: './staff-what-kind-of-delegated-healthcare-activities.component.html',
+    standalone: false
 })
 export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Question implements OnInit {
   public section = WorkplaceFlowSections.SERVICES;

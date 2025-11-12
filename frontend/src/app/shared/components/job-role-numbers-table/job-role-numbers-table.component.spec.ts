@@ -1,6 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
 import lodash from 'lodash';
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { StarterLeaverVacancy } from '@core/model/establishment.model';
 import { SharedModule } from '@shared/shared.module';
@@ -36,8 +37,8 @@ describe('JobRolesNumberTableComponent', () => {
     );
 
     const setupTools = await render(JobRoleNumbersTableComponent, {
-      imports: [SharedModule, ReactiveFormsModule, HttpClientTestingModule],
-      providers: [],
+      imports: [SharedModule, ReactiveFormsModule],
+      providers: [provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         jobRoleNumbers,
         selectedJobRoles,

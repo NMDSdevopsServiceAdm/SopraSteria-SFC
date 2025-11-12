@@ -14,8 +14,9 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { ApprovalOrRejectionDialogComponent } from '@features/admin/components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
 @Component({
-  selector: 'app-cqc-individual-main-service-change',
-  templateUrl: './cqc-individual-main-service-change.component.html',
+    selector: 'app-cqc-individual-main-service-change',
+    templateUrl: './cqc-individual-main-service-change.component.html',
+    standalone: false
 })
 export class CqcIndividualMainServiceChangeComponent implements OnInit {
   public registration: CqcStatusChange;

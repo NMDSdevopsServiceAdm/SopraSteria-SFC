@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
@@ -27,7 +28,7 @@ describe('StaffSummaryComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
     const setupTools = await render(StaffSummaryComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [PaginationComponent, TablePaginationWrapperComponent],
       providers: [
         {
@@ -42,7 +43,7 @@ describe('StaffSummaryComponent', () => {
         },
         WorkerService,
         provideRouter([]),
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: establishment,
         workers: workers,

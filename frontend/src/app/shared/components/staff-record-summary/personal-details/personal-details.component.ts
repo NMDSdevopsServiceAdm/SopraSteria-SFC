@@ -4,8 +4,9 @@ import dayjs from 'dayjs';
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 
 @Component({
-  selector: 'app-personal-details',
-  templateUrl: './personal-details.component.html',
+    selector: 'app-personal-details',
+    templateUrl: './personal-details.component.html',
+    standalone: false
 })
 export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;

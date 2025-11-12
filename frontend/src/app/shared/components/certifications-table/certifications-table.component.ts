@@ -2,9 +2,10 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Certificate } from '@core/model/trainingAndQualifications.model';
 
 @Component({
-  selector: 'app-certifications-table',
-  templateUrl: './certifications-table.component.html',
-  styleUrls: ['./certifications-table.component.scss'],
+    selector: 'app-certifications-table',
+    templateUrl: './certifications-table.component.html',
+    styleUrls: ['./certifications-table.component.scss'],
+    standalone: false
 })
 export class CertificationsTableComponent implements OnInit {
   @Input() certificates: Certificate[] = [];

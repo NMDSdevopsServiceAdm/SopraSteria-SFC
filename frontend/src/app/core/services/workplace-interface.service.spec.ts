@@ -1,8 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { WorkplaceInterfaceService } from './workplace-interface.service';
 import { environment } from 'src/environments/environment';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('WorkplaceInterfaceService', () => {
   let service: WorkplaceInterfaceService;
@@ -10,8 +11,8 @@ describe('WorkplaceInterfaceService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [WorkplaceInterfaceService],
+      imports: [],
+      providers: [WorkplaceInterfaceService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(WorkplaceInterfaceService);
 
@@ -30,7 +31,9 @@ describe('WorkplaceInterfaceService', () => {
     it('should call the establishmentExistsCheck/locationId endpoint', () => {
       service.checkIfEstablishmentExists('1-1234567890').subscribe();
 
-      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/establishmentExistsCheck/1-1234567890`);
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/registration/establishmentExistsCheck/1-1234567890`,
+      );
       expect(req.request.method).toBe('GET');
     });
   });

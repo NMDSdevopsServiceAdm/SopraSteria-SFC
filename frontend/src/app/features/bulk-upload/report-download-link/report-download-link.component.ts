@@ -6,8 +6,9 @@ import { saveAs } from 'file-saver';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-report-download-link',
-  templateUrl: './report-download-link.component.html',
+    selector: 'app-report-download-link',
+    templateUrl: './report-download-link.component.html',
+    standalone: false
 })
 export class ReportDownloadLinkComponent {
   @Input() fileType: ValidatedFileType;

@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-check-cqc-details',
-  templateUrl: './check-cqc-details.component.html',
+    selector: 'app-check-cqc-details',
+    templateUrl: './check-cqc-details.component.html',
+    standalone: false
 })
 export class CheckCQCDetailsComponent implements OnInit {
   public locationId: string;

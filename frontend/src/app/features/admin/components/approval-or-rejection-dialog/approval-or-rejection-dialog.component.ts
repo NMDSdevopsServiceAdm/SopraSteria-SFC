@@ -4,8 +4,9 @@ import { ApprovalOrRejectionConfirmation } from '@core/model/admin/approval-or-r
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 
 @Component({
-  selector: 'app-approval-or-rejection-dialog',
-  templateUrl: './approval-or-rejection-dialog.component.html',
+    selector: 'app-approval-or-rejection-dialog',
+    templateUrl: './approval-or-rejection-dialog.component.html',
+    standalone: false
 })
 export class ApprovalOrRejectionDialogComponent extends DialogComponent {
   public isApproval: boolean;

@@ -9,7 +9,9 @@ import { DateUtil } from '@core/utils/date-util';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '@features/workplace/question/question.component';
 
-@Directive({})
+@Directive({
+    standalone: false
+})
 export class DoYouHaveStartersLeaversVacanciesDirective extends Question implements OnDestroy {
   public section = WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
   public heading: string;

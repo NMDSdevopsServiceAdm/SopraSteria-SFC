@@ -22,7 +22,8 @@ db:
     max: 150
     acquire: 240000
     idle: 200000
-  ssl: false
+  ssl:
+    require: true
 
 notify:
   replyTo: '73711295-a4da-4303-9127-65be2a409681'

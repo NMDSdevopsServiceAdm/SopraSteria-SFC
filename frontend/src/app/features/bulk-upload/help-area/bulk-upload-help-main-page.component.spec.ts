@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
@@ -16,9 +16,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import {
-  BulkUploadRelatedContentComponent,
-} from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
+import { BulkUploadRelatedContentComponent } from '../bulk-upload-sidebar/bulk-upload-related-content/bulk-upload-related-content.component';
 import { CodesAndGuidanceComponent } from '../codes-and-guidance/codes-and-guidance.component';
 import { BulkUploadFlowchartComponent } from './bulk-upload-flowchart/bulk-upload-flowchart.component';
 import { BulkUploadHelpMainPageComponent } from './bulk-upload-help-main-page.component';
@@ -31,20 +29,17 @@ describe('BulkUploadHelpMainPageComponent', () => {
 
   const setup = async () => {
     const { fixture, getByText, queryByText } = await render(BulkUploadHelpMainPageComponent, {
-      imports: [
-        RouterTestingModule.withRoutes([
+      imports: [RouterModule, BrowserModule],
+      providers: [
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        { provide: AuthService, useClass: MockAuthService },
+        provideRouter([
           { path: 'bulk-upload/get-help/step-by-step-guide', component: BulkUploadFlowchartComponent },
           { path: `bulk-upload/get-help/${topTipsList.data[0].slug}`, component: BulkUploadTopTipPageComponent },
           { path: `bulk-upload/get-help/${topTipsList.data[1].slug}`, component: BulkUploadTopTipPageComponent },
           { path: `bulk-upload/get-help/${topTipsList.data[2].slug}`, component: BulkUploadTopTipPageComponent },
         ]),
-        HttpClientTestingModule,
-        BrowserModule,
-      ],
-      providers: [
-        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
-        { provide: AuthService, useClass: MockAuthService },
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
@@ -59,6 +54,8 @@ describe('BulkUploadHelpMainPageComponent', () => {
             },
           }),
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       declarations: [BulkUploadHelpMainPageComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });

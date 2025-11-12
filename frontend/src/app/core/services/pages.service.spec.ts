@@ -1,8 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
 
 import { PagesService } from './pages.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('PagesService', () => {
   let service: PagesService;
@@ -11,8 +12,8 @@ describe('PagesService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [PagesService],
+      imports: [],
+      providers: [PagesService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(PagesService);
     http = TestBed.inject(HttpTestingController);

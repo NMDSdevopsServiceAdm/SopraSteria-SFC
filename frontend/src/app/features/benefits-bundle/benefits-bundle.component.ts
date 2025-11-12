@@ -4,8 +4,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-benefits-bundle',
-  templateUrl: './benefits-bundle.component.html',
+    selector: 'app-benefits-bundle',
+    templateUrl: './benefits-bundle.component.html',
+    standalone: false
 })
 export class BenefitsBundleComponent implements OnInit {
   public workplaceName: string;

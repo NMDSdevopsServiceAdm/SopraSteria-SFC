@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, convertToParamMap } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
@@ -12,7 +13,7 @@ import { CheckPermissionsGuard } from './check-permissions.guard';
 describe('CheckPermissionsGuard', () => {
   function setup(role = Roles.Edit) {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         CheckPermissionsGuard,
         {
@@ -38,6 +39,8 @@ describe('CheckPermissionsGuard', () => {
             loggedInUser: { role },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

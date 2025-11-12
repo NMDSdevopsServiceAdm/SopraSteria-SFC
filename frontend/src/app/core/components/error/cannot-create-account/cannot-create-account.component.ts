@@ -3,8 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 
 @Component({
-  selector: 'app-cannot-create-account',
-  templateUrl: './cannot-create-account.component.html',
+    selector: 'app-cannot-create-account',
+    templateUrl: './cannot-create-account.component.html',
+    standalone: false
 })
 export class CannotCreateAccountComponent implements OnInit {
   private returnTo: string;

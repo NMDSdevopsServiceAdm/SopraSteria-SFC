@@ -1,15 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 
 import { CareWorkforcePathwayUseReasonsResolver } from './care-workforce-pathway-use-reasons.resolver';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { of } from 'rxjs';
 
 describe('CareWorkforcePathwayUseReasonsResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CareWorkforcePathwayUseReasonsResolver],
+      imports: [],
+      providers: [CareWorkforcePathwayUseReasonsResolver, provideHttpClient(), provideHttpClientTesting()],
     });
 
     const resolver = TestBed.inject(CareWorkforcePathwayUseReasonsResolver);

@@ -10,8 +10,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-long-term-absence',
-  templateUrl: './long-term-absence.component.html',
+    selector: 'app-long-term-absence',
+    templateUrl: './long-term-absence.component.html',
+    standalone: false
 })
 export class LongTermAbsenceComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;

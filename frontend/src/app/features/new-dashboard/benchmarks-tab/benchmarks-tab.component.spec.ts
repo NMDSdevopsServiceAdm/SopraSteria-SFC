@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -43,7 +44,7 @@ describe('NewBenchmarksTabComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const setupTools = await render(NewBenchmarksTabComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: FeatureFlagsService,
@@ -82,7 +83,7 @@ describe('NewBenchmarksTabComponent', () => {
           useClass: MockEstablishmentService,
         },
         provideRouter([]),
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       declarations: [NewComparisonGroupHeaderComponent],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {

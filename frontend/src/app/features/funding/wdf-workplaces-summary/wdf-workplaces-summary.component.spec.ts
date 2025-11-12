@@ -1,9 +1,11 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { provideRouter, Router } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -55,7 +57,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfWorkplacesSummaryComponent, {
-      imports: [HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
+      imports: [BrowserModule, SharedModule, FundingModule, RouterModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -69,6 +71,9 @@ describe('WdfWorkplacesSummaryComponent', () => {
           deps: [HttpClient, Router, UserService],
         },
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
       ],
       componentProperties: {
         workplaces: mockWorkplaces(),

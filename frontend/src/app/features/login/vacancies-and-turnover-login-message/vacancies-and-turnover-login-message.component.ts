@@ -3,8 +3,9 @@ import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-vacancies-and-turnover-login-message',
-  templateUrl: './vacancies-and-turnover-login-message.component.html',
+    selector: 'app-vacancies-and-turnover-login-message',
+    templateUrl: './vacancies-and-turnover-login-message.component.html',
+    standalone: false
 })
 export class VacanciesAndTurnoverLoginMessage implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

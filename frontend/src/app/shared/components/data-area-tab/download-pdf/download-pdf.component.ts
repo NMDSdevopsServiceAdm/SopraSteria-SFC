@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-download-pdf',
-  templateUrl: './download-pdf.component.html',
+    selector: 'app-download-pdf',
+    templateUrl: './download-pdf.component.html',
+    standalone: false
 })
 export class DownloadPdfComponent {
   @Input() linkUrl: string;

@@ -11,8 +11,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-mandatory-details',
-  templateUrl: './mandatory-details.component.html',
+    selector: 'app-mandatory-details',
+    templateUrl: './mandatory-details.component.html',
+    standalone: false
 })
 export class MandatoryDetailsComponent implements OnInit, OnDestroy {
   public worker: Worker;

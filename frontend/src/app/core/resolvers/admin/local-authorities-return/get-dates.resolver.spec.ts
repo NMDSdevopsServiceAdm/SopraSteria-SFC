@@ -1,18 +1,19 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { AdminModule } from '@features/admin/admin.module';
 
 import { GetDatesResolver } from './get-dates.resolver';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('GetDatesResolver', () => {
   let resolver: GetDatesResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AdminModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      providers: [GetDatesResolver],
+      imports: [AdminModule, RouterModule],
+      providers: [GetDatesResolver, provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
     resolver = TestBed.inject(GetDatesResolver);
   });

@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'formatAmpersand',
+    name: 'formatAmpersand',
+    standalone: false
 })
 export class FormatAmpersandPipe implements PipeTransform {
   transform(value: string) {

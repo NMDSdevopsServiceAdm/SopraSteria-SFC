@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -144,11 +144,11 @@ import { SortByService } from '@core/services/sort-by.service';
     VacanciesAndTurnoverLoginMessage,
     HelpAndTipsButtonComponent,
   ],
+  bootstrap: [AppComponent],
   imports: [
     AppRoutingModule,
     BrowserModule,
     CommonModule,
-    HttpClientModule,
     HighchartsChartModule,
     ReactiveFormsModule,
     SharedModule,
@@ -214,7 +214,7 @@ import { SortByService } from '@core/services/sort-by.service';
     GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
     GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     FeatureFlagsResolver,
+    provideHttpClient(withInterceptorsFromDi()),
   ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}

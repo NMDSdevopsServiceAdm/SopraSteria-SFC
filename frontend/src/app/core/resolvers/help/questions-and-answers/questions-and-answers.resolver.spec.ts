@@ -1,15 +1,16 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { HelpPagesService } from '@core/services/help-pages.service';
 import { of } from 'rxjs';
 
 import { QuestionsAndAnswersResolver } from './questions-and-answers.resolver';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('QuestionsAndAnswersResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterModule],
       providers: [
         QuestionsAndAnswersResolver,
         {
@@ -20,6 +21,10 @@ describe('QuestionsAndAnswersResolver', () => {
             },
           },
         },
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideRouter([]),
       ],
     });
 

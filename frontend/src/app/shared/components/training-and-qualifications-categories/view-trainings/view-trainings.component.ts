@@ -14,8 +14,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-training-and-qualifications-categories-view',
-  templateUrl: './view-trainings.component.html',
+    selector: 'app-training-and-qualifications-categories-view',
+    templateUrl: './view-trainings.component.html',
+    standalone: false
 })
 export class ViewTrainingComponent implements OnInit, OnDestroy {
   readonly EXPIRED = 'Expired';

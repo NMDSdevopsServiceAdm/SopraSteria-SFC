@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -50,7 +51,7 @@ describe('UpdateVacanciesComponent', () => {
     const addToSubmittedPagesSpy = jasmine.createSpy('addToSubmittedPages');
 
     const setupTools = await render(UpdateVacanciesComponent, {
-      imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -78,7 +79,7 @@ describe('UpdateVacanciesComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

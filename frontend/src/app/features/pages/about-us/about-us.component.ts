@@ -4,8 +4,9 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-about-us',
-  templateUrl: './about-us.component.html',
+    selector: 'app-about-us',
+    templateUrl: './about-us.component.html',
+    standalone: false
 })
 export class AboutUsComponent implements OnInit {
   constructor(private breadcrumbService: BreadcrumbService, private route: ActivatedRoute) {}

@@ -4,17 +4,16 @@ import { SharedModule } from '@shared/shared.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { Establishment } from '@core/model/establishment.model';
 import { provideRouter, RouterModule } from '@angular/router';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('DisplayWorkplaceNameAddress', () => {
   const setup = async (override: any = {}) => {
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(DisplayWorkplaceNameAddress, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [],
-      providers: [
-        provideRouter([])
-      ],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         canEditEstablishment: override.canEditEstablishment,
         workplace: override.workplace ? override.workplace : establishment,

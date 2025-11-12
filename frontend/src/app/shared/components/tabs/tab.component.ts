@@ -2,8 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import * as slugify from 'slugify';
 
 @Component({
-  selector: 'app-tab',
-  template: `
+    selector: 'app-tab',
+    template: `
     <section
       id="{{ slug }}"
       class="govuk-tabs__panel"
@@ -14,6 +14,7 @@ import * as slugify from 'slugify';
       <ng-content></ng-content>
     </section>
   `,
+    standalone: false
 })
 export class TabComponent implements OnInit {
   @Input() title;

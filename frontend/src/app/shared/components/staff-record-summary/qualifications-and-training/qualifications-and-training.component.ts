@@ -3,8 +3,9 @@ import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 
 @Component({
-  selector: 'app-qualifications-and-training',
-  templateUrl: './qualifications-and-training.component.html',
+    selector: 'app-qualifications-and-training',
+    templateUrl: './qualifications-and-training.component.html',
+    standalone: false
 })
 export class QualificationsAndTrainingComponent
   extends StaffRecordSummaryComponent

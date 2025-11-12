@@ -5,8 +5,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-asc-wds-certificate',
-  templateUrl: './asc-wds-certificate.component.html',
+    selector: 'app-asc-wds-certificate',
+    templateUrl: './asc-wds-certificate.component.html',
+    standalone: false
 })
 export class AscWdsCertificateComponent implements OnInit {
   constructor(

@@ -11,8 +11,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-ethnicity',
-  templateUrl: './ethnicity.component.html',
+    selector: 'app-ethnicity',
+    templateUrl: './ethnicity.component.html',
+    standalone: false
 })
 export class EthnicityComponent extends QuestionComponent {
   public ethnicitiesByGroup: any = {};

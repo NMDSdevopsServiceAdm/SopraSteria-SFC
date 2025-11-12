@@ -12,9 +12,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-link-to-parent',
-  templateUrl: './link-to-parent.component.html',
-  styleUrls: ['./link-to-parent.component.scss'],
+    selector: 'app-link-to-parent',
+    templateUrl: './link-to-parent.component.html',
+    styleUrls: ['./link-to-parent.component.scss'],
+    standalone: false
 })
 export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

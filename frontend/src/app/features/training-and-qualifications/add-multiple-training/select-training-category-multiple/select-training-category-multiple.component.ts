@@ -8,8 +8,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
-  selector: 'app-select-training-category-multiple',
-  templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
+    selector: 'app-select-training-category-multiple',
+    templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
+    standalone: false
 })
 export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCategoryDirective implements OnInit {
   public selectedStaff = [];

@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
@@ -9,6 +10,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
@@ -30,7 +32,7 @@ describe('WdfStaffSummaryComponent', () => {
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
     const setupTools = await render(WdfStaffSummaryComponent, {
-      imports: [HttpClientTestingModule, BrowserModule, SharedModule, FundingModule, RouterModule],
+      imports: [BrowserModule, SharedModule, FundingModule, RouterModule],
       declarations: [PaginationComponent, TablePaginationWrapperComponent, SearchInputComponent],
       providers: [
         provideRouter([]),
@@ -54,6 +56,9 @@ describe('WdfStaffSummaryComponent', () => {
           },
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
       ],
       componentProperties: {
         workplace: establishment,

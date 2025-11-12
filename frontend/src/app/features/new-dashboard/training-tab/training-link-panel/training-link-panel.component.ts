@@ -8,8 +8,9 @@ import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-new-training-link-panel',
-  templateUrl: './training-link-panel.component.html',
+    selector: 'app-new-training-link-panel',
+    templateUrl: './training-link-panel.component.html',
+    standalone: false
 })
 export class NewTrainingLinkPanelComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

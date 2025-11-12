@@ -7,8 +7,9 @@ import {
 } from '@core/model/delegated-healthcare-activities.model';
 
 @Component({
-  selector: 'app-details-dha-examples',
-  templateUrl: './details-dha-examples.component.html',
+    selector: 'app-details-dha-examples',
+    templateUrl: './details-dha-examples.component.html',
+    standalone: false
 })
 export class DetailsDhaExamplesComponent {
   @Input() allDHAs: Array<DelegatedHealthcareActivity>;

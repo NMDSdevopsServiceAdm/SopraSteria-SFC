@@ -1,14 +1,21 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from './care-workforce-pathway-workplace-awareness';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { of } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('getCareWorkforcePathwayWorkplaceAwarenessAnswersResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CareWorkforcePathwayWorkplaceAwarenessAnswersResolver, CareWorkforcePathwayService],
+      imports: [],
+      providers: [
+        CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
+        CareWorkforcePathwayService,
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const resolver = TestBed.inject(CareWorkforcePathwayWorkplaceAwarenessAnswersResolver);

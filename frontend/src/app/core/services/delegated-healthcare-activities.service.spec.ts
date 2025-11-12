@@ -1,8 +1,9 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
 
 import { DelegatedHealthcareActivitiesService } from './delegated-healthcare-activities.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('DelegatedHealthcareActivitiesService', () => {
   let service: DelegatedHealthcareActivitiesService;
@@ -10,8 +11,8 @@ describe('DelegatedHealthcareActivitiesService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [DelegatedHealthcareActivitiesService],
+      imports: [],
+      providers: [DelegatedHealthcareActivitiesService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(DelegatedHealthcareActivitiesService);
 

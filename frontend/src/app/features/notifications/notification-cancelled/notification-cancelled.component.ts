@@ -4,8 +4,9 @@ import { NotificationsService } from '@core/services/notifications/notifications
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-notification-cancelled',
-  templateUrl: './notification-cancelled.component.html',
+    selector: 'app-notification-cancelled',
+    templateUrl: './notification-cancelled.component.html',
+    standalone: false
 })
 export class NotificationCancelledComponent implements OnInit {
   @Input() public notification;

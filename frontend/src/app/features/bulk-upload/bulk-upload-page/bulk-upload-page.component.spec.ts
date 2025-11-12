@@ -1,8 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -34,7 +34,7 @@ describe('BulkUploadPageComponent', () => {
 
   async function setup(role = 'AdminManager') {
     const { fixture, getByTestId, queryByTestId } = await render(BulkUploadPageComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
+      imports: [SharedModule, RouterModule, BulkUploadModule],
       providers: [
         {
           provide: WindowRef,
@@ -72,6 +72,8 @@ describe('BulkUploadPageComponent', () => {
           },
         },
         AdminSkipService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       declarations: [
         DragAndDropFilesUploadComponent,

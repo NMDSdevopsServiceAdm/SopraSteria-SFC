@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +21,7 @@ import { SelectMainServiceComponent } from './select-main-service.component';
 describe('SelectMainServiceComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(SelectMainServiceComponent, {
-      imports: [SharedModule, RegistrationModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,
@@ -50,7 +51,7 @@ describe('SelectMainServiceComponent', () => {
           },
         },
         UntypedFormBuilder,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

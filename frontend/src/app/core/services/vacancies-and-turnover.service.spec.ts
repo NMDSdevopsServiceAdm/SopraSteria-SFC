@@ -1,4 +1,4 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import {
@@ -6,14 +6,15 @@ import {
   WorkplaceUpdateFlowType,
   WorkplaceUpdatePage,
 } from './vacancies-and-turnover.service';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('VacanciesAndTurnoverService', () => {
   let service: VacanciesAndTurnoverService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [VacanciesAndTurnoverService],
+      imports: [],
+      providers: [VacanciesAndTurnoverService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(VacanciesAndTurnoverService);
   });

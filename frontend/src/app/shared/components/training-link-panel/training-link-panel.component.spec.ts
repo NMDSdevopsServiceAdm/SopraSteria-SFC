@@ -1,8 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { Worker } from '@core/model/worker.model';
@@ -22,7 +22,7 @@ import { Establishment as MockEstablishment } from '../../../../mockdata/establi
 describe('TrainingLinkPanelComponent', () => {
   async function setup(totalRecords = 6) {
     const { fixture, getByText, queryByText } = await render(TrainingLinkPanelComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterModule],
       providers: [
         {
           provide: WorkerService,
@@ -38,6 +38,9 @@ describe('TrainingLinkPanelComponent', () => {
           useFactory: MockPermissionsService.factory(['canEditEstablishment']),
           deps: [HttpClient, Router, UserService],
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         workplace: MockEstablishment as Establishment,

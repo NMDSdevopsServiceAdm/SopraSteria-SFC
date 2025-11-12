@@ -9,8 +9,9 @@ import {
 } from '@core/model/qualification.model';
 
 @Component({
-  selector: 'app-new-qualifications',
-  templateUrl: './new-qualifications.component.html',
+    selector: 'app-new-qualifications',
+    templateUrl: './new-qualifications.component.html',
+    standalone: false
 })
 export class NewQualificationsComponent {
   @Input() qualificationsByGroup: QualificationsByGroup;

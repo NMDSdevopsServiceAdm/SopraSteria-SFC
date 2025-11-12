@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
@@ -6,6 +7,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockInternationalRecruitmentService } from '@core/test-utils/MockInternationalRecruitmentService';
@@ -21,7 +23,7 @@ import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 describe('WdfStaffRecordComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfStaffRecordComponent, {
-      imports: [HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
+      imports: [BrowserModule, SharedModule, FundingModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -45,6 +47,9 @@ describe('WdfStaffRecordComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
       ],
     });
     const component = setupTools.fixture.componentInstance;

@@ -7,8 +7,9 @@ import saveAs from 'file-saver';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-bulk-upload-download-current-data',
-  templateUrl: './bulk-upload-download-current-data.component.html',
+    selector: 'app-bulk-upload-download-current-data',
+    templateUrl: './bulk-upload-download-current-data.component.html',
+    standalone: false
 })
 export class BulkUploadDownloadCurrentDataComponent {
   @Input() public sanitise: boolean;

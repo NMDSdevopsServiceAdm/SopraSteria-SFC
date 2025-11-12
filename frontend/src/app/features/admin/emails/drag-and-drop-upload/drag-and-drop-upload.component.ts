@@ -2,8 +2,9 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'app-drag-and-drop-upload',
-  templateUrl: './drag-and-drop-upload.component.html',
+    selector: 'app-drag-and-drop-upload',
+    templateUrl: './drag-and-drop-upload.component.html',
+    standalone: false
 })
 export class DragAndDropUploadComponent implements OnInit {
   public form: UntypedFormGroup;

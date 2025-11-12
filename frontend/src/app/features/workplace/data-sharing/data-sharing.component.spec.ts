@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -18,7 +19,7 @@ describe('DataSharingComponent', () => {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       DataSharingComponent,
       {
-        imports: [SharedModule, RouterModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
         providers: [
           ErrorSummaryService,
           BackService,
@@ -31,7 +32,7 @@ describe('DataSharingComponent', () => {
             ),
             deps: [HttpClient],
           },
-        ],
+        provideHttpClient(), provideHttpClientTesting(),],
       },
     );
 

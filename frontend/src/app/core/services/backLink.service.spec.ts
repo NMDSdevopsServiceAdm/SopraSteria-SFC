@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 
 import { BackLinkService } from './backLink.service';
 
@@ -8,7 +7,7 @@ describe('BackLinkService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [],
       providers: [BackLinkService],
     });
     service = TestBed.inject(BackLinkService);

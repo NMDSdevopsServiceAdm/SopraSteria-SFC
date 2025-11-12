@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -25,50 +25,50 @@ import { LinkToParentComponent } from './link-to-parent.component';
 
 describe('LinkToParentComponent', () => {
   async function setup() {
-    const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
-      LinkToParentComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        declarations: [],
-        providers: [
-          AlertService,
-          WindowRef,
-          UntypedFormBuilder,
-          ErrorSummaryService,
-          { provide: PermissionsService, useClass: MockPermissionsService },
+    const setupTools = await render(LinkToParentComponent, {
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
+      declarations: [],
+      providers: [
+        AlertService,
+        WindowRef,
+        UntypedFormBuilder,
+        ErrorSummaryService,
+        { provide: PermissionsService, useClass: MockPermissionsService },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+      componentProperties: {
+        linkToParentRequested: false,
+        availableParentWorkPlaces: [
           {
-            provide: BreadcrumbService,
-            useClass: MockBreadcrumbService,
+            parentName: 'All Now',
+            parentNameAndPostalcode: 'All Now, TW1 452',
+            postcode: 'TW1 452',
+            uid: '111',
           },
           {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: FeatureFlagsService,
-            useClass: MockFeatureFlagsService,
+            parentName: 'Test',
+            parentNameAndPostalcode: 'Test, TW1 452',
+            postcode: 'TW1 452',
+            uid: '222',
           },
         ],
-        componentProperties: {
-          linkToParentRequested: false,
-          availableParentWorkPlaces: [
-            {
-              parentName: 'All Now',
-              parentNameAndPostalcode: 'All Now, TW1 452',
-              postcode: 'TW1 452',
-              uid: '111',
-            },
-            {
-              parentName: 'Test',
-              parentNameAndPostalcode: 'Test, TW1 452',
-              postcode: 'TW1 452',
-              uid: '222',
-            },
-          ],
-        },
       },
-    );
-    const component = fixture.componentInstance;
+    });
+    const component = setupTools.fixture.componentInstance;
 
     const parentRequestsService = TestBed.inject(ParentRequestsService);
 
@@ -82,13 +82,7 @@ describe('LinkToParentComponent', () => {
     const alertService = TestBed.inject(AlertService);
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
     return {
-      getAllByText,
-      getByRole,
-      getByText,
-      getByLabelText,
-      getByTestId,
-      queryByText,
-      fixture,
+      ...setupTools,
       component,
       routerSpy,
       parentRequestsService,
@@ -204,14 +198,14 @@ describe('LinkToParentComponent', () => {
       });
 
       it('should show error message when only data permission is submitted', async () => {
-        const { component, fixture, getByText, getAllByText, queryByText } = await setup();
+        const { component, fixture, getByText, getAllByText, getByRole, queryByText } = await setup();
 
         const linkToParentRequestButton = getByText('Send link request');
         const parentNameAndPostalcodeErrorMessage = "Enter and then select the parent workplace's name or postcode";
         const dataPermissionErrorMessage = 'Select what data you want them to have view only access to';
         const form = component.form;
 
-        const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+        const noneRadioButton = getByRole('radio', { name: 'No access to your data, linked only' });
 
         fireEvent.click(noneRadioButton);
 
@@ -225,11 +219,11 @@ describe('LinkToParentComponent', () => {
     });
 
     it('should be a valid form', async () => {
-      const { component, fixture, getByText, getByLabelText } = await setup();
+      const { component, fixture, getByText, getByLabelText, getByRole } = await setup();
 
       const linkToParentRequestButton = getByText('Send link request');
       const parentNameOrPostCodeInput = getByLabelText("Start to type the parent workplace's name or postcode");
-      const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+      const noneRadioButton = getByRole('radio', { name: 'No access to your data, linked only' });
 
       userEvent.type(parentNameOrPostCodeInput, 'Test, TW1 452');
       fireEvent.click(noneRadioButton);
@@ -334,16 +328,16 @@ describe('LinkToParentComponent', () => {
         },
       });
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: `You've cancelled your request to link to ${returnedEstablishment.requstedParentName}, ${requestedLinkToParent.parentEstablishment.postcode}`,
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `You've cancelled your request to link to ${returnedEstablishment.requstedParentName}, ${requestedLinkToParent.parentEstablishment.postcode}`,
       });
     });
 
     it('should navigate to the home page after the link request has been sent', async () => {
-      const { fixture, establishmentService, routerSpy, getByText, getByLabelText, alertServiceSpy } = await setup();
+      const { fixture, establishmentService, routerSpy, getByText, getByLabelText, getByRole, alertServiceSpy } =
+        await setup();
 
       const sendRequestToParentForLinkSpy = spyOn(establishmentService, 'setRequestToParentForLink').and.returnValue(
         of([requestedLinkToParent]) as Establishment,
@@ -351,7 +345,7 @@ describe('LinkToParentComponent', () => {
 
       const linkToParentRequestButton = getByText('Send link request');
       const parentNameOrPostCodeInput = getByLabelText("Start to type the parent workplace's name or postcode");
-      const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+      const noneRadioButton = getByRole('radio', { name: 'No access to your data, linked only' });
 
       userEvent.type(parentNameOrPostCodeInput, 'Test, TW1 452');
       fireEvent.click(noneRadioButton);
@@ -365,11 +359,10 @@ describe('LinkToParentComponent', () => {
         },
       });
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: `You've sent a link request to Test, TW1 452`,
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `You've sent a link request to Test, TW1 452`,
       });
     });
 

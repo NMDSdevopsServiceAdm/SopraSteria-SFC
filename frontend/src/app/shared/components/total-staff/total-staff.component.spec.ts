@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { render } from '@testing-library/angular';
 
 import { TotalStaffComponent } from './total-staff.component';
@@ -13,14 +14,14 @@ describe('TotalStaffComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(TotalStaffComponent, {
-      imports: [HttpClientTestingModule, SharedModule, ReactiveFormsModule],
+      imports: [SharedModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides),
           deps: [HttpClient],
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         establishmentUid: 'mock-uid',
         showHint: overrides.showHint ?? true,
@@ -31,7 +32,7 @@ describe('TotalStaffComponent', () => {
     const component = setupTools.fixture.componentInstance;
 
     return { ...setupTools, component };
-  }
+  };
 
   it('should create', async () => {
     const component = await setup();

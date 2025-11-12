@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BackService } from '@core/services/back.service';
@@ -14,7 +15,7 @@ import { NameOfWorkplaceComponent } from './name-of-workplace.component';
 describe('NameOfWorkplaceComponent', () => {
   async function setup(overrides: any = {}) {
     const component = await render(NameOfWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
         BackService,
         {
@@ -39,6 +40,8 @@ describe('NameOfWorkplaceComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

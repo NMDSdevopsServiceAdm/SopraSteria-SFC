@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -14,7 +15,7 @@ import { AddTotalStaffComponent } from './add-total-staff.component';
 describe('AddTotalStaffComponent', () => {
   async function setup(overrides: any = {}) {
     const component = await render(AddTotalStaffComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -38,6 +39,8 @@ describe('AddTotalStaffComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

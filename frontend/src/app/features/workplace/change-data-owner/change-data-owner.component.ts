@@ -12,9 +12,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-change-data-owner',
-  templateUrl: './change-data-owner.component.html',
-  styleUrls: ['./change-data-owner.component.scss'],
+    selector: 'app-change-data-owner',
+    templateUrl: './change-data-owner.component.html',
+    styleUrls: ['./change-data-owner.component.scss'],
+    standalone: false
 })
 export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

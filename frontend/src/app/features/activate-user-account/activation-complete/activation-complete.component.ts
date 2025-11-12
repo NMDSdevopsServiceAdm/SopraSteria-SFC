@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 
 @Component({
-  selector: 'app-activation-complete',
-  templateUrl: './activation-complete.component.html',
+    selector: 'app-activation-complete',
+    templateUrl: './activation-complete.component.html',
+    standalone: false
 })
 export class ActivationCompleteComponent implements OnInit {
   constructor(private createAccountService: CreateAccountService) {}

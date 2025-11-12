@@ -1,9 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -11,6 +11,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -29,7 +30,7 @@ describe('WdfDataComponent', () => {
 
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfDataComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, FundingModule],
+      imports: [BrowserModule, SharedModule, FundingModule],
       declarations: [WdfStaffSummaryComponent],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -60,6 +61,9 @@ describe('WdfDataComponent', () => {
             fragment: of(overrides.fragment ?? undefined),
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
       ],
       componentProperties: {
         workerCount: 1,

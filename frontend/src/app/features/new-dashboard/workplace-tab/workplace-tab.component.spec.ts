@@ -1,8 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
@@ -44,7 +44,7 @@ describe('NewWorkplaceTabComponent', () => {
   ) => {
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceTabComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: FeatureFlagsService,
@@ -89,6 +89,8 @@ describe('NewWorkplaceTabComponent', () => {
           },
         },
         { provide: WindowToken, useValue: MockWindow },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         workplace: establishment,

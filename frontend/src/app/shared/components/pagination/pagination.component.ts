@@ -3,6 +3,7 @@ import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@a
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
+  standalone: false,
 })
 export class PaginationComponent implements OnInit {
   public pages: Array<number>;

@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
@@ -22,7 +23,7 @@ describe('TypeOfEmployerComponent', () => {
   ];
   async function setup(overrides: any = {}) {
     const setupTools = await render(TypeOfEmployerComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         provideRouter([]),
@@ -35,7 +36,7 @@ describe('TypeOfEmployerComponent', () => {
                 overrides.owner ?? 'Workplace',
               ),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

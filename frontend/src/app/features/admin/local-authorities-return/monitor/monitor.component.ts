@@ -11,8 +11,9 @@ import { DialogService } from '@core/services/dialog.service';
 import { ResetDialogComponent } from './reset-dialog/reset-dialog.component';
 
 @Component({
-  selector: 'app-monitor',
-  templateUrl: './monitor.component.html',
+    selector: 'app-monitor',
+    templateUrl: './monitor.component.html',
+    standalone: false
 })
 export class MonitorComponent implements OnInit {
   public allOpen = false;

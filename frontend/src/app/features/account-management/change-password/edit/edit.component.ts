@@ -22,8 +22,9 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-edit',
-  templateUrl: './edit.component.html',
+    selector: 'app-edit',
+    templateUrl: './edit.component.html',
+    standalone: false
 })
 export class ChangePasswordEditComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

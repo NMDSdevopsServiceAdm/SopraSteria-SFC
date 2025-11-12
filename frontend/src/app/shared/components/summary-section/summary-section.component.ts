@@ -9,9 +9,10 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-summary-section',
-  templateUrl: './summary-section.component.html',
-  styleUrls: ['./summary-section.component.scss'],
+    selector: 'app-summary-section',
+    templateUrl: './summary-section.component.html',
+    styleUrls: ['./summary-section.component.scss'],
+    standalone: false
 })
 export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

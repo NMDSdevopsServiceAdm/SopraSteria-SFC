@@ -10,8 +10,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-contract-with-zero-hours',
-  templateUrl: './contract-with-zero-hours.component.html',
+    selector: 'app-contract-with-zero-hours',
+    templateUrl: './contract-with-zero-hours.component.html',
+    standalone: false
 })
 export class ContractWithZeroHoursComponent extends QuestionComponent {
   public answersAvailable = [

@@ -11,8 +11,9 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-confirm-multiple-training',
-  templateUrl: './confirm-multiple-training.component.html',
+    selector: 'app-confirm-multiple-training',
+    templateUrl: './confirm-multiple-training.component.html',
+    standalone: false
 })
 export class ConfirmMultipleTrainingComponent implements OnInit {
   public workers: Worker[];

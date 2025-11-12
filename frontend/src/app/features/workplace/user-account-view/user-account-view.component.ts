@@ -16,8 +16,9 @@ import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-user-account-view',
-  templateUrl: './user-account-view.component.html',
+    selector: 'app-user-account-view',
+    templateUrl: './user-account-view.component.html',
+    standalone: false
 })
 export class UserAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

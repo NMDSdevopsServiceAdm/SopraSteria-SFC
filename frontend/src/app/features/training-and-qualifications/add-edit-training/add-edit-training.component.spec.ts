@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -30,7 +30,7 @@ describe('AddEditTrainingComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         declarations: [CertificationsTableComponent, SelectUploadFileComponent],
         providers: [
           WindowRef,
@@ -61,6 +61,8 @@ describe('AddEditTrainingComponent', () => {
             provide: TrainingCertificateService,
             useClass: MockTrainingCertificateService,
           },
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );
@@ -454,11 +456,10 @@ describe('AddEditTrainingComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Training record updated',
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Training record updated',
       });
     });
 
@@ -512,11 +513,10 @@ describe('AddEditTrainingComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Training record added',
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Training record added',
       });
     });
 

@@ -10,8 +10,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-delete-record',
-  templateUrl: './delete-record.component.html',
+    selector: 'app-delete-record',
+    templateUrl: './delete-record.component.html',
+    standalone: false
 })
 export class DeleteRecordComponent implements OnInit, OnDestroy {
   public workplace: Establishment;

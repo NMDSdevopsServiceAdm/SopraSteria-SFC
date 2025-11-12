@@ -5,6 +5,8 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
+      - echo "Downgrading npm to match node version..."
+      - npm install -g npm@10
       - echo Installing dependencies...
       - cd backend && npm ci
 

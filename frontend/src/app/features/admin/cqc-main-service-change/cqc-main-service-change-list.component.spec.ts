@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
@@ -13,7 +13,7 @@ import { CQCMainServiceChangeListComponent } from './cqc-main-service-change-lis
 describe('CQCMainServiceChangeListComponent', () => {
   async function setup(notes = true) {
     const component = await render(CQCMainServiceChangeListComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AdminModule],
+      imports: [SharedModule, RouterModule, AdminModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -41,6 +41,8 @@ describe('CQCMainServiceChangeListComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

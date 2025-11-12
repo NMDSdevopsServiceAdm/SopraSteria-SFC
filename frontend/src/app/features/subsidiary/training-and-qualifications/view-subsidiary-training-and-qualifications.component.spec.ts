@@ -1,7 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { fireEvent, render } from '@testing-library/angular';
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './view-subsidiary-training-and-qualifications.component';
 import { WindowRef } from '@core/services/window.ref';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -15,7 +16,6 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
 import { SharedModule } from '@shared/shared.module';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { TrainingService } from '@core/services/training.service';
@@ -34,7 +34,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     const workers = override?.withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(ViewSubsidiaryTrainingAndQualificationsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [
         NewDashboardHeaderComponent,
         NewTrainingLinkPanelComponent,
@@ -85,6 +85,8 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
             queryParamMap: { get: () => null },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         canEditEstablishment: override.canEditEstablishment,

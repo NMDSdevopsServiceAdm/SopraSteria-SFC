@@ -3,8 +3,9 @@ import { UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-character-count',
-  templateUrl: './character-count.component.html',
+    selector: 'app-character-count',
+    templateUrl: './character-count.component.html',
+    standalone: false
 })
 export class CharacterCountComponent implements OnInit, OnDestroy, OnChanges {
   public remaining: number;

@@ -8,9 +8,10 @@ import {
 import { FormatUtil } from '@core/utils/format-util';
 
 @Component({
-  selector: 'app-data-area-recruitment-and-retention',
-  templateUrl: './data-area-recruitment-and-retention.component.html',
-  styleUrls: ['../data-area-tab.component.scss'],
+    selector: 'app-data-area-recruitment-and-retention',
+    templateUrl: './data-area-recruitment-and-retention.component.html',
+    styleUrls: ['../data-area-tab.component.scss'],
+    standalone: false
 })
 export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
   @Input() data: BenchmarksResponse;

@@ -5,9 +5,10 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-help-area',
-  templateUrl: './help-area.component.html',
-  styleUrls: ['./help-area.component.scss'],
+    selector: 'app-help-area',
+    templateUrl: './help-area.component.html',
+    styleUrls: ['./help-area.component.scss'],
+    standalone: false
 })
 export class HelpAreaComponent implements OnInit {
   public workplaceName: string;

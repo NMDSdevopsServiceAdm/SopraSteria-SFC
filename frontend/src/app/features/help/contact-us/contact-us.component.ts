@@ -5,8 +5,9 @@ import { Page } from '@core/model/page.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-contact-us',
-  templateUrl: './contact-us.component.html',
+    selector: 'app-contact-us',
+    templateUrl: './contact-us.component.html',
+    standalone: false
 })
 export class ContactUsComponent implements OnInit {
   public contactUsPage: Page;

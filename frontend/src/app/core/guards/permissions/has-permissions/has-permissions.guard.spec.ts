@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, convertToParamMap } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRouteSnapshot, convertToParamMap, provideRouter, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -12,7 +12,7 @@ import { HasPermissionsGuard } from './has-permissions.guard';
 describe('HasPermissionsGuard', () => {
   function setup(workplaceId = true) {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [RouterModule],
       providers: [
         HasPermissionsGuard,
         {
@@ -31,6 +31,9 @@ describe('HasPermissionsGuard', () => {
             establishmentId: workplaceId ? 'establishmentUid' : '',
           },
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

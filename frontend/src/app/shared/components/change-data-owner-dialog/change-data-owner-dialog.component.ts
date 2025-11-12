@@ -11,8 +11,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-change-data-owner-dialog',
-  templateUrl: './change-data-owner-dialog.component.html',
+    selector: 'app-change-data-owner-dialog',
+    templateUrl: './change-data-owner-dialog.component.html',
+    standalone: false
 })
 export class ChangeDataOwnerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];

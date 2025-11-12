@@ -6,9 +6,10 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { BulkUploadTopTipsService } from '@core/services/bulk-upload/bulk-upload-top-tips.service';
 
 @Component({
-  selector: 'app-bulk-upload-help-main-page',
-  templateUrl: './bulk-upload-help-main-page.component.html',
-  styleUrls: ['./bulk-upload-help-main-page.component.scss'],
+    selector: 'app-bulk-upload-help-main-page',
+    templateUrl: './bulk-upload-help-main-page.component.html',
+    styleUrls: ['./bulk-upload-help-main-page.component.scss'],
+    standalone: false
 })
 export class BulkUploadHelpMainPageComponent implements OnInit {
   public topTipsList: BulkUploadTopTip[];

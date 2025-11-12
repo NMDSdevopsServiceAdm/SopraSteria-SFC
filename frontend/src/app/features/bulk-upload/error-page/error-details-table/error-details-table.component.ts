@@ -2,8 +2,9 @@ import { Component, Input } from '@angular/core';
 import { ErrorReportError } from '@core/model/bulk-upload.model';
 
 @Component({
-  selector: 'app-error-details-table',
-  templateUrl: './error-details-table.component.html',
+    selector: 'app-error-details-table',
+    templateUrl: './error-details-table.component.html',
+    standalone: false
 })
 export class ErrorDetailsTableComponent {
   @Input() errors: ErrorReportError[];

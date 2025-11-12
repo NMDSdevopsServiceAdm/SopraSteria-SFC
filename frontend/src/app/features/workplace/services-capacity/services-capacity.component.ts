@@ -12,8 +12,9 @@ import groupBy from 'lodash/groupBy';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-services-capacity',
-  templateUrl: './services-capacity.component.html',
+    selector: 'app-services-capacity',
+    templateUrl: './services-capacity.component.html',
+    standalone: false
 })
 export class ServicesCapacityComponent extends Question {
   public capacities = [];

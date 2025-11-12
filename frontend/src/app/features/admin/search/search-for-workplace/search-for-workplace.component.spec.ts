@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -23,7 +24,7 @@ import { AdminUnlockConfirmationDialogComponent } from '@shared/components/admin
 describe('SearchForWorkplaceComponent', () => {
   async function setup(searchButtonClicked = false, isLocked = false, isParent = false, hasSubs = false) {
     const { fixture, getByText, getByTestId, queryAllByText, queryByText } = await render(SearchForWorkplaceComponent, {
-      imports: [SharedModule, RouterModule, ReactiveFormsModule, HttpClientTestingModule, FormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule, FormsModule],
       declarations: [WorkplaceDropdownComponent, AdminUnlockConfirmationDialogComponent],
       providers: [
         {
@@ -38,7 +39,7 @@ describe('SearchForWorkplaceComponent', () => {
         SearchService,
         WindowRef,
         AlertService,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const mockSearchResult = buildMockAdminSearchWorkplace(isLocked, isParent, hasSubs);

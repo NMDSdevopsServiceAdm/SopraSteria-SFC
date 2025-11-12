@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -19,7 +19,7 @@ describe('EditAdminUserMenuComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByText } = await render(
       EditAdminUserComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           AlertService,
           WindowRef,
@@ -48,6 +48,8 @@ describe('EditAdminUserMenuComponent', () => {
               },
             },
           },
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

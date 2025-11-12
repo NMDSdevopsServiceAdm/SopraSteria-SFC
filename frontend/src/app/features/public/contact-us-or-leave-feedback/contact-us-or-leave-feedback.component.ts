@@ -9,8 +9,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FeedbackService } from '@core/services/feedback.service';
 
 @Component({
-  selector: 'app-contact-us-or-leave-feedback',
-  templateUrl: './contact-us-or-leave-feedback.component.html',
+    selector: 'app-contact-us-or-leave-feedback',
+    templateUrl: './contact-us-or-leave-feedback.component.html',
+    standalone: false
 })
 export class ContactUsOrLeaveFeedbackComponent {
   @ViewChild('formEl') formEl: ElementRef;

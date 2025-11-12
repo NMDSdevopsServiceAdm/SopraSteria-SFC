@@ -3,8 +3,9 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-about-bulk-upload',
-  templateUrl: './about-bulk-upload.component.html',
+    selector: 'app-about-bulk-upload',
+    templateUrl: './about-bulk-upload.component.html',
+    standalone: false
 })
 export class AboutBulkUploadComponent implements OnInit {
   constructor(private breadcrumbService: BreadcrumbService) {}

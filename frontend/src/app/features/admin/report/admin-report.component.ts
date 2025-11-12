@@ -6,8 +6,9 @@ import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-report',
-  templateUrl: './admin-report.component.html',
+    selector: 'app-report',
+    templateUrl: './admin-report.component.html',
+    standalone: false
 })
 export class ReportComponent {
   private subscriptions: Subscription = new Subscription();

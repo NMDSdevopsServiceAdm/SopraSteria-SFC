@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -17,7 +17,7 @@ describe('DataAreaAboutTheDataComponent', () => {
     const workplaceName = 'Mock Workplace Name';
 
     const { getByText, getByLabelText, getByTestId, fixture } = await render(DataAreaAboutTheDataComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [],
       providers: [
         { provide: PermissionsService, useClass: MockPermissionsService },
@@ -41,6 +41,8 @@ describe('DataAreaAboutTheDataComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     const component = fixture.componentInstance;

@@ -15,8 +15,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-health-and-care-visa-existing-workers',
-  templateUrl: 'health-and-care-visa-existing-workers.component.html',
+    selector: 'app-health-and-care-visa-existing-workers',
+    templateUrl: 'health-and-care-visa-existing-workers.component.html',
+    standalone: false
 })
 export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   public healthCareAndVisaAnswers = [

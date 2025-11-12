@@ -1,6 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { FundingModule } from '@features/funding/funding.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -10,8 +12,13 @@ import { WdfFieldConfirmationComponent } from './wdf-field-confirmation.componen
 describe('WdfFieldConfirmationComponent', async () => {
   const setup = async () => {
     const { fixture, getByText, queryByText } = await render(WdfFieldConfirmationComponent, {
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, FundingModule],
-      providers: [],
+      imports: [SharedModule, RouterModule, BrowserModule, FundingModule],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: FundingReportResolver, useValue: { resolve: () => {} } },
+      ],
       declarations: [],
       componentProperties: {
         changeLink: ['123', 'nationality'],

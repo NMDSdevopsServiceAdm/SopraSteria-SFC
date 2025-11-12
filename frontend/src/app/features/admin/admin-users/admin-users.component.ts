@@ -7,8 +7,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({
-  selector: 'app-admin-users',
-  templateUrl: './admin-users.component.html',
+    selector: 'app-admin-users',
+    templateUrl: './admin-users.component.html',
+    standalone: false
 })
 export class AdminUsersComponent implements OnInit {
   public users: UserDetails[] = [];

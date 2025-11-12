@@ -9,8 +9,9 @@ interface ResolverData {
 }
 
 @Component({
-  selector: 'app-worker-pagination',
-  templateUrl: './worker-pagination.component.html',
+    selector: 'app-worker-pagination',
+    templateUrl: './worker-pagination.component.html',
+    standalone: false
 })
 export class WorkerPaginationComponent implements OnInit {
   @Input() workerList: string[];

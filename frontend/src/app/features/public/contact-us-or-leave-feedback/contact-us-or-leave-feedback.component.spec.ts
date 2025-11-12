@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
@@ -11,18 +11,22 @@ import { fireEvent, render } from '@testing-library/angular';
 import { ContactUsOrLeaveFeedbackComponent } from './contact-us-or-leave-feedback.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('ContactUsOrLeaveFeedbackComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(
       ContactUsOrLeaveFeedbackComponent,
       {
-        imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
+        imports: [BrowserModule, RouterModule, SharedModule, ReactiveFormsModule],
         providers: [
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
           UntypedFormBuilder,
           ErrorSummaryService,
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

@@ -8,8 +8,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-reject-request-dialog',
-  templateUrl: './reject-request-dialog.component.html',
+    selector: 'app-reject-request-dialog',
+    templateUrl: './reject-request-dialog.component.html',
+    standalone: false
 })
 export class RejectRequestDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public form: UntypedFormGroup;

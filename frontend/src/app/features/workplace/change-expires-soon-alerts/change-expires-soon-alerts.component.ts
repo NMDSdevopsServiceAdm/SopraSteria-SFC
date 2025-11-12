@@ -8,8 +8,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-change-expires-soon-alerts',
-  templateUrl: './change-expires-soon-alerts.component.html',
+    selector: 'app-change-expires-soon-alerts',
+    templateUrl: './change-expires-soon-alerts.component.html',
+    standalone: false
 })
 export class ChangeExpiresSoonAlertsComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;

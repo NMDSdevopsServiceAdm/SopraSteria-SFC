@@ -1,9 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
@@ -15,41 +15,34 @@ import { SelectWorkplaceComponent } from './select-workplace.component';
 
 describe('SelectWorkplaceComponent', () => {
   async function setup(addWorkplaceFlow = true, manyLocationAddresses = false) {
-    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
-      SelectWorkplaceComponent,
-      {
-        imports: [
-          SharedModule,
-          RegistrationModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
-        providers: [
-          {
-            provide: WorkplaceService,
-            useFactory: MockWorkplaceService.factory({ value: 'Private Sector' }, manyLocationAddresses),
-            deps: [HttpClient],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                parent: {
-                  url: [
-                    {
-                      path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
-                    },
-                  ],
-                },
+    const setupTools = await render(SelectWorkplaceComponent, {
+      imports: [SharedModule, RouterModule, RegistrationModule, FormsModule, ReactiveFormsModule],
+      providers: [
+        {
+          provide: WorkplaceService,
+          useFactory: MockWorkplaceService.factory({ value: 'Private Sector' }, manyLocationAddresses),
+          deps: [HttpClient],
+        },
+        provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              parent: {
+                url: [
+                  {
+                    path: addWorkplaceFlow ? 'add-workplace' : 'confirm-workplace-details',
+                  },
+                ],
               },
             },
           },
-          UntypedFormBuilder,
-        ],
-      },
-    );
+        },
+        UntypedFormBuilder,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -58,17 +51,12 @@ describe('SelectWorkplaceComponent', () => {
     const spy = spyOn(router, 'navigate');
     spy.and.returnValue(Promise.resolve(true));
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
-      fixture,
+      ...setupTools,
       component,
       spy,
-      getAllByText,
-      queryByText,
-      getByText,
-      getByTestId,
-      queryByTestId,
       workplaceService,
     };
   }
@@ -192,12 +180,12 @@ describe('SelectWorkplaceComponent', () => {
 
   describe('Navigation', () => {
     it('should call the establishmentExistsCheck when selecting workplace', async () => {
-      const { component, fixture, getByText, workplaceService } = await setup();
+      const { component, getAllByRole, getByText, workplaceService } = await setup();
 
       const workplaceSpy = spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: false }));
 
       const locationId = component.locationAddresses[0].locationId;
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
+      const workplaceRadioButton = getAllByRole('radio')[0];
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Continue');
@@ -207,11 +195,11 @@ describe('SelectWorkplaceComponent', () => {
     });
 
     it('should navigate to the cannot-create-account url when selecting the workplace, if the establishment already exists in the service', async () => {
-      const { fixture, getByText, spy, workplaceService } = await setup();
+      const { getAllByRole, getByText, spy, workplaceService } = await setup();
 
       spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(of({ exists: true }));
 
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
+      const workplaceRadioButton = getAllByRole('radio')[0];
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Continue');
@@ -223,9 +211,9 @@ describe('SelectWorkplaceComponent', () => {
     });
 
     it('should navigate to the type-of-employer url in add-workplace flow when workplace selected and the establishment does not already exists in the service', async () => {
-      const { getByText, fixture, spy } = await setup();
+      const { getByText, getAllByRole, spy } = await setup();
 
-      const firstWorkplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
+      const firstWorkplaceRadioButton = getAllByRole('radio')[0];
       fireEvent.click(firstWorkplaceRadioButton);
 
       const continueButton = getByText('Continue');
@@ -235,13 +223,13 @@ describe('SelectWorkplaceComponent', () => {
     });
 
     it('should navigate to the confirm-workplace-details page when returnToConfirmDetails is not null and the establishment does not already exist in the service', async () => {
-      const { component, getByText, fixture, spy } = await setup(false);
+      const { component, getAllByRole, getByText, fixture, spy } = await setup(false);
 
       component.returnToConfirmDetails = { url: ['add-workplace', 'confirm-workplace-details'] };
       component.setNextRoute();
       fixture.detectChanges();
 
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
+      const workplaceRadioButton = getAllByRole('radio')[0];
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Save and return');
@@ -251,11 +239,11 @@ describe('SelectWorkplaceComponent', () => {
     });
 
     it('should navigate to the problem-with-the-service url when there is a problem with the checkIfEstablishmentExists call', async () => {
-      const { fixture, getByText, spy, workplaceService } = await setup();
+      const { getAllByRole, getByText, spy, workplaceService } = await setup();
 
       spyOn(workplaceService, 'checkIfEstablishmentExists').and.returnValue(throwError('error'));
 
-      const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="0"]`);
+      const workplaceRadioButton = getAllByRole('radio')[0];
       fireEvent.click(workplaceRadioButton);
 
       const continueButton = getByText('Continue');

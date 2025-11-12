@@ -12,8 +12,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-staff-details',
-  templateUrl: './staff-details.component.html',
+    selector: 'app-staff-details',
+    templateUrl: './staff-details.component.html',
+    standalone: false
 })
 export class StaffDetailsComponent extends QuestionComponent implements OnInit, OnDestroy {
   public contractsAvailable = [

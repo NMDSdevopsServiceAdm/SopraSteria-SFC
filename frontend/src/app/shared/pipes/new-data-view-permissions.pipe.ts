@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { DataPermissions } from '@core/model/my-workplaces.model';
 
 @Pipe({
-  name: 'newDataViewPermissions',
+    name: 'newDataViewPermissions',
+    standalone: false
 })
 export class NewDataViewPermissionsPipe implements PipeTransform {
   transform(value: DataPermissions, isParent: boolean): string {

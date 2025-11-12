@@ -11,8 +11,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-country-of-birth',
-  templateUrl: './country-of-birth.component.html',
+    selector: 'app-country-of-birth',
+    templateUrl: './country-of-birth.component.html',
+    standalone: false
 })
 export class CountryOfBirthComponent extends QuestionComponent {
   public availableCountries: CountryResponse[];

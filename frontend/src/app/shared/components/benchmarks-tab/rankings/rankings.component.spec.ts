@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MetricsContent } from '@core/model/benchmarks.model';
@@ -25,7 +26,7 @@ const metrics: string[] = ['Pay', 'Turnover', 'Sickness', 'Qualifications'];
 describe('BenchmarksRankingsComponent', () => {
   const setup = async () => {
     const setupTools = await render(BenchmarksRankingsComponent, {
-      imports: [HttpClientTestingModule, BrowserModule, BenchmarksModule],
+      imports: [BrowserModule, BenchmarksModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -46,7 +47,7 @@ describe('BenchmarksRankingsComponent', () => {
             fragment: of('pay'),
           }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

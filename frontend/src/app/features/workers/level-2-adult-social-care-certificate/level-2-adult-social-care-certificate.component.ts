@@ -9,8 +9,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import dayjs from 'dayjs';
 
 @Component({
-  selector: 'app-level-2-adult-social-care-certificate',
-  templateUrl: './level-2-adult-social-care-certificate.component.html',
+    selector: 'app-level-2-adult-social-care-certificate',
+    templateUrl: './level-2-adult-social-care-certificate.component.html',
+    standalone: false
 })
 export class Level2AdultSocialCareCertificateComponent extends QuestionComponent {
   public answersAvailable = ['Yes, completed', 'Yes, started', 'No'];

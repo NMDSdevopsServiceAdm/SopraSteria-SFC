@@ -1,6 +1,6 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { WizardService } from '@core/services/wizard.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockWizardService } from '@core/test-utils/MockWizardService';
@@ -16,7 +16,7 @@ describe('GetStartedComponent', () => {
 
   async function setup() {
     const setupTools = await render(GetStartedComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         { provide: WizardService, useClass: MockWizardService },
         {
@@ -33,6 +33,8 @@ describe('GetStartedComponent', () => {
             },
           }),
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

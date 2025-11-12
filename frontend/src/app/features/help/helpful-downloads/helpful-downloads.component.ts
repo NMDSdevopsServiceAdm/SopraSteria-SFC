@@ -7,8 +7,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-helpful-downloads',
-  templateUrl: './helpful-downloads.component.html',
+    selector: 'app-helpful-downloads',
+    templateUrl: './helpful-downloads.component.html',
+    standalone: false
 })
 export class HelpfulDownloadsComponent {
   public helpfulDownloadsPage: Page;

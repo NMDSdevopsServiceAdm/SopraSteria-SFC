@@ -13,9 +13,10 @@ import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-wdf-workplace-summary',
-  templateUrl: './wdf-workplace-summary.component.html',
-  providers: [I18nPluralPipe],
+    selector: 'app-wdf-workplace-summary',
+    templateUrl: './wdf-workplace-summary.component.html',
+    providers: [I18nPluralPipe],
+    standalone: false
 })
 export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   private _workplace: any;

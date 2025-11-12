@@ -6,8 +6,9 @@ import {
 } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
-  selector: 'app-update-vacancies',
-  templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+    selector: 'app-update-vacancies',
+    templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+    standalone: false
 })
 export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDirective {
   public revealText =
