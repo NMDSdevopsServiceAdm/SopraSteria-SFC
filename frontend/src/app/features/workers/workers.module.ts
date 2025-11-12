@@ -87,6 +87,7 @@ import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/wo
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
+import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -160,6 +161,7 @@ import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qu
     QualificationsResolver,
     TrainingCategoriesResolver,
     TrainingCourseResolver,
+    TrainingProvidersResolver,
     TrainingRecordResolver,
     TrainingRecordsResolver,
     TrainingAndQualificationRecordsResolver,
