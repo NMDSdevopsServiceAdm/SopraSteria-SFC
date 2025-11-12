@@ -56,6 +56,9 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
 
+    this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
+    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+
     if (this.hasCompletedStaffRecordFlow) {
       this.showContinueButtons();
     }
@@ -63,7 +66,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.worker$.pipe().subscribe((worker) => {
         this.worker = worker;
-        if (!this.worker?.completed) {
+        if (!this.worker?.completed && this.canEditWorker) {
           this.updateCompleted();
         }
       }),
@@ -79,8 +82,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       }),
     );
 
-    this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
-    this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.hasAnyTrainingOrQualifications =
       this.route.snapshot.data?.workerHasAnyTrainingOrQualifications?.hasAnyTrainingOrQualifications;
 

@@ -12,7 +12,7 @@ phases:
   pre_build:
     commands:
       - cd lambdas/bulkUpload && npm ci
-      - cd ../../backend && npm ci
+      - cd ../../backend && npm ci --no-optional
   build:
     commands:
       - npm run server:test:unit
