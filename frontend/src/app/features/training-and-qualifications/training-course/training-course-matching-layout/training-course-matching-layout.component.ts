@@ -30,6 +30,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   public notesValue = '';
   public multipleTrainingDetails: boolean;
   public trainingRecord: any;
+  public expiryMismatchWarning: any;
   private _filesToUpload: File[];
 
   constructor(
@@ -52,6 +53,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     this.workplace = this.establishmentService.establishment;
     this.setupForm();
     this.fillForm();
+    this.checkExpiryMismatch();
     this.setBackLink();
   }
 
@@ -94,6 +96,18 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
   private toFormDate(date: dayjs.Dayjs | null): { day: number; month: number; year: number } | null {
     return date ? { day: date.date(), month: date.month() + 1, year: date.year() } : null;
+  }
+
+  private checkExpiryMismatch(): void {
+    const { completed, expires, validityPeriodInMonth } = this.trainingRecord;
+
+    if (!completed || !expires || !validityPeriodInMonth) return;
+
+    const completedDate = dayjs(completed, DATE_PARSE_FORMAT);
+    const expiresDate = dayjs(expires, DATE_PARSE_FORMAT);
+    const expectedExpiry = completedDate.add(validityPeriodInMonth, 'month');
+
+    this.expiryMismatchWarning = !expiresDate.isSame(expectedExpiry, 'day');
   }
 
   public onSubmit(): void {

@@ -101,7 +101,7 @@
               </fieldset>
                 </div>
               </div>
-              <div class="govuk-grid-column-one-half">
+              <div class="govuk-grid-column-one-half" [class.govuk-summary-list__warning]="expiryMismatchWarning">
           <div
               data-testid="expiresDate"
               class="govuk-form-group"
@@ -109,6 +109,11 @@
               <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
                 <legend class="govuk-fieldset__legend">Training expiry date</legend>
                 <legend id="expires-hint" class="govuk-hint  govuk-!-margin-bottom-3"> For example, 31 3 2025 </legend>
+          <div *ngIf="expiryMismatchWarning" class="govuk-summary-list__row govuk-summary-list__row--error-warning-message" >
+          <dt class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap">
+         This training is usually valid for  {{trainingRecord?.validityPeriodInMonth}} months
+          </dt>
+        </div>
               <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
                 </span>
