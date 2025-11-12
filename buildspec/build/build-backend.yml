@@ -8,6 +8,13 @@ phases:
   install:
     runtime-versions:
       nodejs: 18
+    commands:
+      - echo "npm version on codebuild:"
+      - npm -v
+      - echo "Downgrading npm to match Node 18..."
+      - npm install -g npm@10
+      - echo "Using npm version:"
+      - npm -v
   build:
     commands:
       - echo $CODEBUILD_RESOLVED_SOURCE_VERSION > commit_hash.txt
