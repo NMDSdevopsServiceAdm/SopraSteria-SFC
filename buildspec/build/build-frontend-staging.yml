@@ -8,6 +8,9 @@ phases:
   install:
     runtime-versions:
       nodejs: 22
+    commands:
+      - echo "Downgrading npm to match node version..."
+      - npm install -g npm@10
   build:
     commands:
       - echo $CODEBUILD_RESOLVED_SOURCE_VERSION > commit_hash.txt
