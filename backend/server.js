@@ -62,7 +62,7 @@ var careWorkforcePathwayWorkplaceAwarenessAnswers = require('./server/routes/car
 const { careWorkforcePathwayRouter } = require('./server/routes/careWorkforcePathway');
 const { dhaRouter } = require('./server/routes/delegatedHealthcareActivities');
 const { cmsRouter } = require('./server/routes/cms');
-const { trainingProviders } = require('./server/routes/trainingProviders');
+const { trainingProvidersRouter } = require('./server/routes/trainingProviders');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -276,6 +276,7 @@ app.use('/api/careWorkforcePathwayWorkplaceAwarenessAnswers', [
 app.use('/api/careWorkforcePathway', [refCacheMiddleware.refcache, careWorkforcePathwayRouter]);
 app.use('/api/delegatedHealthcareActivities', [refCacheMiddleware.refcache, dhaRouter]);
 app.use('/api/cms', [refCacheMiddleware.refcache, cmsRouter]);
+app.use('/api/trainingProviders', [refCacheMiddleware.refcache, trainingProvidersRouter]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
