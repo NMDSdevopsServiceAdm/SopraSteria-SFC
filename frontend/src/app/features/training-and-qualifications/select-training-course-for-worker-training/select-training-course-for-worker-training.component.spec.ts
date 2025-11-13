@@ -18,7 +18,7 @@ import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteServ
 import { TrainingService } from '@core/services/training.service';
 
 describe('SelectTrainingCourseForWorkerTraining', () => {
-  const continueWithOutCourseOptionText = 'Continue without selecting a saved course';
+  const continueWithOutCourseOptionText = 'Continue without selecting a training course';
   const trainingCourses = [
     {
       id: 1,
@@ -145,7 +145,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
   it('should show the sub text above the course radio buttons', async () => {
     const { getByText } = await setup();
 
-    expect(getByText('Select a saved course for this record')).toBeTruthy();
+    expect(getByText('Select a training course for this record')).toBeTruthy();
   });
 
   it('should show a "Continue" button', async () => {

@@ -21,7 +21,7 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
   public sectionText = '';
   public headingText = '';
   public trainingCourses: TrainingCourse[];
-  public continueWithOutCourseOptionText: string;
+  public continueWithOutCourseOptionText = 'Continue without selecting a training course';
   public continueWithOutCourseOption = { id: 999, name: '' };
   public radioOptions = [];
   public submitted: boolean = false;
