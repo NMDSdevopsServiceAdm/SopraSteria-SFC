@@ -208,7 +208,9 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
     fireEvent.click(button);
     fixture.detectChanges();
 
-    expect(getAllByText('Continue without selecting a saved course or select a saved course').length).toEqual(2);
+    expect(
+      getAllByText('Continue without selecting a training course or select the training course taken').length,
+    ).toEqual(2);
   });
 
   describe('prefill', () => {

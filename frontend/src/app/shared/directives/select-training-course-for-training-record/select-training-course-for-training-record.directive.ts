@@ -100,7 +100,7 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
         type: [
           {
             name: 'required',
-            message: 'Continue without selecting a saved course or select a saved course',
+            message: 'Continue without selecting a training course or select the training course taken',
           },
         ],
       },
