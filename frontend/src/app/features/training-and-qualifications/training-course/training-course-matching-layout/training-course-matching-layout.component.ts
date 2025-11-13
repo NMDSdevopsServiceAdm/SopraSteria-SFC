@@ -47,33 +47,48 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.trainingRecord = this.route.snapshot.data.trainingRecord;
-    console.log(this.trainingRecord);
-
     this.worker = this.workerService.worker;
     this.workplace = this.establishmentService.establishment;
     this.setupForm();
     this.fillForm();
+    this.autoFillExpiry();
     this.checkExpiryMismatch();
+
+    this.form.valueChanges.subscribe(() => {
+      this.autoFillExpiry();
+      this.checkExpiryMismatch();
+    });
+
     this.setBackLink();
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group(
-      {
-        completed: this.formBuilder.group({
-          day: null,
-          month: null,
-          year: null,
-        }),
-        expires: this.formBuilder.group({
-          day: null,
-          month: null,
-          year: null,
-        }),
-        notes: [null, Validators.maxLength(this.notesMaxLength)],
-      },
-      { updateOn: 'submit' },
-    );
+    this.form = this.formBuilder.group({
+      completed: this.formBuilder.group({
+        day: null,
+        month: null,
+        year: null,
+      }),
+      expires: this.formBuilder.group({
+        day: null,
+        month: null,
+        year: null,
+      }),
+      notes: [null, Validators.maxLength(this.notesMaxLength)],
+    });
+  }
+
+  private parseDate(dateString?: string): dayjs.Dayjs | null {
+    return dateString ? dayjs(dateString, DATE_PARSE_FORMAT) : null;
+  }
+
+  private toFormDate(date: dayjs.Dayjs | null): { day: number; month: number; year: number } | null {
+    return date ? { day: date.date(), month: date.month() + 1, year: date.year() } : null;
+  }
+
+  private fromFormDate(formDate: { day: number; month: number; year: number } | null): dayjs.Dayjs | null {
+    if (!formDate?.day || !formDate?.month || !formDate?.year) return null;
+    return dayjs(`${formDate.day}-${formDate.month}-${formDate.year}`, DATE_PARSE_FORMAT);
   }
 
   private fillForm(): void {
@@ -90,24 +105,50 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     }
   }
 
-  private parseDate(dateString?: string): dayjs.Dayjs | null {
-    return dateString ? dayjs(dateString, DATE_PARSE_FORMAT) : null;
-  }
+  private autoFillExpiry(): void {
+    const formValue = this.form.value;
+    const completed = formValue.completed;
+    const expires = formValue.expires;
+    const validityPeriodInMonth = this.trainingRecord?.validityPeriodInMonth;
 
-  private toFormDate(date: dayjs.Dayjs | null): { day: number; month: number; year: number } | null {
-    return date ? { day: date.date(), month: date.month() + 1, year: date.year() } : null;
-  }
+    if (!completed?.day || !validityPeriodInMonth) return;
 
+    const completedDate = this.fromFormDate(completed);
+    if (!completedDate) return;
+
+    const calculatedExpiry = completedDate.add(validityPeriodInMonth, 'month');
+    const currentExpiry = this.fromFormDate(expires);
+
+    if (!currentExpiry) {
+      const newExpiry = this.toFormDate(calculatedExpiry);
+
+      this.form.patchValue(
+        {
+          expires: newExpiry,
+        },
+        { emitEvent: false },
+      );
+    }
+  }
   private checkExpiryMismatch(): void {
-    const { completed, expires, validityPeriodInMonth } = this.trainingRecord;
+    const { completed, expires } = this.form.value;
+    const validityPeriodInMonth = this.trainingRecord?.validityPeriodInMonth;
 
-    if (!completed || !expires || !validityPeriodInMonth) return;
-
-    const completedDate = dayjs(completed, DATE_PARSE_FORMAT);
-    const expiresDate = dayjs(expires, DATE_PARSE_FORMAT);
-    const expectedExpiry = completedDate.add(validityPeriodInMonth, 'month');
+    if (!completed?.day || !expires?.day || !validityPeriodInMonth) {
+      this.expiryMismatchWarning = false;
+      return;
+    }
+    const completedDate = this.fromFormDate(completed);
+    const expiresDate = this.fromFormDate(expires);
+    const expectedExpiry = completedDate?.add(validityPeriodInMonth, 'month');
 
     this.expiryMismatchWarning = !expiresDate.isSame(expectedExpiry, 'day');
+    if (completedDate && expiresDate && expectedExpiry) {
+      const diff = !expiresDate.isSame(expectedExpiry, 'day');
+      this.expiryMismatchWarning = diff;
+    } else {
+      this.expiryMismatchWarning = false;
+    }
   }
 
   public onSubmit(): void {
