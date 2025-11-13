@@ -97,7 +97,7 @@ describe('training record', () => {
 
       // add a training record
       cy.get('h1').should('contain', 'Add a training record');
-      cy.getByLabel('Continue without selecting a saved course').click();
+      cy.getByLabel('Continue without selecting a training course').click();
       cy.contains('button', 'Continue').click();
 
       // select training category
