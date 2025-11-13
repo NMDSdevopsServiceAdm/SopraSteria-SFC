@@ -31,6 +31,10 @@ module.exports = function (sequelize, DataTypes) {
       schema: 'cqc',
       createdAt: false,
       updatedAt: false,
+
+      defaultScope: {
+        attributes: ['id', 'name', 'isOther'],
+      },
     },
   );
 

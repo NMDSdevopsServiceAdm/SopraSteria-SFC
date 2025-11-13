@@ -45,17 +45,17 @@ module.exports = function (sequelize, DataTypes) {
         field: 'DeliveredBy',
         validate: {
           isIn: [Enum.TrainingCourseDeliveredBy],
-          clearExternalProviderName() {
-            if (this.deliveredBy !== 'External provider') {
-              this.externalProviderName = null;
-            }
-          },
         },
       },
-      externalProviderName: {
+      trainingProviderFk: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'TrainingProviderFK',
+      },
+      otherTrainingProviderName: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: 'ExternalProviderName',
+        field: 'OtherTrainingProviderName',
       },
       howWasItDelivered: {
         type: DataTypes.ENUM(Enum.TrainingCourseDeliveryMode),
@@ -110,6 +110,10 @@ module.exports = function (sequelize, DataTypes) {
       schema: 'cqc',
       createdAt: 'created',
       updatedAt: 'updated',
+
+      defaultScope: {
+        include: ['category', 'trainingProvider'],
+      },
     },
   );
 
@@ -131,7 +135,26 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'workerTraining',
     });
+
+    TrainingCourse.belongsTo(models.trainingProvider, {
+      foreignKey: 'trainingProviderFk',
+      targetKey: 'id',
+      as: 'trainingProvider',
+    });
   };
+
+  TrainingCourse.addHook('beforeSave', 'ensureProviderInfoCorrect', async (trainingCourse) => {
+    if (trainingCourse.deliveredBy !== 'External provider') {
+      trainingCourse.trainingProviderFk = null;
+      trainingCourse.otherTrainingProviderName = null;
+      return;
+    }
+
+    const trainingProvider = await trainingCourse.getTrainingProvider();
+    if (trainingProvider && !trainingProvider.isOther) {
+      trainingCourse.otherTrainingProviderName = null;
+    }
+  });
 
   return TrainingCourse;
 };
