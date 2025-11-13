@@ -43,12 +43,11 @@ export class SelectTrainingCourseForWorkerTraining
   }
 
   public setUpVariables(): void {
-    this.continueWithOutCourseOptionText = 'Continue without selecting a saved course';
     this.headingText = 'Add a training record';
     this.sectionText = this.workerService.worker.nameOrId;
     this.previousPageToCheckWithoutTrainingCourse = 'add-training';
     this.previousPageToCheckWithTrainingCourse = 'matching-layout';
-    this.courseOptionsSubText = 'Select a saved course for this record';
+    this.courseOptionsSubText = 'Select a training course for this record';
     this.routeWithoutTrainingCourse = [
       '/workplace',
       this.workplace.uid,

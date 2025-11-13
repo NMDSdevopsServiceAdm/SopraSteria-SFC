@@ -45,7 +45,6 @@ export class SelectTrainingCourseForMultipleTrainingRecords
   protected init(): void {}
 
   public setUpVariables(): void {
-    this.continueWithOutCourseOptionText = 'Continue without selecting a training course';
     this.headingText = 'How do you want to continue?';
     this.sectionText = 'Add multiple training records';
     this.previousPageToCheckWithoutTrainingCourse = 'select-training-category';
