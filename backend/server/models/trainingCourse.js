@@ -1,4 +1,5 @@
 const { Enum } = require('../../reference/databaseEnumTypes');
+const { ensureProviderInfoCorrect } = require('./hooks/trainingHooks');
 
 module.exports = function (sequelize, DataTypes) {
   const TrainingCourse = sequelize.define(
@@ -57,6 +58,22 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'OtherTrainingProviderName',
       },
+
+      // Temporary field to match the current frontend interface. to be removed in ticket #1840
+      externalProviderName: {
+        type: DataTypes.VIRTUAL,
+        allowNull: true,
+        get() {
+          return this.otherTrainingProviderName;
+        },
+        set(externalProviderName) {
+          if (externalProviderName?.length > 0) {
+            this.trainingProviderFk = 63;
+            this.otherTrainingProviderName = externalProviderName;
+          }
+        },
+      },
+
       howWasItDelivered: {
         type: DataTypes.ENUM(Enum.TrainingCourseDeliveryMode),
         allowNull: true,
@@ -143,18 +160,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  TrainingCourse.addHook('beforeSave', 'ensureProviderInfoCorrect', async (trainingCourse) => {
-    if (trainingCourse.deliveredBy !== 'External provider') {
-      trainingCourse.trainingProviderFk = null;
-      trainingCourse.otherTrainingProviderName = null;
-      return;
-    }
-
-    const trainingProvider = await trainingCourse.getTrainingProvider();
-    if (trainingProvider && !trainingProvider.isOther) {
-      trainingCourse.otherTrainingProviderName = null;
-    }
-  });
+  TrainingCourse.addHook('beforeSave', 'ensureProviderInfoCorrect', ensureProviderInfoCorrect);
 
   return TrainingCourse;
 };
