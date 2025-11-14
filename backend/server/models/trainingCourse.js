@@ -1,4 +1,5 @@
 const { Enum } = require('../../reference/databaseEnumTypes');
+const { ensureProviderInfoCorrect } = require('./hooks/trainingHooks');
 
 module.exports = function (sequelize, DataTypes) {
   const TrainingCourse = sequelize.define(
@@ -45,18 +46,34 @@ module.exports = function (sequelize, DataTypes) {
         field: 'DeliveredBy',
         validate: {
           isIn: [Enum.TrainingCourseDeliveredBy],
-          clearExternalProviderName() {
-            if (this.deliveredBy !== 'External provider') {
-              this.externalProviderName = null;
-            }
-          },
         },
       },
-      externalProviderName: {
+      trainingProviderFk: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'TrainingProviderFK',
+      },
+      otherTrainingProviderName: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: 'ExternalProviderName',
+        field: 'OtherTrainingProviderName',
       },
+
+      // Temporary field to match the current frontend interface. to be removed in ticket #1840
+      externalProviderName: {
+        type: DataTypes.VIRTUAL,
+        allowNull: true,
+        get() {
+          return this.otherTrainingProviderName;
+        },
+        set(externalProviderName) {
+          if (externalProviderName?.length > 0) {
+            this.trainingProviderFk = 63;
+            this.otherTrainingProviderName = externalProviderName;
+          }
+        },
+      },
+
       howWasItDelivered: {
         type: DataTypes.ENUM(Enum.TrainingCourseDeliveryMode),
         allowNull: true,
@@ -110,6 +127,10 @@ module.exports = function (sequelize, DataTypes) {
       schema: 'cqc',
       createdAt: 'created',
       updatedAt: 'updated',
+
+      defaultScope: {
+        include: ['category', 'trainingProvider'],
+      },
     },
   );
 
@@ -131,7 +152,15 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'workerTraining',
     });
+
+    TrainingCourse.belongsTo(models.trainingProvider, {
+      foreignKey: 'trainingProviderFk',
+      targetKey: 'id',
+      as: 'trainingProvider',
+    });
   };
+
+  TrainingCourse.addHook('beforeSave', 'ensureProviderInfoCorrect', ensureProviderInfoCorrect);
 
   return TrainingCourse;
 };
