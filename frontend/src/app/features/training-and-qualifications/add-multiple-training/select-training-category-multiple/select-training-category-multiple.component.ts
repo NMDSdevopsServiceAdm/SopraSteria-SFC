@@ -45,7 +45,7 @@ export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCateg
   }
 
   protected setSectionHeading(): void {
-    this.section = 'Add multiple records';
+    this.section = 'Add multiple training records';
   }
 
   public onCancel(event: Event) {

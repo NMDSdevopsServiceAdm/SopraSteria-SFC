@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -26,7 +25,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
   async function setup(prefill = false, accessedFromSummary = false, qsParamGetMock = sinon.stub()) {
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(SelectTrainingCategoryMultipleComponent, {
-      imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
+      imports: [HttpClientTestingModule, SharedModule, RouterModule, AddMultipleTrainingModule],
       declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
         BackLinkService,
@@ -87,7 +86,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
   it('should show the page caption', async () => {
     const { getByText } = await setup(true);
 
-    const caption = getByText('Add multiple records');
+    const caption = getByText('Add multiple training records');
 
     expect(caption).toBeTruthy();
   });
