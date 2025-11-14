@@ -12,6 +12,8 @@ import { SelectedStaffPanelComponent } from './selected-staff-panel/selected-sta
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
 import { SelectTrainingCategoryMultipleComponent } from './select-training-category-multiple/select-training-category-multiple.component';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
+import { SelectTrainingCourseForMultipleTrainingRecords } from './select-training-course-for-multiple-training-records/select-training-course-for-multiple-training-records.component';
+import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 
 @NgModule({
   imports: [
@@ -29,7 +31,8 @@ import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.
     SelectStaffErrorSummaryComponent,
     ConfirmMultipleTrainingComponent,
     SelectTrainingCategoryMultipleComponent,
+    SelectTrainingCourseForMultipleTrainingRecords,
   ],
-  providers: [TrainingCategoriesResolver],
+  providers: [TrainingCategoriesResolver, TrainingCourseResolver],
 })
 export class AddMultipleTrainingModule {}
