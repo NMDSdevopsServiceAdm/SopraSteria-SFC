@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { RequireCWPAnswerForSomeWorkersGuard } from '@core/guards/require-cwp-answer-for-some-workers/require-cwp-answer-for-some-workers.guard';
 import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
@@ -30,6 +31,7 @@ import {
 } from '../../shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
 import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from '../training-and-qualifications/add-edit-training/add-edit-training.component';
+import { IncludeTrainingCourseDetailsComponent} from '../../include-training-course-details/include-training-course-details.component';
 import { DeleteRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
 import { NewTrainingAndQualificationsRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
@@ -86,6 +88,7 @@ import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/wo
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import { AddATrainingRecord } from '@features/training-and-qualifications/add-a-training-record/add-a-training-record.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const routes: Routes = [
   {
@@ -545,6 +548,11 @@ const routes: Routes = [
                 component: AddEditTrainingComponent,
                 data: { title: 'Training' },
               },
+              // {
+              //   path: 'include-training-course-details',
+              //   component: IncludeTrainingCourseDetailsComponent,
+              //   data: { title: 'Include training course details' },
+              // },
               {
                 path: 'delete',
                 component: DeleteRecordComponent,
@@ -845,11 +853,26 @@ const routes: Routes = [
       },
       {
         path: 'training/:trainingRecordId',
+        resolve: { trainingRecord: TrainingRecordResolver },
         children: [
           {
             path: '',
             component: AddEditTrainingComponent,
             data: { title: 'Training' },
+          },
+          {
+            path: 'include-training-course-details',
+            component: IncludeTrainingCourseDetailsComponent,
+            data: {
+              title: 'Include training course details',
+              // trainingCoursesToLoad: {
+              //   categoryId: 2,
+              // },
+            },
+            resolve: {
+              // trainingRecord: TrainingRecordResolver,
+              trainingCourses: TrainingCourseResolver,
+            },
           },
           {
             path: 'delete',
@@ -917,7 +940,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  declarations: [IncludeTrainingCourseDetailsComponent],
+  imports: [RouterModule.forChild(routes), CommonModule, ReactiveFormsModule],
   exports: [RouterModule],
 })
 export class WorkersRoutingModule {}

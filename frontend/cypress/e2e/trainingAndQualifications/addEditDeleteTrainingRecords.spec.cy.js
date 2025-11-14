@@ -192,6 +192,25 @@ describe('training record', () => {
     cy.get('[data-testid="generic_alert"]').contains('Training record deleted');
   });
 
+  describe('including training course details', () => {
+
+    // one course option --> checkbox
+    //     select and continue
+    //     don't select and continue
+    // multiple course options --> radios
+    //     select and continue
+    //     don't select and continue
+    // Click cancel
+    it('should include training course details successfully', () => {
+      cy.addWorkerTraining({ establishmentID: StandAloneEstablishment.id, workerName: workerName1, categoryId: 4 });
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', trainingName).click();
+
+      cy.contains('a', 'Include training course details').click();
+      cy.get('heading').contains('Include training course details');
+    });
+  })
+
   it('should add multiple training records successfully', () => {
     cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName2 });
     cy.deleteTestWorkerFromDb(workerName2);
