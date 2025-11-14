@@ -61,14 +61,14 @@
                <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key govuk__nowrap">How is this training course delivered?</dt>
           <dd class="govuk-summary-list__value">
-                      {{trainingRecord?.howWasItDelivered}}
+                      {{trainingRecord?.howWasItDelivered? trainingRecord?.howWasItDelivered: '-'}}
           </dd>
         </div>
                 <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key govuk__nowrap">How long is the training valid for?</dt>
           <dd class="govuk-summary-list__value">
 
-                      {{trainingRecord?.validityPeriodInMonth}}
+                      {{trainingRecord?.validityPeriodInMonth? trainingRecord?.validityPeriodInMonth: '-'}}
 
           </dd>
         </div>
@@ -132,15 +132,16 @@
           <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
             <a
               class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center"
-
               data-testid="deleteButton"
+                 *ngIf="trainingRecordId"
+              (click)="navigateToDeleteTrainingRecord()"
             >
               <img src="/assets/images/bin.svg" alt="" />
               <span class="govuk-!-margin-left-1"> Delete this training record </span></a
             >
           </div>
         </div>
-        <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
+        <div  class="govuk-grid-row">
           <div class="govuk-grid-column-full">
             <app-select-upload-certificate [filesToUpload]="filesToUpload" (selectFiles)="onSelectFiles($event)" [certificateErrors]="certificateErrors" />
              <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4 "/>
