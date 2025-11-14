@@ -51,7 +51,7 @@ install-for-e2e:
 	npm install -g sequelize-cli
 
 test-e2e-inside-docker:
-	docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
+	CYPRESS_PATH="cypress/e2e/trainingAndQualifications/**/*.cy.js" docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
 
 deploy-bu-dev:
 	cd lambdas/bulkUpload && npm ci && npx serverless deploy --stage dev

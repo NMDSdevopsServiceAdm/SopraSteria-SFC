@@ -57,7 +57,7 @@ services:
         condition: service_healthy
     volumes:
       - ./frontend:/frontend
-    entrypoint: ["cypress", "run", "${CYPRESS_PATH}"]
+    entrypoint: ["cypress", "run", "--spec", "${CYPRESS_PATH}"]
     env_file:
       - .env
     environment:
