@@ -46,7 +46,7 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     TrainingProvider.hasMany(models.workerTraining, {
-      foreignKey: 'trainingProviderFK',
+      foreignKey: 'trainingProviderFk',
       targetKey: 'id',
       as: 'workerTraining',
     });
