@@ -53,6 +53,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { IncludeTrainingCourseDetailsComponent} from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
 import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
@@ -84,7 +85,7 @@ import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delega
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
-
+import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
 
 const routes: Routes = [
   {
@@ -544,11 +545,6 @@ const routes: Routes = [
                 component: AddEditTrainingComponent,
                 data: { title: 'Training' },
               },
-              // {
-              //   path: 'include-training-course-details',
-              //   component: IncludeTrainingCourseDetailsComponent,
-              //   data: { title: 'Include training course details' },
-              // },
               {
                 path: 'delete',
                 component: DeleteRecordComponent,
@@ -573,7 +569,7 @@ const routes: Routes = [
           },
           {
             path: 'add-a-training-record',
-            component: AddATrainingRecord,
+            component: SelectTrainingCourseForWorkerTraining,
             resolve: { trainingCourses: TrainingCourseResolver },
             data: { title: 'Add a Training Record' },
           },
@@ -861,12 +857,8 @@ const routes: Routes = [
             component: IncludeTrainingCourseDetailsComponent,
             data: {
               title: 'Include training course details',
-              // trainingCoursesToLoad: {
-              //   categoryId: 2,
-              // },
             },
             resolve: {
-              // trainingRecord: TrainingRecordResolver,
               trainingCourses: TrainingCourseResolver,
             },
           },
@@ -894,7 +886,7 @@ const routes: Routes = [
       },
       {
         path: 'add-a-training-record',
-        component: AddATrainingRecord,
+        component: SelectTrainingCourseForWorkerTraining,
         resolve: { trainingCourses: TrainingCourseResolver },
         data: { title: 'Add a Training Record' },
       },

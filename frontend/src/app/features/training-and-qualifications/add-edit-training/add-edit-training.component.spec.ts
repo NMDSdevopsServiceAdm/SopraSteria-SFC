@@ -391,14 +391,14 @@ describe('AddEditTrainingComponent', () => {
     });
 
     describe('when there is no training id', async () => {
-      const { getByText, queryByTestId } = await setup({ trainingRecordId: null });
-
       it('should render the Save record and Cancel buttons', async () => {
+        const { getByText } = await setup({ trainingRecordId: null });
         expect(getByText('Save record')).toBeTruthy();
         expect(getByText('Cancel')).toBeTruthy();
       });
 
       it('should not render the Delete and Include training course details buttons', async () => {
+        const { queryByTestId } = await setup({ trainingRecordId: null });
         expect(queryByTestId('deleteButton')).toBeFalsy();
         expect(queryByTestId('includeTraining')).toBeFalsy();
       });
@@ -451,8 +451,6 @@ describe('AddEditTrainingComponent', () => {
       );
     });
   });
-
-
 
   describe('Cancel button', () => {
     it('should call navigate when pressing cancel', async () => {

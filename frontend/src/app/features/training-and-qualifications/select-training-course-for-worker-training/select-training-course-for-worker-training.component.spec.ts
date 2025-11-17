@@ -1,11 +1,11 @@
 import { fireEvent, render, within } from '@testing-library/angular';
-import { AddATrainingRecord } from './add-a-training-record.component';
+import { SelectTrainingCourseForWorkerTraining } from './select-training-course-for-worker-training.component';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
-import { DeliveredBy, HowWasItDelivered, Training } from '@core/model/training.model';
+import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -17,8 +17,8 @@ import { PreviousRouteService } from '@core/services/previous-route.service';
 import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 import { TrainingService } from '@core/services/training.service';
 
-describe('AddATrainingRecord', () => {
-  const continueWithOutCourseOptionText = 'Continue without selecting a saved course';
+describe('SelectTrainingCourseForWorkerTraining', () => {
+  const continueWithOutCourseOptionText = 'Continue without selecting a training course';
   const trainingCourses = [
     {
       id: 1,
@@ -46,7 +46,7 @@ describe('AddATrainingRecord', () => {
     },
   ];
   async function setup(overrides: any = {}) {
-    const setupTools = await render(AddATrainingRecord, {
+    const setupTools = await render(SelectTrainingCourseForWorkerTraining, {
       imports: [RouterModule, ReactiveFormsModule, SharedModule],
       declarations: [],
       providers: [
@@ -127,7 +127,7 @@ describe('AddATrainingRecord', () => {
   it('should show the worker name in caption', async () => {
     const { component, getByTestId } = await setup();
 
-    const caption = getByTestId('workerName');
+    const caption = getByTestId('section');
 
     expect(caption).toBeTruthy();
     expect(within(caption).getByText(component.worker.nameOrId)).toBeTruthy();
@@ -142,6 +142,12 @@ describe('AddATrainingRecord', () => {
     });
   });
 
+  it('should show the sub text above the course radio buttons', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Select a training course for this record')).toBeTruthy();
+  });
+
   it('should show a "Continue" button', async () => {
     const { getByRole } = await setup();
 
@@ -151,7 +157,15 @@ describe('AddATrainingRecord', () => {
   });
 
   it(`should navigate to "add-training" selecting ${continueWithOutCourseOptionText}`, async () => {
-    const { component, fixture, getByText, getByRole, routerSpy } = await setup();
+    const {
+      component,
+      fixture,
+      getByText,
+      getByRole,
+      routerSpy,
+      setIsTrainingCourseSelectedSpy,
+      setSelectedTrainingCourseSpy,
+    } = await setup();
 
     const button = getByRole('button', { name: 'Continue' });
     const option = getByText(continueWithOutCourseOptionText);
@@ -167,10 +181,20 @@ describe('AddATrainingRecord', () => {
       component.worker.uid,
       'add-training',
     ]);
+    expect(setIsTrainingCourseSelectedSpy).toHaveBeenCalledWith(false);
+    expect(setSelectedTrainingCourseSpy).not.toHaveBeenCalled();
   });
 
   it(`should navigate to "add-training" after selecting a training course`, async () => {
-    const { component, fixture, getByText, getByRole, routerSpy } = await setup();
+    const {
+      component,
+      fixture,
+      getByText,
+      getByRole,
+      routerSpy,
+      setIsTrainingCourseSelectedSpy,
+      setSelectedTrainingCourseSpy,
+    } = await setup();
 
     const button = getByRole('button', { name: 'Continue' });
     const option = getByText(trainingCourses[0].name);
@@ -186,18 +210,27 @@ describe('AddATrainingRecord', () => {
       component.worker.uid,
       'matching-layout',
     ]);
+    expect(setIsTrainingCourseSelectedSpy).toHaveBeenCalledWith(true);
+    expect(setSelectedTrainingCourseSpy).toHaveBeenCalledWith(trainingCourses[0]);
   });
 
   it('should show a "Cancel" link and go back to the staff training page', async () => {
-    const { component, getByRole } = await setup();
+    const { component, getByRole, fixture, routerSpy } = await setup();
 
     const link = getByRole('link', { name: 'Cancel' });
 
     expect(link).toBeTruthy();
 
-    expect(link.getAttribute('href')).toEqual(
-      `/workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}/training`,
-    );
+    fireEvent.click(link);
+    fixture.detectChanges();
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      component.workplace.uid,
+      'training-and-qualifications-record',
+      component.worker.uid,
+      'training',
+    ]);
   });
 
   it('should show an error message if "Continue" is clicked without selecting a radio option', async () => {
@@ -208,7 +241,9 @@ describe('AddATrainingRecord', () => {
     fireEvent.click(button);
     fixture.detectChanges();
 
-    expect(getAllByText('Continue without selecting a saved course or select a saved course').length).toEqual(2);
+    expect(
+      getAllByText('Continue without selecting a training course or select the training course taken').length,
+    ).toEqual(2);
   });
 
   describe('prefill', () => {
@@ -243,6 +278,22 @@ describe('AddATrainingRecord', () => {
     it('should not prefill if the previous page was "add-training" and isTrainingCourseSelected is undefined', async () => {
       const overrides = {
         isTrainingCourseSelected: undefined,
+        previousUrl: 'add-training',
+      };
+      const { getByLabelText } = await setup(overrides);
+
+      const noCourseRadioButton = getByLabelText(continueWithOutCourseOptionText) as HTMLInputElement;
+      expect(noCourseRadioButton.checked).toBeFalsy();
+
+      trainingCourses.forEach((radioOption) => {
+        const radioButton = getByLabelText(radioOption.name) as HTMLInputElement;
+        expect(radioButton.checked).toBeFalsy();
+      });
+    });
+
+    it('should not prefill if the previous page was "add-training" and isTrainingCourseSelected is true', async () => {
+      const overrides = {
+        isTrainingCourseSelected: true,
         previousUrl: 'add-training',
       };
       const { getByLabelText } = await setup(overrides);

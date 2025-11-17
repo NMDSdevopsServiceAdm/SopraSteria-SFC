@@ -1,5 +1,14 @@
 @import 'govuk-frontend/govuk/base';
 
+.additional-details-wrapper{
+  margin-left: -1px;
+}
+
+.first-line-of-details-text{
+  margin-top: -5px;
+  margin-bottom: 0px;
+}
+
 .radio-background{
   background-color: govuk-colour("light-grey");
   padding-top: 20px;
@@ -9,9 +18,8 @@
   margin-top: -30px;
 }
 
-.shaded-background{
+.checkbox-shaded-background{
   background-color: govuk-colour("light-grey");
-  //margin-top: 500px;
   padding-top: 20px;
   padding-bottom: 20px;
   padding-left: 20px;
@@ -27,10 +35,6 @@
 .govuk-radios__label:after, .govuk-radios__label:before {
   background: govuk-colour("white");
 }
-
-//.training-course-heading{
-//  margin-bottom: -30px;
-//}
 
 .first-grid-row{
   margin-top: -40px;
