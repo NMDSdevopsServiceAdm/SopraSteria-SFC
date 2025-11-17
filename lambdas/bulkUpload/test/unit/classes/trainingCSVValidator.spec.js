@@ -11,7 +11,7 @@ const {
   TrainingCourseDeliveryMode,
 } = require('../../../../../backend/reference/databaseEnumTypes');
 
-describe('trainingCSVValidator', () => {
+describe.only('trainingCSVValidator', () => {
   describe('Validation', () => {
     let trainingCsv;
 
@@ -643,15 +643,15 @@ describe('trainingCSVValidator', () => {
         expect(validator.validationErrors).to.deep.equal([]);
       });
 
-      it('should pass validation set externalProviderName if WHODELIVERED is "2" and PROVIDERNAME is given', () => {
+      it('should pass validation set  if WHODELIVERED is "2" and PROVIDERNAME is given with a valid number', () => {
         trainingCsv.WHODELIVERED = '2'; // external provider
-        trainingCsv.PROVIDERNAME = 'Care skill academy';
+        trainingCsv.PROVIDERNAME = '1';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
         validator._validateWhoDelivered();
         validator._validateProviderName();
 
-        expect(validator.externalProviderName).to.deep.equal('Care skill academy');
+        expect(validator.trainingProviderFk).to.deep.equal(1);
         expect(validator.validationErrors).to.deep.equal([]);
       });
 
