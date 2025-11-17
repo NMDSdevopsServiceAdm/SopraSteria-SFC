@@ -50,7 +50,7 @@ const trainingProviders = [
     name: 'Guardian Angels Training (Stewart Hill Associates Limited, T/As Guardian Angels)',
   },
   { id: 25, bulkUploadCode: 25, name: 'Gecko programmes Ltd' },
-  { id: 26, bulkUploadCode: 26, name: 'GLENDALE ACADEMY' },
+  { id: 26, bulkUploadCode: 26, name: 'Glendale Academy' },
   { id: 27, bulkUploadCode: 27, name: 'Global Skills Services Ltd' },
   { id: 28, bulkUploadCode: 28, name: 'Hasca Ltd' },
   { id: 29, bulkUploadCode: 29, name: 'HCPA in partnership with CPA' },
@@ -83,7 +83,7 @@ const trainingProviders = [
     name: 'Newcastle and Stafford Colleges Group',
   },
   { id: 42, bulkUploadCode: 42, name: 'Northbrook' },
-  { id: 43, bulkUploadCode: 43, name: 'Pathways Associates  CIC Ltd' },
+  { id: 43, bulkUploadCode: 43, name: 'Pathways Associates CIC Ltd' },
   { id: 44, bulkUploadCode: 44, name: 'Pentagon Skills Limited' },
   {
     id: 45,
