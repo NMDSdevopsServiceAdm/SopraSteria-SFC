@@ -115,7 +115,7 @@ class TrainingCsvValidator {
       notes: this.notes,
       lineNumber: this.lineNumber,
       deliveredBy: this.deliveredBy,
-      externalProviderName: this.externalProviderName,
+      trainingProviderFk: this.trainingProviderFk,
       howWasItDelivered: this.howWasItDelivered,
       doesNotExpire: this.doesNotExpire,
       validityPeriodInMonth: this.validityPeriodInMonth,
@@ -133,7 +133,7 @@ class TrainingCsvValidator {
       notes: this.notes ? this.notes : undefined,
       accredited: this.accredited ? this.accredited : undefined,
       deliveredBy: this.deliveredBy,
-      externalProviderName: this.externalProviderName,
+      trainingProviderFk: this.trainingProviderFk,
       howWasItDelivered: this.howWasItDelivered,
       doesNotExpire: this.doesNotExpire,
       validityPeriodInMonth: this.validityPeriodInMonth,
@@ -261,7 +261,20 @@ class TrainingCsvValidator {
       return;
     }
 
-    this.externalProviderName = this.currentLine.PROVIDERNAME;
+    const providerBulkUploadCode = parseInt(this.currentLine.PROVIDERNAME);
+    const providerFk = this.BUDI.trainingProvider(this.BUDI.TO_ASC, providerBulkUploadCode);
+
+    if (!providerFk) {
+      this._addValidationError(
+        'PROVIDERNAME_ERROR',
+        'The code you have entered for PROVIDERNAME is invalid',
+        this.currentLine.PROVIDERNAME,
+        'PROVIDERNAME',
+      );
+      return;
+    }
+
+    this.trainingProviderFk = providerFk;
   }
 
   _validateHowDelivered() {

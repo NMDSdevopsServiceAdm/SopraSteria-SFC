@@ -11,7 +11,7 @@ const {
   TrainingCourseDeliveryMode,
 } = require('../../../../../backend/reference/databaseEnumTypes');
 
-describe.only('trainingCSVValidator', () => {
+describe('trainingCSVValidator', () => {
   describe('Validation', () => {
     let trainingCsv;
 
@@ -30,6 +30,16 @@ describe.only('trainingCSVValidator', () => {
         EXPIRYDATE: '15/04/2022',
         NOTES: '',
       };
+    });
+
+    before(() => {
+      // patch the imported mapping object, as TRAINING_PROVIDER mapping is fetched from database data, not hard-coded
+      const mockTrainingProviderMappings = [
+        { ASC: 1, BUDI: 1 },
+        { ASC: 2, BUDI: 2 },
+        { ASC: 63, BUDI: 999 },
+      ];
+      Object.assign(mappings, { TRAINING_PROVIDER: mockTrainingProviderMappings });
     });
 
     describe('_validateAccredited()', () => {
@@ -643,7 +653,7 @@ describe.only('trainingCSVValidator', () => {
         expect(validator.validationErrors).to.deep.equal([]);
       });
 
-      it('should pass validation set  if WHODELIVERED is "2" and PROVIDERNAME is given with a valid number', () => {
+      it('should pass validation and set the trainingProviderFk if WHODELIVERED is "2" and PROVIDERNAME is given with a valid number', () => {
         trainingCsv.WHODELIVERED = '2'; // external provider
         trainingCsv.PROVIDERNAME = '1';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
@@ -657,13 +667,13 @@ describe.only('trainingCSVValidator', () => {
 
       it('should add a PROVIDERNAME_ERROR if PROVIDERNAME is given and WHODELIVERED is not 2', () => {
         trainingCsv.WHODELIVERED = '1'; // in-house staff
-        trainingCsv.PROVIDERNAME = 'Care skill academy';
+        trainingCsv.PROVIDERNAME = '1';
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
         validator._validateWhoDelivered();
         validator._validateProviderName();
 
-        expect(validator.externalProviderName).to.equal(undefined);
+        expect(validator.trainingProviderFk).to.equal(undefined);
         expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
@@ -672,6 +682,30 @@ describe.only('trainingCSVValidator', () => {
             warning: 'PROVIDERNAME will be ignored as WHODELIVERED is not 2 (External provider)',
             source: trainingCsv.PROVIDERNAME,
             column: 'WHODELIVERED/PROVIDERNAME',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add a PROVIDERNAME_ERROR if PROVIDERNAME is not a valid value', () => {
+        trainingCsv.WHODELIVERED = '2'; // external provider
+        trainingCsv.PROVIDERNAME = '1000';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+        validator._validateProviderName();
+
+        expect(validator.trainingProviderFk).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            errCode: 1090,
+            errType: 'PROVIDERNAME_ERROR',
+            error: 'The code you have entered for PROVIDERNAME is invalid',
+            source: trainingCsv.PROVIDERNAME,
+            column: 'PROVIDERNAME',
             lineNumber: 1,
             name: 'foo',
             worker: 'bar',
@@ -920,7 +954,7 @@ describe.only('trainingCSVValidator', () => {
         TRAININGNAME: 'training',
         ACCREDITED: '1',
         WHODELIVERED: '2',
-        PROVIDERNAME: 'Care skill academy',
+        PROVIDERNAME: '999',
         HOWDELIVERED: '1',
         VALIDITY: '24',
         DATECOMPLETED: '01/01/2022',
@@ -939,7 +973,7 @@ describe.only('trainingCSVValidator', () => {
         notes: 'some notes',
         accredited: 'Yes',
         deliveredBy: 'External provider',
-        externalProviderName: 'Care skill academy',
+        trainingProviderFk: 63,
         howWasItDelivered: 'Face to face',
         doesNotExpire: false,
         validityPeriodInMonth: 24,
@@ -963,7 +997,7 @@ describe.only('trainingCSVValidator', () => {
         TRAININGNAME: 'training',
         ACCREDITED: '1',
         WHODELIVERED: '2',
-        PROVIDERNAME: 'Care skill academy',
+        PROVIDERNAME: '999',
         HOWDELIVERED: '1',
         VALIDITY: '24',
         DATECOMPLETED: '01/01/2022',
@@ -981,7 +1015,7 @@ describe.only('trainingCSVValidator', () => {
         notes: 'some notes',
         accredited: 'Yes',
         deliveredBy: 'External provider',
-        externalProviderName: 'Care skill academy',
+        trainingProviderFk: 63,
         howWasItDelivered: 'Face to face',
         doesNotExpire: false,
         validityPeriodInMonth: 24,
