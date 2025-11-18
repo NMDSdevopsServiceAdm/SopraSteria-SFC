@@ -123,25 +123,20 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   }
 
   private autoFillExpiry(): void {
-    const formValue = this.form.value;
-    const completed = formValue.completed;
-    const expires = formValue.expires;
-    const validityPeriodInMonth = this.trainingRecord?.validityPeriodInMonth;
+    const completed = this.fromFormDate(this.form.get('completed')?.value);
+    const expires = this.fromFormDate(this.form.get('expires')?.value);
+    const validity = this.trainingRecord?.validityPeriodInMonth;
 
-    if (!completed?.day || !validityPeriodInMonth) return;
-
-    const completedDate = this.fromFormDate(completed);
-    if (!completedDate) return;
-
-    const calculatedExpiry = completedDate.add(validityPeriodInMonth, 'month');
-    const currentExpiry = this.fromFormDate(expires);
-
-    if (!currentExpiry) {
-      const newExpiry = this.toFormDate(calculatedExpiry);
+    if (completed && !expires && validity) {
+      const newExpiry = completed.add(validity, 'month');
 
       this.form.patchValue(
         {
-          expires: newExpiry,
+          expires: {
+            day: newExpiry.date(),
+            month: newExpiry.month() + 1,
+            year: newExpiry.year(),
+          },
         },
         { emitEvent: false },
       );
@@ -170,6 +165,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
   public onSubmit(): void {
     this.submitted = true;
+
     this.onSubmitSuccess();
   }
 
