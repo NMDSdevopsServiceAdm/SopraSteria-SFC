@@ -108,8 +108,10 @@ module.exports = function (sequelize, DataTypes) {
           return this.otherTrainingProviderName;
         },
         set(externalProviderName) {
-          this.trainingProviderFk = 63;
-          this.otherTrainingProviderName = externalProviderName;
+          if (externalProviderName?.length > 0) {
+            this.trainingProviderFk = 63;
+            this.otherTrainingProviderName = externalProviderName;
+          }
         },
       },
 
