@@ -52,5 +52,9 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  TrainingProvider.addScope('bulkUpload', {
+    attributes: ['id', 'bulkUploadCode', 'isOther'],
+  });
+
   return TrainingProvider;
 };

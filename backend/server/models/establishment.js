@@ -1720,17 +1720,22 @@ module.exports = function (sequelize, DataTypes) {
                 'accredited',
                 'notes',
                 'deliveredBy',
-                'externalProviderName',
                 'howWasItDelivered',
                 'doesNotExpire',
                 'validityPeriodInMonth',
               ],
               model: sequelize.models.workerTraining,
               as: 'workerTraining',
-              include: {
-                model: sequelize.models.workerTrainingCategories,
-                as: 'category',
-              },
+              include: [
+                {
+                  model: sequelize.models.workerTrainingCategories,
+                  as: 'category',
+                },
+                {
+                  model: sequelize.models.trainingProvider.scope('bulkUpload'),
+                  as: 'trainingProvider',
+                },
+              ],
             },
           ],
         },

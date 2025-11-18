@@ -4,6 +4,10 @@ const BUDI = require('../../../../../../models/BulkImport/BUDI').BUDI;
 const sandbox = require('sinon').createSandbox();
 const yesNoDontKnow = require('../../../../mockdata/workers').yesNoDontKnow;
 const {
+  TrainingCourseDeliveryMode,
+  TrainingCourseDeliveredBy,
+} = require('../../../../../../../reference/databaseEnumTypes');
+const {
   toCSV,
   convertDateFormatToDayMonthYearWithSlashes,
   convertAccredited,
@@ -64,6 +68,7 @@ describe('trainingCSV', () => {
           const csvAsArray = csv.split(',');
           expect(csvAsArray[3]).to.equal('');
         });
+
         describe('accredited', () => {
           yesNoDontKnow.forEach((value) => {
             it('should return accredited value for ' + value.value, async () => {
@@ -86,47 +91,64 @@ describe('trainingCSV', () => {
             });
           });
         });
-        it('should return deliveredBy as WhoDelivered', () => async () => {
+
+        it('should return deliveredBy as WhoDelivered', async () => {
+          trainingRecord.deliveredBy = TrainingCourseDeliveredBy.ExternalProvider;
+
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-          expect(csvAsArray[5]).to.equal(trainingRecord.deliveredBy);
+          expect(csvAsArray[5]).to.equal('2');
         });
-        it('should return externalProviderName as ProviderName', () => async () => {
+
+        it('should return the bulk upload code of trainingProviderFk as ProviderName', async () => {
+          trainingRecord.trainingProvider = { id: 63, bulkUploadCode: 999 };
+          const expectedTrainingProviderBuCode = '999';
+
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-          expect(csvAsArray[6]).to.equal(trainingRecord.externalProviderName);
+
+          expect(csvAsArray[6]).to.equal(expectedTrainingProviderBuCode);
         });
-        it('should return howWasItDelivered as HowDelivered', () => async () => {
+
+        it('should return howWasItDelivered as HowDelivered', async () => {
+          trainingRecord.howWasItDelivered = TrainingCourseDeliveryMode.FaceToFace;
+
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
-          expect(csvAsArray[7]).to.equal(trainingRecord.howWasItDelivered);
+          expect(csvAsArray[7]).to.equal('1');
         });
-        it('should return validityPeriodInMonth as Validity', () => async () => {
+
+        it('should return validityPeriodInMonth as Validity', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
           expect(csvAsArray[8]).to.equal(trainingRecord.validityPeriodInMonth.toString());
         });
-        it('should return validityPeriodInMonth as "none" if training does not expire', () => async () => {
+
+        it('should return validityPeriodInMonth as "none" if training does not expire', async () => {
           trainingRecord.doesNotExpire = true;
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
           expect(csvAsArray[8]).to.equal('none');
         });
+
         it('should return training completed date', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
           expect(csvAsArray[9]).to.equal(convertDateFormatToDayMonthYearWithSlashes(trainingRecord.completed));
         });
+
         it('should return training expiry date', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
           expect(csvAsArray[10]).to.equal(convertDateFormatToDayMonthYearWithSlashes(trainingRecord.expires));
         });
+
         it('should return training notes', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
           const csvAsArray = csv.split(',');
           expect(csvAsArray[11]).to.equal(trainingRecord.notes);
         });
+
         it('should return training notes as empty string if null', async () => {
           trainingRecord.notes = null;
           const csv = toCSV(establishment.LocalIdentifierValue, worker.LocalIdentifierValue, trainingRecord);
@@ -257,30 +279,42 @@ describe('trainingCSV', () => {
   });
 
   describe('convertProviderName', () => {
-    it('should return the external provider name when deliveredBy is "External provider"', () => {
-      const expected = 'Care skill academy';
-      const actual = convertProviderName(externalProvider, 'Care skill academy');
+    it('should return the bulk upload code of training provider when deliveredBy is "External provider"', () => {
+      const deliveredBy = externalProvider;
+      const trainingProvider = { id: 63, bulkUploadCode: 999 };
+
+      const expected = '999';
+      const actual = convertProviderName(deliveredBy, trainingProvider);
 
       expect(actual).to.equal(expected);
     });
 
-    it('should properly escape special chars in provider name', () => {
-      const expected = '"""Care Skills Academy"", year 2025"';
-      const actual = convertProviderName(externalProvider, '"Care Skills Academy", year 2025');
+    it('should return an empty string when trainingProvider is null', () => {
+      const deliveredBy = externalProvider;
+      const trainingProvider = null;
+
+      const expected = '';
+      const actual = convertProviderName(deliveredBy, trainingProvider);
 
       expect(actual).to.equal(expected);
     });
 
     it('should return an empty string when deliveredBy is "In-house staff"', () => {
+      const deliveredBy = inHouseStaff;
+      const trainingProvider = { id: 63, bulkUploadCode: 999 };
+
       const expected = '';
-      const actual = convertProviderName(inHouseStaff, 'Care skill academy');
+      const actual = convertProviderName(deliveredBy, trainingProvider);
 
       expect(actual).to.equal(expected);
     });
 
     it('should return an empty string when deliveredBy is null', () => {
+      const deliveredBy = null;
+      const trainingProvider = { id: 63, bulkUploadCode: 999 };
+
       const expected = '';
-      const actual = convertProviderName(null, 'Care skill academy');
+      const actual = convertProviderName(deliveredBy, trainingProvider);
 
       expect(actual).to.equal(expected);
     });

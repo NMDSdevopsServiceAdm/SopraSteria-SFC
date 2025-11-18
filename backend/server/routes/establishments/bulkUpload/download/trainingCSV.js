@@ -11,7 +11,7 @@ const toCSV = (establishmentId, workerId, entity) => {
   const trainingName = entity.title ? csvQuote(entity.title) : '';
   const accredited = convertAccredited(entity.accredited);
   const whoDelivered = convertWhoDelivered(entity.deliveredBy);
-  const providerName = convertProviderName(entity.deliveredBy, entity.externalProviderName);
+  const providerName = convertProviderName(entity.deliveredBy, entity.trainingProvider);
   const howDelivered = convertHowDelivered(entity.howWasItDelivered);
   const validity = convertValidity(entity.doesNotExpire, entity.validityPeriodInMonth);
   const dateCompleted = convertDateFormatToDayMonthYearWithSlashes(entity.completed);
@@ -78,12 +78,13 @@ const convertWhoDelivered = (deliveredBy) => {
   }
 };
 
-const convertProviderName = (deliveredBy, externalProviderName) => {
+const convertProviderName = (deliveredBy, trainingProvider) => {
   if (deliveredBy !== TrainingCourseDeliveredBy.ExternalProvider) {
     return '';
   }
+  const bulkUploadCode = trainingProvider?.bulkUploadCode?.toString();
 
-  return csvQuote(externalProviderName);
+  return bulkUploadCode ?? '';
 };
 
 const convertHowDelivered = (howWasItDelivered) => {
