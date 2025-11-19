@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
@@ -24,55 +23,56 @@ import { MultipleTrainingDetailsComponent } from './training-details.component';
 
 describe('MultipleTrainingDetailsComponent', () => {
   async function setup(
-    accessedFromSummary = false,
-    prefill = false,
-    isPrimaryWorkplace = true,
-    qsParamGetMock = sinon.fake(),
+    overrides: any = {
+      accessedFromSummary: false,
+      prefill: false,
+      isPrimaryWorkplace: true,
+      qsParamGetMock: sinon.fake(),
+    },
   ) {
-    const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByTestId } = await render(
-      MultipleTrainingDetailsComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
-        providers: [
-          WindowRef,
-          { provide: EstablishmentService, useClass: MockEstablishmentService },
-          { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
-          {
-            provide: ActivatedRoute,
-            useValue: new MockActivatedRoute({
-              snapshot: {
-                params: { trainingRecordId: '1' },
-                parent: {
-                  url: [{ path: accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
-                },
-              },
+    const setupTools = await render(MultipleTrainingDetailsComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, AddMultipleTrainingModule],
+      providers: [
+        WindowRef,
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            snapshot: {
+              params: { trainingRecordId: '1' },
               parent: {
-                snapshot: {
-                  data: {
-                    establishment: {
-                      uid: isPrimaryWorkplace ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : 'mock-uid',
-                    },
+                url: [{ path: overrides.accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
+              },
+            },
+            parent: {
+              snapshot: {
+                data: {
+                  establishment: {
+                    uid: overrides.isPrimaryWorkplace ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : 'mock-uid',
                   },
                 },
               },
-            }),
-          },
-          UntypedFormBuilder,
-          ErrorSummaryService,
-          {
-            provide: TrainingService,
-            useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
-          },
-          { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-          {
-            provide: TrainingCategoryService,
-            useClass: MockTrainingCategoryService,
-          },
-        ],
+            },
+          }),
+        },
+        UntypedFormBuilder,
+        ErrorSummaryService,
+        {
+          provide: TrainingService,
+          useClass: overrides.prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
+        },
+        { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+        {
+          provide: TrainingCategoryService,
+          useClass: MockTrainingCategoryService,
+        },
+      ],
+      componentProperties: {
+        hideExpiresDate: overrides.hideExpiresDate ?? false,
       },
-    );
+    });
 
-    const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService) as WorkerService;
@@ -88,25 +88,30 @@ describe('MultipleTrainingDetailsComponent', () => {
     );
 
     return {
-      component,
-      fixture,
-      getByText,
-      getByLabelText,
-      getAllByText,
-      getByTestId,
+      component: setupTools.fixture.componentInstance,
+      ...setupTools,
       spy,
       workerSpy,
       trainingService,
       trainingSpy,
       setSelectedTrainingSpy,
       setUpdatingSelectedStaffForMultipleTrainingSpy,
-      queryByTestId,
     };
   }
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show the caption and heading', async () => {
+    const { getByRole, getByTestId } = await setup();
+
+    const caption = getByTestId('section-heading');
+
+    expect(caption).toBeTruthy();
+    expect(within(caption).getByText('Add multiple training records')).toBeTruthy();
+    expect(getByRole('heading', { name: 'Add training record details' })).toBeTruthy();
   });
 
   it('should render `Continue` and `Cancel` buttons when it is not accessed from the confirm training page', async () => {
@@ -117,7 +122,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should render `Save and return` and `Cancel` buttons when it is accessed from the confirm training page', async () => {
-    const { getByText } = await setup(true);
+    const { getByText } = await setup({ accessedFromSummary: true });
 
     expect(getByText('Save and return')).toBeTruthy();
     expect(getByText('Cancel')).toBeTruthy();
@@ -187,7 +192,10 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should navigate to the confirm training page when page has been accessed from that page and pressing Save and return', async () => {
-    const { component, fixture, getByText, setSelectedTrainingSpy, spy } = await setup(true, true);
+    const { component, fixture, getByText, setSelectedTrainingSpy, spy } = await setup({
+      accessedFromSummary: true,
+      prefill: true,
+    });
 
     component.trainingCategory = {
       id: component.categories[0].id,
@@ -204,7 +212,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       accredited: 'Yes',
       deliveredBy: null,
       externalProviderName: null,
-      howWasItDelivered: null,
+      howWasItDelivered: 'Face to face',
       validityPeriodInMonth: null,
       doesNotExpire: null,
       completed: '2020-01-01',
@@ -230,7 +238,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should not clear selected staff and navigate when pressing cancel when in the flow', async () => {
-    const { getByText, spy, trainingSpy } = await setup(true);
+    const { getByText, spy, trainingSpy } = await setup({ accessedFromSummary: true });
 
     const cancelButton = getByText('Cancel');
     fireEvent.click(cancelButton);
@@ -240,7 +248,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should prefill the form if it has already been filled out', async () => {
-    const { component } = await setup(false, true);
+    const { component } = await setup({ accessedFromSummary: false, prefill: true });
 
     const form = component.form;
     const {
@@ -273,7 +281,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should set the notes section as open if there are some notes', async () => {
-    const { component, getByText, getByTestId } = await setup(false, true);
+    const { component, getByText, getByTestId } = await setup({ accessedFromSummary: false, prefill: true });
 
     const { notes } = component.trainingService.selectedTraining;
 
@@ -286,7 +294,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should display the remaining character count correctly if there are some notes', async () => {
-    const { component, getByText } = await setup(false, true);
+    const { component, getByText } = await setup({ accessedFromSummary: false, prefill: true });
 
     const { notes } = component.trainingService.selectedTraining;
 
@@ -298,6 +306,24 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { queryByTestId } = await setup();
     const uploadSection = queryByTestId('uploadCertificate');
     expect(uploadSection).toBeFalsy();
+  });
+
+  describe('expiresDate', () => {
+    it('should show', async () => {
+      const { getByTestId } = await setup({ hideExpiresDate: false });
+
+      const expiresDate = getByTestId('expiresDate');
+
+      expect(expiresDate).toBeTruthy();
+    });
+
+    it('should show', async () => {
+      const { queryByTestId } = await setup({ hideExpiresDate: true });
+
+      const expiresDate = queryByTestId('expiresDate');
+
+      expect(expiresDate).toBeFalsy();
+    });
   });
 
   describe('Notes section', () => {
@@ -433,7 +459,7 @@ describe('MultipleTrainingDetailsComponent', () => {
         'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
 
       it('should show an error message if the notes is over 1000 characters', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
@@ -449,7 +475,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       });
 
       it('should open the notes section if the notes input is over 1000 characters and section is closed on submit', async () => {
-        const { fixture, getByText, getByLabelText, getByTestId } = await setup(null);
+        const { fixture, getByText, getByLabelText, getByTestId } = await setup({ accessedFromSummary: null });
 
         const openNotesButton = getByText('Open notes');
         openNotesButton.click();
@@ -474,7 +500,7 @@ describe('MultipleTrainingDetailsComponent', () => {
 
   describe('change links', () => {
     it('should display a change link for number of staff selected', async () => {
-      const { getByTestId } = await setup(false, true);
+      const { getByTestId } = await setup({ accessedFromSummary: false, prefill: true });
 
       const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
 
@@ -485,7 +511,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
 
     it('should display a change link for training category selected if not accessed from summary page', async () => {
-      const { component, fixture, getByTestId } = await setup(false, true);
+      const { component, fixture, getByTestId } = await setup({ accessedFromSummary: false, prefill: true });
 
       component.trainingCategory = {
         id: component.categories[0].id,
@@ -503,7 +529,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
 
     it('should not display the number of staff and training category if accessed from summary page', async () => {
-      const { queryByTestId } = await setup(true, true);
+      const { queryByTestId } = await setup({ accessedFromSummary: true, prefill: true });
 
       const numberOfStaffSelected = queryByTestId('numberOfStaffSelected');
       const trainingCategoryDisplay = queryByTestId('trainingCategoryDisplay');
@@ -513,7 +539,10 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
 
     it('should call setIsSelectStaffChange when change is clicked for staff', async () => {
-      const { setUpdatingSelectedStaffForMultipleTrainingSpy, getByTestId } = await setup(false, true);
+      const { setUpdatingSelectedStaffForMultipleTrainingSpy, getByTestId } = await setup({
+        accessedFromSummary: false,
+        prefill: true,
+      });
 
       const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
 

@@ -279,6 +279,8 @@
                 </div>
               </div>
               <div class="govuk-grid-column-one-half">
+                <ng-container>
+                  @if (!hideExpiresDate){
           <div
               data-testid="expiresDate"
               class="govuk-form-group"
@@ -297,6 +299,8 @@
                 ></app-date-picker>
               </fieldset>
             </div>
+              }
+                </ng-container>
               </div>
              </div>
              </div>
