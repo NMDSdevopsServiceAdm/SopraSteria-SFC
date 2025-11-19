@@ -12,6 +12,7 @@ export const trainingCourseBuilder = build('TrainingCourse', {
     uid: fake((f) => f.datatype.uuid()),
     trainingCategoryId: fake((f) => f.datatype.number({ min: 1, max: 48 })),
     name: fake((f) => f.lorem.words()),
+    trainingCategoryName: fake((f) => f.lorem.words()),
     accredited: oneOf(...Object.values(YesNoDontKnow)),
     deliveredBy: oneOf(...Object.values(DeliveredBy)),
     externalProviderName: null,

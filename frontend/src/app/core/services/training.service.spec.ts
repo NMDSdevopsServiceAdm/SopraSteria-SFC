@@ -124,6 +124,7 @@ describe('TrainingService', () => {
         uid: 'uid-1',
         trainingCategoryId: 1,
         name: 'Care skills and knowledge',
+        trainingCategoryName: 'Activity provision, wellbeing',
         accredited: YesNoDontKnow.Yes,
         deliveredBy: DeliveredBy.InHouseStaff,
         externalProviderName: null,
