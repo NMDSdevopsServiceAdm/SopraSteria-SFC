@@ -21,7 +21,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training.component';
 
-fdescribe('ConfirmMultipleTrainingComponent', () => {
+describe('ConfirmMultipleTrainingComponent', () => {
   const selectedTraining = {
     accredited: 'Yes',
     trainingCategory: { id: 1, seq: 3, category: 'Category' },
