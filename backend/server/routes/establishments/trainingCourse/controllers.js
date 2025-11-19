@@ -25,10 +25,9 @@ const fetchAllTrainingCourses = async (req, res) => {
       },
       attributes: { exclude: ['establishmentFk'] },
       order: [['updated', 'DESC']],
-      raw: true,
     });
 
-    const trainingCourses = recordsFound.map(renameKeys);
+    const trainingCourses = recordsFound.map((record) => record.toJSON()).map(renameKeys);
     const responseBody = { trainingCourses };
 
     return res.status(200).send(responseBody);
@@ -97,16 +96,22 @@ const getTrainingCourse = async (req, res) => {
 };
 
 const renameKeys = (record) => {
-  return lodash.mapKeys(record, (_v, key) => {
+  const renamed = lodash.mapKeys(record, (_v, key) => {
     switch (key) {
       case 'categoryFk':
         return 'trainingCategoryId';
-      case 'category.category':
-        return 'trainingCategoryName';
+      case 'trainingProviderFk':
+        return 'trainingProviderId';
       default:
         return key;
     }
   });
+
+  if (record?.category) {
+    renamed.trainingCategoryName = record.category.category;
+  }
+
+  return renamed;
 };
 
 module.exports = { fetchAllTrainingCourses, createTrainingCourse, getTrainingCourse };

@@ -9,7 +9,11 @@ const {
   createTrainingCourse,
   getTrainingCourse,
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
-const { mockTrainingCourses, expectedTrainingCoursesInResponse } = require('../../../mockdata/trainingCourse');
+const {
+  mockTrainingCourses,
+  expectedTrainingCoursesInResponse,
+  mockTrainingCourseFindAllResult,
+} = require('../../../mockdata/trainingCourse');
 
 describe('/api/establishment/:uid/trainingCourse/', () => {
   afterEach(() => {
@@ -29,7 +33,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     };
 
     it('should respond with 200 and a list of all training courses', async () => {
-      sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourses);
+      sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourseFindAllResult);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -43,7 +47,6 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         where: { establishmentFk: 'mock-id', archived: false },
         attributes: { exclude: ['establishmentFk'] },
         order: [['updated', 'DESC']],
-        raw: true,
       });
     });
 
@@ -60,7 +63,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should be able to accept a query of categoryId and return the training courses of that category', async () => {
-      sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourses);
+      sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourseFindAllResult);
 
       const req = httpMocks.createRequest({ ...request, query: { trainingCategoryId: 1 } });
       const res = httpMocks.createResponse();
@@ -74,7 +77,6 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         where: { establishmentFk: 'mock-id', archived: false, categoryFk: 1 },
         attributes: { exclude: ['establishmentFk'] },
         order: [['updated', 'DESC']],
-        raw: true,
       });
     });
 

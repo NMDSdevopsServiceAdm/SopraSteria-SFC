@@ -130,6 +130,7 @@ module.exports = function (sequelize, DataTypes) {
 
       defaultScope: {
         include: ['category', 'trainingProvider'],
+        nest: true,
       },
     },
   );
