@@ -33,6 +33,10 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   public deliveredByOptions = DeliveredBy;
   public howWasItDeliveredOptions = HowWasItDelivered;
 
+  public heading: string;
+  public sectionHeading: string;
+  public selectedTrainingCourse: TrainingCourse;
+
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected route: ActivatedRoute,
@@ -45,6 +49,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.determineJourneyType();
+    this.setText();
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefill();
@@ -58,6 +63,21 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   private determineJourneyType() {
     this.journeyType = this.route.snapshot?.data?.journeyType ?? 'Add';
+  }
+
+  private setText() {
+    switch (this.journeyType) {
+      case 'Add': {
+        this.heading = 'Add training course details';
+        this.sectionHeading = 'Add a training course';
+        break;
+      }
+      case 'Edit': {
+        this.heading = 'Training course details';
+        this.sectionHeading = 'Training and qualifications';
+        break;
+      }
+    }
   }
 
   private setupForm(): void {
@@ -104,12 +124,43 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   private prefill(): void {
     if (this.journeyType === 'Add' && this.trainingCourseService.newTrainingCourseToBeAdded) {
       this.prefillFromLocalData();
+    } else {
+      this.loadSelectedTrainingCourse();
+      this.prefillFromSelectedCourse();
     }
   }
 
   private prefillFromLocalData() {
-    const data = this.trainingCourseService.newTrainingCourseToBeAdded;
-    this.form.patchValue(data);
+    const trainingCourse = this.trainingCourseService.newTrainingCourseToBeAdded;
+    if (trainingCourse?.trainingProvider) {
+      const trainingProvider = trainingCourse.trainingProvider;
+      const providerName = trainingProvider.isOther ? trainingCourse.otherTrainingProviderName : trainingProvider.name;
+      trainingCourse.externalProviderName = providerName;
+    }
+    this.form.patchValue(trainingCourse);
+  }
+
+  private loadSelectedTrainingCourse() {
+    const trainingCourses: TrainingCourse[] = this.route.snapshot.data.trainingCourses;
+    const selectedTrainingCourseUid = this.route.snapshot.params.trainingCourseUid;
+    const trainingCourse = trainingCourses.find((course) => course.uid === selectedTrainingCourseUid);
+
+    if (!trainingCourse) {
+      // return to parent
+    }
+
+    console.log(trainingCourse, '<--- trainingCourse');
+    if (trainingCourse?.trainingProvider) {
+      console.log('===== 2 =====');
+      const trainingProvider = trainingCourse.trainingProvider;
+      const providerName = trainingProvider.isOther ? trainingCourse.otherTrainingProviderName : trainingProvider.name;
+      trainingCourse.externalProviderName = providerName;
+    }
+    this.selectedTrainingCourse = trainingCourse;
+  }
+
+  private prefillFromSelectedCourse() {
+    this.form.patchValue(this.selectedTrainingCourse);
   }
 
   public handleValidityPeriodChange(newValue: string | number): void {

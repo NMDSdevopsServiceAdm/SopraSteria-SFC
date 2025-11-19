@@ -9,17 +9,20 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TrainingCourse } from '@core/model/training-course.model';
 import { DeliveredBy } from '@core/model/training.model';
 import { TrainingCourseService } from '@core/services/training-course.service';
-import { MockTrainingCourseService } from '@core/test-utils/MockTrainingCourseService';
+import { MockTrainingCourseService, trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, getByTestId, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
 
-describe('TrainingCourseDetailsComponent', () => {
+fdescribe('TrainingCourseDetailsComponent', () => {
   async function setup(overrides: any = {}) {
     const newTrainingCourseToBeAdded = overrides?.newTrainingCourseToBeAdded;
     const journeyType = overrides?.journeyType ?? 'Add';
+    const trainingCourses = [trainingCourseBuilder(), trainingCourseBuilder(), trainingCourseBuilder()];
+    const selectedTrainingCourse = trainingCourses[1];
+    const trainingCourseUid = journeyType === 'Edit' ? selectedTrainingCourse.uid : null;
 
     const setupTools = await render(TrainingCourseDetailsComponent, {
       imports: [CommonModule, SharedModule, RouterModule, ReactiveFormsModule],
@@ -32,7 +35,8 @@ describe('TrainingCourseDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { establishment: { uid: 'mock-uid' }, journeyType },
+              data: { establishment: { uid: 'mock-uid' }, journeyType, trainingCourses },
+              params: { establishmentuid: 'mock-establishment-uid', trainingCourseUid: trainingCourseUid },
               root: { children: [], url: [''] },
             },
             parent: {
@@ -70,6 +74,7 @@ describe('TrainingCourseDetailsComponent', () => {
       routerSpy,
       trainingCourseService,
       trainingCourseServiceSpy,
+      selectedTrainingCourse,
     };
   }
 
@@ -78,12 +83,44 @@ describe('TrainingCourseDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show a heading for the page', async () => {
-    const { getByRole, getByText } = await setup();
+  describe('page rendering', () => {
+    describe('when adding a training course', () => {
+      it('should show a heading for the page', async () => {
+        const { getByRole, getByText } = await setup({ journeyType: 'Add' });
 
-    const expectedHeadingText = 'Add training course details';
-    expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
-    expect(getByText('Add a training course')).toBeTruthy();
+        const expectedHeadingText = 'Add training course details';
+        expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
+        expect(getByText('Add a training course')).toBeTruthy();
+      });
+    });
+
+    describe('when editing a training course', () => {
+      it('should show a heading for the page', async () => {
+        const { getByRole, getByText } = await setup({ journeyType: 'Edit' });
+
+        const expectedHeadingText = 'Training course details';
+        expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
+        expect(getByText('Training and qualifications')).toBeTruthy();
+      });
+
+      it('should show the training category of the selected course', async () => {
+        const { getByTestId, selectedTrainingCourse } = await setup({ journeyType: 'Edit' });
+
+        const categorySection = getByTestId('training-category');
+        expect(categorySection).toBeTruthy();
+
+        expect(within(categorySection).getByText('Training category')).toBeTruthy();
+        expect(within(categorySection).getByText(selectedTrainingCourse.trainingCategoryName)).toBeTruthy();
+      });
+
+      it('should show a link that lead to change-category page', async () => {
+        const { getByTestId } = await setup({ journeyType: 'Edit' });
+
+        const categorySection = getByTestId('training-category');
+        const changeLink = within(categorySection).getByRole('link', { name: /Change/ });
+        expect(changeLink.getAttribute('href')).toEqual('/change-category');
+      });
+    });
   });
 
   describe('prefill', () => {
