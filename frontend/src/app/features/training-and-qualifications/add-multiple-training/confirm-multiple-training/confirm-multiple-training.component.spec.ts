@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Alert } from '@core/model/alert.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -11,7 +10,10 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import {
+  MockTrainingServiceWithOverrides,
+  MockTrainingServiceWithPreselectedStaff,
+} from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -19,43 +21,52 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training.component';
 
-describe('MultipleTrainingDetailsComponent', () => {
-  async function setup(incompleteTraining = false, isPrimaryWorkplace = true) {
-    const { fixture, getByText, getAllByText, getByTestId, getByLabelText } = await render(
-      ConfirmMultipleTrainingComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
-        providers: [
-          AlertService,
-          WindowRef,
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: new MockActivatedRoute({
-              snapshot: {
-                data: {
-                  establishment: {
-                    uid: isPrimaryWorkplace ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : 'mock-uid',
-                  },
+fdescribe('ConfirmMultipleTrainingComponent', () => {
+  const selectedTraining = {
+    accredited: 'Yes',
+    trainingCategory: { id: 1, seq: 3, category: 'Category' },
+    completed: '2020-01-01',
+    expires: '2021-01-01',
+    notes: 'This is a note',
+    title: 'Title',
+    howWasItDelivered: 'External',
+    externalProviderName: 'Care Skills Academy',
+    deliveredBy: 'Face to face',
+  };
+  async function setup(overrides: any = { incompleteTraining: false, isPrimaryWorkplace: true }) {
+    const setupTools = await render(ConfirmMultipleTrainingComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, AddMultipleTrainingModule],
+      providers: [
+        AlertService,
+        WindowRef,
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            snapshot: {
+              data: {
+                establishment: {
+                  uid: overrides.isPrimaryWorkplace ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : 'mock-uid',
                 },
               },
-            }),
-          },
+            },
+          }),
+        },
 
-          {
-            provide: TrainingService,
-            useFactory: MockTrainingServiceWithPreselectedStaff.factory(incompleteTraining),
-            deps: [HttpClient],
-          },
-          { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-        ],
-      },
-    );
+        {
+          provide: TrainingService,
+          useFactory: overrides?.selectedTraining
+            ? MockTrainingServiceWithOverrides.factory(overrides.selectedTraining)
+            : MockTrainingServiceWithPreselectedStaff.factory(overrides.incompleteTraining),
+          deps: [HttpClient],
+        },
+        { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+      ],
+    });
 
-    const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const alert = injector.inject(AlertService) as AlertService;
@@ -68,12 +79,8 @@ describe('MultipleTrainingDetailsComponent', () => {
     const trainingSpy = spyOn(trainingService, 'resetState').and.callThrough();
 
     return {
-      component,
-      fixture,
-      getByText,
-      getByLabelText,
-      getAllByText,
-      getByTestId,
+      component: setupTools.fixture.componentInstance,
+      ...setupTools,
       routerSpy,
       alertSpy,
       workerSpy,
@@ -87,9 +94,19 @@ describe('MultipleTrainingDetailsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the confirm button', async () => {
+  it('should show the caption and heading', async () => {
+    const { getByRole, getByTestId } = await setup();
+
+    const caption = getByTestId('section-heading');
+
+    expect(caption).toBeTruthy();
+    expect(within(caption).getByText('Add multiple training records')).toBeTruthy();
+    expect(getByRole('heading', { name: 'Summary' })).toBeTruthy();
+  });
+
+  it('should display the "Save training records" button', async () => {
     const { getByText } = await setup();
-    expect(getByText('Confirm details')).toBeTruthy();
+    expect(getByText('Save training records')).toBeTruthy();
   });
 
   describe('Selected staff summary', () => {
@@ -119,7 +136,18 @@ describe('MultipleTrainingDetailsComponent', () => {
 
   describe('Training record details', () => {
     it('should display the training record information', async () => {
-      const { getByTestId } = await setup();
+      const overrides = {
+        selectedTraining: {
+          selectedTraining: {
+            ...selectedTraining,
+            howWasItDelivered: 'External',
+            externalProviderName: 'Care Skills Academy',
+            deliveredBy: 'Face to face',
+            validityPeriodInMonth: 12,
+          },
+        },
+      };
+      const { getByTestId } = await setup(overrides);
 
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
 
@@ -129,15 +157,63 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(within(trainingRecordDetails).getByText('1 January 2020')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('1 January 2021')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('This is a note')).toBeTruthy();
+      expect(within(trainingRecordDetails).getByText('External')).toBeTruthy();
+      expect(within(trainingRecordDetails).getByText('Care Skills Academy')).toBeTruthy();
+      expect(within(trainingRecordDetails).getByText('Face to face')).toBeTruthy();
     });
 
     it('should display a `-` if there are no dates and `No notes added` if there are no notes', async () => {
-      const { getByTestId } = await setup(true);
+      const { getByTestId } = await setup({ incompleteTraining: true });
 
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
 
-      expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(2);
+      expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(5);
       expect(within(trainingRecordDetails).getByText('No notes added')).toBeTruthy();
+    });
+
+    describe('validity', () => {
+      it('should show the non plurarised amount', async () => {
+        const overrides = {
+          selectedTraining: {
+            selectedTraining: {
+              ...selectedTraining,
+              howWasItDelivered: 'External',
+              externalProviderName: 'Care Skills Academy',
+              deliveredBy: 'Face to face',
+              validityPeriodInMonth: 1,
+            },
+          },
+        };
+        const { getByTestId } = await setup(overrides);
+
+        const trainingRecordDetails = getByTestId('trainingRecordDetails');
+
+        expect(within(trainingRecordDetails).getByText('1 month')).toBeTruthy();
+      });
+
+      it('should show the plurarised amount', async () => {
+        const overrides = {
+          selectedTraining: { selectedTraining: { ...selectedTraining, validityPeriodInMonth: 12 } },
+        };
+        const { getByTestId } = await setup(overrides);
+
+        const trainingRecordDetails = getByTestId('trainingRecordDetails');
+
+        expect(within(trainingRecordDetails).getByText('12 months')).toBeTruthy();
+      });
+
+      it('should show it does not expire', async () => {
+        const overrides = {
+          selectedTraining: {
+            selectedTraining: { ...selectedTraining, validityPeriodInMonth: null, doesNotExpire: true },
+          },
+        };
+        const { getByTestId } = await setup(overrides);
+
+        const trainingRecordDetails = getByTestId('trainingRecordDetails');
+
+        expect(within(trainingRecordDetails).getByText('Does not expire')).toBeTruthy();
+      });
     });
 
     it('should display a change link with the correct href at Training category row which navigate to select training category page', async () => {
@@ -152,11 +228,11 @@ describe('MultipleTrainingDetailsComponent', () => {
       );
     });
 
-    it('should display a change link with the correct href at Training name row which navigate to training detail page', async () => {
+    it('should display a change link with the correct href at Training record name row which navigate to training detail page', async () => {
       const { getByTestId } = await setup();
 
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
-      const trainingNameRow = within(trainingRecordDetails).getByText('Training name').parentElement;
+      const trainingNameRow = within(trainingRecordDetails).getByText('Training record name').parentElement;
       const changeLink = within(trainingNameRow).getByText('Change');
 
       expect(changeLink.getAttribute('href')).toEqual(
@@ -166,13 +242,13 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   describe('Confirming details', () => {
-    it('should call createMultipleTrainingRecords function when clicking confirm details button', async () => {
+    it('should call createMultipleTrainingRecords function when clicking Save training records button', async () => {
       const { component, fixture, getByText, workerSpy } = await setup();
 
       const selectedTraining = component['trainingService'].selectedTraining;
       const selectedStaff = component.workers.map((worker) => worker.uid);
 
-      const button = getByText('Confirm details');
+      const button = getByText('Save training records');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -182,7 +258,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     it('should call resetState in the training service when successfully confirming details', async () => {
       const { getByText, fixture, trainingSpy } = await setup();
 
-      const button = getByText('Confirm details');
+      const button = getByText('Save training records');
       fireEvent.click(button);
       fixture.detectChanges();
 
@@ -192,7 +268,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     it('should navigate back to the dashboard and add an alert when it is the primary workplace', async () => {
       const { fixture, getByText, routerSpy, alertSpy } = await setup();
 
-      const button = getByText('Confirm details');
+      const button = getByText('Save training records');
       fireEvent.click(button);
       fixture.detectChanges();
 
