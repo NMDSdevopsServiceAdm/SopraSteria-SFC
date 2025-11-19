@@ -49,6 +49,26 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: ':trainingCourseUid',
+    resolve: { trainingCourses: TrainingCourseResolver },
+    children: [
+      {
+        path: 'edit-details',
+        component: TrainingCourseDetailsComponent,
+        data: {
+          title: 'Edit training course details',
+          journeyType: 'Edit',
+        },
+      },
+      // {
+      //   path: 'change-category',
+      // },
+      // {
+      //   path: 'select-which-to-apply',
+      // },
+    ],
+  },
 ];
 
 @NgModule({
