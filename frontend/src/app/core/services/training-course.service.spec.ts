@@ -7,7 +7,7 @@ import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { TrainingCourse } from '@core/model/training-course.model';
 
-describe('TrainingCourseService', () => {
+fdescribe('TrainingCourseService', () => {
   let service: TrainingCourseService;
   let http: HttpTestingController;
 
@@ -63,6 +63,29 @@ describe('TrainingCourseService', () => {
 
       const req = http.expectOne(baseEndpoint);
       expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(mockTrainingCourse);
+    });
+  });
+
+  describe('updateTrainingCourse', () => {
+    const mockTrainingCourseUid = 'mock-training-course-uid';
+
+    it('should call PUT trainingCourse/:trainingCourseUid endpoint with the updated trainingCourse as request body', async () => {
+      const mockTrainingCourse = {
+        trainingCategoryId: 1,
+        name: 'Care skills and knowledge',
+        accredited: YesNoDontKnow.Yes,
+        deliveredBy: DeliveredBy.InHouseStaff,
+        externalProviderName: null,
+        howWasItDelivered: HowWasItDelivered.FaceToFace,
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+      } as TrainingCourse;
+
+      service.updateTrainingCourse(establishmentUid, mockTrainingCourseUid, mockTrainingCourse).subscribe();
+
+      const req = http.expectOne(`${baseEndpoint}/${mockTrainingCourseUid}`);
+      expect(req.request.method).toBe('PUT');
       expect(req.request.body).toEqual(mockTrainingCourse);
     });
   });

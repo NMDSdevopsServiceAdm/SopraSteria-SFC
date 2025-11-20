@@ -268,7 +268,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   private storeChangesAndContinueToNextPage() {
     const updatedCourse: Partial<TrainingCourse> = this.getAndProcessFormValue();
 
-    this.trainingCourseService.updatedTrainingCourse = updatedCourse;
+    this.trainingCourseService.trainingCourseToBeUpdated = updatedCourse;
     // this.clearLocalTrainingCourseDataWhenClickedAway();
 
     this.router.navigate(['../select-what-training-records-to-apply'], { relativeTo: this.route });

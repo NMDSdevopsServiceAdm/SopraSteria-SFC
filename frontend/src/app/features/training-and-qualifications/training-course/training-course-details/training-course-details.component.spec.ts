@@ -16,7 +16,7 @@ import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
 
-describe('TrainingCourseDetailsComponent', () => {
+fdescribe('TrainingCourseDetailsComponent', () => {
   const otherTrainingProviderId = 63;
   const mockTrainingProviders = [
     { id: 1, name: 'Preset provider name #1', isOther: false },
@@ -70,11 +70,13 @@ describe('TrainingCourseDetailsComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const route = injector.inject(ActivatedRoute) as ActivatedRoute;
 
     const trainingCourseService = injector.inject(TrainingCourseService);
     const newTrainingCourseToBeAddedSpy = spyOnProperty(trainingCourseService, 'newTrainingCourseToBeAdded', 'set');
-    const updatedTrainingCourseSpy = spyOnProperty(trainingCourseService, 'updatedTrainingCourse', 'set');
-    const trainingCourseServiceSpy = journeyType === 'Add' ? newTrainingCourseToBeAddedSpy : updatedTrainingCourseSpy;
+    const trainingCourseToBeUpdatedSpy = spyOnProperty(trainingCourseService, 'trainingCourseToBeUpdated', 'set');
+    const trainingCourseServiceSpy =
+      journeyType === 'Add' ? newTrainingCourseToBeAddedSpy : trainingCourseToBeUpdatedSpy;
 
     const getInputByLabelText = (label: any) => setupTools.getByLabelText(label) as HTMLInputElement;
     const getInputByRole = (role: any, options: any) => setupTools.getByRole(role, options) as HTMLInputElement;
@@ -85,9 +87,10 @@ describe('TrainingCourseDetailsComponent', () => {
       getInputByRole,
       component,
       routerSpy,
+      route,
       trainingCourseService,
       newTrainingCourseToBeAddedSpy,
-      updatedTrainingCourseSpy,
+      trainingCourseToBeUpdatedSpy,
       trainingCourseServiceSpy,
       selectedTrainingCourse,
     };
@@ -443,7 +446,7 @@ describe('TrainingCourseDetailsComponent', () => {
 
     describe('when adding new training course', () => {
       it('should save the current training course in trainingCourseService, and navigate to select category page', async () => {
-        const { getByRole, getByLabelText, newTrainingCourseToBeAddedSpy, routerSpy, component } = await setup({
+        const { getByRole, getByLabelText, newTrainingCourseToBeAddedSpy, routerSpy, route } = await setup({
           journeyType: 'Add',
         });
 
@@ -468,14 +471,13 @@ describe('TrainingCourseDetailsComponent', () => {
         } as Partial<TrainingCourse>;
 
         expect(newTrainingCourseToBeAddedSpy).toHaveBeenCalledWith(expectedProps);
-        // @ts-expect-error: TS2341: Property 'route' is private
-        expect(routerSpy).toHaveBeenCalledWith(['../select-category'], { relativeTo: component.route });
+        expect(routerSpy).toHaveBeenCalledWith(['../select-category'], { relativeTo: route });
       });
     });
 
     describe('when editing training course', () => {
       it('should save the changed training course in trainingCourseService, and navigate to select-what-training-records-to-apply page', async () => {
-        const { getByLabelText, getByRole, selectedTrainingCourse, updatedTrainingCourseSpy, routerSpy, component } =
+        const { getByLabelText, getByRole, selectedTrainingCourse, trainingCourseToBeUpdatedSpy, routerSpy, route } =
           await setup({
             journeyType: 'Edit',
           });
@@ -509,15 +511,14 @@ describe('TrainingCourseDetailsComponent', () => {
           doesNotExpire: null,
         } as Partial<TrainingCourse>;
 
-        expect(updatedTrainingCourseSpy).toHaveBeenCalledWith(expectedProps);
-        // @ts-expect-error: TS2341: Property 'route' is private
+        expect(trainingCourseToBeUpdatedSpy).toHaveBeenCalledWith(expectedProps);
         expect(routerSpy).toHaveBeenCalledWith(['../select-what-training-records-to-apply'], {
-          relativeTo: component.route,
+          relativeTo: route,
         });
       });
 
       it('should set trainingProviderId and otherTrainingProviderName to null on submit, if user changed deliveredBy to In-house staff', async () => {
-        const { getByRole, updatedTrainingCourseSpy } = await setup({
+        const { getByRole, trainingCourseToBeUpdatedSpy } = await setup({
           journeyType: 'Edit',
         });
 
@@ -525,7 +526,7 @@ describe('TrainingCourseDetailsComponent', () => {
 
         userEvent.click(getByRole('button', { name: 'Continue' }));
 
-        expect(updatedTrainingCourseSpy).toHaveBeenCalledWith(
+        expect(trainingCourseToBeUpdatedSpy).toHaveBeenCalledWith(
           jasmine.objectContaining({
             deliveredBy: 'In-house staff',
             otherTrainingProviderName: null,
