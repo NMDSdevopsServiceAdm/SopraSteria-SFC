@@ -11,6 +11,7 @@ import { GetTrainingCoursesResponse, TrainingCourse } from '@core/model/training
 })
 export class TrainingCourseService {
   private _newTrainingCourseToBeAdded: Partial<TrainingCourse>;
+  private _updatedTrainingCourse: Partial<TrainingCourse>;
   constructor(private http: HttpClient) {}
 
   public getAllTrainingCourses(establishmentUid: string): Observable<Array<TrainingCourse>> {
@@ -48,5 +49,13 @@ export class TrainingCourseService {
 
   public set newTrainingCourseToBeAdded(props: Partial<TrainingCourse>) {
     this._newTrainingCourseToBeAdded = props;
+  }
+
+  public get updatedTrainingCourse(): Partial<TrainingCourse> {
+    return this._updatedTrainingCourse;
+  }
+
+  public set updatedTrainingCourse(props: Partial<TrainingCourse>) {
+    this._updatedTrainingCourse = props;
   }
 }

@@ -11,6 +11,7 @@ export type TrainingCourse = {
   accredited: YesNoDontKnow;
   deliveredBy: DeliveredBy;
   trainingProvider?: TrainingProvider;
+  trainingProviderId?: number;
   externalProviderName: string;
   otherTrainingProviderName?: string;
   howWasItDelivered: HowWasItDelivered;

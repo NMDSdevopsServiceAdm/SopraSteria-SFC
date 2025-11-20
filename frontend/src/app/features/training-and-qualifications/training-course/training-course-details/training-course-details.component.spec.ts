@@ -11,17 +11,23 @@ import { DeliveredBy } from '@core/model/training.model';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { MockTrainingCourseService, trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 import { SharedModule } from '@shared/shared.module';
-import { render, getByTestId, within } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
 
-fdescribe('TrainingCourseDetailsComponent', () => {
+describe('TrainingCourseDetailsComponent', () => {
+  const otherTrainingProviderId = 63;
+  const mockTrainingProviders = [
+    { id: 1, name: 'Preset provider name #1', isOther: false },
+    { id: 63, name: 'other', isOther: true },
+  ];
+
   async function setup(overrides: any = {}) {
     const newTrainingCourseToBeAdded = overrides?.newTrainingCourseToBeAdded;
     const journeyType = overrides?.journeyType ?? 'Add';
-    const trainingCourses = [trainingCourseBuilder(), trainingCourseBuilder(), trainingCourseBuilder()];
-    const selectedTrainingCourse = trainingCourses[1];
+    const selectedTrainingCourse = overrides?.selectedTrainingCourse ?? trainingCourseBuilder();
+    const trainingCourses = [trainingCourseBuilder(), selectedTrainingCourse, trainingCourseBuilder()];
     const trainingCourseUid = journeyType === 'Edit' ? selectedTrainingCourse.uid : null;
 
     const setupTools = await render(TrainingCourseDetailsComponent, {
@@ -35,7 +41,12 @@ fdescribe('TrainingCourseDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { establishment: { uid: 'mock-uid' }, journeyType, trainingCourses },
+              data: {
+                establishment: { uid: 'mock-uid' },
+                journeyType,
+                trainingCourses,
+                trainingProviders: mockTrainingProviders,
+              },
               params: { establishmentuid: 'mock-establishment-uid', trainingCourseUid: trainingCourseUid },
               root: { children: [], url: [''] },
             },
@@ -61,7 +72,9 @@ fdescribe('TrainingCourseDetailsComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     const trainingCourseService = injector.inject(TrainingCourseService);
-    const trainingCourseServiceSpy = spyOnProperty(trainingCourseService, 'newTrainingCourseToBeAdded', 'set');
+    const newTrainingCourseToBeAddedSpy = spyOnProperty(trainingCourseService, 'newTrainingCourseToBeAdded', 'set');
+    const updatedTrainingCourseSpy = spyOnProperty(trainingCourseService, 'updatedTrainingCourse', 'set');
+    const trainingCourseServiceSpy = journeyType === 'Add' ? newTrainingCourseToBeAddedSpy : updatedTrainingCourseSpy;
 
     const getInputByLabelText = (label: any) => setupTools.getByLabelText(label) as HTMLInputElement;
     const getInputByRole = (role: any, options: any) => setupTools.getByRole(role, options) as HTMLInputElement;
@@ -73,6 +86,8 @@ fdescribe('TrainingCourseDetailsComponent', () => {
       component,
       routerSpy,
       trainingCourseService,
+      newTrainingCourseToBeAddedSpy,
+      updatedTrainingCourseSpy,
       trainingCourseServiceSpy,
       selectedTrainingCourse,
     };
@@ -124,34 +139,82 @@ fdescribe('TrainingCourseDetailsComponent', () => {
   });
 
   describe('prefill', () => {
+    const mockTrainingCourse = {
+      name: 'First aid course',
+      accredited: 'No',
+      deliveredBy: 'External provider',
+      trainingProvider: { id: 1, name: 'Care skills academy', isOther: false },
+      otherTrainingProviderName: null,
+      howWasItDelivered: 'E-learning',
+      doesNotExpire: false,
+      validityPeriodInMonth: 24,
+    };
+
     describe('when adding new training course', () => {
       // for the case when user return from select category page to this page
-      it('should prefill the form with data from TrainingCourseService if adding a new course', async () => {
-        const mockTrainingCourse = {
-          name: 'First aid course',
-          accredited: 'No',
-          deliveredBy: 'External provider',
-          externalProviderName: 'Care skills academy',
-          howWasItDelivered: 'E-learning',
-          doesNotExpire: false,
-          validityPeriodInMonth: 24,
-        };
-
-        const { getInputByRole, getInputByLabelText, fixture } = await setup({
+      it('should prefill the form with data from TrainingCourseService', async () => {
+        const { getInputByRole, getInputByLabelText } = await setup({
           journeyType: 'Add',
           newTrainingCourseToBeAdded: mockTrainingCourse,
         });
 
-        fixture.detectChanges();
-
-        expect(getInputByLabelText('Training course name').value).toEqual('First aid course');
-        expect(getInputByRole('radio', { name: 'No' }).checked).toBeTrue();
-        expect(getInputByRole('radio', { name: 'External provider' }).checked).toBeTrue();
-        expect(getInputByLabelText('Provider name').value).toEqual('Care skills academy');
+        expect(getInputByLabelText('Training course name').value).toEqual(mockTrainingCourse.name);
+        expect(getInputByRole('radio', { name: mockTrainingCourse.accredited }).checked).toBeTrue();
+        expect(getInputByRole('radio', { name: mockTrainingCourse.deliveredBy }).checked).toBeTrue();
+        expect(getInputByLabelText('Provider name').value).toEqual(mockTrainingCourse.trainingProvider.name);
         expect(getInputByRole('radio', { name: 'E-learning' }).checked).toBeTrue();
         expect(getInputByLabelText(/How many months is/).value).toEqual('24');
         expect(getInputByRole('checkbox', { name: 'This training does not expire' }).checked).toBeFalse();
       });
+    });
+
+    describe('when editing training course', () => {
+      it('should prefill the form with the data of the selected training course', async () => {
+        const { getInputByRole, getInputByLabelText } = await setup({
+          journeyType: 'Edit',
+          selectedTrainingCourse: mockTrainingCourse,
+        });
+
+        expect(getInputByLabelText('Training course name').value).toEqual(mockTrainingCourse.name);
+        expect(getInputByRole('radio', { name: mockTrainingCourse.accredited }).checked).toBeTrue();
+        expect(getInputByRole('radio', { name: mockTrainingCourse.deliveredBy }).checked).toBeTrue();
+        expect(getInputByLabelText('Provider name').value).toEqual(mockTrainingCourse.trainingProvider.name);
+        expect(getInputByRole('radio', { name: mockTrainingCourse.howWasItDelivered }).checked).toBeTrue();
+        expect(getInputByLabelText(/How many months is/).value).toEqual('24');
+        expect(getInputByRole('checkbox', { name: 'This training does not expire' }).checked).toBeFalse();
+      });
+
+      xit('should show the changed category name if user is back from change-category page');
+    });
+
+    const mockTrainingCourse2 = {
+      name: 'Fire safety course',
+      accredited: 'Yes',
+      deliveredBy: 'External provider',
+      trainingProvider: { id: 63, name: 'Others', isOther: true },
+      otherTrainingProviderName: 'Some other training',
+      howWasItDelivered: 'Face to face',
+      doesNotExpire: true,
+      validityPeriodInMonth: null,
+    };
+
+    it('should be able to prefill correctly when "otherTrainingProviderName" is given', async () => {
+      const { getInputByLabelText } = await setup({
+        journeyType: 'Add',
+        newTrainingCourseToBeAdded: mockTrainingCourse2,
+      });
+
+      expect(getInputByLabelText('Provider name').value).toEqual(mockTrainingCourse2.otherTrainingProviderName);
+    });
+
+    it('should be able to prefill correctly when "does not expire" is true', async () => {
+      const { getInputByRole, getInputByLabelText } = await setup({
+        journeyType: 'Add',
+        newTrainingCourseToBeAdded: mockTrainingCourse2,
+      });
+
+      expect(getInputByLabelText(/How many months is/).value).toEqual('');
+      expect(getInputByRole('checkbox', { name: 'This training does not expire' }).checked).toBeTrue();
     });
   });
 
@@ -297,16 +360,90 @@ fdescribe('TrainingCourseDetailsComponent', () => {
   });
 
   describe('form submit', () => {
-    describe('when adding new training course', () => {
-      it('should show a Continue button and a Cancel button', async () => {
-        const { getByRole } = await setup({ journeyType: 'Add' });
+    ['Add', 'Edit'].forEach((journeyType) => {
+      describe(`common logic - ${journeyType}:`, () => {
+        it('should show a Continue button and a Cancel button', async () => {
+          const { getByRole } = await setup({ journeyType });
 
-        expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
-        expect(getByRole('button', { name: 'Cancel' })).toBeTruthy();
+          expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
+          expect(getByRole('button', { name: 'Cancel' })).toBeTruthy();
+        });
+
+        it('the cancel button should link to the "Add and manage training course" page', async () => {
+          const { getByRole } = await setup({ journeyType: 'Add' });
+
+          const cancelButton = getByRole('button', { name: 'Cancel' });
+          expect(cancelButton.getAttribute('href')).toEqual(
+            '/workplace/mock-establishment-uid/training-course/add-and-manage-training-courses',
+          );
+        });
+
+        it('should set trainingProviderId and otherTrainingProviderName to null on submit, if user select deliveredBy as In-house staff', async () => {
+          const { getByRole, getByLabelText, trainingCourseServiceSpy } = await setup({ journeyType });
+
+          userEvent.type(getByLabelText('Training course name'), 'First aid course');
+          userEvent.type(getByLabelText(/How many months/), '24');
+
+          userEvent.click(getByRole('radio', { name: 'In-house staff' }));
+
+          userEvent.click(getByRole('button', { name: 'Continue' }));
+
+          expect(trainingCourseServiceSpy).toHaveBeenCalledWith(
+            jasmine.objectContaining({
+              deliveredBy: 'In-house staff',
+              otherTrainingProviderName: null,
+              trainingProviderId: null,
+            }),
+          );
+        });
+
+        it('should set trainingProviderId to a preset id, if user entered one of the preset training provider name', async () => {
+          const { getByRole, getByLabelText, trainingCourseServiceSpy } = await setup({ journeyType });
+
+          userEvent.type(getByLabelText('Training course name'), 'First aid course');
+          userEvent.type(getByLabelText(/How many months/), '24');
+
+          userEvent.click(getByRole('radio', { name: 'External provider' }));
+          userEvent.clear(getByLabelText('Provider name'));
+          userEvent.type(getByLabelText('Provider name'), mockTrainingProviders[0].name);
+
+          userEvent.click(getByRole('button', { name: 'Continue' }));
+
+          expect(trainingCourseServiceSpy).toHaveBeenCalledWith(
+            jasmine.objectContaining({
+              deliveredBy: 'External provider',
+              otherTrainingProviderName: null,
+              trainingProviderId: mockTrainingProviders[0].id,
+            }),
+          );
+        });
+
+        it('should set trainingProviderId to the id of "other" and set the otherTrainingProviderName, if user entered a name that is not in the list', async () => {
+          const { getByRole, getByLabelText, trainingCourseServiceSpy } = await setup({ journeyType });
+
+          userEvent.type(getByLabelText('Training course name'), 'First aid course');
+          userEvent.type(getByLabelText(/How many months/), '24');
+
+          userEvent.click(getByRole('radio', { name: 'External provider' }));
+          userEvent.clear(getByLabelText('Provider name'));
+          userEvent.type(getByLabelText('Provider name'), 'A new training provider');
+
+          userEvent.click(getByRole('button', { name: 'Continue' }));
+
+          expect(trainingCourseServiceSpy).toHaveBeenCalledWith(
+            jasmine.objectContaining({
+              deliveredBy: 'External provider',
+              otherTrainingProviderName: 'A new training provider',
+              trainingProviderId: otherTrainingProviderId,
+            }),
+          );
+        });
       });
+    });
 
+    describe('when adding new training course', () => {
       it('should save the current training course in trainingCourseService, and navigate to select category page', async () => {
-        const { getByRole, getByLabelText, trainingCourseServiceSpy, routerSpy, component } = await setup({
+        const { getByRole, getByLabelText, newTrainingCourseToBeAddedSpy, routerSpy, component } = await setup({
           journeyType: 'Add',
         });
 
@@ -323,39 +460,75 @@ fdescribe('TrainingCourseDetailsComponent', () => {
           name: 'First aid course',
           accredited: 'Yes',
           deliveredBy: 'External provider',
-          externalProviderName: 'Care skill academy',
+          trainingProviderId: otherTrainingProviderId,
+          otherTrainingProviderName: 'Care skill academy',
           howWasItDelivered: 'Face to face',
           validityPeriodInMonth: 24,
           doesNotExpire: null,
         } as Partial<TrainingCourse>;
 
-        expect(trainingCourseServiceSpy).toHaveBeenCalledWith(expectedProps);
+        expect(newTrainingCourseToBeAddedSpy).toHaveBeenCalledWith(expectedProps);
         // @ts-expect-error: TS2341: Property 'route' is private
         expect(routerSpy).toHaveBeenCalledWith(['../select-category'], { relativeTo: component.route });
       });
+    });
 
-      it('should set externalProviderName to null on submit if user changed deliveredBy to In-house staff', async () => {
-        const { getByRole, getByLabelText, trainingCourseServiceSpy } = await setup();
+    describe('when editing training course', () => {
+      it('should save the changed training course in trainingCourseService, and navigate to select-which-to-apply page', async () => {
+        const { getByLabelText, getByRole, selectedTrainingCourse, updatedTrainingCourseSpy, routerSpy, component } =
+          await setup({
+            journeyType: 'Edit',
+          });
 
+        expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
+        expect(getByRole('button', { name: 'Cancel' })).toBeTruthy();
+
+        userEvent.clear(getByLabelText('Training course name'));
         userEvent.type(getByLabelText('Training course name'), 'First aid course');
-        userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
-        userEvent.type(getByRole('textbox', { name: 'Provider name' }), 'Care skills academy');
-        userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
-        userEvent.click(getByLabelText('This training does not expire'));
+
+        userEvent.click(getByLabelText('Yes'));
+        userEvent.click(getByLabelText('External provider'));
+
+        userEvent.clear(getByLabelText('Provider name'));
+        userEvent.type(getByLabelText('Provider name'), 'Care skill academy');
+
+        userEvent.click(getByLabelText('Face to face'));
+        userEvent.type(getByLabelText(/^How many months/), '24');
 
         userEvent.click(getByRole('button', { name: 'Continue' }));
 
-        expect(trainingCourseServiceSpy).toHaveBeenCalledWith(
-          jasmine.objectContaining({ deliveredBy: 'In-house staff', externalProviderName: null }),
-        );
+        const expectedProps = {
+          name: 'First aid course',
+          accredited: 'Yes',
+          trainingCategoryId: selectedTrainingCourse.trainingCategoryId,
+          deliveredBy: 'External provider',
+          trainingProviderId: otherTrainingProviderId,
+          otherTrainingProviderName: 'Care skill academy',
+          howWasItDelivered: 'Face to face',
+          validityPeriodInMonth: 24,
+          doesNotExpire: null,
+        } as Partial<TrainingCourse>;
+
+        expect(updatedTrainingCourseSpy).toHaveBeenCalledWith(expectedProps);
+        // @ts-expect-error: TS2341: Property 'route' is private
+        expect(routerSpy).toHaveBeenCalledWith(['../select-which-to-apply'], { relativeTo: component.route });
       });
 
-      it('the cancel button should link to the "Add and manage training course" page', async () => {
-        const { getByRole } = await setup({ journeyType: 'Add' });
+      it('should set trainingProviderId and otherTrainingProviderName to null on submit, if user changed deliveredBy to In-house staff', async () => {
+        const { getByRole, updatedTrainingCourseSpy } = await setup({
+          journeyType: 'Edit',
+        });
 
-        const cancelButton = getByRole('button', { name: 'Cancel' });
-        expect(cancelButton.getAttribute('href')).toEqual(
-          '/workplace/mock-establishment-uid/training-course/add-and-manage-training-courses',
+        userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
+
+        userEvent.click(getByRole('button', { name: 'Continue' }));
+
+        expect(updatedTrainingCourseSpy).toHaveBeenCalledWith(
+          jasmine.objectContaining({
+            deliveredBy: 'In-house staff',
+            otherTrainingProviderName: null,
+            trainingProviderId: null,
+          }),
         );
       });
     });

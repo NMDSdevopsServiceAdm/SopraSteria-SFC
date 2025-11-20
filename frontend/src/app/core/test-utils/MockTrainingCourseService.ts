@@ -10,14 +10,16 @@ export const trainingCourseBuilder = build('TrainingCourse', {
   fields: {
     id: sequence(),
     uid: fake((f) => f.datatype.uuid()),
-    trainingCategoryId: fake((f) => f.datatype.number({ min: 1, max: 48 })),
     name: fake((f) => f.lorem.words()),
+    trainingCategoryId: fake((f) => f.datatype.number({ min: 1, max: 48 })),
     trainingCategoryName: fake((f) => f.lorem.words()),
     accredited: oneOf(...Object.values(YesNoDontKnow)),
     deliveredBy: oneOf(...Object.values(DeliveredBy)),
     externalProviderName: null,
+    trainingProviderId: null,
+    otherTrainingProviderName: null,
     howWasItDelivered: null,
-    doesNotExpire: oneOf(false),
+    doesNotExpire: oneOf(true),
     validityPeriodInMonth: null,
   },
 }) as unknown as (buildTimeConfig?: BuildTimeConfig<any>) => TrainingCourse;

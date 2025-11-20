@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCourse } from '@core/model/training-course.model';
+import { TrainingProvider } from '@core/model/training-provider.model';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -32,6 +33,8 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   public accreditedOptions = YesNoDontKnowOptions;
   public deliveredByOptions = DeliveredBy;
   public howWasItDeliveredOptions = HowWasItDelivered;
+  public trainingProviders: TrainingProvider[];
+  public otherTrainingProviderId: number;
 
   public heading: string;
   public sectionHeading: string;
@@ -50,6 +53,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.determineJourneyType();
     this.setText();
+    this.loadTrainingProviders();
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefill();
@@ -80,12 +84,18 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private loadTrainingProviders() {
+    this.trainingProviders = this.route.snapshot.data.trainingProviders;
+    this.otherTrainingProviderId = this.trainingProviders?.find((provider) => provider.isOther)?.id;
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
         name: [null, { validators: [Validators.required, Validators.minLength(3), Validators.maxLength(120)] }],
         accredited: null,
         deliveredBy: [null, { updateOn: 'change' }],
+        trainingProviderId: null,
         externalProviderName: null,
         howWasItDelivered: null,
         validityPeriodInMonth: null,
@@ -95,6 +105,10 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
         updateOn: 'submit',
       },
     );
+
+    if (this.journeyType === 'Edit') {
+      this.form.addControl('trainingCategoryId', new UntypedFormControl(null));
+    }
   }
 
   private setupFormErrorsMap(): void {
@@ -122,8 +136,10 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private prefill(): void {
-    if (this.journeyType === 'Add' && this.trainingCourseService.newTrainingCourseToBeAdded) {
-      this.prefillFromLocalData();
+    if (this.journeyType === 'Add') {
+      if (this.trainingCourseService.newTrainingCourseToBeAdded) {
+        this.prefillFromLocalData();
+      }
     } else {
       this.loadSelectedTrainingCourse();
       this.prefillFromSelectedCourse();
@@ -149,9 +165,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
       // return to parent
     }
 
-    console.log(trainingCourse, '<--- trainingCourse');
     if (trainingCourse?.trainingProvider) {
-      console.log('===== 2 =====');
       const trainingProvider = trainingCourse.trainingProvider;
       const providerName = trainingProvider.isOther ? trainingCourse.otherTrainingProviderName : trainingProvider.name;
       trainingCourse.externalProviderName = providerName;
@@ -206,20 +220,58 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     }
 
     if (this.journeyType === 'Add') {
-      this.storeDetailsAndContinueToNextPage();
+      this.storeNewCourseAndContinueToNextPage();
+    } else if (this.journeyType === 'Edit') {
+      this.storeChangesAndContinueToNextPage();
     }
   }
 
-  private storeDetailsAndContinueToNextPage() {
-    const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.form.value;
-    if (newTrainingCourseToBeAdded.deliveredBy !== this.deliveredByOptions.ExternalProvider) {
-      newTrainingCourseToBeAdded.externalProviderName = null;
+  private getAndProcessFormValue(): Partial<TrainingCourse> {
+    const trainingCourseData: Partial<TrainingCourse> = this.form.value;
+
+    const externalProviderName = trainingCourseData.externalProviderName;
+    delete trainingCourseData.externalProviderName;
+
+    if (trainingCourseData.deliveredBy !== this.deliveredByOptions.ExternalProvider) {
+      trainingCourseData.trainingProviderId = null;
+      trainingCourseData.otherTrainingProviderName = null;
+      return trainingCourseData;
     }
+
+    const trainingProvider = this.getTrainingProviderIdFromName(externalProviderName);
+    trainingCourseData.trainingProviderId = trainingProvider.id;
+    trainingCourseData.otherTrainingProviderName = trainingProvider.isOther ? externalProviderName : null;
+
+    return trainingCourseData;
+  }
+
+  private getTrainingProviderIdFromName(externalProviderName: string): TrainingProvider {
+    const trimmedName = externalProviderName ? externalProviderName.trim() : '';
+    const providerFound = this.trainingProviders.find((provider) => provider.name === trimmedName && !provider.isOther);
+
+    if (providerFound) {
+      return providerFound;
+    }
+
+    return { id: this.otherTrainingProviderId, name: 'other', isOther: true };
+  }
+
+  private storeNewCourseAndContinueToNextPage() {
+    const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.getAndProcessFormValue();
 
     this.trainingCourseService.newTrainingCourseToBeAdded = newTrainingCourseToBeAdded;
     this.clearLocalTrainingCourseDataWhenClickedAway();
 
     this.router.navigate(['../select-category'], { relativeTo: this.route });
+  }
+
+  private storeChangesAndContinueToNextPage() {
+    const updatedCourse: Partial<TrainingCourse> = this.getAndProcessFormValue();
+
+    this.trainingCourseService.updatedTrainingCourse = updatedCourse;
+    // this.clearLocalTrainingCourseDataWhenClickedAway();
+
+    this.router.navigate(['../select-which-to-apply'], { relativeTo: this.route });
   }
 
   private clearLocalTrainingCourseDataWhenClickedAway(): void {

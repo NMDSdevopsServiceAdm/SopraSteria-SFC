@@ -5,6 +5,7 @@ import { TrainingCourseResolver, TrainingCoursesToLoad } from '@core/resolvers/t
 import { TrainingCourseDetailsComponent } from './training-course-details/training-course-details.component';
 import { TrainingCourseCategoryComponent } from './training-course-category/training-course-category.component';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
+import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 
 const routes: Routes = [
   {
@@ -27,6 +28,10 @@ const routes: Routes = [
     data: {
       permissions: ['canEditWorker'],
     },
+    resolve: {
+      trainingCategories: TrainingCategoriesResolver,
+      trainingProviders: TrainingProvidersResolver,
+    },
     children: [
       {
         path: 'details',
@@ -39,9 +44,6 @@ const routes: Routes = [
       {
         path: 'select-category',
         component: TrainingCourseCategoryComponent,
-        resolve: {
-          trainingCategories: TrainingCategoriesResolver,
-        },
         data: {
           title: 'Select training course category',
           journeyType: 'Add',
@@ -51,7 +53,11 @@ const routes: Routes = [
   },
   {
     path: ':trainingCourseUid',
-    resolve: { trainingCourses: TrainingCourseResolver },
+    resolve: {
+      trainingCourses: TrainingCourseResolver,
+      trainingProviders: TrainingProvidersResolver,
+      trainingCategories: TrainingCategoriesResolver,
+    },
     children: [
       {
         path: 'edit-details',
