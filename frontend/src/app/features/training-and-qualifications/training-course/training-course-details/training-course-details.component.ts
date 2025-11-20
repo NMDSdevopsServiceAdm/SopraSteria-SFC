@@ -271,7 +271,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     this.trainingCourseService.updatedTrainingCourse = updatedCourse;
     // this.clearLocalTrainingCourseDataWhenClickedAway();
 
-    this.router.navigate(['../select-which-to-apply'], { relativeTo: this.route });
+    this.router.navigate(['../select-what-training-records-to-apply'], { relativeTo: this.route });
   }
 
   private clearLocalTrainingCourseDataWhenClickedAway(): void {

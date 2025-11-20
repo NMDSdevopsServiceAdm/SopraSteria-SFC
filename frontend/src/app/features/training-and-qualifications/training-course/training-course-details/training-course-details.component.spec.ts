@@ -474,7 +474,7 @@ describe('TrainingCourseDetailsComponent', () => {
     });
 
     describe('when editing training course', () => {
-      it('should save the changed training course in trainingCourseService, and navigate to select-which-to-apply page', async () => {
+      it('should save the changed training course in trainingCourseService, and navigate to select-what-training-records-to-apply page', async () => {
         const { getByLabelText, getByRole, selectedTrainingCourse, updatedTrainingCourseSpy, routerSpy, component } =
           await setup({
             journeyType: 'Edit',
@@ -511,7 +511,9 @@ describe('TrainingCourseDetailsComponent', () => {
 
         expect(updatedTrainingCourseSpy).toHaveBeenCalledWith(expectedProps);
         // @ts-expect-error: TS2341: Property 'route' is private
-        expect(routerSpy).toHaveBeenCalledWith(['../select-which-to-apply'], { relativeTo: component.route });
+        expect(routerSpy).toHaveBeenCalledWith(['../select-what-training-records-to-apply'], {
+          relativeTo: component.route,
+        });
       });
 
       it('should set trainingProviderId and otherTrainingProviderName to null on submit, if user changed deliveredBy to In-house staff', async () => {
