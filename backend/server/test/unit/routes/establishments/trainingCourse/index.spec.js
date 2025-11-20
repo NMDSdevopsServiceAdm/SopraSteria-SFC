@@ -2,12 +2,14 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 const sequelize = require('sequelize');
+const lodash = require('lodash');
 
 const models = require('../../../../../models');
 const {
   fetchAllTrainingCourses,
   createTrainingCourse,
   getTrainingCourse,
+  updateTrainingCourse,
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
 const {
   mockTrainingCourses,
@@ -15,7 +17,7 @@ const {
   mockTrainingCourseFindAllResult,
 } = require('../../../mockdata/trainingCourse');
 
-describe('/api/establishment/:uid/trainingCourse/', () => {
+describe.only('/api/establishment/:uid/trainingCourse/', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -104,7 +106,8 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         name: 'Care skills and knowledge',
         accredited: 'Yes',
         deliveredBy: 'In-house staff',
-        externalProviderName: null,
+        trainingProviderId: null,
+        otherTrainingProviderName: null,
         howWasItDelivered: 'Face to face',
         doesNotExpire: false,
         validityPeriodInMonth: 24,
@@ -128,7 +131,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         name: 'Care skills and knowledge',
         accredited: 'Yes',
         deliveredBy: 'In-house staff',
-        externalProviderName: null,
+        otherTrainingProviderName: null,
         howWasItDelivered: 'Face to face',
         doesNotExpire: false,
         validityPeriodInMonth: 24,
@@ -176,7 +179,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
   });
 
-  describe('GET /trainingCourse/:trainingCourseUid - createTrainingCourse', () => {
+  describe('GET /trainingCourse/:trainingCourseUid - getTrainingCourse', () => {
     const mockTrainingCourseUid = 123;
     const request = {
       method: 'GET',
@@ -205,7 +208,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       });
     });
 
-    it('should respond with 404 and if the training course is not found', async () => {
+    it('should respond with 404 if the training course is not found', async () => {
       sinon.stub(models.trainingCourse, 'findOne').resolves(null);
 
       const req = httpMocks.createRequest(request);
@@ -217,7 +220,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res._getData()).to.deep.equal({ message: 'Training course not found' });
     });
 
-    it('should respond with 500 and if an error occurred', async () => {
+    it('should respond with 500 if an error occurred', async () => {
       sinon.stub(models.trainingCourse, 'findOne').rejects(new sequelize.ConnectionError('some database error'));
       sinon.stub(console, 'error');
 
@@ -227,6 +230,111 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       await getTrainingCourse(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
+  describe('PUT /trainingCourse/:trainingCourseUid - updateTrainingCourse', () => {
+    const mockTrainingCourseUid = 123;
+    const mockRequestBody = {
+      trainingCategoryId: 10,
+      trainingProviderId: null,
+      name: 'Care skills and knowledge',
+      accredited: 'Yes',
+      deliveredBy: 'In-house staff',
+      otherTrainingProviderName: null,
+      howWasItDelivered: 'E-learning',
+      doesNotExpire: true,
+      validityPeriodInMonth: null,
+    };
+
+    const request = {
+      method: 'PUT',
+      url: `${baseEndpoint}/${mockTrainingCourseUid}`,
+      establishmentId,
+      username: mockUsername,
+      params: { trainingCourseUid: mockTrainingCourseUid },
+      body: mockRequestBody,
+    };
+    const mockSequelizeRecord = {
+      ...mockTrainingCourses[0],
+      toJSON() {
+        return lodash.omit(this, ['update', 'toJSON']);
+      },
+    };
+
+    it('should respond with 200 if successfully updated the record', async () => {
+      const updateRecordSpy = sinon.stub().resolves(null);
+      sinon.stub(models.trainingCourse, 'findOne').resolves({ ...mockSequelizeRecord, update: updateRecordSpy });
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+
+      expect(models.trainingCourse.findOne).to.have.been.calledWith(
+        sinon.match({
+          where: { establishmentFk: 'mock-id', uid: 123, archived: false },
+        }),
+      );
+      expect(updateRecordSpy).to.have.been.calledWith({
+        categoryFk: 10,
+        trainingProviderFk: null,
+        name: 'Care skills and knowledge',
+        accredited: 'Yes',
+        deliveredBy: 'In-house staff',
+        otherTrainingProviderName: null,
+        howWasItDelivered: 'E-learning',
+        doesNotExpire: true,
+        validityPeriodInMonth: null,
+        updatedBy: mockUsername,
+      });
+    });
+
+    it('should respond with 400 if the req body is empty', async () => {
+      const updateRecordSpy = sinon.stub().resolves(null);
+      sinon.stub(models.trainingCourse, 'findOne').resolves({ ...mockSequelizeRecord, update: updateRecordSpy });
+      sinon.stub(console, 'error'); // suppress error msg in test log
+
+      const req = httpMocks.createRequest({ ...request, body: undefined });
+      const res = httpMocks.createResponse();
+
+      await updateTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(400);
+
+      expect(updateRecordSpy).not.to.be.called;
+    });
+
+    it('should respond with 404 if the course was not found', async () => {
+      const updateRecordSpy = sinon.stub().resolves(null);
+      sinon.stub(models.trainingCourse, 'findOne').resolves(null);
+      sinon.stub(console, 'error'); // suppress error msg in test log
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(404);
+
+      expect(updateRecordSpy).not.to.be.called;
+    });
+
+    it('should respond with 500 if error occured', async () => {
+      const updateRecordSpy = sinon.stub().resolves(null);
+      sinon.stub(models.trainingCourse, 'findOne').rejects(new Error('some error'));
+      sinon.stub(console, 'error'); // suppress error msg in test log
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+
+      expect(updateRecordSpy).not.to.be.called;
     });
   });
 });

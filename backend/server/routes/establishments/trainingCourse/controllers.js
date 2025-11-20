@@ -1,12 +1,13 @@
 const lodash = require('lodash');
 const sequelize = require('sequelize');
 const models = require('../../../models');
+const HttpError = require('../../../utils/errors/httpError');
 
 const userChangeableFields = [
   'name',
   'accredited',
   'deliveredBy',
-  'externalProviderName',
+  'otherTrainingProviderName',
   'howWasItDelivered',
   'doesNotExpire',
   'validityPeriodInMonth',
@@ -95,6 +96,59 @@ const getTrainingCourse = async (req, res) => {
   }
 };
 
+const updateTrainingCourse = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+    const trainingCourseUid = req?.params?.trainingCourseUid;
+
+    if (lodash.isEmpty(req.body)) {
+      throw new HttpError('request body is empty', 400);
+    }
+
+    const updates = extractDataFromRequest(req);
+
+    const recordFound = await models.trainingCourse.findOne({
+      where: {
+        establishmentFk: establishmentId,
+        uid: trainingCourseUid,
+        archived: false,
+      },
+      attributes: { exclude: ['establishmentFk'] },
+    });
+
+    if (!recordFound) {
+      throw new HttpError('Establishment not found', 404);
+    }
+    await recordFound.update(updates);
+
+    const responseBody = renameKeys(recordFound.toJSON());
+
+    return res.status(200).send(responseBody);
+  } catch (err) {
+    console.error('PUT /establishment/:uid/trainingCourse/:uid  - failed', err);
+    if (err instanceof HttpError) {
+      return res.status(err.statusCode).send(err.message);
+    }
+    return res.status(500).send({ message: 'Internal server error' });
+  }
+};
+
+const extractDataFromRequest = (req) => {
+  let updates = lodash.pick(req.body, userChangeableFields);
+  const trainingProviderFk = req.body.trainingProviderId;
+  const categoryFk = req.body.trainingCategoryId;
+
+  if (trainingProviderFk || trainingProviderFk === null) {
+    updates.trainingProviderFk = trainingProviderFk;
+  }
+  if (categoryFk) {
+    updates.categoryFk = categoryFk;
+  }
+
+  updates.updatedBy = req.username;
+  return updates;
+};
+
 const renameKeys = (record) => {
   const renamed = lodash.mapKeys(record, (_v, key) => {
     switch (key) {
@@ -114,4 +168,4 @@ const renameKeys = (record) => {
   return renamed;
 };
 
-module.exports = { fetchAllTrainingCourses, createTrainingCourse, getTrainingCourse };
+module.exports = { fetchAllTrainingCourses, createTrainingCourse, getTrainingCourse, updateTrainingCourse };
