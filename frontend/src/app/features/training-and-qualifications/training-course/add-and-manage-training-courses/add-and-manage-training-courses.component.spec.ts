@@ -84,7 +84,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
         const row = queryByTestId(`trainingCourse-${index}`);
         const courseLink = within(row).getByRole('link', { name: course.name });
         expect(courseLink).toBeTruthy();
-        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}/edit`);
+        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}/edit-details`);
 
         const removeLink = within(row).getByText('Remove');
         expect(removeLink).toBeTruthy();
@@ -107,7 +107,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
         const row = queryByTestId(`trainingCourse-${index}`);
         const courseLink = within(row).getByRole('link', { name: 'Missing training course name' });
         expect(courseLink).toBeTruthy();
-        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}/edit`);
+        expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}/edit-details`);
       });
     });
   });
