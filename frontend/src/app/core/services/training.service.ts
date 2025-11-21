@@ -99,6 +99,8 @@ export class TrainingService {
     this.resetSelectedStaff();
     this.resetSelectedTraining();
     this.clearSelectedTrainingCategory();
+    this.clearIsTrainingCourseSelected();
+    this.clearSelectedTrainingCourse();
   }
 
   public setSelectedTrainingCategory(trainingCategory: TrainingCategory) {
