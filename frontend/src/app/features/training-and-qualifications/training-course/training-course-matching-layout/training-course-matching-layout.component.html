@@ -1,5 +1,4 @@
-<!-- <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary> -->
-
+ <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 <form  (ngSubmit)="onSubmit()"   [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -12,7 +11,6 @@
                 Training record details
               </h1>
             </legend>
-
          <dl class="govuk-summary-list govuk-summary-list--top-border govuk-summary-list--wide-key govuk-summary-list--wide " style="width: 150%">
         <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key">Training course name</dt>
@@ -21,8 +19,7 @@
             <a
               class="govuk-button  govuk-!-padding-left-0 govuk-button--link govuk__flex  govuk-link--no-visited-state"
               draggable="false"
-              data-testid="includeTraining"
-            >
+              data-testid="includeTraining">
               <img src="/assets/images/Addtraining.svg" alt="" />
               <span class="govuk__nowrap">Select a different training course </span>
               </a>
@@ -31,31 +28,25 @@
           <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key">Training category</dt>
           <dd class="govuk-summary-list__value">
-
                       {{trainingRecord?.trainingCategory?.category}}
-
           </dd>
         </div>
           <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key govuk__nowrap">Is the training course accredited?</dt>
           <dd class="govuk-summary-list__value">
-
                       {{trainingRecord?.accredited}}
-
           </dd>
         </div>
                <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key govuk__nowrap">Who delivers the training course?</dt>
           <dd class="govuk-summary-list__value">
-
                       {{trainingRecord?.deliveredBy}}
-
           </dd>
         </div>
                <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key">Training provider name</dt>
           <dd class="govuk-summary-list__value">
-                      {{trainingRecord?.externalProviderName ?trainingRecord?.externalProviderName : '-' }}
+              {{trainingRecord?.externalProviderName ?trainingRecord?.externalProviderName : '-' }}
           </dd>
         </div>
                <div class="govuk-summary-list__row" >
@@ -64,32 +55,22 @@
                       {{trainingRecord?.howWasItDelivered? trainingRecord?.howWasItDelivered: '-'}}
           </dd>
         </div>
-                <div class="govuk-summary-list__row" >
+           <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key govuk__nowrap">How long is the training valid for?</dt>
           <dd class="govuk-summary-list__value">
 
                       {{trainingRecord?.validityPeriodInMonth? trainingRecord?.validityPeriodInMonth: '-'}}
-
           </dd>
         </div>
-
       </dl>
-
           <div class="govuk-form-group govuk-!-margin-bottom-4">
             <div class="govuk-grid-row ">
             <div class="govuk-grid-column-one-half">
-                 <div
-              data-testid="completedDate"
-              class=" govuk-form-group"
-
-            >
+               <div data-testid="completedDate" class="govuk-form-group">
               <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Training completion date</legend>
-                <legend id="completed-hint" class="govuk-hint govuk-!-margin-bottom-3"> For example, 31 3 2024 </legend>
-                 <span
-                  *ngIf="submitted && form.get('completed').invalid"
-                  id="completed-error"
-                  class="govuk-error-message"
+                <legend id="completed-hint" class="govuk-hint "> For example, 31 3 2024 </legend>
+                 <span *ngIf="submitted && form.get('completed').invalid" id="completed-error"  class="govuk-error-message"
                 >
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('completed') }}
                 </span>
@@ -101,10 +82,8 @@
               </fieldset>
                 </div>
               </div>
-              <div class="govuk-grid-column-one-half" [class.govuk-summary-list__warning]="expiryMismatchWarning">
-          <div
-              data-testid="expiresDate"
-              class="govuk-form-group"
+           <div class="govuk-grid-column-one-half" [class.govuk-summary-list__warning]="expiryMismatchWarning">
+            <div data-testid="expiresDate" class="govuk-form-group"     [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
             >
               <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Training expiry date</legend>
@@ -113,7 +92,7 @@
           <span class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap">
          This training is usually valid for  {{trainingRecord?.validityPeriodInMonth}} months
           </span>
-        </div>
+         </div>
               <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
                 </span>
@@ -124,9 +103,9 @@
                 ></app-date-picker>
               </fieldset>
             </div>
-              </div>
-             </div>
-             </div>
+            </div>
+          </div>
+         </div>
          <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
          </div>
           <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
@@ -134,11 +113,9 @@
               class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center"
               data-testid="deleteButton"
                  *ngIf="trainingRecordId"
-              (click)="navigateToDeleteTrainingRecord()"
-            >
+              (click)="navigateToDeleteTrainingRecord()">
               <img src="/assets/images/bin.svg" alt="" />
-              <span class="govuk-!-margin-left-1"> Delete this training record </span></a
-            >
+              <span class="govuk-!-margin-left-1"> Delete this training record </span></a>
           </div>
         </div>
         <div  class="govuk-grid-row">
@@ -168,8 +145,7 @@
                   type="button"
                   (click)="toggleNotesOpen()"
                   class="govuk-accordion__show-all govuk-!-margin-bottom-0"
-                  [attr.aria-expanded]="notesOpen"
-                >
+                  [attr.aria-expanded]="notesOpen">
                   <span
                     class="govuk-accordion-nav__chevron"
                     [class]="{
@@ -210,7 +186,6 @@
                                 other: 'characters'
                               }
                       }}
-
                       {{ remainingCharacterCount >= 0 ? 'remaining' : 'too many' }}
                     </ng-container>
                   </span>
@@ -220,18 +195,15 @@
           </div>
         </div>
       </fieldset>
-
       <div class="govuk-button-group">
         <button type="submit" class="govuk-button govuk-!-margin-right-9">
          Save and return
         </button>
-
         <a
           class="govuk-button govuk-button--link govuk-!-margin-left-9"
           role="button"
           draggable="false"
-          (click)="onCancel($event)"
-        >
+          (click)="onCancel($event)">
           Cancel
         </a>
       </div>
