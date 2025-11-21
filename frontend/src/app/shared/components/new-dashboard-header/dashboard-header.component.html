@@ -124,7 +124,17 @@
                       role="button"
                       class="asc-button-menu__item"
                     >
-                      Add and manage training courses
+                      Add training courses details
+                    </a>
+                  </li>
+
+                  <li *ngIf="isTrainingCourse">
+                    <a
+                      [routerLink]="['/workplace', workplace.uid, 'training-course', 'add-and-manage-training-courses']"
+                      role="button"
+                      class="asc-button-menu__item no-wrap"
+                    >
+                      Update records with training course details
                     </a>
                   </li>
                   <li>
@@ -133,7 +143,7 @@
                       role="button"
                       class="asc-button-menu__item"
                     >
-                      Add a mandatory training category
+                      Manage mandatory training
                     </a>
                   </li>
                   <li>
