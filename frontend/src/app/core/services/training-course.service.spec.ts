@@ -69,24 +69,35 @@ fdescribe('TrainingCourseService', () => {
 
   describe('updateTrainingCourse', () => {
     const mockTrainingCourseUid = 'mock-training-course-uid';
+    const mockTrainingCourseUpdates = {
+      trainingCategoryId: 1,
+      name: 'Care skills and knowledge',
+      accredited: YesNoDontKnow.Yes,
+      deliveredBy: DeliveredBy.InHouseStaff,
+      externalProviderName: null,
+      howWasItDelivered: HowWasItDelivered.FaceToFace,
+      doesNotExpire: false,
+      validityPeriodInMonth: 24,
+    } as TrainingCourse;
 
-    it('should call PUT trainingCourse/:trainingCourseUid endpoint with the updated trainingCourse as request body', async () => {
-      const mockTrainingCourse = {
-        trainingCategoryId: 1,
-        name: 'Care skills and knowledge',
-        accredited: YesNoDontKnow.Yes,
-        deliveredBy: DeliveredBy.InHouseStaff,
-        externalProviderName: null,
-        howWasItDelivered: HowWasItDelivered.FaceToFace,
-        doesNotExpire: false,
-        validityPeriodInMonth: 24,
-      } as TrainingCourse;
+    [true, false].forEach((applyToExistingRecords) => {
+      it(`should call PUT trainingCourse/:trainingCourseUid endpoint with the updated trainingCourse as request body, applyToExistingRecords: ${applyToExistingRecords}`, async () => {
+        service
+          .updateTrainingCourse(
+            establishmentUid,
+            mockTrainingCourseUid,
+            mockTrainingCourseUpdates,
+            applyToExistingRecords,
+          )
+          .subscribe();
 
-      service.updateTrainingCourse(establishmentUid, mockTrainingCourseUid, mockTrainingCourse).subscribe();
-
-      const req = http.expectOne(`${baseEndpoint}/${mockTrainingCourseUid}`);
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual(mockTrainingCourse);
+        const req = http.expectOne(`${baseEndpoint}/${mockTrainingCourseUid}`);
+        expect(req.request.method).toBe('PUT');
+        expect(req.request.body).toEqual({
+          trainingCourse: mockTrainingCourseUpdates,
+          applyToExistingRecords: applyToExistingRecords,
+        });
+      });
     });
   });
 });

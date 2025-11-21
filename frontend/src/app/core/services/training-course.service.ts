@@ -46,11 +46,17 @@ export class TrainingCourseService {
   public updateTrainingCourse(
     establishmentUid: string,
     trainingCourseUid: string,
-    props: Partial<TrainingCourse>,
+    updates: Partial<TrainingCourse>,
+    applyToExistingRecords: boolean,
   ): Observable<TrainingCourse> {
+    const requestBody = {
+      trainingCourse: updates,
+      applyToExistingRecords,
+    };
+
     return this.http.put<TrainingCourse>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse/${trainingCourseUid}`,
-      props,
+      requestBody,
     );
   }
 
