@@ -48,6 +48,7 @@ import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
+import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 
 const routes: Routes = [
   {
@@ -205,6 +206,7 @@ const routes: Routes = [
             GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
           noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer:
             GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
+          trainingCourses: TrainingCourseResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },
