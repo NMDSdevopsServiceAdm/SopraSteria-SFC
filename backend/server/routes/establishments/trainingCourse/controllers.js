@@ -2,6 +2,7 @@ const lodash = require('lodash');
 const sequelize = require('sequelize');
 const models = require('../../../models');
 const HttpError = require('../../../utils/errors/httpError');
+const { NotFoundError } = require('../../../utils/errors/customErrors');
 
 const userChangeableFields = [
   'name',
@@ -101,42 +102,54 @@ const updateTrainingCourse = async (req, res) => {
     const establishmentId = req.establishmentId;
     const trainingCourseUid = req?.params?.trainingCourseUid;
 
-    if (lodash.isEmpty(req.body)) {
-      throw new HttpError('request body is empty', 400);
-    }
+    const { updates, updatedBy, applyToExistingRecords } = extractDataFromRequest(req);
 
-    const updates = extractDataFromRequest(req);
+    const updatedTrainingCourse = await models.sequelize.transaction(async (transaction) => {
+      const updatedTrainingCourse = await models.trainingCourse.updateTrainingCourse({
+        establishmentId,
+        trainingCourseUid,
+        updates,
+        updatedBy,
+        transaction,
+      });
 
-    const recordFound = await models.trainingCourse.findOne({
-      where: {
-        establishmentFk: establishmentId,
-        uid: trainingCourseUid,
-        archived: false,
-      },
-      attributes: { exclude: ['establishmentFk'] },
+      return updatedTrainingCourse;
     });
 
-    if (!recordFound) {
-      throw new HttpError('Establishment not found', 404);
-    }
-    await recordFound.update(updates);
-
-    const responseBody = renameKeys(recordFound.toJSON());
+    const responseBody = renameKeys(updatedTrainingCourse.toJSON());
 
     return res.status(200).send(responseBody);
   } catch (err) {
     console.error('PUT /establishment/:uid/trainingCourse/:uid  - failed', err);
+
     if (err instanceof HttpError) {
       return res.status(err.statusCode).send(err.message);
     }
+    if (err instanceof NotFoundError) {
+      return res.status(404).send('Training course not found');
+    }
+
     return res.status(500).send({ message: 'Internal server error' });
   }
 };
 
 const extractDataFromRequest = (req) => {
-  let updates = lodash.pick(req.body, userChangeableFields);
-  const trainingProviderFk = req.body.trainingProviderId;
-  const categoryFk = req.body.trainingCategoryId;
+  if (lodash.isEmpty(req.body)) {
+    throw new HttpError('request body is empty', 400);
+  }
+  const { trainingCourse, applyToExistingRecords } = req.body;
+  const updatedBy = req.username;
+
+  if (lodash.isEmpty(trainingCourse)) {
+    throw new HttpError('missing "trainingCourse" in request body', 400);
+  }
+  if (![true, false].includes(applyToExistingRecords)) {
+    throw new HttpError('need to specify "applyToExistingRecords" in request body', 400);
+  }
+
+  let updates = lodash.pick(trainingCourse, userChangeableFields);
+  const trainingProviderFk = trainingCourse.trainingProviderId;
+  const categoryFk = trainingCourse.trainingCategoryId;
 
   if (trainingProviderFk || trainingProviderFk === null) {
     updates.trainingProviderFk = trainingProviderFk;
@@ -145,8 +158,7 @@ const extractDataFromRequest = (req) => {
     updates.categoryFk = categoryFk;
   }
 
-  updates.updatedBy = req.username;
-  return updates;
+  return { updates, updatedBy, applyToExistingRecords };
 };
 
 const renameKeys = (record) => {

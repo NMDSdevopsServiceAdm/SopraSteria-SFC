@@ -1,4 +1,5 @@
 const { Enum } = require('../../reference/databaseEnumTypes');
+const { NotFoundError } = require('../utils/errors/customErrors');
 const { ensureProviderInfoCorrect } = require('./hooks/trainingHooks');
 
 module.exports = function (sequelize, DataTypes) {
@@ -162,6 +163,30 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   TrainingCourse.addHook('beforeSave', 'ensureProviderInfoCorrect', ensureProviderInfoCorrect);
+
+  TrainingCourse.updateTrainingCourse = async ({
+    establishmentId,
+    trainingCourseUid,
+    updates,
+    updatedBy,
+    transaction,
+  }) => {
+    const models = sequelize.models;
+
+    const recordFound = await models.trainingCourse.findOne({
+      where: {
+        establishmentFk: establishmentId,
+        uid: trainingCourseUid,
+        archived: false,
+      },
+      attributes: { exclude: ['establishmentFk'] },
+    });
+
+    if (!recordFound) {
+      throw new NotFoundError('Training course not found');
+    }
+    return recordFound.update({ ...updates, updatedBy }, { transaction });
+  };
 
   return TrainingCourse;
 };

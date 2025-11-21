@@ -235,7 +235,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
 
   describe('PUT /trainingCourse/:trainingCourseUid - updateTrainingCourse', () => {
     const mockTrainingCourseUid = 123;
-    const mockRequestBody = {
+    const mockTrainingCourseUpdate = {
       trainingCategoryId: 10,
       trainingProviderId: null,
       name: 'Care skills and knowledge',
@@ -246,6 +246,10 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       doesNotExpire: true,
       validityPeriodInMonth: null,
     };
+    const mockRequestBody = {
+      trainingCourse: mockTrainingCourseUpdate,
+      applyToExistingRecords: false,
+    };
 
     const request = {
       method: 'PUT',
@@ -255,16 +259,25 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       params: { trainingCourseUid: mockTrainingCourseUid },
       body: mockRequestBody,
     };
+
     const mockSequelizeRecord = {
       ...mockTrainingCourses[0],
       toJSON() {
         return lodash.omit(this, ['update', 'toJSON']);
       },
+      update() {
+        return this;
+      },
     };
 
+    const mockTransaction = {};
+    beforeEach(() => {
+      sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations(mockTransaction));
+    });
+
     it('should respond with 200 if successfully updated the record', async () => {
-      const updateRecordSpy = sinon.stub().resolves(null);
-      sinon.stub(models.trainingCourse, 'findOne').resolves({ ...mockSequelizeRecord, update: updateRecordSpy });
+      const updateRecordSpy = sinon.stub(mockSequelizeRecord, 'update').callThrough();
+      sinon.stub(models.trainingCourse, 'findOne').resolves(mockSequelizeRecord);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
