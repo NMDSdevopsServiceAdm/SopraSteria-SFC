@@ -6,7 +6,7 @@ import { TrainingCourseDetailsComponent } from './training-course-details/traini
 import { TrainingCourseCategoryComponent } from './training-course-category/training-course-category.component';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
-import { SelectWhatTrainingRecordsToApplyComponent } from './select-what-training-records-to-apply/select-what-training-records-to-apply.component';
+import { SelectWhichTrainingRecordsToApplyComponent } from './select-which-training-records-to-apply/select-which-training-records-to-apply.component';
 
 const routes: Routes = [
   {
@@ -72,8 +72,8 @@ const routes: Routes = [
       //   path: 'change-category',
       // },
       {
-        path: 'select-what-training-records-to-apply',
-        component: SelectWhatTrainingRecordsToApplyComponent,
+        path: 'select-which-training-records-to-apply',
+        component: SelectWhichTrainingRecordsToApplyComponent,
         data: {
           title: 'Select which ',
           journeyType: 'Edit',

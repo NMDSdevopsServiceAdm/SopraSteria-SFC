@@ -476,7 +476,7 @@ fdescribe('TrainingCourseDetailsComponent', () => {
     });
 
     describe('when editing training course', () => {
-      it('should save the changed training course in trainingCourseService, and navigate to select-what-training-records-to-apply page', async () => {
+      it('should save the changed training course in trainingCourseService, and navigate to select-which-training-records-to-apply page', async () => {
         const { getByLabelText, getByRole, selectedTrainingCourse, trainingCourseToBeUpdatedSpy, routerSpy, route } =
           await setup({
             journeyType: 'Edit',
@@ -512,7 +512,7 @@ fdescribe('TrainingCourseDetailsComponent', () => {
         } as Partial<TrainingCourse>;
 
         expect(trainingCourseToBeUpdatedSpy).toHaveBeenCalledWith(expectedProps);
-        expect(routerSpy).toHaveBeenCalledWith(['../select-what-training-records-to-apply'], {
+        expect(routerSpy).toHaveBeenCalledWith(['../select-which-training-records-to-apply'], {
           relativeTo: route,
         });
       });

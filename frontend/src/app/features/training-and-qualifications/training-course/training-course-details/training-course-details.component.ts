@@ -222,7 +222,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     if (this.journeyType === 'Add') {
       this.storeNewCourseAndContinueToNextPage();
     } else if (this.journeyType === 'Edit') {
-      this.storeChangesAndContinueToNextPage();
+      this.storeUpdatedCourseAndContinueToNextPage();
     }
   }
 
@@ -265,13 +265,13 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     this.router.navigate(['../select-category'], { relativeTo: this.route });
   }
 
-  private storeChangesAndContinueToNextPage() {
+  private storeUpdatedCourseAndContinueToNextPage() {
     const updatedCourse: Partial<TrainingCourse> = this.getAndProcessFormValue();
 
     this.trainingCourseService.trainingCourseToBeUpdated = updatedCourse;
     // this.clearLocalTrainingCourseDataWhenClickedAway();
 
-    this.router.navigate(['../select-what-training-records-to-apply'], { relativeTo: this.route });
+    this.router.navigate(['../select-which-training-records-to-apply'], { relativeTo: this.route });
   }
 
   private clearLocalTrainingCourseDataWhenClickedAway(): void {
