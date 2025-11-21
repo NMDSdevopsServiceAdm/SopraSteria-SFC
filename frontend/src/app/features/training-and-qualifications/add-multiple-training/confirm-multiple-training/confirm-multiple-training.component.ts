@@ -58,7 +58,6 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
         key: 'Training completion date',
         value: training.completed ? dayjs(training.completed).format('D MMMM YYYY') : '-',
       },
-      { key: 'Expiry date', value: training.expires ? dayjs(training.expires).format('D MMMM YYYY') : '-' },
       { key: 'Notes', value: training.notes ? training.notes : 'No notes added' },
     ];
   }

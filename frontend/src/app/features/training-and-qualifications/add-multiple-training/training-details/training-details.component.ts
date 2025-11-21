@@ -58,6 +58,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
 
     this.checkAccessFromSummaryAndHideElements();
     this.hideExpiresDate = true;
+    this.hideIncludeTrainingCourseDetailsLink = true;
   }
 
   protected setTitle(): void {

@@ -111,6 +111,15 @@ describe('MultipleTrainingDetailsComponent', () => {
     expect(getByRole('heading', { name: 'Add training record details' })).toBeTruthy();
   });
 
+  it('should not show the "Include training course details" link', async () => {
+    const { component, fixture, queryByText } = await setup();
+
+    component.hideIncludeTrainingCourseDetailsLink = true;
+    fixture.detectChanges();
+
+    expect(queryByText('Include training course details')).toBeFalsy();
+  });
+
   it('should render `Continue` and `Cancel` buttons when it is not accessed from the confirm training page', async () => {
     const { getByText } = await setup();
 
@@ -502,17 +511,6 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   describe('change links', () => {
-    it('should display a change link for number of staff selected', async () => {
-      const { getByTestId } = await setup({ accessedFromSummary: false, prefill: true });
-
-      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
-
-      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
-
-      expect(numberOfStaffSelected).toBeTruthy();
-      expect(changeStaffSelectedLink).toBeTruthy();
-    });
-
     it('should display a change link for training category selected if not accessed from summary page', async () => {
       const { component, fixture, getByTestId } = await setup({ accessedFromSummary: false, prefill: true });
 
@@ -531,29 +529,12 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(changeTrainingCaegorySelectedLink).toBeTruthy();
     });
 
-    it('should not display the number of staff and training category if accessed from summary page', async () => {
+    it('should not display the training category if accessed from summary page', async () => {
       const { queryByTestId } = await setup({ accessedFromSummary: true, prefill: true });
 
-      const numberOfStaffSelected = queryByTestId('numberOfStaffSelected');
       const trainingCategoryDisplay = queryByTestId('trainingCategoryDisplay');
 
-      expect(numberOfStaffSelected).toBeFalsy();
       expect(trainingCategoryDisplay).toBeFalsy();
-    });
-
-    it('should call setIsSelectStaffChange when change is clicked for staff', async () => {
-      const { setUpdatingSelectedStaffForMultipleTrainingSpy, getByTestId } = await setup({
-        accessedFromSummary: false,
-        prefill: true,
-      });
-
-      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
-
-      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
-
-      fireEvent.click(changeStaffSelectedLink);
-
-      expect(setUpdatingSelectedStaffForMultipleTrainingSpy).toHaveBeenCalledWith(true);
     });
   });
 });

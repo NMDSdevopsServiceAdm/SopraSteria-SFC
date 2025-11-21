@@ -26,7 +26,6 @@ describe('ConfirmMultipleTrainingComponent', () => {
     accredited: 'Yes',
     trainingCategory: { id: 1, seq: 3, category: 'Category' },
     completed: '2020-01-01',
-    expires: '2021-01-01',
     notes: 'This is a note',
     title: 'Title',
     howWasItDelivered: 'External',
@@ -155,7 +154,6 @@ describe('ConfirmMultipleTrainingComponent', () => {
       expect(within(trainingRecordDetails).getByText('Title')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('Yes')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('1 January 2020')).toBeTruthy();
-      expect(within(trainingRecordDetails).getByText('1 January 2021')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('This is a note')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('External')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('Care Skills Academy')).toBeTruthy();
@@ -167,7 +165,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
 
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
 
-      expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(5);
+      expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(4);
       expect(within(trainingRecordDetails).getByText('No notes added')).toBeTruthy();
     });
 
