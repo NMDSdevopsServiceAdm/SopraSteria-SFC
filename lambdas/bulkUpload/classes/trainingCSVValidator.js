@@ -319,7 +319,7 @@ class TrainingCsvValidator {
 
     const validityInMonth = parseInt(validity);
 
-    if (validityInMonth > 1 && validityInMonth <= 999) {
+    if (validityInMonth > 0 && validityInMonth <= 999) {
       this.doesNotExpire = false;
       this.validityPeriodInMonth = validityInMonth;
       this._matchUpWithExpiryDate();
