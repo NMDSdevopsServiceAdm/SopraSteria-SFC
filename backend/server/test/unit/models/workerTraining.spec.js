@@ -94,14 +94,4 @@ describe.only('workerTraining model', () => {
       expect(updateRecordSpy).not.to.have.been.called;
     });
   });
-
-  describe('updateRecordsWithTrainingCourse', () => {
-    it('should update multiple training record with the data from trainingCourse');
-
-    it('should exclude training records that are already linked to other training course');
-
-    it('should exclude training records that are not belongs to worker of the same establishment');
-
-    it('should exclude training records that are already linked to other training course');
-  });
 });

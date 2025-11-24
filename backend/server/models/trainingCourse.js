@@ -1,6 +1,8 @@
 const { Enum } = require('../../reference/databaseEnumTypes');
 const { NotFoundError } = require('../utils/errors/customErrors');
 const { ensureProviderInfoCorrect } = require('./hooks/trainingHooks');
+const Sequelize = require('sequelize');
+const lodash = require('lodash');
 
 module.exports = function (sequelize, DataTypes) {
   const TrainingCourse = sequelize.define(
@@ -186,6 +188,81 @@ module.exports = function (sequelize, DataTypes) {
       throw new NotFoundError('Training course not found');
     }
     return recordFound.update({ ...updates, updatedBy }, { transaction });
+  };
+
+  TrainingCourse.updateTrainingRecordsWithTrainingCourse = async function ({
+    establishmentId,
+    trainingRecordUids,
+    trainingCourseUid,
+    transaction,
+    updatedBy,
+  }) {
+    const models = sequelize.models;
+
+    const trainingCourse = await models.trainingCourse.findOne({
+      where: {
+        establishmentFk: establishmentId,
+        uid: trainingCourseUid,
+        archived: false,
+      },
+      attributes: { exclude: ['establishmentFk'] },
+    });
+
+    if (!trainingCourse) {
+      throw new NotFoundError('Could not find the training course');
+    }
+
+    const trainingRecordsFound = await sequelize.models.workerTraining.findAll({
+      where: {
+        uid: { [Sequelize.Op.in]: trainingRecordUids },
+        trainingCourseFK: { [Sequelize.Op.or]: [trainingCourse.id, null] },
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'worker',
+          attributes: ['id'],
+          where: {
+            establishmentFk: establishmentId,
+            archived: false,
+          },
+        },
+      ],
+    });
+
+    if (trainingRecordsFound.length === 0) {
+      throw new NotFoundError('Could not find the training records');
+    }
+
+    const idsOfTrainingRecordsToUpdate = trainingRecordsFound.map((record) => record.id);
+
+    const fieldsToCopy = [
+      'categoryFk',
+      'accredited',
+      'deliveredBy',
+      'trainingProviderFk',
+      'otherTrainingProviderName',
+      'howWasItDelivered',
+      'doesNotExpire',
+      'validityPeriodInMonth',
+    ];
+
+    const updatesToApply = {
+      ...lodash.pick(trainingCourse.toJSON(), fieldsToCopy),
+      title: trainingCourse.name,
+      trainingCourseFK: trainingCourse.id,
+      updatedBy,
+      updatedAt: new Date(),
+    };
+
+    await sequelize.models.workerTraining.update(updatesToApply, {
+      where: {
+        id: idsOfTrainingRecordsToUpdate,
+      },
+      transaction,
+    });
+
+    return { trainingRecordIds: idsOfTrainingRecordsToUpdate };
   };
 
   return TrainingCourse;
