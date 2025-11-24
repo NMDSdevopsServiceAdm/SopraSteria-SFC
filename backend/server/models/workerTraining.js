@@ -5,6 +5,7 @@ const { Enum } = require('../../reference/databaseEnumTypes');
 const lodash = require('lodash');
 const Sequelize = require('sequelize');
 const { calculateTrainingExpiryDate } = require('../utils/dateUtils');
+const { NotFoundError } = require('../utils/errors/customErrors');
 
 module.exports = function (sequelize, DataTypes) {
   const WorkerTraining = sequelize.define(
@@ -330,7 +331,7 @@ module.exports = function (sequelize, DataTypes) {
   WorkerTraining.autoFillInExpiryDate = async function ({ trainingRecordId, transaction, updatedBy }) {
     const trainingRecord = await sequelize.models.workerTraining.findByPk(trainingRecordId);
     if (!trainingRecord) {
-      // throw not found error
+      throw new NotFoundError('Could not find training record');
     }
 
     if (trainingRecord.expires || !trainingRecord.completed || !trainingRecord.validityPeriodInMonth) {
