@@ -47,7 +47,7 @@ export class SelectTrainingCourseForMultipleTrainingRecords
   public setUpVariables(): void {
     this.headingText = 'How do you want to continue?';
     this.sectionText = 'Add multiple training records';
-    this.previousPageToCheckWithoutTrainingCourse = 'select-training-category';
+    this.previousPageToCheckWithoutTrainingCourse = 'add-multiple-training';
     this.previousPageToCheckWithTrainingCourse = 'update-url';
     this.courseOptionsSubText = 'Select the training course taken';
     this.routeWithoutTrainingCourse = [

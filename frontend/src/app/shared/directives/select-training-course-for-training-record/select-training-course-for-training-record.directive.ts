@@ -72,21 +72,31 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
   }
 
   private prefillForm(): void {
-    const previousPage = this.previousRouteService.getPreviousPage();
     const previousUrl = this.previousRouteService.getPreviousUrl();
 
     const isTrainingCourseSelected = this.trainingService.getIsTrainingCourseSelected();
     const selectedTrainingCourse = this.trainingService.getSelectedTrainingCourse();
 
-    if (previousPage === this.previousPageToCheckWithoutTrainingCourse && isTrainingCourseSelected === false) {
-      this.form.setValue({ addATrainingRecord: this.continueWithOutCourseOption.id });
-    } else if (
-      previousUrl?.includes(this.previousPageToCheckWithTrainingCourse) &&
-      isTrainingCourseSelected &&
-      selectedTrainingCourse?.id
+    if (
+      previousUrl?.includes(this.previousPageToCheckWithoutTrainingCourse) ||
+      previousUrl?.includes(this.previousPageToCheckWithTrainingCourse)
     ) {
-      this.form.setValue({ addATrainingRecord: selectedTrainingCourse.id });
+      if (isTrainingCourseSelected === false) {
+        this.form.setValue({ addATrainingRecord: this.continueWithOutCourseOption.id });
+      } else if (isTrainingCourseSelected && selectedTrainingCourse?.id) {
+        this.form.setValue({ addATrainingRecord: selectedTrainingCourse.id });
+      }
     }
+
+    // if (previousUrl?.includes(this.previousPageToCheckWithoutTrainingCourse) && isTrainingCourseSelected === false) {
+    //   this.form.setValue({ addATrainingRecord: this.continueWithOutCourseOption.id });
+    // } else if (
+    //   previousUrl?.includes(this.previousPageToCheckWithTrainingCourse) &&
+    //   isTrainingCourseSelected &&
+    //   selectedTrainingCourse?.id
+    // ) {
+    //   this.form.setValue({ addATrainingRecord: selectedTrainingCourse.id });
+    // }
   }
 
   public getFormErrorMessage(item: string, errorType: string): string {
@@ -147,6 +157,7 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
 
   public onCancel(event: Event): void {
     event.preventDefault();
+    this.trainingService.resetState();
     this.navigateOnCancelClick();
   }
 

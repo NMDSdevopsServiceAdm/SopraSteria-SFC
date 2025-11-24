@@ -76,6 +76,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
             getSelectedTrainingCourse() {
               return overrides.selectedTrainingCourse ?? null;
             },
+            resetState() {},
           },
         },
         {
@@ -100,6 +101,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const setIsTrainingCourseSelectedSpy = spyOn(trainingService, 'setIsTrainingCourseSelected');
     const setSelectedTrainingCourseSpy = spyOn(trainingService, 'setSelectedTrainingCourse');
+    const resetStateSpy = spyOn(trainingService, 'resetState');
 
     return {
       ...setupTools,
@@ -107,6 +109,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       routerSpy,
       setIsTrainingCourseSelectedSpy,
       setSelectedTrainingCourseSpy,
+      resetStateSpy,
     };
   }
 
@@ -215,7 +218,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
   });
 
   it('should show a "Cancel" link and go back to the staff training page', async () => {
-    const { component, getByRole, fixture, routerSpy } = await setup();
+    const { component, getByRole, fixture, routerSpy, resetStateSpy } = await setup();
 
     const link = getByRole('link', { name: 'Cancel' });
 
@@ -231,6 +234,8 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       component.worker.uid,
       'training',
     ]);
+
+    expect(resetStateSpy).toHaveBeenCalled();
   });
 
   it('should show an error message if "Continue" is clicked without selecting a radio option', async () => {
