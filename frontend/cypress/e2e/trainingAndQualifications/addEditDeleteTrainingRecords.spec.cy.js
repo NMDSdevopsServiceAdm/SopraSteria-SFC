@@ -264,11 +264,6 @@ describe('training record', () => {
       cy.contains('button', 'Continue').click();
 
       // add training record details
-      cy.get('[data-testid="numberOfStaffSelected"]').as('numberOfStaffSelected');
-      cy.get('@numberOfStaffSelected').contains('Number of staff selected');
-      cy.get('@numberOfStaffSelected').contains('2');
-      cy.get('@numberOfStaffSelected').contains('Change');
-
       cy.get('[data-testid="trainingCategoryDisplay"]').as('trainingCategoryDisplay');
       cy.get('@trainingCategoryDisplay').contains('Training category');
       cy.get('@trainingCategoryDisplay').contains(trainingCategory);
@@ -289,12 +284,6 @@ describe('training record', () => {
         cy.getByLabel('Year').clear().type(2025);
       });
 
-      cy.get('[data-testid="expiresDate"]').within(() => {
-        cy.getByLabel('Day').clear().type(31);
-        cy.getByLabel('Month').clear().type(3);
-        cy.getByLabel('Year').clear().type(2026);
-      });
-
       cy.contains('button', 'Open notes').click();
       cy.get('[data-testid="notesSection"]').clear().type('Group training');
       cy.contains('button', 'Continue').click();
@@ -303,7 +292,7 @@ describe('training record', () => {
       cy.contains(workerName1);
       cy.contains(workerName2);
       cy.contains(trainingCategory);
-      cy.contains('button', 'Confirm details').click();
+      cy.contains('button', 'Save training records').click();
 
       // staff training and qualifications page
       cy.get('[data-testid="generic_alert"]').contains('2 training records added');
@@ -320,7 +309,7 @@ describe('training record', () => {
         cy.deleteAllTrainingCourses(establishmentID);
       });
 
-      it('should add successfully when but no training courses are picked', () => {
+      it('should add successfully when no training courses are picked', () => {
         cy.contains('button', 'Add and manage training').click();
         cy.contains('a', 'Add multiple training records').click();
 
@@ -348,12 +337,6 @@ describe('training record', () => {
         cy.getByLabel(trainingCategory).click();
         cy.contains('button', 'Continue').click();
 
-        // add training record details
-        cy.get('[data-testid="numberOfStaffSelected"]').as('numberOfStaffSelected');
-        cy.get('@numberOfStaffSelected').contains('Number of staff selected');
-        cy.get('@numberOfStaffSelected').contains('2');
-        cy.get('@numberOfStaffSelected').contains('Change');
-
         cy.get('[data-testid="trainingCategoryDisplay"]').as('trainingCategoryDisplay');
         cy.get('@trainingCategoryDisplay').contains('Training category');
         cy.get('@trainingCategoryDisplay').contains(trainingCategory);
@@ -374,12 +357,6 @@ describe('training record', () => {
           cy.getByLabel('Year').clear().type(2025);
         });
 
-        cy.get('[data-testid="expiresDate"]').within(() => {
-          cy.getByLabel('Day').clear().type(31);
-          cy.getByLabel('Month').clear().type(3);
-          cy.getByLabel('Year').clear().type(2026);
-        });
-
         cy.contains('button', 'Open notes').click();
         cy.get('[data-testid="notesSection"]').clear().type('Group training');
         cy.contains('button', 'Continue').click();
@@ -388,7 +365,7 @@ describe('training record', () => {
         cy.contains(workerName1);
         cy.contains(workerName2);
         cy.contains(trainingCategory);
-        cy.contains('button', 'Confirm details').click();
+        cy.contains('button', 'Save training records').click();
 
         // staff training and qualifications page
         cy.get('[data-testid="generic_alert"]').contains('2 training records added');
