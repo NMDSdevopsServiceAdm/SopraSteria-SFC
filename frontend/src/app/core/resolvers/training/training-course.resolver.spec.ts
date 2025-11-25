@@ -9,13 +9,32 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 describe('trainingCourseResolver', () => {
   const mockEstablishmentUid = 'mock-uid';
 
-  function setup() {
+  const mockParent = {
+    data: {
+      trainingRecord: {
+        trainingCategory: {
+          id: 10,
+        }
+      }
+    }
+  };
+
+  function setup(overrides: any = {}) {
     TestBed.configureTestingModule({
       imports: [],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         provideRouter([]),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ establishmentuid: mockEstablishmentUid }),
+              parent: overrides?.parent,
+            },
+          },
+        },
         TrainingCourseResolver,
         TrainingCourseService,
       ],
@@ -23,10 +42,6 @@ describe('trainingCourseResolver', () => {
 
     const resolver = TestBed.inject(TrainingCourseResolver);
     const route = TestBed.inject(ActivatedRoute);
-
-    spyOnProperty(route.snapshot, 'paramMap', 'get').and.returnValue(
-      convertToParamMap({ establishmentuid: mockEstablishmentUid }),
-    );
 
     const trainingCourseService = TestBed.inject(TrainingCourseService);
     const getAllTrainingCoursesSpy = spyOn(trainingCourseService, 'getAllTrainingCourses').and.callThrough();
@@ -67,10 +82,8 @@ describe('trainingCourseResolver', () => {
     expect(getTrainingCoursesByCategorySpy).not.toHaveBeenCalled();
   });
 
-  it('should call getTrainingCoursesByCategorySpy if trainingCoursesToLoad is "ALL"', () => {
-    const { resolver, route, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = setup();
-
-    route.snapshot.data = { trainingCoursesToLoad: { categoryId: 10 } };
+  it('should call getTrainingCoursesByCategorySpy if there is a training categoryId', () => {
+    const { resolver, route, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = setup({parent:mockParent});
     resolver.resolve(route.snapshot);
 
     expect(getAllTrainingCoursesSpy).not.toHaveBeenCalled();

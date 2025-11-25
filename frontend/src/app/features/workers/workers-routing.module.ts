@@ -23,7 +23,6 @@ import { ViewTrainingComponent } from '@shared/components/training-and-qualifica
 import { UpdateLeaversComponent } from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
 import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
 import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
-
 import {
   JobRoleType,
   SelectJobRolesToAddComponent,
@@ -54,6 +53,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { IncludeTrainingCourseDetailsComponent} from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
 import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
@@ -845,11 +845,22 @@ const routes: Routes = [
       },
       {
         path: 'training/:trainingRecordId',
+        resolve: { trainingRecord: TrainingRecordResolver },
         children: [
           {
             path: '',
             component: AddEditTrainingComponent,
             data: { title: 'Training' },
+          },
+          {
+            path: 'include-training-course-details',
+            component: IncludeTrainingCourseDetailsComponent,
+            data: {
+              title: 'Include training course details',
+            },
+            resolve: {
+              trainingCourses: TrainingCourseResolver,
+            },
           },
           {
             path: 'delete',

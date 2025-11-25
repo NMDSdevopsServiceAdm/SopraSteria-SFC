@@ -192,6 +192,47 @@ describe('training record', () => {
     cy.get('[data-testid="generic_alert"]').contains('Training record deleted');
   });
 
+  describe('including training course details', () => {
+    beforeEach(() => {
+      cy.addWorkerTraining({ establishmentID: StandAloneEstablishment.id, workerName: workerName1, categoryId: 1 });
+      cy.insertTrainingCourse({ establishmentID: StandAloneEstablishment.id, categoryId: 1 });
+      cy.reload();
+    });
+
+    afterEach(() => {
+      cy.deleteAllTrainingCourses(establishmentID);
+    });
+
+    describe('when there is one training course that matches the training record', () => {
+      it('should include training course details successfully', () => {
+        cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+        cy.contains('a', trainingName).click();
+
+        cy.contains('a', 'Include training course details').click();
+        cy.get('[data-testid="workerName"]').contains(workerName1);
+        cy.get('[data-testid="checkbox-label"]').contains('Test training course');
+        cy.get('[data-testid="training-course-name-checkbox"]').check();
+        // Add test for clicking on Continue button when that functionality is added
+      });
+    });
+
+    describe('when there are multiple training course that match the training record', () => {
+      it('should include training course details successfully', () => {
+        cy.insertTrainingCourse({ establishmentID: StandAloneEstablishment.id, categoryId: 1, name: 'Test training course 2'});
+        cy.reload();
+
+        cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+        cy.contains('a', trainingName).click();
+
+        cy.contains('a', 'Include training course details').click();
+        cy.get('[data-testid="workerName"]').contains(workerName1);
+        cy.contains('label', 'Test training course')
+        cy.contains('label', 'Test training course 2')
+        // Add test for selecting and clicking on Continue button when that functionality is added
+      });
+    });
+  });
+
   describe('multiple training records', () => {
     beforeEach(() => {
       cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName2 });

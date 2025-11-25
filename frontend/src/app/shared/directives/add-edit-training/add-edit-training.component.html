@@ -317,13 +317,22 @@
           <div class="govuk-grid-column-one-third">
             <a
               class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center govuk-link--no-visited-state"
+              *ngIf="trainingRecordId"
               draggable="false"
               data-testid="includeTraining"
+              [routerLink]="[
+                '/workplace',
+                 workplace.uid,
+                 'training-and-qualifications-record',
+                 worker.uid,
+                 'training',
+                 trainingRecordId,
+                 'include-training-course-details'
+               ]"
             >
               <img src="/assets/images/Addtraining.svg" alt="" />
               <span class="govuk-!-margin-left-1 govuk__nowrap">Include training course details </span>
-              </a
-            >
+            </a>
           </div>
         </div>
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">

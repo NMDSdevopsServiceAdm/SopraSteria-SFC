@@ -376,21 +376,33 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('buttons', () => {
-    it('should render the Delete, Save and return and Cancel button when editing training', async () => {
-      const { getByTestId, getByText } = await setup();
+    it('should render the Delete and Include training course details buttons when editing training', async () => {
+      const { getByTestId } = await setup();
 
       expect(getByTestId('deleteButton')).toBeTruthy();
+      expect(getByTestId('includeTraining')).toBeTruthy();
+    });
+
+    it('should render the Save and return and Cancel buttons when editing training', async () => {
+      const { getByText } = await setup();
+
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it('should render the Save record and Cancel button but not the delete button when there is no training id', async () => {
-      const { getByText, queryByTestId } = await setup({ trainingRecordId: null });
+    describe('when there is no training id', async () => {
+      it('should render the Save record and Cancel buttons', async () => {
+        const { getByText } = await setup({ trainingRecordId: null });
+        expect(getByText('Save record')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
+      });
 
-      expect(getByText('Save record')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-      expect(queryByTestId('deleteButton')).toBeFalsy();
-    });
+      it('should not render the Delete and Include training course details buttons', async () => {
+        const { queryByTestId } = await setup({ trainingRecordId: null });
+        expect(queryByTestId('deleteButton')).toBeFalsy();
+        expect(queryByTestId('includeTraining')).toBeFalsy();
+      });
+    })
   });
 
   describe('Delete button', () => {
@@ -427,6 +439,16 @@ describe('AddEditTrainingComponent', () => {
         { trainingCategory: JSON.stringify(component.trainingCategory) },
         'delete',
       ]);
+    });
+  });
+
+  describe('Include training course details button', () => {
+    it('should navigate to include training details path', async () => {
+      const { component, getByTestId } = await setup();
+      const link = getByTestId('includeTraining');
+      expect(link.getAttribute('href')).toEqual(
+        `/workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}/training/${component.trainingRecordId}/include-training-course-details`,
+      );
     });
   });
 
@@ -1425,7 +1447,7 @@ describe('AddEditTrainingComponent', () => {
           component.establishmentUid,
           component.workerId,
           component.trainingRecordId,
-          component.filesToRemove,
+          component.filesToRemove
         );
       });
 
