@@ -181,12 +181,13 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
       },
       attributes: { exclude: ['establishmentFk'] },
+      transaction,
     });
 
     if (!recordFound) {
       throw new NotFoundError('Training course not found');
     }
-    return recordFound.update({ ...updates, updatedBy }, { transaction });
+    return await recordFound.update({ ...updates, updatedBy }, { transaction });
   };
 
   TrainingCourse.updateTrainingRecordsWithCourseData = async function ({ trainingCourseUid, transaction, updatedBy }) {
@@ -197,6 +198,7 @@ module.exports = function (sequelize, DataTypes) {
         uid: trainingCourseUid,
         archived: false,
       },
+      transaction,
     });
 
     if (!trainingCourse) {
