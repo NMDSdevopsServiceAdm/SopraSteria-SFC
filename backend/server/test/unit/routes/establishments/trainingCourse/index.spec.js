@@ -291,6 +291,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
 
     it('should respond with 200 if successfully updated the record', async () => {
       sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockSequelizeRecord);
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves([]);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -298,7 +299,18 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       await updateTrainingCourse(req, res);
 
       expect(res.statusCode).to.deep.equal(200);
+    });
 
+    it('should update the training course but not its related training record, if applyToExistingRecords is false', async () => {
+      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockSequelizeRecord);
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves([]);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
       expect(models.trainingCourse.updateTrainingCourse).to.have.been.calledWith(
         sinon.match({
           establishmentId: 'mock-id',
@@ -306,6 +318,30 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
           updates: expectedUpdateParams,
         }),
       );
+      expect(models.trainingCourse.updateTrainingRecordsWithCourseData).not.to.have.been.called;
+    });
+
+    it('should update the training course AND its related training record, if applyToExistingRecords is true', async () => {
+      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockSequelizeRecord);
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves([]);
+
+      const mockRequest = lodash.cloneDeep(request);
+      mockRequest.body.applyToExistingRecords = true;
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+
+      await updateTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(models.trainingCourse.updateTrainingCourse).to.have.been.calledWith(
+        sinon.match({
+          establishmentId: 'mock-id',
+          trainingCourseUid: 123,
+          updates: expectedUpdateParams,
+        }),
+      );
+      expect(models.trainingCourse.updateTrainingRecordsWithCourseData).to.have.been.called;
     });
 
     it('should respond with 400 if the req body is empty', async () => {

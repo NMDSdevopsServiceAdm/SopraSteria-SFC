@@ -103,20 +103,15 @@ describe.only('TrainingCourse model', () => {
     });
   });
 
-  describe('updateTrainingRecordsWithTrainingCourse', () => {
+  describe('updateTrainingRecordsWithCourseData', () => {
+    const mockEstablishmentId = 'mock-workplace-id';
     const mockTrainingCourse = {
       ...mockTrainingCourses[0],
+      establishmentFk: mockEstablishmentId,
       toJSON() {
         return lodash.omit(this, ['update', 'toJSON']);
       },
     };
-    const mockTrainingRecords = [
-      { uid: 'mock-uid-1', id: 'mock-id-1' },
-      { uid: 'mock-uid-2', id: 'mock-id-2' },
-      { uid: 'mock-uid-3', id: 'mock-id-3' },
-    ];
-    const mockTrainingRecordUids = mockTrainingRecords.map((record) => record.uid);
-    const mockEstablishmentId = 'mock-workplace-id';
     const mockTransaction = {};
 
     const expectedUpdates = {
@@ -131,65 +126,42 @@ describe.only('TrainingCourse model', () => {
       title: mockTrainingCourse.name,
       trainingCourseFK: mockTrainingCourse.id,
       updatedBy: mockUsername,
-      updatedAt: sinon.match.any,
+      updated: sinon.match.date,
     };
 
     it('should update multiple training records with the data from trainingCourse', async () => {
       sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
-      sinon.stub(models.workerTraining, 'findAll').resolves(mockTrainingRecords);
 
       const updateRecordSpy = sinon.stub(models.workerTraining, 'update');
 
-      const returnValue = await models.trainingCourse.updateTrainingRecordsWithTrainingCourse({
-        establishmentId: mockEstablishmentId,
-        trainingRecordUids: mockTrainingRecordUids,
+      await models.trainingCourse.updateTrainingRecordsWithCourseData({
         trainingCourseUid: mockTrainingCourse.uid,
         transaction: mockTransaction,
         updatedBy: mockUsername,
       });
 
       expect(updateRecordSpy).to.have.been.calledWith(expectedUpdates, {
-        where: { id: ['mock-id-1', 'mock-id-2', 'mock-id-3'] },
+        where: { trainingCourseFK: mockTrainingCourse.id },
+        include: [
+          {
+            model: models.worker,
+            as: 'worker',
+            attributes: ['establishmentFk', 'archived'],
+            where: { establishmentFk: mockTrainingCourse.establishmentFk, archived: false },
+          },
+        ],
         transaction: mockTransaction,
       });
-
-      expect(returnValue).to.deep.equal({ trainingRecordIds: ['mock-id-1', 'mock-id-2', 'mock-id-3'] });
     });
 
     it('should reject with NotFoundError if could not find the given training course', async () => {
       sinon.stub(models.trainingCourse, 'findOne').resolves(null);
-      sinon.stub(models.workerTraining, 'findAll').resolves(mockTrainingRecords);
 
       const updateRecordSpy = sinon.stub(models.workerTraining, 'update');
 
       let error;
       try {
-        await models.trainingCourse.updateTrainingRecordsWithTrainingCourse({
-          establishmentId: mockEstablishmentId,
-          trainingRecordUids: mockTrainingRecordUids,
-          trainingCourseUid: mockTrainingCourse.uid,
-          transaction: mockTransaction,
-          updatedBy: mockUsername,
-        });
-      } catch (err) {
-        error = err;
-      }
-
-      expect(error).to.be.instanceOf(NotFoundError);
-      expect(updateRecordSpy).not.to.have.been.called;
-    });
-
-    it('should reject with NotFoundError if could not find the training records', async () => {
-      sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
-      sinon.stub(models.workerTraining, 'findAll').resolves([]);
-
-      const updateRecordSpy = sinon.stub(models.workerTraining, 'update');
-
-      let error;
-      try {
-        await models.trainingCourse.updateTrainingRecordsWithTrainingCourse({
-          establishmentId: mockEstablishmentId,
-          trainingRecordUids: mockTrainingRecordUids,
+        await models.trainingCourse.updateTrainingRecordsWithCourseData({
           trainingCourseUid: mockTrainingCourse.uid,
           transaction: mockTransaction,
           updatedBy: mockUsername,

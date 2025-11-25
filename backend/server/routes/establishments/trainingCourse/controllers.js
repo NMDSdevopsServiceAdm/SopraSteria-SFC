@@ -102,7 +102,7 @@ const updateTrainingCourse = async (req, res) => {
     const establishmentId = req.establishmentId;
     const trainingCourseUid = req?.params?.trainingCourseUid;
 
-    const { updates, updatedBy, applyToExistingRecords } = extractDataFromRequest(req);
+    const { updates, updatedBy, applyToExistingRecords } = extractDataFromPatchRequest(req);
 
     const updatedTrainingCourse = await models.sequelize.transaction(async (transaction) => {
       const updatedTrainingCourse = await models.trainingCourse.updateTrainingCourse({
@@ -112,6 +112,10 @@ const updateTrainingCourse = async (req, res) => {
         updatedBy,
         transaction,
       });
+
+      if (applyToExistingRecords) {
+        await models.trainingCourse.updateTrainingRecordsWithCourseData({ trainingCourseUid, updatedBy, transaction });
+      }
 
       return updatedTrainingCourse;
     });
@@ -133,7 +137,7 @@ const updateTrainingCourse = async (req, res) => {
   }
 };
 
-const extractDataFromRequest = (req) => {
+const extractDataFromPatchRequest = (req) => {
   if (lodash.isEmpty(req.body)) {
     throw new HttpError('request body is empty', 400);
   }
