@@ -9,8 +9,9 @@ import { RegistrationService } from '@core/services/registration.service';
 import { CreateUsernameDirective } from '@shared/directives/user/create-username.directive';
 
 @Component({
-  selector: 'app-create-username',
-  templateUrl: './create-username.component.html',
+    selector: 'app-create-username',
+    templateUrl: './create-username.component.html',
+    standalone: false
 })
 export class CreateUsernameComponent extends CreateUsernameDirective {
   private activationToken: string;

@@ -1,6 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { render, waitForElementToBeRemoved } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SearchInputComponent } from './search-input.component';
@@ -8,7 +7,7 @@ import { SearchInputComponent } from './search-input.component';
 describe('SearchInputComponent', () => {
   const setup = (accessibleLabel?: string, ref?: string) =>
     render(SearchInputComponent, {
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [FormsModule, ReactiveFormsModule],
       componentProperties: {
         accessibleLabel,
         ref,
@@ -34,7 +33,7 @@ describe('SearchInputComponent', () => {
     const component = await setup();
 
     expect(component.getByRole('button', { name: 'search' })).toBeTruthy();
-    component.rerender({ searchButtonName: 'new name of button' });
+    component.rerender({ componentProperties: { searchButtonName: 'new name of button' } });
     expect(component.getByRole('button', { name: 'new name of button' })).toBeTruthy();
   });
 
@@ -79,7 +78,6 @@ describe('SearchInputComponent', () => {
     const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
     userEvent.click(component.getByRole('button', { name: 'Clear search results' }));
 
-    await waitForElementToBeRemoved(() => component.getByRole('button', { name: 'Clear search results' }));
     expect(component.queryByRole('button', { name: 'Clear search results' })).toBeNull();
 
     expect(emitSpy).toHaveBeenCalledOnceWith('');

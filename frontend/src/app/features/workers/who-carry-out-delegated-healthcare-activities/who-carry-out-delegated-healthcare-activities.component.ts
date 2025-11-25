@@ -15,8 +15,9 @@ import {
 import { AlertService } from '@core/services/alert.service';
 
 @Component({
-  selector: 'app-who-carry-out-delegated-healthcare-activities',
-  templateUrl: './who-carry-out-delegated-healthcare-activities.component.html',
+    selector: 'app-who-carry-out-delegated-healthcare-activities',
+    templateUrl: './who-carry-out-delegated-healthcare-activities.component.html',
+    standalone: false
 })
 export class WhoCarryOutDelegatedHealthcareActivitiesComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

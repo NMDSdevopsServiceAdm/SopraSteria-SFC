@@ -6,8 +6,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-total-staff',
-  templateUrl: './total-staff.component.html',
+    selector: 'app-total-staff',
+    templateUrl: './total-staff.component.html',
+    standalone: false
 })
 export class TotalStaffComponent implements OnInit {
   @Input() establishmentUid: string;

@@ -6,8 +6,9 @@ import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 
 @Component({
-  selector: 'app-add-note',
-  templateUrl: './add-note.component.html',
+    selector: 'app-add-note',
+    templateUrl: './add-note.component.html',
+    standalone: false
 })
 export class AddNoteComponent {
   @ViewChild('formEl') formEl: ElementRef;

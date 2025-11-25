@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
@@ -35,7 +36,7 @@ describe('WhoCarryOutDelegatedHealthcareActivitiesComponent', () => {
     const routerSpy = jasmine.createSpy('navigate').and.resolveTo(true);
 
     const setuptools = await render(WhoCarryOutDelegatedHealthcareActivitiesComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         WindowRef,
@@ -64,7 +65,7 @@ describe('WhoCarryOutDelegatedHealthcareActivitiesComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const fixture = setuptools.fixture;

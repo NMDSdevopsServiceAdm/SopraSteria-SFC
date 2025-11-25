@@ -30,9 +30,10 @@ import { Subscription } from 'rxjs';
 import { PdfMakeService } from '../../../core/services/pdf-make.service';
 
 @Component({
-  selector: 'app-new-training-and-qualifications-record',
-  templateUrl: './new-training-and-qualifications-record.component.html',
-  styleUrls: ['./new-training-and-qualification.component.scss'],
+    selector: 'app-new-training-and-qualifications-record',
+    templateUrl: './new-training-and-qualifications-record.component.html',
+    styleUrls: ['./new-training-and-qualification.component.scss'],
+    standalone: false
 })
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   @ViewChild('tabEl') tabEl;

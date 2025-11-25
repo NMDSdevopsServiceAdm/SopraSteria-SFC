@@ -3,8 +3,9 @@ import { AccordionSectionComponent } from '../accordion-section/accordion-sectio
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-accordion-group',
-  templateUrl: './accordion-group.component.html',
+    selector: 'app-accordion-group',
+    templateUrl: './accordion-group.component.html',
+    standalone: false
 })
 export class AccordionGroupComponent implements AfterContentInit, OnDestroy {
   @Input() contentName?: string = 'sections';

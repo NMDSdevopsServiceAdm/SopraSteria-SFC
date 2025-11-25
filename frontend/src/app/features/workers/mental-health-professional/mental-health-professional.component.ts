@@ -9,8 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-mental-health-professional',
-  templateUrl: './mental-health-professional.component.html',
+    selector: 'app-mental-health-professional',
+    templateUrl: './mental-health-professional.component.html',
+    standalone: false
 })
 export class MentalHealthProfessionalComponent extends QuestionComponent implements OnInit, OnDestroy {
   public answersAvailable = [

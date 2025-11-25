@@ -10,8 +10,9 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-funding-requirements',
-  templateUrl: './funding-requirements.component.html',
+    selector: 'app-funding-requirements',
+    templateUrl: './funding-requirements.component.html',
+    standalone: false
 })
 export class FundingRequirementsComponent implements OnInit {
   public workplace: Establishment;

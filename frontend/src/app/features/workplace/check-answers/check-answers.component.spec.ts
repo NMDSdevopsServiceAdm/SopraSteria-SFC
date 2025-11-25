@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
@@ -20,7 +21,7 @@ import { CheckAnswersComponent } from './check-answers.component';
 describe('CheckAnswersComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText, getByTestId } = await render(CheckAnswersComponent, {
-      imports: [RouterModule, WorkplaceModule, HttpClientTestingModule, SharedModule],
+      imports: [RouterModule, WorkplaceModule, SharedModule],
       providers: [
         BackService,
         AlertService,
@@ -31,6 +32,8 @@ describe('CheckAnswersComponent', () => {
         },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: WorkerService, useClass: MockWorkerService },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -85,12 +88,11 @@ describe('CheckAnswersComponent', () => {
     fireEvent.click(confirmDetailButton);
     fixture.detectChanges();
 
-    fixture.whenStable().then(() => {
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: `You've confirmed the workplace details that you added`,
-      } as Alert);
-    });
+    await fixture.whenStable();
+    expect(alertSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: `You've confirmed the workplace details that you added`,
+    } as Alert);
   });
 
   describe('setBackLink', () => {

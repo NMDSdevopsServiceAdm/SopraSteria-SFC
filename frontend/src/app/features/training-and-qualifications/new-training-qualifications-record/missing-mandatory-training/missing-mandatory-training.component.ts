@@ -3,8 +3,9 @@ import { Establishment } from '@core/model/establishment.model';
 import { MandatoryTraining } from '@core/model/training.model';
 
 @Component({
-  selector: 'app-missing-mandatory-training',
-  templateUrl: './missing-mandatory-training.component.html',
+    selector: 'app-missing-mandatory-training',
+    templateUrl: './missing-mandatory-training.component.html',
+    standalone: false
 })
 export class MissingMandatoryTrainingComponent {
   public workplace: Establishment;

@@ -5,8 +5,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RequestPasswordResetResponse } from '@core/services/password-reset.service';
 
 @Component({
-  selector: 'app-fp-edit',
-  templateUrl: './edit.component.html',
+    selector: 'app-fp-edit',
+    templateUrl: './edit.component.html',
+    standalone: false
 })
 export class ForgotYourPasswordEditComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

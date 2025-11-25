@@ -3,8 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
-  selector: 'app-basic-records-save-success',
-  templateUrl: './basic-records-save-success.component.html',
+    selector: 'app-basic-records-save-success',
+    templateUrl: './basic-records-save-success.component.html',
+    standalone: false
 })
 export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
   public total: number;

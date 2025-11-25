@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-bulk-upload-sanitise-data-checkbox',
-  templateUrl: './bulk-upload-sanitise-data-checkbox.component.html',
+    selector: 'app-bulk-upload-sanitise-data-checkbox',
+    templateUrl: './bulk-upload-sanitise-data-checkbox.component.html',
+    standalone: false
 })
 export class BulkUploadSanitiseDataCheckboxComponent {
   @Output() public checkboxToggled: EventEmitter<boolean> = new EventEmitter<boolean>();

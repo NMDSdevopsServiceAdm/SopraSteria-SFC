@@ -7,8 +7,9 @@ import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-your-account-summary',
-  templateUrl: './your-account.component.html',
+    selector: 'app-your-account-summary',
+    templateUrl: './your-account.component.html',
+    standalone: false
 })
 export class YourAccountComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

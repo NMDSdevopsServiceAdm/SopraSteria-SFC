@@ -16,9 +16,10 @@ import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnov
 import { WorkplaceUtil } from '@core/utils/workplace-util';
 
 @Component({
-  selector: 'app-new-workplace-summary',
-  templateUrl: './workplace-summary.component.html',
-  providers: [I18nPluralPipe],
+    selector: 'app-new-workplace-summary',
+    templateUrl: './workplace-summary.component.html',
+    providers: [I18nPluralPipe],
+    standalone: false
 })
 export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

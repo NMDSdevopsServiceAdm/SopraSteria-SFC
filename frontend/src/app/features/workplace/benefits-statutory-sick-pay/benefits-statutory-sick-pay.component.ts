@@ -10,8 +10,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-benefits-statutory-sick-pay',
-  templateUrl: './benefits-statutory-sick-pay.component.html',
+    selector: 'app-benefits-statutory-sick-pay',
+    templateUrl: './benefits-statutory-sick-pay.component.html',
+    standalone: false
 })
 export class BenefitsStatutorySickPayComponent extends Question implements OnInit, OnDestroy {
   public statuorySickPayOptions = [

@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -22,7 +22,7 @@ describe('AboutBulkUploadComponent', () => {
 
   const setup = async () => {
     const { fixture, getByText } = await render(AboutBulkUploadComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule],
+      imports: [BrowserModule, RouterModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -38,6 +38,8 @@ describe('AboutBulkUploadComponent', () => {
             },
           }),
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       declarations: [AboutBulkUploadComponent, BulkUploadRelatedContentComponent, CodesAndGuidanceComponent],
     });
@@ -62,18 +64,16 @@ describe('AboutBulkUploadComponent', () => {
   it('should render related contents and download codes and guidance links', async () => {
     const { fixture, getByText } = await setup();
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByText('Related content')).toBeTruthy();
-      expect(getByText('Download codes and guidance')).toBeTruthy();
-    });
+    await fixture.whenStable();
+    expect(getByText('Related content')).toBeTruthy();
+    expect(getByText('Download codes and guidance')).toBeTruthy();
   });
 
   it('should render get help with bulk uploads and data changes links under the related contents', async () => {
     const { fixture, getByText } = await setup();
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByText('Get help with bulk uploads')).toBeTruthy();
-      expect(getByText('Data changes')).toBeTruthy();
-    });
+    await fixture.whenStable();
+    expect(getByText('Get help with bulk uploads')).toBeTruthy();
+    expect(getByText('Data changes')).toBeTruthy();
   });
 });

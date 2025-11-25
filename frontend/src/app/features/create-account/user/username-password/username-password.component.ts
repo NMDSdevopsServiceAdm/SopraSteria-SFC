@@ -8,8 +8,9 @@ import { RegistrationService } from '@core/services/registration.service';
 import { CreateUsernameDirective } from '@shared/directives/user/create-username.directive';
 
 @Component({
-  selector: 'app-username-password',
-  templateUrl: './username-password.component.html',
+    selector: 'app-username-password',
+    templateUrl: './username-password.component.html',
+    standalone: false
 })
 export class UsernamePasswordComponent extends CreateUsernameDirective {
   constructor(

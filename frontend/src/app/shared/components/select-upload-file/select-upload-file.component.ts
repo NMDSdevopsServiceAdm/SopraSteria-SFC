@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-select-upload-file',
-  templateUrl: './select-upload-file.component.html',
-  styleUrls: ['./select-upload-file.component.scss'],
+    selector: 'app-select-upload-file',
+    templateUrl: './select-upload-file.component.html',
+    styleUrls: ['./select-upload-file.component.scss'],
+    standalone: false
 })
 export class SelectUploadFileComponent implements OnInit {
   @Input() accept: string;

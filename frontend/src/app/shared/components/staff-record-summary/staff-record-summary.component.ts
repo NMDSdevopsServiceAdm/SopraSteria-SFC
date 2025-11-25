@@ -12,8 +12,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-staff-record-summary',
-  templateUrl: './staff-record-summary.component.html',
+    selector: 'app-staff-record-summary',
+    templateUrl: './staff-record-summary.component.html',
+    standalone: false
 })
 export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   @Input() set worker(value: Worker) {

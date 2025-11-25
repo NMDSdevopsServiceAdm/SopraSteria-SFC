@@ -3,8 +3,9 @@ import { Component, Input } from '@angular/core';
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 
 @Component({
-  selector: 'app-basic-record',
-  templateUrl: './basic-record.component.html',
+    selector: 'app-basic-record',
+    templateUrl: './basic-record.component.html',
+    standalone: false
 })
 export class BasicRecordComponent extends StaffRecordSummaryComponent {
   @Input() public wdfView = false;

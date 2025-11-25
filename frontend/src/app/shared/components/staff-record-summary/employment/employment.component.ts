@@ -14,9 +14,10 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 import { shouldSeeDHAWorkerQuestion } from '@core/utils/worker-util';
 
 @Component({
-  selector: 'app-employment',
-  templateUrl: './employment.component.html',
-  providers: [DecimalPipe],
+    selector: 'app-employment',
+    templateUrl: './employment.component.html',
+    providers: [DecimalPipe],
+    standalone: false
 })
 export class EmploymentComponent extends StaffRecordSummaryComponent implements OnInit, OnDestroy, OnChanges {
   @Input() wdfView = false;

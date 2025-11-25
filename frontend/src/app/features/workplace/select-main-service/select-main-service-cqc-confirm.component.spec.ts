@@ -1,8 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { render } from '@testing-library/angular';
 import { SharedModule } from '@shared/shared.module';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideRouter, RouterModule } from '@angular/router';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
@@ -10,24 +10,21 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 describe('SelectMainServiceCQCConfirmComponent', () => {
   async function setup() {
-    const component =  await render(SelectMainServiceCqcConfirmComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        ReactiveFormsModule
-      ],
+    const component = await render(SelectMainServiceCqcConfirmComponent, {
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService
+          useClass: MockEstablishmentService,
         },
-      ]
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     return {
-      component
+      component,
     };
   }
 

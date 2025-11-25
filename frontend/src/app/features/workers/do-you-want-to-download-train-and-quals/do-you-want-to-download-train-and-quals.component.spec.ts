@@ -1,12 +1,13 @@
 import { fireEvent, render, within } from '@testing-library/angular';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals.component';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService, qualificationsByGroup, workerBuilder } from '@core/test-utils/MockWorkerService';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { WorkersModule } from '../workers.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { Establishment } from '@core/model/establishment.model';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -80,7 +81,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
     const workplace = establishmentBuilder() as Establishment;
 
     const setupTools = await render(DoYouWantToDowloadTrainAndQualsComponent, {
-      imports: [RouterModule, HttpClientTestingModule, WorkersModule, ReactiveFormsModule],
+      imports: [RouterModule, WorkersModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         AlertService,
@@ -122,6 +123,8 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
         { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
         { provide: PdfMakeService, useValue: { generateTrainingAndQualifications: () => {} } },
         DownloadCertificateService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -131,6 +134,7 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
@@ -174,14 +178,14 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
   });
 
   it('should render the radio buttons', async () => {
-    const { component, getByLabelText } = await setup();
+    const { getByLabelText } = await setup();
 
     expect(getByLabelText(yesRadio)).toBeTruthy();
     expect(getByLabelText(noRadio)).toBeTruthy();
   });
 
   it('should render the continue button ', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
 
     expect(getByText('Continue')).toBeTruthy();
   });
@@ -231,7 +235,6 @@ describe('DoYouWantToDowloadTrainAndQualsComponent', () => {
         workerService,
         trainingCertificateService,
         qualificationCertificateService,
-        PdfMakeServiceInject,
       } = await setup();
 
       const continueButton = getByText('Continue');

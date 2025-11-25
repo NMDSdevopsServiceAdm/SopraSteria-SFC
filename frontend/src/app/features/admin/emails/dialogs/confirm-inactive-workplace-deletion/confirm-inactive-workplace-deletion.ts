@@ -3,8 +3,9 @@ import { DialogComponent } from '@core/components/dialog.component';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 
 @Component({
-  selector: 'app-confirm-inactive-workplace-deletion',
-  templateUrl: './confirm-inactive-workplace-deletion.html',
+    selector: 'app-confirm-inactive-workplace-deletion',
+    templateUrl: './confirm-inactive-workplace-deletion.html',
+    standalone: false
 })
 export class ConfirmInactiveWorkplaceDeletionComponent extends DialogComponent {
   public dialogTitle: string;

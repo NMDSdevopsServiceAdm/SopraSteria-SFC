@@ -1,18 +1,19 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AdminModule } from '@features/admin/admin.module';
 
 import { GetAdminUsersResolver } from './get-admin-users.resolver';
+import { provideHttpClient } from '@angular/common/http';
+import { provideRouter, RouterModule } from '@angular/router';
 
 describe('GetAdminUsersResolver', () => {
   let resolver: GetAdminUsersResolver;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AdminModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
-      providers: [GetAdminUsersResolver],
+      imports: [AdminModule, RouterModule],
+      providers: [GetAdminUsersResolver, provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
     });
     resolver = TestBed.inject(GetAdminUsersResolver);
   });

@@ -9,8 +9,9 @@ import { StaffSummaryDirective } from '@shared/directives/staff-summary/staff-su
 import { orderBy } from 'lodash';
 
 @Component({
-  selector: 'app-wdf-staff-summary',
-  templateUrl: './wdf-staff-summary.component.html',
+    selector: 'app-wdf-staff-summary',
+    templateUrl: './wdf-staff-summary.component.html',
+    standalone: false
 })
 export class WdfStaffSummaryComponent extends StaffSummaryDirective {
   @Input() overallWdfEligibility: boolean;

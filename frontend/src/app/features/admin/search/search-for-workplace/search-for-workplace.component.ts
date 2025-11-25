@@ -7,8 +7,9 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { SearchDirective } from '@shared/directives/admin/search/search.directive';
 
 @Component({
-  selector: 'app-search-for-workplace',
-  templateUrl: './search-for-workplace.component.html',
+    selector: 'app-search-for-workplace',
+    templateUrl: './search-for-workplace.component.html',
+    standalone: false
 })
 export class SearchForWorkplaceComponent extends SearchDirective {
   public results = [];

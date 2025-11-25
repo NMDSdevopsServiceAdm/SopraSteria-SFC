@@ -1,8 +1,9 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { WorkerService } from './worker.service';
 import { build, fake, oneOf } from '@jackfranklin/test-data-bot';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('WorkerService', () => {
   let service: WorkerService;
@@ -24,8 +25,8 @@ describe('WorkerService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [WorkerService],
+      imports: [],
+      providers: [WorkerService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(WorkerService);
   });

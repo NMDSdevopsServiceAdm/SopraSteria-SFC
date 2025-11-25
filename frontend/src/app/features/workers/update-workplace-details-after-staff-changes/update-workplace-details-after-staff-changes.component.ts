@@ -7,8 +7,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { VacanciesAndTurnoverService, WorkplaceUpdateFlowType } from '@core/services/vacancies-and-turnover.service';
 
 @Component({
-  selector: 'app-update-workplace-details-after-staff-changes',
-  templateUrl: './update-workplace-details-after-staff-changes.component.html',
+    selector: 'app-update-workplace-details-after-staff-changes',
+    templateUrl: './update-workplace-details-after-staff-changes.component.html',
+    standalone: false
 })
 export class UpdateWorkplaceDetailsAfterStaffChangesComponent implements OnInit {
   constructor(

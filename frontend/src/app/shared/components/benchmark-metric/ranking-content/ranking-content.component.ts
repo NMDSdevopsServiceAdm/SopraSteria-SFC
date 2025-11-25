@@ -10,8 +10,9 @@ export interface RankingContent {
 }
 
 @Component({
-  selector: 'app-ranking-content',
-  templateUrl: './ranking-content.component.html',
+    selector: 'app-ranking-content',
+    templateUrl: './ranking-content.component.html',
+    standalone: false
 })
 export class RankingContentComponent {
   @Input() set content(value: RankingContent) {

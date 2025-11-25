@@ -15,8 +15,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-carry-out-delegated-healthcare-activities',
-  templateUrl: './carry-out-delegated-healthcare-activities.component.html',
+    selector: 'app-carry-out-delegated-healthcare-activities',
+    templateUrl: './carry-out-delegated-healthcare-activities.component.html',
+    standalone: false
 })
 export class CarryOutDelegatedHealthcareActivitiesComponent extends QuestionComponent {
   public section = 'Employment details';

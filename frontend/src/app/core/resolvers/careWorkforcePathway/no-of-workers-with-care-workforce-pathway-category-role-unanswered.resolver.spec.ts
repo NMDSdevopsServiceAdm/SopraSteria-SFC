@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { PermissionType } from '@core/model/permissions.model';
@@ -16,7 +16,7 @@ describe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () =>
 
   const setup = (overrides: any = {}) => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
         {
@@ -38,6 +38,9 @@ describe('getNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver', () =>
           deps: [HttpClient, Router, UserService],
         },
         CareWorkforcePathwayService,
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     const resolver = TestBed.inject(GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver);

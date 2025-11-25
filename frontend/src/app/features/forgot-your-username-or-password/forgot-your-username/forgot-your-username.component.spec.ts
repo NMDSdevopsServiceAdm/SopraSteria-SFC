@@ -1,10 +1,10 @@
+import { provideHttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MockFindUsernameService, mockTestUser } from '@core/test-utils/MockFindUsernameService';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
@@ -18,7 +18,7 @@ import { ForgotYourUsernameComponent } from './forgot-your-username.component';
 describe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
+      imports: [FormsModule, ReactiveFormsModule, RouterModule, SharedModule],
       declarations: [FindAccountComponent, FindUsernameComponent],
       providers: [
         {
@@ -31,6 +31,8 @@ describe('ForgotYourUsernameComponent', () => {
           provide: FindUsernameService,
           useClass: MockFindUsernameService,
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

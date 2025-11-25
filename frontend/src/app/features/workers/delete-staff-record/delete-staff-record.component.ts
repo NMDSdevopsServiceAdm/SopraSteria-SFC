@@ -13,9 +13,10 @@ import { Reason, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-delete-staff-record',
-  templateUrl: './delete-staff-record.component.html',
-  styleUrls: ['./delete-staff-record.component.scss'],
+    selector: 'app-delete-staff-record',
+    templateUrl: './delete-staff-record.component.html',
+    styleUrls: ['./delete-staff-record.component.scss'],
+    standalone: false
 })
 export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;

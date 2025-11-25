@@ -11,8 +11,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-move-workplace-dialog',
-  templateUrl: './move-workplace-dialog.component.html',
+    selector: 'app-move-workplace-dialog',
+    templateUrl: './move-workplace-dialog.component.html',
+    standalone: false
 })
 export class MoveWorkplaceDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];

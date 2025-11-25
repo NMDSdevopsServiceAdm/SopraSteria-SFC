@@ -8,8 +8,9 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { NewRegulatedByCqcDirective } from '@shared/directives/create-workplace/new-regulated-by-cqc/new-regulated-by-cqc.directive';
 
 @Component({
-  selector: 'app-regulated-by-cqc',
-  templateUrl: '../../../shared/directives/create-workplace/new-regulated-by-cqc/regulated-by-cqc.component.html',
+    selector: 'app-regulated-by-cqc',
+    templateUrl: '../../../shared/directives/create-workplace/new-regulated-by-cqc/regulated-by-cqc.component.html',
+    standalone: false
 })
 export class RegulatedByCqcComponent extends NewRegulatedByCqcDirective {
   constructor(

@@ -9,9 +9,9 @@ import { RegistrationService } from '@core/services/registration.service';
 import { FindWorkplaceAddressDirective } from '@shared/directives/create-workplace/find-workplace-address/find-workplace-address.directive';
 
 @Component({
-  selector: 'app-find-workplace-address-create-account',
-  templateUrl:
-    '../../../../shared/directives/create-workplace/find-workplace-address/find-workplace-address.component.html',
+    selector: 'app-find-workplace-address-create-account',
+    templateUrl: '../../../../shared/directives/create-workplace/find-workplace-address/find-workplace-address.component.html',
+    standalone: false
 })
 export class FindWorkplaceAddressComponent extends FindWorkplaceAddressDirective {
   constructor(

@@ -4,8 +4,9 @@ import { combineLatest } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-select-staff-error-summary',
-  templateUrl: '../../../../shared/directives/error-summary/error-summary.component.html',
+    selector: 'app-select-staff-error-summary',
+    templateUrl: '../../../../shared/directives/error-summary/error-summary.component.html',
+    standalone: false
 })
 export class SelectStaffErrorSummaryComponent extends ErrorSummaryDirective {
   protected init(): void {

@@ -10,8 +10,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { StaffSummaryDirective } from '@shared/directives/staff-summary/staff-summary.directive';
 
 @Component({
-  selector: 'app-staff-summary',
-  templateUrl: './staff-summary.component.html',
+    selector: 'app-staff-summary',
+    templateUrl: './staff-summary.component.html',
+    standalone: false
 })
 export class StaffSummaryComponent extends StaffSummaryDirective implements OnInit {
   constructor(

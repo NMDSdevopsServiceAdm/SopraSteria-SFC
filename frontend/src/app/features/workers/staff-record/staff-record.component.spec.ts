@@ -1,6 +1,7 @@
+import { provideHttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
@@ -41,7 +42,7 @@ describe('StaffRecordComponent', () => {
     localStorageGetSpy.and.returnValue(JSON.stringify(listOfWorkerIds));
 
     const setupTools = await render(StaffRecordComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       providers: [
         AlertService,
         WindowRef,
@@ -96,6 +97,8 @@ describe('StaffRecordComponent', () => {
             clearDoYouWantToAddOrDeleteAnswer: clearDoYouWantToAddOrDeleteAnswerSpy,
           }),
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -105,6 +108,8 @@ describe('StaffRecordComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
+
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
 
     const workerService = injector.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setReturnTo');
@@ -448,6 +453,21 @@ describe('StaffRecordComponent', () => {
           workerService: {
             updateWorker: updateWorkerSpy,
             worker: { completed: true },
+          },
+        });
+
+        expect(updateWorkerSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not call updateWorker even if completed is false, if user does not have permission to edit worker', async () => {
+        const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
+
+        await setup({
+          permissions: [],
+          workerService: {
+            addStaffRecordInProgress: false,
+            updateWorker: updateWorkerSpy,
+            worker: { completed: false },
           },
         });
 

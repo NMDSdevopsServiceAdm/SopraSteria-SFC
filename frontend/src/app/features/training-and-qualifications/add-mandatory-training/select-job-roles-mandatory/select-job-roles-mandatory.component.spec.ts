@@ -1,12 +1,14 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -39,7 +41,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
     };
 
     const setupTools = await render(SelectJobRolesMandatoryComponent, {
-      imports: [HttpClientTestingModule, SharedModule, RouterModule, AddMandatoryTrainingModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule, AddMandatoryTrainingModule],
       declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
         BackLinkService,
@@ -62,6 +64,16 @@ describe('SelectJobRolesMandatoryComponent', () => {
                 jobs: mockAvailableJobs,
               },
             },
+          },
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          // mock the MandatoryTrainingCategoriesResolver,
+          // to avoid dangling subscription causing await fixture.whenStable() to timeout
+          provide: MandatoryTrainingCategoriesResolver,
+          useValue: {
+            resolve: () => {},
           },
         },
       ],

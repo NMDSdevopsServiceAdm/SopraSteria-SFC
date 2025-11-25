@@ -8,8 +8,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
-  selector: 'app-new-staff-tab',
-  templateUrl: './staff-tab.component.html',
+    selector: 'app-new-staff-tab',
+    templateUrl: './staff-tab.component.html',
+    standalone: false
 })
 export class NewStaffTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;

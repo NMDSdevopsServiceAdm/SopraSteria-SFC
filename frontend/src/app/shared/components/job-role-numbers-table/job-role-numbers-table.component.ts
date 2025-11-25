@@ -14,9 +14,10 @@ import lodash from 'lodash';
 import { NumberInputWithButtonsComponent } from '../number-input-with-buttons/number-input-with-buttons.component';
 
 @Component({
-  selector: 'app-job-role-numbers-table',
-  templateUrl: './job-role-numbers-table.component.html',
-  styleUrl: './job-role-numbers-table.component.scss',
+    selector: 'app-job-role-numbers-table',
+    templateUrl: './job-role-numbers-table.component.html',
+    styleUrl: './job-role-numbers-table.component.scss',
+    standalone: false
 })
 export class JobRoleNumbersTableComponent implements AfterViewInit {
   @ViewChildren('numberInputRef') numberInputs: QueryList<NumberInputWithButtonsComponent>;

@@ -10,8 +10,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-staff-recruitment-capture-training-requirement',
-  templateUrl: './staff-recruitment-capture-training-requirement.component.html',
+    selector: 'app-staff-recruitment-capture-training-requirement',
+    templateUrl: './staff-recruitment-capture-training-requirement.component.html',
+    standalone: false
 })
 export class StaffRecruitmentCaptureTrainingRequirementComponent extends Question implements OnInit, OnDestroy {
   public trainingRequiredOptions = [

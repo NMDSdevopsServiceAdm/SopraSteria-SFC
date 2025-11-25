@@ -9,8 +9,9 @@ import { UserService } from '@core/services/user.service';
 import { AccountDetailsDirective } from '@shared/directives/user/account-details.directive';
 
 @Component({
-  selector: 'app-your-details',
-  templateUrl: './your-details.component.html',
+    selector: 'app-your-details',
+    templateUrl: './your-details.component.html',
+    standalone: false
 })
 export class YourDetailsComponent extends AccountDetailsDirective {
   constructor(

@@ -9,8 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-nursing-specialism',
-  templateUrl: './nursing-specialism.component.html',
+    selector: 'app-nursing-specialism',
+    templateUrl: './nursing-specialism.component.html',
+    standalone: false
 })
 export class NursingSpecialismComponent extends QuestionComponent {
   public nursingSpecialisms = [

@@ -1,11 +1,11 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, convertToParamMap, provideRouter, RouterModule } from '@angular/router';
 import { AdminUsersService } from '@core/services/admin/admin-users/admin-users.service';
 import { AdminModule } from '@features/admin/admin.module';
 
 import { GetAdminUserResolver } from './get-admin-user.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('GetAdminUserResolver', () => {
   let resolver: GetAdminUserResolver;
@@ -13,13 +13,16 @@ describe('GetAdminUserResolver', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AdminModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [AdminModule, RouterModule],
       providers: [
         GetAdminUserResolver,
+        provideRouter([]),
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap({ useruid: 'mock-useruid' }) } },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     resolver = TestBed.inject(GetAdminUserResolver);

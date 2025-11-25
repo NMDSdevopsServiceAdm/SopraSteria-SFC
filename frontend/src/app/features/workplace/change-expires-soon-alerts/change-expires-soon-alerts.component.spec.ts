@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -16,7 +16,7 @@ import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts.c
 describe('ChangeExpiresSoonAlertsComponent', () => {
   async function setup() {
     const { fixture, getByText, getAllByText } = await render(ChangeExpiresSoonAlertsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
+      imports: [SharedModule, RouterModule, WorkplaceModule],
       providers: [
         WindowRef,
         {
@@ -38,6 +38,8 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

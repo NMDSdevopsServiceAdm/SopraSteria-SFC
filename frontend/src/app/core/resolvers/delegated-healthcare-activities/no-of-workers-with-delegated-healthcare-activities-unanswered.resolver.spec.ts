@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { PermissionType } from '@core/model/permissions.model';
@@ -17,7 +17,7 @@ describe('getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer'
 
   const setup = (overrides: any = {}) => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      imports: [],
       providers: [
         GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
         {
@@ -39,6 +39,9 @@ describe('getNoOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer'
           deps: [HttpClient, Router, UserService],
         },
         DelegatedHealthcareActivitiesService,
+
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

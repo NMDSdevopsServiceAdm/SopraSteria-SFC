@@ -1,5 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { BackService } from '@core/services/back.service';
@@ -17,7 +17,7 @@ import { FindWorkplaceAddressComponent } from './find-workplace-address.componen
 describe('FindWorkplaceAddressComponent', () => {
   async function setup() {
     const component = await render(FindWorkplaceAddressComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
         BackService,
         provideRouter([]),
@@ -29,6 +29,8 @@ describe('FindWorkplaceAddressComponent', () => {
           provide: RegistrationService,
           useClass: MockRegistrationService,
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

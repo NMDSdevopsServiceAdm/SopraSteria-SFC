@@ -4,8 +4,9 @@ import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 
 @Component({
-  selector: 'app-review-checkbox',
-  templateUrl: './review-checkbox.component.html',
+    selector: 'app-review-checkbox',
+    templateUrl: './review-checkbox.component.html',
+    standalone: false
 })
 export class ReviewCheckboxComponent {
   @Input() public toggleCheckbox: (args: HTMLInputElement) => void;

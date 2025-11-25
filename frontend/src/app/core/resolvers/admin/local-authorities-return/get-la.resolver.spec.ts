@@ -1,11 +1,11 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, convertToParamMap, provideRouter, RouterModule } from '@angular/router';
 import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { AdminModule } from '@features/admin/admin.module';
 
 import { GetLaResolver } from './get-la.resolver';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('GetLaResolver', () => {
   let resolver: GetLaResolver;
@@ -13,13 +13,16 @@ describe('GetLaResolver', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AdminModule, HttpClientTestingModule, RouterTestingModule.withRoutes([])],
+      imports: [AdminModule, RouterModule],
       providers: [
+        provideRouter([]),
         {
           provide: ActivatedRoute,
           useValue: { snapshot: { paramMap: convertToParamMap({ uid: 'someuid' }) } },
         },
         GetLaResolver,
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     resolver = TestBed.inject(GetLaResolver);

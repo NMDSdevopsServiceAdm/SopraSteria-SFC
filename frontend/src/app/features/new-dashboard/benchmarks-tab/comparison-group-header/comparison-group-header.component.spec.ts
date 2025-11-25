@@ -1,6 +1,6 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
@@ -8,17 +8,21 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { NewComparisonGroupHeaderComponent } from './comparison-group-header.component';
+import { getTestBed } from '@angular/core/testing';
 
 describe('NewComparisonGroupHeaderComponent', () => {
   const setup = async (metaData = {}, canViewFullContent = true) => {
     const meta = metaData ? metaData : null;
     const { fixture, getByText, getByTestId } = await render(NewComparisonGroupHeaderComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: BenchmarksV2Service,
           useClass: MockBenchmarksService,
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         meta: meta as Meta,
@@ -28,6 +32,9 @@ describe('NewComparisonGroupHeaderComponent', () => {
     });
 
     const component = fixture.componentInstance;
+
+    const router = getTestBed().inject(Router);
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
 
     return {
       component,

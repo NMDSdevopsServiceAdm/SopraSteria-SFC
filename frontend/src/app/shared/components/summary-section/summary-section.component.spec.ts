@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -19,7 +20,7 @@ import { SummarySectionComponent } from './summary-section.component';
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(SummarySectionComponent, {
-      imports: [SharedModule, HttpClientTestingModule, RouterModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: TabsService,
@@ -30,7 +31,7 @@ describe('Summary section', () => {
           useClass: MockEstablishmentService,
         },
         provideRouter([]),
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: overrides.establishment ?? Establishment,
         trainingCounts: (overrides.trainingCounts as TrainingCounts) ?? ({} as TrainingCounts),
@@ -53,7 +54,7 @@ describe('Summary section', () => {
           overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
         noOfWorkersWithDelegatedHealthcareUnanswered: overrides.noOfWorkersWithDelegatedHealthcareUnanswered ?? 0,
         workplacesNeedAttention: overrides.workplacesNeedAttention ?? false,
-        showCheckCqcDetails: overrides.checkCqcDetails ?? false
+        showCheckCqcDetails: overrides.checkCqcDetails ?? false,
       },
     });
 

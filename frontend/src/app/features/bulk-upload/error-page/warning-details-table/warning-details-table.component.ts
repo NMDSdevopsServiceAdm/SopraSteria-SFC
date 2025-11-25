@@ -2,8 +2,9 @@ import { Component, Input } from '@angular/core';
 import { ErrorReportWarning } from '@core/model/bulk-upload.model';
 
 @Component({
-  selector: 'app-warning-details-table',
-  templateUrl: './warning-details-table.component.html',
+    selector: 'app-warning-details-table',
+    templateUrl: './warning-details-table.component.html',
+    standalone: false
 })
 export class WarningDetailsTableComponent {
   @Input() warnings: ErrorReportWarning[];

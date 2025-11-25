@@ -1,6 +1,6 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -14,7 +14,7 @@ import { AdminComponent } from './admin.component';
 describe('AdminComponent', () => {
   async function setup() {
     const component = await render(AdminComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [AdminMenuComponent],
       providers: [
         {
@@ -25,6 +25,9 @@ describe('AdminComponent', () => {
           provide: FeatureFlagsService,
           useClass: MockFeatureFlagsService,
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

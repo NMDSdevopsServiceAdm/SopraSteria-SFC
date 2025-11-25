@@ -1,8 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Alert } from '@core/model/alert.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -24,7 +24,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, getByLabelText } = await render(
       ConfirmMultipleTrainingComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
+        imports: [SharedModule, RouterModule, AddMultipleTrainingModule],
         providers: [
           AlertService,
           WindowRef,
@@ -51,6 +51,8 @@ describe('MultipleTrainingDetailsComponent', () => {
             deps: [HttpClient],
           },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

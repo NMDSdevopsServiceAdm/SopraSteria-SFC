@@ -5,8 +5,9 @@ import { BulkUploadTroubleshootingPage } from '@core/model/bulk-upload-troublesh
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-bulk-upload-troubleshooting',
-  templateUrl: './bulk-upload-troubleshooting-page.component.html',
+    selector: 'app-bulk-upload-troubleshooting',
+    templateUrl: './bulk-upload-troubleshooting-page.component.html',
+    standalone: false
 })
 export class BulkUploadTroubleshootingComponent implements OnInit {
   public bulkUploadTroubleShootingPages: BulkUploadTroubleshootingPage[];

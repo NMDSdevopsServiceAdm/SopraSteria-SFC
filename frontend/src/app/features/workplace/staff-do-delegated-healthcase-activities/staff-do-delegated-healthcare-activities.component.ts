@@ -15,8 +15,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-staff-do-delegated-healthcare-activities',
-  templateUrl: './staff-do-delegated-healthcare-activities.component.html',
+    selector: 'app-staff-do-delegated-healthcare-activities',
+    templateUrl: './staff-do-delegated-healthcare-activities.component.html',
+    standalone: false
 })
 export class StaffDoDelegatedHealthcareActivitiesComponent extends Question implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.SERVICES;

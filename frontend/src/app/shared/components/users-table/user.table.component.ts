@@ -3,8 +3,9 @@ import { Establishment } from '@core/model/establishment.model';
 import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
 
 @Component({
-  selector: 'app-user-table',
-  templateUrl: './user-table.component.html',
+    selector: 'app-user-table',
+    templateUrl: './user-table.component.html',
+    standalone: false
 })
 export class UserTableComponent {
   @Input() users: UserDetails[] = [];

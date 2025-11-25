@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -48,7 +49,7 @@ describe('NewHomeTabComponent', () => {
     const localStorageSetSpy = spyOn(localStorage, 'setItem');
 
     const setupTools = await render(NewHomeTabComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         WindowRef,
         AlertService,
@@ -93,6 +94,8 @@ describe('NewHomeTabComponent', () => {
           useClass: MockEstablishmentService,
         },
         { provide: WindowToken, useValue: MockWindow },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       declarations: [
         NewDashboardHeaderComponent,
@@ -122,6 +125,7 @@ describe('NewHomeTabComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
 
     return {
       ...setupTools,

@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { FindUsernameService } from '@core/services/find-username.service';
 
 @Component({
-  selector: 'app-username-found',
-  templateUrl: './username-found.component.html',
-  styleUrls: ['./username-found.component.scss'],
+    selector: 'app-username-found',
+    templateUrl: './username-found.component.html',
+    styleUrls: ['./username-found.component.scss'],
+    standalone: false
 })
 export class UsernameFoundComponent implements OnInit {
   public username: string;

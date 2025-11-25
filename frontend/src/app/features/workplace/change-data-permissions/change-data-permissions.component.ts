@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-change-data-permissions',
   templateUrl: './change-data-permissions.component.html',
+  standalone: false,
 })
 export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
@@ -127,9 +128,9 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
 
   public getWorkplaceToChangeDataPermissionsFor(): void {
     if (this.uidToChangeDataPermissionsFor && this.childWorkplaces.length > 0) {
-      let childWorkplace: Workplace;
-
-      childWorkplace = this.childWorkplaces.find((workplace) => workplace?.uid === this.uidToChangeDataPermissionsFor);
+      const childWorkplace = this.childWorkplaces.find(
+        (workplace) => workplace?.uid === this.uidToChangeDataPermissionsFor,
+      );
       this.setupVariables(childWorkplace);
     } else {
       this.setupVariables(this.workplace);

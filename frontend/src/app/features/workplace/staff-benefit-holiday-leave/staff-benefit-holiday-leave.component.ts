@@ -9,8 +9,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-staff-benefit-holiday-leave',
-  templateUrl: './staff-benefit-holiday-leave.component.html',
+    selector: 'app-staff-benefit-holiday-leave',
+    templateUrl: './staff-benefit-holiday-leave.component.html',
+    standalone: false
 })
 export class StaffBenefitHolidayLeaveComponent extends Question implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;

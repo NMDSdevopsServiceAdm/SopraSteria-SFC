@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-parent-requests-list',
-  templateUrl: './parent-requests-list.component.html',
+    selector: 'app-parent-requests-list',
+    templateUrl: './parent-requests-list.component.html',
+    standalone: false
 })
 export class ParentRequestsListComponent implements OnInit {
   public parentRequests = [];

@@ -19,8 +19,9 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-workplace-info-panel',
-  templateUrl: './workplace-info-panel.component.html',
+    selector: 'app-workplace-info-panel',
+    templateUrl: './workplace-info-panel.component.html',
+    standalone: false
 })
 export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   @Output() public changeOwnershipAndPermissionsEvent = new EventEmitter();
