@@ -122,8 +122,8 @@ export class SelectWhichTrainingRecordsToApplyComponent {
 
   private navigateAndShowAlert() {
     const updateExistingRecords = this.trainingRecordsToApply.value === TrainingRecordsToApply.ExistingAndNew;
-    const applyTo = updateExistingRecords ? 'EXISTING and NEW' : 'NEW';
-    const alertMessage = `Course details updated and will apply to ${applyTo} training records`;
+    const applyToWhich = updateExistingRecords ? 'EXISTING and NEW' : 'NEW';
+    const alertMessage = `Course details updated and will apply to ${applyToWhich} training records`;
 
     this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route }).then(() => {
       this.alertService.addAlert({ type: 'success', message: alertMessage });

@@ -68,15 +68,19 @@ const routes: Routes = [
           journeyType: 'Edit',
         },
       },
-      // {
-      //   path: 'change-category',
-      // },
+      {
+        path: 'change-category',
+        component: TrainingCourseCategoryComponent,
+        data: {
+          title: 'Select training course category',
+          journeyType: 'Edit',
+        },
+      },
       {
         path: 'select-which-training-records-to-apply',
         component: SelectWhichTrainingRecordsToApplyComponent,
         data: {
-          title: 'Select which ',
-          journeyType: 'Edit',
+          title: 'Select which training records to apply to',
         },
       },
     ],
