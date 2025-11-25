@@ -134,11 +134,17 @@ describe('training record', () => {
   });
 
   it('should update successfully', () => {
+    cy.intercept('GET', '/api/establishment/*/worker/*/training/*').as('trainingRecord');
+    cy.intercept('GET', '/api/trainingCategories').as('trainingCategories');
+
     cy.addWorkerTraining({ establishmentID, workerName: workerName1, categoryId: 4 });
     cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
     cy.contains('a', trainingName).click();
 
     // update training record details
+    cy.wait('@trainingRecord');
+    cy.wait('@trainingCategories');
+
     cy.get('#accredited-no').check().should('be.checked');
     cy.get('#deliveredBy-ExternalProvider').check().should('be.checked');
     cy.get('#conditional-external-provider-name').should('not.have.class', 'govuk-radios__conditional--hidden');
@@ -206,7 +212,11 @@ describe('training record', () => {
 
     describe('when there are multiple training course that match the training record', () => {
       it('should include training course details successfully', () => {
-        cy.insertTrainingCourse({ establishmentID: StandAloneEstablishment.id, categoryId: 1, name: 'Test training course 2'});
+        cy.insertTrainingCourse({
+          establishmentID: StandAloneEstablishment.id,
+          categoryId: 1,
+          name: 'Test training course 2',
+        });
         cy.reload();
 
         cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
@@ -214,8 +224,8 @@ describe('training record', () => {
 
         cy.contains('a', 'Include training course details').click();
         cy.get('[data-testid="workerName"]').contains(workerName1);
-        cy.contains('label', 'Test training course')
-        cy.contains('label', 'Test training course 2')
+        cy.contains('label', 'Test training course');
+        cy.contains('label', 'Test training course 2');
         // Add test for selecting and clicking on Continue button when that functionality is added
       });
     });
