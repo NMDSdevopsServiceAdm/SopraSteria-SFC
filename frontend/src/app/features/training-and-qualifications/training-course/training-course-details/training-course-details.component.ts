@@ -5,7 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCourse } from '@core/model/training-course.model';
 import { TrainingProvider } from '@core/model/training-provider.model';
-import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
+import { DeliveredBy, HowWasItDelivered, TrainingCategory } from '@core/model/training.model';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -35,10 +35,13 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   public howWasItDeliveredOptions = HowWasItDelivered;
   public trainingProviders: TrainingProvider[];
   public otherTrainingProviderId: number;
+  public trainingCategoies: TrainingCategory[];
+  public trainingCategoryName: string;
 
   public heading: string;
   public sectionHeading: string;
-  public selectedTrainingCourse: TrainingCourse;
+  public selectedTrainingCourse: Partial<TrainingCourse>;
+  public selectedTrainingCourseUid: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -53,7 +56,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.determineJourneyType();
     this.setText();
-    this.loadTrainingProviders();
+    this.loadTrainingProvidersAndCategories();
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefill();
@@ -84,9 +87,10 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private loadTrainingProviders() {
+  private loadTrainingProvidersAndCategories() {
     this.trainingProviders = this.route.snapshot.data.trainingProviders;
     this.otherTrainingProviderId = this.trainingProviders?.find((provider) => provider.isOther)?.id;
+    this.trainingCategoies = this.route.snapshot.data.trainingCategories;
   }
 
   private setupForm(): void {
@@ -158,19 +162,30 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   private loadSelectedTrainingCourse() {
     const trainingCourses: TrainingCourse[] = this.route.snapshot.data.trainingCourses;
-    const selectedTrainingCourseUid = this.route.snapshot.params.trainingCourseUid;
-    const trainingCourse = trainingCourses.find((course) => course.uid === selectedTrainingCourseUid);
+    this.selectedTrainingCourseUid = this.route.snapshot.params.trainingCourseUid;
 
-    if (!trainingCourse) {
-      // return to parent
+    const selectedtrainingCourse =
+      this.trainingCourseService.trainingCourseToBeUpdated ??
+      trainingCourses.find((course) => course.uid === this.selectedTrainingCourseUid);
+
+    if (!selectedtrainingCourse) {
+      this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route });
     }
 
-    if (trainingCourse?.trainingProvider) {
-      const trainingProvider = trainingCourse.trainingProvider;
-      const providerName = trainingProvider.isOther ? trainingCourse.otherTrainingProviderName : trainingProvider.name;
-      trainingCourse.externalProviderName = providerName;
+    this.trainingCategoryName = this.trainingCategoies.find(
+      (category) => category.id === selectedtrainingCourse.trainingCategoryId,
+    ).category;
+
+    // TODO: refactor this in ticket #1840
+    if (selectedtrainingCourse?.trainingProvider) {
+      const trainingProvider = selectedtrainingCourse.trainingProvider;
+
+      const providerName = trainingProvider.isOther
+        ? selectedtrainingCourse.otherTrainingProviderName
+        : trainingProvider.name;
+      selectedtrainingCourse.externalProviderName = providerName;
     }
-    this.selectedTrainingCourse = trainingCourse;
+    this.selectedTrainingCourse = selectedtrainingCourse;
   }
 
   private prefillFromSelectedCourse() {
@@ -269,20 +284,23 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     const updatedCourse: Partial<TrainingCourse> = this.getAndProcessFormValue();
 
     this.trainingCourseService.trainingCourseToBeUpdated = updatedCourse;
-    // this.clearLocalTrainingCourseDataWhenClickedAway();
+    this.clearLocalTrainingCourseDataWhenClickedAway();
 
     this.router.navigate(['../select-which-training-records-to-apply'], { relativeTo: this.route });
   }
 
   private clearLocalTrainingCourseDataWhenClickedAway(): void {
+    const parentPath = this.journeyType === 'Add' ? 'add-training-course' : this.selectedTrainingCourseUid;
+    const fieldToClear = this.journeyType === 'Add' ? 'newTrainingCourseToBeAdded' : 'trainingCourseToBeUpdated';
+
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes('add-training-course')),
+        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes(parentPath)),
         take(1),
       )
       .subscribe(() => {
-        this.trainingCourseService.newTrainingCourseToBeAdded = null;
+        this.trainingCourseService[fieldToClear] = null;
       });
   }
 }

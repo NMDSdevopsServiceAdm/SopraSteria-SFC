@@ -15,6 +15,7 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
+import { trainingCategories as mockTrainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 
 fdescribe('TrainingCourseDetailsComponent', () => {
   const otherTrainingProviderId = 63;
@@ -28,6 +29,7 @@ fdescribe('TrainingCourseDetailsComponent', () => {
     const journeyType = overrides?.journeyType ?? 'Add';
     const selectedTrainingCourse = overrides?.selectedTrainingCourse ?? trainingCourseBuilder();
     const trainingCourses = [trainingCourseBuilder(), selectedTrainingCourse, trainingCourseBuilder()];
+    const trainingCourseToBeUpdated = overrides?.trainingCourseToBeUpdated ?? undefined;
     const trainingCourseUid = journeyType === 'Edit' ? selectedTrainingCourse.uid : null;
 
     const setupTools = await render(TrainingCourseDetailsComponent, {
@@ -35,7 +37,7 @@ fdescribe('TrainingCourseDetailsComponent', () => {
       providers: [
         {
           provide: TrainingCourseService,
-          useFactory: MockTrainingCourseService.factory({ newTrainingCourseToBeAdded }),
+          useFactory: MockTrainingCourseService.factory({ newTrainingCourseToBeAdded, trainingCourseToBeUpdated }),
         },
         {
           provide: ActivatedRoute,
@@ -46,6 +48,7 @@ fdescribe('TrainingCourseDetailsComponent', () => {
                 journeyType,
                 trainingCourses,
                 trainingProviders: mockTrainingProviders,
+                trainingCategories: mockTrainingCategories,
               },
               params: { establishmentuid: 'mock-establishment-uid', trainingCourseUid: trainingCourseUid },
               root: { children: [], url: [''] },
@@ -131,6 +134,20 @@ fdescribe('TrainingCourseDetailsComponent', () => {
         expect(within(categorySection).getByText(selectedTrainingCourse.trainingCategoryName)).toBeTruthy();
       });
 
+      it('should show the changed category name if user is back from change-category page', async () => {
+        const mockTrainingCourse = trainingCourseBuilder();
+        const { getByTestId } = await setup({
+          journeyType: 'Edit',
+          selectedTrainingCourse: mockTrainingCourse,
+          trainingCourseToBeUpdated: { ...mockTrainingCourse, trainingCategoryId: mockTrainingCategories[1].id },
+        });
+
+        const categorySection = getByTestId('training-category');
+
+        expect(within(categorySection).getByText('Training category')).toBeTruthy();
+        expect(within(categorySection).getByText(mockTrainingCategories[1].category)).toBeTruthy();
+      });
+
       it('should show a link that lead to change-category page', async () => {
         const { getByTestId } = await setup({ journeyType: 'Edit' });
 
@@ -143,10 +160,10 @@ fdescribe('TrainingCourseDetailsComponent', () => {
 
   describe('prefill', () => {
     const mockTrainingCourse = {
-      name: 'First aid course',
-      accredited: 'No',
-      deliveredBy: 'External provider',
+      ...trainingCourseBuilder(),
       trainingProvider: { id: 1, name: 'Care skills academy', isOther: false },
+      trainingProviderId: 1,
+      trainingProviderName: 'Care skills academy',
       otherTrainingProviderName: null,
       howWasItDelivered: 'E-learning',
       doesNotExpire: false,
@@ -155,7 +172,7 @@ fdescribe('TrainingCourseDetailsComponent', () => {
 
     describe('when adding new training course', () => {
       // for the case when user return from select category page to this page
-      it('should prefill the form with data from TrainingCourseService', async () => {
+      it('should prefill the form with data from TrainingCourseService.newTrainingCourseToBeAdded', async () => {
         const { getInputByRole, getInputByLabelText } = await setup({
           journeyType: 'Add',
           newTrainingCourseToBeAdded: mockTrainingCourse,
@@ -186,8 +203,6 @@ fdescribe('TrainingCourseDetailsComponent', () => {
         expect(getInputByLabelText(/How many months is/).value).toEqual('24');
         expect(getInputByRole('checkbox', { name: 'This training does not expire' }).checked).toBeFalse();
       });
-
-      xit('should show the changed category name if user is back from change-category page');
     });
 
     const mockTrainingCourse2 = {
