@@ -65,12 +65,6 @@ describe('training record', () => {
       cy.getByLabel('Year').clear().type(2025);
     });
 
-    cy.get('[data-testid="expiresDate"]').within(() => {
-      cy.getByLabel('Day').clear().type(31);
-      cy.getByLabel('Month').clear().type(3);
-      cy.getByLabel('Year').clear().type(2026);
-    });
-
     cy.contains('button', 'Open notes').click();
     cy.get('[data-testid="notesSection"]').clear().type('Refresh');
     cy.contains('button', 'Save record').click();
@@ -115,12 +109,6 @@ describe('training record', () => {
         cy.getByLabel('Day').clear().type(31);
         cy.getByLabel('Month').clear().type(3);
         cy.getByLabel('Year').clear().type(2025);
-      });
-
-      cy.get('[data-testid="expiresDate"]').within(() => {
-        cy.getByLabel('Day').clear().type(31);
-        cy.getByLabel('Month').clear().type(3);
-        cy.getByLabel('Year').clear().type(2026);
       });
 
       cy.contains('button', 'Open notes').click();

@@ -40,7 +40,7 @@ describe('MultipleTrainingDetailsComponent', () => {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
             snapshot: {
-              params: { trainingRecordId: '1' },
+              params: { trainingRecordId: overrides?.trainingRecordId ?? '1' },
               parent: {
                 url: [{ path: overrides.accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
               },
@@ -111,13 +111,10 @@ describe('MultipleTrainingDetailsComponent', () => {
     expect(getByRole('heading', { name: 'Add training record details' })).toBeTruthy();
   });
 
-  it('should not show the "Include training course details" link', async () => {
-    const { component, fixture, queryByText } = await setup();
+  it('should not show the "Include training course details" link if there is no trainingRecordId', async () => {
+    const { queryByTestId } = await setup({ trainingRecordId: null });
 
-    component.hideIncludeTrainingCourseDetailsLink = true;
-    fixture.detectChanges();
-
-    expect(queryByText('Include training course details')).toBeFalsy();
+    expect(queryByTestId('includeTraining')).toBeFalsy();
   });
 
   it('should render `Continue` and `Cancel` buttons when it is not accessed from the confirm training page', async () => {
@@ -144,13 +141,15 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should store the selected training in training service and navigate to the next page when filling out the form and clicking continue', async () => {
-    const { component, getByText, getByLabelText, getByTestId, fixture, setSelectedTrainingSpy, spy } = await setup();
+    const { component, getByText, getByLabelText, getByTestId, fixture, setSelectedTrainingSpy, spy } = await setup({
+      trainingRecordId: null,
+    });
 
     component.trainingCategory = {
       id: component.categories[0].id,
       category: component.categories[0].category,
     };
-    component.hideExpiresDate = false;
+
     const openNotesButton = getByText('Open notes');
     openNotesButton.click();
     fixture.detectChanges();
@@ -166,10 +165,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     userEvent.type(within(completedDate).getByLabelText('Day'), '1');
     userEvent.type(within(completedDate).getByLabelText('Month'), '1');
     userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
-    const expiryDate = getByTestId('expiresDate');
-    userEvent.type(within(expiryDate).getByLabelText('Day'), '1');
-    userEvent.type(within(expiryDate).getByLabelText('Month'), '1');
-    userEvent.type(within(expiryDate).getByLabelText('Year'), '2022');
+
     userEvent.type(getByLabelText('Add a note'), 'Notes for training');
 
     const finishButton = getByText('Continue');
@@ -187,7 +183,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       validityPeriodInMonth: null,
       doesNotExpire: true,
       completed: '2020-01-01',
-      expires: '2022-01-01',
+      expires: null,
       notes: 'Notes for training',
     });
     expect(spy).toHaveBeenCalledWith([
@@ -315,27 +311,12 @@ describe('MultipleTrainingDetailsComponent', () => {
     expect(uploadSection).toBeFalsy();
   });
 
-  describe('expiresDate', () => {
-    it('should show', async () => {
-      const { component, fixture, getByTestId } = await setup();
+  it('expiresDate should not show', async () => {
+    const { queryByTestId } = await setup({ trainingRecordId: null });
 
-      component.hideExpiresDate = false;
-      fixture.detectChanges();
-      const expiresDate = getByTestId('expiresDate');
+    const expiresDate = queryByTestId('expiresDate');
 
-      expect(expiresDate).toBeTruthy();
-    });
-
-    it('should not show', async () => {
-      const { component, fixture, queryByTestId } = await setup();
-
-      component.hideExpiresDate = true;
-      fixture.detectChanges();
-
-      const expiresDate = queryByTestId('expiresDate');
-
-      expect(expiresDate).toBeFalsy();
-    });
+    expect(expiresDate).toBeFalsy();
   });
 
   describe('Notes section', () => {
@@ -364,7 +345,7 @@ describe('MultipleTrainingDetailsComponent', () => {
 
   describe('errors', () => {
     it('should show an error when Training record name less than 3 characters', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
+      const { component, getByText, fixture, getAllByText } = await setup({ trainingRecordId: '1' });
       component.form.markAsDirty();
       component.form.get('title').setValue('a');
       component.form.get('title').markAsDirty();
@@ -424,46 +405,6 @@ describe('MultipleTrainingDetailsComponent', () => {
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Date completed cannot be more than 100 years ago').length).toEqual(2);
-    });
-
-    xit('should show an error when expiry date not valid', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      component.form.get('expires').setValue({ day: 32, month: 12, year: 2000 });
-      component.form.get('expires').markAsDirty();
-      const finishButton = getByText('Continue');
-      fireEvent.click(finishButton);
-      fixture.detectChanges();
-      expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
-    });
-
-    xit('should show an error when expiry date not valid and 0s are entered in the input fields', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      component.form.get('expires').setValue({ day: 0, month: 0, year: 0 });
-      component.form.get('expires').markAsDirty();
-      const finishButton = getByText('Continue');
-      fireEvent.click(finishButton);
-      fixture.detectChanges();
-      expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
-    });
-
-    xit('should show an error when expiry date is before the completed date', async () => {
-      const { component, getByTestId, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      const today = new Date();
-      const completedDate = getByTestId('completedDate');
-      userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
-      userEvent.type(within(completedDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
-      userEvent.type(within(completedDate).getByLabelText('Year'), `${today.getFullYear()}`);
-      const expiresDate = getByTestId('expiresDate');
-      userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
-      userEvent.type(within(expiresDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
-      userEvent.type(within(expiresDate).getByLabelText('Year'), `${today.getFullYear()}`);
-      fireEvent.click(getByText('Continue'));
-      fixture.detectChanges();
-
-      expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
     });
 
     describe('notes errors', () => {

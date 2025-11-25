@@ -58,7 +58,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public deliveredByOptions = DeliveredBy;
   public howWasItDeliveredOptions = HowWasItDelivered;
   public hideExpiresDate: boolean = false;
-  public hideIncludeTrainingCourseDetailsLink: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

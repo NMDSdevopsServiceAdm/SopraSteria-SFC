@@ -295,7 +295,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
       expect(noCourseRadioButton.checked).toBeTruthy();
     });
 
-    xit(`should prefill if the previous answer is ${trainingCourses[0].name} and previous url contains "add-multiple-training/select-staff"`, async () => {
+    it(`should prefill if the previous answer is ${trainingCourses[0].name} and previous url contains "add-multiple-training/select-staff"`, async () => {
       const overrides = {
         isTrainingCourseSelected: true,
         previousUrl: 'add-multiple-training/select-staff',
