@@ -1,8 +1,9 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -35,6 +36,8 @@ export class SelectWhichTrainingRecordsToApplyComponent {
   public submitted: boolean = false;
   private workplace: Establishment;
   public radioButtonOptions = radioButtonOptions;
+  public updates: Partial<TrainingCourse>;
+  public trainingCourseUid: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -45,13 +48,17 @@ export class SelectWhichTrainingRecordsToApplyComponent {
     protected errorSummaryService: ErrorSummaryService,
     protected trainingCourseService: TrainingCourseService,
   ) {
+    this.workplace = this.route.parent.snapshot.data.establishment;
     this.loadTrainingCourseToUpdate();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setBackLink();
   }
 
-  private loadTrainingCourseToUpdate() {}
+  private loadTrainingCourseToUpdate() {
+    this.trainingCourseUid = this.route.snapshot.params.trainingCourseUid;
+    this.updates = this.trainingCourseService.trainingCourseToBeUpdated;
+  }
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
@@ -60,7 +67,7 @@ export class SelectWhichTrainingRecordsToApplyComponent {
   private setupForm() {
     this.form = this.formBuilder.group(
       {
-        trainingRecordsToApply: [null],
+        trainingRecordsToApply: [null, Validators.required],
       },
       {
         updateOn: 'submit',
@@ -68,11 +75,58 @@ export class SelectWhichTrainingRecordsToApplyComponent {
     );
   }
 
-  private setupFormErrorsMap() {}
-
-  private setBackLink(): void {
-    this.backLinkService.showBackLink();
+  private setupFormErrorsMap() {
+    this.formErrorsMap = [
+      {
+        item: 'trainingRecordsToApply',
+        type: [
+          {
+            name: 'required',
+            message: 'Select which training records you want the details to apply to',
+          },
+        ],
+      },
+    ];
   }
 
-  public onSubmit() {}
+  public get trainingRecordsToApply() {
+    return this.form.get('trainingRecordsToApply');
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private setBackLink(): void {
+    setTimeout(() => {
+      this.backLinkService.showBackLink();
+    }, 0);
+  }
+
+  public onSubmit() {
+    this.submitted = true;
+
+    if (this.form.invalid || !this.updates) {
+      return;
+    }
+
+    const shouldUpdateExistingRecords = this.trainingRecordsToApply.value === TrainingRecordsToApply.ExistingAndNew;
+
+    this.trainingCourseService
+      .updateTrainingCourse(this.workplace.uid, this.trainingCourseUid, this.updates, shouldUpdateExistingRecords)
+      .subscribe(() => {
+        this.navigateAndShowAlert();
+      });
+  }
+
+  private navigateAndShowAlert() {
+    const updateExistingRecords = this.trainingRecordsToApply.value === TrainingRecordsToApply.ExistingAndNew;
+    const applyTo = updateExistingRecords ? 'EXISTING and NEW' : 'NEW';
+    const alertMessage = `Course details updated and will apply to ${applyTo} training records`;
+
+    this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route }).then(() => {
+      this.alertService.addAlert({ type: 'success', message: alertMessage });
+    });
+  }
 }
