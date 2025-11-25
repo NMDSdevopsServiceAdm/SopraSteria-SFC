@@ -92,6 +92,7 @@ describe('NewDashboardHeaderComponent', () => {
         hasWorkers: override.hasWorkers,
         isParent: false,
         workplace: establishment,
+        isTrainingCourse: true,
       },
     });
 
@@ -487,6 +488,9 @@ describe('NewDashboardHeaderComponent', () => {
         expect(addAndManageTrainingCoursesSubMenu.getAttribute('href')).toEqual(
           `/workplace/${workplaceUid}/training-course/add-and-manage-training-courses`,
         );
+
+        const addAndManageTrainingCourseDetailsSubMenu = getByText('Update records with training course details');
+        expect(addAndManageTrainingCourseDetailsSubMenu).toBeTruthy();
 
         const addAMandatoryTrainingCategorySubMenu = getByText('Manage mandatory training');
         expect(addAMandatoryTrainingCategorySubMenu).toBeTruthy();
