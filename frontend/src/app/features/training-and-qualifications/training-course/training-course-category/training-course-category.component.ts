@@ -118,11 +118,12 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
       const trainingCourse = this.trainingCourseService.trainingCourseToBeUpdated;
       this.trainingCourseName = trainingCourse.name;
       this.preFilledId = trainingCourse.trainingCategoryId;
+      this.form.patchValue({ category: trainingCourse.trainingCategoryId });
       return;
     }
 
     // if could not find the data to prefill
-    this.router.navigate(['..', 'details'], { relativeTo: this.route });
+    this.router.navigate(['../details'], { relativeTo: this.route });
   }
 
   public onSubmit(): void {

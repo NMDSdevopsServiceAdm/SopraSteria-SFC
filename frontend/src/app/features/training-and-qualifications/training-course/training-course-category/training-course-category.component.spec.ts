@@ -140,12 +140,16 @@ fdescribe('TrainingCourseCategoryComponent', () => {
       expect(getByText('Change').getAttribute('href')).toEqual('/details');
     });
 
-    it('should pre-select the category of the training course', async () => {
+    it('should prefill the category of the training course', async () => {
       const mockTrainingCourse = trainingCourseBuilder();
-      const { getByRole } = await setup({ journeyType: 'Edit', trainingCourseToBeUpdated: mockTrainingCourse });
+      const { getByRole, component } = await setup({
+        journeyType: 'Edit',
+        trainingCourseToBeUpdated: mockTrainingCourse,
+      });
 
       const radioButton = getByRole('radio', { name: mockTrainingCourse.trainingCategoryName }) as HTMLInputElement;
       expect(radioButton.checked).toBeTruthy();
+      expect(component.form.get('category').value).toEqual(mockTrainingCourse.trainingCategoryId);
     });
   });
 

@@ -12,7 +12,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { filter, take } from 'rxjs/operators';
+import { filter, take, tap } from 'rxjs/operators';
 
 type JourneyType = 'Add' | 'Edit';
 
@@ -165,6 +165,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private loadSelectedTrainingCourse() {
+    this.selectedTrainingCourseUid = this.route.snapshot.params.trainingCourseUid;
     const gotDataInLocalService = !!this.trainingCourseService.trainingCourseToBeUpdated;
 
     const selectedtrainingCourse = this.trainingCourseService.trainingCourseToBeUpdated ?? this.loadFromSnapshotData();
@@ -184,7 +185,6 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   private loadFromSnapshotData(): Partial<TrainingCourse> {
     const trainingCourses: TrainingCourse[] = this.route.snapshot.data.trainingCourses;
-    this.selectedTrainingCourseUid = this.route.snapshot.params.trainingCourseUid;
     const selectedtrainingCourse =
       this.trainingCourseService.trainingCourseToBeUpdated ??
       trainingCourses?.find((course) => course.uid === this.selectedTrainingCourseUid);
