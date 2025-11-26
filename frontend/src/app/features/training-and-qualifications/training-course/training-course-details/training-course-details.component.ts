@@ -61,6 +61,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     this.setupFormErrorsMap();
     this.prefill();
     this.backLinkService.showBackLink();
+    this.clearLocalTrainingCourseDataWhenClickedAway();
   }
 
   ngAfterViewInit(): void {
@@ -141,9 +142,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   private prefill(): void {
     if (this.journeyType === 'Add') {
-      if (this.trainingCourseService.newTrainingCourseToBeAdded) {
-        this.prefillFromLocalData();
-      }
+      this.prefillFromLocalData();
     } else {
       this.loadSelectedTrainingCourse();
       this.prefillFromSelectedCourse();
@@ -152,45 +151,66 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   private prefillFromLocalData() {
     const trainingCourse = this.trainingCourseService.newTrainingCourseToBeAdded;
+    if (!trainingCourse) {
+      return;
+    }
+
     if (trainingCourse?.trainingProvider) {
       const trainingProvider = trainingCourse.trainingProvider;
       const providerName = trainingProvider.isOther ? trainingCourse.otherTrainingProviderName : trainingProvider.name;
       trainingCourse.externalProviderName = providerName;
     }
+
     this.form.patchValue(trainingCourse);
   }
 
   private loadSelectedTrainingCourse() {
-    const trainingCourses: TrainingCourse[] = this.route.snapshot.data.trainingCourses;
-    this.selectedTrainingCourseUid = this.route.snapshot.params.trainingCourseUid;
-
     const gotDataInLocalService = !!this.trainingCourseService.trainingCourseToBeUpdated;
 
-    const selectedtrainingCourse =
-      this.trainingCourseService.trainingCourseToBeUpdated ??
-      trainingCourses.find((course) => course.uid === this.selectedTrainingCourseUid);
+    const selectedtrainingCourse = this.trainingCourseService.trainingCourseToBeUpdated ?? this.loadFromSnapshotData();
 
     if (!selectedtrainingCourse) {
       this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route });
     }
+    this.trainingCategoryName = this.getTrainingCategoryName(selectedtrainingCourse);
 
-    this.trainingCategoryName = this.trainingCategoies.find(
-      (category) => category.id === selectedtrainingCourse.trainingCategoryId,
-    ).category;
-
-    // TODO: refactor this in ticket #1840
-    if (selectedtrainingCourse?.trainingProvider) {
-      const trainingProvider = selectedtrainingCourse.trainingProvider;
-
-      const providerName = trainingProvider.isOther
-        ? selectedtrainingCourse.otherTrainingProviderName
-        : trainingProvider.name;
-      selectedtrainingCourse.externalProviderName = providerName;
-    }
+    selectedtrainingCourse.externalProviderName = this.getTrainingProviderName(selectedtrainingCourse);
     this.selectedTrainingCourse = selectedtrainingCourse;
+
     if (!gotDataInLocalService) {
-      this.trainingCourseService.trainingCourseToBeUpdated = this.selectedTrainingCourse;
+      this.storeTempDataInLocalService();
     }
+  }
+
+  private loadFromSnapshotData(): Partial<TrainingCourse> {
+    const trainingCourses: TrainingCourse[] = this.route.snapshot.data.trainingCourses;
+    this.selectedTrainingCourseUid = this.route.snapshot.params.trainingCourseUid;
+    const selectedtrainingCourse =
+      this.trainingCourseService.trainingCourseToBeUpdated ??
+      trainingCourses?.find((course) => course.uid === this.selectedTrainingCourseUid);
+    return selectedtrainingCourse;
+  }
+
+  private getTrainingCategoryName(selectedtrainingCourse: Partial<TrainingCourse>): string {
+    return this.trainingCategoies.find((category) => category.id === selectedtrainingCourse.trainingCategoryId)
+      .category;
+  }
+
+  private getTrainingProviderName(selectedtrainingCourse: Partial<TrainingCourse>): string {
+    // TODO: refactor this in ticket #1840
+    if (!selectedtrainingCourse?.trainingProvider) {
+      return null;
+    }
+    const trainingProvider = selectedtrainingCourse.trainingProvider;
+    const providerName = trainingProvider.isOther
+      ? selectedtrainingCourse.otherTrainingProviderName
+      : trainingProvider.name;
+
+    return providerName;
+  }
+
+  private storeTempDataInLocalService() {
+    this.trainingCourseService.trainingCourseToBeUpdated = this.selectedTrainingCourse;
   }
 
   private prefillFromSelectedCourse() {
@@ -242,7 +262,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     if (this.journeyType === 'Add') {
       this.storeNewCourseAndContinueToNextPage();
     } else if (this.journeyType === 'Edit') {
-      this.storeUpdatedCourseAndContinueToNextPage();
+      this.storeUpdatedCourseAndContinueToConfirmationPage();
     }
   }
 
@@ -280,16 +300,14 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.getAndProcessFormValue();
 
     this.trainingCourseService.newTrainingCourseToBeAdded = newTrainingCourseToBeAdded;
-    this.clearLocalTrainingCourseDataWhenClickedAway();
 
     this.router.navigate(['../select-category'], { relativeTo: this.route });
   }
 
-  private storeUpdatedCourseAndContinueToNextPage() {
+  private storeUpdatedCourseAndContinueToConfirmationPage() {
     const updatedCourse: Partial<TrainingCourse> = this.getAndProcessFormValue();
 
     this.trainingCourseService.trainingCourseToBeUpdated = updatedCourse;
-    this.clearLocalTrainingCourseDataWhenClickedAway();
 
     this.router.navigate(['../select-which-training-records-to-apply'], { relativeTo: this.route });
   }

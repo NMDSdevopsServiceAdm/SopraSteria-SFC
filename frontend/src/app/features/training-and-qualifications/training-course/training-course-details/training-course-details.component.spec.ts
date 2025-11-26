@@ -149,7 +149,7 @@ fdescribe('TrainingCourseDetailsComponent', () => {
       });
 
       it('should show a change link that lead to change category page', async () => {
-        const { getByTestId, routerSpy, route } = await setup({ journeyType: 'Edit' });
+        const { getByTestId } = await setup({ journeyType: 'Edit' });
 
         const categorySection = getByTestId('training-category');
         const changeLink = within(categorySection).getByRole('link', { name: /Change/ });
