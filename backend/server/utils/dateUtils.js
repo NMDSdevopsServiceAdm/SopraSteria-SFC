@@ -1,7 +1,7 @@
 const dayjs = require('dayjs');
 
 const calculateTrainingExpiryDate = (completionDate, validityPeriodInMonth) => {
-  const parsedCompletionDate = dayjs(completionDate, 'YYYY-MM-DD');
+  const parsedCompletionDate = dayjs(completionDate);
   const parsedValidityPeriodInMonth = Number(validityPeriodInMonth);
   const inputsAreValid = parsedCompletionDate.isValid() && parsedValidityPeriodInMonth > 0;
 

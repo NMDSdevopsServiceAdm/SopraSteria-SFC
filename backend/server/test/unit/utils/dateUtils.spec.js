@@ -1,6 +1,7 @@
 const { calculateTrainingExpiryDate } = require('../../../utils/dateUtils');
 
 const expect = require('chai').expect;
+const moment = require('moment');
 
 describe.only('dateUtils', () => {
   describe('calculateTrainingExpiryDate', () => {
@@ -29,6 +30,28 @@ describe.only('dateUtils', () => {
 
         expect(actual).to.equal(expected);
       });
+    });
+
+    it('should be able to handle completionDate as momentJS object', () => {
+      // for backward compatibility, as some legacy code still using the deprecated momentJS
+      const completionDate = moment.utc('2025-11-01', 'YYYY-MM-DD');
+      const validityPeriodInMonth = 12;
+
+      const expected = '2026-10-31';
+      const actual = calculateTrainingExpiryDate(completionDate, validityPeriodInMonth);
+
+      expect(actual).to.equal(expected);
+    });
+
+    it('should be able to handle completionDate JS Date() object', () => {
+      // for backward compatibility, as some legacy code still using the deprecated momentJS
+      const completionDate = new Date('2025-11-01Z');
+      const validityPeriodInMonth = 12;
+
+      const expected = '2026-10-31';
+      const actual = calculateTrainingExpiryDate(completionDate, validityPeriodInMonth);
+
+      expect(actual).to.equal(expected);
     });
 
     it('should return null if completionDate is invalid', () => {
