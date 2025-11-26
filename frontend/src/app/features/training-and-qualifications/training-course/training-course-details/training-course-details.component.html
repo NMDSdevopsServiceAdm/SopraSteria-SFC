@@ -19,6 +19,7 @@
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('name') }}
         </span>
         <input
+          #courseName
           class="govuk-input govuk-!-width-one-half"
           id="training-course-name"
           name="training-course-name"
@@ -39,7 +40,7 @@
           {{ trainingCategoryName }}
         </dd>
         <dd class="govuk-body govuk-util__inline-block govuk-!-margin-left-0 govuk-!-margin-bottom-0">
-          <a class="govuk-link--no-visited-state" href="#" [routerLink]="['../change-category']"
+          <a class="govuk-link--no-visited-state" href="#" (click)="handleChangeLinkClick($event)"
             >Change <span class="govuk-visually-hidden">training course category</span>
           </a>
         </dd>

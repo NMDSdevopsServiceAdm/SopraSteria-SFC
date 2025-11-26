@@ -58,6 +58,9 @@ export class SelectWhichTrainingRecordsToApplyComponent {
   private loadTrainingCourseToUpdate() {
     this.trainingCourseUid = this.route.snapshot.params.trainingCourseUid;
     this.updates = this.trainingCourseService.trainingCourseToBeUpdated;
+    if (!this.updates) {
+      this.router.navigate(['../details'], { relativeTo: this.route });
+    }
   }
 
   ngAfterViewInit(): void {

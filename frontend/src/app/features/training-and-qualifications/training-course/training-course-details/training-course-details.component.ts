@@ -12,7 +12,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { filter, take, tap } from 'rxjs/operators';
+import { filter, take } from 'rxjs/operators';
 
 type JourneyType = 'Add' | 'Edit';
 
@@ -23,6 +23,7 @@ type JourneyType = 'Add' | 'Edit';
 export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('validityPeriodInMonthRef') validityPeriodInMonth: NumberInputWithButtonsComponent;
+  @ViewChild('courseName') courseName: ElementRef<HTMLInputElement>;
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
@@ -230,6 +231,17 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  public handleChangeLinkClick(event: Event) {
+    event.preventDefault();
+
+    const courseName = this.courseName.nativeElement.value;
+    if (courseName) {
+      this.trainingCourseService.trainingCourseToBeUpdated = { ...this.selectedTrainingCourse, name: courseName };
+    }
+
+    this.router.navigate(['../change-category'], { relativeTo: this.route });
+  }
+
   private clearFormControlAndKeepErrorMessages(formControlName: string): void {
     const formControl = this.form.get(formControlName);
     const existingErrors = formControl.errors;
@@ -267,6 +279,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private getAndProcessFormValue(): Partial<TrainingCourse> {
+    // TODO: refactor in ticket #1840 when implementing the provider name input
     const trainingCourseData: Partial<TrainingCourse> = this.form.value;
 
     const externalProviderName = trainingCourseData.externalProviderName;

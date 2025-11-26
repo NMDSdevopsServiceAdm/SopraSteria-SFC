@@ -153,8 +153,27 @@ describe('TrainingCourseDetailsComponent', () => {
 
         const categorySection = getByTestId('training-category');
         const changeLink = within(categorySection).getByRole('link', { name: /Change/ });
+        expect(changeLink).toBeTruthy();
+      });
 
-        expect(changeLink.getAttribute('href')).toEqual('/change-category');
+      it('should store the training course name and bring user to category page when change link is clicked', async () => {
+        const { getByTestId, getInputByLabelText, trainingCourseToBeUpdatedSpy, routerSpy, route } = await setup({
+          journeyType: 'Edit',
+        });
+
+        const categorySection = getByTestId('training-category');
+        const changeLink = within(categorySection).getByRole('link', { name: /Change/ });
+
+        const courseNameInput = getInputByLabelText('Training course name');
+
+        userEvent.clear(courseNameInput);
+        userEvent.type(courseNameInput, 'changed course name');
+
+        userEvent.click(changeLink);
+        expect(routerSpy).toHaveBeenCalledWith(['../change-category'], { relativeTo: route });
+        expect(trainingCourseToBeUpdatedSpy).toHaveBeenCalledWith(
+          jasmine.objectContaining({ name: 'changed course name' }),
+        );
       });
     });
   });
