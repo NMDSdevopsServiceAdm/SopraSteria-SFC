@@ -25,7 +25,7 @@ describe('Standalone training and qualifications page as edit user', () => {
 
     cy.get('a').contains('Add multiple training records').should('not.be.visible');
     cy.get('a').contains('Add and manage training courses').should('not.be.visible');
-    cy.get('a').contains('mandatory training category').should('not.be.visible');
+    cy.get('a').contains('Add a mandatory training category').should('not.be.visible');
     cy.get('a').contains('Manage expiry alerts').should('not.be.visible');
 
     cy.contains('Download training report').should('not.exist');

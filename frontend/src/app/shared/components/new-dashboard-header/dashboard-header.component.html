@@ -127,6 +127,12 @@
                       Add and manage training courses
                     </a>
                   </li>
+
+                  <li *ngIf="isTrainingCourse">
+                    <a [routerLink]="[]" role="button" class="asc-button-menu__item govuk-!-margin-right-3">
+                      Update records with training course details
+                    </a>
+                  </li>
                   <li>
                     <a
                       [routerLink]="['/workplace', workplace.uid, 'add-and-manage-mandatory-training']"
