@@ -504,6 +504,27 @@ describe('NewDashboardHeaderComponent', () => {
           `/workplace/${workplaceUid}/change-expires-soon-alerts`,
         );
       });
+
+      it('should not  display the `Update records with training course details` in the sub-menu links', async () => {
+        const override = {
+          tab: 'training-and-qualifications',
+          updateDate: false,
+          canAddWorker: false,
+          canEditWorker: true,
+          hasWorkers: true,
+        };
+
+        const { component, fixture, getByText, queryByText } = await setup(override);
+        const button = getByText('Add and manage training');
+
+        component.isTrainingCourse = false;
+
+        button.click();
+        fixture.detectChanges();
+
+        const addAndManageTrainingCourseDetailsSubMenu = queryByText('Update records with training course details');
+        expect(addAndManageTrainingCourseDetailsSubMenu).toBeNull();
+      });
     });
 
     it('should render conditional column width classes', async () => {
