@@ -106,8 +106,7 @@ describe('MultipleTrainingDetailsComponent', () => {
 
     const caption = getByTestId('section-heading');
 
-    expect(caption).toBeTruthy();
-    expect(within(caption).getByText('Add multiple training records')).toBeTruthy();
+    expect(caption.textContent).toBe('Add multiple training records');
     expect(getByRole('heading', { name: 'Add training record details' })).toBeTruthy();
   });
 

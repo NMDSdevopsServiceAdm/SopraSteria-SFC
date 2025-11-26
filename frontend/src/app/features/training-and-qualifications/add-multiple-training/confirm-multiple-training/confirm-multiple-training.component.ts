@@ -63,16 +63,16 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   }
 
   private showCorrectTrainingValidity(training: any): string {
-    if (training.validityPeriodInMonth) {
-      if (training.validityPeriodInMonth > 1) {
-        return `${training.validityPeriodInMonth} months`;
-      } else {
-        return `${training.validityPeriodInMonth} month`;
-      }
+    if (!training.validityPeriodInMonth && !training.doesNotExpire) {
+      return '-';
+    }
+
+    if (training.validityPeriodInMonth > 1) {
+      return `${training.validityPeriodInMonth} months`;
+    } else if (training.validityPeriodInMonth === 1) {
+      return `${training.validityPeriodInMonth} month`;
     } else if (training.doesNotExpire) {
       return 'Does not expire';
-    } else {
-      return '-';
     }
   }
 

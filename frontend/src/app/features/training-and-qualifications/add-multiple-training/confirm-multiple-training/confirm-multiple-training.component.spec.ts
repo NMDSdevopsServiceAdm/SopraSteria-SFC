@@ -98,8 +98,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
 
     const caption = getByTestId('section-heading');
 
-    expect(caption).toBeTruthy();
-    expect(within(caption).getByText('Add multiple training records')).toBeTruthy();
+    expect(caption.textContent).toBe('Add multiple training records');
     expect(getByRole('heading', { name: 'Summary' })).toBeTruthy();
   });
 
@@ -214,7 +213,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
       });
     });
 
-    it('should display a change link with the correct href at Training category row which navigate to select training category page', async () => {
+    it('should display a change link with the correct href at Training category row which navigates to select training category page', async () => {
       const { getByTestId } = await setup();
 
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
@@ -226,7 +225,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
       );
     });
 
-    it('should display a change link with the correct href at Training record name row which navigate to training detail page', async () => {
+    it('should display a change link with the correct href at Training record name row which navigates to training detail page', async () => {
       const { getByTestId } = await setup();
 
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
