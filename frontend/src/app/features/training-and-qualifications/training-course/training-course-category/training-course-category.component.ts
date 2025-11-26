@@ -48,11 +48,9 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
-
     this.determineJourneyType();
     this.setText();
     this.getCategories();
-    this.loadTrainingCourse();
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefill();
@@ -65,35 +63,27 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
 
   private determineJourneyType() {
     this.journeyType = this.route.snapshot?.data?.journeyType ?? 'Add';
-
-    if (this.journeyType === 'Add' && !this.trainingCourseService.newTrainingCourseToBeAdded) {
-      this.router.navigate(['..', 'details'], { relativeTo: this.route });
-    }
   }
 
   private setText() {
-    this.sectionHeading = this.journeyType === 'Add' ? 'Add a training course' : 'Training and qualifications';
-    this.ctaButtonText = this.journeyType === 'Add' ? 'Save training course' : 'Continue';
+    switch (this.journeyType) {
+      case 'Add': {
+        this.sectionHeading = 'Add a training course';
+        this.ctaButtonText = 'Save training course';
+        break;
+      }
+      case 'Edit': {
+        this.sectionHeading = 'Training and qualifications';
+        this.ctaButtonText = 'Continue';
+        break;
+      }
+    }
   }
 
   private getCategories(): void {
     this.categories = this.route.snapshot.data.trainingCategories;
     this.trainingGroups = TrainingCategoryService.sortTrainingCategoryByGroups(this.categories);
     this.otherCategory = this.categories.find((category) => category.trainingCategoryGroup === null);
-  }
-
-  private loadTrainingCourse(): void {
-    if (this.journeyType === 'Add') {
-      this.trainingCourseName = this.trainingCourseService.newTrainingCourseToBeAdded.name;
-      return;
-    }
-
-    const trainingCourse = this.trainingCourseService.trainingCourseToBeUpdated;
-    if (!trainingCourse) {
-      this.router.navigate(['..', 'details'], { relativeTo: this.route });
-    }
-    this.trainingCourseName = trainingCourse.name;
-    this.preFilledId = trainingCourse.trainingCategoryId;
   }
 
   private setupForm(): void {
@@ -121,12 +111,18 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
 
   private prefill(): void {
     if (this.journeyType === 'Add' && this.trainingCourseService.newTrainingCourseToBeAdded) {
-      this.prefillFromLocalData();
+      this.trainingCourseName = this.trainingCourseService?.newTrainingCourseToBeAdded?.name;
+      return;
     }
-  }
+    if (this.journeyType === 'Edit' && this.trainingCourseService.trainingCourseToBeUpdated) {
+      const trainingCourse = this.trainingCourseService.trainingCourseToBeUpdated;
+      this.trainingCourseName = trainingCourse.name;
+      this.preFilledId = trainingCourse.trainingCategoryId;
+      return;
+    }
 
-  private prefillFromLocalData() {
-    this.trainingCourseName = this.trainingCourseService?.newTrainingCourseToBeAdded?.name;
+    // if could not find the data to prefill
+    this.router.navigate(['..', 'details'], { relativeTo: this.route });
   }
 
   public onSubmit(): void {
