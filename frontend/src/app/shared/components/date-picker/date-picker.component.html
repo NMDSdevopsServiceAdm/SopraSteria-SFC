@@ -2,7 +2,7 @@
   <div class="govuk-date-input" [formGroupName]="formGroupName">
     <div class="govuk-date-input__item">
       <div class="govuk-form-group">
-        <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-day">
+        <label data-testid="day-heading" class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-day">
           Day
         </label>
         <input
@@ -19,7 +19,7 @@
     </div>
     <div class="govuk-date-input__item">
       <div class="govuk-form-group">
-        <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-month">
+        <label data-testid="month-heading" class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-month">
           Month
         </label>
         <input
@@ -36,7 +36,7 @@
     </div>
     <div class="govuk-date-input__item">
       <div class="govuk-form-group">
-        <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-year">
+        <label data-testid="year-heading" class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-year">
           Year
         </label>
         <input

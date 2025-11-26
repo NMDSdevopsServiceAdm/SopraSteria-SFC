@@ -176,7 +176,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
     expect(setSelectedTrainingCourseSpy).not.toHaveBeenCalled();
   });
 
-  it(`should navigate to "update-url" after selecting a training course`, async () => {
+  it(`should navigate to "view-training-course-details" after selecting a training course`, async () => {
     const {
       component,
       fixture,
@@ -198,7 +198,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
       '/workplace',
       component.workplace.uid,
       'add-multiple-training',
-      'update-url',
+      'view-selected-training-course-details',
     ]);
     expect(setIsTrainingCourseSelectedSpy).toHaveBeenCalledWith(true);
     expect(setSelectedTrainingCourseSpy).toHaveBeenCalledWith(trainingCourses[0]);

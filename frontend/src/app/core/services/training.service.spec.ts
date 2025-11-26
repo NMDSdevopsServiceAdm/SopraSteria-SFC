@@ -144,4 +144,51 @@ describe('TrainingService', () => {
       expect(service.getSelectedTrainingCourse()).toBe(null);
     });
   });
+
+  describe('Course Completion Date', () => {
+    it('sets and gets the completion date', async () => {
+      const date = new Date('2025-10-15')
+      service.setCourseCompletionDate(date);
+
+      expect(service.getCourseCompletionDate()).toEqual(date);
+    })
+
+    // it('sets and gets the completion date month', async () => {
+    //   service.setCourseCompletionDateMonth(10)
+    //
+    //   expect(service.getCourseCompletionDateMonth()).toEqual(10);
+    // })
+    //
+    // it('sets and gets the completion date year', async () => {
+    //   service.setCourseCompletionDateYear(2025)
+    //
+    //   expect(service.getCourseCompletionDateYear()).toEqual(2025);
+    // })
+
+    // it('sets and gets the completion date day', async () => {
+    //   service.setCourseCompletionDateDay(10)
+    //
+    //   expect(service.getCourseCompletionDateDay()).toEqual(10);
+    // })
+    //
+    // it('sets and gets the completion date month', async () => {
+    //   service.setCourseCompletionDateMonth(10)
+    //
+    //   expect(service.getCourseCompletionDateMonth()).toEqual(10);
+    // })
+
+    // it('sets and gets the completion date year', async () => {
+    //   service.setCourseCompletionDateYear(2025)
+    //
+    //   expect(service.getCourseCompletionDateYear()).toEqual(2025);
+    // })
+  })
+
+  describe('Notes', () => {
+    it('sets and gets the notes', async () => {
+      service.setNotes('Hello, world!');
+
+      expect(service.getNotes()).toEqual('Hello, world!');
+    })
+  })
 });

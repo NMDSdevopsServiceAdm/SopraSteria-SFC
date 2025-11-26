@@ -10,6 +10,8 @@ import { SelectTrainingCategoryMultipleComponent } from './select-training-categ
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { SelectTrainingCourseForMultipleTrainingRecords } from './select-training-course-for-multiple-training-records/select-training-course-for-multiple-training-records.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
+import { ViewSelectedTrainingCourseDetailsComponent} from '@features/training-and-qualifications/add-multiple-training/view-selected-training-course-details/view-selected-training-course-details.component';
+
 
 const selectStaffRoute = {
   path: 'select-staff',
@@ -57,7 +59,17 @@ const trainingDetailsRouteWithGuard = {
   canActivate: [AddMultipleTrainingInProgressGuard],
 };
 
+const viewSelectedTrainingCourseDetailsRoute = {
+  path: 'view-selected-training-course-details',
+  component: ViewSelectedTrainingCourseDetailsComponent,
+  data: { title: 'Add training record details' },
+  resolve: {
+    trainingCourses: TrainingCourseResolver,
+  },
+};
+
 const routes: Routes = [
+  viewSelectedTrainingCourseDetailsRoute,
   selectStaffRoute,
   selectTrainingCourseRoute,
   selectTrainingCategoryRouteWithGuard,
