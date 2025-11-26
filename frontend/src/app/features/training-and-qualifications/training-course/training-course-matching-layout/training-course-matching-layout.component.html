@@ -19,7 +19,18 @@
             <a
               class="govuk-button  govuk-!-padding-left-0 govuk-button--link govuk__flex  govuk-link--no-visited-state"
               draggable="false"
-              data-testid="includeTraining">
+                   [routerLink]="[
+                '/workplace',
+                 workplace.uid,
+                 'training-and-qualifications-record',
+                 worker.uid,
+                 'training',
+                 trainingRecordId,
+                 'include-training-course-details'
+               ]"
+              data-testid="includeTraining"
+              >
+
               <img src="/assets/images/Addtraining.svg" alt="" />
               <span class="govuk__nowrap">Select a different training course </span>
               </a>
