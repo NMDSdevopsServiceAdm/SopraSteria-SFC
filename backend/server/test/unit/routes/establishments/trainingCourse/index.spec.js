@@ -18,7 +18,7 @@ const {
 } = require('../../../mockdata/trainingCourse');
 const { NotFoundError } = require('../../../../../utils/errors/customErrors');
 
-describe.only('/api/establishment/:uid/trainingCourse/', () => {
+describe('/api/establishment/:uid/trainingCourse/', () => {
   afterEach(() => {
     sinon.restore();
   });

@@ -327,7 +327,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   WorkerTraining.autoFillInExpiryDate = async function ({ trainingRecordId, transaction, updatedBy }) {
-    const trainingRecord = await sequelize.models.workerTraining.findByPk(trainingRecordId);
+    const trainingRecord = await sequelize.models.workerTraining.findByPk(trainingRecordId, { transaction });
     if (!trainingRecord) {
       throw new NotFoundError('Could not find training record');
     }
@@ -337,7 +337,7 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     const newExpiryDate = calculateTrainingExpiryDate(trainingRecord.completed, trainingRecord.validityPeriodInMonth);
-    return await trainingRecord.update({ expires: newExpiryDate, updatedBy, updatedAt: new Date() }, { transaction });
+    return await trainingRecord.update({ expires: newExpiryDate, updatedBy, updated: new Date() }, { transaction });
   };
 
   return WorkerTraining;

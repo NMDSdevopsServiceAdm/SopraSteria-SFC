@@ -5,7 +5,7 @@ const { mockTrainingCourses } = require('../mockdata/trainingCourse');
 const models = require('../../../models/index');
 const { NotFoundError } = require('../../../utils/errors/customErrors');
 
-describe.only('TrainingCourse model', () => {
+describe('TrainingCourse model', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -14,7 +14,7 @@ describe.only('TrainingCourse model', () => {
   const mockUsername = 'mock-username';
 
   describe('updateTrainingCourse', () => {
-    const mockSequelizeRecord = {
+    const mockSequelizeTrainingCourse = {
       ...mockTrainingCourses[0],
       toJSON() {
         return lodash.omit(this, ['update', 'toJSON']);
@@ -38,8 +38,8 @@ describe.only('TrainingCourse model', () => {
     const mockTransaction = {};
 
     it('should find the given training course record and apply update to it', async () => {
-      const updateSpy = sinon.stub(mockSequelizeRecord, 'update').callThrough();
-      sinon.stub(models.trainingCourse, 'findOne').resolves(mockSequelizeRecord);
+      const updateSpy = sinon.stub(mockSequelizeTrainingCourse, 'update').callThrough();
+      sinon.stub(models.trainingCourse, 'findOne').resolves(mockSequelizeTrainingCourse);
 
       await models.trainingCourse.updateTrainingCourse({
         establishmentId: mockEstablishmentId,
@@ -65,8 +65,8 @@ describe.only('TrainingCourse model', () => {
     });
 
     it('should return the updated trainingCourse sequelize object', async () => {
-      sinon.stub(mockSequelizeRecord, 'update').callThrough();
-      sinon.stub(models.trainingCourse, 'findOne').resolves(mockSequelizeRecord);
+      sinon.stub(mockSequelizeTrainingCourse, 'update').callThrough();
+      sinon.stub(models.trainingCourse, 'findOne').resolves(mockSequelizeTrainingCourse);
 
       const returnValue = await models.trainingCourse.updateTrainingCourse({
         establishmentId: mockEstablishmentId,
@@ -76,11 +76,11 @@ describe.only('TrainingCourse model', () => {
         transaction: mockTransaction,
       });
 
-      expect(returnValue).to.equal(mockSequelizeRecord);
+      expect(returnValue).to.equal(mockSequelizeTrainingCourse);
     });
 
     it('should reject with a NotFoundError if the training course could not be found', async () => {
-      const updateRecordSpy = sinon.stub(mockSequelizeRecord, 'update').callThrough();
+      const updateRecordSpy = sinon.stub(mockSequelizeTrainingCourse, 'update').callThrough();
       sinon.stub(models.trainingCourse, 'findOne').resolves(null);
 
       const params = {
@@ -104,10 +104,19 @@ describe.only('TrainingCourse model', () => {
   });
 
   describe('updateTrainingRecordsWithCourseData', () => {
+    const mockTrainingRecords = [{ id: 'record-id-1' }, { id: 'record-id-2' }, { id: 'record-id-3' }];
+    const mockTrainingRecordRows = mockTrainingRecords.map((record) => {
+      return { dataValues: { ID: record.id } };
+    });
+
     const mockEstablishmentId = 'mock-workplace-id';
+
     const mockTrainingCourse = {
       ...mockTrainingCourses[0],
       establishmentFk: mockEstablishmentId,
+      countWorkerTraining() {
+        return mockTrainingRecords.length;
+      },
       toJSON() {
         return lodash.omit(this, ['update', 'toJSON']);
       },
@@ -131,8 +140,11 @@ describe.only('TrainingCourse model', () => {
 
     it('should update multiple training records with the data from trainingCourse', async () => {
       sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
+      sinon.stub(models.workerTraining, 'autoFillInExpiryDate').resolves();
 
-      const updateRecordSpy = sinon.stub(models.workerTraining, 'update');
+      const updateRecordSpy = sinon
+        .stub(models.workerTraining, 'update')
+        .resolves([mockTrainingRecords.count, mockTrainingRecordRows]);
 
       await models.trainingCourse.updateTrainingRecordsWithCourseData({
         trainingCourseUid: mockTrainingCourse.uid,
@@ -141,6 +153,7 @@ describe.only('TrainingCourse model', () => {
       });
 
       expect(updateRecordSpy).to.have.been.calledWith(expectedUpdates, {
+        returning: true,
         where: { trainingCourseFK: mockTrainingCourse.id },
         include: [
           {
@@ -154,8 +167,31 @@ describe.only('TrainingCourse model', () => {
       });
     });
 
+    it('should trigger autoFillInExpiryDate() for the affected training records', async () => {
+      sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
+      const autoFillInExpiryDateSpy = sinon.stub(models.workerTraining, 'autoFillInExpiryDate').resolves();
+
+      sinon.stub(models.workerTraining, 'update').resolves([mockTrainingRecords.count, mockTrainingRecordRows]);
+
+      await models.trainingCourse.updateTrainingRecordsWithCourseData({
+        trainingCourseUid: mockTrainingCourse.uid,
+        transaction: mockTransaction,
+        updatedBy: mockUsername,
+      });
+
+      expect(autoFillInExpiryDateSpy).to.have.callCount(mockTrainingRecords.length);
+      mockTrainingRecords.forEach((record) => {
+        expect(autoFillInExpiryDateSpy).to.have.calledWith({
+          trainingRecordId: record.id,
+          transaction: mockTransaction,
+          updatedBy: mockUsername,
+        });
+      });
+    });
+
     it('should reject with NotFoundError if could not find the given training course', async () => {
       sinon.stub(models.trainingCourse, 'findOne').resolves(null);
+      sinon.stub(models.workerTraining, 'autoFillInExpiryDate').resolves();
 
       const updateRecordSpy = sinon.stub(models.workerTraining, 'update');
 

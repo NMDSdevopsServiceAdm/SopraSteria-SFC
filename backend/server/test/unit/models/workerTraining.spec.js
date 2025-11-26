@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const models = require('../../../models/index');
 const { NotFoundError } = require('../../../utils/errors/customErrors');
 
-describe.only('workerTraining model', () => {
+describe('workerTraining model', () => {
   afterEach(() => {
     sinon.restore();
   });

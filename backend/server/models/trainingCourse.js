@@ -205,6 +205,11 @@ module.exports = function (sequelize, DataTypes) {
       throw new NotFoundError('Could not find the training course');
     }
 
+    const trainingRecordsToUpdate = await trainingCourse.countWorkerTraining();
+    if (!trainingRecordsToUpdate) {
+      return;
+    }
+
     const fieldsToCopy = [
       'categoryFk',
       'accredited',
@@ -224,7 +229,8 @@ module.exports = function (sequelize, DataTypes) {
       updated: new Date(),
     };
 
-    return await sequelize.models.workerTraining.update(updatesToApply, {
+    const [_updatedRecordCount, updatedRows] = await sequelize.models.workerTraining.update(updatesToApply, {
+      returning: true,
       where: {
         trainingCourseFK: trainingCourse.id,
       },
@@ -241,6 +247,17 @@ module.exports = function (sequelize, DataTypes) {
       ],
       transaction,
     });
+
+    const updateExpiryDateForEachRecord = updatedRows.map((trainingRecordRow) => {
+      const trainingRecordId = trainingRecordRow.dataValues.ID;
+      return models.workerTraining.autoFillInExpiryDate({
+        trainingRecordId,
+        transaction,
+        updatedBy,
+      });
+    });
+
+    await Promise.all(updateExpiryDateForEachRecord);
   };
 
   return TrainingCourse;

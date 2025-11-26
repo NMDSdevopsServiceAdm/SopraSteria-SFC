@@ -3,7 +3,7 @@ const { calculateTrainingExpiryDate } = require('../../../utils/dateUtils');
 const expect = require('chai').expect;
 const moment = require('moment');
 
-describe.only('dateUtils', () => {
+describe('dateUtils', () => {
   describe('calculateTrainingExpiryDate', () => {
     it('should take a completionDate and validityPeriodInMonth and return the expected expiry date in format YYYY-MM-DD', () => {
       const completionDate = '2025-11-01';
