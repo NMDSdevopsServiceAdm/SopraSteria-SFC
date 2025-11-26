@@ -18,7 +18,7 @@ import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseCategoryComponent } from './training-course-category.component';
 
-fdescribe('TrainingCourseCategoryComponent', () => {
+describe('TrainingCourseCategoryComponent', () => {
   const mockTrainingCourseToBeAdded = {
     name: 'First aid course',
     accredited: YesNoDontKnow.Yes,

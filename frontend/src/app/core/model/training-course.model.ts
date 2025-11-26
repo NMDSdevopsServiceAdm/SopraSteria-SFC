@@ -7,12 +7,12 @@ export type TrainingCourse = {
   uid: string;
   trainingCategoryId: number;
   name: string;
-  trainingCategoryName: string;
+  trainingCategoryName?: string;
   accredited: YesNoDontKnow;
   deliveredBy: DeliveredBy;
   trainingProvider?: TrainingProvider;
   trainingProviderId?: number;
-  externalProviderName: string;
+  externalProviderName?: string;
   otherTrainingProviderName?: string;
   howWasItDelivered: HowWasItDelivered;
   doesNotExpire: boolean;

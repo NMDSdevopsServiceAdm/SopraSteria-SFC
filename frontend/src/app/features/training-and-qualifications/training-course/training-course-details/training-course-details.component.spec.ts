@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 import { TrainingCourseDetailsComponent } from './training-course-details.component';
 import { trainingCategories as mockTrainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 
-fdescribe('TrainingCourseDetailsComponent', () => {
+describe('TrainingCourseDetailsComponent', () => {
   const otherTrainingProviderId = 63;
   const mockTrainingProviders = [
     { id: 1, name: 'Preset provider name #1', isOther: false },

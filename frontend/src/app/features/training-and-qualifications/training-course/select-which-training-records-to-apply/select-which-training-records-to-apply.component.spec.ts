@@ -16,7 +16,7 @@ import { render } from '@testing-library/angular';
 import { SelectWhichTrainingRecordsToApplyComponent } from './select-which-training-records-to-apply.component';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('SelectWhichTrainingRecordsToApplyComponent', () => {
+describe('SelectWhichTrainingRecordsToApplyComponent', () => {
   const mockEstablishmentUid = 'mock-establishment-uid';
   const mockTrainingCourseUid = 'mock-training-course-uid';
   const radioLabels = {
