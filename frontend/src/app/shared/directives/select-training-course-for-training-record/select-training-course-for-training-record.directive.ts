@@ -87,16 +87,6 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
         this.form.setValue({ addATrainingRecord: selectedTrainingCourse.id });
       }
     }
-
-    // if (previousUrl?.includes(this.previousPageToCheckWithoutTrainingCourse) && isTrainingCourseSelected === false) {
-    //   this.form.setValue({ addATrainingRecord: this.continueWithOutCourseOption.id });
-    // } else if (
-    //   previousUrl?.includes(this.previousPageToCheckWithTrainingCourse) &&
-    //   isTrainingCourseSelected &&
-    //   selectedTrainingCourse?.id
-    // ) {
-    //   this.form.setValue({ addATrainingRecord: selectedTrainingCourse.id });
-    // }
   }
 
   public getFormErrorMessage(item: string, errorType: string): string {
