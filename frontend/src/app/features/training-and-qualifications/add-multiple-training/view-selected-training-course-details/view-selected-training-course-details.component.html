@@ -1,0 +1,158 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <span data-testid="caption" class="govuk-caption-l">Add multiple training records</span>
+        <h1 data-testid="heading" class="govuk-heading-l govuk-!-margin-bottom-4">Add training record details</h1>
+      </div>
+    </div>
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <div class="govuk-grid-row second-grid-row">
+      <div class="govuk-grid-column-full">
+        <dl class="govuk-summary-list">
+          <div class="govuk-summary-list__row">
+            <dt data-testid="training-course-name-key" class="govuk-summary-list__key training-course-name-key">
+              Training course name
+            </dt>
+            <dd data-testid="training-course-name-value" class="training-course-name-value govuk-summary-list__value">
+              {{ trainingCourse?.name ? trainingCourse?.name:'-' }}
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <span class="different-training-course-link-and-arrow">
+                <a data-testid="different-training-course-link"
+                   class="govuk-link govuk__nowrap"
+                   [routerLink]="[
+                '/workplace',
+                workplace.uid,
+                'add-multiple-training',
+                'select-training-course'
+                ]"
+                >
+                <img src="/assets/images/Addtraining.svg" alt="" class="different-training-course-arrow"/>
+                <span>Select a different training course</span>
+                </a>
+              </span>
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt data-testid="training-category-key" class="govuk-summary-list__key">
+              Training category
+            </dt>
+            <dd data-testid="training-category-value" class="training-category-value govuk-summary-list__value">
+              {{ trainingCourse?.trainingCategoryName ? trainingCourse?.trainingCategoryName:'-' }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt data-testid="accreditation-key" class="govuk-summary-list__key govuk__nowrap">
+              Is the training course accredited?
+            </dt>
+            <dd data-testid="accreditation-value" class="accreditation-value govuk-summary-list__value">
+              {{ trainingCourse?.accredited ? trainingCourse?.accredited:'-' }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt data-testid="delivered-by-key" class="govuk-summary-list__key govuk__nowrap">
+              Who delivered the training course?
+            </dt>
+            <dd data-testid="delivered-by-value" class="delivered-by-value govuk-summary-list__value">
+              {{ trainingCourse?.deliveredBy ? trainingCourse?.deliveredBy:'-' }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt data-testid="training-provider-name-key" class="govuk-summary-list__key">
+              Training provider name
+            </dt>
+            <dd data-testid="training-provider-name-value" class="training-provider-name-value govuk-summary-list__value">
+              {{ trainingCourse?.otherTrainingProviderName ? trainingCourse?.otherTrainingProviderName:'-'  }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt data-testid="course-delivery-method-key" class="govuk-summary-list__key govuk__nowrap">
+              How was the training course delivered?
+            </dt>
+            <dd data-testid="course-delivery-method-value" class="course-delivery-method-value govuk-summary-list__value">
+              {{ trainingCourse?.howWasItDelivered ? trainingCourse?.howWasItDelivered:'-' }}
+            </dd>
+          </div>
+          <div class="govuk-summary-list__row">
+            <dt data-testid="training-validity-period-key" class="govuk-summary-list__key govuk__nowrap">
+              How long is the training valid for?
+            </dt>
+            <dd data-testid="training-validity-period-value" class="training-validity-period-value govuk-summary-list__value">
+              {{ trainingCourse?.validityPeriodInMonth != null
+              ? trainingCourse.validityPeriodInMonth + ' month' + (trainingCourse?.validityPeriodInMonth === 1 ? '' : 's')
+              : '-'
+              }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-form-group"
+          [class.govuk-form-group--error]="submitted && form.get('courseCompletionDate').invalid">
+          <fieldset class="govuk-fieldset" role="group" aria-describedby="course-completion-date-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              <p data-testid="course-completion-date-heading" class="course-completion-date-heading">
+                Course completion date
+              </p>
+              <div
+                data-testid="course-completion-date-hint"
+                id="course-completion-date-hint"
+                class="govuk-hint course-completion-date-hint">
+                For example, 31 3 2024
+              </div>
+            </legend>
+            <div>
+               <span
+                 data-testid="completion-date-error"
+                 *ngIf="submitted && form.get('courseCompletionDate').invalid"
+                 id="courseCompletionDate-error"
+                 class="govuk-error-message completion-date-error"
+               >
+                <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('courseCompletionDate') }}
+              </span>
+              <div class="course-completion-date-input">
+              <app-date-picker
+                [formGroup]="form"
+                [formGroupName]="'courseCompletionDate'"
+                [submitted]="submitted"
+              ></app-date-picker>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-row second-grid-row">
+      <div class="govuk-grid-column-full">
+        <hr class="govuk-section-break govuk-section-break--visible section-break">
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <app-add-a-note-accordion
+          [errorMessage]="form.get('notes').invalid ? getFirstErrorMessage('notes') : null"
+          [notes]="form.get('notes')"
+          [submitted]="submitted">
+        </app-add-a-note-accordion>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-button-group govuk-!-margin-top-2">
+          <button type="submit" class="govuk-button continue-button" data-module="govuk-button">
+            Continue
+          </button>
+          <a
+            class="govuk-button govuk-button--link"
+            [routerLink]="'/dashboard'"
+            fragment="training-and-qualifications"
+          >Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

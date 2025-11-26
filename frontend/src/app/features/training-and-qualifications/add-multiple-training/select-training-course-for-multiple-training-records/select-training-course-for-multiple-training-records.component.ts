@@ -57,8 +57,7 @@ export class SelectTrainingCourseForMultipleTrainingRecords
       'select-training-category',
     ];
 
-    // this will need updating when the new page is created
-    this.routeWithTrainingCourse = ['/workplace', this.workplace.uid, 'add-multiple-training', 'update-url'];
+    this.routeWithTrainingCourse = ['/workplace', this.workplace.uid, 'add-multiple-training', 'view-selected-training-course-details'];
   }
 
   protected navigateOnCancelClick() {

@@ -145,6 +145,7 @@ import { CookieBannerComponent } from './components/cookie-banner/cookie-banner.
 import { A11yModule } from '@angular/cdk/a11y';
 import { ButtonMenuComponent } from '@shared/components/button-menu/button-menu.component';
 import { SeperatorLineComponent } from './components/seperator-line/seperator-line.component';
+import { AddANoteAccordionComponent } from '@shared/components/accordions/add-a-note-accordion/add-a-note-accordion.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule, A11yModule],
@@ -289,6 +290,7 @@ import { SeperatorLineComponent } from './components/seperator-line/seperator-li
     CookieBannerComponent,
     ButtonMenuComponent,
     SeperatorLineComponent,
+    AddANoteAccordionComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -423,6 +425,7 @@ import { SeperatorLineComponent } from './components/seperator-line/seperator-li
     FormatWhatDhaPipe,
     CookieBannerComponent,
     SeperatorLineComponent,
+    AddANoteAccordionComponent,
   ],
   providers: [
     DialogService,

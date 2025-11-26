@@ -502,7 +502,21 @@ describe('training record', () => {
         cy.getByLabel(trainingCourseName).click();
         cy.contains('button', 'Continue').click();
 
-        // to update when the journey is complete
+        // check training course details
+        cy.url().should('include', 'add-multiple-training/view-selected-training-course-details');
+        cy.get('h1').should('contain', 'Add training record details');
+
+        // add course completion date
+        cy.getByLabel('Day').clear().type(31);
+        cy.getByLabel('Month').clear().type(3);
+        cy.getByLabel('Year').clear().type(2025);
+
+        // add notes
+        cy.contains('button', 'Open notes').click();
+        cy.get('[data-testid="notesSection"]').clear().type('Group training');
+
+        cy.contains('button', 'Continue').click();
+      //  update when next page of journey is completed
       });
     });
   });
