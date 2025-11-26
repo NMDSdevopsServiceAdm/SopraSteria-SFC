@@ -25,7 +25,7 @@ describe('Standalone training and qualifications page as edit user', () => {
 
     cy.get('a').contains('Add multiple training records').should('not.be.visible');
     cy.get('a').contains('Add and manage training courses').should('not.be.visible');
-    cy.get('a').contains('mandatory training category').should('not.be.visible');
+    cy.get('a').contains('Add a mandatory training category').should('not.be.visible');
     cy.get('a').contains('Manage expiry alerts').should('not.be.visible');
 
     cy.contains('Download training report').should('not.exist');
@@ -46,11 +46,11 @@ describe('Standalone training and qualifications page as edit user', () => {
       cy.get('h1').should('contain', 'Add and manage training courses');
     });
 
-    it('should show the "mandatory training category" item with the correct link', () => {
+    it('should show the "Add a mandatory training category" item with the correct link', () => {
       cy.contains('button', 'Add and manage training').click();
-      cy.contains('mandatory training category').click();
+      cy.contains('Add a mandatory training category').click();
       cy.url().should('include', 'add-and-manage-mandatory-training');
-      cy.get('span').should('contain', 'mandatory training category');
+      cy.get('span').should('contain', 'Add a mandatory training category');
     });
 
     it('should show the "Manage expiry alerts" item with the correct link', () => {
