@@ -62,6 +62,10 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     expires: '2021-01-01',
     notes: 'This is a note',
     title: 'Title',
+    howWasItDelivered: 'Face to face',
+    externalProviderName: null,
+    deliveredBy: null,
+    validityPeriodInMonth: null,
   };
 
   public get trainingOrQualificationPreviouslySelected() {

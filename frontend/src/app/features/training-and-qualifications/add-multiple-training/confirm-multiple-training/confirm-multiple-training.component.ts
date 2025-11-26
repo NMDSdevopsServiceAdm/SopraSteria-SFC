@@ -42,12 +42,38 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     const training = this.trainingService.selectedTraining;
     this.trainingRecords = [
       { key: 'Training category', value: training.trainingCategory.category },
-      { key: 'Training name', value: training.title ? training.title : '-' },
-      { key: 'Training accredited', value: training.accredited ? training.accredited : '-' },
-      { key: 'Date completed', value: training.completed ? dayjs(training.completed).format('D MMMM YYYY') : '-' },
-      { key: 'Expiry date', value: training.expires ? dayjs(training.expires).format('D MMMM YYYY') : '-' },
+      { key: 'Training record name', value: training.title ? training.title : '-' },
+      { key: 'Is the training course accredited?', value: training.accredited ? training.accredited : '-' },
+      { key: 'Who delivered the training course?', value: training.deliveredBy ? training.deliveredBy : '-' },
+      { key: 'Training provider name', value: training.externalProviderName ? training.externalProviderName : '-' },
+      {
+        key: 'How was the training course delivered?',
+        value: training.howWasItDelivered ? training.howWasItDelivered : '-',
+      },
+      {
+        key: 'How long is the training valid for?',
+        value: this.showCorrectTrainingValidity(training),
+      },
+      {
+        key: 'Training completion date',
+        value: training.completed ? dayjs(training.completed).format('D MMMM YYYY') : '-',
+      },
       { key: 'Notes', value: training.notes ? training.notes : 'No notes added' },
     ];
+  }
+
+  private showCorrectTrainingValidity(training: any): string {
+    if (!training.validityPeriodInMonth && !training.doesNotExpire) {
+      return '-';
+    }
+
+    if (training.validityPeriodInMonth > 1) {
+      return `${training.validityPeriodInMonth} months`;
+    } else if (training.validityPeriodInMonth === 1) {
+      return `${training.validityPeriodInMonth} month`;
+    } else if (training.doesNotExpire) {
+      return 'Does not expire';
+    }
   }
 
   private getStaffData(): void {

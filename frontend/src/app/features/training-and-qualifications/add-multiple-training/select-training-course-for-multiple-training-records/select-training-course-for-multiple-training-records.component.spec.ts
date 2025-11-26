@@ -51,6 +51,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
             getSelectedTrainingCourse() {
               return overrides.selectedTrainingCourse ?? null;
             },
+            resetState() {},
           },
         },
         {
@@ -75,6 +76,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const setIsTrainingCourseSelectedSpy = spyOn(trainingService, 'setIsTrainingCourseSelected');
     const setSelectedTrainingCourseSpy = spyOn(trainingService, 'setSelectedTrainingCourse');
+    const resetStateSpy = spyOn(trainingService, 'resetState');
 
     return {
       ...setupTools,
@@ -82,6 +84,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
       routerSpy,
       setIsTrainingCourseSelectedSpy,
       setSelectedTrainingCourseSpy,
+      resetStateSpy,
     };
   }
 
@@ -124,7 +127,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
   });
 
   it('should show a "Cancel" link and go back to the training and qualifications page', async () => {
-    const { getByRole, routerSpy, fixture } = await setup();
+    const { getByRole, routerSpy, fixture, resetStateSpy } = await setup();
 
     const link = getByRole('link', { name: 'Cancel' });
 
@@ -134,6 +137,7 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
     fixture.detectChanges();
 
     expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'training-and-qualifications' });
+    expect(resetStateSpy).toHaveBeenCalled();
   });
 
   it('should show a "Continue" button', async () => {
@@ -214,10 +218,10 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
   });
 
   describe('prefill', () => {
-    it('should not prefill if the previous page was not "select-training-category"', async () => {
+    it('should not prefill if the previous url does not contain "add-multiple-training"', async () => {
       const overrides = {
         isTrainingCourseSelected: false,
-        previousUrl: 'select-staff',
+        previousUrl: 'add-staff',
       };
 
       const { getByLabelText } = await setup(overrides);
@@ -231,10 +235,10 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
       });
     });
 
-    it('should not prefill if the previous page was "select-training-category" and isTrainingCourseSelected is null', async () => {
+    it('should not prefill if the previous url contains "add-multiple-training" and isTrainingCourseSelected is null', async () => {
       const overrides = {
         isTrainingCourseSelected: null,
-        previousUrl: 'select-training-category',
+        previousUrl: 'add-multiple-training/select-training-category',
       };
       const { getByLabelText } = await setup(overrides);
 
@@ -247,10 +251,10 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
       });
     });
 
-    it('should not prefill if the previous page was "select-training-category" and isTrainingCourseSelected is undefined', async () => {
+    it('should not prefill if the previous url contains "add-multiple-training" and isTrainingCourseSelected is undefined', async () => {
       const overrides = {
         isTrainingCourseSelected: undefined,
-        previousUrl: 'select-training-category',
+        previousUrl: 'add-multiple-training/select-training-category',
       };
       const { getByLabelText } = await setup(overrides);
 
@@ -263,10 +267,10 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
       });
     });
 
-    it('should not prefill if the previous page was "select-training-category" and isTrainingCourseSelected is true', async () => {
+    it('should not prefill if the previous url contains "add-multiple-training" and isTrainingCourseSelected is true', async () => {
       const overrides = {
         isTrainingCourseSelected: true,
-        previousUrl: 'select-training-category',
+        previousUrl: 'add-multiple-training/select-staff',
       };
       const { getByLabelText } = await setup(overrides);
 
@@ -279,10 +283,34 @@ describe('SelectTrainingCourseForMultipleTrainingRecords', () => {
       });
     });
 
-    it(`should prefill if the previous answer is ${continueWithOutCourseOptionText} and previous page was "select-training-category"`, async () => {
+    it('should prefill if the previous answer is ${continueWithOutCourseOptionText} and the previous url contains "add-multiple-training/select-staff"', async () => {
       const overrides = {
         isTrainingCourseSelected: false,
-        previousUrl: 'select-training-category',
+        previousUrl: 'add-multiple-training/select-staff',
+      };
+
+      const { getByLabelText } = await setup(overrides);
+
+      const noCourseRadioButton = getByLabelText(continueWithOutCourseOptionText) as HTMLInputElement;
+      expect(noCourseRadioButton.checked).toBeTruthy();
+    });
+
+    it(`should prefill if the previous answer is ${trainingCourses[0].name} and previous url contains "add-multiple-training/select-staff"`, async () => {
+      const overrides = {
+        isTrainingCourseSelected: true,
+        previousUrl: 'add-multiple-training/select-staff',
+        selectedTrainingCourse: trainingCourses[0],
+      };
+      const { getByLabelText } = await setup(overrides);
+
+      const radioButton = getByLabelText(trainingCourses[0].name) as HTMLInputElement;
+      expect(radioButton.checked).toBeTruthy();
+    });
+
+    it(`should prefill if the previous answer is ${continueWithOutCourseOptionText} and previous url contains "add-multiple-training"`, async () => {
+      const overrides = {
+        isTrainingCourseSelected: false,
+        previousUrl: 'add-multiple-training/select-training-category',
       };
       const { getByLabelText } = await setup(overrides);
 

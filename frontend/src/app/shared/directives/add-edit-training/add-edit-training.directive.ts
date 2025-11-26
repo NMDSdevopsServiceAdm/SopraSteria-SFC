@@ -57,6 +57,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public submitButtonDisabled: boolean = false;
   public deliveredByOptions = DeliveredBy;
   public howWasItDeliveredOptions = HowWasItDelivered;
+  public hideExpiresDate: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

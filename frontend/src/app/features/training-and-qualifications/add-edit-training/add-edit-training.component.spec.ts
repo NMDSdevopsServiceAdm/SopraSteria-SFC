@@ -402,7 +402,12 @@ describe('AddEditTrainingComponent', () => {
         expect(queryByTestId('deleteButton')).toBeFalsy();
         expect(queryByTestId('includeTraining')).toBeFalsy();
       });
-    })
+
+      it('should not render the expires date inputs', async () => {
+        const { queryByTestId } = await setup({ trainingRecordId: null });
+        expect(queryByTestId('expiresDate')).toBeFalsy();
+      });
+    });
   });
 
   describe('Delete button', () => {
@@ -596,10 +601,7 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(within(completedDate).getByLabelText('Day'), '10');
       userEvent.type(within(completedDate).getByLabelText('Month'), '4');
       userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
-      const expiresDate = getByTestId('expiresDate');
-      userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
-      userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
-      userEvent.type(within(expiresDate).getByLabelText('Year'), '2022');
+
       userEvent.type(getByLabelText('Add a note'), 'Some notes for this training');
 
       fireEvent.click(getByText('Save record'));
@@ -614,7 +616,7 @@ describe('AddEditTrainingComponent', () => {
         validityPeriodInMonth: null,
         doesNotExpire: true,
         completed: { day: 10, month: 4, year: 2020 },
-        expires: { day: 10, month: 4, year: 2022 },
+        expires: { day: null, month: null, year: null },
         notes: 'Some notes for this training',
       };
 
@@ -630,7 +632,7 @@ describe('AddEditTrainingComponent', () => {
         validityPeriodInMonth: null,
         doesNotExpire: true,
         completed: '2020-04-10',
-        expires: '2022-04-10',
+        expires: null,
         notes: 'Some notes for this training',
       });
 
@@ -937,9 +939,11 @@ describe('AddEditTrainingComponent', () => {
       });
     });
 
-    describe('expires date errors', () => {
+    describe('expires date errors when there is a trainingRecordId', () => {
+      const dateInputs = ['Day', 'Month', 'Year'];
+
       it('should show an error message if the expiry date is invalid', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -949,14 +953,16 @@ describe('AddEditTrainingComponent', () => {
         userEvent.type(within(expiresDate).getByLabelText('Month'), '33');
         userEvent.type(within(expiresDate).getByLabelText('Year'), '2');
 
-        fireEvent.click(getByText('Save record'));
+        fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
       });
 
       it('should show an error message if the expiry date is more than 100 years ago', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({
+          trainingRecordId: '1',
+        });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -965,20 +971,23 @@ describe('AddEditTrainingComponent', () => {
         pastDate.setFullYear(pastDate.getFullYear() - 101);
 
         const expiresDate = getByTestId('expiresDate');
+
+        dateInputs.forEach((input) => {
+          userEvent.clear(within(expiresDate).getByLabelText(`${input}`));
+        });
+
         userEvent.type(within(expiresDate).getByLabelText('Day'), `${pastDate.getDate()}`);
         userEvent.type(within(expiresDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
         userEvent.type(within(expiresDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
 
-        fireEvent.click(getByText('Save record'));
+        fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
       });
 
       it('should show the min date error message if expiry date is over a hundred years ago and the expiry date is before the completed date', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup({
-          trainingRecordId: null,
-        });
+        const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -986,6 +995,13 @@ describe('AddEditTrainingComponent', () => {
         const dateCompleted = new Date();
 
         const completedDate = getByTestId('completedDate');
+        const expiresDate = getByTestId('expiresDate');
+
+        dateInputs.forEach((input) => {
+          userEvent.clear(within(completedDate).getByLabelText(`${input}`));
+          userEvent.clear(within(expiresDate).getByLabelText(`${input}`));
+        });
+
         userEvent.type(within(completedDate).getByLabelText('Day'), `${dateCompleted.getDate()}`);
         userEvent.type(within(completedDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
         userEvent.type(within(completedDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
@@ -993,12 +1009,11 @@ describe('AddEditTrainingComponent', () => {
         const pastDate = new Date();
         pastDate.setFullYear(pastDate.getFullYear() - 101);
 
-        const expiresDate = getByTestId('expiresDate');
         userEvent.type(within(expiresDate).getByLabelText('Day'), `${pastDate.getDate()}`);
         userEvent.type(within(expiresDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
         userEvent.type(within(expiresDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
 
-        fireEvent.click(getByText('Save record'));
+        fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
@@ -1006,7 +1021,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should an error message when the expiry date is before the completed date', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -1014,15 +1029,22 @@ describe('AddEditTrainingComponent', () => {
         const dateCompleted = new Date();
 
         const completedDate = getByTestId('completedDate');
+        const expiresDate = getByTestId('expiresDate');
+
+        dateInputs.forEach((input) => {
+          userEvent.clear(within(completedDate).getByLabelText(`${input}`));
+          userEvent.clear(within(expiresDate).getByLabelText(`${input}`));
+        });
+
         userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
         userEvent.type(within(completedDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
         userEvent.type(within(completedDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
-        const expiresDate = getByTestId('expiresDate');
+
         userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
         userEvent.type(within(expiresDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
         userEvent.type(within(expiresDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
 
-        fireEvent.click(getByText('Save record'));
+        fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
@@ -1447,7 +1469,7 @@ describe('AddEditTrainingComponent', () => {
           component.establishmentUid,
           component.workerId,
           component.trainingRecordId,
-          component.filesToRemove
+          component.filesToRemove,
         );
       });
 

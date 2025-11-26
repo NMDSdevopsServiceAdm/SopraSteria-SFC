@@ -28,17 +28,7 @@ const createWorkers = (noOfWorkers) => {
 describe('SelectStaffComponent', () => {
   async function setup(overrides: any = {}) {
     const workers = createWorkers(overrides?.noOfWorkers ?? 3);
-    const {
-      fixture,
-      getByText,
-      getAllByText,
-      getByLabelText,
-      getByTestId,
-      queryByText,
-      queryAllByText,
-      queryByLabelText,
-      queryByTestId,
-    } = await render(SelectStaffComponent, {
+    const setupTools = await render(SelectStaffComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, AddMultipleTrainingModule],
       providers: [
         {
@@ -75,7 +65,7 @@ describe('SelectStaffComponent', () => {
       ],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -92,18 +82,12 @@ describe('SelectStaffComponent', () => {
       'clearUpdatingSelectedStaffForMultipleTraining',
     ).and.callThrough();
     const clearSelectedTrainingCategorySpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
+    const clearIsTrainingCourseSelectedSpy = spyOn(trainingService, 'clearIsTrainingCourseSelected').and.callThrough();
+    const clearSelectedTrainingCourseSpy = spyOn(trainingService, 'clearSelectedTrainingCourse').and.callThrough();
 
     return {
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByLabelText,
-      getByTestId,
-      queryByText,
-      queryAllByText,
-      queryByLabelText,
-      queryByTestId,
+      ...setupTools,
       router,
       spy,
       trainingSpy,
@@ -113,12 +97,24 @@ describe('SelectStaffComponent', () => {
       workers,
       clearUpdatingSelectedStaffForMultipleTrainingSpy,
       clearSelectedTrainingCategorySpy,
+      clearIsTrainingCourseSelectedSpy,
+      clearSelectedTrainingCourseSpy,
     };
   }
 
   it('should render a SelectStaffComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show the heading and caption', async () => {
+    const { component, getByTestId } = await setup();
+
+    const caption = getByTestId('caption');
+    const heading = getByTestId('heading');
+
+    expect(within(caption).getByText('Add multiple training records'));
+    expect(within(heading).getByText('Select all those who you want to add a record for'));
   });
 
   it('should render `Continue` and `Cancel` buttons when it is not accessed from the confirm training page', async () => {
@@ -135,35 +131,20 @@ describe('SelectStaffComponent', () => {
     expect(getByText('Cancel')).toBeTruthy();
   });
 
-  it('should render a table with the establishment staff in it and the number of workers above the table pluralised if there is more than 1 staff record', async () => {
+  it('should render a table with the establishment staff in it and the number of workers above the table', async () => {
     const { component, fixture, getByText, workers } = await setup();
 
     component.paginatedWorkers = workers;
     fixture.detectChanges();
 
     const numberOfWorkersText = getByText(
-      `Showing ${component.paginatedWorkers.length} of ${component.totalWorkerCount} staff records`,
+      `Showing ${component.paginatedWorkers.length} of ${component.totalWorkerCount} staff`,
     );
     expect(numberOfWorkersText).toBeTruthy();
     workers.forEach((worker) => {
       expect(getByText(`${worker.nameOrId}`)).toBeTruthy();
       expect(getByText(`${worker.mainJob.title}`)).toBeTruthy();
     });
-  });
-
-  it('should render a table with the establishment staff in it and the number of workers above the table not pluralised if there is 1 staff record', async () => {
-    const { component, fixture, getByText, workers } = await setup({ noOfWorkers: 1 });
-
-    component.paginatedWorkers = workers;
-    fixture.detectChanges();
-
-    const numberOfWorkersText = getByText(
-      `Showing ${component.paginatedWorkers.length} of ${component.totalWorkerCount} staff record`,
-    );
-    expect(numberOfWorkersText).toBeTruthy();
-    const worker = workers[0];
-    expect(getByText(`${worker.nameOrId}`)).toBeTruthy();
-    expect(getByText(`${worker.mainJob.title}`)).toBeTruthy();
   });
 
   it('should render count box, select links and select all link, but no deselect links, when nothing is selected', async () => {
@@ -635,10 +616,17 @@ describe('SelectStaffComponent', () => {
   });
 
   it('should call trainingService if there are no selected workers when landing on the page', async () => {
-    const { component, clearSelectedTrainingCategorySpy } = await setup();
+    const {
+      component,
+      clearSelectedTrainingCategorySpy,
+      clearIsTrainingCourseSelectedSpy,
+      clearSelectedTrainingCourseSpy,
+    } = await setup();
 
     component.ngOnInit();
 
     expect(clearSelectedTrainingCategorySpy).toHaveBeenCalled();
+    expect(clearIsTrainingCourseSelectedSpy).toHaveBeenCalled();
+    expect(clearSelectedTrainingCourseSpy).toHaveBeenCalled();
   });
 });
