@@ -164,6 +164,8 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     const trainingCourses: TrainingCourse[] = this.route.snapshot.data.trainingCourses;
     this.selectedTrainingCourseUid = this.route.snapshot.params.trainingCourseUid;
 
+    const gotDataInLocalService = !!this.trainingCourseService.trainingCourseToBeUpdated;
+
     const selectedtrainingCourse =
       this.trainingCourseService.trainingCourseToBeUpdated ??
       trainingCourses.find((course) => course.uid === this.selectedTrainingCourseUid);
@@ -186,6 +188,9 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
       selectedtrainingCourse.externalProviderName = providerName;
     }
     this.selectedTrainingCourse = selectedtrainingCourse;
+    if (!gotDataInLocalService) {
+      this.trainingCourseService.trainingCourseToBeUpdated = this.selectedTrainingCourse;
+    }
   }
 
   private prefillFromSelectedCourse() {

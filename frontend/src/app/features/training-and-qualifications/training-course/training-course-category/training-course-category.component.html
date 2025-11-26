@@ -5,7 +5,7 @@
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
-          <span class="govuk-caption-l" data-testid="section-heading">Add a training course</span>
+          <span class="govuk-caption-l" data-testid="section-heading">{{ sectionHeading }}</span>
           <h1 class="govuk-fieldset__heading">Select a category that best matches this training course</h1>
         </legend>
       </fieldset>
@@ -55,7 +55,7 @@
       </div>
 
       <div class="govuk-button-group govuk-!-margin-top-8">
-        <button type="submit" class="govuk-button govuk-!-margin-right-9">Save training course</button>
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">{{ ctaButtonText }}</button>
 
         <a
           class="govuk-button govuk-button--link govuk-!-margin-left-9"

@@ -11,7 +11,7 @@ export const trainingCourseBuilder = build('TrainingCourse', {
     id: sequence(),
     uid: fake((f) => f.datatype.uuid()),
     name: fake((f) => f.lorem.words()),
-    trainingCategory: oneOf(...trainingCategories),
+    trainingCategory: oneOf(trainingCategories[0], trainingCategories[1]),
     trainingCategoryName: null,
     trainingCategoryId: null,
     accredited: oneOf('Yes', 'No'),

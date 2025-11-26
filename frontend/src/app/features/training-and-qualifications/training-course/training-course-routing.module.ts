@@ -61,7 +61,7 @@ const routes: Routes = [
     },
     children: [
       {
-        path: 'edit-details',
+        path: 'details',
         component: TrainingCourseDetailsComponent,
         data: {
           title: 'Edit training course details',

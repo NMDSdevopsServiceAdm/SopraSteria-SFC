@@ -148,11 +148,12 @@ fdescribe('TrainingCourseDetailsComponent', () => {
         expect(within(categorySection).getByText(mockTrainingCategories[1].category)).toBeTruthy();
       });
 
-      it('should show a link that lead to change-category page', async () => {
-        const { getByTestId } = await setup({ journeyType: 'Edit' });
+      it('should show a change link that lead to change category page', async () => {
+        const { getByTestId, routerSpy, route } = await setup({ journeyType: 'Edit' });
 
         const categorySection = getByTestId('training-category');
         const changeLink = within(categorySection).getByRole('link', { name: /Change/ });
+
         expect(changeLink.getAttribute('href')).toEqual('/change-category');
       });
     });
