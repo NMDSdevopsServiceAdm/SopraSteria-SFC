@@ -92,6 +92,7 @@ describe('NewDashboardHeaderComponent', () => {
         hasWorkers: override.hasWorkers,
         isParent: false,
         workplace: establishment,
+        isTrainingCourse: true,
       },
     });
 
@@ -488,6 +489,9 @@ describe('NewDashboardHeaderComponent', () => {
           `/workplace/${workplaceUid}/training-course/add-and-manage-training-courses`,
         );
 
+        const addAndManageTrainingCourseDetailsSubMenu = getByText('Update records with training course details');
+        expect(addAndManageTrainingCourseDetailsSubMenu).toBeTruthy();
+
         const addAMandatoryTrainingCategorySubMenu = getByText('Add a mandatory training category');
         expect(addAMandatoryTrainingCategorySubMenu).toBeTruthy();
         expect(addAMandatoryTrainingCategorySubMenu.getAttribute('href')).toEqual(
@@ -499,6 +503,27 @@ describe('NewDashboardHeaderComponent', () => {
         expect(manageExpiryAlertsSubMenu.getAttribute('href')).toEqual(
           `/workplace/${workplaceUid}/change-expires-soon-alerts`,
         );
+      });
+
+      it('should not  display the `Update records with training course details` in the sub-menu links', async () => {
+        const override = {
+          tab: 'training-and-qualifications',
+          updateDate: false,
+          canAddWorker: false,
+          canEditWorker: true,
+          hasWorkers: true,
+        };
+
+        const { component, fixture, getByText, queryByText } = await setup(override);
+        const button = getByText('Add and manage training');
+
+        component.isTrainingCourse = false;
+
+        button.click();
+        fixture.detectChanges();
+
+        const addAndManageTrainingCourseDetailsSubMenu = queryByText('Update records with training course details');
+        expect(addAndManageTrainingCourseDetailsSubMenu).toBeNull();
       });
     });
 

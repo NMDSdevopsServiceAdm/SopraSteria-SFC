@@ -138,7 +138,8 @@ describe('Standalone staff records page as edit user', () => {
     };
 
     const skipAllQuestionsBySaveButton = () => {
-      cy.get('button').contains('Save and continue').click();
+      cy.get('button').as('btn');
+      cy.get('@btn').contains('Save and continue').click();
       cy.location('pathname').then((pathname) => {
         if (pathname.includes('staff-record-summary')) {
           return;
@@ -660,11 +661,12 @@ describe('Standalone staff records page as edit user', () => {
 
       ['Yes', 'I do not know'].forEach((value) => {
         it(`should see the DHA worker question if workplace answered "${value}" for DHA workplace question 1`, () => {
+          cy.intercept('GET', '/api/establishment/*/worker').as('getWorker');
           onHomePage.clickTab('Workplace');
           onWorkplacePage.answerDHAQuestions(value);
 
           onHomePage.clickTab('Staff records');
-          cy.intercept('GET', '/api/establishment/*/worker').as('getWorker');
+
           cy.wait('@getWorker');
           onStaffRecordsPage.clickIntoWorker(careWorker);
           onStaffRecordSummaryPage.expectRow('Carries out delegated healthcare activities').toHaveValue('-');

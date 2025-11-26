@@ -89,11 +89,30 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"DeliveredBy"',
       },
-      externalProviderName: {
+      trainingProviderFk: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'TrainingProviderFK',
+      },
+      otherTrainingProviderName: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: 'ExternalProviderName',
+        field: 'OtherTrainingProviderName',
       },
+
+      // Temporary field to match the current frontend interface. to be removed in ticket #1840
+      externalProviderName: {
+        type: DataTypes.VIRTUAL,
+        allowNull: true,
+        get() {
+          return this.otherTrainingProviderName;
+        },
+        set(externalProviderName) {
+          this.trainingProviderFk = 63;
+          this.otherTrainingProviderName = externalProviderName;
+        },
+      },
+
       howWasItDelivered: {
         type: DataTypes.ENUM,
         values: Enum.TrainingCourseDeliveryMode,
@@ -134,7 +153,11 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'trainingCourseFK',
       sourceKey: 'id',
       as: 'trainingCourse',
-      onDelete: 'CASCADE',
+    });
+    WorkerTraining.belongsTo(models.trainingProvider, {
+      foreignKey: 'trainingProviderFk',
+      sourceKey: 'id',
+      as: 'trainingProvider',
     });
     WorkerTraining.hasMany(models.trainingCertificates, {
       foreignKey: 'workerTrainingFk',

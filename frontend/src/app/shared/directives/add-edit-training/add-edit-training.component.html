@@ -12,72 +12,43 @@
                 {{ title }}
               </h1>
             </legend>
-            <div class="govuk-body" *ngIf="showWorkerCount" data-testid="numberOfStaffSelected">
-              <span class="govuk-util__block govuk-!-font-weight-bold">Number of staff selected</span>
-              <div class="govuk-grid-row">
-                <div class="govuk-grid-column-three-quarters">
-                  <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-one-half">
-                      <p>{{ workerCount }}</p>
-                    </div>
-                    <div class="govuk-grid-column-one-half">
-                      <p>
-                        <a
-                          class="govuk-link govuk-!-margin-left-4"
-                          [routerLink]="['..', 'select-staff']"
-                          (click)="setIsSelectStaffChange()"
-                          >Change</a
-                        >
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <ng-container *ngIf="multipleTrainingDetails; else singleRecord">
-              <div *ngIf="showCategory" class="govuk-body" data-testid="trainingCategoryDisplay">
+              <div *ngIf="showCategory" class="govuk-body govuk-!-margin-bottom-0" data-testid="trainingCategoryDisplay">
                 <span class="govuk-util__block govuk-!-font-weight-bold">Training category</span>
-                <div class="govuk-grid-row">
-                  <div class="govuk-grid-column-three-quarters">
+                <div class="govuk-grid-row" style="width: 152%;">
+                  <div class="govuk-grid-column-full">
                     <div class="govuk-grid-row">
                       <div class="govuk-grid-column-one-half">
-                        <p>{{ category }}</p>
+                        <p class="govuk-!-margin-bottom-2">{{ category }}</p>
                       </div>
-                      <div class="govuk-grid-column-one-half">
-                        <p>
-                          <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-training-category']"
+                      <div class="govuk-grid-column-one-half govuk-!-padding-right-0">
+                        <p class="govuk-util__float-right govuk-!-margin-bottom-2">
+
+                          <a *ngIf="multipleTrainingDetails" class="govuk-link govuk-!-margin-left-4"
+                          data-testid="changeTrainingCategoryLink"
+                          [routerLink]="['..', 'select-training-category']"
                             >Change</a
                           >
+                           <a
+                    *ngIf="!multipleTrainingDetails && showChangeLink && !trainingRecordId"
+                    data-testid="changeTrainingCategoryLink"
+                    class="govuk-link--no-visited-state govuk-!-margin-left-4"
+                    [routerLink]="['..']"
+                    >Change</a
+                  >
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </ng-container>
-            <ng-template #singleRecord>
-              <p class="govuk-body govuk-!-margin-bottom-4" data-testid="trainingCategoryDisplay">
-                <span class="govuk-util__block"><b>Training category</b></span>
-                <span class="govuk-util__block govuk-!-margin-top-2"
-                  >{{ category }}
-                  <a
-                    *ngIf="showChangeLink && !trainingRecordId"
-                    data-testid="changeTrainingCategoryLink"
-                    class="govuk-link--no-visited-state govuk-!-margin-left-4"
-                    [routerLink]="['..']"
-                    >Change</a
-                  >
-                </span>
-              </p>
-            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 " style="width: 150%"/>
-            </ng-template>
+            <hr *ngIf="showCategory" class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6 " style="width: 150%"/>
             <div class="govuk-form-group govuk-!-margin-bottom-4" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
               <label class="govuk-label" for="title"> Training record name </label>
               <span *ngIf="submitted && form.get('title').invalid" id="title-error" class="govuk-error-message">
                 <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('title') }}
               </span>
               <input
-                class="govuk-input govuk-date-input__input"
+                class="govuk-input govuk-date-input__input govuk-!-width-three-quarters"
                 [class.govuk-input--error]="submitted && form.get('title').invalid"
                 [formControlName]="'title'"
                 id="title"
@@ -278,26 +249,29 @@
               </fieldset>
                 </div>
               </div>
+              @if (trainingRecordId){
               <div class="govuk-grid-column-one-half">
-          <div
-              data-testid="expiresDate"
-              class="govuk-form-group"
-              [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
-            >
-              <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
-                <legend class="govuk-fieldset__legend">Training expiry date</legend>
-                <legend id="expires-hint" class="govuk-hint  govuk-!-margin-bottom-3"> For example, 31 3 2025 </legend>
-                <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
-                  <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
-                </span>
-                <app-date-picker
-                  [formGroup]="form"
-                  [formGroupName]="'expires'"
-                  [submitted]="submitted"
-                ></app-date-picker>
-              </fieldset>
-            </div>
+                  <div
+
+                      data-testid="expiresDate"
+                      class="govuk-form-group"
+                      [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
+                    >
+                      <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
+                        <legend class="govuk-fieldset__legend">Training expiry date</legend>
+                        <legend id="expires-hint" class="govuk-hint  govuk-!-margin-bottom-3"> For example, 31 3 2025 </legend>
+                        <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">
+                          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
+                        </span>
+                        <app-date-picker
+                          [formGroup]="form"
+                          [formGroupName]="'expires'"
+                          [submitted]="submitted"
+                        ></app-date-picker>
+                      </fieldset>
+                    </div>
               </div>
+              }
              </div>
              </div>
          <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%"/>
@@ -317,13 +291,22 @@
           <div class="govuk-grid-column-one-third">
             <a
               class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center govuk-link--no-visited-state"
+              *ngIf="trainingRecordId"
               draggable="false"
               data-testid="includeTraining"
+              [routerLink]="[
+                '/workplace',
+                 workplace.uid,
+                 'training-and-qualifications-record',
+                 worker.uid,
+                 'training',
+                 trainingRecordId,
+                 'include-training-course-details'
+               ]"
             >
               <img src="/assets/images/Addtraining.svg" alt="" />
               <span class="govuk-!-margin-left-1 govuk__nowrap">Include training course details </span>
-              </a
-            >
+            </a>
           </div>
         </div>
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
@@ -341,7 +324,7 @@
             ></app-certifications-table>
           </div>
         </div>
-        <div class="govuk-grid-row govuk-!-margin-top-4">
+        <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds-from-desktop">
             <div class="govuk-character-count govuk-!-margin-bottom-4">
               <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
@@ -364,7 +347,7 @@
                   ></span>
                   <span class="govuk-accordion__show-all-text">{{ !notesOpen ? 'Open notes' : 'Close notes' }}</span>
                 </button>
-                <div data-testid="notesSection"  class="govuk-!-margin-top-3 govuk-!-padding-bottom-1" [ngClass]="{ 'govuk-visually-hidden': !notesOpen }">
+                <div data-testid="notesSection" class="govuk-!-margin-top-3 govuk-!-padding-bottom-1" [ngClass]="{ 'govuk-visually-hidden': !notesOpen }">
                   <textarea
                     class="govuk-textarea"
                     [class.govuk-textarea--error]="submitted && form.get('notes').invalid"

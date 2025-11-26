@@ -48,7 +48,7 @@ describe('Parent training and quals page as edit user', () => {
       cy.contains('button', 'Add and manage training').click();
       cy.contains('Add multiple training records').click();
       cy.url().should('include', 'add-multiple-training/select-staff');
-      cy.get('span').should('contain', 'Add multiple records');
+      cy.get('span').should('contain', 'Add multiple training records');
     });
 
     it('should show the "Add and manage training courses" item', () => {

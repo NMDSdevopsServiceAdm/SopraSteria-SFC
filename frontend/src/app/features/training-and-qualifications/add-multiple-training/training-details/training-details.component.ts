@@ -59,21 +59,29 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.checkAccessFromSummaryAndHideElements();
   }
 
-  protected setSection(): void {
-    this.section = 'Add multiple records';
-  }
-
   protected setTitle(): void {
     this.title = 'Add training record details';
   }
 
   protected setSectionHeading(): void {
-    this.section = 'Add multiple records';
+    this.section = 'Add multiple training records';
   }
 
   protected prefill(): void {
     if (this.trainingService.selectedTraining) {
-      const { accredited, trainingCategory, completed, expires, notes, title } = this.trainingService.selectedTraining;
+      const {
+        accredited,
+        trainingCategory,
+        completed,
+        expires,
+        notes,
+        title,
+        deliveredBy,
+        externalProviderName,
+        howWasItDelivered,
+        validityPeriodInMonth,
+        doesNotExpire,
+      } = this.trainingService.selectedTraining;
       const completedArr = completed?.split('-');
       const expiresArr = expires?.split('-');
       this.form.patchValue({
@@ -91,6 +99,11 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
         notes,
         title,
         category: trainingCategory.id,
+        deliveredBy,
+        externalProviderName,
+        howWasItDelivered,
+        validityPeriodInMonth: validityPeriodInMonth ? validityPeriodInMonth : null,
+        doesNotExpire: doesNotExpire ? doesNotExpire : null,
       });
       if (notes?.length > 0) {
         this.notesOpen = true;

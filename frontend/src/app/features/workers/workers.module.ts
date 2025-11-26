@@ -87,7 +87,9 @@ import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/wo
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
-import { AddATrainingRecord } from '@features/training-and-qualifications/add-a-training-record/add-a-training-record.component';
+import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
+import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
+import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -152,7 +154,8 @@ import { AddATrainingRecord } from '@features/training-and-qualifications/add-a-
     WhoCarryOutDelegatedHealthcareActivitiesComponent,
     DoYouWantToDowloadTrainAndQualsComponent,
     TrainingCourseMatchingLayoutComponent,
-    AddATrainingRecord,
+    SelectTrainingCourseForWorkerTraining,
+    IncludeTrainingCourseDetailsComponent,
   ],
   providers: [
     DialogService,
@@ -162,6 +165,7 @@ import { AddATrainingRecord } from '@features/training-and-qualifications/add-a-
     QualificationsResolver,
     TrainingCategoriesResolver,
     TrainingCourseResolver,
+    TrainingProvidersResolver,
     TrainingRecordResolver,
     TrainingRecordsResolver,
     TrainingAndQualificationRecordsResolver,
