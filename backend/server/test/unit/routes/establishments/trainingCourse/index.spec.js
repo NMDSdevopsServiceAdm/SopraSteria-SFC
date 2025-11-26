@@ -26,6 +26,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
   const establishmentId = 'mock-id';
   const mockUsername = 'workplace edit user';
   const baseEndpoint = `/api/establishment/${establishmentUid}/trainingCourse`;
+  const mockTrainingCourseUid = mockTrainingCourses[0].uid;
 
   describe('GET /trainingCourse/ - fetchAllTrainingCourses', () => {
     const request = {
@@ -181,7 +182,6 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
   });
 
   describe('GET /trainingCourse/:trainingCourseUid - getTrainingCourse', () => {
-    const mockTrainingCourseUid = 123;
     const request = {
       method: 'GET',
       url: `${baseEndpoint}/${mockTrainingCourseUid}`,
@@ -202,7 +202,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       expect(res._getData()).to.deep.equal(expectedTrainingCoursesInResponse[0]);
 
       expect(models.trainingCourse.findOne).to.have.been.calledWith({
-        where: { establishmentFk: 'mock-id', uid: 123, archived: false },
+        where: { establishmentFk: 'mock-id', uid: mockTrainingCourseUid, archived: false },
         include: [{ model: models.workerTrainingCategories, as: 'category' }],
         attributes: { exclude: ['establishmentFk'] },
         raw: true,
@@ -235,7 +235,6 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
   });
 
   describe('PUT /trainingCourse/:trainingCourseUid - updateTrainingCourse', () => {
-    const mockTrainingCourseUid = 123;
     const mockTrainingCourseInRequestBody = {
       trainingCategoryId: 10,
       trainingProviderId: null,
@@ -314,7 +313,7 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       expect(models.trainingCourse.updateTrainingCourse).to.have.been.calledWith(
         sinon.match({
           establishmentId: 'mock-id',
-          trainingCourseUid: 123,
+          trainingCourseUid: mockTrainingCourseUid,
           updates: expectedUpdateParams,
         }),
       );
@@ -337,11 +336,15 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
       expect(models.trainingCourse.updateTrainingCourse).to.have.been.calledWith(
         sinon.match({
           establishmentId: 'mock-id',
-          trainingCourseUid: 123,
+          trainingCourseUid: mockTrainingCourseUid,
           updates: expectedUpdateParams,
         }),
       );
-      expect(models.trainingCourse.updateTrainingRecordsWithCourseData).to.have.been.called;
+      expect(models.trainingCourse.updateTrainingRecordsWithCourseData).to.have.been.calledWith({
+        trainingCourseUid: mockTrainingCourseUid,
+        updatedBy: mockUsername,
+        transaction: mockTransaction,
+      });
     });
 
     it('should respond with 400 if the req body is empty', async () => {
