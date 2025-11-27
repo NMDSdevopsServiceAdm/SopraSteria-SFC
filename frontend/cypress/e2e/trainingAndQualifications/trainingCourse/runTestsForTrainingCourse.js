@@ -150,6 +150,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         // Verify that the change to training course is applied to the linked training record
         cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
         cy.get('[data-testid="training-worker-table"]').contains(workerName).click();
+        cy.url().should('contain', 'training-and-qualifications-record');
 
         cy.get('a').contains(trainingRecordTitle).should('not.exist');
         cy.get('a').contains(changedCourseDetail.courseName).should('exist');
@@ -203,6 +204,8 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         // Verify that the linked training record is not changed
         cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
         cy.get('[data-testid="training-worker-table"]').contains(workerName).click();
+        cy.url().should('contain', 'training-and-qualifications-record');
+
         cy.get('a').contains(changedCourseDetail.courseName).should('not.exist');
         cy.get('a').contains(trainingRecordTitle).should('exist');
       });
