@@ -880,6 +880,7 @@ const routes: Routes = [
             },
             resolve: {
               trainingRecord: TrainingRecordResolver,
+              trainingCourses: TrainingCourseResolver,
             },
           },
         ],

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 import { TrainingCertificate, TrainingRecordRequest } from '@core/model/training.model';
 import { CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
@@ -48,6 +49,8 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   public trainingCertificates: TrainingCertificate[] = [];
   public filesToRemove: TrainingCertificate[] = [];
   public trainingCategory: { id: number; category: string };
+  public selectedTrainingCourse: any;
+  public trainingCourses: TrainingCourse[];
 
   public record: any;
 
@@ -65,12 +68,14 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.trainingRecord = this.route.snapshot.data.trainingRecord;
+    this.trainingRecord = this.route.snapshot.data?.trainingRecord;
+    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
     this.worker = this.workerService.worker;
     this.establishmentUid = this.route.snapshot.params?.establishmentuid;
     this.workerId = this.route.snapshot.params?.id;
     this.workplace = this.establishmentService.establishment;
+    this.selectedTrainingCourse = this.trainingService.getSelectedTrainingCourse();
     this.setupForm();
     this.fillForm();
     this.autoFillExpiry();
@@ -83,6 +88,10 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
     this.setBackLink();
     this.setupFormErrorsMap();
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   private setupForm(): void {
