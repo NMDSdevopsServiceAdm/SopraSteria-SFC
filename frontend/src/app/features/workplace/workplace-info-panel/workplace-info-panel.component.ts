@@ -108,7 +108,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
               dialog.afterClosed.subscribe((cancelDataOwnerConfirmed) => {
                 if (cancelDataOwnerConfirmed) {
                   this.changeOwnershipAndPermissions();
-                  this.router.navigate(['/dashboard']);
+                  this.router.navigate(['/workplace/view-all-workplaces']);
                   this.alertService.addAlert({
                     type: 'success',
                     message: 'Request to change data owner has been cancelled ',

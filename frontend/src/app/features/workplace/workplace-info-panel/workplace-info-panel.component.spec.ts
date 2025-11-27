@@ -15,7 +15,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { Workplace } from '../../../core/model/my-workplaces.model';
@@ -23,19 +23,31 @@ import { EstablishmentService } from '../../../core/services/establishment.servi
 import { MockParentSubsidiaryViewService } from '../../../core/test-utils/MockParentSubsidiaryViewService';
 import { workplaceBuilder } from '../../../core/test-utils/MockUserService';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel.component';
+import { DialogService } from '@core/services/dialog.service';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { AlertService } from '@core/services/alert.service';
+import { of } from 'rxjs';
+import { CancelOwnerShip, Establishment } from '@core/model/establishment.model';
 
 describe('workplace-info-panel', () => {
+  const establishment = workplaceBuilder() as Workplace;
   const setup = async (overrides: any = {}) => {
     const isAdmin = overrides?.isAdmin ? true : false;
-    const establishment = workplaceBuilder() as Workplace;
+
+    const subWorkplace = { ...establishment, ...overrides?.workplace };
 
     const setupTools = await render(WorkplaceInfoPanelComponent, {
       imports: [RouterModule, SharedModule],
+      declarations: [CancelDataOwnerDialogComponent],
       providers: [
         WindowRef,
+        DialogService,
+        AlertService,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceWithOverrides.factory({ primaryWorkplace: overrides.primaryWorkplace }),
+          useFactory: MockEstablishmentServiceWithOverrides.factory({
+            primaryWorkplace: overrides.primaryWorkplace,
+          }),
         },
         {
           provide: PermissionsService,
@@ -58,12 +70,11 @@ describe('workplace-info-panel', () => {
           provide: ParentSubsidiaryViewService,
           useClass: MockParentSubsidiaryViewService,
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
-        workplace: {
-          ...establishment,
-          ...overrides?.workplace,
-        },
+        workplace: subWorkplace,
         subWorkplaceNumber: 1,
       },
     });
@@ -73,11 +84,19 @@ describe('workplace-info-panel', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const changeOwnershipDetailsSpy = spyOn(establishmentService, 'changeOwnershipDetails');
+    const cancelOwnershipSpy = spyOn(establishmentService, 'cancelOwnership').and.returnValue(of({} as Establishment));
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     return {
       ...setupTools,
       component,
       routerSpy,
+      changeOwnershipDetailsSpy,
+      cancelOwnershipSpy,
+      alertServiceSpy,
     };
   };
 
@@ -199,19 +218,109 @@ describe('workplace-info-panel', () => {
   });
 
   describe('Data permissions links', () => {
-    it('should display Data request pending message if dataOwnershipRequested is true', async () => {
-      const { getByText } = await setup({
-        primaryWorkplace: { isParent: true },
-        workplace: {
-          dataOwnershipRequested: true,
-          dataOwner: 'Workplace',
+    describe('data request pending', () => {
+      const workplace = {
+        dataOwner: 'Workplace',
+        dataOwnershipRequested: '2025-11-27T12:38:16.132Z',
+        dataPermissions: 'Workplace',
+        ownershipChangeRequestId: ['request-id'],
+        id: 'some-id',
+        uid: 'some-id',
+      };
+
+      const requestDetails = [
+        {
+          approvalStatus: 'REQUESTED',
+          createdByUserUID: 'mocked-uid',
+          ownerChangeRequestUID: workplace.ownershipChangeRequestId[0],
+          subEstablishmentID: workplace.id,
         },
-        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+      ];
+
+      it('should display message if dataOwnershipRequested is true', async () => {
+        const { getByText } = await setup({
+          primaryWorkplace: { isParent: true },
+          workplace: workplace,
+          permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+        });
+
+        const dataRequestPendingLink = getByText('Data request pending');
+
+        expect(dataRequestPendingLink).toBeTruthy();
       });
 
-      const dataRequestPendingLink = getByText('Data request pending');
+      it('should open dialog when "Data request pending is clicked"', async () => {
+        const { getByText, fixture, changeOwnershipDetailsSpy } = await setup({
+          primaryWorkplace: { isParent: true },
+          workplace: workplace,
+          permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+        });
 
-      expect(dataRequestPendingLink).toBeTruthy();
+        changeOwnershipDetailsSpy.and.returnValue(of(requestDetails));
+
+        const dataRequestPendingLink = getByText('Data request pending');
+        fireEvent.click(dataRequestPendingLink);
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+
+        expect(dialog.textContent).toContain('Your request to change ownership of data is pending');
+        expect(dialog.textContent).toContain('Cancel');
+        expect(dialog.textContent).toContain('Cancel data owner request');
+      });
+
+      it('should close the dialog when the "Cancel" link is clicked', async () => {
+        const { getByText, fixture, changeOwnershipDetailsSpy } = await setup({
+          primaryWorkplace: { isParent: true },
+          workplace: workplace,
+          permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+        });
+
+        changeOwnershipDetailsSpy.and.returnValue(of(requestDetails));
+
+        const dataRequestPendingLink = getByText('Data request pending');
+        fireEvent.click(dataRequestPendingLink);
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+        const cancelLink = within(dialog).getByText('Cancel');
+
+        fireEvent.click(cancelLink);
+        fixture.detectChanges();
+
+        expect(within(document.body).queryByRole('dialog')).toBeFalsy();
+      });
+
+      it('should call cancelOwnership() to cancel the request when the "Cancel data owner request" clicked', async () => {
+        const { component, getByText, fixture, changeOwnershipDetailsSpy, cancelOwnershipSpy, alertServiceSpy } =
+          await setup({
+            primaryWorkplace: { isParent: true },
+            workplace: workplace,
+            permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+          });
+
+        changeOwnershipDetailsSpy.and.returnValue(of(requestDetails));
+
+        const dataRequestPendingLink = getByText('Data request pending');
+        fireEvent.click(dataRequestPendingLink);
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+        const cancelDataOwnerRequestButton = within(dialog).getByText('Cancel data owner request');
+
+        fireEvent.click(cancelDataOwnerRequestButton);
+        fixture.detectChanges();
+
+        expect(cancelOwnershipSpy).toHaveBeenCalledWith(workplace.id, workplace.ownershipChangeRequestId[0], {
+          approvalStatus: 'CANCELLED',
+          notificationRecipientUid: component.primaryWorkplace.uid,
+        } as CancelOwnerShip);
+        expect(within(document.body).queryByRole('dialog')).toBeFalsy();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Request to change data owner has been cancelled ',
+        });
+      });
     });
 
     it('should display Change data owner link if workplace is data owner and parent has permission to change permissions for sub', async () => {
