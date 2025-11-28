@@ -12,12 +12,12 @@
               </h1>
             </legend>
          <dl class="govuk-summary-list govuk-summary-list--top-border govuk-summary-list--wide-key govuk-summary-list--wide " style="width: 150%">
-        <div class="govuk-summary-list__row" >
+        <div class="govuk-summary-list__row " >
           <dt class="govuk-summary-list__key">Training course name</dt>
           <dd class="govuk-summary-list__value">
-                     Basic safeguarding for support staff
-            <a
-              class="govuk-button  govuk-!-padding-left-0 govuk-button--link govuk__flex  govuk-link--no-visited-state"
+                   {{selectedTrainingCourse?.name}}
+            <a *ngIf="trainingCourses.length>1"
+              class="govuk-button  govuk-!-padding-left-0 govuk-!-padding-bottom-0 govuk-button--link govuk__flex  govuk-link--no-visited-state"
               draggable="false"
                    [routerLink]="[
                 '/workplace',
@@ -49,7 +49,7 @@
           </dd>
         </div>
                <div class="govuk-summary-list__row" >
-          <dt class="govuk-summary-list__key govuk__nowrap">Who delivers the training course?</dt>
+          <dt class="govuk-summary-list__key govuk__nowrap">Who delivered the training course?</dt>
           <dd class="govuk-summary-list__value">
                       {{trainingRecord?.deliveredBy}}
           </dd>
@@ -70,14 +70,15 @@
           <dt class="govuk-summary-list__key govuk__nowrap">How long is the training valid for?</dt>
           <dd class="govuk-summary-list__value">
 
-                      {{trainingRecord?.validityPeriodInMonth? trainingRecord?.validityPeriodInMonth: '-'}}
+                      {{trainingRecord?.validityPeriodInMonth? trainingRecord?.validityPeriodInMonth +' months': '-'}}
           </dd>
         </div>
       </dl>
           <div class="govuk-form-group govuk-!-margin-bottom-4">
             <div class="govuk-grid-row ">
             <div class="govuk-grid-column-one-half">
-               <div data-testid="completedDate" class="govuk-form-group">
+               <div data-testid="completedDate" class="govuk-form-group"
+                 [class.govuk-form-group--error]="submitted && form.get('completed').invalid">
               <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Training completion date</legend>
                 <legend id="completed-hint" class="govuk-hint "> For example, 31 3 2024 </legend>
@@ -93,13 +94,13 @@
               </fieldset>
                 </div>
               </div>
-           <div class="govuk-grid-column-one-half" [class.govuk-summary-list__warning]="expiryMismatchWarning">
-            <div data-testid="expiresDate" class="govuk-form-group"     [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
+           <div class="govuk-grid-column-one-half" >
+            <div data-testid="expiresDate" class="govuk-form-group" [class.govuk-summary-list__warning]="expiryMismatchWarning"    [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
             >
               <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Training expiry date</legend>
                 <legend id="expires-hint" class="govuk-hint"> For example, 31 3 2025 </legend>
-          <div *ngIf="expiryMismatchWarning" class="govuk-summary-list__row govuk-summary-list__row--error-warning-message govuk-!-padding-bottom-0 govuk-!-padding-top-0" >
+          <div *ngIf="expiryMismatchWarning">
           <span class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap">
          This training is usually valid for  {{trainingRecord?.validityPeriodInMonth}} months
           </span>

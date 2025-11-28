@@ -5,7 +5,6 @@ export type TrainingCourse = {
   id: number;
   uid: string;
   trainingCategoryId: number;
-  trainingCategoryName: string;
   name: string;
   accredited: YesNoDontKnow;
   deliveredBy: DeliveredBy;
