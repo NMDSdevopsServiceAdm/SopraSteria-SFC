@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
@@ -29,12 +30,9 @@ describe('workplace-info-panel', () => {
     const establishment = workplaceBuilder() as Workplace;
 
     const setupTools = await render(WorkplaceInfoPanelComponent, {
-      imports: [RouterModule, SharedModule, HttpClientTestingModule],
+      imports: [RouterModule, SharedModule],
       providers: [
-        {
-          provide: WindowRef,
-          useClass: WindowRef,
-        },
+        WindowRef,
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory({ primaryWorkplace: overrides.primaryWorkplace }),
@@ -60,7 +58,7 @@ describe('workplace-info-panel', () => {
           provide: ParentSubsidiaryViewService,
           useClass: MockParentSubsidiaryViewService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       componentProperties: {
         workplace: {
           ...establishment,
@@ -232,6 +230,27 @@ describe('workplace-info-panel', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace/change-data-owner'], {
         queryParams: { changeDataOwnerFrom: workplace.uid },
+      });
+    });
+
+    it('should display "Change data permissions" if they are a parent and data owner', async () => {
+      const workplace = {
+        dataOwner: 'Parent',
+        uid: 'sub-uuid',
+      };
+
+      const { getByText, routerSpy } = await setup({
+        primaryWorkplace: { isParent: true },
+        workplace,
+        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+      });
+
+      const changeDataPermissionsLink = getByText('Change data permissions');
+      userEvent.click(changeDataPermissionsLink);
+
+      expect(changeDataPermissionsLink).toBeTruthy();
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace/change-data-permissions'], {
+        queryParams: { changeDataPermissionsFor: workplace.uid },
       });
     });
   });

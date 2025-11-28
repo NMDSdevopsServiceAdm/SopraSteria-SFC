@@ -1,9 +1,10 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'app-training-info-panel',
-  templateUrl: './training-info-panel.component.html',
-  styleUrls: ['./training-info-panel.component.scss'],
+    selector: 'app-training-info-panel',
+    templateUrl: './training-info-panel.component.html',
+    styleUrls: ['./training-info-panel.component.scss'],
+    standalone: false
 })
 export class TrainingInfoPanelComponent {
   @Input() public workplaceUid: string;

@@ -59,73 +59,23 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <app-new-article-list data-testid="article-list"></app-new-article-list>
-      <div class="govuk-!-margin-top-7" data-cy="home-other-links">
-        <h3 class="govuk-heading-s">Other links</h3>
-        <ul class="govuk-list govuk-!-margin-bottom-6">
-          <app-link-with-arrow>
-            <a class="govuk-link" [routerLink]="['/asc-wds-certificate']">Get your ASC-WDS certificate</a>
-          </app-link-with-arrow>
-
-          <app-link-with-arrow *ngIf="canBulkUpload">
-            <a class="govuk-link" [routerLink]="['/bulk-upload']">Bulk upload your data</a>
-          </app-link-with-arrow>
-
-          <app-link-with-arrow>
-            <a class="govuk-link" [routerLink]="['/benefits-bundle']">View the ASC-WDS Benefits Bundle</a>
-          </app-link-with-arrow>
-
-          <app-link-with-arrow>
-            <a class="govuk-link" [routerLink]="['/about-ascwds']">About ASC-WDS</a>
-          </app-link-with-arrow>
-
-          <app-link-with-arrow *ngIf="canLinkToParent && !workplace.isParent">
-            <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
-              <a
-                class="govuk-link"
-                [routerLink]="['/link-to-parent']"
-                [state]="{ linkToParentRequested: linkToParentRequestedStatus }"
-                >Link to a parent workplace (request pending)</a
-              >
-            </ng-container>
-            <ng-template #requestLinkToParent>
-              <a class="govuk-link" [routerLink]="['/link-to-parent']">Link to a parent workplace</a>
-            </ng-template>
-          </app-link-with-arrow>
-
-          <app-link-with-arrow *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
-            <ng-container *ngIf="parentStatusRequested; else requestBecomeAParent">
-              <a class="govuk-link" [routerLink]="['/become-a-parent']"
-                >Become a parent and manage other workplaces' data (request pending)</a
-              >
-            </ng-container>
-            <ng-template #requestBecomeAParent>
-              <a class="govuk-link" [routerLink]="['/become-a-parent']"
-                >Become a parent and manage other workplaces' data</a
-              >
-            </ng-template>
-          </app-link-with-arrow>
-
-          <app-link-with-arrow *ngIf="canViewChangeDataOwner">
-            <ng-container *ngIf="isOwnershipRequested; else changeDataOwner">
-              <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
-            </ng-container>
-            <ng-template #changeDataOwner>
-              <a class="govuk-link" [routerLink]="['/workplace/change-data-owner']">Change data owner</a>
-            </ng-template></app-link-with-arrow
-          >
-          <app-link-with-arrow *ngIf="canViewDataPermissionsLink">
-            <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
-          </app-link-with-arrow>
-          <app-link-with-arrow *ngIf="canRemoveParentAssociation">
-            <ng-container *ngIf="canViewChangeDataOwner; else removeLinkToParent">
-              <a (click)="ownershipChangeMessage($event)" href="#">Remove the link to your parent workplace</a>
-            </ng-container>
-            <ng-template #removeLinkToParent>
-              <a [routerLink]="['/remove-link-to-parent']">Remove the link to your parent workplace</a>
-            </ng-template>
-          </app-link-with-arrow>
-        </ul>
-      </div>
+      <app-other-links
+        [canBulkUpload]="canBulkUpload"
+        [canViewReports]="canViewReports"
+        [isParentSubsidiaryView]="false"
+        [canBecomeAParent]="canBecomeAParent"
+        [canLinkToParent]="canLinkToParent"
+        [isParent]="workplace.isParent"
+        [linkToParentRequestedStatus]="linkToParentRequestedStatus"
+        [parentStatusRequested]="parentStatusRequested"
+        [canViewChangeDataOwner]="canViewChangeDataOwner"
+        [isOwnershipRequested]="isOwnershipRequested"
+        [canViewDataPermissionsLink]="canViewDataPermissionsLink"
+        [canRemoveParentAssociation]="canRemoveParentAssociation"
+        [canViewChangeDataOwner]="canViewChangeDataOwner"
+        (ownershipChangeMessageEvent)="ownershipChangeMessage($event)"
+        (cancelChangeDataOwnerRequestEvent)="cancelChangeDataOwnerRequest($event)"
+      ></app-other-links>
     </div>
   </div>
 </div>

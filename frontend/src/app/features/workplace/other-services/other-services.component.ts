@@ -12,8 +12,9 @@ import filter from 'lodash/filter';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-other-services',
-  templateUrl: './other-services.component.html',
+    selector: 'app-other-services',
+    templateUrl: './other-services.component.html',
+    standalone: false
 })
 export class OtherServicesComponent extends Question {
   private additionalOtherServiceMaxLength = 120;

@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-training-select-view-panel',
-  templateUrl: './training-select-view-panel.component.html',
-  styleUrls: ['./training-select-view-panel.component.scss'],
+    selector: 'app-training-select-view-panel',
+    templateUrl: './training-select-view-panel.component.html',
+    styleUrls: ['./training-select-view-panel.component.scss'],
+    standalone: false
 })
 export class TrainingSelectViewPanelComponent {
   @Input() viewTrainingByCategory: boolean;

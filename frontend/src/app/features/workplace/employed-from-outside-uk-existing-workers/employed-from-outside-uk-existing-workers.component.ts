@@ -11,8 +11,9 @@ import { InternationalRecruitmentService } from '@core/services/international-re
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-employed-from-outside-uk-existing-workers',
-  templateUrl: './employed-from-outside-uk-existing-workers.component.html',
+    selector: 'app-employed-from-outside-uk-existing-workers',
+    templateUrl: './employed-from-outside-uk-existing-workers.component.html',
+    standalone: false
 })
 export class EmployedFromOutsideUkExistingWorkersComponent implements OnInit {
   public workplaceUid: string;

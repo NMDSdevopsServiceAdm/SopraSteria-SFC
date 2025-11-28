@@ -10,8 +10,9 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
-  selector: 'app-select-main-service',
-  templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
+    selector: 'app-select-main-service',
+    templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
+    standalone: false
 })
 export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public workplace: Establishment;

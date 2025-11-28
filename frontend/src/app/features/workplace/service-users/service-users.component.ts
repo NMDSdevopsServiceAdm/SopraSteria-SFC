@@ -13,8 +13,9 @@ import filter from 'lodash/filter';
 import find from 'lodash/find';
 
 @Component({
-  selector: 'app-service-users',
-  templateUrl: './service-users.component.html',
+    selector: 'app-service-users',
+    templateUrl: './service-users.component.html',
+    standalone: false
 })
 export class ServiceUsersComponent extends Question {
   public serviceUserGroups: ServiceUserGroup[];

@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
@@ -14,7 +14,7 @@ import { DataAreaBarchartComponent } from './data-area-barchart.component';
 describe('DataAreaBarchartComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getByTestId, queryByTestId, queryByText } = await render(DataAreaBarchartComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -24,6 +24,9 @@ describe('DataAreaBarchartComponent', () => {
           provide: BenchmarksV2Service,
           useClass: MockBenchmarksService,
         },
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {

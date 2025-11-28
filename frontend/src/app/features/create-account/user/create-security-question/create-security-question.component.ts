@@ -9,8 +9,9 @@ import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { SecurityQuestionDirective } from '@shared/directives/user/security-question.directive';
 
 @Component({
-  selector: 'app-create-security-question',
-  templateUrl: './create-security-question.component.html',
+    selector: 'app-create-security-question',
+    templateUrl: './create-security-question.component.html',
+    standalone: false
 })
 export class SecurityQuestionComponent extends SecurityQuestionDirective {
   public workplaceSections: string[];

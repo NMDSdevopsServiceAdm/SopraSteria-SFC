@@ -9,8 +9,9 @@ import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-delete-mandatory-training-category',
-  templateUrl: './delete-mandatory-training-category.component.html',
+    selector: 'app-delete-mandatory-training-category',
+    templateUrl: './delete-mandatory-training-category.component.html',
+    standalone: false
 })
 export class DeleteMandatoryTrainingCategoryComponent implements OnInit, OnDestroy {
   public selectedCategory: mandatoryTraining;

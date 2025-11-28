@@ -1,5 +1,5 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
@@ -22,7 +22,7 @@ describe('LoginComponent', () => {
     const employerTypeSet: boolean = ('employerTypeSet' in overrides ? overrides.employerTypeSet : true) as boolean;
 
     const setupTools = await render(LoginComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -34,6 +34,8 @@ describe('LoginComponent', () => {
           useClass: MockUserService,
         },
         provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

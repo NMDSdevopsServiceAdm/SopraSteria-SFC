@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { CareWorkforcePathwayUse } from '../../core/model/care-workforce-pathway.model';
 
 @Pipe({
-  name: 'formatCWPUse',
+    name: 'formatCWPUse',
+    standalone: false
 })
 export class FormatCwpUsePipe implements PipeTransform {
   transform(cwpUse: CareWorkforcePathwayUse): string | Array<string> {

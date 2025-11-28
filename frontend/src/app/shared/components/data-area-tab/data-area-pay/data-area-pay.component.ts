@@ -8,9 +8,10 @@ import {
 import { FormatUtil } from '@core/utils/format-util';
 
 @Component({
-  selector: 'app-data-area-pay',
-  templateUrl: './data-area-pay.component.html',
-  styleUrls: ['../data-area-tab.component.scss'],
+    selector: 'app-data-area-pay',
+    templateUrl: './data-area-pay.component.html',
+    styleUrls: ['../data-area-tab.component.scss'],
+    standalone: false
 })
 export class DataAreaPayComponent {
   @Input() data: BenchmarksResponse;

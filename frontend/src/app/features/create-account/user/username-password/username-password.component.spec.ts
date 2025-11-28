@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { LocationService } from '@core/services/location.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -16,7 +16,7 @@ import { UsernamePasswordComponent } from './username-password.component';
 describe('UsernamePasswordComponent', () => {
   async function setup(registrationFlow = true) {
     const component = await render(UsernamePasswordComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, RegistrationModule],
+      imports: [SharedModule, RouterModule, RegistrationModule],
       providers: [
         BackService,
         {
@@ -41,6 +41,8 @@ describe('UsernamePasswordComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-summary-record-change',
-  templateUrl: './summary-record-change.component.html',
+    selector: 'app-summary-record-change',
+    templateUrl: './summary-record-change.component.html',
+    standalone: false
 })
 export class SummaryRecordChangeComponent {
   @Input() explanationText: string;

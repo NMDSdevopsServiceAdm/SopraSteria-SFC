@@ -12,8 +12,9 @@ import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.ser
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-main-job-role.component',
-  templateUrl: './main-job-role.component.html',
+    selector: 'app-main-job-role.component',
+    templateUrl: './main-job-role.component.html',
+    standalone: false
 })
 export class MainJobRoleComponent extends QuestionComponent implements OnInit, OnDestroy {
   public jobsAvailable: Job[] = [];

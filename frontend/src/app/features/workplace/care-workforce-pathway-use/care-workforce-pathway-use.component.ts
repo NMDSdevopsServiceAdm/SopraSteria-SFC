@@ -15,8 +15,9 @@ import { PreviousRouteService } from '../../../core/services/previous-route.serv
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-care-workforce-pathway-use',
-  templateUrl: './care-workforce-pathway-use.component.html',
+    selector: 'app-care-workforce-pathway-use',
+    templateUrl: './care-workforce-pathway-use.component.html',
+    standalone: false
 })
 export class CareWorkforcePathwayUseComponent extends Question implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;

@@ -3,7 +3,8 @@ import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 import { FormatUtil } from '@core/utils/format-util';
 
 @Pipe({
-  name: 'formatSLV',
+    name: 'formatSLV',
+    standalone: false
 })
 export class FormatStartersLeaversVacanciesPipe implements PipeTransform {
   transform(jobRole: Starter | Leaver | Vacancy): string {

@@ -9,8 +9,9 @@ import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-participation',
-  templateUrl: './participation.component.html',
+    selector: 'app-participation',
+    templateUrl: './participation.component.html',
+    standalone: false
 })
 export class ParticipationComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

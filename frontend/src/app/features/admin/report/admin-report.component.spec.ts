@@ -1,6 +1,6 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { ReportService } from '@core/services/report.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -10,12 +10,10 @@ import { AdminModule } from '../admin.module';
 import { ReportComponent } from './admin-report.component';
 
 describe('ReportComponent', () => {
-  let component: ReportComponent;
-  let fixture: ComponentFixture<ReportComponent>;
-
   async function setup() {
     return render(ReportComponent, {
-      imports: [SharedModule, HttpClientTestingModule, RouterTestingModule, AdminModule],
+      imports: [SharedModule, AdminModule],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
   }
 

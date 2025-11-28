@@ -1,8 +1,7 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { MetricsContent } from '@core/model/benchmarks.model';
 import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -54,7 +53,7 @@ const noPayRankingData = {
 
 const getBenchmarksMetricComponent = async () => {
   return render(BenchmarksMetricComponent, {
-    imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BenchmarksModule],
+    imports: [BrowserModule, BenchmarksModule],
     providers: [
       {
         provide: BenchmarksV2Service,

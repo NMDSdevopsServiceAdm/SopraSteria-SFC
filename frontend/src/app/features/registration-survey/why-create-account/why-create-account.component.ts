@@ -6,8 +6,9 @@ import { BackService } from '@core/services/back.service';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 
 @Component({
-  selector: 'app-why-create-account',
-  templateUrl: './why-create-account.component.html',
+    selector: 'app-why-create-account',
+    templateUrl: './why-create-account.component.html',
+    standalone: false
 })
 export class WhyCreateAccountComponent implements OnInit {
   public nextPage: URLStructure = { url: ['/registration-survey', 'how-did-you-hear-about'] };

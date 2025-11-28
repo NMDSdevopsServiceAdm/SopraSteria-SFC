@@ -11,7 +11,8 @@ import { BackLinkService } from '@core/services/backLink.service';
 @Component({
   selector: 'app-include-training-course-details',
   templateUrl: './include-training-course-details.component.html',
-  styleUrl: './include-training-course-details.component.scss'
+  styleUrl: './include-training-course-details.component.scss',
+  standalone: false,
 })
 export class IncludeTrainingCourseDetailsComponent {
   public userSelectedTrainingCourse = new UntypedFormControl('');
@@ -40,16 +41,15 @@ export class IncludeTrainingCourseDetailsComponent {
   }
 
   public onSubmit(): void {
-    if (this.userSelectedTrainingCourse.value === '' ||
-      this.userSelectedTrainingCourse.value === false) {
+    if (this.userSelectedTrainingCourse.value === '' || this.userSelectedTrainingCourse.value === false) {
       const previousPage = [
         '/workplace',
         this.workplace.uid,
         'training-and-qualifications-record',
         this.worker.uid,
         'training',
-        this.trainingRecord.uid
-      ]
+        this.trainingRecord.uid,
+      ];
       this.router.navigate(previousPage);
       return;
     }

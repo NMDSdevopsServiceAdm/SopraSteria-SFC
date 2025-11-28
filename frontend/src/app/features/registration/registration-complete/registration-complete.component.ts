@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { RegistrationService } from '@core/services/registration.service';
 
 @Component({
-  selector: 'app-registration-complete',
-  templateUrl: './registration-complete.component.html'
+    selector: 'app-registration-complete',
+    templateUrl: './registration-complete.component.html',
+    standalone: false
 })
 export class RegistrationCompleteComponent implements OnInit {
 

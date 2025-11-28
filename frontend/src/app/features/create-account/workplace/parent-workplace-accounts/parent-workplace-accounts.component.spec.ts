@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
@@ -24,14 +24,7 @@ describe('ParentWorkplaceAccounts', () => {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
       ParentWorkplaceAccounts,
       {
-        imports: [
-          SharedModule,
-          RegistrationModule,
-          RouterTestingModule,
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RegistrationModule, FormsModule, ReactiveFormsModule],
         providers: [
           BackService,
           BackLinkService,
@@ -62,6 +55,8 @@ describe('ParentWorkplaceAccounts', () => {
             },
           },
           UntypedFormBuilder,
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

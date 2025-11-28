@@ -25,15 +25,14 @@
         <app-auto-suggest
           data-testid="autocomplete-result"
           [formGroup]="form"
-          class="300px;"
-          [dataProvider]="workplaceNameOrPostCodeFilter"
+          [dataProvider]="autoCompleteDataProvider"
           [formControlName]="'workplaceNameOrPostCode'"
         ></app-auto-suggest>
       </div>
 
       <p *ngIf="form.valid">
         <strong
-          >You're about to move {{ data.worker.nameOrId }} {{ form.get('workplaceNameOrPostCode').value }}.</strong
+          >You're about to move {{ data.worker.nameOrId }} to {{ form.get('workplaceNameOrPostCode').value }}.</strong
         >
       </p>
     </fieldset>

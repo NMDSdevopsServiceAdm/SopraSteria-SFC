@@ -9,8 +9,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-care-workforce-pathway-workers-summary',
-  templateUrl: './care-workforce-pathway-workers-summary.component.html',
+    selector: 'app-care-workforce-pathway-workers-summary',
+    templateUrl: './care-workforce-pathway-workers-summary.component.html',
+    standalone: false
 })
 export class CareWorkforcePathwayWorkersSummaryComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

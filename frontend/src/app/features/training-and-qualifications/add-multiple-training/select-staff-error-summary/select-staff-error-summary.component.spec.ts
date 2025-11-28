@@ -1,5 +1,4 @@
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, RouterModule } from '@angular/router';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { SelectStaffErrorSummaryComponent } from './select-staff-error-summary.component';
@@ -7,9 +6,9 @@ import { SelectStaffErrorSummaryComponent } from './select-staff-error-summary.c
 describe('SelectStaffErrorSummaryComponent', () => {
   async function setup() {
     const { fixture, getByText, getByTestId } = await render(SelectStaffErrorSummaryComponent, {
-      imports: [RouterModule, RouterTestingModule],
+      imports: [RouterModule],
       declarations: [],
-      providers: [],
+      providers: [provideRouter([])],
       componentProperties: {
         formErrorsMap: [
           {

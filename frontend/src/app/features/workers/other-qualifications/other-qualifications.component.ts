@@ -10,8 +10,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-other-qualifications',
-  templateUrl: './other-qualifications.component.html',
+    selector: 'app-other-qualifications',
+    templateUrl: './other-qualifications.component.html',
+    standalone: false
 })
 export class OtherQualificationsComponent extends QuestionComponent {
   public answersAvailable = [

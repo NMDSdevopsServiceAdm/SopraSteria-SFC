@@ -8,8 +8,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-bulk-upload-missing-page',
-  templateUrl: './bulk-upload-missing-page.component.html',
+    selector: 'app-bulk-upload-missing-page',
+    templateUrl: './bulk-upload-missing-page.component.html',
+    standalone: false
 })
 export class BulkUploadMissingPageComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

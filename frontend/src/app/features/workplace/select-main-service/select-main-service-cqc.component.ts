@@ -8,8 +8,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-select-main-service-cqc',
-  templateUrl: './select-main-service-cqc.component.html',
+    selector: 'app-select-main-service-cqc',
+    templateUrl: './select-main-service-cqc.component.html',
+    standalone: false
 })
 export class SelectMainServiceCqcComponent extends Question {
   constructor(

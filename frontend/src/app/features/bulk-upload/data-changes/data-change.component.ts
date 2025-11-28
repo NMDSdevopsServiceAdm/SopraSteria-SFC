@@ -8,8 +8,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-data-change',
-  templateUrl: './data-change.component.html',
+    selector: 'app-data-change',
+    templateUrl: './data-change.component.html',
+    standalone: false
 })
 export class BulkUploadDataChangeComponent implements OnInit, OnDestroy {
   public datachange: DataChange;

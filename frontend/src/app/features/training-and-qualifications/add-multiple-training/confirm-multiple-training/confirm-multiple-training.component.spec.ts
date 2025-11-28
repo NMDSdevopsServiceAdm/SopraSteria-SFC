@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
@@ -34,7 +35,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
   };
   async function setup(overrides: any = { incompleteTraining: false, isPrimaryWorkplace: true }) {
     const setupTools = await render(ConfirmMultipleTrainingComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, AddMultipleTrainingModule],
+      imports: [SharedModule, RouterModule, AddMultipleTrainingModule],
       providers: [
         AlertService,
         WindowRef,
@@ -63,6 +64,8 @@ describe('ConfirmMultipleTrainingComponent', () => {
           deps: [HttpClient],
         },
         { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -25,7 +26,7 @@ describe('SelectLeaverJobRolesComponent', () => {
     const selectedLeavers = override.selectedLeavers ?? null;
 
     const renderResults = await render(SelectLeaverJobRolesComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -50,7 +51,7 @@ describe('SelectLeaverJobRolesComponent', () => {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedLeavers }),
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = renderResults.fixture.componentInstance;

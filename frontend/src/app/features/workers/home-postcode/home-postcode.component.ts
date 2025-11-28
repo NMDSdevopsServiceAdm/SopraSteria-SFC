@@ -10,8 +10,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-home-postcode',
-  templateUrl: './home-postcode.component.html',
+    selector: 'app-home-postcode',
+    templateUrl: './home-postcode.component.html',
+    standalone: false
 })
 export class HomePostcodeComponent extends QuestionComponent {
   constructor(

@@ -1,9 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, provideRouter, RouterModule } from '@angular/router';
 import { CqcStatusChange } from '@core/model/cqc-status-change.model';
 import { Note } from '@core/model/registrations.model';
 import { AlertService } from '@core/services/alert.service';
@@ -43,16 +43,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId, getAllByText, queryAllByText } = await render(
       CqcIndividualMainServiceChangeComponent,
       {
-        imports: [
-          SharedModule,
-          RouterModule,
-          RouterTestingModule.withRoutes([
-            { path: 'sfcadmin/cqc-main-service-change', component: CQCMainServiceChangeListComponent },
-          ]),
-          HttpClientTestingModule,
-          FormsModule,
-          ReactiveFormsModule,
-        ],
+        imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
         providers: [
           AlertService,
           WindowRef,
@@ -60,6 +51,7 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           { provide: SwitchWorkplaceService, useClasee: MockSwitchWorkplaceService },
           { provide: RegistrationsService, useClass: MockRegistrationsService },
+          provideRouter([{ path: 'sfcadmin/cqc-main-service-change', component: CQCMainServiceChangeListComponent }]),
           {
             provide: ActivatedRoute,
             useValue: {
@@ -72,6 +64,8 @@ describe('CqcIndividualMainServiceChangeComponent', () => {
               },
             },
           },
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

@@ -1,8 +1,8 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationType } from '@core/model/qualification.model';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -13,12 +13,8 @@ import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
 import { mockAvailableQualifications, workerBuilder } from '@core/test-utils/MockWorkerService';
-import {
-  GroupedRadioButtonAccordionComponent,
-} from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import {
-  RadioButtonAccordionComponent,
-} from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -45,14 +41,7 @@ describe('SelectQualificationTypeComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, getByRole } = await render(
       SelectQualificationTypeComponent,
       {
-        imports: [
-          HttpClientTestingModule,
-          SharedModule,
-          RouterModule,
-          RouterTestingModule,
-          ReactiveFormsModule,
-          FormsModule,
-        ],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule, FormsModule],
         declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
         providers: [
           BackLinkService,
@@ -82,6 +71,8 @@ describe('SelectQualificationTypeComponent', () => {
               },
             },
           },
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

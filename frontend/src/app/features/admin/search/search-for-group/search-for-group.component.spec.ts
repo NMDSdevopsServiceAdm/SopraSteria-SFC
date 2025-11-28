@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -24,7 +25,7 @@ import { AdminUnlockConfirmationDialogComponent } from '@shared/components/admin
 describe('SearchForGroupComponent', () => {
   async function setup(searchButtonClicked = false, isLocked = false, isParent = false, hasSubs = false) {
     const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(SearchForGroupComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
       declarations: [WorkplaceDropdownComponent, AdminUnlockConfirmationDialogComponent],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -36,7 +37,7 @@ describe('SearchForGroupComponent', () => {
         WindowRef,
         SearchService,
         AlertService,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const mockSearchResult = buildMockAdminSearchWorkplace(isLocked, isParent, hasSubs);

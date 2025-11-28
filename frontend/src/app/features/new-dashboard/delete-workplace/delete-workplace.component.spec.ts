@@ -1,9 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
@@ -30,7 +30,7 @@ describe('DeleteWorkplaceComponent', async () => {
     const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
       DeleteWorkplaceComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         declarations: [DeleteWorkplaceComponent],
         providers: [
           WindowRef,
@@ -54,6 +54,9 @@ describe('DeleteWorkplaceComponent', async () => {
             useFactory: MockAuthService.factory(true, isAdmin),
             deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
           },
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
         componentProperties: {},
       },

@@ -11,8 +11,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-social-care-qualification-level',
-  templateUrl: './social-care-qualification-level.component.html',
+    selector: 'app-social-care-qualification-level',
+    templateUrl: './social-care-qualification-level.component.html',
+    standalone: false
 })
 export class SocialCareQualificationLevelComponent extends QuestionComponent {
   public qualifications: QualificationLevel[];

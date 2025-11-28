@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
@@ -29,7 +30,7 @@ describe('SelectStaffComponent', () => {
   async function setup(overrides: any = {}) {
     const workers = createWorkers(overrides?.noOfWorkers ?? 3);
     const setupTools = await render(SelectStaffComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, AddMultipleTrainingModule],
+      imports: [SharedModule, RouterModule, AddMultipleTrainingModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -62,6 +63,8 @@ describe('SelectStaffComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 

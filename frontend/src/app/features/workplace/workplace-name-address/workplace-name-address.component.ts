@@ -13,9 +13,9 @@ import {
 } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 
 @Component({
-  selector: 'app-workplace-name-address',
-  templateUrl:
-    '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
+    selector: 'app-workplace-name-address',
+    templateUrl: '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
+    standalone: false
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public workplace: Establishment;

@@ -11,9 +11,10 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-new-dashboard-header',
-  templateUrl: './dashboard-header.component.html',
-  styleUrls: ['./dashboard-header.component.scss'],
+    selector: 'app-new-dashboard-header',
+    templateUrl: './dashboard-header.component.html',
+    styleUrls: ['./dashboard-header.component.scss'],
+    standalone: false
 })
 export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   private subscriptions: Subscription = new Subscription();

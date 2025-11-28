@@ -12,8 +12,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-total-staff-change',
-  templateUrl: './total-staff-change.component.html',
+    selector: 'app-total-staff-change',
+    templateUrl: './total-staff-change.component.html',
+    standalone: false
 })
 export class TotalStaffChangeComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

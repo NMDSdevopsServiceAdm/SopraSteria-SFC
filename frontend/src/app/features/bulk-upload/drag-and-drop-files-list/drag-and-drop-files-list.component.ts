@@ -23,10 +23,11 @@ import { combineLatest, Subscription } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-drag-and-drop-files-list',
-  templateUrl: './drag-and-drop-files-list.component.html',
-  styleUrls: ['./drag-and-drop-files-list.component.scss'],
-  providers: [I18nPluralPipe],
+    selector: 'app-drag-and-drop-files-list',
+    templateUrl: './drag-and-drop-files-list.component.html',
+    styleUrls: ['./drag-and-drop-files-list.component.scss'],
+    providers: [I18nPluralPipe],
+    standalone: false
 })
 export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   @Input() public sanitise: boolean;

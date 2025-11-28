@@ -3,8 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 
 @Component({
-  selector: 'app-bulk-upload-related-content',
-  templateUrl: './bulk-upload-related-content.component.html',
+    selector: 'app-bulk-upload-related-content',
+    templateUrl: './bulk-upload-related-content.component.html',
+    standalone: false
 })
 export class BulkUploadRelatedContentComponent implements OnInit {
   @Input() showAboutBulkUpload = true;

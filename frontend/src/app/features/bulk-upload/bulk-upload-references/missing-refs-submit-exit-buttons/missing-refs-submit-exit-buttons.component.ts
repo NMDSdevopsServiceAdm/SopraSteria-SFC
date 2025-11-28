@@ -3,8 +3,9 @@ import { AuthService } from '@core/services/auth.service';
 import { SubmitExitButtonsComponent } from '@shared/components/submit-exit-buttons/submit-exit-buttons.component';
 
 @Component({
-  selector: 'app-missing-refs-submit-exit-buttons',
-  templateUrl: './missing-refs-submit-exit-buttons.component.html',
+    selector: 'app-missing-refs-submit-exit-buttons',
+    templateUrl: './missing-refs-submit-exit-buttons.component.html',
+    standalone: false
 })
 export class MissingRefsSubmitExitButtonsComponent extends SubmitExitButtonsComponent {
   constructor(public authService: AuthService) {

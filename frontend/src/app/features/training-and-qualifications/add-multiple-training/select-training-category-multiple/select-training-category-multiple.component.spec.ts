@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -25,7 +26,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
   async function setup(prefill = false, accessedFromSummary = false, qsParamGetMock = sinon.stub()) {
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(SelectTrainingCategoryMultipleComponent, {
-      imports: [HttpClientTestingModule, SharedModule, RouterModule, AddMultipleTrainingModule],
+      imports: [SharedModule, RouterModule, AddMultipleTrainingModule],
       declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
         BackLinkService,
@@ -57,6 +58,8 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
     const component = setupTools.fixture.componentInstance;

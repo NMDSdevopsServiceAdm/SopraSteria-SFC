@@ -6,8 +6,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
 @Component({
-  selector: 'app-registration-requests',
-  templateUrl: './pending-registration-requests.component.html',
+    selector: 'app-registration-requests',
+    templateUrl: './pending-registration-requests.component.html',
+    standalone: false
 })
 export class PendingRegistrationRequestsComponent implements OnInit {
   public pendingRegistrations: Registration[];

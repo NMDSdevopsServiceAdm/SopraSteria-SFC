@@ -3,8 +3,9 @@ import { Starter } from '@core/model/establishment.model';
 import { SelectJobRolesDirective } from '@features/workplace/vacancies-and-turnover/select-job-roles.directive';
 
 @Component({
-  selector: 'app-select-starter-job-roles',
-  templateUrl: '../vacancies-and-turnover/select-job-roles.html',
+    selector: 'app-select-starter-job-roles',
+    templateUrl: '../vacancies-and-turnover/select-job-roles.html',
+    standalone: false
 })
 export class SelectStarterJobRolesComponent extends SelectJobRolesDirective {
   public errorMessageOnEmptyInput = 'Select job roles for the starters you want to add';

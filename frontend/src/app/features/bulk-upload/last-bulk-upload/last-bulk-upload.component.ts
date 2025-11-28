@@ -11,9 +11,10 @@ import saveAs from 'file-saver';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-last-bulk-upload',
-  templateUrl: './last-bulk-upload.component.html',
-  providers: [],
+    selector: 'app-last-bulk-upload',
+    templateUrl: './last-bulk-upload.component.html',
+    providers: [],
+    standalone: false
 })
 export class LastBulkUploadComponent implements OnInit {
   public sanitise = true;

@@ -5,8 +5,9 @@ import { UserPermissionsType } from '@core/model/userDetails.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
-  selector: 'app-user-form',
-  templateUrl: './user-form.component.html',
+    selector: 'app-user-form',
+    templateUrl: './user-form.component.html',
+    standalone: false
 })
 export class UserFormComponent {
   @Input() form: UntypedFormGroup;

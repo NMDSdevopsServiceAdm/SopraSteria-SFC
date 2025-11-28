@@ -1,9 +1,9 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -67,7 +67,7 @@ describe('EmployedFromOutsideUkExistingWorkersComponent', () => {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       EmployedFromOutsideUkExistingWorkersComponent,
       {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
           WindowRef,
@@ -82,6 +82,9 @@ describe('EmployedFromOutsideUkExistingWorkersComponent', () => {
             provide: EstablishmentService,
             useClass: MockEstablishmentService,
           },
+          provideRouter([]),
+          provideHttpClient(),
+          provideHttpClientTesting(),
         ],
       },
     );

@@ -8,8 +8,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-check-answers',
-  templateUrl: './check-answers.component.html',
+    selector: 'app-check-answers',
+    templateUrl: './check-answers.component.html',
+    standalone: false
 })
 export class CheckAnswersComponent implements OnInit, OnDestroy {
   public establishment: Establishment;

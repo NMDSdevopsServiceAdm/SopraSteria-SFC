@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -26,7 +27,7 @@ describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
     const workerServiceOverrides = lodash.pick(overrides, 'worker', 'returnTo');
 
     const setupTools = await render(CarryOutDelegatedHealthcareActivitiesComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       providers: [
         UntypedFormBuilder,
         {
@@ -59,7 +60,7 @@ describe('CarryOutDelegatedHealthcareActivitiesComponent', () => {
           provide: DelegatedHealthcareActivitiesService,
           useClass: MockDelegatedHealthcareActivitiesService,
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
     const component = setupTools.fixture.componentInstance;
 

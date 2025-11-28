@@ -13,9 +13,10 @@ import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-wdf-overview',
-  templateUrl: './wdf-overview.component.html',
-  styleUrls: ['../../../shared/components/summary-section/summary-section.component.scss'],
+    selector: 'app-wdf-overview',
+    templateUrl: './wdf-overview.component.html',
+    styleUrls: ['../../../shared/components/summary-section/summary-section.component.scss'],
+    standalone: false
 })
 export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplace: Establishment;

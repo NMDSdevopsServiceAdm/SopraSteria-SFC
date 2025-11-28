@@ -2,7 +2,8 @@ import { DatePipe } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'longDate',
+    name: 'longDate',
+    standalone: false
 })
 export class LongDatePipe extends DatePipe implements PipeTransform {
   transform(value: any, format?: string, timezone?: string, locale?: string): any {

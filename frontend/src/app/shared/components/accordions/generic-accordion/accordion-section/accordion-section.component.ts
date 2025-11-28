@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-accordion-section',
-  templateUrl: './accordion-section.component.html',
+    selector: 'app-accordion-section',
+    templateUrl: './accordion-section.component.html',
+    standalone: false
 })
 export class AccordionSectionComponent implements OnInit {
   @Input() title: string;

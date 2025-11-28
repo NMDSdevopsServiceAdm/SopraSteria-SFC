@@ -14,8 +14,9 @@ import { UserService } from '@core/services/user.service';
 import { SecurityQuestionDirective } from '@shared/directives/user/security-question.directive';
 
 @Component({
-  selector: 'app-change-user-security',
-  templateUrl: './change-user-security.component.html',
+    selector: 'app-change-user-security',
+    templateUrl: './change-user-security.component.html',
+    standalone: false
 })
 export class ChangeUserSecurityComponent extends SecurityQuestionDirective {
   private serverErrorsMap: Array<ErrorDefinition>;

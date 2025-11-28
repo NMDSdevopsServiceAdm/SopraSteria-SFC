@@ -6,8 +6,9 @@ import { BackService } from '@core/services/back.service';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 
 @Component({
-  selector: 'app-how-did-you-hear-about',
-  templateUrl: './how-did-you-hear-about.component.html',
+    selector: 'app-how-did-you-hear-about',
+    templateUrl: './how-did-you-hear-about.component.html',
+    standalone: false
 })
 export class HowDidYouHearAboutComponent implements OnInit {
   public nextPage: URLStructure = { url: ['/registration-survey', 'thank-you'] };

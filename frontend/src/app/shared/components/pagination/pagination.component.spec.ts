@@ -1,6 +1,6 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -9,9 +9,9 @@ import { PaginationComponent } from './pagination.component';
 describe('PaginationComponent', () => {
   async function setup(itemsPerPage = 15, totalNoOfItems = 43, isBigWindow = true) {
     const { fixture, queryByText, queryByTestId, rerender } = await render(PaginationComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [],
-      providers: [],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         itemsPerPage,
         totalNoOfItems,
@@ -323,7 +323,7 @@ describe('PaginationComponent', () => {
       expect(queryByText('2')).toBeTruthy();
       expect(queryByText('Next')).toBeTruthy();
 
-      rerender({ totalNoOfItems: 4 });
+      rerender({ componentProperties: { totalNoOfItems: 4, itemsPerPage: 5 } });
 
       expect(queryByText('1')).toBeFalsy();
       expect(queryByText('2')).toBeFalsy();

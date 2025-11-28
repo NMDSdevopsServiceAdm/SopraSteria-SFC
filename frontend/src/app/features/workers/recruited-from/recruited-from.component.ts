@@ -10,8 +10,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-recruited-from',
-  templateUrl: './recruited-from.component.html',
+    selector: 'app-recruited-from',
+    templateUrl: './recruited-from.component.html',
+    standalone: false
 })
 export class RecruitedFromComponent extends QuestionComponent {
   public availableRecruitments: RecruitmentResponse[];

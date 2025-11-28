@@ -9,8 +9,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-cancel-data-owner-dialog',
-  templateUrl: './cancel-data-owner-dialog.component.html',
+    selector: 'app-cancel-data-owner-dialog',
+    templateUrl: './cancel-data-owner-dialog.component.html',
+    standalone: false
 })
 export class CancelDataOwnerDialogComponent extends DialogComponent implements OnInit, OnDestroy {
   public dataPermissions: DataPermissions[];

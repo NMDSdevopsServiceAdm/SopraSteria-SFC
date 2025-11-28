@@ -6,8 +6,9 @@ import { PasswordResetService } from '@core/services/password-reset.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-forgot-your-password',
-  templateUrl: './forgot-your-password.component.html',
+    selector: 'app-forgot-your-password',
+    templateUrl: './forgot-your-password.component.html',
+    standalone: false
 })
 export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
   public usernameOrEmail: string;

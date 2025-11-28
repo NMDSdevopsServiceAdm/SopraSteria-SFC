@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -22,7 +22,7 @@ import { BecomeAParentComponent } from './become-a-parent.component';
 describe('BecomeAParentComponent', () => {
   async function setup(isBecomeParentRequestPending = false) {
     const { getByRole, getByText, getByLabelText, getByTestId, fixture } = await render(BecomeAParentComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       declarations: [],
       providers: [
         AlertService,
@@ -52,6 +52,8 @@ describe('BecomeAParentComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
       componentProperties: {
         isBecomeParentRequestPending,
@@ -151,11 +153,10 @@ describe('BecomeAParentComponent', () => {
       },
     });
 
-    fixture.whenStable().then(() => {
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'You’ve sent a request to become a parent workplace',
-      });
+    await fixture.whenStable();
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'You’ve sent a request to become a parent workplace',
     });
   });
 
@@ -235,11 +236,10 @@ describe('BecomeAParentComponent', () => {
         },
       });
 
-      fixture.whenStable().then(() => {
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: "You've cancelled your request to become a parent workplace",
-        });
+      await fixture.whenStable();
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: "You've cancelled your request to become a parent workplace",
       });
     });
   });

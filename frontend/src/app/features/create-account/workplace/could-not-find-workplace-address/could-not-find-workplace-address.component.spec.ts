@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -16,14 +17,7 @@ import { CouldNotFindWorkplaceAddressComponent } from './could-not-find-workplac
 describe('CouldNotFindWorkplaceAddressComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(CouldNotFindWorkplaceAddressComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        HttpClientTestingModule,
-        RegistrationModule,
-        FormsModule,
-        ReactiveFormsModule,
-      ],
+      imports: [SharedModule, RouterModule, RegistrationModule, FormsModule, ReactiveFormsModule],
       providers: [
         CouldNotFindWorkplaceAddressDirective,
         BackService,
@@ -45,6 +39,8 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
             },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -163,8 +159,8 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
 
   describe('Navigation', () => {
     it('should navigate to the find-workplace-address page when selecting yes', async () => {
-      const { fixture, spy, getByText } = await setup();
-      const yesRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="yes"]`);
+      const { spy, getByText, getByRole } = await setup();
+      const yesRadioButton = getByRole('radio', { name: 'Yes' });
       fireEvent.click(yesRadioButton);
 
       const continueButton = getByText('Continue');
@@ -174,8 +170,8 @@ describe('CouldNotFindWorkplaceAddressComponent', () => {
     });
 
     it('should navigate to the workplace name and address page when selecting no', async () => {
-      const { fixture, spy, getByText } = await setup();
-      const noRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="no"]`);
+      const { spy, getByText, getByRole } = await setup();
+      const noRadioButton = getByRole('radio', { name: /^No/ });
       fireEvent.click(noRadioButton);
 
       const continueButton = getByText('Continue');

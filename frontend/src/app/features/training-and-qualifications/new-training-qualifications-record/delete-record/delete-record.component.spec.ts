@@ -1,7 +1,7 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -20,7 +20,7 @@ describe('DeleteRecordComponent', () => {
 
   async function setup(trainingView = true, otherJob = false) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(DeleteRecordComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       providers: [
         AlertService,
         WindowRef,
@@ -48,6 +48,8 @@ describe('DeleteRecordComponent', () => {
           provide: WorkerService,
           useClass: MockWorkerService,
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -167,11 +169,10 @@ describe('DeleteRecordComponent', () => {
 
         expect(routerSpy).toHaveBeenCalledWith([previousUrl]);
 
-        fixture.whenStable().then(() => {
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Training record deleted',
-          });
+        await fixture.whenStable();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Training record deleted',
         });
       });
 
@@ -189,11 +190,10 @@ describe('DeleteRecordComponent', () => {
           'training',
         ]);
 
-        fixture.whenStable().then(() => {
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Training record deleted',
-          });
+        await fixture.whenStable();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Training record deleted',
         });
       });
     });
@@ -275,11 +275,10 @@ describe('DeleteRecordComponent', () => {
 
         expect(routerSpy).toHaveBeenCalledWith([previousUrl]);
 
-        fixture.whenStable().then(() => {
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Qualification record deleted',
-          });
+        await fixture.whenStable();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Qualification record deleted',
         });
       });
 
@@ -297,11 +296,10 @@ describe('DeleteRecordComponent', () => {
           'training',
         ]);
 
-        fixture.whenStable().then(() => {
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: 'Qualification record deleted',
-          });
+        await fixture.whenStable();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Qualification record deleted',
         });
       });
     });

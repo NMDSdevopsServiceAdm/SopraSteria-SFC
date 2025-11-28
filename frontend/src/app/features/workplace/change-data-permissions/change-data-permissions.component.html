@@ -1,0 +1,134 @@
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+  data-testid="changeDataPermissionsErrorSummary"
+>
+</app-error-summary>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div data-testid="heading">
+      <span class="govuk-caption-l">{{ workplace?.name }}</span>
+      <h1 class="govuk-heading-l">Change data permissions</h1>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p data-testid="current-permission">
+      <strong>{{ workplaceNameToChangeDataPermissionsFor }}</strong>
+      <span *ngIf="currentDataPermission === dataPermissions[0]">
+          can currently view {{ posssesivePronounText }} workplace details, but cannot edit them (they have
+          <strong>view only</strong> access).</span
+        >
+        <span *ngIf="currentDataPermission === dataPermissions[1]">
+          can currently view {{ posssesivePronounText }} workplace details and {{ posssesivePronounText }} staff records, but cannot edit them (they have
+          <strong>view only</strong> access).</span
+        >
+        <span *ngIf="currentDataPermission === dataPermissions[2]">
+          cannot currently view any of {{ posssesivePronounText }} data (they are linked by name only).</span
+        >
+    </p>
+    <p class="govuk-body">You can change their data permissions so that they:</p>
+    <ul class="govuk-list govuk-list--bullet">
+
+        <ng-container *ngIf="currentDataPermission === dataPermissions[0]">
+          <li>can view {{ posssesivePronounText }} workplace details and {{ posssesivePronounText }} staff records</li>
+          <li>are linked by name only and are unable to view any of {{ posssesivePronounText }} data</li>
+        </ng-container>
+        <ng-container *ngIf="currentDataPermission === dataPermissions[1]">
+          <li>can only view {{ posssesivePronounText }} workplace details</li>
+          <li>are linked by name only and are unable to view any of {{ posssesivePronounText }} data</li>
+        </ng-container>
+        <ng-container *ngIf="currentDataPermission === dataPermissions[2]">
+          <li>can only view {{ posssesivePronounText }} workplace details</li>
+          <li>can view {{ posssesivePronounText }} workplace details and {{ posssesivePronounText }} staff records</li>
+        </ng-container>
+    </ul>
+    <p class="govuk-!-margin-top-6">
+      What data do you want <strong>{{ workplaceNameToChangeDataPermissionsFor }}</strong> to have
+      <strong>view only</strong> access to?
+    </p>
+    <div>
+      <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off" aria-label="form">
+        <div
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="(submitted && form.get('dataPermission').invalid) || serverError"
+        >
+          <fieldset class="govuk-fieldset">
+            <span
+              *ngIf="submitted && form.get('dataPermission').errors"
+              id="dataPermission-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('dataPermission', 'required') }}
+            </span>
+            <div class="govuk-radios" data-module="govuk-radios">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                  id="dataPermission-0"
+                  name="dataPermission"
+                  [formControlName]="'dataPermission'"
+                  type="radio"
+                  [value]="dataPermissions[0]"
+                />
+
+                <label class="govuk-label govuk-radios__label" for="dataPermission-0">
+                  {{ dataPermissions[0] | newDataViewPermissions: isParent }}
+                </label>
+              </div>
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                  id="dataPermission-1"
+                  name="dataPermission"
+                  [formControlName]="'dataPermission'"
+                  type="radio"
+                  [value]="dataPermissions[1]"
+                />
+
+                <label class="govuk-label govuk-radios__label" for="dataPermission-1">
+                  {{ dataPermissions[1] | newDataViewPermissions: isParent }}
+                </label>
+              </div>
+              <div class="govuk-radios__divider govuk-!-text-align-left govuk-!-padding-top-2 govuk-!-padding-bottom-2">
+                or
+              </div>
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                  id="dataPermission-2"
+                  name="dataPermission"
+                  [formControlName]="'dataPermission'"
+                  type="radio"
+                  [value]="dataPermissions[2]"
+                />
+
+                <label class="govuk-label govuk-radios__label" for="dataPermission-2">
+                  {{ dataPermissions[2] | newDataViewPermissions: isParent }}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds govuk-!-margin-top-5">
+            <button type="submit" class="govuk-button" data-module="govuk-button">Save and return</button>
+            <a
+              href="#"
+              [routerLink]="['/workplace/view-all-workplaces']"
+              class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2"
+              data-testid="cancelLink"
+              >Cancel</a
+            >
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

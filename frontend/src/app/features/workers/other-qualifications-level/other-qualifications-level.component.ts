@@ -12,8 +12,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-other-qualifications-level',
-  templateUrl: './other-qualifications-level.component.html',
+    selector: 'app-other-qualifications-level',
+    templateUrl: './other-qualifications-level.component.html',
+    standalone: false
 })
 export class OtherQualificationsLevelComponent extends QuestionComponent {
   public qualifications: QualificationLevel[];

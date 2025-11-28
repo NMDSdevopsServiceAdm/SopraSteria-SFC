@@ -21,8 +21,9 @@ import { WdfEligibilityStatus } from '../../../core/model/wdf.model';
 import { Worker } from '../../../core/model/worker.model';
 
 @Component({
-  selector: 'app-wdf-data',
-  templateUrl: './wdf-data.component.html',
+    selector: 'app-wdf-data',
+    templateUrl: './wdf-data.component.html',
+    standalone: false
 })
 export class WdfDataComponent implements OnInit {
   public workplace: Establishment;

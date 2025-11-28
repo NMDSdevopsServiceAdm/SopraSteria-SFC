@@ -1,7 +1,7 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -16,7 +16,7 @@ import { environment } from 'src/environments/environment';
 describe('DeleteUserAccountComponent', () => {
   async function setup() {
     const component = await render(DeleteUserAccountComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         BackService,
         {
@@ -44,6 +44,8 @@ describe('DeleteUserAccountComponent', () => {
           provide: WindowRef,
           useClass: WindowRef,
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -80,7 +82,9 @@ describe('DeleteUserAccountComponent', () => {
     component.fixture.detectChanges();
 
     const httpTestingController = TestBed.inject(HttpTestingController);
-    const req = httpTestingController.expectOne(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}/${userUid}`);
+    const req = httpTestingController.expectOne(
+      `${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}/${userUid}`,
+    );
     expect(req.request.body).toBeNull();
   });
 

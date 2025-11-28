@@ -11,8 +11,9 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
-  selector: 'app-select-record-type',
-  templateUrl: './select-record-type.component.html',
+    selector: 'app-select-record-type',
+    templateUrl: './select-record-type.component.html',
+    standalone: false
 })
 export class SelectRecordTypeComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

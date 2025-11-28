@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-data-area-useful-link-recruitment',
-  templateUrl: './data-area-useful-link-recruitment.component.html',
+    selector: 'app-data-area-useful-link-recruitment',
+    templateUrl: './data-area-useful-link-recruitment.component.html',
+    standalone: false
 })
 export class DataAreaUsefulLinkRecruitmentComponent implements OnInit {
   public usefulLinkRecruitment;

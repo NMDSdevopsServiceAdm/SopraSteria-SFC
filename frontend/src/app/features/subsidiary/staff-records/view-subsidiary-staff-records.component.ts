@@ -8,8 +8,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
-  selector: 'app-view-subsidiary-staff-records',
-  templateUrl: './view-subsidiary-staff-records.component.html',
+    selector: 'app-view-subsidiary-staff-records',
+    templateUrl: './view-subsidiary-staff-records.component.html',
+    standalone: false
 })
 export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
   public workplace: Establishment;

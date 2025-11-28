@@ -1,6 +1,7 @@
 import { environment } from 'src/environments/environment';
 
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import {
   expectedTrainingCategoryGroupsAfterSorting,
@@ -15,8 +16,8 @@ describe('TrainingCategoryService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [TrainingCategoryService],
+      imports: [],
+      providers: [TrainingCategoryService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(TrainingCategoryService);
 

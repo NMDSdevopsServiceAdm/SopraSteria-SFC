@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -38,7 +39,7 @@ describe('MainJobRoleComponent', () => {
       path = 'staff-record-summary';
     }
     const setupTools = await render(MainJobRoleComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       declarations: [ProgressBarComponent],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -100,7 +101,7 @@ describe('MainJobRoleComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const component = setupTools.fixture.componentInstance;

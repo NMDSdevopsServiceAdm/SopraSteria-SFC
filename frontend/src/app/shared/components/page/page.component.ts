@@ -3,8 +3,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Page } from '@core/model/page.model';
 
 @Component({
-  selector: 'app-page',
-  templateUrl: './page.component.html',
+    selector: 'app-page',
+    templateUrl: './page.component.html',
+    standalone: false
 })
 export class PageComponent implements OnInit {
   @Input() public page: Page;

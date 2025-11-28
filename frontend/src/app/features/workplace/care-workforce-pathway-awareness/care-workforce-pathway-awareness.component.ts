@@ -12,8 +12,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-  selector: 'app-care-workforce-pathway-awareness',
-  templateUrl: './care-workforce-pathway-awareness.component.html',
+    selector: 'app-care-workforce-pathway-awareness',
+    templateUrl: './care-workforce-pathway-awareness.component.html',
+    standalone: false
 })
 export class CareWorkforcePathwayAwarenessComponent extends Question implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;

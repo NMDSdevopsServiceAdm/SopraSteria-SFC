@@ -1,4 +1,5 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
 
@@ -12,8 +13,8 @@ describe('TrainingService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [TrainingService],
+      imports: [],
+      providers: [TrainingService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(TrainingService);
 

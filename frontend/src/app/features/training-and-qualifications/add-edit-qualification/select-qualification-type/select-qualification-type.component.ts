@@ -13,8 +13,9 @@ import {
 } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 
 @Component({
-  selector: 'app-select-qualification-type',
-  templateUrl: './select-qualification-type.component.html',
+    selector: 'app-select-qualification-type',
+    templateUrl: './select-qualification-type.component.html',
+    standalone: false
 })
 export class SelectQualificationTypeComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;

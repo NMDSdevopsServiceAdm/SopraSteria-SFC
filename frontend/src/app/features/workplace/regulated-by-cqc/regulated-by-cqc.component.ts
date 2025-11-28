@@ -10,8 +10,9 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { RegulatedByCQCDirective } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
 
 @Component({
-  selector: 'app-regulated-by-cqc',
-  templateUrl: './regulated-by-cqc.component.html',
+    selector: 'app-regulated-by-cqc',
+    templateUrl: './regulated-by-cqc.component.html',
+    standalone: false
 })
 export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
   public nextRoute: string[];

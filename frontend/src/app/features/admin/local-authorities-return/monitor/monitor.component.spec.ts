@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
@@ -14,7 +15,7 @@ import { MonitorComponent } from './monitor.component';
 describe('MonitorComponent', () => {
   async function setup() {
     const component = await render(MonitorComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: LocalAuthoritiesReturnService, useClass: MockLocalAuthoritiesReturnService },
@@ -41,7 +42,7 @@ describe('MonitorComponent', () => {
             },
           },
         },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
 
     const injector = getTestBed();

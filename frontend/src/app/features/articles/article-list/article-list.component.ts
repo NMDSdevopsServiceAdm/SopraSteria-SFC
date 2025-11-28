@@ -4,9 +4,10 @@ import { Article } from '@core/model/article.model';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-article-list',
-  templateUrl: './article-list.component.html',
-  providers: [],
+    selector: 'app-article-list',
+    templateUrl: './article-list.component.html',
+    providers: [],
+    standalone: false
 })
 export class ArticleListComponent implements OnInit, OnDestroy {
   public articleList: Article[];

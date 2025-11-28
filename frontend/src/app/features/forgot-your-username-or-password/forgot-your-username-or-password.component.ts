@@ -5,8 +5,9 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
-  selector: 'app-forgot-your-username-or-password',
-  templateUrl: './forgot-your-username-or-password.component.html',
+    selector: 'app-forgot-your-username-or-password',
+    templateUrl: './forgot-your-username-or-password.component.html',
+    standalone: false
 })
 export class ForgotYourUsernameOrPasswordComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

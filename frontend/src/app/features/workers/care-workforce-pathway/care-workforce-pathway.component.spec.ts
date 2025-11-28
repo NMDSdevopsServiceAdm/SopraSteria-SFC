@@ -1,5 +1,6 @@
+import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -26,7 +27,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
   async function setup(overrides: any = {}) {
     const insideFlow = overrides.insideFlow ?? false;
     const setupTools = await render(CareWorkforcePathwayRoleComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
+      imports: [SharedModule, RouterModule, WorkersModule],
       declarations: [DetailsComponent],
       providers: [
         UntypedFormBuilder,
@@ -58,7 +59,7 @@ describe('CareWorkforcePathwayRoleComponent', () => {
         },
         AlertService,
         WindowRef,
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
     });
     const injector = getTestBed();
 

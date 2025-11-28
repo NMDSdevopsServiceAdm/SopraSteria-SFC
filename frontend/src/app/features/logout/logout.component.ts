@@ -4,8 +4,9 @@ import { AuthService } from '@core/services/auth.service';
 import { IdleService } from '@core/services/idle.service';
 
 @Component({
-  selector: 'app-logout',
-  templateUrl: './logout.component.html',
+    selector: 'app-logout',
+    templateUrl: './logout.component.html',
+    standalone: false
 })
 export class LogoutComponent {
   private jwt = new JwtHelperService();

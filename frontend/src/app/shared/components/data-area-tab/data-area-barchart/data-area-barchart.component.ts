@@ -4,9 +4,10 @@ import * as Highcharts from 'highcharts';
 import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-builder';
 
 @Component({
-  selector: 'app-data-area-barchart',
-  templateUrl: './data-area-barchart.component.html',
-  styleUrls: ['./data-area-barchart.component.scss'],
+    selector: 'app-data-area-barchart',
+    templateUrl: './data-area-barchart.component.html',
+    styleUrls: ['./data-area-barchart.component.scss'],
+    standalone: false
 })
 export class DataAreaBarchartComponent implements OnChanges {
   Highcharts: typeof Highcharts = Highcharts;

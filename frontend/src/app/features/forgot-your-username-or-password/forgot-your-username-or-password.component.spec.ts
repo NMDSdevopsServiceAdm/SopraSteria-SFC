@@ -1,7 +1,6 @@
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -11,7 +10,7 @@ import { ForgotYourUsernameOrPasswordComponent } from './forgot-your-username-or
 describe('ForgotYourUsernameOrPasswordComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameOrPasswordComponent, {
-      imports: [FormsModule, ReactiveFormsModule, SharedModule, RouterTestingModule],
+      imports: [FormsModule, ReactiveFormsModule, SharedModule, RouterModule],
       providers: [
         {
           provide: ActivatedRoute,

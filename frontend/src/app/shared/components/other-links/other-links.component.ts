@@ -1,8 +1,9 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-other-links',
-  templateUrl: './other-links.component.html',
+    selector: 'app-other-links',
+    templateUrl: './other-links.component.html',
+    standalone: false
 })
 export class OtherLinksComponent implements OnInit {
   @Input() canBulkUpload: boolean;
@@ -15,6 +16,20 @@ export class OtherLinksComponent implements OnInit {
   @Input() canViewDataPermissionsLink: boolean;
   @Input() canViewChangeDataOwner: boolean;
   @Input() isParentSubsidiaryView: boolean;
+  @Input() parentStatusRequested: boolean;
+  @Input() isOwnershipRequested: boolean;
+  @Output() cancelChangeDataOwnerRequestEvent: EventEmitter<Event> = new EventEmitter();
+  @Output() ownershipChangeMessageEvent: EventEmitter<Event> = new EventEmitter();
 
   ngOnInit(): void {}
+
+  public cancelChangeDataOwnerRequest(event: Event): void {
+    event.preventDefault();
+    this.cancelChangeDataOwnerRequestEvent.emit(event);
+  }
+
+  public ownershipChangeMessage(event: Event): void {
+    event.preventDefault();
+    this.ownershipChangeMessageEvent.emit(event);
+  }
 }

@@ -4,8 +4,9 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-cqc-main-service-change-list',
-  templateUrl: './cqc-main-service-change-list.component.html',
+    selector: 'app-cqc-main-service-change-list',
+    templateUrl: './cqc-main-service-change-list.component.html',
+    standalone: false
 })
 export class CQCMainServiceChangeListComponent implements OnInit {
   public pendingCQCMainServiceChanges: any;

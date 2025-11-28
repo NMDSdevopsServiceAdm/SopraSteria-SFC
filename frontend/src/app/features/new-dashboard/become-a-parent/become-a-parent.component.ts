@@ -12,9 +12,10 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-become-a-parent',
-  templateUrl: './become-a-parent.component.html',
-  styleUrls: ['./become-a-parent.component.scss'],
+    selector: 'app-become-a-parent',
+    templateUrl: './become-a-parent.component.html',
+    styleUrls: ['./become-a-parent.component.scss'],
+    standalone: false
 })
 export class BecomeAParentComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();

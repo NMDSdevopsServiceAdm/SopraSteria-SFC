@@ -1,7 +1,8 @@
+import { provideHttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -52,7 +53,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
     const localStorageSetSpy = spyOn(localStorage, 'setItem');
 
     const setupTools = await render(ViewSubsidiaryHomeComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule],
       providers: [
         WindowRef,
         {
@@ -106,7 +107,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
           useClass: MockEstablishmentService,
         },
         { provide: WindowToken, useValue: MockWindow },
-      ],
+      provideHttpClient(), provideHttpClientTesting(),],
       declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
       componentProperties: {
         subsidiaryWorkplace: establishment,

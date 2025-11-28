@@ -1,4 +1,5 @@
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,7 +14,7 @@ import { BehaviorSubject } from 'rxjs';
 describe('WorkplaceNameAddressComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(WorkplaceNameAddressComponent, {
-      imports: [SharedModule, WorkplaceModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [SharedModule, WorkplaceModule, FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: RegistrationService,
@@ -34,6 +35,8 @@ describe('WorkplaceNameAddressComponent', () => {
           },
         },
         UntypedFormBuilder,
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -62,9 +65,8 @@ describe('WorkplaceNameAddressComponent', () => {
     const expectedTitle = `What's your workplace name and address?`;
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
-    });
+    await fixture.whenStable();
+    expect(getByText(expectedTitle, { exact: false })).toBeTruthy();
   });
 
   describe('preFillForm()', () => {
@@ -80,17 +82,16 @@ describe('WorkplaceNameAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      fixture.whenStable().then(() => {
-        expect(spy).toHaveBeenCalled();
-        expect(component.form.value).toEqual({
-          workplaceName: 'Workplace Name',
-          address1: '1 Street',
-          address2: 'Second Line',
-          address3: 'Third Line',
-          townOrCity: 'Manchester',
-          county: 'Greater Manchester',
-          postcode: 'ABC 123',
-        });
+      await fixture.whenStable();
+      expect(spy).toHaveBeenCalled();
+      expect(component.form.value).toEqual({
+        workplaceName: 'Workplace Name',
+        address1: '1 Street',
+        address2: 'Second Line',
+        address3: 'Third Line',
+        townOrCity: 'Manchester',
+        county: 'Greater Manchester',
+        postcode: 'ABC 123',
       });
     });
 
@@ -106,17 +107,16 @@ describe('WorkplaceNameAddressComponent', () => {
       const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
-      fixture.whenStable().then(() => {
-        expect(spy).toHaveBeenCalled();
-        expect(component.form.value).toEqual({
-          workplaceName: 'Workplace Name',
-          address1: '1 Street',
-          address2: 'Second Line',
-          address3: 'Third Line',
-          townOrCity: 'Manchester',
-          county: 'Greater Manchester',
-          postcode: 'ABC 123',
-        });
+      await fixture.whenStable();
+      expect(spy).toHaveBeenCalled();
+      expect(component.form.value).toEqual({
+        workplaceName: 'Workplace Name',
+        address1: '1 Street',
+        address2: 'Second Line',
+        address3: 'Third Line',
+        townOrCity: 'Manchester',
+        county: 'Greater Manchester',
+        postcode: 'ABC 123',
       });
     });
   });

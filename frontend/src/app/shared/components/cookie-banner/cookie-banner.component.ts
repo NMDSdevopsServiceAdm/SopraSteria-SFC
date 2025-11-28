@@ -7,9 +7,10 @@ import { AnalyticCookiesService } from '@core/services/analytic-cookies.service'
 import { UserService } from '@core/services/user.service';
 
 @Component({
-  selector: 'app-cookie-banner',
-  templateUrl: './cookie-banner.component.html',
-  styleUrl: './cookie-banner.component.scss',
+    selector: 'app-cookie-banner',
+    templateUrl: './cookie-banner.component.html',
+    styleUrl: './cookie-banner.component.scss',
+    standalone: false
 })
 export class CookieBannerComponent implements OnInit, OnDestroy {
   private _isShowing: BehaviorSubject<boolean> = new BehaviorSubject(null);

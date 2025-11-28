@@ -7,8 +7,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-account-saved',
-  templateUrl: './user-account-saved.component.html',
+    selector: 'app-account-saved',
+    templateUrl: './user-account-saved.component.html',
+    standalone: false
 })
 export class UserAccountSavedComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();

@@ -9,8 +9,9 @@ import { TrainingService } from '@core/services/training.service';
 import { ExpiredAndExpiringTrainingDirective } from '../expired-and-expiring-training/expired-and-expiring-training.directive';
 
 @Component({
-  selector: 'app-expired-training',
-  templateUrl: '../expired-and-expiring-training/expired-and-expiring-training.component.html',
+    selector: 'app-expired-training',
+    templateUrl: '../expired-and-expiring-training/expired-and-expiring-training.component.html',
+    standalone: false
 })
 export class ExpiredTrainingComponent extends ExpiredAndExpiringTrainingDirective {
   constructor(

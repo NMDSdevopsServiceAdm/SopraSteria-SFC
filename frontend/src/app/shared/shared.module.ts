@@ -74,7 +74,6 @@ import { SelectUploadFileComponent } from './components/select-upload-file/selec
 import { SelectViewPanelComponent } from './components/select-view-panel/select-view-panel.component';
 import { SelectWorkplaceDropdownFormComponent } from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
 import { SelectWorkplaceRadioButtonFormComponent } from './components/select-workplace-radio-button-form/select-workplace-radio-button-form.component';
-import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
 import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
 import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
 import { PersonalDetailsComponent } from './components/staff-record-summary/personal-details/personal-details.component';
@@ -202,7 +201,6 @@ import { SeperatorLineComponent } from './components/seperator-line/seperator-li
     OrderOtherPipe,
     LongDatePipe,
     RejectRequestDialogComponent,
-    SetDataPermissionDialogComponent,
     TrainingAndQualificationsCategoriesComponent,
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,
@@ -341,7 +339,6 @@ import { SeperatorLineComponent } from './components/seperator-line/seperator-li
     TrainingLinkPanelComponent,
     LongDatePipe,
     RejectRequestDialogComponent,
-    SetDataPermissionDialogComponent,
     TrainingAndQualificationsCategoriesComponent,
     TrainingAndQualificationsSummaryComponent,
     TrainingInfoPanelComponent,

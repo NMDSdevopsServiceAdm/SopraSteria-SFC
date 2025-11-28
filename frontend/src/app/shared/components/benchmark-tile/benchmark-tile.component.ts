@@ -3,9 +3,10 @@ import { Metric, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { BenchmarksUtil } from '@core/utils/benchmarks-util';
 
 @Component({
-  selector: 'app-benchmark-tile',
-  templateUrl: './benchmark-tile.component.html',
-  styleUrls: ['./benchmark-tile.component.scss'],
+    selector: 'app-benchmark-tile',
+    templateUrl: './benchmark-tile.component.html',
+    styleUrls: ['./benchmark-tile.component.scss'],
+    standalone: false
 })
 export class BenchmarkTileComponent {
   @Input() public canViewFullContent: boolean;

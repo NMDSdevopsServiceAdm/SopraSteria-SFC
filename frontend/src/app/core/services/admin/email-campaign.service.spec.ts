@@ -1,16 +1,17 @@
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { EmailCampaignService } from './email-campaign.service';
 import { environment } from 'src/environments/environment';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('EmailCampaignService', () => {
   let service: EmailCampaignService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [EmailCampaignService],
+      imports: [],
+      providers: [EmailCampaignService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(EmailCampaignService);
   });
@@ -27,7 +28,9 @@ describe('EmailCampaignService', () => {
     service.getInactiveWorkplaces().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces?stopViewRefresh=false`);
+    const req = http.expectOne(
+      `${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces?stopViewRefresh=false`,
+    );
 
     expect(req.request.method).toBe('GET');
   });
@@ -45,7 +48,9 @@ describe('EmailCampaignService', () => {
     service.getInactiveWorkplacesHistory().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/history`);
+    const req = http.expectOne(
+      `${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/history`,
+    );
 
     expect(req.request.method).toBe('GET');
   });
@@ -54,7 +59,9 @@ describe('EmailCampaignService', () => {
     service.getInactiveWorkplacesReport().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/report?stopViewRefresh=false`);
+    const req = http.expectOne(
+      `${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/report?stopViewRefresh=false`,
+    );
 
     expect(req.request.method).toBe('GET');
   });
@@ -63,7 +70,9 @@ describe('EmailCampaignService', () => {
     service.getTargetedTotalEmails('primaryUsers').subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/targeted-emails/total?groupType=primaryUsers`);
+    const req = http.expectOne(
+      `${environment.appRunnerEndpoint}/api/admin/email-campaigns/targeted-emails/total?groupType=primaryUsers`,
+    );
 
     expect(req.request.method).toBe('GET');
   });
@@ -92,7 +101,9 @@ describe('EmailCampaignService', () => {
     service.getTargetedTotalValidEmails(new FormData()).subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/targeted-emails/total?groupType=multipleAccounts`);
+    const req = http.expectOne(
+      `${environment.appRunnerEndpoint}/api/admin/email-campaigns/targeted-emails/total?groupType=multipleAccounts`,
+    );
 
     expect(req.request.method).toBe('POST');
   });

@@ -6,6 +6,7 @@
 ></app-new-dashboard-header>
 
 <div class="govuk-width-container govuk-!-margin-top-2">
+  <app-alert></app-alert>
   <div class="govuk-!-margin-top-7">
     <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
       <div data-testid="staff-records">

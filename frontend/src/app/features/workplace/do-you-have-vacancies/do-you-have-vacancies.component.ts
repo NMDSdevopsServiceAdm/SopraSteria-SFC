@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.directive';
 
 @Component({
-  selector: 'app-do-you-have-vacancies',
-  templateUrl:
-    '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
+    selector: 'app-do-you-have-vacancies',
+    templateUrl: '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
+    standalone: false
 })
 export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanciesDirective {
   public heading = 'Do you have any current staff vacancies?';
