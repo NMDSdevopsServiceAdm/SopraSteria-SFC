@@ -1,6 +1,6 @@
 const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
 const { fromContainerMetadata } = require('@aws-sdk/credential-providers');
-const { mappings } = require('../../../../reference/BUDIMappings');
+const { mappings, mappingBuilder } = require('../../../../reference/BUDIMappings');
 const config = require('../../../config/config');
 const region = String(config.get('bulkupload.lambdaRegion'));
 const env = String(config.get('env'));
@@ -49,10 +49,13 @@ const validateWorkerLambda = async (thisLine, currentLineNumber, existingWorker)
 };
 
 const validateTrainingLambda = async (thisLine, currentLineNumber) => {
+  const mappingsFromBuilder = await mappingBuilder();
+  const trainingMappings = { ...mappings, ...mappingsFromBuilder };
+
   const payload = {
     thisLine,
     currentLineNumber,
-    mappings,
+    mappings: trainingMappings,
   };
   return await invokeLambda('validateTraining', payload);
 };
