@@ -269,6 +269,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     return {
       ...this.trainingRecord,
       trainingCategory: { id: this.trainingRecord.trainingCategory.id },
+      trainingCourseFK: this.selectedTrainingCourse.id,
       completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
       expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
       notes: notes.value ?? null,
