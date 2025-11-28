@@ -27,6 +27,7 @@ const radioButtonOptions = [
 @Component({
   selector: 'app-select-which-training-records-to-apply',
   templateUrl: './select-which-training-records-to-apply.component.html',
+  standalone: false,
 })
 export class SelectWhichTrainingRecordsToApplyComponent {
   @ViewChild('formEl') formEl: ElementRef;
