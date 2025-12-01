@@ -6,7 +6,7 @@ import {
   fillInAddress,
   inputLocationOrPostcode,
 } from '../../support/page_objects/createNewWorkplaceForms';
-import { fillUserRegistrationForm, createUserWithinWorkplace } from '../../support/page_objects/userRegistrationForms';
+import { createUserWithinWorkplace } from '../../support/page_objects/userRegistrationForms';
 
 describe('change data owner', () => {
   const subsidiaryWorkplaceName = 'Workplace for data ownership';
@@ -64,14 +64,13 @@ describe('change data owner', () => {
     cy.updateDataOwner({
       parentEstablishmentID: ParentEstablishment.id,
       subWorkplaceName: subsidiaryWorkplaceName,
-      dataOwnerValue: 'Workplace',
+      dataOwnerValue: 'Parent',
     });
     cy.reload();
   });
 
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
-    cy.get('a').contains('Your other workplaces').click();
+    cy.loginAsUser(loginId, mockPassword);
   });
 
   after(() => {
@@ -81,42 +80,43 @@ describe('change data owner', () => {
   });
 
   it('should make a request to become the data owner and then cancel the request', () => {
-    cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data owner').click();
+    cy.get('[data-cy="tab-list"]').contains('Home').click();
+    cy.get(`[data-cy="home-other-links"]`).contains('Change data owner').click();
 
     cy.get('h1').contains('Change data owner').should('be.visible');
     cy.contains(ParentEstablishment.name);
     cy.contains(subsidiaryWorkplaceName);
 
-    cy.getByLabel('Only their workplace details').click();
+    cy.getByLabel('Only your workplace details').click();
     cy.contains('Send change request').click();
 
     cy.get(`[data-testid="generic_alert"]`).contains("You've sent a change data owner request");
-    cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Data request pending').click();
+    cy.get(`[data-cy="home-other-links"]`).contains('Data request pending').click();
 
     cy.get('h1').contains('Your request to change ownership of data is pending').should('be.visible');
 
     cy.get('button').contains('Cancel data owner request').click();
 
     cy.get(`[data-testid="generic_alert"]`).contains('Request to change data owner has been cancelled');
-    cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data owner');
+    cy.get(`[data-cy="home-other-links"]`).contains('Change data owner').click();
   });
 
-  it('should make a request to become the data owner and the subsidiary rejects the request', () => {
-    cy.intercept('POST', 'api/logout').as('logout');
-    cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data owner').click();
+  it('should make a request to become the data owner and the parent rejects the request', () => {
+    cy.get('[data-cy="tab-list"]').contains('Home').click();
+    cy.get(`[data-cy="home-other-links"]`).contains('Change data owner').click();
 
     cy.get('h1').contains('Change data owner').should('be.visible');
     cy.contains(ParentEstablishment.name);
     cy.contains(subsidiaryWorkplaceName);
 
-    cy.getByLabel('Only their workplace details').click();
+    cy.getByLabel('Only your workplace details').click();
     cy.contains('Send change request').click();
 
     cy.get(`[data-testid="generic_alert"]`).contains("You've sent a change data owner request");
     cy.get('a').contains('Sign out').click();
 
-    // log into sub
-    cy.loginAsUser(loginId, mockPassword);
+    // log into parent
+    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     cy.contains('Notifications').click();
 
     cy.get('h1').contains('Notifications').should('be.visible');
@@ -131,33 +131,32 @@ describe('change data owner', () => {
     cy.get('button').contains('Continue').click();
 
     cy.get(`[data-testid="generic_alert"]`).contains(
-      `Your decision to transfer ownership of data has been sent to ${ParentEstablishment.name}`,
+      `Your decision to transfer ownership of data has been sent to ${subsidiaryWorkplaceName}`,
     );
     cy.get('a').contains('Sign out').click();
 
-    cy.wait('@logout');
-
-    //log into parent
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
-    cy.get('a').contains('Your other workplaces').click();
-    cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data owner');
+    //log back into sub
+    cy.loginAsUser(loginId, mockPassword);
+    cy.get('[data-cy="tab-list"]').contains('Home').click();
+    cy.get(`[data-cy="home-other-links"]`).contains('Change data owner');
   });
 
-  it('should make a request to become the data owner and the subsidiary approves the request', () => {
-    cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data owner').click();
+  it('should make a request to become the data owner and the parent approves the request', () => {
+    cy.get('[data-cy="tab-list"]').contains('Home').click();
+    cy.get(`[data-cy="home-other-links"]`).contains('Change data owner').click();
 
     cy.get('h1').contains('Change data owner').should('be.visible');
     cy.contains(ParentEstablishment.name);
     cy.contains(subsidiaryWorkplaceName);
 
-    cy.getByLabel('Only their workplace details').click();
+    cy.getByLabel('Only your workplace details').click();
     cy.contains('Send change request').click();
 
     cy.get(`[data-testid="generic_alert"]`).contains("You've sent a change data owner request");
     cy.get('a').contains('Sign out').click();
 
-    // log into sub
-    cy.loginAsUser(loginId, mockPassword);
+    // log into parent
+    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     cy.contains('Notifications').click();
 
     cy.get('h1').contains('Notifications').should('be.visible');
@@ -168,13 +167,15 @@ describe('change data owner', () => {
     cy.get('button').contains('Approve request').click();
 
     cy.get(`[data-testid="generic_alert"]`).contains(
-      `Your decision to transfer ownership of data has been sent to ${ParentEstablishment.name}`,
+      `Your decision to transfer ownership of data has been sent to ${subsidiaryWorkplaceName}`,
     );
+    cy.get('a').contains('Your other workplaces').click();
+    cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data owner');
     cy.get('a').contains('Sign out').click();
 
-    //log into parent
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
-    cy.get('a').contains('Your other workplaces').click();
-    cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data owner').should('not.exist');
+    //log back into sub
+    cy.loginAsUser(loginId, mockPassword);
+    cy.get('[data-cy="tab-list"]').contains('Home').click();
+    cy.get(`[data-cy="home-other-links"]`).contains('Change data owner').should('not.exist');
   });
 });
