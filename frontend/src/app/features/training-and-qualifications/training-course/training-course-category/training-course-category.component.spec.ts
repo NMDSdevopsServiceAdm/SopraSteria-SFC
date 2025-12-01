@@ -11,7 +11,7 @@ import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { AlertService } from '@core/services/alert.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
-import { MockTrainingCourseService } from '@core/test-utils/MockTrainingCourseService';
+import { MockTrainingCourseService, trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -32,6 +32,7 @@ describe('TrainingCourseCategoryComponent', () => {
 
   async function setup(overrides: any = {}) {
     const newTrainingCourseToBeAdded = overrides?.newTrainingCourseToBeAdded ?? mockTrainingCourseToBeAdded;
+    const trainingCourseToBeUpdated = overrides?.trainingCourseToBeUpdated ?? undefined;
     const journeyType = overrides?.journeyType ?? 'Add';
 
     const setupTools = await render(TrainingCourseCategoryComponent, {
@@ -39,7 +40,7 @@ describe('TrainingCourseCategoryComponent', () => {
       providers: [
         {
           provide: TrainingCourseService,
-          useFactory: MockTrainingCourseService.factory({ newTrainingCourseToBeAdded }),
+          useFactory: MockTrainingCourseService.factory({ newTrainingCourseToBeAdded, trainingCourseToBeUpdated }),
         },
         {
           provide: ActivatedRoute,
@@ -73,6 +74,7 @@ describe('TrainingCourseCategoryComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
+    const route = injector.inject(ActivatedRoute) as ActivatedRoute;
 
     const trainingCourseService = injector.inject(TrainingCourseService);
     const createTrainingCourseSpy = spyOn(trainingCourseService, 'createTrainingCourse').and.returnValue(of(null));
@@ -87,6 +89,7 @@ describe('TrainingCourseCategoryComponent', () => {
       trainingCourseService,
       createTrainingCourseSpy,
       alertSpy,
+      route,
     };
   }
 
@@ -95,21 +98,59 @@ describe('TrainingCourseCategoryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show a heading for the page', async () => {
-    const { getByRole, getByText } = await setup();
+  describe('when adding a training course', () => {
+    it('should show a heading for the page', async () => {
+      const { getByRole, getByText } = await setup();
 
-    const expectedHeadingText = 'Select a category that best matches this training course';
-    expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
-    expect(getByText('Add a training course')).toBeTruthy();
+      const expectedHeadingText = 'Select a category that best matches this training course';
+      expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
+      expect(getByText('Add a training course')).toBeTruthy();
+    });
+
+    it('should show the training course name and a "Change" link to return to details page', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Training course name')).toBeTruthy();
+      expect(getByText(mockTrainingCourseToBeAdded.name)).toBeTruthy();
+
+      expect(getByText('Change').getAttribute('href')).toEqual('/details');
+    });
   });
 
-  it('should show the training course name and a "Change" link to return to details page', async () => {
-    const { getByText } = await setup();
+  describe('when editing a training course', () => {
+    it('should show a heading for the page', async () => {
+      const mockTrainingCourse = trainingCourseBuilder();
+      const { getByRole, getByText } = await setup({
+        journeyType: 'Edit',
+        trainingCourseToBeUpdated: mockTrainingCourse,
+      });
 
-    expect(getByText('Training course name')).toBeTruthy();
-    expect(getByText(mockTrainingCourseToBeAdded.name)).toBeTruthy();
+      const expectedHeadingText = 'Select a category that best matches this training course';
+      expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
+      expect(getByText('Training and qualifications')).toBeTruthy();
+    });
 
-    expect(getByText('Change').getAttribute('href')).toEqual('/details');
+    it('should show the training course name and a "Change" link to return to details page', async () => {
+      const mockTrainingCourse = trainingCourseBuilder();
+      const { getByText } = await setup({ journeyType: 'Edit', trainingCourseToBeUpdated: mockTrainingCourse });
+
+      expect(getByText('Training course name')).toBeTruthy();
+      expect(getByText(mockTrainingCourse.name)).toBeTruthy();
+
+      expect(getByText('Change').getAttribute('href')).toEqual('/details');
+    });
+
+    it('should prefill the category of the training course', async () => {
+      const mockTrainingCourse = trainingCourseBuilder();
+      const { getByRole, component } = await setup({
+        journeyType: 'Edit',
+        trainingCourseToBeUpdated: mockTrainingCourse,
+      });
+
+      const radioButton = getByRole('radio', { name: mockTrainingCourse.trainingCategoryName }) as HTMLInputElement;
+      expect(radioButton.checked).toBeTruthy();
+      expect(component.form.get('category').value).toEqual(mockTrainingCourse.trainingCategoryId);
+    });
   });
 
   it('should show an accordion with the correct categories in', async () => {
@@ -200,6 +241,36 @@ describe('TrainingCourseCategoryComponent', () => {
           type: 'success',
           message: 'Training course added',
         });
+      });
+    });
+
+    describe('when editing a training course', () => {
+      it('should show a "Continue" button instead', async () => {
+        const mockTrainingCourse = trainingCourseBuilder();
+        const { getByRole } = await setup({
+          journeyType: 'Edit',
+          trainingCourseToBeUpdated: mockTrainingCourse,
+        });
+
+        expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
+      });
+
+      it('should update the training course in trainingCourseService', async () => {
+        const mockTrainingCourse = trainingCourseBuilder();
+        const { getByRole, trainingCourseService, routerSpy, route } = await setup({
+          journeyType: 'Edit',
+          trainingCourseToBeUpdated: mockTrainingCourse,
+        });
+        const updateTrainingCourseSpy = spyOnProperty(trainingCourseService, 'trainingCourseToBeUpdated', 'set');
+
+        userEvent.click(getByRole('radio', { name: trainingCategories[1].category }));
+        userEvent.click(getByRole('button', { name: 'Continue' }));
+
+        expect(updateTrainingCourseSpy).toHaveBeenCalledWith({
+          ...mockTrainingCourse,
+          trainingCategoryId: trainingCategories[1].id,
+        });
+        expect(routerSpy).toHaveBeenCalledWith(['../details'], { relativeTo: route });
       });
     });
   });

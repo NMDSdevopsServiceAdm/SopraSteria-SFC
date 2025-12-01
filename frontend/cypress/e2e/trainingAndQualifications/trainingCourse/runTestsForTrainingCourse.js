@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 
 import { onHomePage } from '../../../support/page_objects/onHomePage';
+import { clickIntoTrainingCourse, expectPageToHaveDetails, fillInCourseDetails } from './helpers';
 
 export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
   describe('Add and manage training course', () => {
@@ -9,12 +10,15 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
     const workerName = 'test worker for training course';
 
     before(() => {
+      cy.unlinkAllWorkerTrainingFromCourse();
+      cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
       cy.deleteAllTrainingCourses(establishmentID);
       cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Test training course' });
       cy.insertTestWorker({ establishmentID, workerName });
     });
 
     after(() => {
+      cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
       cy.deleteTestWorkerFromDb(workerName);
       cy.deleteAllTrainingCourses(establishmentID);
     });
@@ -31,6 +35,15 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
     });
 
     it('should be able to add a new training course', () => {
+      const newCourseDetails = {
+        courseName: 'Test add new training course',
+        accredited: 'No',
+        deliveredBy: 'In-house staff',
+        howWasItDelivered: 'E-learning',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+      };
+
       onHomePage.clickTab('Training and qualifications');
       cy.contains('Add and manage training').click();
       cy.get('a').contains('Add and manage training courses').click();
@@ -38,12 +51,8 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
       cy.get('a').contains('Add a training course').click();
 
       cy.get('h1').should('contain', 'Add training course details');
-      cy.getByLabel('Training course name').type('Test add new training course');
-      cy.getByLabel('Yes').click();
-      cy.getByLabel('External provider').click();
-      cy.getByLabel('Provider name').type('Care skill academy');
-      cy.getByLabel('Face to face').click();
-      cy.getByLabel('This training does not expire').click();
+
+      fillInCourseDetails(newCourseDetails);
 
       cy.get('button').contains('Continue').click();
 
@@ -56,7 +65,151 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
       cy.get('h1').should('contain', 'Add and manage training courses');
       cy.get('app-alert span').should('contain', 'Training course added');
 
-      cy.get('[data-testid="training-course-table"]').should('contain.text', 'Test add new training course');
+      // Verify that the training course details is same as added
+      cy.get('[data-testid="training-course-table"]').should('contain.text', newCourseDetails.courseName);
+      clickIntoTrainingCourse(newCourseDetails.courseName);
+      expectPageToHaveDetails(newCourseDetails);
+    });
+
+    describe('edit training course', () => {
+      const confirmationPageHeading = 'Select which training records you want the updated course details to apply to?';
+      const radioLabels = {
+        onlyNew: 'Only apply the updated course details to NEW training records that you add in the future',
+        existingAndNew: 'Apply the updated course details to EXISTING and NEW training records',
+      };
+      const trainingCourseName = 'Test linked training course';
+      const trainingRecordTitle = 'Test training record linked to course';
+      const workerName = 'Test worker for linked training course';
+
+      beforeEach(() => {
+        cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: trainingCourseName });
+
+        cy.insertTestWorker({ establishmentID, workerName });
+        cy.addWorkerTrainingLinkedToCourse({
+          establishmentID,
+          workerName,
+          categoryId: 1,
+          trainingCourseName,
+          trainingTitle: trainingRecordTitle,
+        });
+      });
+
+      afterEach(() => {
+        cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
+        cy.deleteTestWorkerFromDb(workerName);
+        cy.deleteAllTrainingCourses(establishmentID);
+      });
+
+      const changedCourseDetail = {
+        courseName: 'Changed course name',
+        categoryName: 'Medication management',
+        accredited: 'No',
+        deliveredBy: 'External provider',
+        providerName: 'Care skill academy',
+        howWasItDelivered: 'Face to face',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+      };
+
+      it('should be able to edit a training course and apply the change to linked training records', () => {
+        onHomePage.clickTab('Training and qualifications');
+        cy.contains('Add and manage training').click();
+        cy.get('a').contains('Add and manage training courses').click();
+        cy.get('h1').should('contain', 'Add and manage training courses');
+
+        clickIntoTrainingCourse(trainingCourseName);
+        cy.get('h1').should('contain', 'Training course details');
+        cy.getByLabel('Training course name').should('have.value', trainingCourseName);
+
+        // change category
+        cy.get('a').contains('Change').click();
+        cy.get('button').contains('Show all categories').click();
+        cy.getByLabel(changedCourseDetail.categoryName).click();
+        cy.get('button').contains('Continue').click();
+
+        // fill in other details
+        cy.get('h1').should('contain', 'Training course details');
+        fillInCourseDetails(changedCourseDetail);
+        cy.get('button').contains('Continue').click();
+
+        cy.getByLabel(radioLabels.existingAndNew).click();
+
+        cy.get('button').contains('Apply and save').click();
+
+        cy.get('h1').should('contain', 'Add and manage training courses for your workplace');
+        cy.get('app-alert span').should(
+          'contain',
+          'Course details updated and will apply to EXISTING and NEW training records',
+        );
+
+        // Verify that the training course details is changed
+        clickIntoTrainingCourse(changedCourseDetail.courseName);
+        cy.get('h1').should('contain', 'Training course details');
+        expectPageToHaveDetails(changedCourseDetail);
+        cy.get('[data-testid="training-category"]').should('contain', changedCourseDetail.categoryName);
+
+        // Verify that the change to training course is applied to the linked training record
+        cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
+        cy.get('[data-testid="training-worker-table"]').contains(workerName).click();
+        cy.url().should('contain', 'training-and-qualifications-record');
+
+        cy.get('a').contains(trainingRecordTitle).should('not.exist');
+        cy.get('a').contains(changedCourseDetail.courseName).should('exist');
+
+        cy.contains('a', changedCourseDetail.courseName).click();
+
+        cy.get('[data-testid="trainingCategoryDisplay"]').should('contain', changedCourseDetail.categoryName);
+        expectPageToHaveDetails({
+          ...changedCourseDetail,
+          trainingRecordTitle: changedCourseDetail.courseName,
+          courseName: null,
+        });
+      });
+
+      it('should be able to edit the training course only', () => {
+        onHomePage.clickTab('Training and qualifications');
+        cy.contains('Add and manage training').click();
+        cy.get('a').contains('Add and manage training courses').click();
+        cy.get('h1').should('contain', 'Add and manage training courses');
+
+        clickIntoTrainingCourse(trainingCourseName);
+        cy.get('h1').should('contain', 'Training course details');
+        cy.getByLabel('Training course name').should('have.value', trainingCourseName);
+
+        // change category
+        cy.get('a').contains('Change').click();
+        cy.get('button').contains('Show all categories').click();
+        cy.getByLabel(changedCourseDetail.categoryName).click();
+        cy.get('button').contains('Continue').click();
+
+        // fill in other details
+        cy.get('h1').should('contain', 'Training course details');
+        fillInCourseDetails(changedCourseDetail);
+        cy.get('button').contains('Continue').click();
+
+        cy.get('h1').should('contain', confirmationPageHeading);
+
+        cy.getByLabel(radioLabels.onlyNew).click();
+
+        cy.get('button').contains('Apply and save').click();
+
+        cy.get('h1').should('contain', 'Add and manage training courses for your workplace');
+        cy.get('app-alert span').should('contain', 'Course details updated and will apply to NEW training records');
+
+        // Verify that the training course details is changed
+        clickIntoTrainingCourse(changedCourseDetail.courseName);
+        cy.get('h1').should('contain', 'Training course details');
+        expectPageToHaveDetails(changedCourseDetail);
+        cy.get('[data-testid="training-category"]').should('contain', changedCourseDetail.categoryName);
+
+        // Verify that the linked training record is not changed
+        cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
+        cy.get('[data-testid="training-worker-table"]').contains(workerName).click();
+        cy.url().should('contain', 'training-and-qualifications-record');
+
+        cy.get('a').contains(changedCourseDetail.courseName).should('not.exist');
+        cy.get('a').contains(trainingRecordTitle).should('exist');
+      });
     });
   });
 };

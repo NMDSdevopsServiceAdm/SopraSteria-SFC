@@ -1,10 +1,11 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCourse } from '@core/model/training-course.model';
-import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
+import { TrainingProvider } from '@core/model/training-provider.model';
+import { DeliveredBy, HowWasItDelivered, TrainingCategory } from '@core/model/training.model';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -22,6 +23,7 @@ type JourneyType = 'Add' | 'Edit';
 export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('validityPeriodInMonthRef') validityPeriodInMonth: NumberInputWithButtonsComponent;
+  @ViewChild('courseName') courseName: ElementRef<HTMLInputElement>;
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
@@ -32,6 +34,15 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   public accreditedOptions = YesNoDontKnowOptions;
   public deliveredByOptions = DeliveredBy;
   public howWasItDeliveredOptions = HowWasItDelivered;
+  public trainingProviders: TrainingProvider[];
+  public otherTrainingProviderId: number;
+  public trainingCategoies: TrainingCategory[];
+  public trainingCategoryName: string;
+
+  public heading: string;
+  public sectionHeading: string;
+  public selectedTrainingCourse: Partial<TrainingCourse>;
+  public selectedTrainingCourseUid: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -45,10 +56,13 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.determineJourneyType();
+    this.setText();
+    this.loadTrainingProvidersAndCategories();
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefill();
     this.backLinkService.showBackLink();
+    this.clearLocalTrainingCourseDataWhenClickedAway();
   }
 
   ngAfterViewInit(): void {
@@ -60,12 +74,34 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     this.journeyType = this.route.snapshot?.data?.journeyType ?? 'Add';
   }
 
+  private setText() {
+    switch (this.journeyType) {
+      case 'Add': {
+        this.heading = 'Add training course details';
+        this.sectionHeading = 'Add a training course';
+        break;
+      }
+      case 'Edit': {
+        this.heading = 'Training course details';
+        this.sectionHeading = 'Training and qualifications';
+        break;
+      }
+    }
+  }
+
+  private loadTrainingProvidersAndCategories() {
+    this.trainingProviders = this.route.snapshot.data.trainingProviders;
+    this.otherTrainingProviderId = this.trainingProviders?.find((provider) => provider.isOther)?.id;
+    this.trainingCategoies = this.route.snapshot.data.trainingCategories;
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
         name: [null, { validators: [Validators.required, Validators.minLength(3), Validators.maxLength(120)] }],
         accredited: null,
         deliveredBy: [null, { updateOn: 'change' }],
+        trainingProviderId: null,
         externalProviderName: null,
         howWasItDelivered: null,
         validityPeriodInMonth: null,
@@ -75,6 +111,10 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
         updateOn: 'submit',
       },
     );
+
+    if (this.journeyType === 'Edit') {
+      this.form.addControl('trainingCategoryId', new UntypedFormControl(null));
+    }
   }
 
   private setupFormErrorsMap(): void {
@@ -102,14 +142,80 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private prefill(): void {
-    if (this.journeyType === 'Add' && this.trainingCourseService.newTrainingCourseToBeAdded) {
+    if (this.journeyType === 'Add') {
       this.prefillFromLocalData();
+    } else {
+      this.loadSelectedTrainingCourse();
+      this.prefillFromSelectedCourse();
     }
   }
 
   private prefillFromLocalData() {
-    const data = this.trainingCourseService.newTrainingCourseToBeAdded;
-    this.form.patchValue(data);
+    const trainingCourse = this.trainingCourseService.newTrainingCourseToBeAdded;
+    if (!trainingCourse) {
+      return;
+    }
+
+    if (trainingCourse?.trainingProvider) {
+      const trainingProvider = trainingCourse.trainingProvider;
+      const providerName = trainingProvider.isOther ? trainingCourse.otherTrainingProviderName : trainingProvider.name;
+      trainingCourse.externalProviderName = providerName;
+    }
+
+    this.form.patchValue(trainingCourse);
+  }
+
+  private loadSelectedTrainingCourse() {
+    this.selectedTrainingCourseUid = this.route.snapshot.params.trainingCourseUid;
+    const gotDataInLocalService = !!this.trainingCourseService.trainingCourseToBeUpdated;
+
+    const selectedtrainingCourse = this.trainingCourseService.trainingCourseToBeUpdated ?? this.loadFromSnapshotData();
+
+    if (!selectedtrainingCourse) {
+      this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route });
+    }
+    this.trainingCategoryName = this.getTrainingCategoryName(selectedtrainingCourse);
+
+    selectedtrainingCourse.externalProviderName = this.getTrainingProviderName(selectedtrainingCourse);
+    this.selectedTrainingCourse = selectedtrainingCourse;
+
+    if (!gotDataInLocalService) {
+      this.storeTempDataInLocalService();
+    }
+  }
+
+  private loadFromSnapshotData(): Partial<TrainingCourse> {
+    const trainingCourses: TrainingCourse[] = this.route.snapshot.data.trainingCourses;
+    const selectedtrainingCourse =
+      this.trainingCourseService.trainingCourseToBeUpdated ??
+      trainingCourses?.find((course) => course.uid === this.selectedTrainingCourseUid);
+    return selectedtrainingCourse;
+  }
+
+  private getTrainingCategoryName(selectedtrainingCourse: Partial<TrainingCourse>): string {
+    return this.trainingCategoies.find((category) => category.id === selectedtrainingCourse.trainingCategoryId)
+      .category;
+  }
+
+  private getTrainingProviderName(selectedtrainingCourse: Partial<TrainingCourse>): string {
+    // TODO: refactor this in ticket #1840
+    if (!selectedtrainingCourse?.trainingProvider) {
+      return null;
+    }
+    const trainingProvider = selectedtrainingCourse.trainingProvider;
+    const providerName = trainingProvider.isOther
+      ? selectedtrainingCourse.otherTrainingProviderName
+      : trainingProvider.name;
+
+    return providerName;
+  }
+
+  private storeTempDataInLocalService() {
+    this.trainingCourseService.trainingCourseToBeUpdated = this.selectedTrainingCourse;
+  }
+
+  private prefillFromSelectedCourse() {
+    this.form.patchValue(this.selectedTrainingCourse);
   }
 
   public handleValidityPeriodChange(newValue: string | number): void {
@@ -123,6 +229,17 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     if (checkboxTicked) {
       this.clearFormControlAndKeepErrorMessages('validityPeriodInMonth');
     }
+  }
+
+  public handleChangeLinkClick(event: Event) {
+    event.preventDefault();
+
+    const courseName = this.courseName.nativeElement.value;
+    if (courseName) {
+      this.trainingCourseService.trainingCourseToBeUpdated = { ...this.selectedTrainingCourse, name: courseName };
+    }
+
+    this.router.navigate(['../change-category'], { relativeTo: this.route });
   }
 
   private clearFormControlAndKeepErrorMessages(formControlName: string): void {
@@ -155,31 +272,71 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     }
 
     if (this.journeyType === 'Add') {
-      this.storeDetailsAndContinueToNextPage();
+      this.storeNewCourseAndContinueToNextPage();
+    } else if (this.journeyType === 'Edit') {
+      this.storeUpdatedCourseAndContinueToConfirmationPage();
     }
   }
 
-  private storeDetailsAndContinueToNextPage() {
-    const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.form.value;
-    if (newTrainingCourseToBeAdded.deliveredBy !== this.deliveredByOptions.ExternalProvider) {
-      newTrainingCourseToBeAdded.externalProviderName = null;
+  private getAndProcessFormValue(): Partial<TrainingCourse> {
+    // TODO: refactor in ticket #1840 when implementing the provider name input
+    const trainingCourseData: Partial<TrainingCourse> = this.form.value;
+
+    const externalProviderName = trainingCourseData.externalProviderName;
+    delete trainingCourseData.externalProviderName;
+
+    if (trainingCourseData.deliveredBy !== this.deliveredByOptions.ExternalProvider) {
+      trainingCourseData.trainingProviderId = null;
+      trainingCourseData.otherTrainingProviderName = null;
+      return trainingCourseData;
     }
 
+    const trainingProvider = this.getTrainingProviderIdFromName(externalProviderName);
+    trainingCourseData.trainingProviderId = trainingProvider.id;
+    trainingCourseData.otherTrainingProviderName = trainingProvider.isOther ? externalProviderName : null;
+
+    return trainingCourseData;
+  }
+
+  private getTrainingProviderIdFromName(externalProviderName: string): TrainingProvider {
+    const trimmedName = externalProviderName ? externalProviderName.trim() : '';
+    const providerFound = this.trainingProviders.find((provider) => provider.name === trimmedName && !provider.isOther);
+
+    if (providerFound) {
+      return providerFound;
+    }
+
+    return { id: this.otherTrainingProviderId, name: 'other', isOther: true };
+  }
+
+  private storeNewCourseAndContinueToNextPage() {
+    const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.getAndProcessFormValue();
+
     this.trainingCourseService.newTrainingCourseToBeAdded = newTrainingCourseToBeAdded;
-    this.clearLocalTrainingCourseDataWhenClickedAway();
 
     this.router.navigate(['../select-category'], { relativeTo: this.route });
   }
 
+  private storeUpdatedCourseAndContinueToConfirmationPage() {
+    const updatedCourse: Partial<TrainingCourse> = this.getAndProcessFormValue();
+
+    this.trainingCourseService.trainingCourseToBeUpdated = updatedCourse;
+
+    this.router.navigate(['../select-which-training-records-to-apply'], { relativeTo: this.route });
+  }
+
   private clearLocalTrainingCourseDataWhenClickedAway(): void {
+    const parentPath = this.journeyType === 'Add' ? 'add-training-course' : this.selectedTrainingCourseUid;
+    const fieldToClear = this.journeyType === 'Add' ? 'newTrainingCourseToBeAdded' : 'trainingCourseToBeUpdated';
+
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes('add-training-course')),
+        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes(parentPath)),
         take(1),
       )
       .subscribe(() => {
-        this.trainingCourseService.newTrainingCourseToBeAdded = null;
+        this.trainingCourseService[fieldToClear] = null;
       });
   }
 }

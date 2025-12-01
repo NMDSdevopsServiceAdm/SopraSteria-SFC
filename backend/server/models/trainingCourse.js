@@ -1,5 +1,7 @@
 const { Enum } = require('../../reference/databaseEnumTypes');
+const { NotFoundError } = require('../utils/errors/customErrors');
 const { ensureProviderInfoCorrect } = require('./hooks/trainingHooks');
+const lodash = require('lodash');
 
 module.exports = function (sequelize, DataTypes) {
   const TrainingCourse = sequelize.define(
@@ -130,6 +132,7 @@ module.exports = function (sequelize, DataTypes) {
 
       defaultScope: {
         include: ['category', 'trainingProvider'],
+        nest: true,
       },
     },
   );
@@ -161,6 +164,101 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   TrainingCourse.addHook('beforeSave', 'ensureProviderInfoCorrect', ensureProviderInfoCorrect);
+
+  TrainingCourse.updateTrainingCourse = async ({
+    establishmentId,
+    trainingCourseUid,
+    updates,
+    updatedBy,
+    transaction,
+  }) => {
+    const models = sequelize.models;
+
+    const recordFound = await models.trainingCourse.findOne({
+      where: {
+        establishmentFk: establishmentId,
+        uid: trainingCourseUid,
+        archived: false,
+      },
+      attributes: { exclude: ['establishmentFk'] },
+      transaction,
+    });
+
+    if (!recordFound) {
+      throw new NotFoundError('Training course not found');
+    }
+    return await recordFound.update({ ...updates, updatedBy }, { transaction });
+  };
+
+  TrainingCourse.updateTrainingRecordsWithCourseData = async function ({ trainingCourseUid, transaction, updatedBy }) {
+    const models = sequelize.models;
+
+    const trainingCourse = await models.trainingCourse.findOne({
+      where: {
+        uid: trainingCourseUid,
+        archived: false,
+      },
+      transaction,
+    });
+
+    if (!trainingCourse) {
+      throw new NotFoundError('Could not find the training course');
+    }
+
+    const trainingRecordsToUpdate = await trainingCourse.countWorkerTraining();
+    if (!trainingRecordsToUpdate) {
+      return;
+    }
+
+    const fieldsToCopy = [
+      'categoryFk',
+      'accredited',
+      'deliveredBy',
+      'trainingProviderFk',
+      'otherTrainingProviderName',
+      'howWasItDelivered',
+      'doesNotExpire',
+      'validityPeriodInMonth',
+    ];
+
+    const updatesToApply = {
+      ...lodash.pick(trainingCourse.toJSON(), fieldsToCopy),
+      title: trainingCourse.name,
+      trainingCourseFK: trainingCourse.id,
+      updatedBy,
+      updated: new Date(),
+    };
+
+    const [_updatedRecordCount, updatedRows] = await sequelize.models.workerTraining.update(updatesToApply, {
+      returning: true,
+      where: {
+        trainingCourseFK: trainingCourse.id,
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'worker',
+          attributes: ['establishmentFk', 'archived'],
+          where: {
+            establishmentFk: trainingCourse.establishmentFk,
+            archived: false,
+          },
+        },
+      ],
+      transaction,
+    });
+
+    const updateExpiryDateForEachRecord = updatedRows.map((trainingRecordRow) => {
+      const trainingRecordId = trainingRecordRow.dataValues.ID;
+      return models.workerTraining.autoFillInExpiryDate({
+        trainingRecordId,
+        transaction,
+        updatedBy,
+      });
+    });
+
+    await Promise.all(updateExpiryDateForEachRecord);
+  };
 
   return TrainingCourse;
 };
