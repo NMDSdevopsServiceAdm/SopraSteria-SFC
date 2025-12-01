@@ -218,6 +218,25 @@ describe('workplace-info-panel', () => {
   });
 
   describe('Data permissions links', () => {
+    it('should display Change data owner link if workplace is data owner and parent has permission to change permissions for sub', async () => {
+      const workplace = {
+        dataOwner: 'Workplace',
+        uid: 'abc123456',
+      };
+      const { getByText, routerSpy } = await setup({
+        primaryWorkplace: { isParent: true },
+        workplace,
+        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+      });
+
+      const changeDataOwnerLink = getByText('Change data owner');
+      userEvent.click(changeDataOwnerLink);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace/change-data-owner'], {
+        queryParams: { changeDataOwnerFrom: workplace.uid },
+      });
+    });
+
     describe('data request pending', () => {
       const workplace = {
         dataOwner: 'Workplace',
@@ -320,25 +339,6 @@ describe('workplace-info-panel', () => {
           type: 'success',
           message: 'Request to change data owner has been cancelled ',
         });
-      });
-    });
-
-    it('should display Change data owner link if workplace is data owner and parent has permission to change permissions for sub', async () => {
-      const workplace = {
-        dataOwner: 'Workplace',
-        uid: 'abc123456',
-      };
-      const { getByText, routerSpy } = await setup({
-        primaryWorkplace: { isParent: true },
-        workplace,
-        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
-      });
-
-      const changeDataOwnerLink = getByText('Change data owner');
-      userEvent.click(changeDataOwnerLink);
-
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace/change-data-owner'], {
-        queryParams: { changeDataOwnerFrom: workplace.uid },
       });
     });
 

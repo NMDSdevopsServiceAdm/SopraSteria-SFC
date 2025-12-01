@@ -33,6 +33,7 @@ import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-he
 import { NewHomeTabComponent } from './home-tab.component';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { Worker } from '@core/model/worker.model';
+import { CancelOwnerShip } from '@core/model/establishment.model';
 
 describe('NewHomeTabComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -127,6 +128,10 @@ describe('NewHomeTabComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     spyOn(router, 'navigateByUrl'); // suppress Error: NG04002: Cannot match any route
 
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const changeOwnershipDetailsSpy = spyOn(establishmentService, 'changeOwnershipDetails');
+    const cancelOwnershipSpy = spyOn(establishmentService, 'cancelOwnership').and.returnValue(of({} as Establishment));
+
     return {
       ...setupTools,
       component,
@@ -136,6 +141,8 @@ describe('NewHomeTabComponent', () => {
       routerSpy,
       dataLayerPushSpy,
       localStorageSetSpy,
+      changeOwnershipDetailsSpy,
+      cancelOwnershipSpy,
     };
   };
 
@@ -316,6 +323,27 @@ describe('NewHomeTabComponent', () => {
     });
 
     describe('Data owner', () => {
+      const workplace = {
+        ...Establishment,
+        dataOwner: 'Parent',
+        dataOwnershipRequested: '2025-11-27T12:38:16.132Z',
+        dataPermissions: 'Workplace',
+        ownershipChangeRequestId: ['request-id'],
+        id: 'some-id',
+        uid: 'some-id',
+      };
+
+      const requestDetails = [
+        {
+          approvalStatus: 'REQUESTED',
+          createdByUserUID: 'mocked-uid',
+          ownerChangeRequestUID: workplace.ownershipChangeRequestId[0],
+          subEstablishmentID: workplace.id,
+        },
+      ];
+
+      const overrides = { establishment: workplace };
+
       it('should not show a link if canViewChangeDataOwner is false', async () => {
         const { component, fixture, queryByText } = await setup();
 
@@ -358,6 +386,76 @@ describe('NewHomeTabComponent', () => {
         fixture.detectChanges();
 
         expect(getByText('Data request pending')).toBeTruthy();
+      });
+
+      it('should open dialog when "Data request pending is clicked"', async () => {
+        const { component, getByText, fixture, changeOwnershipDetailsSpy } = await setup(overrides);
+
+        component.isOwnershipRequested = true;
+        fixture.detectChanges();
+
+        changeOwnershipDetailsSpy.and.returnValue(of(requestDetails));
+
+        const dataRequestPendingLink = getByText('Data request pending');
+        fireEvent.click(dataRequestPendingLink);
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+
+        expect(dialog.textContent).toContain('Your request to change ownership of data is pending');
+        expect(dialog.textContent).toContain('Cancel');
+        expect(dialog.textContent).toContain('Cancel data owner request');
+      });
+
+      it('should close the dialog when the "Cancel" link is clicked', async () => {
+        const { component, getByText, fixture, changeOwnershipDetailsSpy } = await setup(overrides);
+
+        component.isOwnershipRequested = true;
+        fixture.detectChanges();
+
+        changeOwnershipDetailsSpy.and.returnValue(of(requestDetails));
+
+        const dataRequestPendingLink = getByText('Data request pending');
+        fireEvent.click(dataRequestPendingLink);
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+        const cancelLink = within(dialog).getByText('Cancel');
+
+        fireEvent.click(cancelLink);
+        fixture.detectChanges();
+
+        expect(within(document.body).queryByRole('dialog')).toBeFalsy();
+      });
+
+      it('should call cancelOwnership() to cancel the request when the "Cancel data owner request" clicked', async () => {
+        const { component, getByText, fixture, changeOwnershipDetailsSpy, cancelOwnershipSpy, alertServiceSpy } =
+          await setup(overrides);
+
+        component.isOwnershipRequested = true;
+        fixture.detectChanges();
+
+        changeOwnershipDetailsSpy.and.returnValue(of(requestDetails));
+
+        const dataRequestPendingLink = getByText('Data request pending');
+        fireEvent.click(dataRequestPendingLink);
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+        const cancelDataOwnerRequestButton = within(dialog).getByText('Cancel data owner request');
+
+        fireEvent.click(cancelDataOwnerRequestButton);
+        fixture.detectChanges();
+
+        expect(cancelOwnershipSpy).toHaveBeenCalledWith(workplace.id, workplace.ownershipChangeRequestId[0], {
+          approvalStatus: 'CANCELLED',
+          notificationRecipientUid: workplace.uid,
+        } as CancelOwnerShip);
+        expect(within(document.body).queryByRole('dialog')).toBeFalsy();
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Request to change data owner has been cancelled ',
+        });
       });
     });
 
