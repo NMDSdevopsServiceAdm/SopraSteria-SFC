@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { MockTrainingCourseService, trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
+import { MockTrainingCourseService } from '@core/test-utils/MockTrainingCourseService';
 import { SharedModule } from '@shared/shared.module';
-import { render, getByTestId } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { UpdateRecordsSelectTrainingCourseComponent } from './update-records-select-training-course.component';
-import { WindowRef } from '@core/services/window.ref';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -79,6 +78,10 @@ fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
     expect(getByTestId('section-heading').textContent).toContain(expectedCaption);
   });
 
+  it('should show a breadcrumb', async () => {
+    // TODO: to implement this
+  });
+
   it('should show a reveal text to explain what is the care workforce pathway', async () => {
     const { getByTestId } = await setup();
     const revealTextTitle = 'Why is it a good idea to update records with training course details?';
@@ -100,8 +103,14 @@ fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
   });
 
   describe('training courses table', () => {
-    it('should show a table of training courses in the workplace', () => {
-      const subheading = 'Select a training course to see the records you can update';
+    it('should show a table of training courses in the workplace', async () => {
+      const { getByTestId } = await setup();
+
+      const expectedSubheading = 'Select a training course to see the records you can update';
+
+      const table = getByTestId('training-course-table');
+      expect(table).toBeTruthy();
+      expect(within(table).getByText(expectedSubheading)).toBeTruthy();
     });
 
     it(
@@ -111,9 +120,18 @@ fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
     it('should show the training course name as a plain text, if no training records can be linked to the course');
   });
 
-  it('should show a text to tell user about the alternative way', () => {
-    const expectedText = `You can also update training records with training course details by going to
-    training and qualifications, clicking on a member of staff and then clicking on the training record that
-     you want to update.`;
+  it('should show a text to tell user about the alternative way and link to training and qualifications tab', async () => {
+    const { getByText } = await setup();
+
+    const expectedText =
+      'You can also update training records with training course details by going to ' +
+      'training and qualifications, clicking on a member of staff and then clicking ' +
+      'on the training record that you want to update.';
+
+    const paragraph = getByText(/^You can also update/);
+    expect(paragraph.textContent).toContain(expectedText);
+
+    const link = within(paragraph).getByRole('link') as HTMLAnchorElement;
+    expect(link.href).toContain('/dashboard#training-and-qualifications');
   });
 });
