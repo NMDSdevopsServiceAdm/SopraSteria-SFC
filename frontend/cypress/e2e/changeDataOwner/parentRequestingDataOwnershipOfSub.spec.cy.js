@@ -114,6 +114,7 @@ describe('change data owner', () => {
 
     cy.get(`[data-testid="generic_alert"]`).contains("You've sent a change data owner request");
     cy.get('a').contains('Sign out').click();
+    cy.wait('@logout');
 
     // log into sub
     cy.loginAsUser(loginId, mockPassword);
