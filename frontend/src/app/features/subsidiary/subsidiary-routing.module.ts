@@ -778,6 +778,18 @@ const routes: Routes = [
           title: 'Training course',
         },
       },
+      {
+        path: 'update-records-with-training-course-details',
+        loadChildren: () =>
+          import(
+            '@features/training-and-qualifications/update-records-with-training-course/update-records-with-training-course.module'
+          ).then((m) => m.UpdateRecordsWithTrainingCourseModule),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Update records with training course details',
+        },
+      },
     ],
   },
   {
