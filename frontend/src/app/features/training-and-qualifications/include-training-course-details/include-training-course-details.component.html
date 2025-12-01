@@ -6,9 +6,19 @@
         <h1 data-testid="page-heading" class="govuk-heading-l">Select a training course</h1>
       </div>
     </div>
-    <div class="govuk-grid-row second-grid-row additional-details-wrapper">
-      <div class="govuk-grid-column-four-fifths">
-        <app-details [title]="'Why is it a good idea to update records with training course details?'">
+    <div class="govuk-grid-row second-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <app-details [title]="revealText.title" data-testid="reveal-why-is-it-a-good-idea">
+          <p class="govuk-body asc__negative-margin-right-4">
+            {{ revealText.paragraph }}
+          </p>
+          <ul class="govuk-list govuk-list--bullet">
+            @for(bullet of revealText.bullets; track bullet; let index = $index){
+            <li>{{ bullet }}</li>
+            }
+          </ul>
+        </app-details>
+        <!-- <app-details [title]="'Why is it a good idea to update records with training course details?'">
           <p class="govuk-body first-line-of-details-text">
             It's a good idea because your training records will then be consistent with
           </p>
@@ -24,7 +34,7 @@
             <li>still generate alerts when the training is due to expire</li>
             <li class="govuk-!-margin-bottom-0">keep any certification and notes that were added</li>
           </ul>
-        </app-details>
+        </app-details> -->
       </div>
     </div>
     <div class="govuk-grid-row">
