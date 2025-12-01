@@ -10,15 +10,18 @@ const {
   createTrainingCourse,
   getTrainingCourse,
   updateTrainingCourse,
+  getTrainingCoursesWithLinkableRecords,
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
 const {
   mockTrainingCourses,
   expectedTrainingCoursesInResponse,
   mockTrainingCourseFindAllResult,
+  mockEstablishmentObject,
+  trainingCourseWithLinkableRecords,
 } = require('../../../mockdata/trainingCourse');
 const { NotFoundError } = require('../../../../../utils/errors/customErrors');
 
-describe('/api/establishment/:uid/trainingCourse/', () => {
+describe.only('/api/establishment/:uid/trainingCourse/', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -381,6 +384,76 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       const res = httpMocks.createResponse();
 
       await updateTrainingCourse(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
+  describe('GET /trainingCourse/getTrainingCoursesWithLinkableRecords', () => {
+    const request = {
+      method: 'GET',
+      url: `${baseEndpoint}/getTrainingCoursesWithLinkableRecords`,
+      establishmentId,
+      username: mockUsername,
+    };
+
+    // const expectedResponseBody = {trainingCourses: [expectedTrainingCoursesInResponse]};
+
+    it('should respond with 200 and an empty array if no training course in the workplace', async () => {
+      sinon.stub(models.trainingCourse, 'findAll').resolves([]);
+      sinon.stub(models.establishment, 'findWithWorkersAndTraining').resolves(mockEstablishmentObject);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getTrainingCoursesWithLinkableRecords(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.deep.equal({ trainingCourses: [] });
+    });
+
+    it('should respond with 200 and a list of training courses with no linkable training if no worker in the workplace', async () => {
+      const establishmentWithNoWorkers = { ...mockEstablishmentObject, workers: [] };
+
+      sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourseFindAllResult);
+      sinon.stub(models.establishment, 'findWithWorkersAndTraining').resolves(establishmentWithNoWorkers);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getTrainingCoursesWithLinkableRecords(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+
+      const trainingCourseWithNoLinkableRecords = expectedTrainingCoursesInResponse.map((course) => ({
+        ...course,
+        linkableTrainingRecords: [],
+      }));
+      expect(res._getData()).to.deep.equal({ trainingCourses: trainingCourseWithNoLinkableRecords });
+    });
+
+    it('should respond with 200 and a list of training courses with linkable training records', async () => {
+      sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourseFindAllResult);
+      sinon.stub(models.establishment, 'findWithWorkersAndTraining').resolves(mockEstablishmentObject);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getTrainingCoursesWithLinkableRecords(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.deep.equal({ trainingCourses: trainingCourseWithLinkableRecords });
+    });
+
+    it('should respond with 500 if error occured', async () => {
+      sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourseFindAllResult);
+      sinon.stub(models.establishment, 'findWithWorkersAndTraining').rejects('some error');
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await getTrainingCoursesWithLinkableRecords(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
     });
