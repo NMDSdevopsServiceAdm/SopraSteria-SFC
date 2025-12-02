@@ -8,7 +8,7 @@ import {
 } from '../../support/page_objects/createNewWorkplaceForms';
 import { createUserWithinWorkplace } from '../../support/page_objects/userRegistrationForms';
 
-describe('change data owner', () => {
+describe('subsidiary requesting to change data owner', () => {
   const subsidiaryWorkplaceName = 'Workplace for data ownership';
   const userFullName = 'Test new user for cypress';
   const loginId = 'cypress-test-user-0002';
