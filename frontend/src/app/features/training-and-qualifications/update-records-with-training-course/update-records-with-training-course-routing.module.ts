@@ -5,12 +5,27 @@ import { TrainingCoursesWithLinkableRecordsResolver } from '@core/resolvers/trai
 
 const routes: Routes = [
   {
-    path: 'select-a-training-course',
-    component: UpdateRecordsSelectTrainingCourseComponent,
+    path: '',
     resolve: {
       trainingCoursesWithLinkableRecords: TrainingCoursesWithLinkableRecordsResolver,
     },
-    data: { title: 'Select a training course' },
+    children: [
+      {
+        path: 'select-a-training-course',
+        component: UpdateRecordsSelectTrainingCourseComponent,
+        data: { title: 'Select a training course' },
+      },
+      // {
+      //   path: ':trainingCourseUid',
+      //   children: [
+      //     {
+      //       path: 'select-training-records',
+      //       component: UpdateRecordsSelectTrainingCourseComponent,
+      //       data: { title: 'Select the training records that you want to update' },
+      //     },
+      //   ],
+      // },
+    ],
   },
 ];
 
