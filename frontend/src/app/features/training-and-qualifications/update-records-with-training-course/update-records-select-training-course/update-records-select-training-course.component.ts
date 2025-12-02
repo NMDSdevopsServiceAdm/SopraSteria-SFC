@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { TrainingCourseWithLinkableRecords } from '@core/model/training-course.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -18,10 +20,12 @@ export class UpdateRecordsSelectTrainingCourseComponent {
   constructor(
     protected route: ActivatedRoute,
     protected router: Router,
+    protected breadcrumbService: BreadcrumbService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     protected trainingCourseService: TrainingCourseService,
   ) {
     this.trainingCoursesWithLinkableRecords = this.route.snapshot.data.trainingCoursesWithLinkableRecords;
+    this.breadcrumbService.show(JourneyType.UPDATE_RECORDS_WITH_TRAINING_COURSE_DETAILS);
   }
 }

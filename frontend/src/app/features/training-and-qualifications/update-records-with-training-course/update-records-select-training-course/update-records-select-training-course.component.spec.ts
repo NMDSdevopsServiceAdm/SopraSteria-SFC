@@ -11,6 +11,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { TrainingCourseWithLinkableRecords } from '@core/model/training-course.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
   const mockEstablishmentUid = 'mock-establishment-uid';
@@ -37,10 +40,15 @@ fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
 
   async function setup(overrides: any = {}) {
     const trainingCoursesWithLinkableRecords = overrides?.trainingCoursesWithLinkableRecords ?? mockTrainingCourses;
+    const showBreadcrumbSpy = jasmine.createSpy('BreadcrumbService.show()');
 
     const setupTools = await render(UpdateRecordsSelectTrainingCourseComponent, {
       imports: [CommonModule, SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        {
+          provide: BreadcrumbService,
+          useValue: { show: showBreadcrumbSpy },
+        },
         {
           provide: TrainingCourseService,
           useFactory: MockTrainingCourseService.factory({}),
@@ -83,6 +91,7 @@ fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
       route,
       routerSpy,
       trainingCourseService,
+      showBreadcrumbSpy,
     };
   }
 
@@ -102,7 +111,8 @@ fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
   });
 
   it('should show a breadcrumb', async () => {
-    // TODO: to implement this
+    const { showBreadcrumbSpy } = await setup();
+    expect(showBreadcrumbSpy).toHaveBeenCalledWith(JourneyType.UPDATE_RECORDS_WITH_TRAINING_COURSE_DETAILS);
   });
 
   it('should show a reveal text to explain what is the care workforce pathway', async () => {
