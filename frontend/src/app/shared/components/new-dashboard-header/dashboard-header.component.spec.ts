@@ -31,7 +31,7 @@ const MockWindow = {
   },
 };
 
-describe('NewDashboardHeaderComponent', () => {
+fdescribe('NewDashboardHeaderComponent', () => {
   const establishment = establishmentBuilder() as Establishment;
   const setup = async (
     override: any = {
@@ -489,8 +489,11 @@ describe('NewDashboardHeaderComponent', () => {
           `/workplace/${workplaceUid}/training-course/add-and-manage-training-courses`,
         );
 
-        const addAndManageTrainingCourseDetailsSubMenu = getByText('Update records with training course details');
-        expect(addAndManageTrainingCourseDetailsSubMenu).toBeTruthy();
+        const updateRecordsWithTrainingCourseDetailsSubMenu = getByText('Update records with training course details');
+        expect(updateRecordsWithTrainingCourseDetailsSubMenu).toBeTruthy();
+        expect(updateRecordsWithTrainingCourseDetailsSubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/update-records-with-training-course-details/select-a-training-course`,
+        );
 
         const addAMandatoryTrainingCategorySubMenu = getByText('Add a mandatory training category');
         expect(addAMandatoryTrainingCategorySubMenu).toBeTruthy();
