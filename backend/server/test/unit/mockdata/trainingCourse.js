@@ -191,10 +191,6 @@ const trainingCourseWithLinkableRecords = [
     ],
   },
   {
-    ...expectedTrainingCoursesInResponse[1],
-    linkableTrainingRecords: [mockTrainingRecords[4]],
-  },
-  {
     ...expectedTrainingCoursesInResponse[2],
     linkableTrainingRecords: [
       mockTrainingRecords[0],
@@ -202,6 +198,10 @@ const trainingCourseWithLinkableRecords = [
       mockTrainingRecords[3],
       mockTrainingRecords[5],
     ],
+  },
+  {
+    ...expectedTrainingCoursesInResponse[1],
+    linkableTrainingRecords: [mockTrainingRecords[4]],
   },
 ];
 

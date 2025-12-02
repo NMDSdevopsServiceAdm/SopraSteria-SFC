@@ -21,7 +21,7 @@ const {
 } = require('../../../mockdata/trainingCourse');
 const { NotFoundError } = require('../../../../../utils/errors/customErrors');
 
-describe.only('/api/establishment/:uid/trainingCourse/', () => {
+describe('/api/establishment/:uid/trainingCourse/', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -425,11 +425,14 @@ describe.only('/api/establishment/:uid/trainingCourse/', () => {
 
       expect(res.statusCode).to.deep.equal(200);
 
-      const trainingCourseWithNoLinkableRecords = expectedTrainingCoursesInResponse.map((course) => ({
-        ...course,
-        linkableTrainingRecords: [],
-      }));
-      expect(res._getData()).to.deep.equal({ trainingCourses: trainingCourseWithNoLinkableRecords });
+      const trainingCoursesWithNoLinkableRecords = expectedTrainingCoursesInResponse
+        .map((course) => ({
+          ...course,
+          linkableTrainingRecords: [],
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      expect(res._getData()).to.deep.equal({ trainingCourses: trainingCoursesWithNoLinkableRecords });
     });
 
     it('should respond with 200 and a list of training courses with linkable training records', async () => {

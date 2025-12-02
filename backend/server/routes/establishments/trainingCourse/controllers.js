@@ -79,7 +79,11 @@ const getTrainingCoursesWithLinkableRecords = async (req, res) => {
       return { ...plainTrainingCourse, linkableTrainingRecords };
     });
 
-    const responseBody = { trainingCourses: trainingCoursesWithLinkableRecords };
+    const showCoursesWithLinkableRecordFirst = (course) => (course.linkableTrainingRecords?.length > 0 ? 1 : 2);
+
+    const sorted = lodash.sortBy(trainingCoursesWithLinkableRecords, [showCoursesWithLinkableRecordFirst, 'name']);
+
+    const responseBody = { trainingCourses: sorted };
 
     return res.status(200).send(responseBody);
   } catch (err) {
