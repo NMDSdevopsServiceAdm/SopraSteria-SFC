@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TrainingCourseWithLinkableRecords } from '@core/model/training-course.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -12,6 +13,7 @@ import { WorkerService } from '@core/services/worker.service';
 })
 export class UpdateRecordsSelectTrainingCourseComponent {
   public revealText = TrainingCourseService.RevealText;
+  public trainingCoursesWithLinkableRecords: Array<TrainingCourseWithLinkableRecords>;
 
   constructor(
     protected route: ActivatedRoute,
@@ -19,5 +21,7 @@ export class UpdateRecordsSelectTrainingCourseComponent {
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     protected trainingCourseService: TrainingCourseService,
-  ) {}
+  ) {
+    this.trainingCoursesWithLinkableRecords = this.route.snapshot.data.trainingCoursesWithLinkableRecords;
+  }
 }

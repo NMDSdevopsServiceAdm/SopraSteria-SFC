@@ -32,15 +32,17 @@
         </tr>
       </thead>
       <tbody class="govuk-table__body">
+        @for(course of trainingCoursesWithLinkableRecords; track course.uid; let index = $index){
         <tr class="govuk-table__row">
-          <td class="govuk-table__cell">Course 1</td>
+          <td class="govuk-table__cell">
+            @if(course?.linkableTrainingRecords?.length > 1) {
+            <a href="#" [routerLink]="['../', course.uid, 'select-training-records']">{{ course.name }}</a>
+            } @else {
+            {{ course.name }}
+            }
+          </td>
         </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">Course 2</td>
-        </tr>
-        <tr class="govuk-table__row">
-          <td class="govuk-table__cell">Course 3</td>
-        </tr>
+        }
       </tbody>
     </table>
   </div>

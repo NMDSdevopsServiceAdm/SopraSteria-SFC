@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { MockTrainingCourseService } from '@core/test-utils/MockTrainingCourseService';
+import { MockTrainingCourseService, trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
@@ -10,11 +10,34 @@ import { TrainingCourseService } from '@core/services/training-course.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { TrainingCourseWithLinkableRecords } from '@core/model/training-course.model';
 
 fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
   const mockEstablishmentUid = 'mock-establishment-uid';
+  const courseWithNoLinkableRecords = { ...trainingCourseBuilder(), linkableTrainingRecords: [] };
+  const courseWithLinkableRecords = {
+    ...trainingCourseBuilder(),
+    linkableTrainingRecords: [
+      {
+        id: 1,
+        uid: 'mock-training-record-uid-1',
+        title: 'training record not linked to a course yet',
+      },
+      {
+        id: 2,
+        uid: 'mock-training-record-uid-2',
+        title: 'another training record not linked to a course yet',
+      },
+    ],
+  };
+  const mockTrainingCourses: Array<TrainingCourseWithLinkableRecords> = [
+    courseWithNoLinkableRecords,
+    courseWithLinkableRecords,
+  ];
 
   async function setup(overrides: any = {}) {
+    const trainingCoursesWithLinkableRecords = overrides?.trainingCoursesWithLinkableRecords ?? mockTrainingCourses;
+
     const setupTools = await render(UpdateRecordsSelectTrainingCourseComponent, {
       imports: [CommonModule, SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
@@ -26,7 +49,7 @@ fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: {},
+              data: { trainingCoursesWithLinkableRecords },
               params: { establishmentuid: mockEstablishmentUid },
               root: { children: [], url: [''] },
             },
@@ -113,11 +136,27 @@ fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
       expect(within(table).getByText(expectedSubheading)).toBeTruthy();
     });
 
-    it(
-      'should show the training course name as a link, if there are training records that can be linked to the course',
-    );
+    it('should show the training course name as a link, if there are training records that can be linked', async () => {
+      const { getByTestId } = await setup();
+      const table = getByTestId('training-course-table');
 
-    it('should show the training course name as a plain text, if no training records can be linked to the course');
+      const courseNameAsLink = within(table).queryByRole('link', {
+        name: courseWithLinkableRecords.name,
+      }) as HTMLLinkElement;
+      expect(courseNameAsLink).toBeTruthy();
+      expect(courseNameAsLink.href).toContain(`/${courseWithLinkableRecords.uid}/select-training-records`);
+    });
+
+    it('should show the training course name as a plain text, if no training records can be linked', async () => {
+      const { getByTestId } = await setup();
+      const table = getByTestId('training-course-table');
+
+      const courseNameAsLink = within(table).queryByRole('link', { name: courseWithNoLinkableRecords.name });
+      expect(courseNameAsLink).toBeFalsy();
+
+      const courseNameAsPlainText = within(table).getByText(courseWithNoLinkableRecords.name);
+      expect(courseNameAsPlainText).toBeTruthy();
+    });
   });
 
   it('should show a text to tell user about the alternative way and link to training and qualifications tab', async () => {
