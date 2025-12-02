@@ -16,7 +16,7 @@
           <dt class="govuk-summary-list__key">Training course name</dt>
           <dd class="govuk-summary-list__value">
                    {{selectedTrainingCourse?.name}}
-            <a *ngIf="trainingCourses.length>1"
+            <a *ngIf="trainingCourses?.length>1"
               class="govuk-button  govuk-!-padding-left-0 govuk-!-padding-bottom-0 govuk-button--link govuk__flex  govuk-link--no-visited-state"
               draggable="false"
                    [routerLink]="[

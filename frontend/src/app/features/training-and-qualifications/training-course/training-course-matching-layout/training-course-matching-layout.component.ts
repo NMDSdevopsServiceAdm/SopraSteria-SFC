@@ -168,7 +168,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     }
   }
 
-  private autoFillExpiry(): void {
+  public autoFillExpiry(): void {
     const completed = this.toDayjs(this.form.get('completed')?.value);
     const expires = this.toDayjs(this.form.get('expires')?.value);
     const validity = this.trainingRecord?.validityPeriodInMonth;
@@ -188,7 +188,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       );
     }
   }
-  private checkExpiryMismatch(): void {
+  public checkExpiryMismatch(): void {
     const { completed, expires } = this.form.value;
     const validityPeriodInMonth = this.trainingRecord?.validityPeriodInMonth;
 
@@ -414,7 +414,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     this.backLinkService.showBackLink();
   }
 
-  protected navigateToDeleteTrainingRecord(): void {
+  public navigateToDeleteTrainingRecord(): void {
     this.router.navigate([
       '/workplace',
       this.workplace.uid,
