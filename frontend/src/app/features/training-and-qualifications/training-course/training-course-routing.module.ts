@@ -5,6 +5,8 @@ import { TrainingCourseResolver, TrainingCoursesToLoad } from '@core/resolvers/t
 import { TrainingCourseDetailsComponent } from './training-course-details/training-course-details.component';
 import { TrainingCourseCategoryComponent } from './training-course-category/training-course-category.component';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
+import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
+import { SelectWhichTrainingRecordsToApplyComponent } from './select-which-training-records-to-apply/select-which-training-records-to-apply.component';
 
 const routes: Routes = [
   {
@@ -27,6 +29,10 @@ const routes: Routes = [
     data: {
       permissions: ['canEditWorker'],
     },
+    resolve: {
+      trainingCategories: TrainingCategoriesResolver,
+      trainingProviders: TrainingProvidersResolver,
+    },
     children: [
       {
         path: 'details',
@@ -39,12 +45,42 @@ const routes: Routes = [
       {
         path: 'select-category',
         component: TrainingCourseCategoryComponent,
-        resolve: {
-          trainingCategories: TrainingCategoriesResolver,
-        },
         data: {
           title: 'Select training course category',
           journeyType: 'Add',
+        },
+      },
+    ],
+  },
+  {
+    path: ':trainingCourseUid',
+    resolve: {
+      trainingCourses: TrainingCourseResolver,
+      trainingProviders: TrainingProvidersResolver,
+      trainingCategories: TrainingCategoriesResolver,
+    },
+    children: [
+      {
+        path: 'details',
+        component: TrainingCourseDetailsComponent,
+        data: {
+          title: 'Edit training course details',
+          journeyType: 'Edit',
+        },
+      },
+      {
+        path: 'change-category',
+        component: TrainingCourseCategoryComponent,
+        data: {
+          title: 'Select training course category',
+          journeyType: 'Edit',
+        },
+      },
+      {
+        path: 'select-which-training-records-to-apply',
+        component: SelectWhichTrainingRecordsToApplyComponent,
+        data: {
+          title: 'Select which training records to apply to',
         },
       },
     ],

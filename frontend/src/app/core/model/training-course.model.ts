@@ -1,3 +1,4 @@
+import { TrainingProvider } from './training-provider.model';
 import { DeliveredBy, HowWasItDelivered } from './training.model';
 import { YesNoDontKnow } from './YesNoDontKnow.enum';
 
@@ -6,9 +7,13 @@ export type TrainingCourse = {
   uid: string;
   trainingCategoryId: number;
   name: string;
+  trainingCategoryName?: string;
   accredited: YesNoDontKnow;
   deliveredBy: DeliveredBy;
-  externalProviderName: string;
+  trainingProvider?: TrainingProvider;
+  trainingProviderId?: number;
+  externalProviderName?: string;
+  otherTrainingProviderName?: string;
   howWasItDelivered: HowWasItDelivered;
   doesNotExpire: boolean;
   validityPeriodInMonth: number;

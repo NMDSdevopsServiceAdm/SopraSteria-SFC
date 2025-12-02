@@ -16,6 +16,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 import { TrainingService } from '@core/services/training.service';
+import { TrainingCourse } from '@core/model/training-course.model';
 
 describe('SelectTrainingCourseForWorkerTraining', () => {
   const continueWithOutCourseOptionText = 'Continue without selecting a training course';
@@ -25,6 +26,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       uid: 'uid-1',
       trainingCategoryId: 1,
       name: 'Care skills and knowledge',
+      trainingCategoryName: 'Activity provision, wellbeing',
       accredited: YesNoDontKnow.Yes,
       deliveredBy: DeliveredBy.InHouseStaff,
       externalProviderName: null,
@@ -37,6 +39,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       uid: 'uid-1',
       trainingCategoryId: 2,
       name: 'First aid course',
+      trainingCategoryName: 'Basic life support and first aid',
       accredited: YesNoDontKnow.No,
       deliveredBy: DeliveredBy.ExternalProvider,
       externalProviderName: 'Care skills academy',
@@ -44,7 +47,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       doesNotExpire: false,
       validityPeriodInMonth: 12,
     },
-  ];
+  ] as TrainingCourse[];
   async function setup(overrides: any = {}) {
     const setupTools = await render(SelectTrainingCourseForWorkerTraining, {
       imports: [RouterModule, ReactiveFormsModule, SharedModule],

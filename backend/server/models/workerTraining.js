@@ -2,6 +2,8 @@
 const moment = require('moment');
 const { QueryTypes } = require('sequelize');
 const { Enum } = require('../../reference/databaseEnumTypes');
+const { NotFoundError } = require('../utils/errors/customErrors');
+const { calculateTrainingExpiryDate } = require('../utils/dateUtils');
 
 module.exports = function (sequelize, DataTypes) {
   const WorkerTraining = sequelize.define(
@@ -324,6 +326,20 @@ module.exports = function (sequelize, DataTypes) {
     }));
 
     return { count: +count[0][0].count, rows: response, category };
+  };
+
+  WorkerTraining.autoFillInExpiryDate = async function ({ trainingRecordId, transaction, updatedBy }) {
+    const trainingRecord = await sequelize.models.workerTraining.findByPk(trainingRecordId, { transaction });
+    if (!trainingRecord) {
+      throw new NotFoundError('Could not find training record');
+    }
+
+    if (trainingRecord.expires || !trainingRecord.completed || !trainingRecord.validityPeriodInMonth) {
+      return;
+    }
+
+    const newExpiryDate = calculateTrainingExpiryDate(trainingRecord.completed, trainingRecord.validityPeriodInMonth);
+    return await trainingRecord.update({ expires: newExpiryDate, updatedBy, updated: new Date() }, { transaction });
   };
 
   return WorkerTraining;
