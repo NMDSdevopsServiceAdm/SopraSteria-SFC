@@ -4,7 +4,12 @@ import { environment } from 'src/environments/environment';
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { GetTrainingCoursesResponse, TrainingCourse } from '@core/model/training-course.model';
+import {
+  GetTrainingCoursesResponse,
+  GetTrainingCoursesWithLinkableRecordsResponse,
+  TrainingCourse,
+  TrainingCourseWithLinkableRecords,
+} from '@core/model/training-course.model';
 
 const revealText = {
   title: 'Why is it a good idea to update records with training course details?',
@@ -48,6 +53,16 @@ export class TrainingCourseService {
         {
           params: { trainingCategoryId },
         },
+      )
+      .pipe(map((res) => res.trainingCourses));
+  }
+
+  public getTrainingCoursesWithLinkableRecords(
+    establishmentUid: string,
+  ): Observable<Array<TrainingCourseWithLinkableRecords>> {
+    return this.http
+      .get<GetTrainingCoursesWithLinkableRecordsResponse>(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse/getTrainingCoursesWithLinkableRecords`,
       )
       .pipe(map((res) => res.trainingCourses));
   }

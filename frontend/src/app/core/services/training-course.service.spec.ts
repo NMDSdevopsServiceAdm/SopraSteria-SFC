@@ -7,7 +7,7 @@ import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { TrainingCourse } from '@core/model/training-course.model';
 
-describe('TrainingCourseService', () => {
+fdescribe('TrainingCourseService', () => {
   let service: TrainingCourseService;
   let http: HttpTestingController;
 
@@ -42,6 +42,15 @@ describe('TrainingCourseService', () => {
       service.getTrainingCoursesByCategory(establishmentUid, trainingCategoryId).subscribe();
 
       const req = http.expectOne(`${baseEndpoint}?trainingCategoryId=${trainingCategoryId}`);
+      expect(req.request.method).toBe('GET');
+    });
+  });
+
+  describe('getTrainingCoursesWithLinkableRecords', () => {
+    it('should call the specific GET  endpoint with establishment uid', async () => {
+      service.getTrainingCoursesWithLinkableRecords(establishmentUid).subscribe();
+
+      const req = http.expectOne(`${baseEndpoint}/getTrainingCoursesWithLinkableRecords`);
       expect(req.request.method).toBe('GET');
     });
   });
