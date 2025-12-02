@@ -15,7 +15,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
-fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
+describe('UpdateRecordsSelectTrainingCourseComponent', () => {
   const mockEstablishmentUid = 'mock-establishment-uid';
   const courseWithNoLinkableRecords = { ...trainingCourseBuilder(), linkableTrainingRecords: [] };
   const courseWithLinkableRecords = {

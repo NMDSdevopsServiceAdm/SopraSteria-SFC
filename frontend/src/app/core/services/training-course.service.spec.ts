@@ -7,7 +7,7 @@ import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { TrainingCourse } from '@core/model/training-course.model';
 
-fdescribe('TrainingCourseService', () => {
+describe('TrainingCourseService', () => {
   let service: TrainingCourseService;
   let http: HttpTestingController;
 

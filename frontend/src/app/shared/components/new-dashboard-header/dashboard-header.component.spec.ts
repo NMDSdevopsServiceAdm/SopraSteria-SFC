@@ -31,7 +31,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('NewDashboardHeaderComponent', () => {
+describe('NewDashboardHeaderComponent', () => {
   const establishment = establishmentBuilder() as Establishment;
   const setup = async (
     override: any = {
