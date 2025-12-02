@@ -276,13 +276,22 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       body: mockRequestBody,
     };
 
-    const mockSequelizeRecord = {
+    const mockTrainingRecords = [
+      { id: 'record-id-1', uid: 'record-uid-1' },
+      { id: 'record-id-2', uid: 'record-uid-2' },
+      { id: 'record-id-3', uid: 'record-uid-3' },
+    ];
+
+    const mockTrainingCourseSequelizeObject = {
       ...mockTrainingCourses[0],
       toJSON() {
         return lodash.omit(this, ['update', 'toJSON']);
       },
       update() {
         return this;
+      },
+      getWorkerTraining() {
+        return mockTrainingRecords;
       },
     };
 
@@ -292,8 +301,8 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should respond with 200 if successfully updated the record', async () => {
-      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockSequelizeRecord);
-      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves([]);
+      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockTrainingCourseSequelizeObject);
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves();
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -304,8 +313,8 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should update the training course but not its related training record, if applyToExistingRecords is false', async () => {
-      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockSequelizeRecord);
-      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves([]);
+      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockTrainingCourseSequelizeObject);
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves();
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -324,8 +333,8 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     });
 
     it('should update the training course AND its related training record, if applyToExistingRecords is true', async () => {
-      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockSequelizeRecord);
-      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves([]);
+      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockTrainingCourseSequelizeObject);
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves();
 
       const mockRequest = lodash.cloneDeep(request);
       mockRequest.body.applyToExistingRecords = true;
@@ -345,13 +354,14 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       );
       expect(models.trainingCourse.updateTrainingRecordsWithCourseData).to.have.been.calledWith({
         trainingCourseUid: mockTrainingCourseUid,
+        trainingRecordUids: mockTrainingRecords.map((record) => record.uid),
         updatedBy: mockUsername,
         transaction: mockTransaction,
       });
     });
 
     it('should respond with 400 if the req body is empty', async () => {
-      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockSequelizeRecord);
+      sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockTrainingCourseSequelizeObject);
       sinon.stub(console, 'error'); // suppress error msg in test log
 
       const req = httpMocks.createRequest({ ...request, body: undefined });

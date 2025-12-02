@@ -165,9 +165,16 @@ const updateTrainingCourse = async (req, res) => {
         updatedBy,
         transaction,
       });
+      const trainingRecordsLinkedToCourse = await updatedTrainingCourse.getWorkerTraining({ transaction });
 
-      if (applyToExistingRecords) {
-        await models.trainingCourse.updateTrainingRecordsWithCourseData({ trainingCourseUid, updatedBy, transaction });
+      if (applyToExistingRecords && trainingRecordsLinkedToCourse?.length > 0) {
+        const trainingRecordUids = trainingRecordsLinkedToCourse.map((record) => record.uid);
+        await models.trainingCourse.updateTrainingRecordsWithCourseData({
+          trainingCourseUid,
+          trainingRecordUids,
+          updatedBy,
+          transaction,
+        });
       }
 
       return updatedTrainingCourse;

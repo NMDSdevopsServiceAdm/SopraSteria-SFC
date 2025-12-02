@@ -190,7 +190,12 @@ module.exports = function (sequelize, DataTypes) {
     return await recordFound.update({ ...updates, updatedBy }, { transaction });
   };
 
-  TrainingCourse.updateTrainingRecordsWithCourseData = async function ({ trainingCourseUid, transaction, updatedBy }) {
+  TrainingCourse.updateTrainingRecordsWithCourseData = async function ({
+    trainingCourseUid,
+    trainingRecordUids,
+    transaction,
+    updatedBy,
+  }) {
     const models = sequelize.models;
 
     const trainingCourse = await models.trainingCourse.findOne({
@@ -203,11 +208,6 @@ module.exports = function (sequelize, DataTypes) {
 
     if (!trainingCourse) {
       throw new NotFoundError('Could not find the training course');
-    }
-
-    const trainingRecordsToUpdate = await trainingCourse.countWorkerTraining();
-    if (!trainingRecordsToUpdate) {
-      return;
     }
 
     const fieldsToCopy = [
@@ -229,9 +229,9 @@ module.exports = function (sequelize, DataTypes) {
       updated: new Date(),
     };
 
-    const [_updatedRecordCount, updatedRows] = await sequelize.models.workerTraining.update(updatesToApply, {
-      returning: true,
+    const trainingRecordsToUpdate = await sequelize.models.workerTraining.findAll({
       where: {
+        uid: trainingRecordUids,
         trainingCourseFK: trainingCourse.id,
       },
       include: [
@@ -248,8 +248,20 @@ module.exports = function (sequelize, DataTypes) {
       transaction,
     });
 
-    const updateExpiryDateForEachRecord = updatedRows.map((trainingRecordRow) => {
-      const trainingRecordId = trainingRecordRow.dataValues.ID;
+    if (!trainingRecordsToUpdate.length) {
+      return;
+    }
+
+    await sequelize.models.workerTraining.update(updatesToApply, {
+      where: {
+        id: trainingRecordsToUpdate.map((record) => record.id),
+        trainingCourseFK: trainingCourse.id,
+      },
+      transaction,
+    });
+
+    const updateExpiryDateForEachRecord = trainingRecordsToUpdate.map((record) => {
+      const trainingRecordId = record.id;
       return models.workerTraining.autoFillInExpiryDate({
         trainingRecordId,
         transaction,
