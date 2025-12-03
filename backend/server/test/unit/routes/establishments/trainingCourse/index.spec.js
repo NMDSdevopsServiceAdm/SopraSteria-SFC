@@ -407,8 +407,6 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       username: mockUsername,
     };
 
-    // const expectedResponseBody = {trainingCourses: [expectedTrainingCoursesInResponse]};
-
     it('should respond with 200 and an empty array if no training course in the workplace', async () => {
       sinon.stub(models.trainingCourse, 'findAll').resolves([]);
       sinon.stub(models.establishment, 'findWithWorkersAndTraining').resolves(mockEstablishmentObject);
