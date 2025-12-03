@@ -20,6 +20,7 @@ import { mergeMap } from 'rxjs/operators';
 @Component({
   selector: 'app-add-edit-training',
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
+  styleUrl: './add-edit-training.component.scss',
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public category: string;
@@ -277,5 +278,17 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   private onError(error) {
     console.log(error);
     this.submitButtonDisabled = false;
+  }
+
+  public onSelectATrainingCourse(): void {
+    this.router.navigate([
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'training',
+      this.trainingRecordId,
+      'include-training-course-details',
+    ]);
   }
 }

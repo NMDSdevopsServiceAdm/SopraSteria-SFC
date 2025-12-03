@@ -376,11 +376,10 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('buttons', () => {
-    it('should render the Delete and Include training course details buttons when editing training', async () => {
+    it('should render the Delete button when editing training', async () => {
       const { getByTestId } = await setup();
 
       expect(getByTestId('deleteButton')).toBeTruthy();
-      expect(getByTestId('includeTraining')).toBeTruthy();
     });
 
     it('should render the Save and return and Cancel buttons when editing training', async () => {
@@ -397,10 +396,9 @@ describe('AddEditTrainingComponent', () => {
         expect(getByText('Cancel')).toBeTruthy();
       });
 
-      it('should not render the Delete and Include training course details buttons', async () => {
+      it('should not render the Delete button', async () => {
         const { queryByTestId } = await setup({ trainingRecordId: null });
         expect(queryByTestId('deleteButton')).toBeFalsy();
-        expect(queryByTestId('includeTraining')).toBeFalsy();
       });
 
       it('should not render the expires date inputs', async () => {
@@ -447,7 +445,67 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
-  describe('Include training course details button', () => {
+  fdescribe('add training course details box', () => {
+    it('should render when editing training', async () => {
+      const { getByTestId } = await setup();
+
+      const includeTrainingCourseTestId = getByTestId('includeTrainingCourse');
+
+      expect(includeTrainingCourseTestId).toBeTruthy();
+      expect(
+        within(includeTrainingCourseTestId).getByText(
+          'Why is it a good idea to update records with training course details?',
+        ),
+      );
+    });
+
+    it('should render when editing training', async () => {
+      const { getByTestId } = await setup();
+
+      const includeTrainingCourseTestId = getByTestId('includeTrainingCourse');
+
+      expect(includeTrainingCourseTestId).toBeTruthy();
+      expect(within(includeTrainingCourseTestId).getByRole('button', { name: 'Select a training course' }));
+    });
+
+    it('should navigate to the include training details path', async () => {
+      const { component, fixture, getByTestId, routerSpy } = await setup();
+
+      const includeTrainingCourseTestId = getByTestId('includeTrainingCourse');
+      const button = within(includeTrainingCourseTestId).getByRole('button', { name: 'Select a training course' });
+
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'training-and-qualifications-record',
+        component.worker.uid,
+        'training',
+        component.trainingRecordId,
+        'include-training-course-details',
+      ]);
+    });
+
+    it('should not show if there is no training record id', async () => {
+      const { queryByTestId } = await setup({ trainingRecordId: null });
+
+      expect(queryByTestId('includeTrainingCourse')).toBeFalsy();
+    });
+
+    it('should render the Include training course details button when editing training', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('includeTraining')).toBeTruthy();
+    });
+
+    it('should not render the Include training course details button', async () => {
+      const { queryByTestId } = await setup({ trainingRecordId: null });
+
+      expect(queryByTestId('includeTraining')).toBeFalsy();
+    });
+
     it('should navigate to include training details path', async () => {
       const { component, getByTestId } = await setup();
       const link = getByTestId('includeTraining');
