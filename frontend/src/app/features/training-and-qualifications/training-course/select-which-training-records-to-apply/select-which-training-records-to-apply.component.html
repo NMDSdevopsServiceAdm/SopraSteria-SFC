@@ -1,0 +1,50 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" novalidate>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+          <span class="govuk-caption-l" data-testid="section-heading">Training and qualifications</span>
+          <h1 class="govuk-fieldset__heading">
+            Select which training records you want the updated course details to apply to?
+          </h1>
+        </legend>
+      </fieldset>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && trainingRecordsToApply.errors">
+        <div class="govuk-radios govuk-!-margin-bottom-6">
+          <span
+            *ngIf="submitted && trainingRecordsToApply.errors"
+            id="trainingRecordsToApply-error"
+            class="govuk-error-message"
+          >
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFirstErrorMessage('trainingRecordsToApply') }}
+          </span>
+          @for(option of radioButtonOptions; track option.value; let index = $index) {
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              [class.govuk-input--error]="submitted && form.get('trainingRecordsToApply').invalid"
+              [id]="'trainingRecordsToApply-' + index"
+              name="trainingRecordsToApply"
+              [formControlName]="'trainingRecordsToApply'"
+              type="radio"
+              [value]="option.value"
+            />
+            <label class="govuk-label govuk-radios__label" [for]="'trainingRecordsToApply-' + index">
+              {{ option.label }}
+            </label>
+          </div>
+          }
+        </div>
+      </div>
+
+      <button type="submit" class="govuk-button govuk-!-margin-top-4">Apply and save course details</button>
+    </div>
+  </div>
+</form>

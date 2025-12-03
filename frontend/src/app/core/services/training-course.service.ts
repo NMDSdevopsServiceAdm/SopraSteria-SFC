@@ -11,6 +11,7 @@ import { GetTrainingCoursesResponse, TrainingCourse } from '@core/model/training
 })
 export class TrainingCourseService {
   private _newTrainingCourseToBeAdded: Partial<TrainingCourse>;
+  private _trainingCourseToBeUpdated: Partial<TrainingCourse>;
   constructor(private http: HttpClient) {}
 
   public getAllTrainingCourses(establishmentUid: string): Observable<Array<TrainingCourse>> {
@@ -42,11 +43,36 @@ export class TrainingCourseService {
     );
   }
 
+  public updateTrainingCourse(
+    establishmentUid: string,
+    trainingCourseUid: string,
+    updates: Partial<TrainingCourse>,
+    applyToExistingRecords: boolean,
+  ): Observable<TrainingCourse> {
+    const requestBody = {
+      trainingCourse: updates,
+      applyToExistingRecords,
+    };
+
+    return this.http.put<TrainingCourse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse/${trainingCourseUid}`,
+      requestBody,
+    );
+  }
+
   public get newTrainingCourseToBeAdded(): Partial<TrainingCourse> {
     return this._newTrainingCourseToBeAdded;
   }
 
   public set newTrainingCourseToBeAdded(props: Partial<TrainingCourse>) {
     this._newTrainingCourseToBeAdded = props;
+  }
+
+  public get trainingCourseToBeUpdated(): Partial<TrainingCourse> {
+    return this._trainingCourseToBeUpdated;
+  }
+
+  public set trainingCourseToBeUpdated(props: Partial<TrainingCourse>) {
+    this._trainingCourseToBeUpdated = props;
   }
 }

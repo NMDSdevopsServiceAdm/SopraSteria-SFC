@@ -29,6 +29,8 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
   public trainingCourseName: string;
 
   public requiredErrorMessage: string = 'Select the training course category';
+  public sectionHeading: string;
+  public ctaButtonText: string;
 
   public trainingGroups: TrainingCategorySortedByGroup;
   public categories: TrainingCategory[];
@@ -47,11 +49,9 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
-
     this.determineJourneyType();
+    this.setText();
     this.getCategories();
-    this.trainingCourseName = this.trainingCourseService.newTrainingCourseToBeAdded.name;
-
     this.setupForm();
     this.setupFormErrorsMap();
     this.prefill();
@@ -64,9 +64,20 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
 
   private determineJourneyType() {
     this.journeyType = this.route.snapshot?.data?.journeyType ?? 'Add';
+  }
 
-    if (this.journeyType === 'Add' && !this.trainingCourseService.newTrainingCourseToBeAdded) {
-      this.router.navigate(['..', 'details'], { relativeTo: this.route });
+  private setText() {
+    switch (this.journeyType) {
+      case 'Add': {
+        this.sectionHeading = 'Add a training course';
+        this.ctaButtonText = 'Save training course';
+        break;
+      }
+      case 'Edit': {
+        this.sectionHeading = 'Training and qualifications';
+        this.ctaButtonText = 'Continue';
+        break;
+      }
     }
   }
 
@@ -101,12 +112,19 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
 
   private prefill(): void {
     if (this.journeyType === 'Add' && this.trainingCourseService.newTrainingCourseToBeAdded) {
-      this.prefillFromLocalData();
+      this.trainingCourseName = this.trainingCourseService?.newTrainingCourseToBeAdded?.name;
+      return;
     }
-  }
+    if (this.journeyType === 'Edit' && this.trainingCourseService.trainingCourseToBeUpdated) {
+      const trainingCourse = this.trainingCourseService.trainingCourseToBeUpdated;
+      this.trainingCourseName = trainingCourse.name;
+      this.preFilledId = trainingCourse.trainingCategoryId;
+      this.form.patchValue({ category: trainingCourse.trainingCategoryId });
+      return;
+    }
 
-  private prefillFromLocalData() {
-    this.trainingCourseName = this.trainingCourseService?.newTrainingCourseToBeAdded?.name;
+    // if could not find the data to prefill
+    this.router.navigate(['../details'], { relativeTo: this.route });
   }
 
   public onSubmit(): void {
@@ -119,6 +137,8 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
 
     if (this.journeyType === 'Add') {
       this.createNewTrainingCourseAndReturn();
+    } else if (this.journeyType === 'Edit') {
+      this.updateCategoryAndReturn();
     }
   }
 
@@ -131,5 +151,17 @@ export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
         .navigate(['workplace', this.workplace.uid, 'training-course', 'add-and-manage-training-courses'])
         .then(() => this.alertService.addAlert({ type: 'success', message: 'Training course added' }));
     });
+  }
+
+  private updateCategoryAndReturn(): void {
+    const trainingCategoryId = this.form.get('category').value;
+
+    const updatedTrainingCourse = {
+      ...this.trainingCourseService.trainingCourseToBeUpdated,
+      trainingCategoryId,
+    };
+
+    this.trainingCourseService.trainingCourseToBeUpdated = updatedTrainingCourse;
+    this.router.navigate(['../details'], { relativeTo: this.route });
   }
 }
