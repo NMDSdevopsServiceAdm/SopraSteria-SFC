@@ -92,7 +92,7 @@ describe('NewDashboardHeaderComponent', () => {
         hasWorkers: override.hasWorkers,
         isParent: false,
         workplace: establishment,
-        isTrainingCourse: true,
+        hasTrainingCourse: true,
       },
     });
 
@@ -520,7 +520,7 @@ describe('NewDashboardHeaderComponent', () => {
         const { component, fixture, getByText, queryByText } = await setup(override);
         const button = getByText('Add and manage training');
 
-        component.isTrainingCourse = false;
+        component.hasTrainingCourse = false;
 
         button.click();
         fixture.detectChanges();
