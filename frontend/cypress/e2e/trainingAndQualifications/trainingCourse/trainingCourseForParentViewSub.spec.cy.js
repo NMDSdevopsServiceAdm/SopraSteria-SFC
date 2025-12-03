@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../../support/mockEstablishmentData';
 import { runTestsForTrainingCourseJourney } from './runTestsForTrainingCourse';
+import { runTestsForUpdateTrainingRecordsWithCourseDetails } from './runTestsForUpdateRecordsWithTrainingCourseDetails';
 
 describe('Training course for parent workplace edit user', () => {
   const subsidaryToView = SubEstablishmentNotDataOwner;
@@ -15,4 +16,6 @@ describe('Training course for parent workplace edit user', () => {
   });
 
   runTestsForTrainingCourseJourney(subsidaryToView);
+
+  runTestsForUpdateTrainingRecordsWithCourseDetails(subsidaryToView);
 });

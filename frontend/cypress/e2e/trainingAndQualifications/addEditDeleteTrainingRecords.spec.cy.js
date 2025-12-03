@@ -83,7 +83,7 @@ describe('training record', () => {
   describe('training courses', () => {
     before(() => {
       cy.deleteAllTrainingCourses(establishmentID);
-      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: trainingCourseName });
+      cy.insertTrainingCourse({ establishmentID, categoryId: 1, name: trainingCourseName });
       cy.reload();
     });
 
@@ -409,7 +409,7 @@ describe('training record', () => {
     describe('with training courses', () => {
       before(() => {
         cy.deleteAllTrainingCourses(establishmentID);
-        cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: trainingCourseName });
+        cy.insertTrainingCourse({ establishmentID, categoryId: 1, name: trainingCourseName });
         cy.reload();
       });
 
