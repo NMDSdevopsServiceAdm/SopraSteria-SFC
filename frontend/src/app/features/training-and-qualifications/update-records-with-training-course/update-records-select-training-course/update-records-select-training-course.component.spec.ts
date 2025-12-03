@@ -12,10 +12,9 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { TrainingCourseWithLinkableRecords } from '@core/model/training-course.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
-describe('UpdateRecordsSelectTrainingCourseComponent', () => {
+fdescribe('UpdateRecordsSelectTrainingCourseComponent', () => {
   const mockEstablishmentUid = 'mock-establishment-uid';
   const courseWithNoLinkableRecords = { ...trainingCourseBuilder(), linkableTrainingRecords: [] };
   const courseWithLinkableRecords = {
@@ -146,26 +145,36 @@ describe('UpdateRecordsSelectTrainingCourseComponent', () => {
       expect(within(table).getByText(expectedSubheading)).toBeTruthy();
     });
 
-    it('should show the training course name as a link, if there are training records that can be linked', async () => {
-      const { getByTestId } = await setup();
-      const table = getByTestId('training-course-table');
+    describe('if a course can be linked to training records', () => {
+      it('should show the training course name as a link and "Records available to update" in status column', async () => {
+        const { getByText } = await setup();
 
-      const courseNameAsLink = within(table).queryByRole('link', {
-        name: courseWithLinkableRecords.name,
-      }) as HTMLLinkElement;
-      expect(courseNameAsLink).toBeTruthy();
-      expect(courseNameAsLink.href).toContain(`/${courseWithLinkableRecords.uid}/select-training-records`);
+        const trainingCourseRow = getByText(courseWithLinkableRecords.name).closest('tr');
+        const courseNameAsLink = within(trainingCourseRow).queryByRole('link', {
+          name: courseWithLinkableRecords.name,
+        }) as HTMLLinkElement;
+        expect(courseNameAsLink).toBeTruthy();
+        expect(courseNameAsLink.href).toContain(`/${courseWithLinkableRecords.uid}/select-training-records`);
+
+        expect(within(trainingCourseRow).queryByText('Records available to update')).toBeTruthy();
+      });
     });
 
-    it('should show the training course name as a plain text, if no training records can be linked', async () => {
-      const { getByTestId } = await setup();
-      const table = getByTestId('training-course-table');
+    describe('if a course cannot be linked to training records (no training record in that category)', () => {
+      it('should show the training course name as plain text and "No records available to update" in status column', async () => {
+        const { getByText } = await setup();
 
-      const courseNameAsLink = within(table).queryByRole('link', { name: courseWithNoLinkableRecords.name });
-      expect(courseNameAsLink).toBeFalsy();
+        const trainingCourseRow = getByText(courseWithNoLinkableRecords.name).closest('tr');
+        const courseNameAsLink = within(trainingCourseRow).queryByRole('link', {
+          name: courseWithLinkableRecords.name,
+        }) as HTMLLinkElement;
+        expect(courseNameAsLink).toBeFalsy();
 
-      const courseNameAsPlainText = within(table).getByText(courseWithNoLinkableRecords.name);
-      expect(courseNameAsPlainText).toBeTruthy();
+        const courseNameAsPlainText = within(trainingCourseRow).getByText(courseWithNoLinkableRecords.name);
+        expect(courseNameAsPlainText).toBeTruthy();
+
+        expect(within(trainingCourseRow).queryByText('No records available to update')).toBeTruthy();
+      });
     });
   });
 
