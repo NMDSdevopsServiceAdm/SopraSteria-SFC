@@ -30,21 +30,29 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     completed: '2024-01-01',
     expires: '2025-01-01',
     notes: 'Test notes',
-    validityPeriodInMonth: 12,
     trainingCertificates: [],
-    accredited: 'Yes',
-    deliveredBy: 'Trainer',
-    externalProviderName: 'Provider',
-    howWasItDelivered: 'Classroom',
-    trainingCategory: { id: 10, category: 'Safety' },
+  };
+  const defaultSelectedTraining = {
+    name: 'Basic Sefeguarding For support staff',
+    accredited: null,
+    deliveredBy: null,
+    trainingProviderId: null,
+    otherTrainingProviderName: null,
+    howWasItDelivered: null,
+    doesNotExpire: false,
+    validityPeriodInMonth: 12,
+    archived: false,
+    category: { id: 33, seq: 0, category: 'Safeguarding adults', trainingCategoryGroup: 'Care skills and knowledge' },
+    trainingProvider: null,
+    trainingCategoryName: 'Safeguarding adults',
   };
 
   const mockTrainingCourses = [
     { id: 1, name: 'Fire Safety' },
     { id: 2, name: 'Manual Handling' },
   ];
+
   async function setup(overrides: any = {}) {
-    const defaultSelectedTraining = { id: 1, name: 'Default Training' };
     const defaultTrainingRecord = { ...mockTrainingRecordData };
 
     const selectedTraining = overrides?.selectedTraining ?? defaultSelectedTraining;
@@ -128,6 +136,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const certificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
+    spyOn(trainingService, 'getSelectedTrainingCourse').and.returnValue(selectedTraining);
 
     component.selectedTrainingCourse = selectedTraining;
     component.trainingRecord = mockTrainingRecord;
@@ -209,10 +218,12 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     it('should display the "Select a different training course" link if more than one training course exists', async () => {
       const { component, getByTestId } = await setup();
 
-      const link = getByTestId('includeTraining');
+      const span = getByTestId('includeTraining');
+      const link = span.closest('a');
       expect(link).toBeTruthy();
 
-      const href = link.getAttribute('href');
+      const href = link.getAttribute('href') || link.getAttribute('ng-reflect-router-link');
+
       expect(href).toContain(
         `/workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}/training/${component.trainingRecordId}/include-training-course-details`,
       );
@@ -268,6 +279,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       component.onSelectFiles([file]);
       expect(component.filesToUpload.length).toBe(1);
     });
+
     it('should handle selecting invalid files', async () => {
       const { component } = await setup();
       const invalidFile = new File(['exe'], 'malware.exe');
@@ -280,10 +292,12 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       const { component } = await setup();
       const file = new File(['abc'], 'certificate.pdf');
       component.onSelectFiles([file]);
+
       expect(component.filesToUpload.length).toBe(1);
       component.removeFileToUpload(0);
       expect(component.filesToUpload.length).toBe(0);
     });
+
     it('should move a saved certificate into filesToRemove', async () => {
       const { component } = await setup();
       component.trainingCertificates = [{ uid: 'cert1', filename: 'old.pdf' } as any];
@@ -300,6 +314,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       component.toggleNotesOpen();
       expect(component.notesOpen).toBe(!start);
     });
+
     it('should update notes value & remaining characters on input', async () => {
       const { component } = await setup();
       const event = { target: { value: 'hello world' } } as any;

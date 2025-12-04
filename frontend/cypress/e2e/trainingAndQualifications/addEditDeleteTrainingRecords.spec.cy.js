@@ -24,6 +24,12 @@ describe('training record', () => {
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
+
+    cy.addWorkerTraining({
+      establishmentID,
+      workerName: workerName1,
+      categoryId: 1,
+    });
     cy.reload();
   });
 
@@ -206,7 +212,11 @@ describe('training record', () => {
         cy.get('[data-testid="workerName"]').contains(workerName1);
         cy.get('[data-testid="checkbox-label"]').contains('Test training course');
         cy.get('[data-testid="training-course-name-checkbox"]').check();
-        // Add test for clicking on Continue button when that functionality is added
+        // Click Continue
+        cy.get('[data-testid="continue-button"]').click();
+
+        // Assert navigation
+        cy.url().should('include', `matching-layout`);
       });
     });
 
@@ -228,6 +238,102 @@ describe('training record', () => {
         cy.contains('label', 'Test training course 2');
         // Add test for selecting and clicking on Continue button when that functionality is added
       });
+    });
+  });
+
+  describe('Training Course Matching Layout Page', () => {
+    const workerName = 'Test Worker';
+
+    beforeEach(() => {
+      cy.deleteAllTrainingCourses(establishmentID);
+      cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
+      cy.deleteTestWorkerFromDb(workerName);
+      cy.insertTestWorker({ establishmentID, workerName });
+
+      // Insert 2 training courses so the "Select a different training course" link is visible
+      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Fire Safety' });
+      cy.insertTrainingCourse({ establishmentID, categoryID: 2, name: 'Manual Handling' });
+
+      // Add a training record
+      cy.addWorkerTraining({
+        establishmentID,
+        workerName,
+        courseName: 'Fire Safety',
+        completed: '2024-01-01',
+        expires: '2025-01-01',
+        notes: 'Test notes',
+      });
+
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', trainingName).click();
+      cy.contains('a', 'Include training course details').click();
+      cy.get('[data-testid="training-course-name-checkbox"]').check();
+      // Click Continue
+      cy.get('[data-testid="continue-button"]').click();
+
+      cy.url().should('include', `matching-layout`);
+
+      cy.get('h1', { timeout: 15000 }).should('contain.text', 'Training record details');
+    });
+
+    afterEach(() => {
+      cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
+      cy.deleteTestWorkerFromDb(workerName);
+    });
+
+    it('should display the selected training course name', () => {
+      cy.contains('.govuk-summary-list__key', 'Training course name').next().should('contain.text', 'Fire Safety');
+    });
+
+    it('should NOT show the link when only one course exists', () => {
+      cy.deleteAllTrainingCourses(establishmentID);
+      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Fire Safety' });
+
+      cy.get('[data-testid="includeTraining"]').should('not.exist');
+    });
+
+    it('should allow the user to open notes and edit them', () => {
+      cy.contains('button', 'Open notes').click();
+
+      cy.get('[data-testid="notesSection"] textarea').should('be.visible').clear().type('Updated notes via E2E');
+
+      cy.get('[data-testid="notesSection"]').should('exist').and('be.visible');
+    });
+
+    it('should allow editing the completed and expiry dates', () => {
+      cy.get('[data-testid="completedDate"]').within(() => {
+        cy.get('input').each(($input) => cy.wrap($input).clear());
+        cy.get('input').eq(0).type('01');
+        cy.get('input').eq(1).type('02');
+        cy.get('input').eq(2).type('2024');
+      });
+
+      cy.get('[data-testid="expiresDate"]').within(() => {
+        cy.get('input').each(($input) => cy.wrap($input).clear());
+        cy.get('input').eq(0).type('01');
+        cy.get('input').eq(1).type('03');
+        cy.get('input').eq(2).type('2025');
+      });
+    });
+
+    it('should display the certificate upload component', () => {
+      cy.get('app-select-upload-certificate').should('exist');
+    });
+
+    it('should show delete training record button', () => {
+      cy.get('[data-testid="deleteButton"]').should('exist');
+    });
+
+    it('should submit the form successfully and redirect', () => {
+      cy.contains('button', 'Open notes').click();
+
+      cy.get('[data-testid="notesSection"] textarea').clear().type('Final updated note');
+
+      cy.get('button[type="submit"]').click();
+
+      cy.get('app-alert span', { timeout: 10000 }).should('contain.text', 'Training record updated');
+
+      cy.url().should('include', '/dashboard');
     });
   });
 

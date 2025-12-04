@@ -28,49 +28,50 @@
                  trainingRecordId,
                  'include-training-course-details'
                ]"
-              data-testid="includeTraining"
+
               >
 
               <img src="/assets/images/Addtraining.svg" alt="" />
-              <span class="govuk__nowrap">Select a different training course </span>
+              <span class="govuk__nowrap" data-testid="includeTraining">Select a different training course </span>
               </a>
           </dd>
         </div>
           <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key">Training category</dt>
           <dd class="govuk-summary-list__value">
-                      {{trainingRecord?.trainingCategory?.category}}
+                      {{selectedTrainingCourse?.trainingCategoryName ? selectedTrainingCourse?.trainingCategoryName:'-'}}
           </dd>
         </div>
           <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key govuk__nowrap">Is the training course accredited?</dt>
           <dd class="govuk-summary-list__value">
-                      {{trainingRecord?.accredited}}
+                       {{selectedTrainingCourse?.accredited ? selectedTrainingCourse?.accredited:'-'}}
           </dd>
         </div>
                <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key govuk__nowrap">Who delivered the training course?</dt>
           <dd class="govuk-summary-list__value">
-                      {{trainingRecord?.deliveredBy}}
+          {{selectedTrainingCourse?.deliveredBy ? selectedTrainingCourse?.deliveredBy:'-'}}
           </dd>
         </div>
                <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key">Training provider name</dt>
           <dd class="govuk-summary-list__value">
-              {{trainingRecord?.externalProviderName ?trainingRecord?.externalProviderName : '-' }}
+               {{selectedTrainingCourse?.externalProviderName ? selectedTrainingCourse?.externalProviderName:'-'}}
           </dd>
         </div>
                <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key govuk__nowrap">How is this training course delivered?</dt>
           <dd class="govuk-summary-list__value">
-                      {{trainingRecord?.howWasItDelivered? trainingRecord?.howWasItDelivered: '-'}}
+          {{selectedTrainingCourse?.howWasItDelivered ? selectedTrainingCourse?.howWasItDelivered:'-'}}
+
           </dd>
         </div>
            <div class="govuk-summary-list__row" >
           <dt class="govuk-summary-list__key govuk__nowrap">How long is the training valid for?</dt>
           <dd class="govuk-summary-list__value">
+           {{selectedTrainingCourse?.validityPeriodInMonth ? selectedTrainingCourse?.validityPeriodInMonth +' months': '-'}}
 
-                      {{trainingRecord?.validityPeriodInMonth? trainingRecord?.validityPeriodInMonth +' months': '-'}}
           </dd>
         </div>
       </dl>
@@ -102,7 +103,7 @@
                 <legend id="expires-hint" class="govuk-hint"> For example, 31 3 2025 </legend>
           <div *ngIf="expiryMismatchWarning">
           <span class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap">
-         This training is usually valid for  {{trainingRecord?.validityPeriodInMonth}} months
+         This training is usually valid for  {{selectedTrainingCourse?.validityPeriodInMonth}} months
           </span>
          </div>
               <span *ngIf="submitted && form.get('expires').invalid" id="expires-error" class="govuk-error-message">

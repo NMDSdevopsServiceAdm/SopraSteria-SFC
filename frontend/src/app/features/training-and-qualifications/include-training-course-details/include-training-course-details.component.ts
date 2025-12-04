@@ -61,7 +61,7 @@ export class IncludeTrainingCourseDetailsComponent {
       });
       this.trainingService.setSelectedTrainingCourse(userSelectedTrainingCourseFullDetails);
     }
-    // to be updated when next page is developed
+
     this.router.navigate([
       '/workplace',
       this.workplace.uid,

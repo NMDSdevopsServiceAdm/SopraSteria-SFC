@@ -171,7 +171,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   public autoFillExpiry(): void {
     const completed = this.toDayjs(this.form.get('completed')?.value);
     const expires = this.toDayjs(this.form.get('expires')?.value);
-    const validity = this.trainingRecord?.validityPeriodInMonth;
+    const validity = this.selectedTrainingCourse?.validityPeriodInMonth;
 
     if (completed && !expires && validity) {
       const newExpiry = completed.add(validity, 'month');
@@ -190,7 +190,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   }
   public checkExpiryMismatch(): void {
     const { completed, expires } = this.form.value;
-    const validityPeriodInMonth = this.trainingRecord?.validityPeriodInMonth;
+    const validityPeriodInMonth = this.selectedTrainingCourse?.validityPeriodInMonth;
 
     if (!completed?.day || !expires?.day || !validityPeriodInMonth) {
       this.expiryMismatchWarning = false;
@@ -267,8 +267,8 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
 
     return {
-      ...this.trainingRecord,
-      trainingCategory: { id: this.trainingRecord.trainingCategory.id },
+      ...this.selectedTrainingCourse,
+      trainingCategory: { id: this.selectedTrainingCourse?.category.id },
       trainingCourseFK: this.selectedTrainingCourse.id,
       completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
       expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
