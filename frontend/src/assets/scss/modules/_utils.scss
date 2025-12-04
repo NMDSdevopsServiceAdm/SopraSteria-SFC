@@ -179,3 +179,24 @@
   padding-top: 30px;
   margin-top: -20px;
 }
+
+dl.asc__name-value-pair {
+  dt,
+  dd {
+    @extend .govuk-body;
+  }
+
+  dt {
+    font-weight: 700;
+    margin-bottom: 7px;
+  }
+
+  dd {
+    display: inline-block;
+    margin-bottom: 0px;
+  }
+
+  dd:first-of-type {
+    margin-left: 0px;
+  }
+}
