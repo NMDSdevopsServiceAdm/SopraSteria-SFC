@@ -99,14 +99,14 @@ describe('Create account', () => {
     cy.get('span').contains('Your account is now being checked by Skills for Care').should('be.visible');
 
     // try login as the new user
-    cy.loginAsUser(loginId, mockPassword);
+    cy.loginAsUserWithNewSession(loginId, mockPassword);
     cy.contains('Your registration request is awaiting approval').should('be.visible');
 
     // approve the registration request
     approveRegistrationRequestAsAdmin(workplaceName);
 
     // try login again as the new user
-    cy.loginAsUser(loginId, mockPassword);
+    cy.loginAsUserWithNewSession(loginId, mockPassword);
     cy.get('h1').contains('Welcome to your new account').should('be.visible');
     cy.getByLabel('No, I want to start adding data').check();
     cy.get('button').contains('Continue').click();

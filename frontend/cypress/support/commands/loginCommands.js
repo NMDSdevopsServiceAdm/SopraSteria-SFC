@@ -16,6 +16,36 @@ Cypress.Commands.add('loginAsAdmin', () => {
 });
 
 Cypress.Commands.add('loginAsUser', (username, password) => {
+  cy.session(
+    username,
+    () => {
+      cy.intercept('POST', '/api/login').as('login');
+
+      cy.setCookie('cookies_preferences_set', 'true');
+      cy.visit('/');
+      cy.get('[data-cy="username"]').type(username);
+      cy.get('[data-cy="password"]').type(password);
+      cy.get('[data-testid="signinButton"]').click();
+      cy.wait('@login');
+    },
+    {
+      validate() {
+        cy.request({
+          url: '/api/user/me',
+          headers: { Authorization: localStorage['auth-token'] },
+          method: 'GET',
+        })
+          .its('status')
+          .should('equal', 200);
+      },
+    },
+  );
+
+  cy.visit('/');
+  cy.url().should('contain', 'dashboard#home');
+});
+
+Cypress.Commands.add('loginAsUserWithNewSession', (username, password) => {
   cy.intercept('POST', '/api/login').as('login');
 
   cy.setCookie('cookies_preferences_set', 'true');

@@ -5,7 +5,7 @@ import { fillUserRegistrationForm } from '../../support/page_objects/userRegistr
 
 describe('As a workplace primary user I want to register a new user', () => {
   const userFullName = 'Test new user for cypress';
-  const loginId = 'cypress-test-user-0002';
+  const loginIdPrefix = 'cypress-test-user-0002';
   const mockPassword = 'Some-very-super-strong-p@ssw0rd';
 
   before(() => {
@@ -35,6 +35,8 @@ describe('As a workplace primary user I want to register a new user', () => {
   const userTypes = ['edit', 'read'];
 
   userTypes.forEach((userType) => {
+    const loginId = `${loginIdPrefix}-${userType}`;
+
     it(`should be able to add a new ${userType} user for the workplace`, () => {
       // Add new user to workplace
       cy.contains('a', 'Users').click();
