@@ -86,9 +86,10 @@ import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from 
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
+import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
-import { IncludeTrainingCourseDetailsComponent} from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
+import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -152,6 +153,7 @@ import { IncludeTrainingCourseDetailsComponent} from '@features/training-and-qua
     CarryOutDelegatedHealthcareActivitiesComponent,
     WhoCarryOutDelegatedHealthcareActivitiesComponent,
     DoYouWantToDowloadTrainAndQualsComponent,
+    TrainingCourseMatchingLayoutComponent,
     SelectTrainingCourseForWorkerTraining,
     IncludeTrainingCourseDetailsComponent,
   ],

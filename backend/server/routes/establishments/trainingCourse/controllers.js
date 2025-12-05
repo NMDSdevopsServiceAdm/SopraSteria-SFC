@@ -25,6 +25,13 @@ const fetchAllTrainingCourses = async (req, res) => {
         archived: false,
         ...(trainingCategoryId ? { categoryFk: trainingCategoryId } : {}),
       },
+      include: [
+        {
+          model: models.workerTrainingCategories,
+          as: 'category',
+        },
+      ],
+
       attributes: { exclude: ['establishmentFk'] },
       order: [['updated', 'DESC']],
     });
