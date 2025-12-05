@@ -379,6 +379,14 @@ class Training extends EntityValidator {
     } else {
       validatedTrainingRecord.accredited = null;
     }
+
+    // training course FK
+    if (document.trainingCourseFK) {
+      validatedTrainingRecord.trainingCourseFK = document.trainingCourseFK;
+    } else {
+      validatedTrainingRecord.trainingCourseFK = null;
+    }
+
     //deliveredBy
     if (document.deliveredBy) {
       const ALLOWED_VALUES = ['In-house staff', 'External provider'];
@@ -545,6 +553,7 @@ class Training extends EntityValidator {
         this.category = validatedTrainingRecord.trainingCategory;
         this.title = validatedTrainingRecord.title;
         this.accredited = validatedTrainingRecord.accredited;
+        this.trainingCourseFK = validatedTrainingRecord.trainingCourseFK;
         this.deliveredBy = validatedTrainingRecord.deliveredBy;
         this.externalProviderName = validatedTrainingRecord.externalProviderName;
         this.trainingProvider = validatedTrainingRecord.trainingProvider;
@@ -621,6 +630,7 @@ class Training extends EntityValidator {
             categoryFk: this._category.id,
             title: this.title,
             accredited: this._accredited,
+            trainingCourseFK: this._trainingCourseFK,
             deliveredBy: this._deliveredBy,
             externalProviderName: this._externalProviderName,
             trainingProviderFk: this._trainingProviderFk,
@@ -675,6 +685,7 @@ class Training extends EntityValidator {
             categoryFk: this._category.id,
             title: this.title,
             accredited: this._accredited,
+            trainingCourseFK: this.trainingCourseFK,
             deliveredBy: this._deliveredBy,
             externalProviderName: this._externalProviderName,
             howWasItDelivered: this._howWasItDelivered,
@@ -779,8 +790,8 @@ class Training extends EntityValidator {
         };
         this._title = fetchResults.title;
         this._accredited = fetchResults.accredited;
-        this._deliveredBy = fetchResults.deliveredBy;
         this._trainingCourseFK = fetchResults.trainingCourseFK;
+        this._deliveredBy = fetchResults.deliveredBy;
         this._trainingProviderFk = fetchResults._trainingProviderFk;
         this._externalProviderName = fetchResults.externalProviderName;
         this._howWasItDelivered = fetchResults.howWasItDelivered;
@@ -1034,6 +1045,7 @@ class Training extends EntityValidator {
       trainingCategory: this.category,
       title: this.title ? this.title : undefined,
       accredited: this.accredited ? this.accredited : undefined,
+      trainingCourseFK: this.trainingCourseFK ? this.trainingCourseFK : null,
       deliveredBy: this.deliveredBy ? this.deliveredBy : undefined,
       trainingProvider: this.trainingProvider ? this.trainingProvider : undefined,
       externalProviderName: this.externalProviderName ? this.externalProviderName : undefined,

@@ -8,17 +8,14 @@
     </div>
     <div class="govuk-grid-row second-grid-row additional-details-wrapper">
       <div class="govuk-grid-column-four-fifths">
-        <app-details
-          [title]="'Why is it a good idea to update records with training course details?'">
+        <app-details [title]="'Why is it a good idea to update records with training course details?'">
           <p class="govuk-body first-line-of-details-text">
             It's a good idea because your training records will then be consistent with
           </p>
           <p class="govuk-body govuk-!-margin-bottom-0">
             each other, sharing the same details, like course name and validity. We
           </p>
-          <p class="govuk-body">
-            match records to courses by category and when you update them they’ll:
-          </p>
+          <p class="govuk-body">match records to courses by category and when you update them they’ll:</p>
           <ul class="govuk-list govuk-list--bullet">
             <li>take the name of the training course</li>
             <li>say whether the training is accredited</li>
@@ -47,9 +44,7 @@
         <div class="govuk-form-group govuk-!-margin-bottom-1">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
-              <h3 data-testid="training-course-heading" class="govuk-fieldset__heading">
-                Training course name
-              </h3>
+              <h3 data-testid="training-course-heading" class="govuk-fieldset__heading">Training course name</h3>
             </legend>
           </fieldset>
         </div>
@@ -100,7 +95,9 @@
     <div class="govuk-grid-row last-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <div class="govuk-button-group">
-          <button type="submit" class="govuk-button govuk-!-margin-right-9">Continue</button>
+          <button data-testid="continue-button" type="submit" class="govuk-button govuk-!-margin-right-9">
+            Continue
+          </button>
           <a
             class="govuk-link cancel-link"
             data-testid="cancel-link"

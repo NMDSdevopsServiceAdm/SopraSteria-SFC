@@ -12,19 +12,19 @@ import { BackLinkService } from '@core/services/backLink.service';
 describe('IncludeTrainingCourseDetailsComponent', () => {
   const workplace = {
     uid: '1',
-  }
+  };
   const worker = {
     uid: 123,
     nameOrId: 'John',
     mainJob: {
       title: 'Care Worker',
     },
-  }
+  };
 
   const trainingRecord = {
     title: 'Basic safeguarding for support staff',
     uid: 910,
-  }
+  };
 
   const mockTrainingCourses = [
     {
@@ -62,8 +62,8 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
       howWasItDelivered: HowWasItDelivered.ELearning,
       doesNotExpire: false,
       validityPeriodInMonth: 12,
-    }
-  ]
+    },
+  ];
 
   const mockDataObject = {
     imports: [WorkersModule, HttpClientTestingModule],
@@ -82,11 +82,10 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
         },
       },
     ],
-  }
+  };
 
   async function setup() {
-    const setupTools = await render(IncludeTrainingCourseDetailsComponent, mockDataObject
-  );
+    const setupTools = await render(IncludeTrainingCourseDetailsComponent, mockDataObject);
 
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
@@ -117,10 +116,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
     });
 
     it(`displays a Back link`, async () => {
-      const {
-        component,
-        showBackLinkSpy,
-      } = await setup();
+      const { component, showBackLinkSpy } = await setup();
 
       component.ngOnInit();
 
@@ -143,45 +139,47 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
       it('should display the dropdown toggle', async () => {
         const { getByTestId } = await setup();
         const toggle = getByTestId('details-toggle');
-        expect(toggle.textContent.trim()).toEqual('Why is it a good idea to update records with training course details?');
+        expect(toggle.textContent.trim()).toEqual(
+          'Why is it a good idea to update records with training course details?',
+        );
       });
-    })
+    });
 
     describe('Training record', () => {
       it('should display the header', async () => {
         const { getByTestId } = await setup();
         const header = getByTestId('training-record-heading');
         expect(header.textContent).toContain('Training record name');
-      })
+      });
 
       it('should contain the name of the training record', async () => {
         const { getByTestId } = await setup();
         const name = getByTestId('training-record-name');
         expect(name.textContent).toContain('Basic safeguarding for support staff');
-      })
+      });
     });
 
-    describe('Training course name options',() => {
+    describe('Training course name options', () => {
       it('should display the header', async () => {
         const { getByTestId } = await setup();
         const name = getByTestId('training-course-heading');
         expect(name.textContent).toContain('Training course name');
-      })
+      });
 
       describe('When a single course matches the training record', () => {
         it('should display the correct course related to the training record as a checkbox', async () => {
           const { getByTestId, queryAllByRole } = await setup();
           const name = getByTestId('checkbox-label');
-          const radioOptions = queryAllByRole('radio')
+          const radioOptions = queryAllByRole('radio');
 
           expect(name.textContent).toContain('Deprivation of liberty standards');
           expect(radioOptions.length).toBe(0);
-        })
+        });
       });
 
       describe('When multiple courses match the training record', () => {
         it('should display the correct courses related to the training record as radios', async () => {
-          mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = mockTrainingCourses
+          mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = mockTrainingCourses;
 
           const { queryAllByRole, queryByTestId } = await setup();
           const name = queryByTestId('training-course-name-checkbox');
@@ -189,7 +187,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
 
           expect(name).toBe(null);
           expect(radioOptions.length).toBe(3);
-        })
+        });
       });
     });
 
@@ -204,13 +202,8 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
       describe('When page has a course selection checkbox', () => {
         describe('When the checkbox is ticked', () => {
           it(`should call the training service with the selected course`, async () => {
-            mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = [mockTrainingCourses[0]]
-            const {
-              fixture,
-              getByTestId,
-              getByRole,
-              setSelectedTrainingCourseSpy,
-            } = await setup();
+            mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = [mockTrainingCourses[0]];
+            const { fixture, getByTestId, getByRole, setSelectedTrainingCourseSpy } = await setup();
 
             const checkbox = getByTestId('training-course-name-checkbox');
             const button = getByRole('button', { name: 'Continue' });
@@ -222,12 +215,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
           });
 
           it(`should navigate to the correct page`, async () => {
-            const {
-              fixture,
-              getByTestId,
-              getByRole,
-              routerSpy,
-            } = await setup();
+            const { fixture, getByTestId, getByRole, routerSpy } = await setup();
 
             const checkbox = getByTestId('training-course-name-checkbox');
             const button = getByRole('button', { name: 'Continue' });
@@ -235,16 +223,21 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
             fixture.detectChanges();
 
             fireEvent.click(button);
-            expect(routerSpy).toHaveBeenCalledWith(['.']);
+            expect(routerSpy).toHaveBeenCalledWith([
+              '/workplace',
+              '1',
+              'training-and-qualifications-record',
+              123,
+              'training',
+              910,
+              'matching-layout',
+            ]);
           });
-        })
+        });
 
         describe('When the checkbox is not ticked', () => {
           it(`should not call the training service`, async () => {
-            const {
-              getByRole,
-              setSelectedTrainingCourseSpy,
-            } = await setup();
+            const { getByRole, setSelectedTrainingCourseSpy } = await setup();
 
             const button = getByRole('button', { name: 'Continue' });
             fireEvent.click(button);
@@ -253,11 +246,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
           });
 
           it(`should navigate to the previous page`, async () => {
-            const {
-              component,
-              getByRole,
-              routerSpy,
-            } = await setup();
+            const { component, getByRole, routerSpy } = await setup();
 
             const button = getByRole('button', { name: 'Continue' });
             fireEvent.click(button);
@@ -268,20 +257,15 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
               'training-and-qualifications-record',
               component.worker.uid,
               'training',
-              component.trainingRecord.uid
-            ]
+              component.trainingRecord.uid,
+            ];
 
             expect(routerSpy).toHaveBeenCalledWith(previousPage);
           });
-        })
+        });
         describe('When the checkbox is ticked and unticked', () => {
           it(`should not call the training service`, async () => {
-            const {
-              fixture,
-              getByRole,
-              getByTestId,
-              setSelectedTrainingCourseSpy,
-            } = await setup();
+            const { fixture, getByRole, getByTestId, setSelectedTrainingCourseSpy } = await setup();
 
             const checkbox = getByTestId('training-course-name-checkbox');
             const button = getByRole('button', { name: 'Continue' });
@@ -296,13 +280,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
           });
 
           it(`should navigate to the previous page`, async () => {
-            const {
-              component,
-              fixture,
-              getByRole,
-              getByTestId,
-              routerSpy,
-            } = await setup();
+            const { component, fixture, getByRole, getByTestId, routerSpy } = await setup();
 
             const checkbox = getByTestId('training-course-name-checkbox');
             const button = getByRole('button', { name: 'Continue' });
@@ -320,24 +298,19 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
               'training-and-qualifications-record',
               component.worker.uid,
               'training',
-              component.trainingRecord.uid
-            ]
+              component.trainingRecord.uid,
+            ];
 
             expect(routerSpy).toHaveBeenCalledWith(previousPage);
           });
-        })
-      })
+        });
+      });
 
       describe('When page has course selection radios', () => {
         describe('When a radio is selected', () => {
           it(`should call the training service with the chosen course`, async () => {
-            mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = mockTrainingCourses
-            const {
-              fixture,
-              getByTestId,
-              getByRole,
-              setSelectedTrainingCourseSpy,
-            } = await setup();
+            mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = mockTrainingCourses;
+            const { fixture, getByTestId, getByRole, setSelectedTrainingCourseSpy } = await setup();
 
             const radio = getByTestId('radio-2');
             const button = getByRole('button', { name: 'Continue' });
@@ -349,12 +322,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
           });
 
           it(`should navigate to the correct page`, async () => {
-            const {
-              fixture,
-              getByText,
-              getByRole,
-              routerSpy,
-            } = await setup();
+            const { fixture, getByText, getByRole, routerSpy } = await setup();
 
             const checkbox = getByText(mockTrainingCourses[0].name);
             const button = getByRole('button', { name: 'Continue' });
@@ -362,18 +330,23 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
             fixture.detectChanges();
 
             fireEvent.click(button);
-            expect(routerSpy).toHaveBeenCalledWith(['.']);
+            expect(routerSpy).toHaveBeenCalledWith([
+              '/workplace',
+              '1',
+              'training-and-qualifications-record',
+              123,
+              'training',
+              910,
+              'matching-layout',
+            ]);
           });
-        })
-      })
+        });
+      });
 
       describe('When a radio is not selected', () => {
         it(`should call the training service with the chosen course`, async () => {
-          mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = mockTrainingCourses
-          const {
-            getByRole,
-            setSelectedTrainingCourseSpy,
-          } = await setup();
+          mockDataObject.providers[0].useValue.snapshot.data.trainingCourses = mockTrainingCourses;
+          const { getByRole, setSelectedTrainingCourseSpy } = await setup();
 
           const button = getByRole('button', { name: 'Continue' });
           fireEvent.click(button);
@@ -382,11 +355,7 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
         });
 
         it(`should navigate to the previous page`, async () => {
-          const {
-            component,
-            getByRole,
-            routerSpy,
-          } = await setup();
+          const { component, getByRole, routerSpy } = await setup();
 
           const button = getByRole('button', { name: 'Continue' });
           fireEvent.click(button);
@@ -397,13 +366,13 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
             'training-and-qualifications-record',
             component.worker.uid,
             'training',
-            component.trainingRecord.uid
-          ]
+            component.trainingRecord.uid,
+          ];
 
           expect(routerSpy).toHaveBeenCalledWith(previousPage);
         });
-      })
-    })
+      });
+    });
 
     describe('Cancel link', () => {
       it('should be displayed correctly', async () => {
@@ -419,6 +388,6 @@ describe('IncludeTrainingCourseDetailsComponent', () => {
           `/workplace/${workplace.uid}/training-and-qualifications-record/${worker.uid}/training/${trainingRecord.uid}`,
         );
       });
-    })
-  })
-})
+    });
+  });
+});

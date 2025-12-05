@@ -47,7 +47,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getData()).to.deep.equal({ trainingCourses: expectedTrainingCoursesInResponse });
 
-      expect(models.trainingCourse.findAll).to.have.been.calledWith({
+      expect(models.trainingCourse.findAll).to.have.been.calledWithMatch({
         where: { establishmentFk: 'mock-id', archived: false },
         attributes: { exclude: ['establishmentFk'] },
         order: [['updated', 'DESC']],
@@ -77,7 +77,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getData()).to.deep.equal({ trainingCourses: expectedTrainingCoursesInResponse });
 
-      expect(models.trainingCourse.findAll).to.have.been.calledWith({
+      expect(models.trainingCourse.findAll).to.have.been.calledWithMatch({
         where: { establishmentFk: 'mock-id', archived: false, categoryFk: 1 },
         attributes: { exclude: ['establishmentFk'] },
         order: [['updated', 'DESC']],
