@@ -29,6 +29,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   private _filesToUpload: File[];
   public filesToRemove: TrainingCertificate[] = [];
   public certificateErrors: string[] | null;
+  public isTrainingRecordMatchedToTrainingCourse: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -60,6 +61,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
     this.worker = this.workerService.worker;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
+    this.trainingCourses = this.route.snapshot.data?.trainingCourses ?? [];
     this.showCategory = true;
     if (this.trainingRecordId) {
       this.fillForm();
@@ -93,7 +95,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.buttonText = this.trainingRecordId ? 'Save and return' : 'Save record';
   }
 
-  private fillForm(): void {
+  private async fillForm(): Promise<void> {
     this.subscriptions.add(
       this.workerService.getTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId).subscribe(
         (trainingRecord) => {
@@ -102,6 +104,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
             this.category = trainingRecord.trainingCategory.category;
             this.trainingCategory = trainingRecord.trainingCategory;
             this.trainingCertificates = trainingRecord.trainingCertificates;
+            this.isTrainingRecordMatchedToTrainingCourse = trainingRecord.isMatchedToTrainingCourse;
 
             const completed = this.trainingRecord.completed
               ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)
@@ -137,6 +140,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
               this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
             }
           }
+          this.updatShowUpdateRecordsWithTrainingCourseDetails();
         },
         (error) => {
           console.error(error.error);
@@ -290,5 +294,10 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       this.trainingRecordId,
       'include-training-course-details',
     ]);
+  }
+
+  public updatShowUpdateRecordsWithTrainingCourseDetails(): void {
+    this.showUpdateRecordsWithTrainingCourseDetails =
+      this.trainingRecordId && this.trainingCourses.length > 0 && !this.isTrainingRecordMatchedToTrainingCourse;
   }
 }

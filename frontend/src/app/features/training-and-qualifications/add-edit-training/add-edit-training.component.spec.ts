@@ -18,10 +18,11 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of, throwError } from 'rxjs';
-import { DeliveredBy } from '@core/model/training.model';
+import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
 import { AddEditTrainingComponent } from './add-edit-training.component';
+import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(overrides: any = {}) {
@@ -49,6 +50,7 @@ describe('AddEditTrainingComponent', () => {
           useValue: {
             snapshot: {
               params: { trainingRecordId, establishmentuid: '24', id: 2 },
+              data: { trainingCourses: overrides?.trainingCourses ?? [], trainingRecord: trainingRecord },
             },
             parent: {
               snapshot: {
@@ -57,6 +59,8 @@ describe('AddEditTrainingComponent', () => {
                     uid: '1',
                   },
                   trainingCategories: trainingCategories,
+                  trainingCourses: overrides?.trainingCourses ?? [],
+                  trainingRecord: trainingRecord,
                 },
               },
             },
@@ -445,9 +449,35 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
-  fdescribe('add training course details box', () => {
+  describe('add training course details box', () => {
+    const trainingCourses = [
+      {
+        id: 2,
+        uid: 'uid-1',
+        category: { category: 'Communication', id: 10 },
+        name: 'Communication',
+        trainingCategoryName: 'Communication',
+        accredited: YesNoDontKnow.No,
+        deliveredBy: DeliveredBy.ExternalProvider,
+        externalProviderName: 'Care skills academy',
+        howWasItDelivered: HowWasItDelivered.ELearning,
+        doesNotExpire: false,
+        validityPeriodInMonth: 12,
+      },
+    ];
+
+    const overrides = {
+      trainingRecordId: 2,
+      trainingRecord: {
+        ...trainingRecord,
+        trainingCategory: { id: 10, category: 'Communication' },
+        isMatchedToTrainingCourse: false,
+      },
+      trainingCourses: trainingCourses,
+    };
+
     it('should render when editing training', async () => {
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(overrides);
 
       const includeTrainingCourseTestId = getByTestId('includeTrainingCourse');
 
@@ -459,17 +489,8 @@ describe('AddEditTrainingComponent', () => {
       );
     });
 
-    it('should render when editing training', async () => {
-      const { getByTestId } = await setup();
-
-      const includeTrainingCourseTestId = getByTestId('includeTrainingCourse');
-
-      expect(includeTrainingCourseTestId).toBeTruthy();
-      expect(within(includeTrainingCourseTestId).getByRole('button', { name: 'Select a training course' }));
-    });
-
     it('should navigate to the include training details path', async () => {
-      const { component, fixture, getByTestId, routerSpy } = await setup();
+      const { component, fixture, getByTestId, routerSpy } = await setup(overrides);
 
       const includeTrainingCourseTestId = getByTestId('includeTrainingCourse');
       const button = within(includeTrainingCourseTestId).getByRole('button', { name: 'Select a training course' });
@@ -489,29 +510,33 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should not show if there is no training record id', async () => {
-      const { queryByTestId } = await setup({ trainingRecordId: null });
+      const updatedOverrides = {
+        ...overrides,
+        trainingRecordId: null,
+      };
+      const { queryByTestId } = await setup(updatedOverrides);
 
       expect(queryByTestId('includeTrainingCourse')).toBeFalsy();
     });
 
-    it('should render the Include training course details button when editing training', async () => {
-      const { getByTestId } = await setup();
+    it('should not show if there are no training courses that have the same category id', async () => {
+      const updatedOverrides = { trainingRecord: { ...trainingRecord, category: { id: 11 } } };
+      const { queryByTestId } = await setup(updatedOverrides);
 
-      expect(getByTestId('includeTraining')).toBeTruthy();
+      expect(queryByTestId('includeTrainingCourse')).toBeFalsy();
     });
 
-    it('should not render the Include training course details button', async () => {
-      const { queryByTestId } = await setup({ trainingRecordId: null });
+    it('should not show if the training record is already matched to a training course', async () => {
+      const updatedOverrides = {
+        ...overrides,
+        trainingRecord: {
+          ...trainingRecord,
+          isMatchedToTrainingCourse: true,
+        },
+      };
+      const { queryByTestId } = await setup(updatedOverrides);
 
-      expect(queryByTestId('includeTraining')).toBeFalsy();
-    });
-
-    it('should navigate to include training details path', async () => {
-      const { component, getByTestId } = await setup();
-      const link = getByTestId('includeTraining');
-      expect(link.getAttribute('href')).toEqual(
-        `/workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}/training/${component.trainingRecordId}/include-training-course-details`,
-      );
+      expect(queryByTestId('includeTrainingCourse')).toBeFalsy();
     });
   });
 
