@@ -7,6 +7,7 @@ import { TrainingCourseCategoryComponent } from './training-course-category/trai
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 import { SelectWhichTrainingRecordsToApplyComponent } from './select-which-training-records-to-apply/select-which-training-records-to-apply.component';
+import { RemoveTrainingCourseComponent } from './remove-training-course/remove-training-course.component';
 
 const routes: Routes = [
   {
@@ -42,6 +43,7 @@ const routes: Routes = [
           journeyType: 'Add',
         },
       },
+
       {
         path: 'select-category',
         component: TrainingCourseCategoryComponent,
@@ -66,6 +68,14 @@ const routes: Routes = [
         data: {
           title: 'Edit training course details',
           journeyType: 'Edit',
+        },
+      },
+      {
+        path: 'remove',
+        component: RemoveTrainingCourseComponent,
+        data: {
+          title: 'Remove training course',
+          journeyType: 'Remove',
         },
       },
       {

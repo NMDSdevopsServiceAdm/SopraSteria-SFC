@@ -9,6 +9,7 @@ import { TrainingCourseDetailsComponent } from './training-course-details/traini
 import { TrainingCourseCategoryComponent } from './training-course-category/training-course-category.component';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { SelectWhichTrainingRecordsToApplyComponent } from './select-which-training-records-to-apply/select-which-training-records-to-apply.component';
+import { RemoveTrainingCourseComponent } from './remove-training-course/remove-training-course.component';
 
 @NgModule({
   imports: [CommonModule, TrainingCourseRoutingModule, ReactiveFormsModule, SharedModule],
@@ -17,6 +18,7 @@ import { SelectWhichTrainingRecordsToApplyComponent } from './select-which-train
     TrainingCourseDetailsComponent,
     TrainingCourseCategoryComponent,
     SelectWhichTrainingRecordsToApplyComponent,
+    RemoveTrainingCourseComponent,
   ],
   providers: [TrainingCourseResolver, TrainingCategoriesResolver],
 })
