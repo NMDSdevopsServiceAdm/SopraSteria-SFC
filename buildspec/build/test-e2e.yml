@@ -16,7 +16,7 @@ phases:
 
   install:
     runtime-versions:
-      nodejs: 18
+      nodejs: 22
     commands:
       - echo "Downgrading npm to match node version..."
       - npm install -g npm@10
