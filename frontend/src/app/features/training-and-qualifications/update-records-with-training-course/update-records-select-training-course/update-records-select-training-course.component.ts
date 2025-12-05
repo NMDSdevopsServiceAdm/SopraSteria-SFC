@@ -24,7 +24,9 @@ export class UpdateRecordsSelectTrainingCourseComponent {
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     protected trainingCourseService: TrainingCourseService,
-  ) {
+  ) {}
+
+  ngOnInit() {
     this.trainingCoursesWithLinkableRecords = this.route.snapshot.data.trainingCoursesWithLinkableRecords;
     this.breadcrumbService.show(JourneyType.UPDATE_RECORDS_WITH_TRAINING_COURSE_DETAILS);
   }
