@@ -208,7 +208,7 @@ describe('training record', () => {
         cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
         cy.contains('a', trainingName).click();
 
-        cy.contains('a', 'Include training course details').click();
+        cy.contains('button', 'Select a training course').click();
         cy.get('[data-testid="workerName"]').contains(workerName1);
         cy.get('[data-testid="checkbox-label"]').contains('Test training course');
         cy.get('[data-testid="training-course-name-checkbox"]').check();
@@ -232,7 +232,7 @@ describe('training record', () => {
         cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
         cy.contains('a', trainingName).click();
 
-        cy.contains('a', 'Include training course details').click();
+        cy.contains('button', 'Select a training course').click();
         cy.get('[data-testid="workerName"]').contains(workerName1);
         cy.contains('label', 'Test training course');
         cy.contains('label', 'Test training course 2');
