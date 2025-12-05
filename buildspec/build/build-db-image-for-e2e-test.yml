@@ -4,6 +4,7 @@ env:
   variables:
     NODE_ENV: e2etest
   parameter-store:
+    DB_FILE_URL: /bnd/e2e-test-db-file-url
     POSTGRES_USER: /bnd/e2e-test-db-user
     POSTGRES_PASSWORD: /bnd/e2e-test-db-password
     POSTGRES_DB: /bnd/e2e-test-db-name
@@ -15,6 +16,8 @@ phases:
       - aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 636146736465.dkr.ecr.eu-west-1.amazonaws.com
       - echo Preparing .env file...
       - echo POSTGRES_USER=${POSTGRES_USER}\\nPOSTGRES_PASSWORD=${POSTGRES_PASSWORD}\\nPOSTGRES_DB=${POSTGRES_DB} > .env
+      - echo Downloading database snapshot .sql from s3...
+      - aws s3 cp ${DB_FILE_URL} docker/sfc-e2e-test-db.sql
       - REPOSITORY_URI=636146736465.dkr.ecr.eu-west-1.amazonaws.com/sfc-e2e-test-db-image
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
 
