@@ -53,5 +53,8 @@ install-for-e2e:
 test-e2e-inside-docker:
 	docker-compose -f docker-compose-e2e.yml up --build --no-attach frontend_backend --abort-on-container-exit --exit-code-from cypress
 
+test-e2e-inside-docker-prebuilt:
+	docker-compose -f docker-compose-e2e-prebuilt-image.yml up --build --no-attach frontend_backend --abort-on-container-exit --exit-code-from cypress
+
 deploy-bu-dev:
 	cd lambdas/bulkUpload && npm ci && npx serverless deploy --stage dev

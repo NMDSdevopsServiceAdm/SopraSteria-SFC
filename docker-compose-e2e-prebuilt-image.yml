@@ -1,0 +1,71 @@
+name: run-e2e-test-with-prebuilt-image
+
+services:
+  sfc-e2e-db-prebuilt:
+    image: 636146736465.dkr.ecr.eu-west-1.amazonaws.com/sfc-e2e-test-db-image
+    container_name: sfc-e2e-db-prebuilt
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: "/postgres-data"
+    ports:
+      - 90:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 10s
+      retries: 300
+
+  frontend_backend:
+    image: public.ecr.aws/docker/library/node:22-alpine
+    container_name: frontend_backend
+    working_dir: /app
+    depends_on:
+      sfc-e2e-db-prebuilt:
+        condition: service_healthy
+      sfc-redis:
+         condition: service_started
+    ports:
+      - 3000:3000
+      - 8080:8080
+    environment:
+      - DB_TEST_HOSTNAME=sfc-e2e-db-prebuilt
+      - DB_TEST_PORT=5432
+      - REDIS_ENDPOINT=sfc-redis
+    volumes:
+      - ./:/app
+    command: sh -c "apk add --no-cache make curl; make run-e2e-server"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 40s
+
+  sfc-redis:
+    image: public.ecr.aws/docker/library/redis
+    ports:
+      - '6379:6379'
+
+  cypress:
+    image: public.ecr.aws/cypress-io/cypress/included
+    working_dir: /frontend
+    depends_on:
+      frontend_backend:
+        condition: service_healthy
+    volumes:
+      - ./frontend:/frontend
+    entrypoint: ["cypress", "run", "${CYPRESS_PATH}"]
+    env_file:
+      - .env
+    environment:
+      CYPRESS_BASE_URL: "http://frontend_backend:8080"
+      DB_TEST_HOSTNAME: "sfc-e2e-db-prebuilt"
+      DB_TEST_USER: ${POSTGRES_USER}
+      DB_TEST_PASS: ${POSTGRES_PASSWORD}
+      DB_TEST_NAME: ${POSTGRES_DB}
+      DB_TEST_PORT: 5432
+      NO_COLOR: 1
