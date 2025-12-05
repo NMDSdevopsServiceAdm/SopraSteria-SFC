@@ -11,6 +11,7 @@ env:
 phases:
   pre_build:
     commands:
+      - aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 636146736465.dkr.ecr.eu-west-1.amazonaws.com
       - echo POSTGRES_USER=${POSTGRES_USER}\\nPOSTGRES_PASSWORD=${POSTGRES_PASSWORD}\\nPOSTGRES_DB=${POSTGRES_DB} > .env
 
   install:
