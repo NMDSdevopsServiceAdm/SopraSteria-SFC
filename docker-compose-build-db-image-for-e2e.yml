@@ -1,0 +1,27 @@
+name: build-db-image-for-e2e
+services:
+  db-builder:
+    image: db-builder
+    container_name: db-builder
+    build:
+      context: ./docker
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 90:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 10s
+      retries: 300
+
+  health-checker:
+    image: public.ecr.aws/docker/library/alpine
+    container_name: health-checker
+    working_dir: /app
+    depends_on:
+      db-builder:
+        condition: service_healthy
+    command: sh -c "echo Postgres db initialisation complete."
