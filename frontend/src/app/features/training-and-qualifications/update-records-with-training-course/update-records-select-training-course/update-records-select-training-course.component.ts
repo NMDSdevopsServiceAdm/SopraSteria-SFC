@@ -10,7 +10,6 @@ import { WorkerService } from '@core/services/worker.service';
 @Component({
   selector: 'app-update-records-select-training-course',
   templateUrl: './update-records-select-training-course.component.html',
-  styleUrl: './update-records-select-training-course.component.scss',
   standalone: false,
 })
 export class UpdateRecordsSelectTrainingCourseComponent {
