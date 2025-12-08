@@ -545,6 +545,9 @@ const routes: Routes = [
                 path: '',
                 component: AddEditTrainingComponent,
                 data: { title: 'Training' },
+                resolve: {
+                  trainingCourses: TrainingCourseResolver,
+                },
               },
               {
                 path: 'delete',
@@ -853,6 +856,9 @@ const routes: Routes = [
             path: '',
             component: AddEditTrainingComponent,
             data: { title: 'Training' },
+            resolve: {
+              trainingCourses: TrainingCourseResolver,
+            },
           },
           {
             path: 'include-training-course-details',

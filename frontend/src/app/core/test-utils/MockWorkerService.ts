@@ -403,6 +403,7 @@ export const trainingRecord = {
   howWasItDelivered: 'E-learning',
   validityPeriodInMonth: 24,
   doesNotExpire: false,
+  isMatchedToTrainingCourse: false,
 };
 
 export const qualificationRecord = {

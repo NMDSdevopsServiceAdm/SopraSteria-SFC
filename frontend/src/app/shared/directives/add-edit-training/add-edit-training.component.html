@@ -6,12 +6,36 @@
       <fieldset class="govuk-fieldset">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds-from-desktop">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8" [ngClass]="{'govuk-!-margin-bottom-8': !showUpdateRecordsWithTrainingCourseDetails, 'govuk-!-margin-bottom-6': showUpdateRecordsWithTrainingCourseDetails}">
               <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
               <h1 class="govuk-fieldset__heading">
                 {{ title }}
               </h1>
             </legend>
+            @if (showUpdateRecordsWithTrainingCourseDetails){
+              <div class="govuk-body govuk-!-margin-bottom-6 includeTrainingCourseInformation" data-testid="includeTrainingCourse">
+                <table>
+                  <h2 class="govuk-heading-s govuk-!-margin-bottom-0">{{ updateTrainingRecordWithTrainingCourseText.title }}</h2>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <p>
+                          {{ updateTrainingRecordWithTrainingCourseText.paragraph }}
+                        </p>
+                        <ul class="govuk-list govuk-list--bullet">
+                          @for(bullet of updateTrainingRecordWithTrainingCourseText.bullets; track bullet; let index = $index){
+                          <li>{{ bullet }}</li>
+                          }
+                        </ul>
+                        <button type="button" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-4" data-module="govuk-button" (click)="onSelectATrainingCourse()">
+                          Select a training course
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            }
               <div *ngIf="showCategory" class="govuk-body govuk-!-margin-bottom-0" data-testid="trainingCategoryDisplay">
                 <span class="govuk-util__block govuk-!-font-weight-bold">Training category</span>
                 <div class="govuk-grid-row" style="width: 152%;">
@@ -287,26 +311,6 @@
               <img src="/assets/images/bin.svg" alt="" />
               <span class="govuk-!-margin-left-1"> Delete this training record </span></a
             >
-          </div>
-          <div class="govuk-grid-column-one-third">
-            <a
-              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center govuk-link--no-visited-state"
-              *ngIf="trainingRecordId"
-              draggable="false"
-              data-testid="includeTraining"
-              [routerLink]="[
-                '/workplace',
-                 workplace.uid,
-                 'training-and-qualifications-record',
-                 worker.uid,
-                 'training',
-                 trainingRecordId,
-                 'include-training-course-details'
-               ]"
-            >
-              <img src="/assets/images/Addtraining.svg" alt="" />
-              <span class="govuk-!-margin-left-1 govuk__nowrap">Include training course details </span>
-            </a>
           </div>
         </div>
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">

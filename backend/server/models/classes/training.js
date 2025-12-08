@@ -1056,6 +1056,7 @@ class Training extends EntityValidator {
       expires: this._expires !== null ? this.expires : undefined,
       notes: this._notes !== null ? this.notes : undefined,
       trainingCertificates: this.trainingCertificates,
+      isMatchedToTrainingCourse: this.trainingCourseFK ? true : false,
     };
 
     return myDefaultJSON;

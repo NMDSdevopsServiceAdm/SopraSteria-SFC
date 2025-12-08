@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 import {
   DeliveredBy,
   HowWasItDelivered,
@@ -18,6 +19,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingCourseService } from '@core/services/training-course.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
@@ -58,6 +60,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public deliveredByOptions = DeliveredBy;
   public howWasItDeliveredOptions = HowWasItDelivered;
   public hideExpiresDate: boolean = false;
+  public trainingCourses: TrainingCourse[] = [];
+  public showUpdateRecordsWithTrainingCourseDetails: boolean = false;
+  public updateTrainingRecordWithTrainingCourseText = TrainingCourseService.RevealText;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

@@ -87,6 +87,7 @@ export interface TrainingRecord {
   updatedBy: string;
   trainingStatus?: number;
   missing?: boolean;
+  isMatchedToTrainingCourse?: boolean;
 }
 
 export interface TrainingRecordCategory {
