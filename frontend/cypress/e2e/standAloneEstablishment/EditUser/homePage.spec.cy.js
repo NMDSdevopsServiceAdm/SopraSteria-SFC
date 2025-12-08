@@ -3,7 +3,7 @@
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
-describe('Standalone home page as edit user', () => {
+describe('Standalone home page as edit user', { tags: '@standalone' }, () => {
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
   });

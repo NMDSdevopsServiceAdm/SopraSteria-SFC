@@ -7,7 +7,7 @@ import { onHomePage } from '../../../support/page_objects/onHomePage';
 import { onStaffRecordsPage, onStaffRecordSummaryPage } from '../../../support/page_objects/onStaffRecordsPage';
 import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
 
-describe('Standalone staff records page as edit user', () => {
+describe('Standalone staff records page as edit user', { tags: '@standalone' }, () => {
   const establishmentId = StandAloneEstablishment.id;
   const worker1 = 'Staff 01';
   const worker2 = 'Staff 02';

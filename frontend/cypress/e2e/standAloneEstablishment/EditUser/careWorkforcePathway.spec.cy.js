@@ -8,7 +8,7 @@ const cwpWorkersSummaryPath = 'care-workforce-pathway-workers-summary';
 const homePagePath = 'dashboard#home';
 const testWorkers = ['test CWP worker 1', 'test CWP worker 2'];
 
-describe('Care workforce pathway journey', () => {
+describe('Care workforce pathway journey', { tags: '@standalone' }, () => {
   before(() => {
     cy.archiveAllWorkersInWorkplace(establishmentID);
     cy.resetWorkplaceCWPAnswers(establishmentID);

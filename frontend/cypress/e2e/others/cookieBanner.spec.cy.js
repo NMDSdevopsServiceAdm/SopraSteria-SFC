@@ -3,7 +3,7 @@
 
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 
-describe('Cookie banner', () => {
+describe('Cookie banner', { tags: '@standalone' }, () => {
   describe('when user login', () => {
     beforeEach(() => {
       cy.loginAsUser(StandAloneEstablishment.editUserLoginName, Cypress.env('userPassword'));

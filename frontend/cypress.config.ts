@@ -1,6 +1,7 @@
 import { defineConfig } from 'cypress';
 import * as dotenv from 'dotenv';
 import { Client } from 'pg';
+import { plugin as cypressGrepPlugin } from '@cypress/grep/plugin';
 
 dotenv.config({ path: '../.env' });
 
@@ -44,6 +45,7 @@ export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:8080',
     defaultCommandTimeout: 10000,
+
     setupNodeEvents(on, config) {
       on('task', {
         async dbQuery({ queryString, parameters }: DbQueryType) {
@@ -64,7 +66,10 @@ export default defineConfig({
           return null;
         },
       });
-      // implement node event listeners here
+
+      cypressGrepPlugin(config);
+
+      return config;
     },
   },
 });

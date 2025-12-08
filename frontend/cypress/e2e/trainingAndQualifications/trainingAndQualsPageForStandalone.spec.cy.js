@@ -3,7 +3,7 @@
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onTrainingAndQualsPage } from '../../support/page_objects/onTrainingAndQualsPage';
 
-describe('Standalone training and qualifications page as edit user', () => {
+describe('Standalone training and qualifications page as edit user', { tags: '@standalone' }, () => {
   beforeEach(() => {
     cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: 'Cypress test worker' });
 

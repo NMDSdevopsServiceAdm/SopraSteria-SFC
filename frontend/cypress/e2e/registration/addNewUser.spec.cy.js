@@ -3,7 +3,7 @@ import { onHomePage } from '../../support/page_objects/onHomePage';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { fillUserRegistrationForm } from '../../support/page_objects/userRegistrationForms';
 
-describe('As a workplace primary user I want to register a new user', () => {
+describe('As a workplace primary user I want to register a new user', { tags: '@standalone' }, () => {
   const userFullName = 'Test new user for cypress';
   const loginIdPrefix = 'cypress-test-user-0002';
   const mockPassword = 'Some-very-super-strong-p@ssw0rd';
