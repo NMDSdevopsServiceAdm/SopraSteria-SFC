@@ -15,16 +15,6 @@ const routes: Routes = [
         component: UpdateRecordsSelectTrainingCourseComponent,
         data: { title: 'Select a training course' },
       },
-      // {
-      //   path: ':trainingCourseUid',
-      //   children: [
-      //     {
-      //       path: 'select-training-records',
-      //       component: UpdateRecordsSelectTrainingCourseComponent,
-      //       data: { title: 'Select the training records that you want to update' },
-      //     },
-      //   ],
-      // },
     ],
   },
 ];
