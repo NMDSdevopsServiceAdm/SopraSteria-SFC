@@ -128,8 +128,17 @@
                     </a>
                   </li>
 
-                  <li *ngIf="isTrainingCourse">
-                    <a [routerLink]="[]" role="button" class="asc-button-menu__item govuk-!-margin-right-3">
+                  <li *ngIf="hasTrainingCourse">
+                    <a
+                      [routerLink]="[
+                        '/workplace',
+                        workplace.uid,
+                        'update-records-with-training-course-details',
+                        'select-a-training-course'
+                      ]"
+                      role="button"
+                      class="asc-button-menu__item govuk-!-margin-right-3"
+                    >
                       Update records with training course details
                     </a>
                   </li>

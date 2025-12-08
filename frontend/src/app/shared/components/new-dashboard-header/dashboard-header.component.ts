@@ -26,7 +26,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   @Input() hasWorkers = false;
   @Input() workplace: Establishment;
   @Input() return: URLStructure = null;
-  @Input() isTrainingCourse: boolean;
+  @Input() hasTrainingCourse: boolean;
 
   public canDeleteEstablishment: boolean;
   public canEditEstablishment: boolean;

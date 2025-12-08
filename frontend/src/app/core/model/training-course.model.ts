@@ -1,5 +1,5 @@
 import { TrainingProvider } from './training-provider.model';
-import { DeliveredBy, HowWasItDelivered } from './training.model';
+import { DeliveredBy, HowWasItDelivered, TrainingRecord } from './training.model';
 import { YesNoDontKnow } from './YesNoDontKnow.enum';
 
 export type TrainingCourse = {
@@ -21,4 +21,10 @@ export type TrainingCourse = {
 
 export type GetTrainingCoursesResponse = {
   trainingCourses: Array<TrainingCourse>;
+};
+
+export type TrainingCourseWithLinkableRecords = TrainingCourse & { linkableTrainingRecords: Array<TrainingRecord> };
+
+export type GetTrainingCoursesWithLinkableRecordsResponse = {
+  trainingCourses: Array<TrainingCourseWithLinkableRecords>;
 };

@@ -94,4 +94,121 @@ const expectedTrainingCoursesInResponse = mockTrainingCourses.map((course) => {
   return expectedObject;
 });
 
-module.exports = { mockTrainingCourses, mockTrainingCourseFindAllResult, expectedTrainingCoursesInResponse };
+const mockTrainingRecords = [
+  {
+    id: 'training-id-1',
+    uid: 'training-uid-1',
+    title: 'Activity provision training',
+    expires: '2027-12-31',
+    categoryFk: 1,
+    trainingCourseFK: null,
+  },
+  {
+    id: 'training-id-2',
+    uid: 'training-uid-2',
+    title: 'Another activity provision training',
+    expires: '2030-12-31',
+    categoryFk: 1,
+    trainingCourseFK: null,
+  },
+  {
+    id: 'training-id-3',
+    uid: 'training-uid-3',
+    title: 'Activity provision training linked to a course',
+    expires: '2030-12-31',
+    categoryFk: 1,
+    trainingCourseFK: 1,
+  },
+  {
+    id: 'training-id-4',
+    uid: 'training-uid-4',
+    title: 'Activity provision training',
+    expires: '2027-12-31',
+    categoryFk: 1,
+    trainingCourseFK: null,
+  },
+  {
+    id: 'training-id-5',
+    uid: 'training-uid-5',
+    title: 'Autism training',
+    expires: '2027-12-31',
+    categoryFk: 2,
+    trainingCourseFK: null,
+  },
+  {
+    id: 'training-id-6',
+    uid: 'training-uid-6',
+    title: 'Another activity provision training',
+    expires: '2030-12-31',
+    categoryFk: 1,
+    trainingCourseFK: null,
+  },
+  {
+    id: 'training-id-7',
+    uid: 'training-uid-7',
+    title: 'Autism training linked to a course',
+    expires: '2030-12-31',
+    categoryFk: 2,
+    trainingCourseFK: 2,
+  },
+];
+const mockTrainingRecordObjects = mockTrainingRecords.map((self) => ({ ...self, toJSON: () => self }));
+
+const mockEstablishmentObject = {
+  id: 'mock-workplace-id',
+  uid: 'mock-workplace-uid',
+  workers: [
+    {
+      id: 'worker-1',
+      uid: 'worker-uid-1',
+      NameOrIdValue: 'Worker 1',
+      mainJob: {},
+      workerTraining: [mockTrainingRecordObjects[0], mockTrainingRecordObjects[1], mockTrainingRecordObjects[2]],
+    },
+    {
+      id: 'worker-2',
+      uid: 'worker-uid-2',
+      NameOrIdValue: 'Worker 2',
+      mainJob: {},
+      workerTraining: [
+        mockTrainingRecordObjects[3],
+        mockTrainingRecordObjects[4],
+        mockTrainingRecordObjects[5],
+        mockTrainingRecordObjects[6],
+      ],
+    },
+  ],
+};
+
+const trainingCourseWithLinkableRecords = [
+  {
+    ...expectedTrainingCoursesInResponse[0],
+    linkableTrainingRecords: [
+      mockTrainingRecords[0],
+      mockTrainingRecords[1],
+      mockTrainingRecords[3],
+      mockTrainingRecords[5],
+    ],
+  },
+  {
+    ...expectedTrainingCoursesInResponse[2],
+    linkableTrainingRecords: [
+      mockTrainingRecords[0],
+      mockTrainingRecords[1],
+      mockTrainingRecords[3],
+      mockTrainingRecords[5],
+    ],
+  },
+  {
+    ...expectedTrainingCoursesInResponse[1],
+    linkableTrainingRecords: [mockTrainingRecords[4]],
+  },
+];
+
+module.exports = {
+  mockTrainingCourses,
+  mockTrainingCourseFindAllResult,
+  expectedTrainingCoursesInResponse,
+  mockEstablishmentObject,
+  trainingCourseWithLinkableRecords,
+};

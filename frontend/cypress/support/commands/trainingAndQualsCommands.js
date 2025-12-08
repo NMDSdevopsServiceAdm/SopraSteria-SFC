@@ -95,13 +95,13 @@ Cypress.Commands.add('deleteAllTrainingCourses', (establishmentID) => {
 });
 
 Cypress.Commands.add('insertTrainingCourse', (args) => {
-  const { establishmentID, categoryID = 1, name = 'Test training course' } = args;
+  const { establishmentID, categoryId = 1, name = 'Test training course' } = args;
 
   const queryString = `INSERT INTO cqc."TrainingCourse"
   ("EstablishmentFK", "CategoryFK", "Name")
   VALUES ($1, $2, $3) RETURNING "ID";`;
 
-  const parameters = [establishmentID, categoryID, name];
+  const parameters = [establishmentID, categoryId, name];
 
   return cy.task('dbQuery', { queryString, parameters });
 });

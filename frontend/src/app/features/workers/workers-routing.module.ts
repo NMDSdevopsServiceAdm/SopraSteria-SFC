@@ -53,7 +53,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
-import { IncludeTrainingCourseDetailsComponent} from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
+import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
 import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
@@ -85,6 +85,7 @@ import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delega
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
+import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
 
 const routes: Routes = [
@@ -573,6 +574,7 @@ const routes: Routes = [
             resolve: { trainingCourses: TrainingCourseResolver },
             data: { title: 'Add a Training Record' },
           },
+
           {
             path: 'long-term-absence',
             component: LongTermAbsenceComponent,
@@ -870,6 +872,17 @@ const routes: Routes = [
               trainingRecord: TrainingRecordResolver,
             },
           },
+          {
+            path: 'matching-layout',
+            component: TrainingCourseMatchingLayoutComponent,
+            data: {
+              title: 'Match the training record',
+            },
+            resolve: {
+              trainingRecord: TrainingRecordResolver,
+              trainingCourses: TrainingCourseResolver,
+            },
+          },
         ],
       },
       {
@@ -890,6 +903,7 @@ const routes: Routes = [
         resolve: { trainingCourses: TrainingCourseResolver },
         data: { title: 'Add a Training Record' },
       },
+
       {
         path: 'long-term-absence',
         component: LongTermAbsenceComponent,

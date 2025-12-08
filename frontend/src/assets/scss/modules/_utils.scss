@@ -150,6 +150,13 @@
   margin-right: -1 * govuk-spacing(4);
 }
 
+.asc__width-three-fifths {
+  width: 100%;
+  @include govuk-media-query($from: tablet) {
+    width: 60%;
+  }
+}
+
 .asc__vertical-line {
   border-left: 1px solid govuk-colour('light-grey');
 }

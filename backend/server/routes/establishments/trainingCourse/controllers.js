@@ -25,6 +25,13 @@ const fetchAllTrainingCourses = async (req, res) => {
         archived: false,
         ...(trainingCategoryId ? { categoryFk: trainingCategoryId } : {}),
       },
+      include: [
+        {
+          model: models.workerTrainingCategories,
+          as: 'category',
+        },
+      ],
+
       attributes: { exclude: ['establishmentFk'] },
       order: [['updated', 'DESC']],
     });
@@ -35,6 +42,52 @@ const fetchAllTrainingCourses = async (req, res) => {
     return res.status(200).send(responseBody);
   } catch (err) {
     console.error('GET /establishment/:uid/trainingCourse  - failed', err);
+    return res.status(500).send({ message: 'internal server error' });
+  }
+};
+
+const getTrainingCoursesWithLinkableRecords = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+
+    const allTrainingCourses = await models.trainingCourse.findAll({
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      order: [['updated', 'DESC']],
+    });
+
+    if (!allTrainingCourses.length) {
+      return res.status(200).send({ trainingCourses: [] });
+    }
+
+    const establishmentWithWorkersAndTraining = await models.establishment.findWithWorkersAndTraining(establishmentId);
+    const allTrainingRecordsInWorkplace = establishmentWithWorkersAndTraining.workers?.flatMap(
+      (worker) => worker.workerTraining,
+    );
+
+    const allLinkableTrainingRecords = allTrainingRecordsInWorkplace
+      .filter((trainingRecord) => !trainingRecord.trainingCourseFK)
+      .map((trainingRecord) => trainingRecord.toJSON());
+
+    const groupedByCategoryId = lodash.groupBy(allLinkableTrainingRecords, 'categoryFk');
+
+    const trainingCoursesWithLinkableRecords = allTrainingCourses.map((trainingCourse) => {
+      const plainTrainingCourse = renameKeys(trainingCourse.toJSON());
+      const linkableTrainingRecords = groupedByCategoryId[plainTrainingCourse.trainingCategoryId] ?? [];
+      return { ...plainTrainingCourse, linkableTrainingRecords };
+    });
+
+    const showCoursesWithLinkableRecordFirst = (course) => (course.linkableTrainingRecords?.length > 0 ? 1 : 2);
+
+    const sorted = lodash.sortBy(trainingCoursesWithLinkableRecords, [showCoursesWithLinkableRecordFirst, 'name']);
+
+    const responseBody = { trainingCourses: sorted };
+
+    return res.status(200).send(responseBody);
+  } catch (err) {
+    console.error('GET /establishment/:uid/trainingCourse/getTrainingCoursesWithLinkableRecords - failed', err);
     return res.status(500).send({ message: 'internal server error' });
   }
 };
@@ -112,9 +165,16 @@ const updateTrainingCourse = async (req, res) => {
         updatedBy,
         transaction,
       });
+      const trainingRecordsLinkedToCourse = await updatedTrainingCourse.getWorkerTraining({ transaction });
 
-      if (applyToExistingRecords) {
-        await models.trainingCourse.updateTrainingRecordsWithCourseData({ trainingCourseUid, updatedBy, transaction });
+      if (applyToExistingRecords && trainingRecordsLinkedToCourse?.length > 0) {
+        const trainingRecordUids = trainingRecordsLinkedToCourse.map((record) => record.uid);
+        await models.trainingCourse.updateTrainingRecordsWithCourseData({
+          trainingCourseUid,
+          trainingRecordUids,
+          updatedBy,
+          transaction,
+        });
       }
 
       return updatedTrainingCourse;
@@ -184,4 +244,10 @@ const renameKeys = (record) => {
   return renamed;
 };
 
-module.exports = { fetchAllTrainingCourses, createTrainingCourse, getTrainingCourse, updateTrainingCourse };
+module.exports = {
+  fetchAllTrainingCourses,
+  createTrainingCourse,
+  getTrainingCourse,
+  updateTrainingCourse,
+  getTrainingCoursesWithLinkableRecords,
+};
