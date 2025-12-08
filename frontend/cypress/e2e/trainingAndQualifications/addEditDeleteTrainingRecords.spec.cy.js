@@ -268,7 +268,7 @@ describe('training record', () => {
     beforeEach(() => {
       cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
       cy.contains('a', trainingName).click();
-      cy.contains('a', 'Include training course details').click();
+      cy.contains('button', 'Select a training course').click();
     });
 
     after(() => {
