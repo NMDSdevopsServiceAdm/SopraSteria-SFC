@@ -95,7 +95,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.buttonText = this.trainingRecordId ? 'Save and return' : 'Save record';
   }
 
-  private async fillForm(): Promise<void> {
+  private fillForm(): void {
     this.subscriptions.add(
       this.workerService.getTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId).subscribe(
         (trainingRecord) => {
