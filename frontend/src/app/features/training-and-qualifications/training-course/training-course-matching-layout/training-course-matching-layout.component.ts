@@ -24,6 +24,7 @@ import { map, mergeMap } from 'rxjs/operators';
 @Component({
   selector: 'app-training-course-matching-layout',
   templateUrl: './training-course-matching-layout.component.html',
+  standalone: false,
 })
 export class TrainingCourseMatchingLayoutComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
