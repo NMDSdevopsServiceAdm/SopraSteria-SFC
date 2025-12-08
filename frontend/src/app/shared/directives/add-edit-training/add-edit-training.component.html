@@ -15,20 +15,17 @@
             @if (showUpdateRecordsWithTrainingCourseDetails){
               <div class="govuk-body govuk-!-margin-bottom-6 includeTrainingCourseInformation" data-testid="includeTrainingCourse">
                 <table>
-                  <caption>Why is it a good idea to update records with training course details?</caption>
+                  <caption>{{ updateTrainingRecordWithTrainingCourseText.title }}</caption>
                   <tbody>
                     <tr>
                       <td>
                         <p>
-                          It's a good idea because your training records will then be consistent with each other, sharing the same details, like course name and validity. We match records to courses by category and when you update them they'll:
+                          {{ updateTrainingRecordWithTrainingCourseText.paragraph }}
                         </p>
                         <ul class="govuk-list govuk-list--bullet">
-                          <li>take the name of the training course</li>
-                          <li>say whether the training is accredited</li>
-                          <li>say how the training was delivered and who delivered it</li>
-                          <li>show how long the training is valid for</li>
-                          <li>still generate alerts when the training is due to expire</li>
-                          <li>keep any certificates and notes that were added</li>
+                          @for(bullet of updateTrainingRecordWithTrainingCourseText.bullets; track bullet; let index = $index){
+                          <li>{{ bullet }}</li>
+                          }
                         </ul>
                         <button type="button" class="govuk-button govuk-button--secondary govuk-!-margin-bottom-4" data-module="govuk-button" (click)="onSelectATrainingCourse()">
                           Select a training course
