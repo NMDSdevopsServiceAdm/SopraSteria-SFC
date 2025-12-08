@@ -15,7 +15,7 @@ import { SelectTrainingRecordsToUpdateComponent } from './select-training-record
 import userEvent from '@testing-library/user-event';
 import { BackLinkService } from '@core/services/backLink.service';
 
-fdescribe('SelectTrainingRecordsToUpdateComponent', () => {
+describe('SelectTrainingRecordsToUpdateComponent', () => {
   const mockEstablishmentUid = 'mock-establishment-uid';
   const mockLinkableTrainingRecords = [
     trainingRecordBuilder({ overrides: { title: 'training A' } }),
