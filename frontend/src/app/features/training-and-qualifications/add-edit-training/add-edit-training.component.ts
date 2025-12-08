@@ -140,7 +140,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
               this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
             }
           }
-          this.updatShowUpdateRecordsWithTrainingCourseDetails();
+          this.updateShowUpdateRecordsWithTrainingCourseDetails();
         },
         (error) => {
           console.error(error.error);
@@ -296,7 +296,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     ]);
   }
 
-  public updatShowUpdateRecordsWithTrainingCourseDetails(): void {
+  public updateShowUpdateRecordsWithTrainingCourseDetails(): void {
     this.showUpdateRecordsWithTrainingCourseDetails =
       this.trainingRecordId && this.trainingCourses.length > 0 && !this.isTrainingRecordMatchedToTrainingCourse;
   }
