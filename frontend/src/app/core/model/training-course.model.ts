@@ -16,6 +16,12 @@ export type TrainingCourse = {
   otherTrainingProviderName?: string;
   howWasItDelivered: HowWasItDelivered;
   doesNotExpire: boolean;
+  category?: {
+    id?: number;
+    seq?: number;
+    category?: string;
+    trainingCategoryGroup?: string;
+  };
   validityPeriodInMonth: number;
 };
 

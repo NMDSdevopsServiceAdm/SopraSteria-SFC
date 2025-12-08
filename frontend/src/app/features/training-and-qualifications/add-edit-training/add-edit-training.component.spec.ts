@@ -23,6 +23,7 @@ import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
 import { AddEditTrainingComponent } from './add-edit-training.component';
 import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
+import { TrainingCourse } from '@core/model/training-course.model';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(overrides: any = {}) {
@@ -454,6 +455,7 @@ describe('AddEditTrainingComponent', () => {
       {
         id: 2,
         uid: 'uid-1',
+        trainingCategoryId: 10,
         category: { category: 'Communication', id: 10 },
         name: 'Communication',
         trainingCategoryName: 'Communication',
@@ -464,7 +466,7 @@ describe('AddEditTrainingComponent', () => {
         doesNotExpire: false,
         validityPeriodInMonth: 12,
       },
-    ];
+    ] as TrainingCourse[];
 
     const overrides = {
       trainingRecordId: 2,

@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 import {
   DeliveredBy,
   HowWasItDelivered,
@@ -58,8 +59,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public deliveredByOptions = DeliveredBy;
   public howWasItDeliveredOptions = HowWasItDelivered;
   public hideExpiresDate: boolean = false;
-  public trainingCourses: any[] = [];
+  public trainingCourses: TrainingCourse[] = [];
   public showUpdateRecordsWithTrainingCourseDetails: boolean = false;
+  public updateTrainingRecordWithTrainingCourseText: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
