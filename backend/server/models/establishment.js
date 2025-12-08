@@ -1005,6 +1005,12 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'delegatedHealthcareActivities',
     });
+
+    Establishment.hasMany(models.trainingCourse, {
+      foreignKey: 'establishmentFk',
+      sourceKey: 'id',
+      as: 'trainingCourse',
+    });
   };
 
   Establishment.turnoverAndVacanciesData = function (establishmentId) {
@@ -1050,7 +1056,7 @@ module.exports = function (sequelize, DataTypes) {
           {
             model: sequelize.models.workerTraining,
             as: 'workerTraining',
-            attributes: ['id', 'uid', 'title', 'expires', 'categoryFk'],
+            attributes: ['id', 'uid', 'title', 'expires', 'categoryFk', 'trainingCourseFK'],
           },
         ],
       },

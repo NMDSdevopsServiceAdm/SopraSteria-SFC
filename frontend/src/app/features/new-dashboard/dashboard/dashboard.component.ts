@@ -29,7 +29,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public tilesData: BenchmarksResponse;
   public canSeeNewDataArea: boolean;
   public isParent: boolean;
-  public isTrainingCourse: boolean;
+  public hasTrainingCourse: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -45,7 +45,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
     this.tilesData = this.benchmarksService.benchmarksData.newBenchmarks;
-    this.isTrainingCourse = this.route.snapshot.data.trainingCourses?.length > 0;
+    this.hasTrainingCourse = this.route.snapshot.data.trainingCourses?.length > 0;
 
     this.isParent = this.workplace?.isParent;
 

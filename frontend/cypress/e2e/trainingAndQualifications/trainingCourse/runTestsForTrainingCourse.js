@@ -13,7 +13,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
       cy.unlinkAllWorkerTrainingFromCourse();
       cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
       cy.deleteAllTrainingCourses(establishmentID);
-      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Test training course' });
+      cy.insertTrainingCourse({ establishmentID, categoryId: 1, name: 'Test training course' });
       cy.insertTestWorker({ establishmentID, workerName });
     });
 
@@ -82,7 +82,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
       const workerName = 'Test worker for linked training course';
 
       beforeEach(() => {
-        cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: trainingCourseName });
+        cy.insertTrainingCourse({ establishmentID, categoryId: 1, name: trainingCourseName });
 
         cy.insertTestWorker({ establishmentID, workerName });
         cy.addWorkerTrainingLinkedToCourse({
