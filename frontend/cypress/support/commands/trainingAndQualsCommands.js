@@ -1,16 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
 
 Cypress.Commands.add('addWorkerTraining', (args) => {
-  const { establishmentID = '180', workerName = 'Test worker', categoryId = 4 } = args;
+  const { establishmentID = '180', workerName = 'Test worker', categoryId = 4, trainingTitle = 'Test Training' } = args;
 
   cy.getWorkerId(establishmentID, workerName);
 
   cy.get('@workerId').then((workerId) => {
     const queryString = `INSERT INTO cqc."WorkerTraining"
   ("UID", "WorkerFK", "CategoryFK", "Title", "Completed", "updatedby")
-  VALUES ($1, $2, $3, 'Test Training', '2025-01-01', 'admin1')`;
+  VALUES ($1, $2, $3, $4, '2025-01-01', 'admin1')`;
 
-    const parameters = [uuidv4(), workerId, categoryId];
+    const parameters = [uuidv4(), workerId, categoryId, trainingTitle];
 
     cy.task('dbQuery', { queryString, parameters });
   });

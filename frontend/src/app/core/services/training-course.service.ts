@@ -10,6 +10,7 @@ import {
   TrainingCourse,
   TrainingCourseWithLinkableRecords,
 } from '@core/model/training-course.model';
+import { TrainingRecord } from '@core/model/training.model';
 
 const revealText = {
   title: 'Why is it a good idea to update records with training course details?',
@@ -31,6 +32,8 @@ const revealText = {
 export class TrainingCourseService {
   private _newTrainingCourseToBeAdded: Partial<TrainingCourse>;
   private _trainingCourseToBeUpdated: Partial<TrainingCourse>;
+  private _trainingRecordsSelectedForUpdate: Array<Pick<TrainingRecord, 'title' | 'uid'>>;
+
   public static RevealText = revealText;
 
   constructor(private http: HttpClient) {}
@@ -105,5 +108,13 @@ export class TrainingCourseService {
 
   public set trainingCourseToBeUpdated(props: Partial<TrainingCourse>) {
     this._trainingCourseToBeUpdated = props;
+  }
+
+  public get trainingRecordsSelectedForUpdate() {
+    return this._trainingRecordsSelectedForUpdate;
+  }
+
+  public set trainingRecordsSelectedForUpdate(props) {
+    this._trainingRecordsSelectedForUpdate = props;
   }
 }

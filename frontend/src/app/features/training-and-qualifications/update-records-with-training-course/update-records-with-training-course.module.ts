@@ -5,10 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { UpdateRecordsWithTrainingCourseRoutingModule } from './update-records-with-training-course-routing.module';
 import { TrainingCoursesWithLinkableRecordsResolver } from '@core/resolvers/training/training-courses-with-linkable-records-resolver';
+import { SelectTrainingRecordsToUpdateComponent } from './select-training-records-to-update/select-training-records-to-update.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, SharedModule, UpdateRecordsWithTrainingCourseRoutingModule],
-  declarations: [UpdateRecordsSelectTrainingCourseComponent],
+  declarations: [UpdateRecordsSelectTrainingCourseComponent, SelectTrainingRecordsToUpdateComponent],
   providers: [TrainingCoursesWithLinkableRecordsResolver],
 })
 export class UpdateRecordsWithTrainingCourseModule {}
