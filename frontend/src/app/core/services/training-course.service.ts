@@ -36,6 +36,12 @@ export class TrainingCourseService {
       .pipe(map((res) => res.trainingCourses));
   }
 
+  public deleteTrainingCourse(establishmentUid: string, trainingCourseUid: string) {
+    return this.http.delete(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse/${trainingCourseUid}`,
+    );
+  }
+
   public createTrainingCourse(establishmentUid: string, props: Partial<TrainingCourse>): Observable<TrainingCourse> {
     return this.http.post<TrainingCourse>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse`,

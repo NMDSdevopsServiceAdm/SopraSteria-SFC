@@ -1,26 +1,22 @@
-import { Component } from '@angular/core';
-import { TrainingRecord } from '@core/model/training.model';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TrainingCourse } from '@core/model/training-course.model';
-import { UntypedFormControl } from '@angular/forms';
-import { Worker } from '@core/model/worker.model';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingService } from '@core/services/training.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { AlertService } from '@core/services/alert.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-remove-training-course',
   templateUrl: './remove-training-course.component.html',
 })
-export class RemoveTrainingCourseComponent {
-  public userSelectedTrainingCourse = new UntypedFormControl('');
-  public trainingRecord: TrainingRecord;
+export class RemoveTrainingCourseComponent implements OnInit {
   public trainingCourses: TrainingCourse[];
-  public worker: Worker;
   public workplace: Establishment;
   public trainingName: string;
+  public trainingCourseUid: string;
+  public subscriptions: Subscription = new Subscription();
 
   constructor(
     private backLinkService: BackLinkService,
@@ -31,15 +27,25 @@ export class RemoveTrainingCourseComponent {
   ) {}
 
   ngOnInit(): void {
+    this.workplace = this.route.parent.snapshot.data.establishment;
+    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
+    this.trainingCourseUid = this.route.snapshot.paramMap.get('trainingCourseUid');
+    const course = this.trainingCourses?.find((c) => c.uid === this.trainingCourseUid);
+    this.trainingName = course?.name;
     this.setBackLink();
+  }
 
-    this.trainingCourses = this.route.snapshot.data?.trainingCourses ?? [];
-    const courseUid = this.route.snapshot.paramMap.get('trainingCourseUid');
-    const course = this.trainingCourses.find((c) => c.uid === courseUid);
-    this.trainingName = course.name;
-
-    this.trainingRecord = this.route.snapshot.data.trainingRecord;
-    this.trainingCourses = this.route.snapshot.data.trainingCourses;
+  public deleteTrainingCourseRecord(): void {
+    this.subscriptions.add(
+      this.trainingCourseService.deleteTrainingCourse(this.workplace.uid, this.trainingCourseUid).subscribe(() => {
+        this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route }).then(() => {
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Training course removed',
+          });
+        });
+      }),
+    );
   }
 
   private setBackLink(): void {
@@ -48,8 +54,6 @@ export class RemoveTrainingCourseComponent {
 
   public onCancel(event: Event): void {
     event.preventDefault();
-    // this.router.navigate(['workplace', this.workplace.uid, 'training-course', 'add-and-manage-training-courses']);
-
     this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route });
   }
 }

@@ -1,11 +1,14 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds" data-testid="heading">
     <span class="govuk-caption-l">Training and qualifications</span>
-    <h1 class="govuk-heading-l">What happens when you remove a training course</h1>
+    <h1 class="govuk-heading-l">
+      What happens when you remove<br />
+      a training course
+    </h1>
   </div>
 </div>
 
-<div class="govuk-grid-row govuk-!-margin-bottom-4">
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <p class="govuk-!-padding-top-1">
       When you remove a training course from ASC-WDS, training records that include the course:
@@ -36,14 +39,16 @@
       </li>
     </ul>
 
-    <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-row govuk-!-padding-bottom-0 govuk-!-margin-top-7">
       <div class="govuk-grid-column-two-thirds">
         <p class="govuk-!-padding-top-1 govuk__nowrap"><strong>Training course name:</strong> {{ trainingName }}</p>
       </div>
     </div>
 
-    <div class="govuk-button-group govuk-!-margin-top-8">
-      <button type="submit" class="govuk-button govuk-!-margin-right-9">Remove this training course</button>
+    <div class="govuk-button-group govuk-!-margin-top-6">
+      <button type="submit" class="govuk-button govuk-!-margin-right-9" (click)="deleteTrainingCourseRecord()">
+        Remove this training course
+      </button>
 
       <a
         class="govuk-button govuk-button--link govuk-!-margin-left-9"
