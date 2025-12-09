@@ -226,7 +226,7 @@ describe('workplace-info-panel', () => {
       const { getByText, routerSpy } = await setup({
         primaryWorkplace: { isParent: true },
         workplace,
-        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary', 'canEditEstablishment'],
       });
 
       const changeDataOwnerLink = getByText('Change data owner');
@@ -235,6 +235,22 @@ describe('workplace-info-panel', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace/change-data-owner'], {
         queryParams: { changeDataOwnerFrom: workplace.uid },
       });
+    });
+
+    it('should not display Change data owner link if workplace is data owner, canEditEstablishment is false but parent has permission to change permissions for sub', async () => {
+      const workplace = {
+        dataOwner: 'Workplace',
+        uid: 'abc123456',
+      };
+      const { queryByText } = await setup({
+        primaryWorkplace: { isParent: true },
+        workplace,
+        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+      });
+
+      const changeDataOwnerLink = queryByText('Change data owner');
+
+      expect(changeDataOwnerLink).toBeFalsy();
     });
 
     describe('data request pending', () => {
@@ -260,7 +276,7 @@ describe('workplace-info-panel', () => {
         const { getByText } = await setup({
           primaryWorkplace: { isParent: true },
           workplace: workplace,
-          permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+          permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary', 'canEditEstablishment'],
         });
 
         const dataRequestPendingLink = getByText('Data request pending');
@@ -272,7 +288,7 @@ describe('workplace-info-panel', () => {
         const { getByText, fixture, changeOwnershipDetailsSpy } = await setup({
           primaryWorkplace: { isParent: true },
           workplace: workplace,
-          permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+          permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary', 'canEditEstablishment'],
         });
 
         changeOwnershipDetailsSpy.and.returnValue(of(requestDetails));
@@ -292,7 +308,7 @@ describe('workplace-info-panel', () => {
         const { getByText, fixture, changeOwnershipDetailsSpy } = await setup({
           primaryWorkplace: { isParent: true },
           workplace: workplace,
-          permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+          permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary', 'canEditEstablishment'],
         });
 
         changeOwnershipDetailsSpy.and.returnValue(of(requestDetails));
@@ -315,7 +331,7 @@ describe('workplace-info-panel', () => {
           await setup({
             primaryWorkplace: { isParent: true },
             workplace: workplace,
-            permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+            permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary', 'canEditEstablishment'],
           });
 
         changeOwnershipDetailsSpy.and.returnValue(of(requestDetails));
@@ -351,7 +367,7 @@ describe('workplace-info-panel', () => {
       const { getByText, routerSpy } = await setup({
         primaryWorkplace: { isParent: true },
         workplace,
-        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary'],
+        permissions: ['canViewEstablishment', 'canChangePermissionsForSubsidiary', 'canEditEstablishment'],
       });
 
       const changeDataPermissionsLink = getByText('Change data permissions');
