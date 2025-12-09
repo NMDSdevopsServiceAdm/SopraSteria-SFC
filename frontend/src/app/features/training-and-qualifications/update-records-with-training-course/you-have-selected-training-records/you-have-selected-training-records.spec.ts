@@ -3,16 +3,17 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { TrainingCourse } from '@core/model/training-course.model';
 import { TrainingCourseService } from '@core/services/training-course.service';
+import { MockRouter } from '@core/test-utils/MockRouter';
 import { MockTrainingCourseService, trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { YouHaveSelectedTrainingRecords } from './you-have-selected-training-records';
 
-fdescribe('YouHaveSelectedTrainingRecords', () => {
+describe('YouHaveSelectedTrainingRecords', () => {
   const mockEstablishmentUid = 'mock-establishment-uid';
   const mockSelectedTrainingCourseUid = 'mock-selected-training-course-uid';
   const mockSelectedTrainingCourse = trainingCourseBuilder({
@@ -38,6 +39,7 @@ fdescribe('YouHaveSelectedTrainingRecords', () => {
   async function setup(overrides: any = {}) {
     const trainingRecordsSelectedForUpdate =
       overrides?.trainingRecordsSelectedForUpdate ?? mocktrainingRecordsSelectedForUpdate;
+    const routerSpy = jasmine.createSpy().and.resolveTo(true);
 
     const setupTools = await render(YouHaveSelectedTrainingRecords, {
       imports: [CommonModule, SharedModule, RouterModule, ReactiveFormsModule],
@@ -65,6 +67,13 @@ fdescribe('YouHaveSelectedTrainingRecords', () => {
             },
           },
         },
+        {
+          provide: Router,
+          useFactory: MockRouter.factory({
+            navigate: routerSpy,
+            url: `${mockSelectedTrainingCourse.uid}/confirm-update-records`,
+          }),
+        },
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
@@ -74,7 +83,6 @@ fdescribe('YouHaveSelectedTrainingRecords', () => {
     const injector = getTestBed();
     const route = injector.inject(ActivatedRoute) as ActivatedRoute;
     const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
     const trainingCourseService = injector.inject(TrainingCourseService);
 
@@ -140,11 +148,31 @@ fdescribe('YouHaveSelectedTrainingRecords', () => {
       'First aid basic (3 records)',
       'First aid basic training (2 records)',
       'Basic of first aid (1 record)',
-      'First aid basic 101',
+      'First aid basic 101 (1 record)',
     ];
 
     expectedListEntries.forEach((record) => {
       expect(getByText(record)).toBeTruthy();
     });
+  });
+
+  it('should show a CTA button and a cancel link', async () => {
+    const { getByRole } = await setup();
+
+    expect(getByRole('button', { name: 'Update training records' })).toBeTruthy();
+    expect(getByRole('button', { name: 'Cancel' })).toBeTruthy();
+  });
+
+  it('the cancel link should link to "select-a-training-course" page', async () => {
+    const { getByRole } = await setup();
+
+    const cancelLink = getByRole('button', { name: 'Cancel' }) as HTMLAnchorElement;
+    expect(cancelLink.href).toContain('/select-a-training-course');
+  });
+
+  it('should return to "select-a-training-course" page if no training records were selected', async () => {
+    const { routerSpy, route } = await setup({ trainingRecordsSelectedForUpdate: [] });
+
+    expect(routerSpy).toHaveBeenCalledWith(['../../select-a-training-course'], { relativeTo: route });
   });
 });
