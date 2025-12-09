@@ -272,5 +272,56 @@ module.exports = function (sequelize, DataTypes) {
     await Promise.all(updateExpiryDateForEachRecord);
   };
 
+  TrainingCourse.linkRecordsToCourse = async function ({
+    trainingCourseUid,
+    trainingRecordUids,
+    establishmentId,
+    updatedBy,
+    transaction,
+  }) {
+    const models = sequelize.models;
+
+    const trainingCourse = await models.trainingCourse.findOne({
+      where: {
+        uid: trainingCourseUid,
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      transaction,
+    });
+
+    if (!trainingCourse) {
+      throw new NotFoundError('Could not find the training course');
+    }
+
+    const trainingRecordsToUpdate = await models.workerTraining.findAll({
+      where: {
+        uid: trainingRecordUids,
+      },
+      include: [
+        {
+          model: models.worker,
+          as: 'worker',
+          attributes: ['establishmentFk', 'archived'],
+          where: {
+            establishmentFk: trainingCourse.establishmentFk,
+            archived: false,
+          },
+        },
+      ],
+      transaction,
+    });
+
+    return models.workerTraining.update(
+      { trainingCourseFK: trainingCourse.id, updatedBy, updated: new Date() },
+      {
+        where: {
+          id: trainingRecordsToUpdate.map((record) => record.id),
+        },
+        transaction,
+      },
+    );
+  };
+
   return TrainingCourse;
 };

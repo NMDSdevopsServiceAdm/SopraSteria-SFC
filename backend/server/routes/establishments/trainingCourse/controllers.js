@@ -253,6 +253,32 @@ const deleteTrainingCourse = async (req, res) => {
   }
 };
 
+const updateTrainingRecordsWithCourseDetails = async (req, res) => {
+  const establishmentId = req.establishmentId;
+
+  const trainingCourseUid = req?.params?.trainingCourseUid;
+  const trainingRecordUids = req?.params?.trainingRecords?.map((record) => record.uid);
+  const updatedBy = req.username;
+
+  const updatedRecords = await models.sequelize.transaction(async (transaction) => {
+    await models.trainingCourse.linkRecordsToCourse({
+      trainingCourseUid,
+      trainingRecordUids,
+      updatedBy,
+      transaction,
+    });
+
+    return await models.trainingCourse.updateTrainingRecordsWithCourseData({
+      trainingCourseUid,
+      trainingRecordUids,
+      updatedBy,
+      transaction,
+    });
+  });
+
+  return res.status(200).send();
+};
+
 const renameKeys = (record) => {
   const renamed = lodash.mapKeys(record, (_v, key) => {
     switch (key) {
