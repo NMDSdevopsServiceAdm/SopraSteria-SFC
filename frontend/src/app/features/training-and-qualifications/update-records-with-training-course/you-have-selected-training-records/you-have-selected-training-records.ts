@@ -72,7 +72,7 @@ export class YouHaveSelectedTrainingRecords {
         this.selectedTrainingRecords,
       )
       .subscribe(() => {
-        this.router.navigate(['/dashboard', { fragment: 'training-and-qualifications' }]).then(() => {
+        this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' }).then(() => {
           this.alertService.addAlert({ type: 'success', message: alertMessage });
         });
       });

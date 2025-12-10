@@ -211,7 +211,7 @@ describe('YouHaveSelectedTrainingRecords', () => {
 
       await fixture.whenStable();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard', { fragment: 'training-and-qualifications' }]);
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
         message: `${mocktrainingRecordsSelectedForUpdate.length} training records updated with course details`,
