@@ -1,15 +1,20 @@
+import { of } from 'rxjs';
+
 import { CommonModule } from '@angular/common';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { TrainingCourse } from '@core/model/training-course.model';
+import { AlertService } from '@core/services/alert.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { MockTrainingCourseService, trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { YouHaveSelectedTrainingRecords } from './you-have-selected-training-records';
 
@@ -44,6 +49,7 @@ describe('YouHaveSelectedTrainingRecords', () => {
     const setupTools = await render(YouHaveSelectedTrainingRecords, {
       imports: [CommonModule, SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        WindowRef,
         {
           provide: TrainingCourseService,
           useFactory: MockTrainingCourseService.factory({ trainingRecordsSelectedForUpdate }),
@@ -81,10 +87,16 @@ describe('YouHaveSelectedTrainingRecords', () => {
     const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
-    const route = injector.inject(ActivatedRoute) as ActivatedRoute;
-    const router = injector.inject(Router) as Router;
 
-    const trainingCourseService = injector.inject(TrainingCourseService);
+    const route = injector.inject(ActivatedRoute) as ActivatedRoute;
+    const trainingCourseService = injector.inject(TrainingCourseService) as TrainingCourseService;
+    const trainingCourseServiceSpy = spyOn(
+      trainingCourseService,
+      'updateTrainingRecordsWithCourseDetails',
+    ).and.returnValue(of([]));
+
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert');
 
     return {
       ...setupTools,
@@ -92,6 +104,8 @@ describe('YouHaveSelectedTrainingRecords', () => {
       route,
       routerSpy,
       trainingCourseService,
+      trainingCourseServiceSpy,
+      alertSpy,
     };
   }
 
@@ -108,6 +122,12 @@ describe('YouHaveSelectedTrainingRecords', () => {
 
     expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeading);
     expect(getByTestId('section-heading').textContent).toContain(expectedCaption);
+  });
+
+  it('should navigate to "select-a-training-course" page if no training records were selected', async () => {
+    const { routerSpy, route } = await setup({ trainingRecordsSelectedForUpdate: [] });
+
+    expect(routerSpy).toHaveBeenCalledWith(['../../select-a-training-course'], { relativeTo: route });
   });
 
   describe('should show the heading with singular / plural noun correctly', () => {
@@ -164,15 +184,38 @@ describe('YouHaveSelectedTrainingRecords', () => {
   });
 
   it('the cancel link should link to "select-a-training-course" page', async () => {
-    const { getByRole } = await setup();
+    const { getByRole, trainingCourseServiceSpy } = await setup();
 
     const cancelLink = getByRole('button', { name: 'Cancel' }) as HTMLAnchorElement;
     expect(cancelLink.href).toContain('/select-a-training-course');
+    expect(trainingCourseServiceSpy).not.toHaveBeenCalled();
   });
 
-  it('should return to "select-a-training-course" page if no training records were selected', async () => {
-    const { routerSpy, route } = await setup({ trainingRecordsSelectedForUpdate: [] });
+  describe('on submit', () => {
+    it('should call updateTrainingRecordsWithCourseDetails() method in service', async () => {
+      const { getByRole, trainingCourseServiceSpy } = await setup();
 
-    expect(routerSpy).toHaveBeenCalledWith(['../../select-a-training-course'], { relativeTo: route });
+      userEvent.click(getByRole('button', { name: 'Update training records' }));
+
+      expect(trainingCourseServiceSpy).toHaveBeenCalledWith(
+        mockEstablishmentUid,
+        mockSelectedTrainingCourseUid,
+        mocktrainingRecordsSelectedForUpdate,
+      );
+    });
+
+    it('should navigate to Training and qualification tab and show an alert', async () => {
+      const { fixture, getByRole, routerSpy, alertSpy } = await setup();
+
+      userEvent.click(getByRole('button', { name: 'Update training records' }));
+
+      await fixture.whenStable();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard', { fragment: 'training-and-qualifications' }]);
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `${mocktrainingRecordsSelectedForUpdate.length} training records updated with course details`,
+      });
+    });
   });
 });

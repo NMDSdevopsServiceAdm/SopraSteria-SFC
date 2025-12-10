@@ -99,6 +99,21 @@ export class TrainingCourseService {
     );
   }
 
+  public updateTrainingRecordsWithCourseDetails(
+    establishmentUid: string,
+    trainingCourseUid: string,
+    trainingRecordsToUpdate: Array<Pick<TrainingRecord, 'uid'>>,
+  ): Observable<Array<TrainingRecord>> {
+    const requestBody = {
+      trainingRecords: trainingRecordsToUpdate,
+    };
+
+    return this.http.post<Array<TrainingRecord>>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse/${trainingCourseUid}/updateTrainingRecordsWithCourseDetails`,
+      requestBody,
+    );
+  }
+
   public get newTrainingCourseToBeAdded(): Partial<TrainingCourse> {
     return this._newTrainingCourseToBeAdded;
   }

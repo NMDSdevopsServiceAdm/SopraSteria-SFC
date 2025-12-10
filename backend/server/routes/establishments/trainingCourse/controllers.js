@@ -190,7 +190,7 @@ const updateTrainingCourse = async (req, res) => {
       return res.status(err.statusCode).send(err.message);
     }
     if (err instanceof NotFoundError) {
-      return res.status(404).send('Training course not found');
+      return res.status(404).send({ message: 'Training course not found' });
     }
 
     return res.status(500).send({ message: 'Internal server error' });
@@ -291,7 +291,7 @@ const updateTrainingRecordsWithCourseDetails = async (req, res) => {
       return res.status(err.statusCode).send(err.message);
     }
     if (err instanceof NotFoundError) {
-      return res.status(404).send('Training course not found');
+      return res.status(404).send({ message: 'Training course not found' });
     }
 
     return res.status(500).send({ message: 'Internal server error' });
