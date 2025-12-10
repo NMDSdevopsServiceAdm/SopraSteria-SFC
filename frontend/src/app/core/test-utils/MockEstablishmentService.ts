@@ -292,6 +292,10 @@ export class MockEstablishmentService extends EstablishmentService {
     return of(this.establishment);
   }
 
+  public changeOwnershipDetails(establishmentId): Observable<any> {
+    return of({});
+  }
+
   public updateJobs(establishmemntId, data: UpdateJobsRequest): Observable<Establishment> {
     return of({
       created: undefined,

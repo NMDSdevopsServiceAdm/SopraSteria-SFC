@@ -266,3 +266,32 @@ Cypress.Commands.add('resetNonMandatoryWorkplaceQuestions', (establishmentID) =>
 
   cy.task('dbQuery', { queryString, parameters });
 });
+
+Cypress.Commands.add('updateDataOwner', (args) => {
+  const { parentEstablishmentID, subWorkplaceName, dataOwnerValue, dataPermissionsValue = 'Workplace' } = args;
+
+  const allowedDataOwnerValues = ['Parent', 'Workplace'];
+
+  if (allowedDataOwnerValues.includes(dataOwnerValue)) {
+    const queryString = `UPDATE cqc."Establishment"
+      SET "DataOwner" = $3,
+      "DataPermissions" = $4
+      WHERE "ParentID" = $1
+      AND "NameValue" = $2;`;
+
+    const parameters = [parentEstablishmentID, subWorkplaceName, dataOwnerValue, dataPermissionsValue];
+
+    cy.task('dbQuery', { queryString, parameters });
+  }
+});
+
+Cypress.Commands.add('deleteOwnershipRequest', (workplaceName) => {
+  const queryString = `DELETE FROM cqc."OwnerChangeRequest"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "OwnerChangeRequest"."subEstablishmentID"
+    AND "Establishment"."NameValue" = $1`;
+
+  const parameters = [workplaceName];
+
+  cy.task('dbQuery', { queryString, parameters });
+});

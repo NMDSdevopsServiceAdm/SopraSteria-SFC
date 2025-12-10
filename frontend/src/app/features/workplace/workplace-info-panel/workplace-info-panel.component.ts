@@ -19,9 +19,9 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-workplace-info-panel',
-    templateUrl: './workplace-info-panel.component.html',
-    standalone: false
+  selector: 'app-workplace-info-panel',
+  templateUrl: './workplace-info-panel.component.html',
+  standalone: false,
 })
 export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   @Output() public changeOwnershipAndPermissionsEvent = new EventEmitter();
@@ -36,6 +36,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public ownershipChangeRequestId: any = [];
   public ownershipChangeRequestCreatedByLoggegInUser: boolean;
   public ownershipChangeRequester: any;
+  public canEditParentEstablishment: boolean;
 
   constructor(
     private dialogService: DialogService,
@@ -53,14 +54,37 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.permissionsService.hasWorkplacePermissions(this.workplace.uid).subscribe((hasPermissions) => {
         if (hasPermissions) {
-          this.canViewEstablishment = this.permissionsService.can(this.workplace.uid, 'canViewEstablishment');
-          this.canChangePermissionsForSubsidiary = this.permissionsService.can(
+          const canViewEstablishmentPermission = this.permissionsService.can(
+            this.workplace.uid,
+            'canViewEstablishment',
+          );
+          const canChangePermissionsForSubsidiaryPermission = this.permissionsService.can(
             this.workplace.uid,
             'canChangePermissionsForSubsidiary',
           );
+          const canEditParentEstablishmentPermission = this.permissionsService.can(
+            this.primaryWorkplace.uid,
+            'canEditEstablishment',
+          );
+          this.setPermissions({
+            canViewEstablishmentPermission,
+            canChangePermissionsForSubsidiaryPermission,
+            canEditParentEstablishmentPermission,
+          });
         }
       }),
     );
+  }
+
+  private setPermissions(args: any): void {
+    const {
+      canViewEstablishmentPermission = false,
+      canChangePermissionsForSubsidiaryPermission = false,
+      canEditParentEstablishmentPermission = false,
+    } = args;
+    this.canViewEstablishment = canViewEstablishmentPermission;
+    this.canChangePermissionsForSubsidiary = canChangePermissionsForSubsidiaryPermission;
+    this.canEditParentEstablishment = canEditParentEstablishmentPermission;
   }
 
   private changeOwnershipAndPermissions(): void {
@@ -103,21 +127,18 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
               this.ownershipChangeRequestCreatedByLoggegInUser = requester === this.loggedInUser ? true : false;
             });
             this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
-            if (this.ownershipChangeRequestCreatedByLoggegInUser) {
-              const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
-              dialog.afterClosed.subscribe((cancelDataOwnerConfirmed) => {
-                if (cancelDataOwnerConfirmed) {
-                  this.changeOwnershipAndPermissions();
-                  this.router.navigate(['/dashboard']);
-                  this.alertService.addAlert({
-                    type: 'success',
-                    message: 'Request to change data owner has been cancelled ',
-                  });
-                }
-              });
-            } else {
-              this.router.navigate(['/notifications']);
-            }
+
+            const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
+            dialog.afterClosed.subscribe((cancelDataOwnerConfirmed) => {
+              if (cancelDataOwnerConfirmed) {
+                this.changeOwnershipAndPermissions();
+                this.router.navigate(['/workplace/view-all-workplaces']);
+                this.alertService.addAlert({
+                  type: 'success',
+                  message: 'Request to change data owner has been cancelled ',
+                });
+              }
+            });
           }
         },
         (error) => {
