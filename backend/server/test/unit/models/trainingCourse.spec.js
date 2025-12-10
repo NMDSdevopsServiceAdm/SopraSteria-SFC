@@ -5,7 +5,7 @@ const { mockTrainingCourses } = require('../mockdata/trainingCourse');
 const models = require('../../../models/index');
 const { NotFoundError } = require('../../../utils/errors/customErrors');
 
-describe.only('TrainingCourse model', () => {
+describe('TrainingCourse model', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -141,7 +141,7 @@ describe.only('TrainingCourse model', () => {
 
       const updateRecordSpy = sinon.stub(models.workerTraining, 'update').resolves();
 
-      await models.trainingCourse.updateTrainingRecordsWithCourseData({
+      const returnValue = await models.trainingCourse.updateTrainingRecordsWithCourseData({
         trainingCourseUid: mockTrainingCourse.uid,
         trainingRecordUids: mockTrainingRecordUids,
         transaction: mockTransaction,
@@ -152,6 +152,7 @@ describe.only('TrainingCourse model', () => {
         where: { trainingCourseFK: mockTrainingCourse.id, id: mockTrainingRecordIds },
         transaction: mockTransaction,
       });
+      expect(returnValue).to.deep.equal(mockTrainingRecords);
     });
 
     it('should only update training records that has uid in the given trainingRecordUids array', async () => {

@@ -339,7 +339,7 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     const newExpiryDate = calculateTrainingExpiryDate(trainingRecord.completed, trainingRecord.validityPeriodInMonth);
-    return await trainingRecord.update({ expires: newExpiryDate, updatedBy, updated: new Date() }, { transaction });
+    await trainingRecord.update({ expires: newExpiryDate, updatedBy, updated: new Date() }, { transaction });
   };
 
   return WorkerTraining;

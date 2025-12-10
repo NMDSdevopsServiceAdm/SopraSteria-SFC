@@ -249,7 +249,7 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     if (!trainingRecordsToUpdate.length) {
-      return;
+      return [];
     }
 
     await sequelize.models.workerTraining.update(updatesToApply, {
@@ -270,6 +270,16 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     await Promise.all(updateExpiryDateForEachRecord);
+
+    const updatedRecords = await sequelize.models.workerTraining.findAll({
+      where: {
+        id: trainingRecordsToUpdate.map((record) => record.id),
+        trainingCourseFK: trainingCourse.id,
+      },
+      transaction,
+    });
+
+    return updatedRecords;
   };
 
   TrainingCourse.linkRecordsToCourse = async function ({
