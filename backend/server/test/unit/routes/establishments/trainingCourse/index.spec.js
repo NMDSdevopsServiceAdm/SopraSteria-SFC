@@ -12,6 +12,7 @@ const {
   updateTrainingCourse,
   deleteTrainingCourse,
   getTrainingCoursesWithLinkableRecords,
+  updateTrainingRecordsWithCourseDetails,
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
 const {
   mockTrainingCourses,
@@ -23,14 +24,27 @@ const {
 const { NotFoundError } = require('../../../../../utils/errors/customErrors');
 
 describe('/api/establishment/:uid/trainingCourse/', () => {
+  const mockTransaction = {};
+
+  beforeEach(() => {
+    sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations(mockTransaction));
+  });
+
   afterEach(() => {
     sinon.restore();
   });
+
   const establishmentUid = 'mock-uid';
   const establishmentId = 'mock-id';
   const mockUsername = 'workplace edit user';
   const baseEndpoint = `/api/establishment/${establishmentUid}/trainingCourse`;
   const mockTrainingCourseUid = mockTrainingCourses[0].uid;
+
+  const mockTrainingRecords = [
+    { id: 'record-id-1', uid: 'record-uid-1' },
+    { id: 'record-id-2', uid: 'record-uid-2' },
+    { id: 'record-id-3', uid: 'record-uid-3' },
+  ];
 
   describe('GET /trainingCourse/ - fetchAllTrainingCourses', () => {
     const request = {
@@ -277,12 +291,6 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       body: mockRequestBody,
     };
 
-    const mockTrainingRecords = [
-      { id: 'record-id-1', uid: 'record-uid-1' },
-      { id: 'record-id-2', uid: 'record-uid-2' },
-      { id: 'record-id-3', uid: 'record-uid-3' },
-    ];
-
     const mockTrainingCourseSequelizeObject = {
       ...mockTrainingCourses[0],
       toJSON() {
@@ -295,11 +303,6 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         return mockTrainingRecords;
       },
     };
-
-    const mockTransaction = {};
-    beforeEach(() => {
-      sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations(mockTransaction));
-    });
 
     it('should respond with 200 if successfully updated the record', async () => {
       sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockTrainingCourseSequelizeObject);
@@ -539,6 +542,86 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       const res = httpMocks.createResponse();
 
       await getTrainingCoursesWithLinkableRecords(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
+  describe('POST /trainingCourse/:trainingCourseUid/updateTrainingRecordsWithCourseDetails', () => {
+    const request = {
+      method: 'POST',
+      url: `${baseEndpoint}/${mockTrainingCourseUid}/updateTrainingRecordsWithCourseDetails`,
+      establishmentId,
+      username: mockUsername,
+      body: { trainingRecords: mockTrainingRecords },
+      params: { trainingCourseUid: mockTrainingCourseUid },
+    };
+
+    const mockTrainingRecordObjects = mockTrainingRecords.map((self) => ({
+      ...self,
+      toJSON: () => lodash.omit(self, ['toJSON']),
+    }));
+
+    it('should respond with 200 and a list of training records after update', async () => {
+      sinon.stub(models.trainingCourse, 'linkRecordsToCourse').resolves(true);
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves(mockTrainingRecordObjects);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateTrainingRecordsWithCourseDetails(req, res);
+
+      expect(models.trainingCourse.linkRecordsToCourse).to.have.been.calledWith({
+        trainingCourseUid: mockTrainingCourseUid,
+        trainingRecordUids: mockTrainingRecords.map((record) => record.uid),
+        establishmentId,
+        updatedBy: mockUsername,
+        transaction: mockTransaction,
+      });
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getData()).to.deep.equal({ trainingRecords: mockTrainingRecords });
+    });
+
+    it('should respond with 400 if request body does not contain a list of training records to update', async () => {
+      sinon.stub(models.trainingCourse, 'linkRecordsToCourse').resolves(true);
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves(mockTrainingRecordObjects);
+      sinon.stub(console, 'error');
+
+      const mockRequest = { ...request, body: {} };
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+
+      await updateTrainingRecordsWithCourseDetails(req, res);
+
+      expect(res.statusCode).to.deep.equal(400);
+      expect(models.trainingCourse.linkRecordsToCourse).not.to.have.been.called;
+      expect(models.trainingCourse.updateTrainingRecordsWithCourseData).not.to.have.been.called;
+    });
+
+    it('should respond with 404 if the training course was not found', async () => {
+      sinon.stub(models.trainingCourse, 'linkRecordsToCourse').rejects(new NotFoundError());
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData');
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateTrainingRecordsWithCourseDetails(req, res);
+
+      expect(res.statusCode).to.deep.equal(404);
+      expect(models.trainingCourse.updateTrainingRecordsWithCourseData).not.to.have.been.called;
+    });
+
+    it('should respond with 500 if error occured', async () => {
+      sinon.stub(models.trainingCourse, 'linkRecordsToCourse').rejects('some other errors');
+      sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData');
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await updateTrainingRecordsWithCourseDetails(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
     });
