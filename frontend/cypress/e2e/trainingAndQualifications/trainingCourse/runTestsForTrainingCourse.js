@@ -2,7 +2,12 @@
 /// <reference types="cypress" />
 
 import { onHomePage } from '../../../support/page_objects/onHomePage';
-import { clickIntoTrainingCourse, expectPageToHaveDetails, fillInCourseDetails } from './helpers';
+import {
+  clickIntoTrainingCourse,
+  clickIntoWorkerTAndQRecordPage,
+  expectPageToHaveDetails,
+  fillInCourseDetails,
+} from './helpers';
 
 export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
   describe('Add and manage training course', () => {
@@ -149,9 +154,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         cy.get('[data-testid="training-category"]').should('contain', changedCourseDetail.categoryName);
 
         // Verify that the change to training course is applied to the linked training record
-        cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
-        cy.get('[data-testid="training-worker-table"]').contains(workerName).click();
-        cy.url().should('contain', 'training-and-qualifications-record');
+        clickIntoWorkerTAndQRecordPage(workerName);
 
         cy.get('a').contains(trainingRecordTitle).should('not.exist');
         cy.get('a').contains(changedCourseDetail.courseName).should('exist');
@@ -203,9 +206,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         cy.get('[data-testid="training-category"]').should('contain', changedCourseDetail.categoryName);
 
         // Verify that the linked training record is not changed
-        cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
-        cy.get('[data-testid="training-worker-table"]').contains(workerName).click();
-        cy.url().should('contain', 'training-and-qualifications-record');
+        clickIntoWorkerTAndQRecordPage(workerName);
 
         cy.get('a').contains(changedCourseDetail.courseName).should('not.exist');
         cy.get('a').contains(trainingRecordTitle).should('exist');

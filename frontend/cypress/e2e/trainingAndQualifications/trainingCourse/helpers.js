@@ -39,6 +39,8 @@ export const expectPageToHaveDetails = (details) => {
     howWasItDelivered,
     doesNotExpire,
     validityPeriodInMonth,
+    completedDate,
+    expiryDate,
   } = details;
 
   if (courseName) {
@@ -62,4 +64,29 @@ export const expectPageToHaveDetails = (details) => {
   } else {
     cy.getByLabel(/How many months/).should('have.value', validityPeriodInMonth.toString());
   }
+
+  if (completedDate) {
+    cy.get('[data-testid="completedDate"]').within(() => {
+      shouldHaveDate(completedDate);
+    });
+  }
+
+  if (expiryDate) {
+    cy.get('[data-testid="expiresDate"]').within(() => {
+      shouldHaveDate(expiryDate);
+    });
+  }
+};
+
+const shouldHaveDate = (dateString) => {
+  const [year, month, day] = dateString.split('-').map((x) => parseInt(x));
+  cy.getByLabel('Day').should('have.value', day);
+  cy.getByLabel('Month').should('have.value', month);
+  cy.getByLabel('Year').should('have.value', year);
+};
+
+export const clickIntoWorkerTAndQRecordPage = (workerName) => {
+  cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
+  cy.get('[data-testid="training-worker-table"]').contains(workerName).click();
+  cy.url().should('contain', 'training-and-qualifications-record');
 };

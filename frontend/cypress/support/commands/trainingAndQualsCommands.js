@@ -1,16 +1,22 @@
 import { v4 as uuidv4 } from 'uuid';
 
 Cypress.Commands.add('addWorkerTraining', (args) => {
-  const { establishmentID = '180', workerName = 'Test worker', categoryId = 4, trainingTitle = 'Test Training' } = args;
+  const {
+    establishmentID = '180',
+    workerName = 'Test worker',
+    categoryId = 4,
+    trainingTitle = 'Test Training',
+    completedDate = '2025-01-01',
+  } = args;
 
   cy.getWorkerId(establishmentID, workerName);
 
   cy.get('@workerId').then((workerId) => {
     const queryString = `INSERT INTO cqc."WorkerTraining"
   ("UID", "WorkerFK", "CategoryFK", "Title", "Completed", "updatedby")
-  VALUES ($1, $2, $3, $4, '2025-01-01', 'admin1')`;
+  VALUES ($1, $2, $3, $4, $5, 'admin1')`;
 
-    const parameters = [uuidv4(), workerId, categoryId, trainingTitle];
+    const parameters = [uuidv4(), workerId, categoryId, trainingTitle, completedDate];
 
     cy.task('dbQuery', { queryString, parameters });
   });
@@ -23,6 +29,7 @@ Cypress.Commands.add('addWorkerTrainingLinkedToCourse', (args) => {
     categoryId = 4,
     trainingCourseName,
     trainingTitle = 'Test Training',
+    completedDate = '2025-01-01',
   } = args;
 
   cy.getWorkerId(establishmentID, workerName);
@@ -32,8 +39,8 @@ Cypress.Commands.add('addWorkerTrainingLinkedToCourse', (args) => {
     cy.get('@trainingCourseId').then((trainingCourseId) => {
       const queryString = `INSERT INTO cqc."WorkerTraining"
   ("UID", "WorkerFK", "CategoryFK", "TrainingCourseFK", "Title", "Completed", "updatedby")
-  VALUES ($1, $2, $3, $4, $5, '2025-01-01', 'admin1')`;
-      const parameters = [uuidv4(), workerId, categoryId, trainingCourseId, trainingTitle];
+  VALUES ($1, $2, $3, $4, $5, $6, 'admin1')`;
+      const parameters = [uuidv4(), workerId, categoryId, trainingCourseId, trainingTitle, completedDate];
       cy.task('dbQuery', { queryString, parameters });
     });
   });
@@ -95,13 +102,31 @@ Cypress.Commands.add('deleteAllTrainingCourses', (establishmentID) => {
 });
 
 Cypress.Commands.add('insertTrainingCourse', (args) => {
-  const { establishmentID, categoryId = 1, name = 'Test training course' } = args;
+  const {
+    establishmentID,
+    categoryId = 1,
+    name = 'Test training course',
+    accredited = null,
+    deliveredBy = null,
+    howWasItDelivered = null,
+    doesNotExpire = false,
+    validityPeriodInMonth = null,
+  } = args;
 
   const queryString = `INSERT INTO cqc."TrainingCourse"
-  ("EstablishmentFK", "CategoryFK", "Name")
-  VALUES ($1, $2, $3) RETURNING "ID";`;
+  ("EstablishmentFK", "CategoryFK", "Name", "Accredited", "DeliveredBy", "HowWasItDelivered", "DoesNotExpire", "ValidityPeriodInMonth")
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "ID";`;
 
-  const parameters = [establishmentID, categoryId, name];
+  const parameters = [
+    establishmentID,
+    categoryId,
+    name,
+    accredited,
+    deliveredBy,
+    howWasItDelivered,
+    doesNotExpire,
+    validityPeriodInMonth,
+  ];
 
   return cy.task('dbQuery', { queryString, parameters });
 });
