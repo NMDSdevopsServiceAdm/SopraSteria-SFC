@@ -32,16 +32,13 @@
       <app-seperator-line></app-seperator-line>
 
       @if(journeyType === 'Edit' && trainingCategoryName) {
-      <dl class="govuk-!-margin-bottom-0 govuk-!-margin-top-0" data-testid="training-category">
-        <dt class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Training category</dt>
-        <dd
-          class="govuk-body govuk-util__inline-block govuk-!-margin-left-0 govuk-!-margin-right-4 govuk-!-margin-bottom-0"
-        >
+
+      <dl class="asc__name-value-pair" data-testid="training-category">
+        <dt>Training category</dt>
+        <dd>
           {{ trainingCategoryName }}
         </dd>
-        <dd
-          class="govuk-body govuk-util__float-right govuk-util__inline-block govuk-!-margin-left-0 govuk-!-margin-bottom-0"
-        >
+        <dd class="govuk-util__float-right">
           <a class="govuk-link--no-visited-state" href="#" (click)="handleChangeLinkClick($event)"
             >Change <span class="govuk-visually-hidden">training course category</span>
           </a>

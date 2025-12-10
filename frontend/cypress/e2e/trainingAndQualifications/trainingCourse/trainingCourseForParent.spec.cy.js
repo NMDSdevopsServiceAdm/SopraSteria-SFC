@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 import { ParentEstablishment } from '../../../support/mockEstablishmentData';
 import { runTestsForTrainingCourseJourney } from './runTestsForTrainingCourse';
+import { runTestsForUpdateTrainingRecordsWithCourseDetails } from './runTestsForUpdateRecordsWithTrainingCourseDetails';
 
 describe('Training course for parent workplace edit user', () => {
   const testEstablishment = ParentEstablishment;
@@ -14,4 +15,6 @@ describe('Training course for parent workplace edit user', () => {
   });
 
   runTestsForTrainingCourseJourney(testEstablishment);
+
+  runTestsForUpdateTrainingRecordsWithCourseDetails(testEstablishment);
 });

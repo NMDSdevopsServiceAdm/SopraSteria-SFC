@@ -2,6 +2,7 @@
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
 import { runTestsForTrainingCourseJourney } from './runTestsForTrainingCourse';
+import { runTestsForUpdateTrainingRecordsWithCourseDetails } from './runTestsForUpdateRecordsWithTrainingCourseDetails';
 
 describe('Training course for standalone workplace edit user', () => {
   const testEstablishment = StandAloneEstablishment;
@@ -14,4 +15,6 @@ describe('Training course for standalone workplace edit user', () => {
   });
 
   runTestsForTrainingCourseJourney(testEstablishment);
+
+  runTestsForUpdateTrainingRecordsWithCourseDetails(testEstablishment);
 });

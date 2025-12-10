@@ -7,6 +7,7 @@ import { Worker } from '@core/model/worker.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingService } from '@core/services/training.service';
 import { BackLinkService } from '@core/services/backLink.service';
+import { TrainingCourseService } from '@core/services/training-course.service';
 
 @Component({
   selector: 'app-include-training-course-details',
@@ -19,6 +20,7 @@ export class IncludeTrainingCourseDetailsComponent {
   public trainingCourses: TrainingCourse[];
   public worker: Worker;
   public workplace: Establishment;
+  public revealText = TrainingCourseService.RevealText;
 
   constructor(
     private backLinkService: BackLinkService,

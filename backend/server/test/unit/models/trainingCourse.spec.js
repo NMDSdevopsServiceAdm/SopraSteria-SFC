@@ -104,19 +104,19 @@ describe('TrainingCourse model', () => {
   });
 
   describe('updateTrainingRecordsWithCourseData', () => {
-    const mockTrainingRecords = [{ id: 'record-id-1' }, { id: 'record-id-2' }, { id: 'record-id-3' }];
-    const mockTrainingRecordRows = mockTrainingRecords.map((record) => {
-      return { dataValues: { ID: record.id } };
-    });
+    const mockTrainingRecords = [
+      { id: 'record-id-1', uid: 'record-uid-1' },
+      { id: 'record-id-2', uid: 'record-uid-2' },
+      { id: 'record-id-3', uid: 'record-uid-3' },
+    ];
+    const mockTrainingRecordIds = mockTrainingRecords.map((record) => record.id);
+    const mockTrainingRecordUids = mockTrainingRecords.map((record) => record.uid);
 
     const mockEstablishmentId = 'mock-workplace-id';
 
     const mockTrainingCourse = {
       ...mockTrainingCourses[0],
       establishmentFk: mockEstablishmentId,
-      countWorkerTraining() {
-        return mockTrainingRecords.length;
-      },
       toJSON() {
         return lodash.omit(this, ['update', 'toJSON']);
       },
@@ -141,20 +141,64 @@ describe('TrainingCourse model', () => {
     it('should update multiple training records with the data from trainingCourse', async () => {
       sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
       sinon.stub(models.workerTraining, 'autoFillInExpiryDate').resolves();
+      sinon.stub(models.workerTraining, 'findAll').resolves(mockTrainingRecords);
 
-      const updateRecordSpy = sinon
-        .stub(models.workerTraining, 'update')
-        .resolves([mockTrainingRecords.count, mockTrainingRecordRows]);
+      const updateRecordSpy = sinon.stub(models.workerTraining, 'update').resolves();
 
       await models.trainingCourse.updateTrainingRecordsWithCourseData({
         trainingCourseUid: mockTrainingCourse.uid,
+        trainingRecordUids: mockTrainingRecordUids,
         transaction: mockTransaction,
         updatedBy: mockUsername,
       });
 
       expect(updateRecordSpy).to.have.been.calledWith(expectedUpdates, {
-        returning: true,
-        where: { trainingCourseFK: mockTrainingCourse.id },
+        where: { trainingCourseFK: mockTrainingCourse.id, id: mockTrainingRecordIds },
+        transaction: mockTransaction,
+      });
+    });
+
+    it('should only update training records that has uid in the given trainingRecordUids array', async () => {
+      sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
+      sinon.stub(models.workerTraining, 'autoFillInExpiryDate').resolves();
+      const workerTrainingFindAllSpy = sinon.stub(models.workerTraining, 'findAll').resolves(mockTrainingRecords);
+      sinon.stub(models.workerTraining, 'update').resolves();
+
+      await models.trainingCourse.updateTrainingRecordsWithCourseData({
+        trainingCourseUid: mockTrainingCourse.uid,
+        trainingRecordUids: [mockTrainingRecords[0].uid, mockTrainingRecords[2].uid], // only update [0] and [2]
+        transaction: mockTransaction,
+        updatedBy: mockUsername,
+      });
+
+      expect(workerTrainingFindAllSpy).to.have.been.calledWith(
+        sinon.match({
+          where: {
+            uid: [mockTrainingRecords[0].uid, mockTrainingRecords[2].uid],
+            trainingCourseFK: 1,
+          },
+        }),
+      );
+    });
+
+    it('should only update training records that are under the same workplace, and worker are not archived', async () => {
+      sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
+      sinon.stub(models.workerTraining, 'autoFillInExpiryDate').resolves();
+      const workerTrainingFindAllSpy = sinon.stub(models.workerTraining, 'findAll').resolves(mockTrainingRecords);
+      sinon.stub(models.workerTraining, 'update').resolves();
+
+      await models.trainingCourse.updateTrainingRecordsWithCourseData({
+        trainingCourseUid: mockTrainingCourse.uid,
+        trainingRecordUids: mockTrainingRecordUids,
+        transaction: mockTransaction,
+        updatedBy: mockUsername,
+      });
+
+      expect(workerTrainingFindAllSpy).to.have.been.calledWith({
+        where: {
+          uid: mockTrainingRecordUids,
+          trainingCourseFK: 1,
+        },
         include: [
           {
             model: models.worker,
@@ -171,7 +215,8 @@ describe('TrainingCourse model', () => {
       sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
       const autoFillInExpiryDateSpy = sinon.stub(models.workerTraining, 'autoFillInExpiryDate').resolves();
 
-      sinon.stub(models.workerTraining, 'update').resolves([mockTrainingRecords.count, mockTrainingRecordRows]);
+      sinon.stub(models.workerTraining, 'findAll').resolves(mockTrainingRecords);
+      sinon.stub(models.workerTraining, 'update').resolves();
 
       await models.trainingCourse.updateTrainingRecordsWithCourseData({
         trainingCourseUid: mockTrainingCourse.uid,

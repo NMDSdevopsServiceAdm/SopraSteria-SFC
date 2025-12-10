@@ -91,6 +91,7 @@ import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from '@features
 import { WorkplaceStaffDoDHAGuard } from '@core/guards/workplace-staff-do-dha/workplace-staff-do-dha.guard';
 import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
 import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
+import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -171,6 +172,7 @@ const routes: Routes = [
       {
         path: 'training-and-qualifications',
         component: ViewSubsidiaryTrainingAndQualificationsComponent,
+        resolve: { trainingCourses: TrainingCourseResolver },
         data: { title: 'Training and qualifications' },
       },
       {
@@ -776,6 +778,18 @@ const routes: Routes = [
         data: {
           permissions: ['canEditWorker'],
           title: 'Training course',
+        },
+      },
+      {
+        path: 'update-records-with-training-course-details',
+        loadChildren: () =>
+          import(
+            '@features/training-and-qualifications/update-records-with-training-course/update-records-with-training-course.module'
+          ).then((m) => m.UpdateRecordsWithTrainingCourseModule),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Update records with training course details',
         },
       },
     ],

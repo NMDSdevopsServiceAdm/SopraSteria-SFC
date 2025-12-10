@@ -92,7 +92,7 @@ describe('NewDashboardHeaderComponent', () => {
         hasWorkers: override.hasWorkers,
         isParent: false,
         workplace: establishment,
-        isTrainingCourse: true,
+        hasTrainingCourse: true,
       },
     });
 
@@ -489,8 +489,11 @@ describe('NewDashboardHeaderComponent', () => {
           `/workplace/${workplaceUid}/training-course/add-and-manage-training-courses`,
         );
 
-        const addAndManageTrainingCourseDetailsSubMenu = getByText('Update records with training course details');
-        expect(addAndManageTrainingCourseDetailsSubMenu).toBeTruthy();
+        const updateRecordsWithTrainingCourseDetailsSubMenu = getByText('Update records with training course details');
+        expect(updateRecordsWithTrainingCourseDetailsSubMenu).toBeTruthy();
+        expect(updateRecordsWithTrainingCourseDetailsSubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/update-records-with-training-course-details/select-a-training-course`,
+        );
 
         const addAMandatoryTrainingCategorySubMenu = getByText('Add a mandatory training category');
         expect(addAMandatoryTrainingCategorySubMenu).toBeTruthy();
@@ -517,7 +520,7 @@ describe('NewDashboardHeaderComponent', () => {
         const { component, fixture, getByText, queryByText } = await setup(override);
         const button = getByText('Add and manage training');
 
-        component.isTrainingCourse = false;
+        component.hasTrainingCourse = false;
 
         button.click();
         fixture.detectChanges();

@@ -28,11 +28,14 @@ import { TrainingAndQualificationsSummaryComponent } from '@shared/components/tr
 import { TrainingAndQualificationsCategoriesComponent } from '@shared/components/training-and-qualifications-categories/training-and-qualifications-categories.component';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '@core/services/user.service';
+import { trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 
 describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
   const setup = async (override: any = {}) => {
     const workers = override?.withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const establishment = establishmentBuilder() as Establishment;
+    const trainingCourses = override?.trainingCourses ?? [];
+
     const setupTools = await render(ViewSubsidiaryTrainingAndQualificationsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [
@@ -72,6 +75,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
             snapshot: {
               data: {
                 establishment,
+                trainingCourses,
                 workers: {
                   workers: workers,
                   workerCount: workers.length,
@@ -153,5 +157,27 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     fixture.detectChanges();
 
     expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.workplace.uid, 'staff-records']);
+  });
+
+  it('should show a "Update records with training course details" button if the workplace has training course', async () => {
+    const { queryByText } = await setup({
+      withWorkers: true,
+      totalRecords: 0,
+      trainingCourses: [trainingCourseBuilder()],
+      permissions: ['canEditWorker', 'canViewWorker'],
+    });
+
+    expect(queryByText('Update records with training course details')).toBeTruthy();
+  });
+
+  it('should not show a "Update records with training course details" button if the workplace has no training courses', async () => {
+    const { queryByText } = await setup({
+      withWorkers: true,
+      totalRecords: 0,
+      trainingCourses: [],
+      permissions: ['canEditWorker', 'canViewWorker'],
+    });
+
+    expect(queryByText('Update records with training course details')).toBeFalsy();
   });
 });

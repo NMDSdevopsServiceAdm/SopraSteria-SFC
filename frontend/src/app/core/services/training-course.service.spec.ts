@@ -46,6 +46,15 @@ describe('TrainingCourseService', () => {
     });
   });
 
+  describe('getTrainingCoursesWithLinkableRecords', () => {
+    it('should call the specific GET  endpoint with establishment uid', async () => {
+      service.getTrainingCoursesWithLinkableRecords(establishmentUid).subscribe();
+
+      const req = http.expectOne(`${baseEndpoint}/getTrainingCoursesWithLinkableRecords`);
+      expect(req.request.method).toBe('GET');
+    });
+  });
+
   describe('createTrainingCourse', () => {
     it('should call POST trainingCourse endpoint with a trainingCourse as request body', async () => {
       const mockTrainingCourse = {

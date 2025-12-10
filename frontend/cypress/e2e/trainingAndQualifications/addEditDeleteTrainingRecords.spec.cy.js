@@ -83,7 +83,7 @@ describe('training record', () => {
   describe('training courses', () => {
     before(() => {
       cy.deleteAllTrainingCourses(establishmentID);
-      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: trainingCourseName });
+      cy.insertTrainingCourse({ establishmentID, categoryId: 1, name: trainingCourseName });
       cy.reload();
     });
 
@@ -208,7 +208,7 @@ describe('training record', () => {
         cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
         cy.contains('a', trainingName).click();
 
-        cy.contains('a', 'Include training course details').click();
+        cy.contains('button', 'Select a training course').click();
         cy.get('[data-testid="workerName"]').contains(workerName1);
         cy.get('[data-testid="checkbox-label"]').contains('Test training course');
         cy.get('[data-testid="training-course-name-checkbox"]').check();
@@ -232,7 +232,7 @@ describe('training record', () => {
         cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
         cy.contains('a', trainingName).click();
 
-        cy.contains('a', 'Include training course details').click();
+        cy.contains('button', 'Select a training course').click();
         cy.get('[data-testid="workerName"]').contains(workerName1);
         cy.contains('label', 'Test training course');
         cy.contains('label', 'Test training course 2');
@@ -244,7 +244,7 @@ describe('training record', () => {
   describe('Training Course Matching Layout Page', () => {
     const workerName = 'Test Worker';
 
-    beforeEach(() => {
+    before(() => {
       cy.deleteAllTrainingCourses(establishmentID);
       cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
       cy.deleteTestWorkerFromDb(workerName);
@@ -263,44 +263,39 @@ describe('training record', () => {
         expires: '2025-01-01',
         notes: 'Test notes',
       });
-
-      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
-      cy.contains('a', trainingName).click();
-      cy.contains('a', 'Include training course details').click();
-      cy.get('[data-testid="training-course-name-checkbox"]').check();
-      // Click Continue
-      cy.get('[data-testid="continue-button"]').click();
-
-      cy.url().should('include', `matching-layout`);
-
-      cy.get('h1', { timeout: 15000 }).should('contain.text', 'Training record details');
     });
 
-    afterEach(() => {
+    beforeEach(() => {
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', trainingName).click();
+      cy.contains('button', 'Select a training course').click();
+    });
+
+    after(() => {
       cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
       cy.deleteTestWorkerFromDb(workerName);
     });
 
-    it('should display the selected training course name', () => {
+    it('should submit the form successfully and redirect', () => {
+      cy.get('h1').should('contain.text', 'Select a training course');
+      cy.getByLabel('Fire Safety').click();
+
+      cy.get('[data-testid="continue-button"]').click();
+
+      cy.url().should('include', `matching-layout`);
+
+      cy.get('h1').should('contain.text', 'Training record details');
+
       cy.contains('.govuk-summary-list__key', 'Training course name').next().should('contain.text', 'Fire Safety');
-    });
 
-    it('should NOT show the link when only one course exists', () => {
-      cy.deleteAllTrainingCourses(establishmentID);
-      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Fire Safety' });
+      cy.get('a').contains('Select a different training course').should('be.visible');
 
-      cy.get('[data-testid="includeTraining"]').should('not.exist');
-    });
-
-    it('should allow the user to open notes and edit them', () => {
       cy.contains('button', 'Open notes').click();
 
       cy.get('[data-testid="notesSection"] textarea').should('be.visible').clear().type('Updated notes via E2E');
 
       cy.get('[data-testid="notesSection"]').should('exist').and('be.visible');
-    });
 
-    it('should allow editing the completed and expiry dates', () => {
       cy.get('[data-testid="completedDate"]').within(() => {
         cy.get('input').each(($input) => cy.wrap($input).clear());
         cy.get('input').eq(0).type('01');
@@ -314,26 +309,31 @@ describe('training record', () => {
         cy.get('input').eq(1).type('03');
         cy.get('input').eq(2).type('2025');
       });
-    });
 
-    it('should display the certificate upload component', () => {
       cy.get('app-select-upload-certificate').should('exist');
-    });
 
-    it('should show delete training record button', () => {
       cy.get('[data-testid="deleteButton"]').should('exist');
-    });
-
-    it('should submit the form successfully and redirect', () => {
-      cy.contains('button', 'Open notes').click();
-
-      cy.get('[data-testid="notesSection"] textarea').clear().type('Final updated note');
 
       cy.get('button[type="submit"]').click();
 
       cy.get('app-alert span', { timeout: 10000 }).should('contain.text', 'Training record updated');
 
       cy.url().should('include', '/dashboard');
+    });
+
+    it('should NOT show the link when only one course exists', () => {
+      cy.deleteAllTrainingCourses(establishmentID);
+      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Fire Safety' });
+
+      cy.reload();
+      cy.get('h1').should('contain.text', 'Select a training course');
+
+      cy.getByLabel('Fire Safety').click();
+
+      cy.get('[data-testid="continue-button"]').click();
+
+      cy.url().should('include', `matching-layout`);
+      cy.get('a').contains('Select a different training course').should('not.exist');
     });
   });
 
@@ -409,7 +409,7 @@ describe('training record', () => {
     describe('with training courses', () => {
       before(() => {
         cy.deleteAllTrainingCourses(establishmentID);
-        cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: trainingCourseName });
+        cy.insertTrainingCourse({ establishmentID, categoryId: 1, name: trainingCourseName });
         cy.reload();
       });
 
