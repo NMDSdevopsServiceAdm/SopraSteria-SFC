@@ -172,6 +172,34 @@ const extractDataFromPatchRequest = (req) => {
   return { updates, updatedBy, applyToExistingRecords };
 };
 
+const deleteTrainingCourse = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+    const { trainingCourseUid } = req?.params;
+
+    const deletedCount = await models.trainingCourse.destroy({
+      where: {
+        uid: trainingCourseUid,
+        establishmentFk: establishmentId,
+      },
+    });
+
+    if (deletedCount === 0) {
+      return res.status(404).send({ message: 'Training course not found' });
+    }
+
+    return res.status(200).send({ message: 'Training course deleted' });
+  } catch (err) {
+    console.error('DELETE /establishment/:uid/trainingCourse/:trainingCourseUid - failed', err);
+
+    if (err instanceof sequelize.DatabaseError) {
+      return res.status(400).send({ message: 'Invalid request' });
+    }
+
+    return res.status(500).send({ message: 'Internal server error' });
+  }
+};
+
 const renameKeys = (record) => {
   const renamed = lodash.mapKeys(record, (_v, key) => {
     switch (key) {
@@ -191,4 +219,10 @@ const renameKeys = (record) => {
   return renamed;
 };
 
-module.exports = { fetchAllTrainingCourses, createTrainingCourse, getTrainingCourse, updateTrainingCourse };
+module.exports = {
+  fetchAllTrainingCourses,
+  createTrainingCourse,
+  getTrainingCourse,
+  updateTrainingCourse,
+  deleteTrainingCourse,
+};
