@@ -1,6 +1,6 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl novalidate>
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl novalidate autocomplete="off">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <fieldset class="govuk-fieldset">
@@ -99,19 +99,23 @@
               </label>
             </div>
             <div
-              class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-1 govuk-!-margin-bottom-1"
+              class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-1 govuk-!-margin-bottom-1 govuk-!-width-three-quarters"
               [class.govuk-radios__conditional--hidden]="
                 form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider
               "
               id="conditional-external-provider-name"
+              data-testid="conditional-external-provider-name"
             >
-              <label class="govuk-label" for="external-provider-name">Provider name</label>
-              <input
-                class="govuk-input govuk-!-width-one-third"
-                id="external-provider-name"
-                name="externalProviderName"
+              <app-auto-suggest
+                [formGroup]="form"
+                [dataProvider]="getSuggestedListOfProviders"
                 [formControlName]="'externalProviderName'"
-              />
+                [showSearchIcon]="false"
+                [showBackground]="false"
+                [label]="'Provider name'"
+                (clickItemEvent)="setShowSuggestedTray()"
+                [showClickedSuggestionInInput]="true"
+              ></app-auto-suggest>
             </div>
           </div>
         </fieldset>
