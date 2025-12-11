@@ -17,6 +17,7 @@ import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { YouHaveSelectedTrainingRecords } from './you-have-selected-training-records';
+import { BackLinkService } from '@core/services/backLink.service';
 
 describe('YouHaveSelectedTrainingRecords', () => {
   const mockEstablishmentUid = 'mock-establishment-uid';
@@ -45,6 +46,7 @@ describe('YouHaveSelectedTrainingRecords', () => {
     const trainingRecordsSelectedForUpdate =
       overrides?.trainingRecordsSelectedForUpdate ?? mocktrainingRecordsSelectedForUpdate;
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
+    const showBackLinkSpy = jasmine.createSpy('showBacklink').and.returnValue(undefined);
 
     const setupTools = await render(YouHaveSelectedTrainingRecords, {
       imports: [CommonModule, SharedModule, RouterModule, ReactiveFormsModule],
@@ -82,6 +84,7 @@ describe('YouHaveSelectedTrainingRecords', () => {
         },
         provideHttpClient(),
         provideHttpClientTesting(),
+        { provide: BackLinkService, useValue: { showBackLink: showBackLinkSpy } },
       ],
     });
     const component = setupTools.fixture.componentInstance;
@@ -105,6 +108,7 @@ describe('YouHaveSelectedTrainingRecords', () => {
       routerSpy,
       trainingCourseService,
       trainingCourseServiceSpy,
+      showBackLinkSpy,
       alertSpy,
     };
   }
@@ -112,6 +116,11 @@ describe('YouHaveSelectedTrainingRecords', () => {
   it('should render', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show a backlink', async () => {
+    const { showBackLinkSpy } = await setup();
+    expect(showBackLinkSpy).toHaveBeenCalled();
   });
 
   it('should show a heading and a caption', async () => {

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TrainingCourse, TrainingCourseWithLinkableRecords } from '@core/model/training-course.model';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 
 @Component({
   selector: 'app-you-have-selected-training-records',
@@ -18,15 +19,21 @@ export class YouHaveSelectedTrainingRecords {
   private establishmentUid: string;
 
   constructor(
-    protected route: ActivatedRoute,
-    protected router: Router,
-    protected trainingCourseService: TrainingCourseService,
-    protected alertService: AlertService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private trainingCourseService: TrainingCourseService,
+    private alertService: AlertService,
+    private backLinkService: BackLinkService,
   ) {}
 
   ngOnInit() {
-    this.loadSelectedTrainingCourseAndRecords();
     this.establishmentUid = this.route.snapshot.params?.establishmentuid;
+    this.loadSelectedTrainingCourseAndRecords();
+    this.setBackLink();
+  }
+
+  private setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   private loadSelectedTrainingCourseAndRecords() {
