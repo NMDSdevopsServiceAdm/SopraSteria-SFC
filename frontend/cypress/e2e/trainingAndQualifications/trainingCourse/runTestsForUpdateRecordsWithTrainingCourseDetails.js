@@ -56,22 +56,14 @@ export const runTestsForUpdateTrainingRecordsWithCourseDetails = (mockEstablishm
       cy.deleteAllTrainingCourses(establishmentID);
     });
 
-    it('should be able to visit "Update records with training course details" page from Training and qualifications tab', () => {
+    it('should be able to update multiple training records with training course details', () => {
       onHomePage.clickTab('Training and qualifications');
       cy.contains('Add and manage training').click();
       cy.get('a').contains('Update records with training course details').click();
-
-      cy.get('a').contains(trainingCourseName).should('be.visible');
 
       // should show a plain text but not a link, for courses that have no records to link to
       cy.get('a').contains(trainingCourseWithoutLinkableRecords).should('not.exist');
       cy.get('td').contains(trainingCourseWithoutLinkableRecords).should('be.visible');
-    });
-
-    it.only('should be able to update multiple training records with training course details', () => {
-      onHomePage.clickTab('Training and qualifications');
-      cy.contains('Add and manage training').click();
-      cy.get('a').contains('Update records with training course details').click();
 
       cy.get('a').contains(trainingCourseName).click();
 
