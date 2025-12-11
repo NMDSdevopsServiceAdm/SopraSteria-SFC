@@ -18,7 +18,7 @@ export const runTestsForUpdateTrainingRecordsWithCourseDetails = (mockEstablishm
 
     const titleA = 'Test update training records with course details A';
     const titleB = 'Test update training records with course details B';
-    const mockTraininRecords = [titleA, titleB, titleA, titleB, titleA];
+    const mockTrainingRecords = [titleA, titleB, titleA, titleB, titleA];
     const mockTrainingRecordCompletedDate = '2025-01-01';
 
     before(() => {
@@ -39,7 +39,7 @@ export const runTestsForUpdateTrainingRecordsWithCourseDetails = (mockEstablishm
       });
       cy.insertTestWorker({ establishmentID, workerName });
 
-      mockTraininRecords.forEach((title) => {
+      mockTrainingRecords.forEach((title) => {
         cy.addWorkerTraining({
           establishmentID,
           workerName: workerName,
