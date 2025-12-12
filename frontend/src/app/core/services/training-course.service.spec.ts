@@ -121,4 +121,14 @@ describe('TrainingCourseService', () => {
       expect(req.request.method).toBe('DELETE');
     });
   });
+
+  describe('deleteAllTrainingCourses', () => {
+    it('should call DELETE trainingCourse endpoint', () => {
+      service.deleteAllTrainingCourses(establishmentUid).subscribe();
+
+      const req = http.expectOne(`${baseEndpoint}`);
+
+      expect(req.request.method).toBe('DELETE');
+    });
+  });
 });
