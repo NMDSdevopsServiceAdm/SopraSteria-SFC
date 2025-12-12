@@ -298,6 +298,22 @@ const updateTrainingRecordsWithCourseDetails = async (req, res) => {
   }
 };
 
+const deleteAllTrainingCourses = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+
+    await models.trainingCourse.destroy({
+      where: {
+        establishmentFk: establishmentId,
+      },
+    });
+  } catch (err) {
+    console.error('DELETE /establishment/:uid/trainingCourse - failed', err);
+
+    return res.status(500).send({ message: 'Internal server error' });
+  }
+};
+
 const renameKeys = (record) => {
   const renamed = lodash.mapKeys(record, (_v, key) => {
     switch (key) {
@@ -323,6 +339,7 @@ module.exports = {
   getTrainingCourse,
   updateTrainingCourse,
   deleteTrainingCourse,
+  deleteAllTrainingCourses,
   getTrainingCoursesWithLinkableRecords,
   updateTrainingRecordsWithCourseDetails,
 };

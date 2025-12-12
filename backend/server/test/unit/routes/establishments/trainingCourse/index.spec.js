@@ -13,6 +13,7 @@ const {
   deleteTrainingCourse,
   getTrainingCoursesWithLinkableRecords,
   updateTrainingRecordsWithCourseDetails,
+  deleteAllTrainingCourses,
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
 const {
   mockTrainingCourses,
@@ -401,78 +402,115 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
 
       expect(res.statusCode).to.deep.equal(500);
     });
-    const { deleteTrainingCourse } = require('../../../../../routes/establishments/trainingCourse/controllers');
+  });
 
-    describe('DELETE /trainingCourse/:trainingCourseUid - deleteTrainingCourse', () => {
-      const establishmentId = 'mock-id';
-      const trainingCourseUid = 'course-123';
+  describe('DELETE /trainingCourse/:trainingCourseUid - deleteTrainingCourse', () => {
+    const establishmentId = 'mock-id';
+    const trainingCourseUid = 'course-123';
 
-      const baseRequest = {
-        method: 'DELETE',
-        establishmentId,
-        params: {
-          trainingCourseUid,
+    const baseRequest = {
+      method: 'DELETE',
+      establishmentId,
+      params: {
+        trainingCourseUid,
+      },
+    };
+
+    it('should delete the training course and return 200', async () => {
+      sinon.stub(models.trainingCourse, 'destroy').resolves(1);
+
+      const req = httpMocks.createRequest(baseRequest);
+      const res = httpMocks.createResponse();
+
+      await deleteTrainingCourse(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(res._getData()).to.deep.equal({ message: 'Training course deleted' });
+
+      expect(models.trainingCourse.destroy).to.have.been.calledWithMatch({
+        where: {
+          uid: trainingCourseUid,
+          establishmentFk: establishmentId,
         },
-      };
-
-      afterEach(() => {
-        sinon.restore();
       });
+    });
 
-      it('should delete the training course and return 200', async () => {
-        sinon.stub(models.trainingCourse, 'destroy').resolves(1);
+    it('should return 404 when training course does not exist', async () => {
+      sinon.stub(models.trainingCourse, 'destroy').resolves(0);
 
-        const req = httpMocks.createRequest(baseRequest);
-        const res = httpMocks.createResponse();
+      const req = httpMocks.createRequest(baseRequest);
+      const res = httpMocks.createResponse();
 
-        await deleteTrainingCourse(req, res);
+      await deleteTrainingCourse(req, res);
 
-        expect(res.statusCode).to.equal(200);
-        expect(res._getData()).to.deep.equal({ message: 'Training course deleted' });
+      expect(res.statusCode).to.equal(404);
+      expect(res._getData()).to.deep.equal({ message: 'Training course not found' });
+    });
 
-        expect(models.trainingCourse.destroy).to.have.been.calledWithMatch({
-          where: {
-            uid: trainingCourseUid,
-            establishmentFk: establishmentId,
-          },
-        });
+    it('should return 400 on Sequelize DatabaseError', async () => {
+      sinon.stub(models.trainingCourse, 'destroy').rejects(new sequelize.DatabaseError(new Error('db error')));
+      sinon.stub(console, 'error'); // suppress error msg in test log
+
+      const req = httpMocks.createRequest(baseRequest);
+      const res = httpMocks.createResponse();
+
+      await deleteTrainingCourse(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.deep.equal({ message: 'Invalid request' });
+    });
+
+    it('should return 500 on unexpected error', async () => {
+      sinon.stub(models.trainingCourse, 'destroy').rejects(new Error('Unexpected'));
+      sinon.stub(console, 'error'); // suppress error msg in test log
+
+      const req = httpMocks.createRequest(baseRequest);
+      const res = httpMocks.createResponse();
+
+      await deleteTrainingCourse(req, res);
+
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.deep.equal({ message: 'Internal server error' });
+    });
+  });
+
+  describe('DELETE /trainingCourse - deleteAllTrainingCourses', () => {
+    const establishmentId = 'mock-id';
+
+    const baseRequest = {
+      url: `${baseEndpoint}`,
+      method: 'DELETE',
+      establishmentId,
+    };
+
+    it('should delete all training courses of the workplace and respond with 200', async () => {
+      sinon.stub(models.trainingCourse, 'destroy').resolves();
+
+      const req = httpMocks.createRequest(baseRequest);
+      const res = httpMocks.createResponse();
+
+      await deleteAllTrainingCourses(req, res);
+
+      expect(res.statusCode).to.equal(200);
+
+      expect(models.trainingCourse.destroy).to.have.been.calledWithMatch({
+        where: {
+          establishmentFk: establishmentId,
+        },
       });
+    });
 
-      it('should return 404 when training course does not exist', async () => {
-        sinon.stub(models.trainingCourse, 'destroy').resolves(0);
+    it('should respond with 500 on unexpected error', async () => {
+      sinon.stub(models.trainingCourse, 'destroy').rejects(new Error('Unexpected error'));
+      sinon.stub(console, 'error'); // suppress error msg in test log
 
-        const req = httpMocks.createRequest(baseRequest);
-        const res = httpMocks.createResponse();
+      const req = httpMocks.createRequest(baseRequest);
+      const res = httpMocks.createResponse();
 
-        await deleteTrainingCourse(req, res);
+      await deleteAllTrainingCourses(req, res);
 
-        expect(res.statusCode).to.equal(404);
-        expect(res._getData()).to.deep.equal({ message: 'Training course not found' });
-      });
-
-      it('should return 400 on Sequelize DatabaseError', async () => {
-        sinon.stub(models.trainingCourse, 'destroy').rejects(new sequelize.DatabaseError(new Error('db error')));
-
-        const req = httpMocks.createRequest(baseRequest);
-        const res = httpMocks.createResponse();
-
-        await deleteTrainingCourse(req, res);
-
-        expect(res.statusCode).to.equal(400);
-        expect(res._getData()).to.deep.equal({ message: 'Invalid request' });
-      });
-
-      it('should return 500 on unexpected error', async () => {
-        sinon.stub(models.trainingCourse, 'destroy').rejects(new Error('Unexpected'));
-
-        const req = httpMocks.createRequest(baseRequest);
-        const res = httpMocks.createResponse();
-
-        await deleteTrainingCourse(req, res);
-
-        expect(res.statusCode).to.equal(500);
-        expect(res._getData()).to.deep.equal({ message: 'Internal server error' });
-      });
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.deep.equal({ message: 'Internal server error' });
     });
   });
 
