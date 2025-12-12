@@ -6,6 +6,7 @@ const {
   createTrainingCourse,
   getTrainingCourse,
   updateTrainingCourse,
+  deleteTrainingCourse,
   getTrainingCoursesWithLinkableRecords,
 } = require('./controllers');
 
@@ -16,5 +17,6 @@ router
   .get(hasPermission('canViewWorker'), getTrainingCoursesWithLinkableRecords);
 router.route('/:trainingCourseUid').get(hasPermission('canViewWorker'), getTrainingCourse);
 router.route('/:trainingCourseUid').put(hasPermission('canEditWorker'), updateTrainingCourse);
+router.route('/:trainingCourseUid').delete(hasPermission('canEditWorker'), deleteTrainingCourse);
 
 module.exports = router;

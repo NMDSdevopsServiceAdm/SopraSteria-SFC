@@ -211,5 +211,48 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         cy.get('a').contains(trainingRecordTitle).should('exist');
       });
     });
+
+    describe('Remove training course page', () => {
+      before(() => {
+        cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Test training course' });
+      });
+
+      it('should display page heading and training name', () => {
+        onHomePage.clickTab('Training and qualifications');
+        cy.contains('Add and manage training').click();
+        cy.get('a').contains('Add and manage training courses').click();
+        cy.get('h1').should('contain', 'Add and manage training courses');
+
+        cy.get('[data-testid^="remove-link-"]')
+          .should('exist')
+          .first()
+          .within(() => {
+            cy.contains('Remove');
+            cy.get('.govuk-visually-hidden').should('contain.text', 'Test training course');
+          })
+          .click();
+
+        cy.url().should('include', '/remove');
+
+        cy.get('[data-testid="heading"]').within(() => {
+          cy.contains('Training and qualifications');
+          cy.contains('What happens when you remove');
+        });
+
+        cy.contains('strong', 'Training course name:').should('exist');
+        cy.get('p.govuk__nowrap').should('contain.text', 'Test training course');
+
+        cy.get('ul.govuk-list--bullet').within(() => {
+          cy.contains('are not deleted').should('be.visible');
+          cy.contains('keep the details of the removed training course').should('be.visible');
+          cy.contains('still generate an alert when the training is due to expire').should('be.visible');
+          cy.contains('keep any certificates and notes that were added').should('be.visible');
+        });
+
+        cy.contains('Remove this training course').click();
+        cy.url().should('include', '/add-and-manage-training-courses');
+        cy.contains('Training course removed').should('be.visible');
+      });
+    });
   });
 };

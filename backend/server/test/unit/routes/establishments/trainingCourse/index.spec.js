@@ -10,6 +10,7 @@ const {
   createTrainingCourse,
   getTrainingCourse,
   updateTrainingCourse,
+  deleteTrainingCourse,
   getTrainingCoursesWithLinkableRecords,
 } = require('../../../../../routes/establishments/trainingCourse/controllers');
 const {
@@ -396,6 +397,79 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
       await updateTrainingCourse(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
+    });
+    const { deleteTrainingCourse } = require('../../../../../routes/establishments/trainingCourse/controllers');
+
+    describe('DELETE /trainingCourse/:trainingCourseUid - deleteTrainingCourse', () => {
+      const establishmentId = 'mock-id';
+      const trainingCourseUid = 'course-123';
+
+      const baseRequest = {
+        method: 'DELETE',
+        establishmentId,
+        params: {
+          trainingCourseUid,
+        },
+      };
+
+      afterEach(() => {
+        sinon.restore();
+      });
+
+      it('should delete the training course and return 200', async () => {
+        sinon.stub(models.trainingCourse, 'destroy').resolves(1);
+
+        const req = httpMocks.createRequest(baseRequest);
+        const res = httpMocks.createResponse();
+
+        await deleteTrainingCourse(req, res);
+
+        expect(res.statusCode).to.equal(200);
+        expect(res._getData()).to.deep.equal({ message: 'Training course deleted' });
+
+        expect(models.trainingCourse.destroy).to.have.been.calledWithMatch({
+          where: {
+            uid: trainingCourseUid,
+            establishmentFk: establishmentId,
+          },
+        });
+      });
+
+      it('should return 404 when training course does not exist', async () => {
+        sinon.stub(models.trainingCourse, 'destroy').resolves(0);
+
+        const req = httpMocks.createRequest(baseRequest);
+        const res = httpMocks.createResponse();
+
+        await deleteTrainingCourse(req, res);
+
+        expect(res.statusCode).to.equal(404);
+        expect(res._getData()).to.deep.equal({ message: 'Training course not found' });
+      });
+
+      it('should return 400 on Sequelize DatabaseError', async () => {
+        sinon.stub(models.trainingCourse, 'destroy').rejects(new sequelize.DatabaseError(new Error('db error')));
+
+        const req = httpMocks.createRequest(baseRequest);
+        const res = httpMocks.createResponse();
+
+        await deleteTrainingCourse(req, res);
+
+        expect(res.statusCode).to.equal(400);
+        expect(res._getData()).to.deep.equal({ message: 'Invalid request' });
+      });
+
+      it('should return 500 on unexpected error', async () => {
+        sinon.stub(models.trainingCourse, 'destroy').rejects(new Error('Unexpected'));
+
+        const req = httpMocks.createRequest(baseRequest);
+        const res = httpMocks.createResponse();
+
+        await deleteTrainingCourse(req, res);
+
+        expect(res.statusCode).to.equal(500);
+        expect(res._getData()).to.deep.equal({ message: 'Internal server error' });
+      });
     });
   });
 

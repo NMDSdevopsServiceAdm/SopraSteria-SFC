@@ -109,4 +109,16 @@ describe('TrainingCourseService', () => {
       });
     });
   });
+
+  describe('deleteTrainingCourse', () => {
+    it('should call DELETE trainingCourse endpoint with the trainingCourseUid', () => {
+      const trainingCourseUid = 'course-123';
+
+      service.deleteTrainingCourse(establishmentUid, trainingCourseUid).subscribe();
+
+      const req = http.expectOne(`${baseEndpoint}/${trainingCourseUid}`);
+
+      expect(req.request.method).toBe('DELETE');
+    });
+  });
 });
