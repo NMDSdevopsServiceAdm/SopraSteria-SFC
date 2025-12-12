@@ -190,7 +190,7 @@ const updateTrainingCourse = async (req, res) => {
       return res.status(err.statusCode).send(err.message);
     }
     if (err instanceof NotFoundError) {
-      return res.status(404).send('Training course not found');
+      return res.status(404).send({ message: 'Training course not found' });
     }
 
     return res.status(500).send({ message: 'Internal server error' });
@@ -253,6 +253,51 @@ const deleteTrainingCourse = async (req, res) => {
   }
 };
 
+const updateTrainingRecordsWithCourseDetails = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+    const trainingCourseUid = req?.params?.trainingCourseUid;
+    const trainingRecordUids = req?.body?.trainingRecords?.map((record) => record.uid);
+    const updatedBy = req.username;
+
+    if (!trainingRecordUids?.length) {
+      throw new HttpError('Missing training record uids in request body', 400);
+    }
+
+    const updatedRecords = await models.sequelize.transaction(async (transaction) => {
+      await models.trainingCourse.linkRecordsToCourse({
+        trainingCourseUid,
+        trainingRecordUids,
+        establishmentId,
+        updatedBy,
+        transaction,
+      });
+
+      return models.trainingCourse.updateTrainingRecordsWithCourseData({
+        trainingCourseUid,
+        trainingRecordUids,
+        updatedBy,
+        transaction,
+      });
+    });
+
+    const responseBody = { trainingRecords: updatedRecords.map((record) => renameKeys(record.toJSON())) };
+
+    return res.status(200).send(responseBody);
+  } catch (err) {
+    console.error('POST /establishment/:uid/trainingCourse/:uid/updateTrainingRecordsWithCourseDetails  - failed', err);
+
+    if (err instanceof HttpError) {
+      return res.status(err.statusCode).send(err.message);
+    }
+    if (err instanceof NotFoundError) {
+      return res.status(404).send({ message: 'Training course not found' });
+    }
+
+    return res.status(500).send({ message: 'Internal server error' });
+  }
+};
+
 const renameKeys = (record) => {
   const renamed = lodash.mapKeys(record, (_v, key) => {
     switch (key) {
@@ -279,4 +324,5 @@ module.exports = {
   updateTrainingCourse,
   deleteTrainingCourse,
   getTrainingCoursesWithLinkableRecords,
+  updateTrainingRecordsWithCourseDetails,
 };

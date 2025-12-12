@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { UpdateRecordsSelectTrainingCourseComponent } from './update-records-select-training-course/update-records-select-training-course.component';
 import { TrainingCoursesWithLinkableRecordsResolver } from '@core/resolvers/training/training-courses-with-linkable-records-resolver';
 import { SelectTrainingRecordsToUpdateComponent } from './select-training-records-to-update/select-training-records-to-update.component';
+import { YouHaveSelectedTrainingRecords } from './you-have-selected-training-records/you-have-selected-training-records';
 
 const routes: Routes = [
   {
@@ -23,6 +24,11 @@ const routes: Routes = [
             path: 'select-training-records',
             component: SelectTrainingRecordsToUpdateComponent,
             data: { title: 'Select the training records that you want to update' },
+          },
+          {
+            path: 'confirm-update-records',
+            component: YouHaveSelectedTrainingRecords,
+            data: { title: 'You have selected training records to update' },
           },
         ],
       },

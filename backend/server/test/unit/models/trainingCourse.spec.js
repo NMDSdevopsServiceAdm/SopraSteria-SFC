@@ -12,6 +12,7 @@ describe('TrainingCourse model', () => {
 
   const mockEstablishmentId = 'mock-establishment-id';
   const mockUsername = 'mock-username';
+  const mockTransaction = {};
 
   describe('updateTrainingCourse', () => {
     const mockSequelizeTrainingCourse = {
@@ -35,7 +36,6 @@ describe('TrainingCourse model', () => {
       doesNotExpire: true,
       validityPeriodInMonth: null,
     };
-    const mockTransaction = {};
 
     it('should find the given training course record and apply update to it', async () => {
       const updateSpy = sinon.stub(mockSequelizeTrainingCourse, 'update').callThrough();
@@ -103,26 +103,22 @@ describe('TrainingCourse model', () => {
     });
   });
 
+  const mockTrainingCourse = {
+    ...mockTrainingCourses[0],
+    establishmentFk: mockEstablishmentId,
+    toJSON() {
+      return lodash.omit(this, ['update', 'toJSON']);
+    },
+  };
+  const mockTrainingRecords = [
+    { id: 'record-id-1', uid: 'record-uid-1' },
+    { id: 'record-id-2', uid: 'record-uid-2' },
+    { id: 'record-id-3', uid: 'record-uid-3' },
+  ];
+  const mockTrainingRecordIds = mockTrainingRecords.map((record) => record.id);
+  const mockTrainingRecordUids = mockTrainingRecords.map((record) => record.uid);
+
   describe('updateTrainingRecordsWithCourseData', () => {
-    const mockTrainingRecords = [
-      { id: 'record-id-1', uid: 'record-uid-1' },
-      { id: 'record-id-2', uid: 'record-uid-2' },
-      { id: 'record-id-3', uid: 'record-uid-3' },
-    ];
-    const mockTrainingRecordIds = mockTrainingRecords.map((record) => record.id);
-    const mockTrainingRecordUids = mockTrainingRecords.map((record) => record.uid);
-
-    const mockEstablishmentId = 'mock-workplace-id';
-
-    const mockTrainingCourse = {
-      ...mockTrainingCourses[0],
-      establishmentFk: mockEstablishmentId,
-      toJSON() {
-        return lodash.omit(this, ['update', 'toJSON']);
-      },
-    };
-    const mockTransaction = {};
-
     const expectedUpdates = {
       categoryFk: mockTrainingCourse.categoryFk,
       accredited: mockTrainingCourse.accredited,
@@ -145,7 +141,7 @@ describe('TrainingCourse model', () => {
 
       const updateRecordSpy = sinon.stub(models.workerTraining, 'update').resolves();
 
-      await models.trainingCourse.updateTrainingRecordsWithCourseData({
+      const returnValue = await models.trainingCourse.updateTrainingRecordsWithCourseData({
         trainingCourseUid: mockTrainingCourse.uid,
         trainingRecordUids: mockTrainingRecordUids,
         transaction: mockTransaction,
@@ -156,6 +152,7 @@ describe('TrainingCourse model', () => {
         where: { trainingCourseFK: mockTrainingCourse.id, id: mockTrainingRecordIds },
         transaction: mockTransaction,
       });
+      expect(returnValue).to.deep.equal(mockTrainingRecords);
     });
 
     it('should only update training records that has uid in the given trainingRecordUids array', async () => {
@@ -253,6 +250,90 @@ describe('TrainingCourse model', () => {
 
       expect(error).to.be.instanceOf(NotFoundError);
       expect(updateRecordSpy).not.to.have.been.called;
+    });
+  });
+
+  describe('linkRecordsToCourse', async () => {
+    it('should update the trainingCourseFK of training records', async () => {
+      sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
+      sinon.stub(models.workerTraining, 'findAll').resolves(mockTrainingRecords);
+      const updateRecordSpy = sinon.stub(models.workerTraining, 'update').resolves(mockTrainingRecords);
+
+      await models.trainingCourse.linkRecordsToCourse({
+        trainingCourseUid: mockTrainingCourse.uid,
+        trainingRecordUids: mockTrainingRecordUids,
+        establishmentId: mockEstablishmentId,
+        updatedBy: mockUsername,
+        transaction: mockTransaction,
+      });
+
+      expect(updateRecordSpy).to.have.been.calledWith(
+        {
+          trainingCourseFK: mockTrainingCourse.id,
+          updatedBy: mockUsername,
+          updated: sinon.match.date,
+        },
+        {
+          where: { id: mockTrainingRecordIds },
+          transaction: mockTransaction,
+        },
+      );
+    });
+
+    it('should reject with NotFoundError if the training course was not found', async () => {
+      const findTrainingCourseSpy = sinon.stub(models.trainingCourse, 'findOne').resolves(null);
+      sinon.stub(models.workerTraining, 'findAll').resolves(mockTrainingRecords);
+      const updateRecordSpy = sinon.stub(models.workerTraining, 'update').resolves(mockTrainingRecords);
+
+      let error;
+      try {
+        await models.trainingCourse.linkRecordsToCourse({
+          trainingCourseUid: mockTrainingCourse.uid,
+          trainingRecordUids: mockTrainingRecordUids,
+          establishmentId: mockEstablishmentId,
+          updatedBy: mockUsername,
+          transaction: mockTransaction,
+        });
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error).to.be.instanceOf(NotFoundError);
+      expect(updateRecordSpy).not.to.have.been.called;
+
+      expect(findTrainingCourseSpy).to.have.been.calledWith({
+        where: { uid: mockTrainingCourse.uid, archived: false, establishmentFk: mockEstablishmentId },
+        transaction: mockTransaction,
+      });
+    });
+
+    it('should only update training records that are under the same workplace, and worker are not archived', async () => {
+      sinon.stub(models.trainingCourse, 'findOne').resolves(mockTrainingCourse);
+      const workerTrainingFindAllSpy = sinon.stub(models.workerTraining, 'findAll').resolves(mockTrainingRecords);
+      sinon.stub(models.workerTraining, 'update').resolves(mockTrainingRecords);
+
+      await models.trainingCourse.linkRecordsToCourse({
+        trainingCourseUid: mockTrainingCourse.uid,
+        trainingRecordUids: mockTrainingRecordUids,
+        establishmentId: mockEstablishmentId,
+        updatedBy: mockUsername,
+        transaction: mockTransaction,
+      });
+
+      expect(workerTrainingFindAllSpy).to.have.been.calledWith({
+        where: {
+          uid: mockTrainingRecordUids,
+        },
+        include: [
+          {
+            model: models.worker,
+            as: 'worker',
+            attributes: ['establishmentFk', 'archived'],
+            where: { establishmentFk: mockTrainingCourse.establishmentFk, archived: false },
+          },
+        ],
+        transaction: mockTransaction,
+      });
     });
   });
 });
