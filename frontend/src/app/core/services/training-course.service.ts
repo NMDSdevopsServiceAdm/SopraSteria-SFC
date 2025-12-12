@@ -65,6 +65,11 @@ export class TrainingCourseService {
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse/${trainingCourseUid}`,
     );
   }
+
+  public deleteAllTrainingCourses(establishmentUid: string) {
+    return this.http.delete(`${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/trainingCourse`);
+  }
+
   public getTrainingCoursesWithLinkableRecords(
     establishmentUid: string,
   ): Observable<Array<TrainingCourseWithLinkableRecords>> {
