@@ -30,7 +30,18 @@
       <thead class="govuk-table__head">
         <tr class="govuk-table__row" data-testid="training-table-heading">
           <th class="govuk-table__header" scope="col">Training course name</th>
-          <th class="govuk-table__header govuk-util__align-right" scope="col"></th>
+          <th class="govuk-table__header govuk-util__align-right" scope="col">
+            @if (trainingCourses?.length > 1) {
+              <a
+                href="#"
+                class="govuk-link govuk-link--no-visited-state govuk-util__normal"
+                data-testid="removeAllLink"
+                draggable="false"
+                [routerLink]="['..', 'remove-all-training-courses']"
+                >Remove all</a
+              >
+            }
+          </th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">

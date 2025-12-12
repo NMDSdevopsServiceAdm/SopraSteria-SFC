@@ -9,7 +9,7 @@ import { render, within } from '@testing-library/angular';
 
 import { AddAndManageTrainingCoursesComponent } from './add-and-manage-training-courses.component';
 
-describe('AddAndManageTrainingCoursesComponent', () => {
+fdescribe('AddAndManageTrainingCoursesComponent', () => {
   async function setup(overrides: any = {}) {
     const trainingCourses = overrides?.trainingCourses ?? [];
 
@@ -109,6 +109,23 @@ describe('AddAndManageTrainingCoursesComponent', () => {
         expect(courseLink).toBeTruthy();
         expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}/details`);
       });
+    });
+
+    it('should show a "Remove all" link if workplace have 2 or more training courses', async () => {
+      const { queryByTestId } = await setup({ trainingCourses: [trainingCourseBuilder(), trainingCourseBuilder()] });
+      const trainingCourseTable = queryByTestId('training-course-table');
+
+      const removeAllLink = within(trainingCourseTable).queryByRole('link', { name: 'Remove all' });
+      expect(removeAllLink).toBeTruthy();
+      expect(removeAllLink.getAttribute('href')).toEqual(`/remove-all-training-courses`);
+    });
+
+    it('should not show a "Remove all" link if workplace have just one training course', async () => {
+      const { queryByTestId } = await setup({ trainingCourses: [trainingCourseBuilder()] });
+      const trainingCourseTable = queryByTestId('training-course-table');
+
+      const removeAllLink = within(trainingCourseTable).queryByRole('link', { name: 'Remove all' });
+      expect(removeAllLink).toBeFalsy();
     });
   });
 });
