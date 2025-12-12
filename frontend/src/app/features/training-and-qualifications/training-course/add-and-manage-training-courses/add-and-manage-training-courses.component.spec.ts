@@ -9,7 +9,7 @@ import { render, within } from '@testing-library/angular';
 
 import { AddAndManageTrainingCoursesComponent } from './add-and-manage-training-courses.component';
 
-fdescribe('AddAndManageTrainingCoursesComponent', () => {
+describe('AddAndManageTrainingCoursesComponent', () => {
   async function setup(overrides: any = {}) {
     const trainingCourses = overrides?.trainingCourses ?? [];
 

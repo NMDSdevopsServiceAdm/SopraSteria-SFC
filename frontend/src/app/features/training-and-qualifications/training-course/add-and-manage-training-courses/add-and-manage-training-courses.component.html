@@ -26,53 +26,55 @@
 
 <div id="training-course-table-wrapper" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <table class="govuk-table" data-testid="training-course-table" *ngIf="trainingCourses?.length > 0">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row" data-testid="training-table-heading">
-          <th class="govuk-table__header" scope="col">Training course name</th>
-          <th class="govuk-table__header govuk-util__align-right" scope="col">
-            @if (trainingCourses?.length > 1) {
+    @if (trainingCourses?.length > 0) {
+      <table class="govuk-table" data-testid="training-course-table">
+        <thead class="govuk-table__head">
+          <tr class="govuk-table__row" data-testid="training-table-heading">
+            <th class="govuk-table__header" scope="col">Training course name</th>
+            <th class="govuk-table__header govuk-util__align-right" scope="col">
+              @if (trainingCourses?.length > 1) {
+                <a
+                  href="#"
+                  class="govuk-link govuk-link--no-visited-state govuk-util__normal"
+                  data-testid="removeAllLink"
+                  draggable="false"
+                  [routerLink]="['..', 'remove-all-training-courses']"
+                  >Remove all</a
+                >
+              }
+            </th>
+          </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+          <tr
+            class="govuk-table__row govuk-util__vertical-align-top"
+            *ngFor="let trainingCourse of trainingCourses; let index = index"
+            [attr.data-testid]="'trainingCourse-' + index"
+          >
+            <td class="govuk-table__cell">
               <a
                 href="#"
-                class="govuk-link govuk-link--no-visited-state govuk-util__normal"
-                data-testid="removeAllLink"
-                draggable="false"
-                [routerLink]="['..', 'remove-all-training-courses']"
-                >Remove all</a
+                class="govuk-link govuk-link--no-visited-state"
+                [routerLink]="['..', trainingCourse.uid, 'details']"
               >
-            }
-          </th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr
-          class="govuk-table__row govuk-util__vertical-align-top"
-          *ngFor="let trainingCourse of trainingCourses; let index = index"
-          [attr.data-testid]="'trainingCourse-' + index"
-        >
-          <td class="govuk-table__cell">
-            <a
-              href="#"
-              class="govuk-link govuk-link--no-visited-state"
-              [routerLink]="['..', trainingCourse.uid, 'details']"
-            >
-              {{ trainingCourse.name?.length > 0 ? trainingCourse.name : 'Missing training course name' }}
-            </a>
-          </td>
+                {{ trainingCourse.name?.length > 0 ? trainingCourse.name : 'Missing training course name' }}
+              </a>
+            </td>
 
-          <td class="govuk-table__cell govuk-!-padding-right-0 govuk-util__align-right">
-            <a
-              href="#"
-              class="govuk-link govuk-link--no-visited-state"
-              [attr.data-testid]="'remove-link-' + index"
-              [routerLink]="['..', trainingCourse.uid, 'remove']"
-            >
-              Remove
-              <span class="govuk-visually-hidden">{{ trainingCourse.name }}</span>
-            </a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td class="govuk-table__cell govuk-!-padding-right-0 govuk-util__align-right">
+              <a
+                href="#"
+                class="govuk-link govuk-link--no-visited-state"
+                [attr.data-testid]="'remove-link-' + index"
+                [routerLink]="['..', trainingCourse.uid, 'remove']"
+              >
+                Remove
+                <span class="govuk-visually-hidden">{{ trainingCourse.name }}</span>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    }
   </div>
 </div>
