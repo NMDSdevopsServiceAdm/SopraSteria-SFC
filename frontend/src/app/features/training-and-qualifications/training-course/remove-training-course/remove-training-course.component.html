@@ -37,29 +37,28 @@
       <li>keep any certificates and notes that were added</li>
     </ul>
 
-    <div class="govuk-grid-row govuk-!-padding-bottom-0 govuk-!-margin-top-7">
-      <div class="govuk-grid-column-two-thirds">
-        @switch (journeyType) {
-          @case ('RemoveSingle') {
-            <p class="govuk-!-padding-top-1 govuk__nowrap">
-              <strong>Training course name:</strong> {{ trainingCourseName }}
-            </p>
-          }
-          @case ('RemoveAll') {
-            <p class="govuk-!-padding-top-1 govuk-!-margin-bottom-2 govuk__nowrap">
-              <strong>Training course name</strong>
-            </p>
-            <ul class="govuk-list" id="training-course-list" data-testid="training-courses">
-              @for (course of trainingCourses; track course.uid) {
-                <li>{{ course.name }}</li>
-              }
-            </ul>
-          }
+    <div class="govuk-!-margin-top-7">
+      @switch (journeyType) {
+        @case ('RemoveSingle') {
+          <p class="govuk-!-padding-top-1 govuk__nowrap">
+            <strong>Training course name:</strong> {{ trainingCourseName }}
+          </p>
         }
-      </div>
+
+        @case ('RemoveAll') {
+          <p class="govuk-!-padding-top-1 govuk-!-margin-bottom-2 govuk__nowrap">
+            <strong>Training course name</strong>
+          </p>
+          <ul class="govuk-list" id="training-course-list" data-testid="training-courses">
+            @for (course of trainingCourses; track course.uid) {
+              <li>{{ course.name }}</li>
+            }
+          </ul>
+        }
+      }
     </div>
 
-    <div class="govuk-button-group govuk-!-margin-top-6">
+    <div class="govuk-button-group govuk-!-margin-top-8">
       <button type="submit" class="govuk-button govuk-button--warning govuk-!-margin-right-9" (click)="onSubmit()">
         Remove {{ journeyType === 'RemoveAll' ? 'all training courses' : 'this training course' }}
       </button>
