@@ -307,6 +307,7 @@ const deleteAllTrainingCourses = async (req, res) => {
         establishmentFk: establishmentId,
       },
     });
+    return res.status(200).send({ message: 'All training courses deleted' });
   } catch (err) {
     console.error('DELETE /establishment/:uid/trainingCourse - failed', err);
 
