@@ -106,9 +106,12 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
 
       await fixture.whenStable();
 
-      expect(routerSpy).toHaveBeenCalledWith(['../../add-and-manage-training-courses'], {
-        relativeTo: route,
-      });
+      expect(routerSpy).toHaveBeenCalledWith([
+        'workplace',
+        mockEstablishmentUid,
+        'training-course',
+        'add-and-manage-training-courses',
+      ]);
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
         message: 'Training course removed',
@@ -155,9 +158,12 @@ fdescribe('AddAndManageTrainingCoursesComponent', () => {
 
       await fixture.whenStable();
 
-      expect(routerSpy).toHaveBeenCalledWith(['../../add-and-manage-training-courses'], {
-        relativeTo: route,
-      });
+      expect(routerSpy).toHaveBeenCalledWith([
+        'workplace',
+        mockEstablishmentUid,
+        'training-course',
+        'add-and-manage-training-courses',
+      ]);
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
         message: 'All training courses removed',

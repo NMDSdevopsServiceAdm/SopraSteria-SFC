@@ -45,7 +45,7 @@ export class RemoveTrainingCourseComponent implements OnInit {
   private loadTrainingCourses(): void {
     this.trainingCourses = this.route.snapshot.data?.trainingCourses;
     if (!this.trainingCourses?.length) {
-      // return to start
+      this.returnToStartPage();
     }
 
     if (this.journeyType === 'RemoveSingle') {
@@ -58,14 +58,14 @@ export class RemoveTrainingCourseComponent implements OnInit {
     const course = this.trainingCourses?.find((c) => c.uid === this.trainingCourseUid);
     this.trainingCourseName = course?.name;
     if (!course) {
-      // return to start
+      this.returnToStartPage();
     }
   }
 
   public deleteTrainingCourseRecord(): void {
     this.subscriptions.add(
       this.trainingCourseService.deleteTrainingCourse(this.workplace.uid, this.trainingCourseUid).subscribe(() => {
-        this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route }).then(() => {
+        this.returnToStartPage().then(() => {
           this.alertService.addAlert({
             type: 'success',
             message: 'Training course removed',
@@ -78,7 +78,7 @@ export class RemoveTrainingCourseComponent implements OnInit {
   public deleteAllTrainingCourses(): void {
     this.subscriptions.add(
       this.trainingCourseService.deleteAllTrainingCourses(this.workplace.uid).subscribe(() => {
-        this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route }).then(() => {
+        this.returnToStartPage().then(() => {
           this.alertService.addAlert({
             type: 'success',
             message: 'All training courses removed',
@@ -90,6 +90,15 @@ export class RemoveTrainingCourseComponent implements OnInit {
 
   private setBackLink(): void {
     this.backLinkService.showBackLink();
+  }
+
+  private returnToStartPage(): Promise<boolean> {
+    return this.router.navigate([
+      'workplace',
+      this.workplace.uid,
+      'training-course',
+      'add-and-manage-training-courses',
+    ]);
   }
 
   public onSubmit(): void {
@@ -107,6 +116,6 @@ export class RemoveTrainingCourseComponent implements OnInit {
 
   public onCancel(event: Event): void {
     event.preventDefault();
-    this.router.navigate(['workplace', this.workplace.uid, 'training-course', 'add-and-manage-training-courses']);
+    this.returnToStartPage();
   }
 }
