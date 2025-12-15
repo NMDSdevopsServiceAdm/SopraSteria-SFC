@@ -11,7 +11,7 @@ import { render } from '@testing-library/angular';
 import { RemoveTrainingCourseComponent } from './remove-training-course.component';
 import userEvent from '@testing-library/user-event';
 
-describe('AddAndManageTrainingCoursesComponent', () => {
+fdescribe('AddAndManageTrainingCoursesComponent', () => {
   const mockTrainingCourses = [
     { uid: 'course-1', name: 'Health and safety awareness' },
     { uid: 'course-2', name: 'Fire safety' },
@@ -165,13 +165,16 @@ describe('AddAndManageTrainingCoursesComponent', () => {
     });
   });
 
-  it('should navigate back when cancel is clicked', async () => {
-    const { getByRole, routerSpy, route } = await setup();
+  it('should navigate to add-and-manage-training-courses page when clicked Cancel', async () => {
+    const { getByRole, routerSpy } = await setup();
 
     userEvent.click(getByRole('button', { name: 'Cancel' }));
 
-    expect(routerSpy).toHaveBeenCalledWith(['../../add-and-manage-training-courses'], {
-      relativeTo: route,
-    });
+    expect(routerSpy).toHaveBeenCalledWith([
+      'workplace',
+      mockEstablishmentUid,
+      'training-course',
+      'add-and-manage-training-courses',
+    ]);
   });
 });

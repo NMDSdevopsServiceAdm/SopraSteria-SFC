@@ -107,6 +107,6 @@ export class RemoveTrainingCourseComponent implements OnInit {
 
   public onCancel(event: Event): void {
     event.preventDefault();
-    this.router.navigate(['../../add-and-manage-training-courses'], { relativeTo: this.route });
+    this.router.navigate(['workplace', this.workplace.uid, 'training-course', 'add-and-manage-training-courses']);
   }
 }
