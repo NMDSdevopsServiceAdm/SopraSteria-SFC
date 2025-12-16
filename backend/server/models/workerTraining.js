@@ -102,21 +102,6 @@ module.exports = function (sequelize, DataTypes) {
         field: 'OtherTrainingProviderName',
       },
 
-      // Temporary field to match the current frontend interface. to be removed in ticket #1840
-      externalProviderName: {
-        type: DataTypes.VIRTUAL,
-        allowNull: true,
-        get() {
-          return this.otherTrainingProviderName;
-        },
-        set(externalProviderName) {
-          if (externalProviderName?.length > 0) {
-            this.trainingProviderFk = 63;
-            this.otherTrainingProviderName = externalProviderName;
-          }
-        },
-      },
-
       howWasItDelivered: {
         type: DataTypes.ENUM,
         values: Enum.TrainingCourseDeliveryMode,
