@@ -19,7 +19,9 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
+
+type JourneyType = 'ApplyToExistingRecord' | 'AddNewTrainingRecord';
 
 @Component({
   selector: 'app-training-course-matching-layout',
@@ -51,6 +53,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   public trainingCategory: { id: number; category: string };
   public selectedTrainingCourse: any;
   public trainingCourses: TrainingCourse[];
+  public journeyType: JourneyType;
 
   public record: any;
 
@@ -69,22 +72,25 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.trainingRecord = this.route.snapshot.data?.trainingRecord;
-    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
     this.worker = this.workerService.worker;
     this.establishmentUid = this.route.snapshot.params?.establishmentuid;
     this.workerId = this.route.snapshot.params?.id;
     this.workplace = this.establishmentService.establishment;
-    this.selectedTrainingCourse = this.trainingService.getSelectedTrainingCourse();
-    this.setupForm();
-    this.fillForm();
-    this.autoFillExpiry();
-    this.checkExpiryMismatch();
+    this.determineJourneyType();
+    this.loadTrainingCourse();
 
-    this.form.valueChanges.subscribe(() => {
+    this.setupForm();
+
+    if (this.journeyType === 'ApplyToExistingRecord') {
+      this.fillForm();
       this.autoFillExpiry();
       this.checkExpiryMismatch();
-    });
+      this.form.valueChanges.subscribe(() => {
+        this.autoFillExpiry();
+        this.checkExpiryMismatch();
+      });
+    }
 
     this.setBackLink();
     this.setupFormErrorsMap();
@@ -92,6 +98,19 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  private determineJourneyType(): void {
+    if (this.trainingRecordId && this.trainingRecord) {
+      this.journeyType = 'ApplyToExistingRecord';
+    } else {
+      this.journeyType = 'AddNewTrainingRecord';
+    }
+  }
+
+  private loadTrainingCourse(): void {
+    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
+    this.selectedTrainingCourse = this.trainingService.getSelectedTrainingCourse();
   }
 
   private setupForm(): void {
@@ -260,6 +279,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
+
   private buildUpdatedRecord(): TrainingRecordRequest {
     const { completed, expires, notes } = this.form.controls;
 
@@ -286,18 +306,21 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
+
     const record = this.buildUpdatedRecord();
 
-    if (!this.trainingRecordId) {
-      return;
-    }
+    let submitTrainingRecord;
 
-    let submitTrainingRecord = this.workerService.updateTrainingRecord(
-      this.workplace.uid,
-      this.worker.uid,
-      this.trainingRecordId,
-      record,
-    );
+    if (this.trainingRecordId) {
+      submitTrainingRecord = this.workerService.updateTrainingRecord(
+        this.workplace.uid,
+        this.worker.uid,
+        this.trainingRecordId,
+        record,
+      );
+    } else {
+      submitTrainingRecord = this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
+    }
 
     if (this.filesToRemove?.length > 0) {
       this.deleteTrainingCertificate(this.filesToRemove);
@@ -358,6 +381,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     this.filesToUpload = filesToKeep;
     this.certificateErrors = [];
   }
+
   private uploadNewCertificate(trainingRecordResponse: any) {
     const trainingRecordId = this.trainingRecordId ?? trainingRecordResponse.uid;
 

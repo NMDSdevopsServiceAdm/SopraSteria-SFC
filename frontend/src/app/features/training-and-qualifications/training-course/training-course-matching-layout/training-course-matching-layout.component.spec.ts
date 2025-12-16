@@ -1,10 +1,15 @@
+import { of } from 'rxjs';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
+import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { AlertService } from '@core/services/alert.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -17,21 +22,18 @@ import { CertificationsTableComponent } from '@shared/components/certifications-
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { of } from 'rxjs';
-
 import { SelectUploadFileComponent } from '../../../../shared/components/select-upload-file/select-upload-file.component';
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
-import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
+import userEvent from '@testing-library/user-event';
 
-describe('TrainingCourseMatchingLayoutComponent', () => {
+fdescribe('TrainingCourseMatchingLayoutComponent', () => {
   const mockTrainingRecordData = {
     completed: '2024-01-01',
     expires: '2025-01-01',
     notes: 'Test notes',
     trainingCertificates: [],
   };
+
   const defaultSelectedTraining = {
     name: 'Basic Sefeguarding For support staff',
     accredited: null,
@@ -129,6 +131,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
     const workerService = injector.inject(WorkerService);
     const updateSpy = spyOn(workerService, 'updateTrainingRecord').and.returnValue(of(null));
+    const createTrainingRecordSpy = spyOn(workerService, 'createTrainingRecord').and.returnValue(of(null));
 
     const component = setupTools.fixture.componentInstance;
     const alertService = injector.inject(AlertService) as AlertService;
@@ -149,6 +152,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       component,
       routerSpy,
       updateSpy,
+      createTrainingRecordSpy,
       workerService,
       workerServiceSpy,
       alertServiceSpy,
@@ -163,48 +167,60 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
   });
 
   describe('fillForm', () => {
-    it('should populate the form on init', async () => {
-      const { component } = await setup();
+    describe('when applying course detail to existing training record', () => {
+      it('should populate the form on init', async () => {
+        const { component } = await setup();
 
-      expect(component.form.value.completed.day).toBe(1);
-      expect(component.form.value.completed.month).toBe(1);
-      expect(component.form.value.completed.year).toBe(2024);
+        expect(component.form.value.completed.day).toBe(1);
+        expect(component.form.value.completed.month).toBe(1);
+        expect(component.form.value.completed.year).toBe(2024);
 
-      expect(component.form.value.notes).toBe('Test notes');
-    });
-
-    it('should auto-calc expiry when missing', async () => {
-      const mockRecord = {
-        ...mockTrainingRecordData,
-        expires: null,
-      };
-
-      const { component } = await setup({ trainingRecord: mockRecord });
-
-      component.form.patchValue({
-        completed: { day: 1, month: 1, year: 2024 },
-        expires: null,
+        expect(component.form.value.notes).toBe('Test notes');
       });
 
-      component.autoFillExpiry();
+      it('should auto-calc expiry when missing', async () => {
+        const mockRecord = {
+          ...mockTrainingRecordData,
+          expires: null,
+        };
 
-      const expiry = component.form.value.expires;
-      expect(expiry.year).toBe(2025);
-      expect(expiry.month).toBe(1);
-      expect(expiry.day).toBe(1);
-    });
+        const { component } = await setup({ trainingRecord: mockRecord });
 
-    it('should set expiryMismatchWarning when expiry does not match validity period', async () => {
-      const { component } = await setup();
+        component.form.patchValue({
+          completed: { day: 1, month: 1, year: 2024 },
+          expires: null,
+        });
 
-      component.form.patchValue({
-        completed: { day: 1, month: 1, year: 2024 },
-        expires: { day: 10, month: 2, year: 2025 },
+        component.autoFillExpiry();
+
+        const expiry = component.form.value.expires;
+        expect(expiry.year).toBe(2025);
+        expect(expiry.month).toBe(1);
+        expect(expiry.day).toBe(1);
       });
 
-      component.checkExpiryMismatch();
+      it('should set expiryMismatchWarning when expiry does not match validity period', async () => {
+        const { component } = await setup();
 
-      expect(component.expiryMismatchWarning).toBeTrue();
+        component.form.patchValue({
+          completed: { day: 1, month: 1, year: 2024 },
+          expires: { day: 10, month: 2, year: 2025 },
+        });
+
+        component.checkExpiryMismatch();
+
+        expect(component.expiryMismatchWarning).toBeTrue();
+      });
+    });
+
+    describe('when adding a new training record', () => {
+      const overrides = { trainingRecordId: null, selectedTraining: null };
+
+      it('should not show the input boxes for expiry date', async () => {
+        const { queryByTestId } = await setup(overrides);
+
+        expect(queryByTestId('expiresDate')).toBeFalsy();
+      });
     });
   });
 
@@ -222,7 +238,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       const link = span.closest('a');
       expect(link).toBeTruthy();
 
-      const href = link.getAttribute('href') || link.getAttribute('ng-reflect-router-link');
+      const href = link.getAttribute('href');
 
       expect(href).toContain(
         `/workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}/training/${component.trainingRecordId}/include-training-course-details`,
@@ -255,21 +271,38 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
   });
 
   describe('Submit', () => {
-    it('should call updateTrainingRecord when form is valid (robust)', async () => {
-      const { component, updateSpy } = await setup({});
+    describe('when applying course detail to existing training record', () => {
+      it('should call updateTrainingRecord when form is valid', async () => {
+        const { getByRole, updateSpy } = await setup({});
 
-      component.onSubmit();
-      expect(updateSpy).toHaveBeenCalled();
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        expect(updateSpy).toHaveBeenCalled();
+      });
+
+      it('should navigate to home page and show banner after successful submit', async () => {
+        const { fixture, routerSpy, alertServiceSpy, getByRole } = await setup();
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+        await fixture.whenStable();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Training record updated',
+        });
+      });
     });
 
-    it('should navigate to home page and show banner after successful submit', async () => {
-      const { component, routerSpy, alertServiceSpy } = await setup();
+    describe('when adding a new training record', () => {
+      const overrides = { trainingRecordId: null, selectedTraining: null };
 
-      await component.onSubmit();
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Training record updated',
+      it('should call createTrainingRecord when form is valid', async () => {
+        const { getByRole, createTrainingRecordSpy } = await setup(overrides);
+
+        userEvent.click(getByRole('button', { name: 'Save training record' }));
+
+        expect(createTrainingRecordSpy).toHaveBeenCalled();
       });
     });
 
