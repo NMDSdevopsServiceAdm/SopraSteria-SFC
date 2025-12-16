@@ -36,6 +36,8 @@ export interface TrainingRecordRequest {
   completed?: string;
   expires?: string;
   notes?: string;
+  trainingProviderId?: number;
+  otherTrainingProviderName?: string;
 }
 
 export interface CreateTrainingRecordResponse extends TrainingRecordRequest {

@@ -10,6 +10,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingProviderService } from '@core/services/training-provider.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AddEditTrainingDirective } from '@shared/directives/add-edit-training/add-edit-training.directive';
@@ -43,6 +44,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected workerService: WorkerService,
     protected alertService: AlertService,
     protected http: HttpClient,
+    protected trainingProviderService: TrainingProviderService,
   ) {
     super(
       formBuilder,
@@ -54,6 +56,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       trainingCategoryService,
       workerService,
       alertService,
+      trainingProviderService,
     );
   }
 
