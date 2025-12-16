@@ -98,25 +98,6 @@
                 {{ deliveredByOptions.ExternalProvider }}
               </label>
             </div>
-            <!-- <div
-              class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-1 govuk-!-margin-bottom-1 govuk-!-width-three-quarters"
-              [class.govuk-radios__conditional--hidden]="
-                form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider
-              "
-              id="conditional-external-provider-name"
-              data-testid="conditional-external-provider-name"
-            >
-              <app-auto-suggest
-                [formGroup]="form"
-                [dataProvider]="getSuggestedListOfProviders"
-                [formControlName]="'externalProviderName'"
-                [showSearchIcon]="false"
-                [showBackground]="false"
-                [label]="'Provider name'"
-                (clickItemEvent)="setShowSuggestedTray()"
-                [showClickedSuggestionInInput]="true"
-              ></app-auto-suggest>
-            </div> -->
             <app-external-training-provider-input
               [trainingProviders]="trainingProviders"
               [hideInput]="form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider"

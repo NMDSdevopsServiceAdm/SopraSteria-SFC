@@ -81,11 +81,6 @@ describe('TrainingProviderService', () => {
         { id: 1, name: 'Preset provider name #1', isOther: false },
         { id: 63, name: 'other', isOther: true },
       ];
-      // const payload = {
-      //   externalProviderName:
-      //   trainingProviders: mockTrainingProviders,
-      //   otherTrainingProviderId: 63,
-      // };
 
       const request = service.getTrainingProviderIdFromName('Udemy', mockTrainingProviders, 63);
 
