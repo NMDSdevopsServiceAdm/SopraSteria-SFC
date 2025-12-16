@@ -158,6 +158,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         validityPeriodInMonth: 24,
         createdBy: mockUsername,
         updatedBy: mockUsername,
+        trainingProviderFk: null,
       });
     });
 
