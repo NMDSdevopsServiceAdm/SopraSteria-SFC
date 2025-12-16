@@ -180,7 +180,6 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     }
     this.trainingCategoryName = this.getTrainingCategoryName(selectedtrainingCourse);
 
-    selectedtrainingCourse.externalProviderName = this.getTrainingProviderName(selectedtrainingCourse);
     this.selectedTrainingCourse = selectedtrainingCourse;
 
     if (!gotDataInLocalService) {
@@ -199,19 +198,6 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   private getTrainingCategoryName(selectedtrainingCourse: Partial<TrainingCourse>): string {
     return this.trainingCategories.find((category) => category.id === selectedtrainingCourse.trainingCategoryId)
       .category;
-  }
-
-  private getTrainingProviderName(selectedtrainingCourse: Partial<TrainingCourse>): string {
-    // TODO: refactor this in ticket #1840
-    if (!selectedtrainingCourse?.trainingProvider) {
-      return null;
-    }
-    const trainingProvider = selectedtrainingCourse.trainingProvider;
-    const providerName = trainingProvider.isOther
-      ? selectedtrainingCourse.otherTrainingProviderName
-      : trainingProvider.name;
-
-    return providerName;
   }
 
   private storeTempDataInLocalService() {

@@ -333,6 +333,12 @@ const renameKeys = (record) => {
     renamed.trainingCategoryName = record.category.category;
   }
 
+  if (record?.trainingProvider?.isOther) {
+    renamed.externalProviderName = record.otherTrainingProviderName;
+  } else if (typeof record?.trainingProvider?.isOther && record?.trainingProvider?.isOther === false) {
+    renamed.externalProviderName = record.trainingProvider?.name;
+  }
+
   return renamed;
 };
 
