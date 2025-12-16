@@ -443,8 +443,6 @@ class Training extends EntityValidator {
         validatedTrainingRecord.trainingProvider = trainingProvider;
         validatedTrainingRecord.trainingProviderFk = trainingProvider.id;
       }
-      console.log('validatedTrainingRecord trainingProvider: ', validatedTrainingRecord.trainingProvider);
-      console.log('validatedTrainingRecord trainingProviderFk: ', validatedTrainingRecord.trainingProviderFk);
     } else {
       validatedTrainingRecord.trainingProviderFk = null;
     }
@@ -590,7 +588,6 @@ class Training extends EntityValidator {
           : null;
         this.expires = validatedTrainingRecord.expires ? validatedTrainingRecord.expires.toJSON().slice(0, 10) : null;
         this.notes = validatedTrainingRecord.notes;
-        console.log('validatedTrainingRecord: ', validatedTrainingRecord);
       } else {
         this._log(Training.LOG_ERROR, 'Training::load - failed');
         return false;
@@ -725,8 +722,6 @@ class Training extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
           };
 
-          console.log('updateDocument: ', updateDocument);
-
           // now save the document
           let [updatedRecordCount, updatedRows] = await models.workerTraining.update(updateDocument, {
             returning: ['*'],
@@ -842,10 +837,6 @@ class Training extends EntityValidator {
         this._updated = fetchResults.updated;
         this._updatedBy = fetchResults.updatedBy;
         this._trainingCertificates = fetchResults.trainingCertificates;
-
-        console.log('fetchResults: ', fetchResults.trainingProvider);
-        console.log('fetchResults: ', fetchResults.trainingProviderFk);
-        console.log('fetchResults: ', fetchResults.externalProviderName);
 
         return true;
       }
