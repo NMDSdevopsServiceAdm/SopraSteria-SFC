@@ -56,7 +56,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
 
     const expectedHeadingText = 'Add and manage training courses for your workplace';
     expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
-    expect(getByText('Training and qualifications')).toBeTruthy();
+    expect(getByText('Add and update training courses')).toBeTruthy();
   });
 
   it('should show CTA button to add a training course', async () => {

@@ -62,7 +62,7 @@ export class RemoveTrainingCourseComponent implements OnInit {
     }
   }
 
-  public deleteTrainingCourseRecord(): void {
+  private deleteTrainingCourseRecord(): void {
     this.subscriptions.add(
       this.trainingCourseService.deleteTrainingCourse(this.workplace.uid, this.trainingCourseUid).subscribe(() => {
         this.returnToStartPage().then(() => {
@@ -75,13 +75,13 @@ export class RemoveTrainingCourseComponent implements OnInit {
     );
   }
 
-  public deleteAllTrainingCourses(): void {
+  private deleteAllTrainingCourses(): void {
     this.subscriptions.add(
       this.trainingCourseService.deleteAllTrainingCourses(this.workplace.uid).subscribe(() => {
         this.returnToStartPage().then(() => {
           this.alertService.addAlert({
             type: 'success',
-            message: 'All training courses removed',
+            message: 'Training courses removed',
           });
         });
       }),

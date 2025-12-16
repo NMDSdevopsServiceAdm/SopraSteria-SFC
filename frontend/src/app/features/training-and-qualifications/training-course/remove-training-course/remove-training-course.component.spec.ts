@@ -87,7 +87,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
 
       const expectedHeadingText = 'What happens when you remove a training course';
       expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
-      expect(getByText('Training and qualifications')).toBeTruthy();
+      expect(getByText('Add and update training courses')).toBeTruthy();
     });
 
     it('should initialise workplace, trainingCourseUid and trainingName', async () => {
@@ -166,7 +166,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
       ]);
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: 'All training courses removed',
+        message: 'Training courses removed',
       });
     });
   });

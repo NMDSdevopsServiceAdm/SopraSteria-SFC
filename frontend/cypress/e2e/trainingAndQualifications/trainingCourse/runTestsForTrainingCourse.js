@@ -226,7 +226,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
 
         cy.contains('Remove this training course').click();
         cy.url().should('include', '/add-and-manage-training-courses');
-        cy.contains('Training course removed').should('be.visible');
+        cy.get('app-alert span').contains('Training course removed').should('be.visible');
 
         cy.contains('a', trainingCourseName).should('not.exist');
       });
@@ -276,7 +276,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
 
         cy.get('button').contains('Remove all training courses').click();
         cy.url().should('include', '/add-and-manage-training-courses');
-        cy.contains('All training courses removed').should('be.visible');
+        cy.get('app-alert span').contains('Training courses removed').should('be.visible');
 
         trainingCourseNames.forEach((trainingCourseName) => {
           cy.contains('a', trainingCourseName).should('not.exist');
