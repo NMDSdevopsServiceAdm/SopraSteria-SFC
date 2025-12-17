@@ -80,7 +80,7 @@ function convertMainServiceToCQC(mainService) {
       cqc: ['Nursing homes', 'Residential Rehabilitation (illness/injury)', 'Residential homes'],
     },
     {
-      asc: 'Residential substance misuse treatment/ rehabilitation services',
+      asc: 'Residential substance misuse treatment, rehabilitation services',
       cqc: [
         'Rehabilitation (substance abuse)',
         'Rehabilitation (illness/injury)',
