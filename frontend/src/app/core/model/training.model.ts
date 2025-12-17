@@ -27,6 +27,7 @@ export interface TrainingRecordRequest {
     id: number;
   };
   title: string;
+  trainingCourseFK?: number;
   accredited?: string;
   deliveredBy?: string;
   externalProviderName?: string;

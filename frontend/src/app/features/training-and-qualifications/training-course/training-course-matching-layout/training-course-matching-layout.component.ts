@@ -5,7 +5,7 @@ import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCourse } from '@core/model/training-course.model';
-import { TrainingCertificate, TrainingRecordRequest } from '@core/model/training.model';
+import { TrainingCertificate, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -28,7 +28,7 @@ type FormGroupDateValues = { day: number; month: number; year: number };
   selector: 'app-training-course-matching-layout',
   templateUrl: './training-course-matching-layout.component.html',
 })
-export class TrainingCourseMatchingLayoutComponent implements OnInit {
+export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public workplace: Establishment;
@@ -44,7 +44,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   public remainingCharacterCount: number = this.notesMaxLength;
   public subscriptions: Subscription = new Subscription();
   public notesValue = '';
-  public trainingRecord: any;
+  public trainingRecord: TrainingRecord & { completed: string; expires: string };
   public trainingRecordId: string;
   public expiryMismatchWarning: boolean;
   public certificateErrors: string[] | null;
@@ -52,21 +52,19 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   public trainingCertificates: TrainingCertificate[] = [];
   public filesToRemove: TrainingCertificate[] = [];
   public trainingCategory: { id: number; category: string };
-  public selectedTrainingCourse: any;
+  public selectedTrainingCourse: TrainingCourse;
   public trainingCourses: TrainingCourse[];
   public journeyType: JourneyType;
-
-  public record: any;
 
   constructor(
     private workerService: WorkerService,
     private establishmentService: EstablishmentService,
-    protected formBuilder: UntypedFormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    protected errorSummaryService: ErrorSummaryService,
-    protected backLinkService: BackLinkService,
-    public trainingService: TrainingService,
+    private errorSummaryService: ErrorSummaryService,
+    private backLinkService: BackLinkService,
+    private trainingService: TrainingService,
     private alertService: AlertService,
     private certificateService: TrainingCertificateService,
   ) {}
@@ -300,6 +298,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
     return {
       ...this.selectedTrainingCourse,
+      title: this.selectedTrainingCourse.name,
       trainingCategory: { id: this.selectedTrainingCourse?.category.id },
       trainingCourseFK: this.selectedTrainingCourse.id,
       completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
@@ -319,7 +318,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       return;
     }
 
-    const record = this.buildUpdatedRecord();
+    const trainingRecord = this.buildUpdatedRecord();
 
     let submitTrainingRecord;
 
@@ -328,10 +327,14 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
         this.workplace.uid,
         this.worker.uid,
         this.trainingRecordId,
-        record,
+        trainingRecord,
       );
     } else {
-      submitTrainingRecord = this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
+      submitTrainingRecord = this.workerService.createTrainingRecord(
+        this.workplace.uid,
+        this.worker.uid,
+        trainingRecord,
+      );
     }
 
     if (this.filesToRemove?.length > 0) {
