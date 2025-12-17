@@ -370,7 +370,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       });
 
       it('should automatically set the expiry date of new training course', async () => {
-        const { getByRole, getByTestId, createTrainingRecordSpy } = await setup(overrides);
+        const { fixture, getByRole, getByTestId, createTrainingRecordSpy, alertServiceSpy } = await setup(overrides);
 
         const completeDate = within(getByTestId('completedDate'));
 
@@ -382,11 +382,18 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
         userEvent.click(getByRole('button', { name: 'Save training record' }));
 
+        await fixture.whenStable();
+
         expect(createTrainingRecordSpy).toHaveBeenCalledWith(
           mockEstablishmentUid,
           mockWorkerUid,
           jasmine.objectContaining({ expires: expectedExpiryDate }),
         );
+
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Training record added',
+        });
       });
 
       it('should not set the expiry date if completed date is empty', async () => {

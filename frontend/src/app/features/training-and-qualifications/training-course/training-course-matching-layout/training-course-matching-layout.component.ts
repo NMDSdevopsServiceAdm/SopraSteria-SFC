@@ -367,10 +367,13 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   }
 
   private onSubmitSuccess(): void {
+    const alertMessage =
+      this.journeyType === 'AddNewTrainingRecord' ? 'Training record added' : 'Training record updated';
+
     this.returnToWorkerTrainingRecordPage().then(() => {
       this.alertService.addAlert({
         type: 'success',
-        message: 'Training record updated',
+        message: alertMessage,
       });
     });
   }
