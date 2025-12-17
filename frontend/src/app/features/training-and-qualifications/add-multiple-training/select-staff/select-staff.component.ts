@@ -11,6 +11,7 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
 import { take } from 'rxjs/operators';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
   selector: 'app-select-staff',
@@ -42,6 +43,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   public selectedWorkers: string[] = [];
   public isChangeStaffSelected: boolean;
   public trainingCourses: TrainingCourse[];
+  private previousUrl: string;
 
   constructor(
     public backLinkService: BackLinkService,
@@ -51,6 +53,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     private errorSummaryService: ErrorSummaryService,
     private route: ActivatedRoute,
     private workerService: WorkerService,
+    private previousRouteService: PreviousRouteService,
   ) {}
 
   ngOnInit(): void {
@@ -66,6 +69,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
     this.isChangeStaffSelected = this.trainingService.getUpdatingSelectedStaffForMultipleTraining();
     this.trainingCourses = this.route.snapshot.data.trainingCourses;
+    this.previousUrl = this.previousRouteService.getPreviousPage();
   }
 
   ngAfterViewInit(): void {
@@ -182,7 +186,10 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     if (this.selectedWorkers.length > 0) {
       this.updateSelectedStaff();
       this.trainingService.addMultipleTrainingInProgress$.next(true);
-      if (this.isChangeStaffSelected) {
+
+      if (this.previousUrl === 'confirm-training-record-details') {
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'confirm-training-record-details']);
+      } else if (this.isChangeStaffSelected) {
         this.trainingService.clearUpdatingSelectedStaffForMultipleTraining();
         this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
       } else if (this.trainingCourses.length > 0) {
