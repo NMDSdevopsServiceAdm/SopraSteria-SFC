@@ -26,7 +26,7 @@ import { SelectUploadFileComponent } from '../../../../shared/components/select-
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('TrainingCourseMatchingLayoutComponent', () => {
+describe('TrainingCourseMatchingLayoutComponent', () => {
   const mockTrainingRecordData = {
     completed: '2024-01-01',
     expires: '2025-01-01',

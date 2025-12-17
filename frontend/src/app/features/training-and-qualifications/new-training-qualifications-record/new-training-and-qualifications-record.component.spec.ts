@@ -45,7 +45,7 @@ import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-
 import { TrainingCourse } from '@core/model/training-course.model';
 import { trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 
-fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
+describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   const yesterday = new Date();
@@ -681,7 +681,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(rowTwo.cells['3'].innerHTML).not.toContain('Update');
     });
 
-    fdescribe('Add a mandatory training from action list', () => {
+    describe('Add a mandatory training from action list', () => {
       const getMandatoryTrainingAddLink = (getByTestId) => {
         const actionListTable = getByTestId('actions-list-table');
         const mandatoryTrainingRow = within(actionListTable).queryByText('Mandatory').closest('tr');

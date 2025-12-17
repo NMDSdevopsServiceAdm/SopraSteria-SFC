@@ -12,7 +12,7 @@ import { SelectTrainingCourseForTrainingRecordDirective } from '@shared/directiv
 @Component({
   selector: 'app-select-training-course-for-worker-training',
   templateUrl:
-    '../../../shared//directives/select-training-course-for-training-record/select-training-course-for-training-record.component.html',
+    '../../../shared/directives/select-training-course-for-training-record/select-training-course-for-training-record.component.html',
 })
 export class SelectTrainingCourseForWorkerTraining
   extends SelectTrainingCourseForTrainingRecordDirective
@@ -63,6 +63,30 @@ export class SelectTrainingCourseForWorkerTraining
       this.worker.uid,
       'matching-layout',
     ];
+  }
+
+  protected loadTrainingCourses(): void {
+    const allTrainingCourseInWorkplace = this.route.snapshot.data?.trainingCourses;
+    const categoryToShow: string = this.route.snapshot.queryParams?.trainingCategory;
+
+    if (categoryToShow) {
+      const categoryId = JSON.parse(categoryToShow)?.id;
+
+      this.trainingCourses = allTrainingCourseInWorkplace.filter((course) => course.trainingCategoryId === categoryId);
+      return;
+    }
+
+    this.trainingCourses = allTrainingCourseInWorkplace;
+  }
+
+  protected continueWithoutTrainingCourse(): void {
+    const queryParamsFromPreviousPage = this.route.snapshot.queryParams;
+
+    if (queryParamsFromPreviousPage) {
+      this.router.navigate(this.routeWithoutTrainingCourse, { queryParams: queryParamsFromPreviousPage });
+    } else {
+      this.router.navigate(this.routeWithoutTrainingCourse);
+    }
   }
 
   protected navigateOnCancelClick() {

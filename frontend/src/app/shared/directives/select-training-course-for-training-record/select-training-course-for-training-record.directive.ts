@@ -49,7 +49,7 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
     this.worker = this.workerService.worker;
     this.workplace = this.establishmentService.establishment;
 
-    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
+    this.loadTrainingCourses();
     this.setUpVariables();
     this.continueWithOutCourseOption.name = this.continueWithOutCourseOptionText;
     this.init();
@@ -66,6 +66,10 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
   protected init(): void {}
   protected setUpVariables(): void {}
   protected navigateOnCancelClick(): void {}
+
+  protected loadTrainingCourses(): void {
+    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
+  }
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
@@ -153,9 +157,17 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
 
   public navigateToNextPage(selectedOption: number): void {
     if (selectedOption === this.continueWithOutCourseOption.id) {
-      this.router.navigate(this.routeWithoutTrainingCourse);
+      this.continueWithoutTrainingCourse();
     } else if (this.trainingCoursesIds.includes(selectedOption)) {
-      this.router.navigate(this.routeWithTrainingCourse);
+      this.continueWithTrainingCourse();
     }
+  }
+
+  protected continueWithoutTrainingCourse(): void {
+    this.router.navigate(this.routeWithoutTrainingCourse);
+  }
+
+  private continueWithTrainingCourse(): void {
+    this.router.navigate(this.routeWithTrainingCourse);
   }
 }
