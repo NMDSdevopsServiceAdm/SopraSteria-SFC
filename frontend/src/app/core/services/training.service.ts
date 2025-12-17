@@ -19,6 +19,8 @@ export class TrainingService {
   public updatingSelectedStaffForMultipleTraining: boolean = null;
   private _isTrainingCourseSelected: boolean = null;
   private _selectedTrainingCourse: TrainingCourse;
+  private _courseCompletionDate: Date = null;
+  private _notes: string = null;
 
   constructor(private http: HttpClient) {}
 
@@ -153,6 +155,22 @@ export class TrainingService {
 
   public clearSelectedTrainingCourse(): void {
     this._selectedTrainingCourse = null;
+  }
+
+  public setCourseCompletionDate(date: Date): void {
+    this._courseCompletionDate = date;
+  }
+
+  public getCourseCompletionDate(): Date {
+    return this._courseCompletionDate;
+  }
+
+  public setNotes(notes: string): void {
+    this._notes = notes;
+  }
+
+  public getNotes(): string {
+    return this._notes;
   }
 }
 

@@ -144,4 +144,21 @@ describe('TrainingService', () => {
       expect(service.getSelectedTrainingCourse()).toBe(null);
     });
   });
+
+  describe('Course Completion Date', () => {
+    it('sets and gets the completion date', async () => {
+      const date = new Date('2025-10-15')
+      service.setCourseCompletionDate(date);
+
+      expect(service.getCourseCompletionDate()).toEqual(date);
+    })
+  })
+
+  describe('Notes', () => {
+    it('sets and gets the notes', async () => {
+      service.setNotes('Hello, world!');
+
+      expect(service.getNotes()).toEqual('Hello, world!');
+    })
+  })
 });
