@@ -1,5 +1,6 @@
 import { of } from 'rxjs';
 
+import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -21,11 +22,10 @@ import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerServi
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { SelectUploadFileComponent } from '../../../../shared/components/select-upload-file/select-upload-file.component';
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
-import userEvent from '@testing-library/user-event';
-import { Location } from '@angular/common';
 
 describe('TrainingCourseMatchingLayoutComponent', () => {
   const mockTrainingRecordData = {
@@ -328,13 +328,21 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
         expect(updateSpy).toHaveBeenCalled();
       });
 
-      it('should navigate to training and qualifications page and show banner after successful submit', async () => {
+      it("should navigate to worker'training and qualifications page and show banner after successful submit", async () => {
         const { fixture, routerSpy, alertServiceSpy, getByRole } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and return' }));
         await fixture.whenStable();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+        const expectedUrl = [
+          '/workplace',
+          mockEstablishmentUid,
+          'training-and-qualifications-record',
+          mockWorkerUid,
+          'training',
+        ];
+
+        expect(routerSpy).toHaveBeenCalledWith(expectedUrl);
         expect(alertServiceSpy).toHaveBeenCalledWith({
           type: 'success',
           message: 'Training record updated',
@@ -495,13 +503,21 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
   });
 
   describe('Cancel', () => {
-    it('should cancel and navigate to dashboard', async () => {
+    it('should return to worker training and qualifications page when clicked cancel', async () => {
       const { getByRole, routerSpy } = await setup();
 
       const cancelLink = getByRole('button', { name: 'Cancel' });
       userEvent.click(cancelLink);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+      const expectedUrl = [
+        '/workplace',
+        mockEstablishmentUid,
+        'training-and-qualifications-record',
+        mockWorkerUid,
+        'training',
+      ];
+
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrl);
     });
   });
 });

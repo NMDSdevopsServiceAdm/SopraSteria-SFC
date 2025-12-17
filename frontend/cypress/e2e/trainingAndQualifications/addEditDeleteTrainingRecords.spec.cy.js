@@ -110,7 +110,7 @@ describe('training record', () => {
     });
   });
 
-  describe('training courses', () => {
+  describe('with training courses', () => {
     before(() => {
       cy.deleteAllTrainingCourses(establishmentID);
       cy.insertTrainingCourse({ establishmentID, categoryId: 1, name: trainingCourseName });
@@ -222,10 +222,15 @@ describe('training record', () => {
     cy.get('[data-testid="generic_alert"]').contains('Training record deleted');
   });
 
-  describe('including training course details', () => {
+  describe('add course details to existing training record', () => {
     beforeEach(() => {
       cy.addWorkerTraining({ establishmentID: StandAloneEstablishment.id, workerName: workerName1, categoryId: 1 });
-      cy.insertTrainingCourse({ establishmentID: StandAloneEstablishment.id, categoryId: 1 });
+      cy.insertTrainingCourse({
+        establishmentID: StandAloneEstablishment.id,
+        categoryId: 1,
+        validityPeriodInMonth: 12,
+        completedDate: ' 2025-03-30',
+      });
       cy.reload();
     });
 
@@ -234,7 +239,7 @@ describe('training record', () => {
     });
 
     describe('when there is one training course that matches the training record', () => {
-      it('should include training course details successfully', () => {
+      it.only('should include training course details successfully', () => {
         cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
         cy.contains('a', trainingName).click();
 
@@ -247,6 +252,10 @@ describe('training record', () => {
 
         // Assert navigation
         cy.url().should('include', `matching-layout`);
+        cy.contains('button', 'Save and return').click();
+
+        cy.get('app-alert span').should('contain', 'Training record updated');
+        cy.get('h1').should('contain', workerName1);
       });
     });
 

@@ -367,7 +367,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   }
 
   private onSubmitSuccess(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' }).then(() => {
+    this.returnToWorkerTrainingRecordPage().then(() => {
       this.alertService.addAlert({
         type: 'success',
         message: 'Training record updated',
@@ -490,7 +490,12 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   public onCancel(event: Event): void {
     event.preventDefault();
-    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
+    this.returnToWorkerTrainingRecordPage();
+  }
+
+  private returnToWorkerTrainingRecordPage(): Promise<boolean> {
+    const url = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'];
+    return this.router.navigate(url);
   }
 
   public handleOnInput(event: Event) {
