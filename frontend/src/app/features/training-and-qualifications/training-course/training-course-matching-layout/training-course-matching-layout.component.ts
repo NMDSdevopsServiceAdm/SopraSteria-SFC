@@ -22,6 +22,7 @@ import { Subscription } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 type JourneyType = 'ApplyToExistingRecord' | 'AddNewTrainingRecord';
+type FormGroupDateValues = { day: number; month: number; year: number };
 
 @Component({
   selector: 'app-training-course-matching-layout',
@@ -45,7 +46,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   public notesValue = '';
   public trainingRecord: any;
   public trainingRecordId: string;
-  public expiryMismatchWarning: any;
+  public expiryMismatchWarning: boolean;
   public certificateErrors: string[] | null;
   private _filesToUpload: File[];
   public trainingCertificates: TrainingCertificate[] = [];
@@ -86,10 +87,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       this.fillForm();
       this.autoFillExpiry();
       this.checkExpiryMismatch();
-      this.form.valueChanges.subscribe(() => {
-        this.autoFillExpiry();
-        this.checkExpiryMismatch();
-      });
+      this.setupExpiryAutofill();
     }
 
     this.setBackLink();
@@ -142,7 +140,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       ]);
   }
 
-  private toDayjs(input: string | { day: number; month: number; year: number } | null): dayjs.Dayjs | null {
+  private toDayjs(input: string | FormGroupDateValues): dayjs.Dayjs {
     if (!input) return null;
 
     // Case 1: DB string "2025-01-20"
@@ -152,12 +150,15 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
     // Case 2: Form group object { day, month, year }
     const { day, month, year } = input;
-    if (!day || !month || !year) return null;
+    if (!day || !month || !year || year < 1000) return null;
 
-    return dayjs(`${year}-${month}-${day}`, DATE_PARSE_FORMAT);
+    const dateString = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    const isValid = DateValidator.validate(dateString, DATE_PARSE_FORMAT);
+
+    return isValid ? dayjs(dateString, DATE_PARSE_FORMAT) : null;
   }
 
-  private toFormDate(date: dayjs.Dayjs | null): { day: number; month: number; year: number } | null {
+  private toFormDate(date: dayjs.Dayjs | null): FormGroupDateValues | null {
     return date
       ? {
           day: date.date(),
@@ -181,10 +182,21 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       expires: this.toFormDate(this.toDayjs(expires)),
       notes,
     });
+
     if (this.trainingRecord?.notes?.length > 0) {
       this.notesOpen = true;
       this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
     }
+  }
+
+  private setupExpiryAutofill(): void {
+    this.form.get('completed').valueChanges.subscribe(() => {
+      this.autoFillExpiry();
+      this.checkExpiryMismatch();
+    });
+    this.form.get('expires').valueChanges.subscribe(() => {
+      this.checkExpiryMismatch();
+    });
   }
 
   public autoFillExpiry(): void {

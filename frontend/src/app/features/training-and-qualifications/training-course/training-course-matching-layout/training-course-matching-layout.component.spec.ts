@@ -20,7 +20,7 @@ import { MockTrainingServiceWithOverrides } from '@core/test-utils/MockTrainingS
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { SelectUploadFileComponent } from '../../../../shared/components/select-upload-file/select-upload-file.component';
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
@@ -34,7 +34,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
     trainingCertificates: [],
   };
 
-  const defaultSelectedTraining = {
+  const defaultSelectedTrainingCourse = {
     name: 'Basic Sefeguarding For support staff',
     accredited: null,
     deliveredBy: null,
@@ -57,12 +57,11 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
   async function setup(overrides: any = {}) {
     const defaultTrainingRecord = { ...mockTrainingRecordData };
 
-    const selectedTraining = overrides?.selectedTraining ?? defaultSelectedTraining;
+    const selectedTrainingCourse = overrides?.selectedTraining ?? defaultSelectedTrainingCourse;
     const trainingRecordId = overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : '1';
 
     const mockTrainingRecord =
       overrides?.trainingRecord !== undefined ? overrides.trainingRecord : defaultTrainingRecord;
-    const workerServiceSpy = jasmine.createSpy().and.returnValue(of(mockTrainingRecord));
     const mockWorker = {
       uid: '2',
       mainJob: {
@@ -83,7 +82,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
             snapshot: {
               params: { trainingRecordId, establishmentuid: '24', id: 2 },
               data: {
-                trainingRecord: mockTrainingRecordData,
+                trainingRecord: mockTrainingRecord,
                 trainingCourses: mockTrainingCourses,
               },
             },
@@ -102,12 +101,13 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
         ErrorSummaryService,
         {
           provide: TrainingService,
-          useFactory: MockTrainingServiceWithOverrides.factory({ selectedTraining }),
+          useFactory: MockTrainingServiceWithOverrides.factory({
+            getSelectedTrainingCourse: () => selectedTrainingCourse,
+          }),
         },
         {
           provide: WorkerService,
           useFactory: MockWorkerServiceWithOverrides.factory({
-            getTrainingRecord: workerServiceSpy,
             worker: mockWorker,
           }),
         },
@@ -139,13 +139,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
 
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const certificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
-    spyOn(trainingService, 'getSelectedTrainingCourse').and.returnValue(selectedTraining);
-
-    component.selectedTrainingCourse = selectedTraining;
-    component.trainingRecord = mockTrainingRecord;
-    setupTools.fixture.detectChanges();
-    await setupTools.fixture.whenStable();
-    setupTools.fixture;
+    spyOn(trainingService, 'getSelectedTrainingCourse').and.returnValue(selectedTrainingCourse);
 
     return {
       ...setupTools,
@@ -154,7 +148,6 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
       updateSpy,
       createTrainingRecordSpy,
       workerService,
-      workerServiceSpy,
       alertServiceSpy,
       trainingService,
       certificateService,
@@ -182,21 +175,69 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
         const mockRecord = {
           ...mockTrainingRecordData,
           expires: null,
+          completed: null,
         };
 
-        const { component } = await setup({ trainingRecord: mockRecord });
+        const { fixture, component, getByTestId } = await setup({ trainingRecord: mockRecord });
 
-        component.form.patchValue({
-          completed: { day: 1, month: 1, year: 2024 },
-          expires: null,
-        });
+        const completeDate = within(getByTestId('completedDate'));
 
-        component.autoFillExpiry();
+        userEvent.type(completeDate.getByLabelText('Day'), '1');
+        userEvent.type(completeDate.getByLabelText('Month'), '1');
+        userEvent.type(completeDate.getByLabelText('Year'), '2025');
+
+        await fixture.whenStable();
 
         const expiry = component.form.value.expires;
-        expect(expiry.year).toBe(2025);
+        expect(expiry.year).toBe(2026);
         expect(expiry.month).toBe(1);
         expect(expiry.day).toBe(1);
+      });
+
+      it('should not change the expiry date if it is already filled in', async () => {
+        const mockRecord = {
+          ...mockTrainingRecordData,
+          expires: '2027-07-31',
+          completed: null,
+        };
+
+        const { fixture, component, getByTestId } = await setup({ trainingRecord: mockRecord });
+
+        const completeDate = within(getByTestId('completedDate'));
+
+        userEvent.type(completeDate.getByLabelText('Day'), '1');
+        userEvent.type(completeDate.getByLabelText('Month'), '1');
+        userEvent.type(completeDate.getByLabelText('Year'), '2025');
+
+        await fixture.whenStable();
+
+        const expiry = component.form.value.expires;
+        expect(expiry.year).toBe(2027);
+        expect(expiry.month).toBe(7);
+        expect(expiry.day).toBe(31);
+      });
+
+      it('should not auto fill in expiry if the value in completed date is not a valid date', async () => {
+        const mockRecord = {
+          ...mockTrainingRecordData,
+          expires: null,
+          completed: null,
+        };
+
+        const { fixture, component, getByTestId } = await setup({ trainingRecord: mockRecord });
+
+        const completeDate = within(getByTestId('completedDate'));
+
+        userEvent.type(completeDate.getByLabelText('Day'), '31');
+        userEvent.type(completeDate.getByLabelText('Month'), '2');
+        userEvent.type(completeDate.getByLabelText('Year'), '2025');
+
+        await fixture.whenStable();
+
+        const expiry = component.form.value.expires;
+        expect(expiry.year).toEqual(null);
+        expect(expiry.month).toEqual(null);
+        expect(expiry.day).toEqual(null);
       });
 
       it('should set expiryMismatchWarning when expiry does not match validity period', async () => {
@@ -214,7 +255,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
     });
 
     describe('when adding a new training record', () => {
-      const overrides = { trainingRecordId: null, selectedTraining: null };
+      const overrides = { trainingRecordId: null, selectedTrainingCourse: null };
 
       it('should not show the input boxes for expiry date', async () => {
         const { queryByTestId } = await setup(overrides);
@@ -273,7 +314,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
   describe('Submit', () => {
     describe('when applying course detail to existing training record', () => {
       it('should call updateTrainingRecord when form is valid', async () => {
-        const { getByRole, updateSpy } = await setup({});
+        const { getByRole, updateSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
@@ -295,7 +336,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
     });
 
     describe('when adding a new training record', () => {
-      const overrides = { trainingRecordId: null, selectedTraining: null };
+      const overrides = { trainingRecordId: null, trainingRecord: null };
 
       it('should call createTrainingRecord when form is valid', async () => {
         const { getByRole, createTrainingRecordSpy } = await setup(overrides);
