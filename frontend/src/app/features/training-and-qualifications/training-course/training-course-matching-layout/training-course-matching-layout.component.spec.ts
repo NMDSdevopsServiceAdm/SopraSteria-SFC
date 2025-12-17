@@ -25,6 +25,7 @@ import { render, within } from '@testing-library/angular';
 import { SelectUploadFileComponent } from '../../../../shared/components/select-upload-file/select-upload-file.component';
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
 import userEvent from '@testing-library/user-event';
+import { Location } from '@angular/common';
 
 describe('TrainingCourseMatchingLayoutComponent', () => {
   const mockTrainingRecordData = {
@@ -145,6 +146,9 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     const certificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
     spyOn(trainingService, 'getSelectedTrainingCourse').and.returnValue(selectedTrainingCourse);
 
+    const location = injector.inject(Location) as Location;
+    const historyBackSpy = spyOn(location, 'back');
+
     return {
       ...setupTools,
       component,
@@ -155,6 +159,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       alertServiceSpy,
       trainingService,
       certificateService,
+      historyBackSpy,
     };
   }
 
@@ -277,17 +282,15 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     });
 
     it('should display the "Select a different training course" link if more than one training course exists', async () => {
-      const { component, getByTestId } = await setup();
+      const { historyBackSpy, getByTestId } = await setup();
 
       const span = getByTestId('includeTraining');
       const link = span.closest('a');
       expect(link).toBeTruthy();
 
-      const href = link.getAttribute('href');
+      userEvent.click(link);
 
-      expect(href).toContain(
-        `/workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}/training/${component.trainingRecordId}/include-training-course-details`,
-      );
+      expect(historyBackSpy).toHaveBeenCalled();
     });
 
     it('should NOT display the link if only one training course exists', async () => {

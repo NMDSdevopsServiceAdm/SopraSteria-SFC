@@ -1,4 +1,9 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import dayjs from 'dayjs';
+import { Subscription } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+
+import { Location } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -17,9 +22,6 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { DateValidator } from '@shared/validators/date.validator';
-import dayjs from 'dayjs';
-import { Subscription } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
 
 type JourneyType = 'ApplyToExistingRecord' | 'AddNewTrainingRecord';
 type FormGroupDateValues = { day: number; month: number; year: number };
@@ -67,6 +69,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     private trainingService: TrainingService,
     private alertService: AlertService,
     private certificateService: TrainingCertificateService,
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -478,6 +481,11 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       this.trainingRecordId,
       'delete',
     ]);
+  }
+
+  public returnToSelectTrainingCoursePage(event: Event): void {
+    event.preventDefault();
+    this.location.back();
   }
 
   public onCancel(event: Event): void {

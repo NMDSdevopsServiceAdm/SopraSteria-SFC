@@ -21,15 +21,9 @@
                     *ngIf="trainingCourses?.length > 1"
                     class="govuk-button govuk-!-padding-left-0 govuk-!-padding-bottom-0 govuk-button--link govuk__flex govuk-link--no-visited-state"
                     draggable="false"
-                    [routerLink]="[
-                      '/workplace',
-                      workplace.uid,
-                      'training-and-qualifications-record',
-                      worker.uid,
-                      'training',
-                      trainingRecordId,
-                      'include-training-course-details',
-                    ]"
+                    href="#"
+                    (click)="returnToSelectTrainingCoursePage($event)"
+                    tabindex="0"
                   >
                     <img src="/assets/images/Addtraining.svg" alt="" />
                     <span class="govuk__nowrap" data-testid="includeTraining">Select a different training course </span>
