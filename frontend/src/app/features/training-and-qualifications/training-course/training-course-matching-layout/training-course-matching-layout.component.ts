@@ -225,16 +225,27 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       this.expiryMismatchWarning = false;
       return;
     }
-    const completedDate = this.toDayjs(completed);
-    const expiresDate = this.toDayjs(expires);
-    const expectedExpiry = completedDate?.add(validityPeriodInMonth, 'month');
 
-    if (completedDate && expiresDate && expectedExpiry && this.form.valid) {
+    const expiresDate = this.toDayjs(expires);
+    const expectedExpiry = this.getExpectedExpiryDate();
+
+    if (expectedExpiry && this.form.valid) {
       const diff = !expiresDate.isSame(expectedExpiry, 'day');
       this.expiryMismatchWarning = diff;
     } else {
       this.expiryMismatchWarning = false;
     }
+  }
+
+  private getExpectedExpiryDate(): dayjs.Dayjs {
+    const { completed } = this.form.value;
+    const validityPeriodInMonth = this.selectedTrainingCourse?.validityPeriodInMonth;
+    if (!completed || !validityPeriodInMonth) {
+      return null;
+    }
+
+    const completedDate = this.toDayjs(completed);
+    return completedDate?.add(validityPeriodInMonth, 'month');
   }
 
   private setupFormErrorsMap(): void {
@@ -294,7 +305,11 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     const { completed, expires, notes } = this.form.controls;
 
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
-    const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
+
+    const expiresDate =
+      this.journeyType === 'ApplyToExistingRecord'
+        ? this.dateGroupToDayjs(expires as UntypedFormGroup)
+        : this.getExpectedExpiryDate();
 
     return {
       ...this.selectedTrainingCourse,

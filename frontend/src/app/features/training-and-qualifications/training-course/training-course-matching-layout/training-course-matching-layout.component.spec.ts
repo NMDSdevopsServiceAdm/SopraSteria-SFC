@@ -35,6 +35,8 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
   };
 
   const defaultSelectedTrainingCourse = {
+    id: 1,
+    uid: 'course-uid-1',
     name: 'Basic Sefeguarding For support staff',
     accredited: null,
     deliveredBy: null,
@@ -53,17 +55,19 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
     { id: 1, name: 'Fire Safety' },
     { id: 2, name: 'Manual Handling' },
   ];
+  const mockWorkerUid = 'worker-uid';
+  const mockEstablishmentUid = 'establishment-uid';
 
   async function setup(overrides: any = {}) {
     const defaultTrainingRecord = { ...mockTrainingRecordData };
 
-    const selectedTrainingCourse = overrides?.selectedTraining ?? defaultSelectedTrainingCourse;
+    const selectedTrainingCourse = overrides?.selectedTrainingCourse ?? defaultSelectedTrainingCourse;
     const trainingRecordId = overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : '1';
 
     const mockTrainingRecord =
       overrides?.trainingRecord !== undefined ? overrides.trainingRecord : defaultTrainingRecord;
     const mockWorker = {
-      uid: '2',
+      uid: mockWorkerUid,
       mainJob: {
         jobId: '1',
         title: 'Admin',
@@ -80,7 +84,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              params: { trainingRecordId, establishmentuid: '24', id: 2 },
+              params: { trainingRecordId, establishmentuid: mockEstablishmentUid, id: mockWorkerUid },
               data: {
                 trainingRecord: mockTrainingRecord,
                 trainingCourses: mockTrainingCourses,
@@ -90,7 +94,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
               snapshot: {
                 data: {
                   establishment: {
-                    uid: '1',
+                    uid: mockEstablishmentUid,
                   },
                 },
               },
@@ -114,7 +118,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
         {
           provide: EstablishmentService,
           useFactory: () => ({
-            establishment: { uid: '24' },
+            establishment: { uid: mockEstablishmentUid },
           }),
         },
         { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
@@ -343,7 +347,68 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
 
         userEvent.click(getByRole('button', { name: 'Save training record' }));
 
-        expect(createTrainingRecordSpy).toHaveBeenCalled();
+        expect(createTrainingRecordSpy).toHaveBeenCalledWith(mockEstablishmentUid, mockWorkerUid, {
+          ...defaultSelectedTrainingCourse,
+          title: defaultSelectedTrainingCourse.name,
+          trainingCategory: { id: defaultSelectedTrainingCourse.category.id },
+          trainingCourseFK: 1,
+          completed: null,
+          expires: null,
+          notes: null,
+        });
+      });
+
+      it('should automatically set the expiry date of new training course', async () => {
+        const { getByRole, getByTestId, createTrainingRecordSpy } = await setup(overrides);
+
+        const completeDate = within(getByTestId('completedDate'));
+
+        userEvent.type(completeDate.getByLabelText('Day'), '15');
+        userEvent.type(completeDate.getByLabelText('Month'), '2');
+        userEvent.type(completeDate.getByLabelText('Year'), '2025');
+
+        const expectedExpiryDate = '2026-02-15';
+
+        userEvent.click(getByRole('button', { name: 'Save training record' }));
+
+        expect(createTrainingRecordSpy).toHaveBeenCalledWith(
+          mockEstablishmentUid,
+          mockWorkerUid,
+          jasmine.objectContaining({ expires: expectedExpiryDate }),
+        );
+      });
+
+      it('should not set the expiry date if completed date is empty', async () => {
+        const { getByRole, createTrainingRecordSpy } = await setup(overrides);
+
+        userEvent.click(getByRole('button', { name: 'Save training record' }));
+
+        expect(createTrainingRecordSpy).toHaveBeenCalledWith(
+          mockEstablishmentUid,
+          mockWorkerUid,
+          jasmine.objectContaining({ expires: null }),
+        );
+      });
+
+      it('should not set the expiry date if the course does not have a validity period', async () => {
+        const { getByRole, getByTestId, createTrainingRecordSpy } = await setup({
+          ...overrides,
+          selectedTrainingCourse: { ...defaultSelectedTrainingCourse, validityPeriodInMonth: null },
+        });
+
+        const completeDate = within(getByTestId('completedDate'));
+
+        userEvent.type(completeDate.getByLabelText('Day'), '15');
+        userEvent.type(completeDate.getByLabelText('Month'), '2');
+        userEvent.type(completeDate.getByLabelText('Year'), '2025');
+
+        userEvent.click(getByRole('button', { name: 'Save training record' }));
+
+        expect(createTrainingRecordSpy).toHaveBeenCalledWith(
+          mockEstablishmentUid,
+          mockWorkerUid,
+          jasmine.objectContaining({ expires: null }),
+        );
       });
     });
 
@@ -399,18 +464,30 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
   });
 
   describe('delete', () => {
-    it('should navigate to delete record page', async () => {
-      const { component, routerSpy } = await setup();
-      component.navigateToDeleteTrainingRecord();
+    it('should navigate to delete record page when delete link is clicked', async () => {
+      const { getByText, routerSpy } = await setup();
+
+      const deleteLink = getByText('Delete this training record');
+      userEvent.click(deleteLink);
+
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
-        '24',
+        mockEstablishmentUid,
         'training-and-qualifications-record',
-        '2',
+        mockWorkerUid,
         'training',
         '1',
         'delete',
       ]);
+    });
+
+    describe('when adding a new training record', () => {
+      it('should not show the delete link when user is adding a new training record', async () => {
+        const { queryByText } = await setup({ trainingRecordId: null, selectedTrainingCourse: null });
+
+        const deleteLink = queryByText('Delete this training record');
+        expect(deleteLink).toBeFalsy();
+      });
     });
   });
 
