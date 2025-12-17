@@ -349,7 +349,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   }
 
   private onSubmitSuccess(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
+    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' }).then(() => {
       this.alertService.addAlert({
         type: 'success',
         message: 'Training record updated',
@@ -467,12 +467,14 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   public onCancel(event: Event): void {
     event.preventDefault();
-    this.router.navigate(['/dashboard'], { fragment: 'home' });
+    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
+
   public handleOnInput(event: Event) {
     this.notesValue = (<HTMLInputElement>event.target).value;
     this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
   }
+
   public toggleNotesOpen(): void {
     this.notesOpen = !this.notesOpen;
   }

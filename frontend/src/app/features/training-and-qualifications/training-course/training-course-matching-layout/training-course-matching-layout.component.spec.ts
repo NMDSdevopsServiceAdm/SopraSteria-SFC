@@ -321,13 +321,13 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
         expect(updateSpy).toHaveBeenCalled();
       });
 
-      it('should navigate to home page and show banner after successful submit', async () => {
+      it('should navigate to training and qualifications page and show banner after successful submit', async () => {
         const { fixture, routerSpy, alertServiceSpy, getByRole } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and return' }));
         await fixture.whenStable();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
         expect(alertServiceSpy).toHaveBeenCalledWith({
           type: 'success',
           message: 'Training record updated',
@@ -416,11 +416,12 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
 
   describe('Cancel', () => {
     it('should cancel and navigate to dashboard', async () => {
-      const { component, routerSpy } = await setup();
-      const event = { preventDefault: jasmine.createSpy() };
-      component.onCancel(event as any);
-      expect(event.preventDefault).toHaveBeenCalled();
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+      const { getByRole, routerSpy } = await setup();
+
+      const cancelLink = getByRole('button', { name: 'Cancel' });
+      userEvent.click(cancelLink);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
     });
   });
 });
