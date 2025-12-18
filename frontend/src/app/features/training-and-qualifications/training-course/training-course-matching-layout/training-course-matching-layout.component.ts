@@ -124,7 +124,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
         month: null,
         year: null,
       }),
-      notes: [null, Validators.maxLength(this.notesMaxLength)],
+      notes: [null, { validators: [Validators.maxLength(this.notesMaxLength)], updateOn: 'submit' }],
     });
 
     const minDate = dayjs().subtract(100, 'years');

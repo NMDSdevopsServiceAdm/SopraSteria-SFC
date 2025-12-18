@@ -176,66 +176,12 @@
         <div class="govuk-grid-row govuk-!-margin-top-4">
           <div class="govuk-grid-column-two-thirds-from-desktop">
             <div class="govuk-character-count govuk-!-margin-bottom-4">
-              <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
-                <label class="govuk-label govuk-!-font-weight-bold" for="notes"> Add a note </label>
-                <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
-                  <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
-                </span>
-                <button
-                  type="button"
-                  (click)="toggleNotesOpen()"
-                  class="govuk-accordion__show-all govuk-!-margin-bottom-0"
-                  [attr.aria-expanded]="notesOpen"
-                >
-                  <span
-                    class="govuk-accordion-nav__chevron"
-                    [class]="{
-                      'govuk-accordion-nav__chevron--up': notesOpen,
-                      'govuk-accordion-nav__chevron--down': !notesOpen,
-                    }"
-                  ></span>
-                  <span class="govuk-accordion__show-all-text">{{ !notesOpen ? 'Open notes' : 'Close notes' }}</span>
-                </button>
-                <div
-                  data-testid="notesSection"
-                  class="govuk-!-margin-top-3 govuk-!-padding-bottom-1"
-                  [ngClass]="{ 'govuk-visually-hidden': !notesOpen }"
-                >
-                  <textarea
-                    class="govuk-textarea"
-                    [class.govuk-textarea--error]="submitted && form.get('notes').invalid"
-                    [formControlName]="'notes'"
-                    id="notes"
-                    name="notes"
-                    rows="5"
-                    [value]="notesValue"
-                    (input)="handleOnInput($event)"
-                  ></textarea>
-                  <span
-                    class="govuk-character-count__message govuk-hint"
-                    [ngClass]="{
-                      'govuk-hint': remainingCharacterCount >= 0,
-                      'govuk-error-message': remainingCharacterCount < 0,
-                    }"
-                    aria-live="polite"
-                  >
-                    <noscript> You can enter up to {{ notesMaxLength }} characters </noscript>
-                    <ng-container>
-                      You have {{ remainingCharacterCount | absoluteNumber | number }}
-                      {{
-                        remainingCharacterCount
-                          | absoluteNumber
-                          | i18nPlural
-                            : {
-                                '=1': 'character',
-                                other: 'characters',
-                              }
-                      }}
-                      {{ remainingCharacterCount >= 0 ? 'remaining' : 'too many' }}
-                    </ng-container>
-                  </span>
-                </div>
-              </div>
+              <app-add-a-note-accordion
+                [errorMessage]="form.get('notes').invalid ? getFirstErrorMessage('notes') : null"
+                [notes]="form.get('notes')"
+                [submitted]="submitted"
+              >
+              </app-add-a-note-accordion>
             </div>
           </div>
         </div>
