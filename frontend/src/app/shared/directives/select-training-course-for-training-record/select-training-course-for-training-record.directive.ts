@@ -61,11 +61,13 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
     this.trainingCoursesIds = this.trainingCourses.map((trainingCourse) => {
       return trainingCourse.id;
     });
+    this.clearSelectedTrainingCourseWhenClickedAway();
   }
 
   protected init(): void {}
   protected setUpVariables(): void {}
   protected navigateOnCancelClick(): void {}
+  protected clearSelectedTrainingCourseWhenClickedAway(): void {}
 
   protected loadTrainingCourses(): void {
     this.trainingCourses = this.route.snapshot.data?.trainingCourses;
