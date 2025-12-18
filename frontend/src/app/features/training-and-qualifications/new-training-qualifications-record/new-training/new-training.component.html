@@ -45,13 +45,11 @@
                     <a
                       class="govuk-link--no-visited-state"
                       [attr.data-testid]="'Title-' + trainingRecord.uid"
-                      [routerLink]="[
-                        '../training',
-                        trainingRecord.uid,
-                        {
-                          trainingCategory: trainingRecord.trainingCategory | json
-                        }
-                      ]"
+                      [routerLink]="
+                        trainingRecord.isMatchedToTrainingCourse
+                          ? ['../training', trainingRecord.uid, 'matching-layout']
+                          : ['../training', trainingRecord.uid]
+                      "
                       >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
                     >
                   </ng-template>
