@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TrainingRecord } from '@core/model/training.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TrainingCourse } from '@core/model/training-course.model';
 import { UntypedFormControl } from '@angular/forms';
 import { Worker } from '@core/model/worker.model';
@@ -8,6 +8,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingService } from '@core/services/training.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-include-training-course-details',
@@ -35,6 +36,7 @@ export class IncludeTrainingCourseDetailsComponent {
     this.trainingCourses = this.route.snapshot.data.trainingCourses;
     this.workplace = this.route.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
+    this.clearSelectedTrainingCourseWhenClickedAway();
   }
 
   private setBackLink(): void {
@@ -73,5 +75,19 @@ export class IncludeTrainingCourseDetailsComponent {
       this.trainingRecord.uid,
       'matching-layout',
     ]);
+  }
+
+  private clearSelectedTrainingCourseWhenClickedAway() {
+    const parentPath = this.trainingRecord.uid;
+
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes(parentPath)),
+        take(1),
+      )
+      .subscribe(() => {
+        this.trainingService.setSelectedTrainingCourse(null);
+      });
   }
 }
