@@ -79,6 +79,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     this.establishmentUid = this.route.snapshot.params?.establishmentuid;
     this.workerId = this.route.snapshot.params?.id;
     this.workplace = this.establishmentService.establishment;
+
     this.determineJourneyType();
     this.loadTrainingCourse();
 
@@ -88,7 +89,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       this.fillForm();
       this.autoFillExpiry();
       this.checkExpiryMismatch();
-      this.setupExpiryAutofill();
+      this.setupCheckExpiryMismatch();
     }
 
     this.setBackLink();
@@ -114,11 +115,14 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      completed: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
+      completed: this.formBuilder.group(
+        {
+          day: null,
+          month: null,
+          year: null,
+        },
+        { updateOn: this.journeyType === 'AddNewTrainingRecord' ? 'submit' : 'change' },
+      ),
       expires: this.formBuilder.group({
         day: null,
         month: null,
@@ -190,22 +194,25 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     }
   }
 
-  private setupExpiryAutofill(): void {
-    this.form.get('completed').valueChanges.subscribe(() => {
-      this.autoFillExpiry();
+  private setupCheckExpiryMismatch(): void {
+    this.form.valueChanges.subscribe(() => {
       this.checkExpiryMismatch();
     });
-    this.form.get('expires').valueChanges.subscribe(() => {
-      this.checkExpiryMismatch();
+
+    this.form.get('completed').statusChanges.subscribe((status) => {
+      if (status === 'VALID') {
+        this.autoFillExpiry();
+      }
     });
   }
 
   public autoFillExpiry(): void {
     const completed = this.toDayjs(this.form.get('completed')?.value);
-    const expires = this.toDayjs(this.form.get('expires')?.value);
     const validity = this.selectedTrainingCourse?.validityPeriodInMonth;
 
-    if (completed && !expires && validity) {
+    const expiryDateIsEmpty = Object.values(this.form.get('expires').value).every((input) => input == null);
+
+    if (completed && validity && expiryDateIsEmpty) {
       const newExpiry = completed.add(validity, 'month');
 
       this.form.patchValue(
@@ -220,6 +227,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       );
     }
   }
+
   public checkExpiryMismatch(): void {
     const { completed, expires } = this.form.value;
     const validityPeriodInMonth = this.selectedTrainingCourse?.validityPeriodInMonth;
