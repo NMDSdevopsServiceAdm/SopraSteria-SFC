@@ -3,6 +3,7 @@
 
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 import {
+  clickIntoAddAndManageTrainingCourses,
   clickIntoTrainingCourse,
   clickIntoWorkerTAndQRecordPage,
   expectPageToHaveDetails,
@@ -29,11 +30,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
     });
 
     it('should be able to visit "Add and manage training course" page from training and qualification tab', () => {
-      onHomePage.clickTab('Training and qualifications');
-      cy.contains('Add and manage training').click();
-      cy.get('a').contains('Add and manage training courses').click();
-
-      cy.get('h1').should('contain.text', 'Add and manage training courses for your workplace');
+      clickIntoAddAndManageTrainingCourses();
       cy.get('[data-testid="training-course-table"]')
         .as('training-course-table')
         .should('contain.text', 'Test training course');
@@ -117,10 +114,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
       };
 
       it('should be able to edit a training course and apply the change to linked training records', () => {
-        onHomePage.clickTab('Training and qualifications');
-        cy.contains('Add and manage training').click();
-        cy.get('a').contains('Add and manage training courses').click();
-        cy.get('h1').should('contain', 'Add and manage training courses');
+        clickIntoAddAndManageTrainingCourses();
 
         clickIntoTrainingCourse(trainingCourseName);
         cy.get('h1').should('contain', 'Training course details');
@@ -170,10 +164,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
       });
 
       it('should be able to edit the training course only', () => {
-        onHomePage.clickTab('Training and qualifications');
-        cy.contains('Add and manage training').click();
-        cy.get('a').contains('Add and manage training courses').click();
-        cy.get('h1').should('contain', 'Add and manage training courses');
+        clickIntoAddAndManageTrainingCourses();
 
         clickIntoTrainingCourse(trainingCourseName);
         cy.get('h1').should('contain', 'Training course details');
@@ -213,46 +204,87 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
       });
     });
 
-    describe('Remove training course page', () => {
+    describe('Remove training course', () => {
+      const trainingCourseName = 'Test remove training course';
+
       before(() => {
-        cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Test training course' });
+        cy.deleteAllTrainingCourses(establishmentID);
+        cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: trainingCourseName });
       });
 
-      it('should display page heading and training name', () => {
-        onHomePage.clickTab('Training and qualifications');
-        cy.contains('Add and manage training').click();
-        cy.get('a').contains('Add and manage training courses').click();
-        cy.get('h1').should('contain', 'Add and manage training courses');
+      it('should be able to remove a training course', () => {
+        clickIntoAddAndManageTrainingCourses();
 
-        cy.get('[data-testid^="remove-link-"]')
-          .should('exist')
-          .first()
-          .within(() => {
-            cy.contains('Remove');
-            cy.get('.govuk-visually-hidden').should('contain.text', 'Test training course');
-          })
-          .click();
+        cy.contains('a', trainingCourseName).should('be.visible');
+        cy.get(`tr:contains("${trainingCourseName}")`).contains('Remove').click();
 
         cy.url().should('include', '/remove');
 
-        cy.get('[data-testid="heading"]').within(() => {
-          cy.contains('Training and qualifications');
-          cy.contains('What happens when you remove');
-        });
+        cy.get('[data-testid="heading"]').contains('What happens when you remove');
 
-        cy.contains('strong', 'Training course name:').should('exist');
-        cy.get('p.govuk__nowrap').should('contain.text', 'Test training course');
-
-        cy.get('ul.govuk-list--bullet').within(() => {
-          cy.contains('are not deleted').should('be.visible');
-          cy.contains('keep the details of the removed training course').should('be.visible');
-          cy.contains('still generate an alert when the training is due to expire').should('be.visible');
-          cy.contains('keep any certificates and notes that were added').should('be.visible');
-        });
+        cy.contains(`Training course name: ${trainingCourseName}`).should('exist');
 
         cy.contains('Remove this training course').click();
         cy.url().should('include', '/add-and-manage-training-courses');
-        cy.contains('Training course removed').should('be.visible');
+        cy.get('app-alert span').contains('Training course removed').should('be.visible');
+
+        cy.contains('a', trainingCourseName).should('not.exist');
+      });
+    });
+
+    describe('Remove all training courses', () => {
+      const trainingCourseNames = [
+        'Test remove training course A',
+        'Test remove training course B',
+        'Test remove training course C',
+      ];
+      const trainingRecordTitle = 'Test training record linked to course';
+
+      before(() => {
+        cy.deleteAllTrainingCourses(establishmentID);
+        trainingCourseNames.forEach((trainingCourseName) => {
+          cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: trainingCourseName });
+        });
+
+        cy.addWorkerTrainingLinkedToCourse({
+          establishmentID,
+          workerName,
+          categoryId: 1,
+          trainingCourseName: trainingCourseNames[0],
+          trainingTitle: trainingRecordTitle,
+        });
+      });
+
+      it('should be able to remove all training courses', () => {
+        clickIntoAddAndManageTrainingCourses();
+
+        trainingCourseNames.forEach((trainingCourseName) => {
+          cy.contains('a', trainingCourseName).should('be.visible');
+        });
+
+        cy.get('a').contains('Remove all').click();
+
+        cy.url().should('include', '/remove');
+
+        cy.get('h1').contains('What happens when you remove all training courses');
+
+        cy.get('[data-testid="training-courses"]').within(() => {
+          trainingCourseNames.forEach((trainingCourseName) => {
+            cy.contains(trainingCourseName).should('be.visible');
+          });
+        });
+
+        cy.get('button').contains('Remove all training courses').click();
+        cy.url().should('include', '/add-and-manage-training-courses');
+        cy.get('app-alert span').contains('Training courses removed').should('be.visible');
+
+        trainingCourseNames.forEach((trainingCourseName) => {
+          cy.contains('a', trainingCourseName).should('not.exist');
+        });
+
+        // verify that linked training record is not deleted
+        clickIntoWorkerTAndQRecordPage(workerName);
+        cy.get('a').contains(trainingRecordTitle).should('exist');
       });
     });
   });

@@ -55,6 +55,15 @@ const routes: Routes = [
     ],
   },
   {
+    path: 'remove-all-training-courses',
+    component: RemoveTrainingCourseComponent,
+    resolve: { trainingCourses: TrainingCourseResolver },
+    data: {
+      title: 'Remove all training course',
+      journeyType: 'RemoveAll',
+    },
+  },
+  {
     path: ':trainingCourseUid',
     resolve: {
       trainingCourses: TrainingCourseResolver,
@@ -75,7 +84,7 @@ const routes: Routes = [
         component: RemoveTrainingCourseComponent,
         data: {
           title: 'Remove training course',
-          journeyType: 'Remove',
+          journeyType: 'RemoveSingle',
         },
       },
       {

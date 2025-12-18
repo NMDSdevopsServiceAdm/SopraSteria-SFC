@@ -7,12 +7,14 @@ const {
   getTrainingCourse,
   updateTrainingCourse,
   deleteTrainingCourse,
+  deleteAllTrainingCourses,
   getTrainingCoursesWithLinkableRecords,
   updateTrainingRecordsWithCourseDetails,
 } = require('./controllers');
 
 router.route('/').get(hasPermission('canViewWorker'), fetchAllTrainingCourses);
 router.route('/').post(hasPermission('canEditWorker'), createTrainingCourse);
+router.route('/').delete(hasPermission('canEditWorker'), deleteAllTrainingCourses);
 router
   .route('/getTrainingCoursesWithLinkableRecords')
   .get(hasPermission('canViewWorker'), getTrainingCoursesWithLinkableRecords);

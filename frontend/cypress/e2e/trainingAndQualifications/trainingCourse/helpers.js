@@ -1,8 +1,18 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
+import { onHomePage } from '../../../support/page_objects/onHomePage';
+
 export const clickIntoTrainingCourse = (courseName) => {
   cy.get('a').not(':contains("Remove")').contains(courseName).click();
+};
+
+export const clickIntoAddAndManageTrainingCourses = () => {
+  onHomePage.clickTab('Training and qualifications');
+  cy.contains('Add and manage training').click();
+  cy.get('a').contains('Add and manage training courses').click();
+
+  cy.get('h1').should('contain.text', 'Add and manage training courses for your workplace');
 };
 
 export const fillInCourseDetails = (courseDetails) => {

@@ -56,7 +56,7 @@ describe('AddAndManageTrainingCoursesComponent', () => {
 
     const expectedHeadingText = 'Add and manage training courses for your workplace';
     expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
-    expect(getByText('Training and qualifications')).toBeTruthy();
+    expect(getByText('Add and update training courses')).toBeTruthy();
   });
 
   it('should show CTA button to add a training course', async () => {
@@ -109,6 +109,23 @@ describe('AddAndManageTrainingCoursesComponent', () => {
         expect(courseLink).toBeTruthy();
         expect(courseLink.getAttribute('href')).toEqual(`/${course.uid}/details`);
       });
+    });
+
+    it('should show a "Remove all" link if workplace have 2 or more training courses', async () => {
+      const { queryByTestId } = await setup({ trainingCourses: [trainingCourseBuilder(), trainingCourseBuilder()] });
+      const trainingCourseTable = queryByTestId('training-course-table');
+
+      const removeAllLink = within(trainingCourseTable).queryByRole('link', { name: 'Remove all' });
+      expect(removeAllLink).toBeTruthy();
+      expect(removeAllLink.getAttribute('href')).toEqual(`/remove-all-training-courses`);
+    });
+
+    it('should not show a "Remove all" link if workplace have just one training course', async () => {
+      const { queryByTestId } = await setup({ trainingCourses: [trainingCourseBuilder()] });
+      const trainingCourseTable = queryByTestId('training-course-table');
+
+      const removeAllLink = within(trainingCourseTable).queryByRole('link', { name: 'Remove all' });
+      expect(removeAllLink).toBeFalsy();
     });
   });
 });
