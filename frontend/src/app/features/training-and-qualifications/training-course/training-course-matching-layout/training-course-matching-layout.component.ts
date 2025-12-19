@@ -23,7 +23,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { DateValidator } from '@shared/validators/date.validator';
 
-type JourneyType = 'ApplyToExistingRecord' | 'AddNewTrainingRecord';
+type JourneyType = 'ApplyCourseToExistingRecord' | 'AddNewTrainingRecordWithCourse' | 'ViewExistingRecord';
 type FormGroupDateValues = { day: number; month: number; year: number };
 
 @Component({
@@ -39,8 +39,6 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   public workerId: string;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
-  public submitButtonDisabled: boolean = false;
-  public buttonText: string;
   public notesOpen = false;
   public notesMaxLength = 1000;
   public remainingCharacterCount: number = this.notesMaxLength;
@@ -54,9 +52,13 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   public trainingCertificates: TrainingCertificate[] = [];
   public filesToRemove: TrainingCertificate[] = [];
   public trainingCategory: { id: number; category: string };
+
   public selectedTrainingCourse: TrainingCourse;
   public trainingCourses: TrainingCourse[];
+
   public journeyType: JourneyType;
+  public headingText: string;
+  public trainingToDisplay: TrainingCourse | (TrainingRecord & { name: string; trainingCategoryName: string });
 
   constructor(
     private workerService: WorkerService,
@@ -80,17 +82,11 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     this.workerId = this.route.snapshot.params?.id;
     this.workplace = this.establishmentService.establishment;
 
-    this.determineJourneyType();
     this.loadTrainingCourse();
-
+    this.determineJourneyType();
     this.setupForm();
-
-    if (this.journeyType === 'ApplyToExistingRecord') {
-      this.fillForm();
-      this.autoFillExpiry();
-      this.checkExpiryMismatch();
-      this.setupCheckExpiryMismatch();
-    }
+    this.loadDataAccordingToJourneyType();
+    this.loadTrainingToDisplay();
 
     this.setBackLink();
     this.setupFormErrorsMap();
@@ -101,16 +97,73 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   }
 
   private determineJourneyType(): void {
-    if (this.trainingRecordId && this.trainingRecord) {
-      this.journeyType = 'ApplyToExistingRecord';
-    } else {
-      this.journeyType = 'AddNewTrainingRecord';
+    const isExistingRecord = this.trainingRecordId && this.trainingRecord;
+    if (!isExistingRecord) {
+      this.journeyType = 'AddNewTrainingRecordWithCourse';
+      return;
     }
+
+    if (this.selectedTrainingCourse) {
+      this.journeyType = 'ApplyCourseToExistingRecord';
+      return;
+    }
+
+    const isMatchedToTrainingCourse = this.trainingRecord.isMatchedToTrainingCourse;
+    if (isMatchedToTrainingCourse) {
+      this.journeyType = 'ViewExistingRecord';
+      return;
+    }
+
+    // if not matching any of the expected journey
+    this.returnToWorkerTrainingRecordPage();
   }
 
   private loadTrainingCourse(): void {
     this.trainingCourses = this.route.snapshot.data?.trainingCourses;
     this.selectedTrainingCourse = this.trainingService.getSelectedTrainingCourse();
+  }
+
+  private loadDataAccordingToJourneyType(): void {
+    switch (this.journeyType) {
+      case 'ApplyCourseToExistingRecord': {
+        this.fillForm();
+        this.autoFillExpiry();
+        this.checkExpiryMismatch();
+        this.setupCheckExpiryMismatch();
+        this.headingText = 'Training record details';
+        break;
+      }
+      case 'ViewExistingRecord': {
+        this.fillForm();
+        this.checkExpiryMismatch();
+        this.setupCheckExpiryMismatch();
+        this.headingText = 'Training record details';
+        break;
+      }
+      case 'AddNewTrainingRecordWithCourse': {
+        this.headingText = 'Add training record details';
+      }
+    }
+  }
+
+  private loadTrainingToDisplay(): void {
+    switch (this.journeyType) {
+      case 'ApplyCourseToExistingRecord':
+      case 'AddNewTrainingRecordWithCourse': {
+        this.trainingToDisplay = this.selectedTrainingCourse;
+        break;
+      }
+      case 'ViewExistingRecord': {
+        const trainingToDisplay = {
+          ...this.trainingRecord,
+          name: this.trainingRecord.title,
+          trainingCategoryName: this.trainingRecord.trainingCategory.category,
+        };
+
+        this.trainingToDisplay = trainingToDisplay;
+        break;
+      }
+    }
   }
 
   private setupForm(): void {
@@ -121,7 +174,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
           month: null,
           year: null,
         },
-        { updateOn: this.journeyType === 'AddNewTrainingRecord' ? 'submit' : 'change' },
+        { updateOn: this.journeyType === 'AddNewTrainingRecordWithCourse' ? 'submit' : 'change' },
       ),
       expires: this.formBuilder.group({
         day: null,
@@ -318,7 +371,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
 
     const expiresDate =
-      this.journeyType === 'ApplyToExistingRecord'
+      this.journeyType === 'ApplyCourseToExistingRecord'
         ? this.dateGroupToDayjs(expires as UntypedFormGroup)
         : this.getExpectedExpiryDate();
 
@@ -376,7 +429,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   private onSubmitSuccess(): void {
     const alertMessage =
-      this.journeyType === 'AddNewTrainingRecord' ? 'Training record added' : 'Training record updated';
+      this.journeyType === 'AddNewTrainingRecordWithCourse' ? 'Training record added' : 'Training record updated';
 
     this.returnToWorkerTrainingRecordPage().then(() => {
       this.alertService.addAlert({
@@ -507,14 +560,5 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   private returnToWorkerTrainingRecordPage(): Promise<boolean> {
     const url = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'];
     return this.router.navigate(url);
-  }
-
-  public handleOnInput(event: Event) {
-    this.notesValue = (<HTMLInputElement>event.target).value;
-    this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
-  }
-
-  public toggleNotesOpen(): void {
-    this.notesOpen = !this.notesOpen;
   }
 }

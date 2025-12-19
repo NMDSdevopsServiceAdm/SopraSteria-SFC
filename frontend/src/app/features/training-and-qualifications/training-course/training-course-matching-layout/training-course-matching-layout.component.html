@@ -7,7 +7,7 @@
           <div class="govuk-grid-column-two-thirds-from-desktop">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
               <span *ngIf="worker" class="govuk-caption-l" data-testid="workerName">{{ worker.nameOrId }}</span>
-              <h1 class="govuk-fieldset__heading">Training record details</h1>
+              <h1 class="govuk-fieldset__heading">{{ headingText }}</h1>
             </legend>
             <dl
               class="govuk-summary-list govuk-summary-list--top-border govuk-summary-list--wide-key govuk-summary-list--wide"
@@ -16,7 +16,7 @@
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Training course name</dt>
                 <dd class="govuk-summary-list__value">
-                  {{ selectedTrainingCourse?.name }}
+                  {{ trainingToDisplay?.name }}
                   <a
                     *ngIf="trainingCourses?.length > 1"
                     class="govuk-button govuk-!-padding-left-0 govuk-!-padding-bottom-0 govuk-button--link govuk__flex govuk-link--no-visited-state"
@@ -32,43 +32,39 @@
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Training category</dt>
                 <dd class="govuk-summary-list__value">
-                  {{
-                    selectedTrainingCourse?.trainingCategoryName ? selectedTrainingCourse?.trainingCategoryName : '-'
-                  }}
+                  {{ trainingToDisplay?.trainingCategoryName ?? '-' }}
                 </dd>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key govuk__nowrap">Is the training course accredited?</dt>
                 <dd class="govuk-summary-list__value">
-                  {{ selectedTrainingCourse?.accredited ? selectedTrainingCourse?.accredited : '-' }}
+                  {{ trainingToDisplay?.accredited ?? '-' }}
                 </dd>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key govuk__nowrap">Who delivered the training course?</dt>
                 <dd class="govuk-summary-list__value">
-                  {{ selectedTrainingCourse?.deliveredBy ? selectedTrainingCourse?.deliveredBy : '-' }}
+                  {{ trainingToDisplay?.deliveredBy ?? '-' }}
                 </dd>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Training provider name</dt>
                 <dd class="govuk-summary-list__value">
-                  {{
-                    selectedTrainingCourse?.externalProviderName ? selectedTrainingCourse?.externalProviderName : '-'
-                  }}
+                  {{ trainingToDisplay?.externalProviderName ?? '-' }}
                 </dd>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key govuk__nowrap">How is this training course delivered?</dt>
                 <dd class="govuk-summary-list__value">
-                  {{ selectedTrainingCourse?.howWasItDelivered ? selectedTrainingCourse?.howWasItDelivered : '-' }}
+                  {{ trainingToDisplay?.howWasItDelivered ?? '-' }}
                 </dd>
               </div>
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key govuk__nowrap">How long is the training valid for?</dt>
                 <dd class="govuk-summary-list__value">
                   {{
-                    selectedTrainingCourse?.validityPeriodInMonth
-                      ? selectedTrainingCourse?.validityPeriodInMonth + ' months'
+                    trainingToDisplay?.validityPeriodInMonth
+                      ? trainingToDisplay?.validityPeriodInMonth + ' months'
                       : '-'
                   }}
                 </dd>
@@ -85,7 +81,7 @@
                     <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
                       <legend
                         class="govuk-fieldset__legend"
-                        [class.govuk-fieldset__legend--s]="journeyType === 'ApplyToExistingRecord'"
+                        [class.govuk-fieldset__legend--s]="journeyType !== 'AddNewTrainingRecordWithCourse'"
                       >
                         Training completion date
                       </legend>
@@ -106,7 +102,7 @@
                   </div>
                 </div>
                 <div class="govuk-grid-column-one-half">
-                  @if (journeyType === 'ApplyToExistingRecord') {
+                  @if (journeyType !== 'AddNewTrainingRecordWithCourse') {
                     <div
                       data-testid="expiresDate"
                       class="govuk-form-group"
@@ -145,7 +141,7 @@
             <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%" />
           </div>
           <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
-            @if (journeyType === 'ApplyToExistingRecord') {
+            @if (journeyType === 'ApplyCourseToExistingRecord') {
               <a
                 class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center"
                 data-testid="deleteButton"
@@ -192,7 +188,7 @@
       </fieldset>
       <div class="govuk-button-group">
         <button type="submit" class="govuk-button govuk-!-margin-right-9">
-          {{ journeyType === 'ApplyToExistingRecord' ? 'Save and return' : 'Save training record' }}
+          {{ journeyType === 'ApplyCourseToExistingRecord' ? 'Save and return' : 'Save training record' }}
         </button>
         <a
           class="govuk-button govuk-button--link govuk-!-margin-left-9"

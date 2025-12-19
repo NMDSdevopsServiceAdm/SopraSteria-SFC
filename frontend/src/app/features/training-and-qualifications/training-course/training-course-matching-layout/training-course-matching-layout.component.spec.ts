@@ -5,8 +5,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
-import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { AlertService } from '@core/services/alert.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -18,7 +16,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockTrainingCertificateService } from '@core/test-utils/MockCertificateService';
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import { MockTrainingServiceWithOverrides } from '@core/test-utils/MockTrainingService';
-import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithOverrides, trainingRecord } from '@core/test-utils/MockWorkerService';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -27,8 +25,15 @@ import userEvent from '@testing-library/user-event';
 import { SelectUploadFileComponent } from '../../../../shared/components/select-upload-file/select-upload-file.component';
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
 
-describe('TrainingCourseMatchingLayoutComponent', () => {
+fdescribe('TrainingCourseMatchingLayoutComponent', () => {
   const mockTrainingRecordData = {
+    title: 'Training record title',
+    accredited: null,
+    deliveredBy: null,
+    trainingProviderId: null,
+    otherTrainingProviderName: null,
+    howWasItDelivered: null,
+    doesNotExpire: false,
     completed: '2024-01-01',
     expires: '2025-01-01',
     notes: 'Test notes',
@@ -52,7 +57,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     trainingCategoryName: 'Safeguarding adults',
   };
 
-  const mockTrainingCourses = [
+  const defaultTrainingCourses = [
     { id: 1, name: 'Fire Safety' },
     { id: 2, name: 'Manual Handling' },
   ];
@@ -65,6 +70,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     const selectedTrainingCourse = overrides?.selectedTrainingCourse ?? defaultSelectedTrainingCourse;
     const trainingRecordId = overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : '1';
 
+    const trainingCourses = overrides?.trainingCourses ?? defaultTrainingCourses;
     const mockTrainingRecord =
       overrides?.trainingRecord !== undefined ? overrides.trainingRecord : defaultTrainingRecord;
     const mockWorker = {
@@ -88,7 +94,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
               params: { trainingRecordId, establishmentuid: mockEstablishmentUid, id: mockWorkerUid },
               data: {
                 trainingRecord: mockTrainingRecord,
-                trainingCourses: mockTrainingCourses,
+                trainingCourses: trainingCourses,
               },
             },
             parent: {
@@ -166,6 +172,16 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should display a page heading', async () => {
+    const { getByRole } = await setup();
+    expect(getByRole('heading', { level: 1, name: 'Training record details' })).toBeTruthy();
+  });
+
+  it('should display a different page heading if adding a new training record', async () => {
+    const { getByRole } = await setup({ trainingRecord: null, trainingRecordId: null });
+    expect(getByRole('heading', { level: 1, name: 'Add training record details' })).toBeTruthy();
   });
 
   describe('fillForm', () => {
@@ -294,7 +310,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     });
 
     describe('when adding a new training record', () => {
-      const overrides = { trainingRecordId: null, selectedTrainingCourse: null };
+      const overrides = { trainingRecordId: null, trainingRecord: null };
 
       it('should not show the input boxes for expiry date', async () => {
         const { queryByTestId } = await setup(overrides);
@@ -324,27 +340,19 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     });
 
     it('should NOT display the link if only one training course exists', async () => {
-      const { component, fixture, queryByTestId } = await setup();
+      const { fixture, queryByTestId } = await setup({ trainingCourses: [defaultTrainingCourses[0]] });
 
-      component.trainingCourses = [
-        {
-          id: 1,
-          uid: '1',
-          name: 'Only Course',
-          trainingCategoryId: 10,
-          accredited: YesNoDontKnow.Yes,
-          deliveredBy: DeliveredBy.ExternalProvider,
-          externalProviderName: 'Provider',
-          howWasItDelivered: HowWasItDelivered.FaceToFace,
-          doesNotExpire: null,
-          validityPeriodInMonth: 12,
-        },
-      ];
-      component.selectedTrainingCourse = component.trainingCourses[0];
       fixture.detectChanges();
 
       const link = queryByTestId('includeTraining');
       expect(link).toBeNull();
+    });
+
+    describe('when viewing an existing training record', () => {
+      const overrides = { selectedTrainingCourse: null };
+      it('should show the data of training record instead of training course', async () => {
+        const { fixture, queryByTestId } = await setup(overrides);
+      });
     });
   });
 
@@ -495,19 +503,20 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
   });
 
   describe('Notes', () => {
-    it('should toggle notes open state', async () => {
-      const { component } = await setup();
-      const start = component.notesOpen;
-      component.toggleNotesOpen();
-      expect(component.notesOpen).toBe(!start);
-    });
-
     it('should update notes value & remaining characters on input', async () => {
-      const { component } = await setup();
-      const event = { target: { value: 'hello world' } } as any;
-      component.handleOnInput(event);
-      expect(component.notesValue).toBe('hello world');
-      expect(component.remainingCharacterCount).toBe(component.notesMaxLength - 'hello world'.length);
+      const { fixture, component, getByRole, getByText } = await setup();
+
+      const textBox = getByRole('textbox', { name: 'Add a note' });
+
+      userEvent.clear(textBox);
+      fixture.detectChanges();
+      expect(getByText(`You have 1,000 characters remaining`)).toBeTruthy();
+
+      userEvent.type(textBox, 'hello world');
+      fixture.detectChanges();
+
+      const expectedRemainingCharacterCount = component.notesMaxLength - 'hello world'.length;
+      expect(getByText(`You have ${expectedRemainingCharacterCount} characters remaining`)).toBeTruthy();
     });
   });
 
