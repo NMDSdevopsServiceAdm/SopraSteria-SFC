@@ -48,7 +48,13 @@
                       [routerLink]="
                         trainingRecord.isMatchedToTrainingCourse
                           ? ['../training', trainingRecord.uid, 'matching-layout']
-                          : ['../training', trainingRecord.uid]
+                          : [
+                              '../training',
+                              trainingRecord.uid,
+                              {
+                                trainingCategory: trainingRecord.trainingCategory | json,
+                              },
+                            ]
                       "
                       >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
                     >
