@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import lodash from 'lodash';
 import { Subscription } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
@@ -10,7 +11,11 @@ import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCourse } from '@core/model/training-course.model';
-import { TrainingCertificate, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
+import {
+  TrainingCertificate,
+  TrainingRecord as LegacyIncorrectTrainingRecordType,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -25,6 +30,7 @@ import { DateValidator } from '@shared/validators/date.validator';
 
 type JourneyType = 'ApplyCourseToExistingRecord' | 'AddNewTrainingRecordWithCourse' | 'ViewExistingRecord';
 type FormGroupDateValues = { day: number; month: number; year: number };
+type TrainingRecord = LegacyIncorrectTrainingRecordType & { completed: string; expires: string; accredited?: string };
 
 @Component({
   selector: 'app-training-course-matching-layout',
@@ -44,7 +50,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   public remainingCharacterCount: number = this.notesMaxLength;
   public subscriptions: Subscription = new Subscription();
   public notesValue = '';
-  public trainingRecord: TrainingRecord & { completed: string; expires: string };
+  public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
   public expiryMismatchWarning: boolean;
   public certificateErrors: string[] | null;
@@ -58,7 +64,9 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   public journeyType: JourneyType;
   public headingText: string;
-  public trainingToDisplay: TrainingCourse | (TrainingRecord & { name: string; trainingCategoryName: string });
+  public trainingToDisplay:
+    | TrainingCourse
+    | (TrainingRecord & { name: string; trainingCategoryName: string; trainingCategoryId: number });
 
   constructor(
     private workerService: WorkerService,
@@ -85,8 +93,8 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     this.loadTrainingCourse();
     this.determineJourneyType();
     this.setupForm();
-    this.loadDataAccordingToJourneyType();
     this.loadTrainingToDisplay();
+    this.loadDataAccordingToJourneyType();
 
     this.setBackLink();
     this.setupFormErrorsMap();
@@ -158,6 +166,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
           ...this.trainingRecord,
           name: this.trainingRecord.title,
           trainingCategoryName: this.trainingRecord.trainingCategory.category,
+          trainingCategoryId: this.trainingRecord.trainingCategory.id,
         };
 
         this.trainingToDisplay = trainingToDisplay;
@@ -261,7 +270,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   public autoFillExpiry(): void {
     const completed = this.toDayjs(this.form.get('completed')?.value);
-    const validity = this.selectedTrainingCourse?.validityPeriodInMonth;
+    const validity = this.trainingToDisplay?.validityPeriodInMonth;
 
     const expiryDateIsEmpty = Object.values(this.form.get('expires').value).every((input) => input == null);
 
@@ -283,7 +292,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   public checkExpiryMismatch(): void {
     const { completed, expires } = this.form.value;
-    const validityPeriodInMonth = this.selectedTrainingCourse?.validityPeriodInMonth;
+    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
 
     if (!completed?.day || !expires?.day || !validityPeriodInMonth) {
       this.expiryMismatchWarning = false;
@@ -293,7 +302,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     const expiresDate = this.toDayjs(expires);
     const expectedExpiry = this.getExpectedExpiryDate();
 
-    if (expectedExpiry && this.form.valid) {
+    if (expectedExpiry && expiresDate) {
       const diff = !expiresDate.isSame(expectedExpiry, 'day');
       this.expiryMismatchWarning = diff;
     } else {
@@ -303,7 +312,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   private getExpectedExpiryDate(): dayjs.Dayjs {
     const { completed } = this.form.value;
-    const validityPeriodInMonth = this.selectedTrainingCourse?.validityPeriodInMonth;
+    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
     if (!completed || !validityPeriodInMonth) {
       return null;
     }
@@ -365,20 +374,39 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private buildUpdatedRecord(): TrainingRecordRequest {
+  private buildRequestBody(): TrainingRecordRequest {
     const { completed, expires, notes } = this.form.controls;
 
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
-
     const expiresDate =
-      this.journeyType === 'ApplyCourseToExistingRecord'
-        ? this.dateGroupToDayjs(expires as UntypedFormGroup)
-        : this.getExpectedExpiryDate();
+      this.journeyType === 'AddNewTrainingRecordWithCourse'
+        ? this.getExpectedExpiryDate()
+        : this.dateGroupToDayjs(expires as UntypedFormGroup);
+
+    if (this.journeyType === 'ViewExistingRecord') {
+      return {
+        ...this.trainingRecord,
+        completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
+        expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
+        notes: notes.value ?? null,
+      };
+    }
+
+    const fieldsToCopyFromCourse = [
+      'accredited',
+      'deliveredBy',
+      'trainingProviderId',
+      'otherTrainingProviderName',
+      'howWasItDelivered',
+      'doesNotExpire',
+      'validityPeriodInMonth',
+    ];
+    const dataFromTrainingCourse = lodash.pick(this.selectedTrainingCourse, fieldsToCopyFromCourse);
 
     return {
-      ...this.selectedTrainingCourse,
-      title: this.selectedTrainingCourse.name,
-      trainingCategory: { id: this.selectedTrainingCourse?.category.id },
+      ...dataFromTrainingCourse,
+      title: this.trainingToDisplay.name,
+      trainingCategory: { id: this.trainingToDisplay.trainingCategoryId },
       trainingCourseFK: this.selectedTrainingCourse.id,
       completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
       expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
@@ -388,6 +416,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   public onSubmit(): void {
     this.submitted = true;
+    this.triggerValidatorForExpiresDate();
 
     if (!this.form.valid) {
       if (this.form.controls.notes?.errors?.maxlength) {
@@ -397,7 +426,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       return;
     }
 
-    const trainingRecord = this.buildUpdatedRecord();
+    const trainingRecord = this.buildRequestBody();
 
     let submitTrainingRecord;
 
@@ -425,6 +454,12 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     }
 
     this.subscriptions.add(submitTrainingRecord.subscribe(() => this.onSubmitSuccess()));
+  }
+
+  private triggerValidatorForExpiresDate(): void {
+    this.form.get('expires').markAsTouched();
+    this.form.get('expires').markAsDirty();
+    this.form.get('expires').updateValueAndValidity();
   }
 
   private onSubmitSuccess(): void {
@@ -507,6 +542,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
         : this.trainingCertificates.map((certificate) => {
             return this.formatForCertificateDownload(certificate);
           });
+
     this.subscriptions.add(
       this.certificateService
         .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
@@ -549,7 +585,21 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   public returnToSelectTrainingCoursePage(event: Event): void {
     event.preventDefault();
-    this.location.back();
+
+    switch (this.journeyType) {
+      case 'ApplyCourseToExistingRecord': {
+        this.router.navigate(['../include-training-course-details'], { relativeTo: this.route });
+        return;
+      }
+      case 'ViewExistingRecord': {
+        this.router.navigate(['../include-training-course-details'], { relativeTo: this.route });
+        return;
+      }
+      case 'AddNewTrainingRecordWithCourse': {
+        this.location.back();
+        return;
+      }
+    }
   }
 
   public onCancel(event: Event): void {

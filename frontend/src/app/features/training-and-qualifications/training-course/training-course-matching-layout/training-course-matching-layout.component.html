@@ -12,6 +12,7 @@
             <dl
               class="govuk-summary-list govuk-summary-list--top-border govuk-summary-list--wide-key govuk-summary-list--wide"
               style="width: 150%"
+              data-testid="trainingRecordDetails"
             >
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key">Training course name</dt>
@@ -117,7 +118,7 @@
                             class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
                           >
                             This training is usually valid for
-                            {{ selectedTrainingCourse?.validityPeriodInMonth }} months
+                            {{ trainingToDisplay?.validityPeriodInMonth }} months
                           </span>
                         </div>
                         <span
@@ -141,7 +142,7 @@
             <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%" />
           </div>
           <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
-            @if (journeyType === 'ApplyCourseToExistingRecord') {
+            @if (journeyType !== 'AddNewTrainingRecordWithCourse') {
               <a
                 class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center"
                 data-testid="deleteButton"
@@ -188,7 +189,7 @@
       </fieldset>
       <div class="govuk-button-group">
         <button type="submit" class="govuk-button govuk-!-margin-right-9">
-          {{ journeyType === 'ApplyCourseToExistingRecord' ? 'Save and return' : 'Save training record' }}
+          {{ journeyType === 'AddNewTrainingRecordWithCourse' ? 'Save training record' : 'Save and return' }}
         </button>
         <a
           class="govuk-button govuk-button--link govuk-!-margin-left-9"
