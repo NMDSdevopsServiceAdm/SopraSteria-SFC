@@ -16,7 +16,7 @@ Resources:
     Properties:
       CodeUri: sendEmails/
       Handler: app.lambdaHandler
-      Runtime: nodejs12.x
+      Runtime: nodejs18.x
       Architectures:
         - x86_64
       Events:
