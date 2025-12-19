@@ -63,11 +63,7 @@
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key govuk__nowrap">How long is the training valid for?</dt>
                 <dd class="govuk-summary-list__value">
-                  {{
-                    trainingToDisplay?.validityPeriodInMonth
-                      ? trainingToDisplay?.validityPeriodInMonth + ' months'
-                      : '-'
-                  }}
+                  {{ trainingToDisplay | showTrainingValidity }}
                 </dd>
               </div>
             </dl>

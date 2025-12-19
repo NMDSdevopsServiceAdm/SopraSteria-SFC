@@ -24,6 +24,7 @@ import userEvent from '@testing-library/user-event';
 
 import { SelectUploadFileComponent } from '../../../../shared/components/select-upload-file/select-upload-file.component';
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
+import { TrainingCourse } from '@core/model/training-course.model';
 
 describe('TrainingCourseMatchingLayoutComponent', () => {
   const mockTrainingRecordData = {
@@ -403,6 +404,22 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
         const validityMonths = `${course.validityPeriodInMonth} months`;
         expect(within(trainingRecordDetails).getByText(validityMonths)).toBeTruthy();
+      });
+
+      it('should show "Does not expire" if the course does not expire', async () => {
+        const courseThatDoesNotExpire = {
+          ...defaultSelectedTrainingCourse,
+          doesNotExpire: true,
+          validityPeriodInMonth: null,
+        };
+        const { getByTestId } = await setup({
+          ...overridesForAddingNewRecord,
+          selectedTrainingCourse: courseThatDoesNotExpire,
+        });
+
+        const trainingRecordDetails = getByTestId('trainingRecordDetails');
+
+        expect(within(trainingRecordDetails).getByText('Does not expire')).toBeTruthy();
       });
 
       it('the "Select a different training course" link should point to the previous page', async () => {

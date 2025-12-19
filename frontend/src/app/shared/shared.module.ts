@@ -147,6 +147,7 @@ import { ButtonMenuComponent } from '@shared/components/button-menu/button-menu.
 import { SeperatorLineComponent } from './components/seperator-line/seperator-line.component';
 import { AddANoteAccordionComponent } from '@shared/components/accordions/add-a-note-accordion/add-a-note-accordion.component';
 import { ExternalTrainingProviderInputComponent } from './components/external-training-provider-input/external-training-provider-input.component';
+import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule, A11yModule],
@@ -293,6 +294,7 @@ import { ExternalTrainingProviderInputComponent } from './components/external-tr
     SeperatorLineComponent,
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
+    ShowTrainingValidityPipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -429,6 +431,7 @@ import { ExternalTrainingProviderInputComponent } from './components/external-tr
     SeperatorLineComponent,
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
+    ShowTrainingValidityPipe,
   ],
   providers: [
     DialogService,
