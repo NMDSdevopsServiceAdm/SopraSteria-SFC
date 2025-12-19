@@ -43,41 +43,71 @@ describe('training record', () => {
     cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName2 });
   });
 
-  it('should add successfully when there are no saved training courses', () => {
-    cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
-    cy.contains('a', 'Add a training record').click();
+  describe('no training courses', () => {
+    it('should add successfully when picking an external provider not on the select list', () => {
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', 'Add a training record').click();
 
-    // select training category
-    cy.contains('button', 'Show all categories').click();
-    cy.getByLabel(trainingCategory).click();
-    cy.contains('button', 'Continue').click();
+      // select training category
+      cy.contains('button', 'Show all categories').click();
+      cy.getByLabel(trainingCategory).click();
+      cy.contains('button', 'Continue').click();
 
-    // add training record details
-    cy.get('[data-testid="trainingCategoryDisplay"]').contains(trainingCategory);
-    cy.contains('a', 'Change');
-    cy.getByLabel('Training record name').clear().type(trainingName);
+      // add training record details
+      cy.get('[data-testid="trainingCategoryDisplay"]').contains(trainingCategory);
+      cy.contains('a', 'Change');
+      cy.getByLabel('Training record name').clear().type(trainingName);
 
-    cy.get('#accredited-yes').check().should('be.checked');
-    cy.get('#deliveredBy-ExternalProvider').check().should('be.checked');
-    cy.get('#conditional-external-provider-name').should('not.have.class', 'govuk-radios__conditional--hidden');
-    cy.get('#external-provider-name').type('Care skills academy');
-    cy.get('#howWasItDelivered-FaceToFace').check().should('be.checked');
-    cy.get('#validity-period').clear().type('12');
-    cy.get('#doesNotExpire').check().should('be.checked');
+      cy.get('#accredited-yes').check().should('be.checked');
+      cy.get('#deliveredBy-ExternalProvider').check().should('be.checked');
+      cy.get('#conditional-external-provider-name').should('not.have.class', 'govuk-radios__conditional--hidden');
+      cy.getByLabel('Provider name').type('Care skills academy');
+      cy.get('#howWasItDelivered-FaceToFace').check().should('be.checked');
+      cy.get('#validity-period').clear().type('12');
+      cy.get('#doesNotExpire').check().should('be.checked');
 
-    cy.get('[data-testid="completedDate"]').within(() => {
-      cy.getByLabel('Day').clear().type(31);
-      cy.getByLabel('Month').clear().type(3);
-      cy.getByLabel('Year').clear().type(2025);
+      cy.get('[data-testid="completedDate"]').within(() => {
+        cy.getByLabel('Day').clear().type(31);
+        cy.getByLabel('Month').clear().type(3);
+        cy.getByLabel('Year').clear().type(2025);
+      });
+
+      cy.contains('button', 'Open notes').click();
+      cy.get('[data-testid="notesSection"]').clear().type('Refresh');
+      cy.contains('button', 'Save record').click();
+
+      // staff training and qualifications page
+      cy.get('[data-testid="generic_alert"]').contains('Training record added');
+      cy.contains(trainingName);
     });
 
-    cy.contains('button', 'Open notes').click();
-    cy.get('[data-testid="notesSection"]').clear().type('Refresh');
-    cy.contains('button', 'Save record').click();
+    it('should add successfully when picking an external provider from the select list', () => {
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', 'Add a training record').click();
 
-    // staff training and qualifications page
-    cy.get('[data-testid="generic_alert"]').contains('Training record added');
-    cy.contains(trainingName);
+      // select training category
+      cy.contains('button', 'Show all categories').click();
+      cy.getByLabel(trainingCategory).click();
+      cy.contains('button', 'Continue').click();
+
+      // add training record details
+      cy.get('[data-testid="trainingCategoryDisplay"]').contains(trainingCategory);
+      cy.contains('a', 'Change');
+      cy.getByLabel('Training record name').clear().type(trainingName);
+
+      cy.get('#deliveredBy-ExternalProvider').check().should('be.checked');
+      cy.get('#conditional-external-provider-name').should('not.have.class', 'govuk-radios__conditional--hidden');
+      cy.getByLabel('Provider name').type('stop');
+      cy.get('[data-testid="tray-list"]').contains('1Stop Training').click();
+
+      cy.get('#doesNotExpire').check().should('be.checked');
+
+      cy.contains('button', 'Save record').click();
+
+      // staff training and qualifications page
+      cy.get('[data-testid="generic_alert"]').contains('Training record added');
+      cy.contains(trainingName);
+    });
   });
 
   describe('training courses', () => {
@@ -154,7 +184,7 @@ describe('training record', () => {
     cy.get('#accredited-no').check().should('be.checked');
     cy.get('#deliveredBy-ExternalProvider').check().should('be.checked');
     cy.get('#conditional-external-provider-name').should('not.have.class', 'govuk-radios__conditional--hidden');
-    cy.get('#external-provider-name').type('Care skills academy');
+    cy.getByLabel('Provider name').type('Care skills academy');
     cy.get('#howWasItDelivered-FaceToFace').check().should('be.checked');
     cy.get('#validity-period').clear().type('12');
     cy.get('#doesNotExpire').check().should('be.checked');
@@ -380,7 +410,7 @@ describe('training record', () => {
         cy.get('#accredited-yes').check().should('be.checked');
         cy.get('#deliveredBy-ExternalProvider').check().should('be.checked');
         cy.get('#conditional-external-provider-name').should('not.have.class', 'govuk-radios__conditional--hidden');
-        cy.get('#external-provider-name').type('Care skills academy');
+        cy.getByLabel('Provider name').type('Care skills academy');
         cy.get('#howWasItDelivered-FaceToFace').check().should('be.checked');
         cy.get('#validity-period').clear().type('12');
         cy.get('#doesNotExpire').check().should('be.checked');
@@ -454,7 +484,7 @@ describe('training record', () => {
         cy.get('#accredited-yes').check().should('be.checked');
         cy.get('#deliveredBy-ExternalProvider').check().should('be.checked');
         cy.get('#conditional-external-provider-name').should('not.have.class', 'govuk-radios__conditional--hidden');
-        cy.get('#external-provider-name').type('Care skills academy');
+        cy.getByLabel('Provider name').type('Care skills academy');
         cy.get('#howWasItDelivered-FaceToFace').check().should('be.checked');
         cy.get('#validity-period').clear().type('12');
         cy.get('#doesNotExpire').check().should('be.checked');

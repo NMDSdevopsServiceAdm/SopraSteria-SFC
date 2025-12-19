@@ -97,11 +97,13 @@ const createTrainingCourse = async (req, res) => {
     const establishmentId = req.establishmentId;
     const categoryFk = req.body?.trainingCategoryId;
     const otherProps = lodash.pick(req.body, userChangeableFields);
+    const trainingProviderFk = req.body?.trainingProviderId;
 
     const newEntry = await models.trainingCourse.create({
       ...otherProps,
       establishmentFk: establishmentId,
       categoryFk,
+      trainingProviderFk,
       createdBy: req.username,
       updatedBy: req.username,
     });
@@ -329,6 +331,12 @@ const renameKeys = (record) => {
 
   if (record?.category) {
     renamed.trainingCategoryName = record.category.category;
+  }
+
+  if (record?.trainingProvider?.isOther) {
+    renamed.externalProviderName = record.otherTrainingProviderName;
+  } else if (typeof record?.trainingProvider?.isOther && record?.trainingProvider?.isOther === false) {
+    renamed.externalProviderName = record.trainingProvider?.name;
   }
 
   return renamed;

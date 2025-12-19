@@ -10,6 +10,7 @@ import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
+import { TrainingProviderService } from '@core/services/training-provider.service';
 import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { filter, take } from 'rxjs/operators';
@@ -36,13 +37,15 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   public howWasItDeliveredOptions = HowWasItDelivered;
   public trainingProviders: TrainingProvider[];
   public otherTrainingProviderId: number;
-  public trainingCategoies: TrainingCategory[];
+  public trainingCategories: TrainingCategory[];
   public trainingCategoryName: string;
 
   public heading: string;
   public sectionHeading: string;
   public selectedTrainingCourse: Partial<TrainingCourse>;
   public selectedTrainingCourseUid: string;
+  public showSuggestedTray: boolean;
+  public trainingProviderNamesWithoutOther: string[];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -51,6 +54,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingCourseService: TrainingCourseService,
+    protected trainingProviderService: TrainingProviderService,
   ) {}
 
   ngOnInit(): void {
@@ -92,7 +96,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   private loadTrainingProvidersAndCategories() {
     this.trainingProviders = this.route.snapshot.data.trainingProviders;
     this.otherTrainingProviderId = this.trainingProviders?.find((provider) => provider.isOther)?.id;
-    this.trainingCategoies = this.route.snapshot.data.trainingCategories;
+    this.trainingCategories = this.route.snapshot.data.trainingCategories;
   }
 
   private setupForm(): void {
@@ -102,7 +106,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
         accredited: null,
         deliveredBy: [null, { updateOn: 'change' }],
         trainingProviderId: null,
-        externalProviderName: null,
+        externalProviderName: [null, { updateOn: 'change' }],
         howWasItDelivered: null,
         validityPeriodInMonth: null,
         doesNotExpire: null,
@@ -176,7 +180,6 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     }
     this.trainingCategoryName = this.getTrainingCategoryName(selectedtrainingCourse);
 
-    selectedtrainingCourse.externalProviderName = this.getTrainingProviderName(selectedtrainingCourse);
     this.selectedTrainingCourse = selectedtrainingCourse;
 
     if (!gotDataInLocalService) {
@@ -193,21 +196,8 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private getTrainingCategoryName(selectedtrainingCourse: Partial<TrainingCourse>): string {
-    return this.trainingCategoies.find((category) => category.id === selectedtrainingCourse.trainingCategoryId)
+    return this.trainingCategories.find((category) => category.id === selectedtrainingCourse.trainingCategoryId)
       .category;
-  }
-
-  private getTrainingProviderName(selectedtrainingCourse: Partial<TrainingCourse>): string {
-    // TODO: refactor this in ticket #1840
-    if (!selectedtrainingCourse?.trainingProvider) {
-      return null;
-    }
-    const trainingProvider = selectedtrainingCourse.trainingProvider;
-    const providerName = trainingProvider.isOther
-      ? selectedtrainingCourse.otherTrainingProviderName
-      : trainingProvider.name;
-
-    return providerName;
   }
 
   private storeTempDataInLocalService() {
@@ -278,39 +268,13 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private getAndProcessFormValue(): Partial<TrainingCourse> {
-    // TODO: refactor in ticket #1840 when implementing the provider name input
-    const trainingCourseData: Partial<TrainingCourse> = this.form.value;
-
-    const externalProviderName = trainingCourseData.externalProviderName;
-    delete trainingCourseData.externalProviderName;
-
-    if (trainingCourseData.deliveredBy !== this.deliveredByOptions.ExternalProvider) {
-      trainingCourseData.trainingProviderId = null;
-      trainingCourseData.otherTrainingProviderName = null;
-      return trainingCourseData;
-    }
-
-    const trainingProvider = this.getTrainingProviderIdFromName(externalProviderName);
-    trainingCourseData.trainingProviderId = trainingProvider.id;
-    trainingCourseData.otherTrainingProviderName = trainingProvider.isOther ? externalProviderName : null;
-
-    return trainingCourseData;
-  }
-
-  private getTrainingProviderIdFromName(externalProviderName: string): TrainingProvider {
-    const trimmedName = externalProviderName ? externalProviderName.trim() : '';
-    const providerFound = this.trainingProviders.find((provider) => provider.name === trimmedName && !provider.isOther);
-
-    if (providerFound) {
-      return providerFound;
-    }
-
-    return { id: this.otherTrainingProviderId, name: 'other', isOther: true };
-  }
-
   private storeNewCourseAndContinueToNextPage() {
-    const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.getAndProcessFormValue();
+    const trainingCourseData: Partial<TrainingCourse> = this.form.value;
+    const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.trainingProviderService.getAndProcessFormValue(
+      trainingCourseData,
+      this.trainingProviders,
+      this.otherTrainingProviderId,
+    );
 
     this.trainingCourseService.newTrainingCourseToBeAdded = newTrainingCourseToBeAdded;
 
@@ -318,7 +282,12 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
   }
 
   private storeUpdatedCourseAndContinueToConfirmationPage() {
-    const updatedCourse: Partial<TrainingCourse> = this.getAndProcessFormValue();
+    const trainingCourseData: Partial<TrainingCourse> = this.form.value;
+    const updatedCourse: Partial<TrainingCourse> = this.trainingProviderService.getAndProcessFormValue(
+      trainingCourseData,
+      this.trainingProviders,
+      this.otherTrainingProviderId,
+    );
 
     this.trainingCourseService.trainingCourseToBeUpdated = updatedCourse;
 

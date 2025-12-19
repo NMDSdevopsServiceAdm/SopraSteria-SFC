@@ -10,8 +10,8 @@ import { SelectTrainingCategoryMultipleComponent } from './select-training-categ
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { SelectTrainingCourseForMultipleTrainingRecords } from './select-training-course-for-multiple-training-records/select-training-course-for-multiple-training-records.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
-import { ViewSelectedTrainingCourseDetailsComponent} from '@features/training-and-qualifications/add-multiple-training/view-selected-training-course-details/view-selected-training-course-details.component';
-
+import { ViewSelectedTrainingCourseDetailsComponent } from '@features/training-and-qualifications/add-multiple-training/view-selected-training-course-details/view-selected-training-course-details.component';
+import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 
 const selectStaffRoute = {
   path: 'select-staff',
@@ -51,6 +51,9 @@ const trainingDetailsRoute = {
   component: MultipleTrainingDetailsComponent,
   data: {
     title: 'Training details',
+  },
+  resolve: {
+    trainingProviders: TrainingProvidersResolver,
   },
 };
 

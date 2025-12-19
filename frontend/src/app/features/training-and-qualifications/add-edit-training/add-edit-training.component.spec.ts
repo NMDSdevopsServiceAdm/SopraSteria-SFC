@@ -26,6 +26,11 @@ import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { TrainingCourse } from '@core/model/training-course.model';
 
 describe('AddEditTrainingComponent', () => {
+  const mockTrainingProviders = [
+    { id: 1, name: 'Preset provider name #1', isOther: false },
+    { id: 63, name: 'other', isOther: true },
+  ];
+
   async function setup(overrides: any = {}) {
     const selectedTraining = overrides?.selectedTraining ?? null;
     const trainingRecordId = overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : '1';
@@ -51,7 +56,11 @@ describe('AddEditTrainingComponent', () => {
           useValue: {
             snapshot: {
               params: { trainingRecordId, establishmentuid: '24', id: 2 },
-              data: { trainingCourses: overrides?.trainingCourses ?? [], trainingRecord: trainingRecord },
+              data: {
+                trainingCourses: overrides?.trainingCourses ?? [],
+                trainingRecord: trainingRecord,
+                trainingProviders: mockTrainingProviders,
+              },
             },
             parent: {
               snapshot: {
@@ -218,21 +227,41 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('input form', () => {
-    it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
-      const { getByRole, fixture } = await setup({ trainingRecord: null });
+    describe('auto suggest', () => {
+      it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
+        const { getByTestId, getByRole, fixture } = await setup({ trainingRecordId: null });
 
-      const providerName = getByRole('textbox', { name: 'Provider name' });
-      expect(providerName).toBeTruthy();
-      const providerNameWrapper = providerName.parentElement;
-      expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
+        const providerName = getByTestId('conditional-external-provider-name');
 
-      userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
-      fixture.detectChanges();
-      expect(providerNameWrapper).not.toHaveClass('govuk-radios__conditional--hidden');
+        expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+        expect(within(providerName).getByRole('textbox', { name: 'Provider name' })).toBeTruthy();
 
-      userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
-      fixture.detectChanges();
-      expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
+        userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
+        fixture.detectChanges();
+        expect(providerName).not.toHaveClass('govuk-radios__conditional--hidden');
+
+        userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
+        fixture.detectChanges();
+        expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+      });
+
+      it('should remove the suggested tray on click of the matching provider name', async () => {
+        const { queryByTestId, getByTestId, fixture } = await setup({ trainingRecordId: null });
+
+        const providerName = getByTestId('conditional-external-provider-name');
+
+        userEvent.type(within(providerName).getByRole('textbox', { name: 'Provider name' }), 'provider');
+        fixture.detectChanges();
+
+        const getTrayList = getByTestId('tray-list');
+        expect(getTrayList).toBeTruthy();
+
+        userEvent.click(within(getTrayList).getByText(mockTrainingProviders[0].name));
+        fixture.detectChanges();
+
+        const queryTrayList = queryByTestId('tray-list');
+        expect(queryTrayList).toBeFalsy();
+      });
     });
 
     it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by button', async () => {
@@ -649,13 +678,14 @@ describe('AddEditTrainingComponent', () => {
           title: 'Communication Training 1',
           accredited: 'Yes',
           deliveredBy: 'External provider',
-          externalProviderName: 'Care skills academy',
           howWasItDelivered: 'E-learning',
           doesNotExpire: false,
           validityPeriodInMonth: 24,
           completed: '2020-01-02',
           expires: '2021-01-02',
           notes: 'Some notes added to this training',
+          trainingProviderId: 63,
+          otherTrainingProviderName: 'Care skills academy',
         },
       );
 
@@ -720,13 +750,14 @@ describe('AddEditTrainingComponent', () => {
         title: 'Some training',
         accredited: 'Yes',
         deliveredBy: 'External provider',
-        externalProviderName: 'Care skills academy',
         howWasItDelivered: 'E-learning',
         validityPeriodInMonth: null,
         doesNotExpire: true,
         completed: '2020-04-10',
         expires: null,
         notes: 'Some notes for this training',
+        trainingProviderId: 63,
+        otherTrainingProviderName: 'Care skills academy',
       });
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
@@ -824,13 +855,14 @@ describe('AddEditTrainingComponent', () => {
             title: 'Communication Training 1',
             accredited: 'Yes',
             deliveredBy: 'External provider',
-            externalProviderName: 'Care skills academy',
             howWasItDelivered: 'E-learning',
             validityPeriodInMonth: 24,
             doesNotExpire: false,
             completed: '2020-01-02',
             expires: '2021-01-02',
             notes: 'Some notes added to this training',
+            trainingProviderId: 63,
+            otherTrainingProviderName: 'Care skills academy',
           },
         );
 
@@ -897,6 +929,8 @@ describe('AddEditTrainingComponent', () => {
           completed: null,
           expires: null,
           notes: null,
+          trainingProviderId: null,
+          otherTrainingProviderName: null,
         });
 
         expect(addCertificatesSpy).toHaveBeenCalledWith(

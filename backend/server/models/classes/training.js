@@ -40,8 +40,10 @@ class Training extends EntityValidator {
     this._accredited = null;
     this._trainingCourseFK = null;
     this._deliveredBy = null;
+    this._trainingProvider = null;
     this._trainingProviderFk = null;
     this._externalProviderName = null;
+    this._otherTrainingProviderName = null;
     this._howWasItDelivered = null;
     this._validityPeriodInMonth = null;
     this._doesNotExpire = null;
@@ -156,11 +158,17 @@ class Training extends EntityValidator {
   get deliveredBy() {
     return this._deliveredBy;
   }
+  get trainingProvider() {
+    return this._trainingProvider;
+  }
   get externalProviderName() {
     return this._externalProviderName;
   }
   get trainingProviderFk() {
     return this._trainingProviderFk;
+  }
+  get otherTrainingProviderName() {
+    return this._otherTrainingProviderName;
   }
   get howWasItDelivered() {
     return this._howWasItDelivered;
@@ -200,18 +208,23 @@ class Training extends EntityValidator {
   set accredited(accredited) {
     this._accredited = accredited;
   }
-
   set trainingCourseFK(trainingCourseFK) {
     this._trainingCourseFK = trainingCourseFK;
   }
   set deliveredBy(deliveredBy) {
     this._deliveredBy = deliveredBy;
   }
+  set trainingProvider(trainingProvider) {
+    this._trainingProvider = trainingProvider;
+  }
   set trainingProviderFk(trainingProviderFk) {
     this._trainingProviderFk = trainingProviderFk;
   }
   set externalProviderName(externalProviderName) {
     this._externalProviderName = externalProviderName;
+  }
+  set otherTrainingProviderName(otherTrainingProviderName) {
+    this._otherTrainingProviderName = otherTrainingProviderName;
   }
   set howWasItDelivered(howWasItDelivered) {
     this._howWasItDelivered = howWasItDelivered;
@@ -415,6 +428,12 @@ class Training extends EntityValidator {
       validatedTrainingRecord.externalProviderName = null;
     }
 
+    if (document.otherTrainingProviderName) {
+      validatedTrainingRecord.otherTrainingProviderName = document.otherTrainingProviderName;
+    } else {
+      validatedTrainingRecord.otherTrainingProviderName = null;
+    }
+
     // trainingProviderFk
     if (document?.trainingProviderFk || document?.trainingProvider?.id) {
       const trainingProviderFk = document?.trainingProviderFk ?? document?.trainingProvider?.id;
@@ -424,6 +443,8 @@ class Training extends EntityValidator {
         validatedTrainingRecord.trainingProvider = trainingProvider;
         validatedTrainingRecord.trainingProviderFk = trainingProvider.id;
       }
+    } else {
+      validatedTrainingRecord.trainingProviderFk = null;
     }
 
     //howWasItDelivered
@@ -556,6 +577,7 @@ class Training extends EntityValidator {
         this.trainingCourseFK = validatedTrainingRecord.trainingCourseFK;
         this.deliveredBy = validatedTrainingRecord.deliveredBy;
         this.externalProviderName = validatedTrainingRecord.externalProviderName;
+        this.otherTrainingProviderName = validatedTrainingRecord.otherTrainingProviderName;
         this.trainingProvider = validatedTrainingRecord.trainingProvider;
         this.trainingProviderFk = validatedTrainingRecord.trainingProviderFk;
         this.howWasItDelivered = validatedTrainingRecord.howWasItDelivered;
@@ -632,7 +654,7 @@ class Training extends EntityValidator {
             accredited: this._accredited,
             trainingCourseFK: this._trainingCourseFK,
             deliveredBy: this._deliveredBy,
-            externalProviderName: this._externalProviderName,
+            otherTrainingProviderName: this._otherTrainingProviderName,
             trainingProviderFk: this._trainingProviderFk,
             howWasItDelivered: this._howWasItDelivered,
             validityPeriodInMonth: this._validityPeriodInMonth,
@@ -687,7 +709,8 @@ class Training extends EntityValidator {
             accredited: this._accredited,
             trainingCourseFK: this.trainingCourseFK,
             deliveredBy: this._deliveredBy,
-            externalProviderName: this._externalProviderName,
+            otherTrainingProviderName: this._otherTrainingProviderName,
+            trainingProviderFk: this._trainingProviderFk,
             howWasItDelivered: this._howWasItDelivered,
             validityPeriodInMonth: this._validityPeriodInMonth,
             doesNotExpire: this._doesNotExpire,
@@ -770,6 +793,11 @@ class Training extends EntityValidator {
             as: 'trainingCertificates',
             attributes: ['uid', 'filename', 'uploadDate'],
           },
+          {
+            model: models.trainingProvider,
+            as: 'trainingProvider',
+            attributes: ['id', 'name', 'isOther'],
+          },
         ],
         order: [
           [models.trainingCertificates, 'uploadDate', 'DESC'],
@@ -792,8 +820,11 @@ class Training extends EntityValidator {
         this._accredited = fetchResults.accredited;
         this._trainingCourseFK = fetchResults.trainingCourseFK;
         this._deliveredBy = fetchResults.deliveredBy;
-        this._trainingProviderFk = fetchResults._trainingProviderFk;
-        this._externalProviderName = fetchResults.externalProviderName;
+        this._trainingProvider = fetchResults.trainingProvider;
+        this._trainingProviderFk = fetchResults.trainingProviderFk;
+        this._externalProviderName = fetchResults.otherTrainingProviderName
+          ? fetchResults.otherTrainingProviderName
+          : fetchResults.trainingProvider?.name;
         this._howWasItDelivered = fetchResults.howWasItDelivered;
         this._validityPeriodInMonth = fetchResults.validityPeriodInMonth;
         this._doesNotExpire = fetchResults.doesNotExpire;
@@ -1012,6 +1043,11 @@ class Training extends EntityValidator {
           as: 'trainingCertificates',
           attributes: ['uid', 'filename', 'uploadDate'],
         },
+        {
+          model: models.trainingProvider,
+          as: 'trainingProvider',
+          attributes: ['id', 'name', 'isOther'],
+        },
       ],
       order: [['updated', 'DESC']],
       ...(categoryId
@@ -1048,6 +1084,7 @@ class Training extends EntityValidator {
       trainingCourseFK: this.trainingCourseFK ? this.trainingCourseFK : null,
       deliveredBy: this.deliveredBy ? this.deliveredBy : undefined,
       trainingProvider: this.trainingProvider ? this.trainingProvider : undefined,
+      trainingProviderFk: this.trainingProviderFk ? this.trainingProviderFk : null,
       externalProviderName: this.externalProviderName ? this.externalProviderName : undefined,
       howWasItDelivered: this.howWasItDelivered ? this.howWasItDelivered : undefined,
       validityPeriodInMonth: this.validityPeriodInMonth ? this.validityPeriodInMonth : null,

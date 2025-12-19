@@ -1,6 +1,6 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl novalidate>
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl novalidate autocomplete="off">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <fieldset class="govuk-fieldset">
@@ -98,21 +98,11 @@
                 {{ deliveredByOptions.ExternalProvider }}
               </label>
             </div>
-            <div
-              class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-1 govuk-!-margin-bottom-1"
-              [class.govuk-radios__conditional--hidden]="
-                form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider
-              "
-              id="conditional-external-provider-name"
-            >
-              <label class="govuk-label" for="external-provider-name">Provider name</label>
-              <input
-                class="govuk-input govuk-!-width-one-third"
-                id="external-provider-name"
-                name="externalProviderName"
-                [formControlName]="'externalProviderName'"
-              />
-            </div>
+            <app-external-training-provider-input
+              [trainingProviders]="trainingProviders"
+              [hideInput]="form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider"
+              [form]="form"
+            ></app-external-training-provider-input>
           </div>
         </fieldset>
       </div>

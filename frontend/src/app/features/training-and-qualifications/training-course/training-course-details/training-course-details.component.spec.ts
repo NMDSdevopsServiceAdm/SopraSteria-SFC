@@ -257,21 +257,42 @@ describe('TrainingCourseDetailsComponent', () => {
   });
 
   describe('input form', () => {
-    it('should show a text input for provider name iff user select "External provider" for delivered by external provider', async () => {
-      const { getByRole, fixture } = await setup();
+    describe('auto suggest', () => {
+      it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
+        const { getByTestId, getByRole, fixture } = await setup();
 
-      const providerName = getByRole('textbox', { name: 'Provider name' });
-      expect(providerName).toBeTruthy();
-      const providerNameWrapper = providerName.parentElement;
-      expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
+        const providerName = getByTestId('conditional-external-provider-name');
 
-      userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
-      fixture.detectChanges();
-      expect(providerNameWrapper).not.toHaveClass('govuk-radios__conditional--hidden');
+        expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+        expect(within(providerName).getByRole('textbox', { name: 'Provider name' })).toBeTruthy();
 
-      userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
-      fixture.detectChanges();
-      expect(providerNameWrapper).toHaveClass('govuk-radios__conditional--hidden');
+        userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
+        fixture.detectChanges();
+        expect(providerName).not.toHaveClass('govuk-radios__conditional--hidden');
+
+        userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
+        fixture.detectChanges();
+        expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+      });
+
+      it('should remove the suggested tray on click of the matching provider name', async () => {
+        const { queryByTestId, getByTestId, fixture } = await setup();
+
+        const providerName = getByTestId('conditional-external-provider-name');
+
+        userEvent.type(within(providerName).getByRole('textbox', { name: 'Provider name' }), 'provider');
+        fixture.detectChanges();
+
+        const getTrayList = getByTestId('tray-list');
+
+        expect(getTrayList).toBeTruthy();
+
+        userEvent.click(within(getTrayList).getByText(mockTrainingProviders[0].name));
+        fixture.detectChanges();
+
+        const queryTrayList = queryByTestId('tray-list');
+        expect(queryTrayList).toBeFalsy();
+      });
     });
 
     it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by button', async () => {

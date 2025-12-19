@@ -24,6 +24,7 @@ const mockTrainingCourses = [
     createdBy: 'admin3',
     updatedBy: 'admin3',
     archived: false,
+    trainingProvider: null,
   },
   {
     id: 2,
@@ -81,12 +82,23 @@ const mockTrainingCourses = [
 
 const mockTrainingCourseFindAllResult = mockTrainingCourses.map((course) => ({ toJSON: () => course }));
 
+const checkWhatTrainingProviderNameToUse = (course) => {
+  if (course?.trainingProvider?.isOther) {
+    return course.otherTrainingProviderName;
+  } else if (typeof course?.trainingProvider?.isOther && course?.trainingProvider?.isOther === false) {
+    return course.trainingProvider?.name;
+  } else {
+    return null;
+  }
+};
+
 const expectedTrainingCoursesInResponse = mockTrainingCourses.map((course) => {
   const expectedObject = {
     ...course,
     trainingCategoryId: course.categoryFk,
     trainingCategoryName: course.category?.category ?? null,
     trainingProviderId: course.trainingProviderFk,
+    externalProviderName: checkWhatTrainingProviderNameToUse(course),
   };
   delete expectedObject.categoryFk;
   delete expectedObject.trainingProviderFk;

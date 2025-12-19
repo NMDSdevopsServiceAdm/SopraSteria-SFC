@@ -6,6 +6,7 @@ import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCourse } from '@core/model/training-course.model';
+import { TrainingProvider } from '@core/model/training-provider.model';
 import {
   DeliveredBy,
   HowWasItDelivered,
@@ -20,6 +21,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingCourseService } from '@core/services/training-course.service';
+import { TrainingProviderService } from '@core/services/training-provider.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
@@ -63,6 +65,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public trainingCourses: TrainingCourse[] = [];
   public showUpdateRecordsWithTrainingCourseDetails: boolean = false;
   public updateTrainingRecordWithTrainingCourseText = TrainingCourseService.RevealText;
+  public trainingProviders: TrainingProvider[];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -74,10 +77,12 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
+    protected trainingProviderService: TrainingProviderService,
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.trainingProviders = this.route.snapshot.data?.trainingProviders;
     this.checkForCategoryId();
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
@@ -127,7 +132,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
         accredited: null,
         deliveredBy: [null, { updateOn: 'change' }],
-        externalProviderName: null,
+        externalProviderName: [null, { updateOn: 'change' }],
         howWasItDelivered: null,
         validityPeriodInMonth: null,
         doesNotExpire: null,
@@ -260,6 +265,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
+  public getOtherTrainingProviderId() {
+    return this.trainingProviders?.find((provider) => provider.isOther)?.id;
+  }
+
   public onSubmit(): void {
     this.form.get('completed').updateValueAndValidity();
     this.form.get('expires').updateValueAndValidity();
@@ -308,7 +317,12 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       notes: notes.value,
     };
 
-    this.submit(record);
+    const updatedRecord = this.trainingProviderService.getAndProcessFormValue(
+      record,
+      this.trainingProviders,
+      this.getOtherTrainingProviderId(),
+    );
+    this.submit(updatedRecord);
   }
 
   dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs {

@@ -1,3 +1,4 @@
+import { TrainingProvider } from './training-provider.model';
 import { Certificate, CertificateDownload } from './trainingAndQualifications.model';
 
 export interface TrainingCategory {
@@ -35,6 +36,8 @@ export interface TrainingRecordRequest {
   completed?: string;
   expires?: string;
   notes?: string;
+  trainingProviderId?: number;
+  otherTrainingProviderName?: string;
 }
 
 export interface CreateTrainingRecordResponse extends TrainingRecordRequest {
@@ -74,6 +77,7 @@ export interface TrainingRecord {
   trainingCertificates: TrainingCertificate[];
   deliveredBy?: string;
   externalProviderName?: string;
+  trainingProvider?: TrainingProvider;
   howWasItDelivered?: string;
   validityPeriodInMonth?: number;
   doesNotExpire?: boolean;

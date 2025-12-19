@@ -20,8 +20,13 @@ import sinon from 'sinon';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
+import { DeliveredBy } from '@core/model/training.model';
 
 describe('MultipleTrainingDetailsComponent', () => {
+  const mockTrainingProviders = [
+    { id: 1, name: 'Preset provider name #1', isOther: false },
+    { id: 63, name: 'other', isOther: true },
+  ];
   async function setup(
     overrides: any = {
       accessedFromSummary: false,
@@ -41,6 +46,9 @@ describe('MultipleTrainingDetailsComponent', () => {
           useValue: new MockActivatedRoute({
             snapshot: {
               params: { trainingRecordId: overrides?.trainingRecordId ?? '1' },
+              data: {
+                trainingProviders: mockTrainingProviders,
+              },
               parent: {
                 url: [{ path: overrides.accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
               },
@@ -177,13 +185,14 @@ describe('MultipleTrainingDetailsComponent', () => {
       title: 'Training',
       accredited: 'Yes',
       deliveredBy: 'External provider',
-      externalProviderName: 'Care skills academy',
       howWasItDelivered: 'E-learning',
       validityPeriodInMonth: null,
       doesNotExpire: true,
       completed: '2020-01-01',
       expires: null,
       notes: 'Notes for training',
+      trainingProviderId: 63,
+      otherTrainingProviderName: 'Care skills academy',
     });
     expect(spy).toHaveBeenCalledWith([
       'workplace',
@@ -220,6 +229,8 @@ describe('MultipleTrainingDetailsComponent', () => {
       completed: '2020-01-01',
       expires: '2021-01-01',
       notes: 'This is a note',
+      trainingProviderId: null,
+      otherTrainingProviderName: null,
     });
     expect(spy).toHaveBeenCalledWith([
       'workplace',
@@ -279,6 +290,43 @@ describe('MultipleTrainingDetailsComponent', () => {
       completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
       expires: { day: +expiresArr[2], month: +expiresArr[1], year: +expiresArr[0] },
       notes,
+    });
+  });
+
+  describe('auto suggest', () => {
+    it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
+      const { getByTestId, getByRole, fixture } = await setup({ trainingRecordId: null });
+
+      const providerName = getByTestId('conditional-external-provider-name');
+
+      expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+      expect(within(providerName).getByRole('textbox', { name: 'Provider name' })).toBeTruthy();
+
+      userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
+      fixture.detectChanges();
+      expect(providerName).not.toHaveClass('govuk-radios__conditional--hidden');
+
+      userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
+      fixture.detectChanges();
+      expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+    });
+
+    it('should remove the suggested tray on click of the matching provider name', async () => {
+      const { queryByTestId, getByTestId, fixture } = await setup({ trainingRecordId: null });
+
+      const providerName = getByTestId('conditional-external-provider-name');
+
+      userEvent.type(within(providerName).getByRole('textbox', { name: 'Provider name' }), 'provider');
+      fixture.detectChanges();
+
+      const getTrayList = getByTestId('tray-list');
+      expect(getTrayList).toBeTruthy();
+
+      userEvent.click(within(getTrayList).getByText(mockTrainingProviders[0].name));
+      fixture.detectChanges();
+
+      const queryTrayList = queryByTestId('tray-list');
+      expect(queryTrayList).toBeFalsy();
     });
   });
 

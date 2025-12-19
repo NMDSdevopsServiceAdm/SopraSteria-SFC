@@ -118,6 +118,11 @@ describe('/server/models/class/training.js', () => {
               as: 'trainingCertificates',
               attributes: ['uid', 'filename', 'uploadDate'],
             },
+            {
+              model: models.trainingProvider,
+              as: 'trainingProvider',
+              attributes: ['id', 'name', 'isOther'],
+            },
           ],
           order: [['updated', 'DESC']],
         });
@@ -147,6 +152,11 @@ describe('/server/models/class/training.js', () => {
               model: models.trainingCertificates,
               as: 'trainingCertificates',
               attributes: ['uid', 'filename', 'uploadDate'],
+            },
+            {
+              model: models.trainingProvider,
+              as: 'trainingProvider',
+              attributes: ['id', 'name', 'isOther'],
             },
           ],
           order: [['updated', 'DESC']],

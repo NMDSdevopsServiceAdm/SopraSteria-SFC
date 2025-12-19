@@ -147,19 +147,12 @@
                 {{ deliveredByOptions.ExternalProvider }}
               </label>
             </div>
-            <div
-              class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-2 govuk-!-margin-bottom-1"
-              [class.govuk-radios__conditional--hidden]="form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider"
-              id="conditional-external-provider-name"
-            >
-              <label class="govuk-label" for="external-provider-name">Provider name</label>
-              <input
-                class="govuk-input govuk-!-width-one-third"
-                id="external-provider-name"
-                name="externalProviderName"
-                [formControlName]="'externalProviderName'"
-              />
-            </div>
+            <app-external-training-provider-input
+            [trainingProviders]="trainingProviders"
+            [hideInput]="form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider"
+            [form]="form"
+            ></app-external-training-provider-input>
+
           </div>
         </fieldset>
       </div>

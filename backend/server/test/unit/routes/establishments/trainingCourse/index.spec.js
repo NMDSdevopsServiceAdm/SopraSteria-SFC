@@ -105,7 +105,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
 
     it('should respond with 500 if an error occured during operation', async () => {
       sinon.stub(models.trainingCourse, 'findAll').rejects(new sequelize.ConnectionError('some database error'));
-      sinon.stub(console, 'error'); // suppress error msg in test log
+      sinon.stub(console, 'error') // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -158,12 +158,13 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
         validityPeriodInMonth: 24,
         createdBy: mockUsername,
         updatedBy: mockUsername,
+        trainingProviderFk: null,
       });
     });
 
     it('should respond with 400 if trainingCategoryId is incorrect', async () => {
       sinon.stub(models.trainingCourse, 'create').rejects(new sequelize.ForeignKeyConstraintError());
-      sinon.stub(console, 'error'); // suppress error msg in test log
+      sinon.stub(console, 'error') // suppress error msg in test log
 
       const req = httpMocks.createRequest({ request, body: { ...request.body, trainingCategoryId: 99999 } });
       const res = httpMocks.createResponse();
@@ -176,7 +177,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
 
     it('should respond with 400 if the request body contains invalid data', async () => {
       sinon.stub(models.trainingCourse, 'create').rejects(new sequelize.ValidationError());
-      sinon.stub(console, 'error'); // suppress error msg in test log
+      sinon.stub(console, 'error') // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -189,7 +190,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
 
     it('should respond with 500 if other error occured', async () => {
       sinon.stub(models.trainingCourse, 'create').rejects(new sequelize.ConnectionError('some database error'));
-      sinon.stub(console, 'error'); // suppress error msg in test log
+      sinon.stub(console, 'error') // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -242,7 +243,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
 
     it('should respond with 500 if an error occurred', async () => {
       sinon.stub(models.trainingCourse, 'findOne').rejects(new sequelize.ConnectionError('some database error'));
-      sinon.stub(console, 'error');
+      sinon.stub(console, 'error') // supress error msg in test log
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -367,7 +368,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
 
     it('should respond with 400 if the req body is empty', async () => {
       sinon.stub(models.trainingCourse, 'updateTrainingCourse').resolves(mockTrainingCourseSequelizeObject);
-      sinon.stub(console, 'error'); // suppress error msg in test log
+      sinon.stub(console, 'error') // suppress error msg in test log
 
       const req = httpMocks.createRequest({ ...request, body: undefined });
       const res = httpMocks.createResponse();
@@ -381,7 +382,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
 
     it('should respond with 404 if the course was not found', async () => {
       sinon.stub(models.trainingCourse, 'updateTrainingCourse').rejects(new NotFoundError());
-      sinon.stub(console, 'error'); // suppress error msg in test log
+      sinon.stub(console, 'error') // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -393,7 +394,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
 
     it('should respond with 500 if error occured', async () => {
       sinon.stub(models.trainingCourse, 'updateTrainingCourse').rejects(new Error('some error'));
-      sinon.stub(console, 'error'); // suppress error msg in test log
+      sinon.stub(console, 'error') // suppress error msg in test log
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -574,7 +575,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     it('should respond with 500 if error occured', async () => {
       sinon.stub(models.trainingCourse, 'findAll').resolves(mockTrainingCourseFindAllResult);
       sinon.stub(models.establishment, 'findWithWorkersAndTraining').rejects('some error');
-      sinon.stub(console, 'error');
+      sinon.stub(console, 'error') // supress error msg in test log
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -624,7 +625,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     it('should respond with 400 if request body does not contain a list of training records to update', async () => {
       sinon.stub(models.trainingCourse, 'linkRecordsToCourse').resolves(true);
       sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData').resolves(mockTrainingRecordObjects);
-      sinon.stub(console, 'error');
+      sinon.stub(console, 'error') // supress error msg in test log
 
       const mockRequest = { ...request, body: {} };
       const req = httpMocks.createRequest(mockRequest);
@@ -640,7 +641,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     it('should respond with 404 if the training course was not found', async () => {
       sinon.stub(models.trainingCourse, 'linkRecordsToCourse').rejects(new NotFoundError());
       sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData');
-      sinon.stub(console, 'error');
+      sinon.stub(console, 'error') // supress error msg in test log
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -654,7 +655,7 @@ describe('/api/establishment/:uid/trainingCourse/', () => {
     it('should respond with 500 if error occured', async () => {
       sinon.stub(models.trainingCourse, 'linkRecordsToCourse').rejects('some other errors');
       sinon.stub(models.trainingCourse, 'updateTrainingRecordsWithCourseData');
-      sinon.stub(console, 'error');
+      sinon.stub(console, 'error') // supress error msg in test log
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();

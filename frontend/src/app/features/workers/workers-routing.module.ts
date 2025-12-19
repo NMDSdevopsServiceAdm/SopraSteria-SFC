@@ -87,6 +87,7 @@ import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-downl
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
+import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 
 const routes: Routes = [
   {
@@ -535,6 +536,9 @@ const routes: Routes = [
                 path: 'details',
                 component: AddEditTrainingComponent,
                 data: { title: 'Add Training' },
+                resolve: {
+                  trainingProviders: TrainingProvidersResolver,
+                },
               },
             ],
           },
@@ -845,6 +849,9 @@ const routes: Routes = [
             path: 'details',
             component: AddEditTrainingComponent,
             data: { title: 'Add Training' },
+            resolve: {
+              trainingProviders: TrainingProvidersResolver,
+            },
           },
         ],
       },
@@ -858,6 +865,7 @@ const routes: Routes = [
             data: { title: 'Training' },
             resolve: {
               trainingCourses: TrainingCourseResolver,
+              trainingProviders: TrainingProvidersResolver,
             },
           },
           {
