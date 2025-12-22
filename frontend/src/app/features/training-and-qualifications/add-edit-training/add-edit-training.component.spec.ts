@@ -48,7 +48,7 @@ describe('AddEditTrainingComponent', () => {
     };
 
     const setupTools = await render(AddEditTrainingComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       declarations: [CertificationsTableComponent, SelectUploadFileComponent],
       providers: [
         WindowRef,

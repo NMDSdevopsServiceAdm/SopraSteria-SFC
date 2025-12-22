@@ -15,6 +15,7 @@ type JourneyType = 'Add' | 'Edit';
 @Component({
   selector: 'app-training-course-category',
   templateUrl: './training-course-category.component.html',
+  standalone: false,
 })
 export class TrainingCourseCategoryComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;

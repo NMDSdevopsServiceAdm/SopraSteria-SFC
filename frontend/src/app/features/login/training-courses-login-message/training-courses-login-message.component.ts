@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-training-courses-login-message',
   templateUrl: './training-courses-login-message.component.html',
+  standalone: false,
 })
 export class TrainingCoursesLoginMessage implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();

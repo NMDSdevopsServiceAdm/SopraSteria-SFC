@@ -5,6 +5,7 @@ import { TrainingProvider } from '@core/model/training-provider.model';
 @Component({
   selector: 'app-external-training-provider-input',
   templateUrl: './external-training-provider-input.component.html',
+  standalone: false,
 })
 export class ExternalTrainingProviderInputComponent implements OnInit {
   @Input() trainingProviders: TrainingProvider[];

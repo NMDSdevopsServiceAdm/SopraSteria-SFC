@@ -13,6 +13,7 @@ import { SelectTrainingCourseForTrainingRecordDirective } from '@shared/directiv
   selector: 'app-select-training-course-for-multiple-training-records',
   templateUrl:
     '../../../../shared/directives/select-training-course-for-training-record/select-training-course-for-training-record.component.html',
+  standalone: false,
 })
 export class SelectTrainingCourseForMultipleTrainingRecords
   extends SelectTrainingCourseForTrainingRecordDirective
@@ -57,7 +58,12 @@ export class SelectTrainingCourseForMultipleTrainingRecords
       'select-training-category',
     ];
 
-    this.routeWithTrainingCourse = ['/workplace', this.workplace.uid, 'add-multiple-training', 'view-selected-training-course-details'];
+    this.routeWithTrainingCourse = [
+      '/workplace',
+      this.workplace.uid,
+      'add-multiple-training',
+      'view-selected-training-course-details',
+    ];
   }
 
   protected navigateOnCancelClick() {

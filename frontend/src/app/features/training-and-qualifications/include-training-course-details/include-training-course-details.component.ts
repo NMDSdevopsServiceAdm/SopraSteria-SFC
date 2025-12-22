@@ -13,6 +13,7 @@ import { TrainingCourseService } from '@core/services/training-course.service';
   selector: 'app-include-training-course-details',
   templateUrl: './include-training-course-details.component.html',
   styleUrl: './include-training-course-details.component.scss',
+  standalone: false,
 })
 export class IncludeTrainingCourseDetailsComponent {
   public userSelectedTrainingCourse = new UntypedFormControl('');
