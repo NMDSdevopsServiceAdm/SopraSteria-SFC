@@ -14,6 +14,7 @@ type JourneyType = 'RemoveSingle' | 'RemoveAll';
   selector: 'app-remove-training-course',
   templateUrl: './remove-training-course.component.html',
   styleUrl: './remove-training-course.component.scss',
+  standalone: false,
 })
 export class RemoveTrainingCourseComponent implements OnInit {
   public trainingCourses: TrainingCourse[];

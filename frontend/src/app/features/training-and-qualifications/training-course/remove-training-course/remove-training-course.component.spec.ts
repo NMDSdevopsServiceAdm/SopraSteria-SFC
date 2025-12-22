@@ -11,7 +11,7 @@ import { render } from '@testing-library/angular';
 import { RemoveTrainingCourseComponent } from './remove-training-course.component';
 import userEvent from '@testing-library/user-event';
 
-describe('AddAndManageTrainingCoursesComponent', () => {
+describe('RemoveTrainingCourseComponent', () => {
   const mockTrainingCourses = [
     { uid: 'course-1', name: 'Health and safety awareness' },
     { uid: 'course-2', name: 'Fire safety' },
