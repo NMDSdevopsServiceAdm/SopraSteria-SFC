@@ -7,6 +7,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { showCorrectTrainingValidity } from '@shared/pipes/show-training-validity.pipe';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
@@ -53,7 +54,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
       },
       {
         key: 'How long is the training valid for?',
-        value: this.showCorrectTrainingValidity(training),
+        value: showCorrectTrainingValidity(training),
       },
       {
         key: 'Training completion date',
@@ -61,20 +62,6 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
       },
       { key: 'Notes', value: training.notes ? training.notes : 'No notes added' },
     ];
-  }
-
-  private showCorrectTrainingValidity(training: any): string {
-    if (!training.validityPeriodInMonth && !training.doesNotExpire) {
-      return '-';
-    }
-
-    if (training.validityPeriodInMonth > 1) {
-      return `${training.validityPeriodInMonth} months`;
-    } else if (training.validityPeriodInMonth === 1) {
-      return `${training.validityPeriodInMonth} month`;
-    } else if (training.doesNotExpire) {
-      return 'Does not expire';
-    }
   }
 
   private getStaffData(): void {

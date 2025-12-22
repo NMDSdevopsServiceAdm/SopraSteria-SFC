@@ -88,6 +88,74 @@ export const expectPageToHaveDetails = (details) => {
   }
 };
 
+export const expectTrainingRecordPageToHaveCourseDetails = (details) => {
+  const {
+    courseName,
+    accredited,
+    deliveredBy,
+    providerName,
+    howWasItDelivered,
+    doesNotExpire,
+    validityPeriodInMonth,
+    completedDate,
+    expiryDate,
+    notes,
+  } = details;
+
+  cy.url().should('contains', '/matching-layout');
+
+  cy.get('h1').should('contain', 'Training record details');
+  cy.get('[data-testid="trainingRecordDetails"]').within(() => {
+    cy.contains('Training course name')
+      .siblings('dd')
+      .should('contain', courseName ?? '-');
+    const accreditedValue = accredited === "Don't know" ? 'I do not know' : accredited;
+    cy.contains('Is the training course accredited?')
+      .siblings('dd')
+      .should('contain', accreditedValue ?? '-');
+
+    cy.contains('Who delivered the training course?')
+      .siblings('dd')
+      .should('contain', deliveredBy ?? '-');
+    cy.contains('How is this training course delivered?')
+      .siblings('dd')
+      .should('contain', howWasItDelivered ?? '-');
+
+    if (providerName) {
+      cy.contains('Training provider name')
+        .siblings('dd')
+        .should('contain', providerName ?? '-');
+    }
+
+    cy.contains('How long is the training valid for?').siblings('dd').as('validity');
+    if (doesNotExpire) {
+      cy.get('@validity').should('contain', 'Does not expire');
+    } else if (validityPeriodInMonth) {
+      cy.get('@validity').should('contain', validityPeriodInMonth);
+    } else {
+      cy.get('@validity').should('contain', '-');
+    }
+  });
+
+  if (completedDate) {
+    cy.get('[data-testid="completedDate"]').within(() => {
+      shouldHaveDate(completedDate);
+    });
+  }
+
+  if (expiryDate) {
+    cy.get('[data-testid="expiresDate"]').within(() => {
+      shouldHaveDate(expiryDate);
+    });
+  }
+
+  if (notes) {
+    cy.get('[data-testid="notesSection"]').within(() => {
+      cy.get('textarea').should('have.value', notes);
+    });
+  }
+};
+
 const shouldHaveDate = (dateString) => {
   const [year, month, day] = dateString.split('-').map((x) => parseInt(x));
   cy.getByLabel('Day').should('have.value', day);

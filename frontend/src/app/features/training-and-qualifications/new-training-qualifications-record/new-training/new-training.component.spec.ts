@@ -1,5 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import lodash from 'lodash';
 import { By } from '@angular/platform-browser';
 import { TrainingCertificateDownloadEvent, TrainingCertificateUploadEvent } from '@core/model/training.model';
 import { SharedModule } from '@shared/shared.module';
@@ -97,12 +98,13 @@ describe('NewTrainingComponent', async () => {
   ];
 
   async function setup(override: any = {}) {
+    const mockTrainingCategories = override?.trainingCategories ?? trainingCategories;
     const { fixture, getByTestId, getByLabelText } = await render(NewTrainingComponent, {
       imports: [SharedModule, RouterModule],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         canEditWorker: true,
-        trainingCategories: trainingCategories,
+        trainingCategories: mockTrainingCategories,
         isMandatoryTraining: false,
         certificateErrors: null,
         ...override,
@@ -209,6 +211,15 @@ describe('NewTrainingComponent', async () => {
       expect(communicationTrainingTitleLink).toBeTruthy();
       expect(healthTrainingTitleLink).toBeTruthy();
       expect(healthTraining2TitleLink).toBeTruthy();
+    });
+
+    it('should link to "matching-layout" page instead if the training record is linked to a training course', async () => {
+      const mockTrainingCategories = lodash.cloneDeep(trainingCategories);
+      mockTrainingCategories[0].trainingRecords[0]['isMatchedToTrainingCourse'] = true;
+
+      const { getByTestId } = await setup({ trainingCategories: mockTrainingCategories });
+      const autismTrainingTitleLink = getByTestId('Title-someAutismUid');
+      expect(autismTrainingTitleLink.getAttribute('href')).toEqual('/training/someAutismUid/matching-layout');
     });
   });
 

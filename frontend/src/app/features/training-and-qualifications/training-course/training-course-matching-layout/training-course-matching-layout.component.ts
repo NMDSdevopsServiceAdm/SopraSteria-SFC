@@ -1,11 +1,21 @@
-import { Component, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import dayjs from 'dayjs';
+import lodash from 'lodash';
+import { Subscription } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+
+import { Location } from '@angular/common';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCourse } from '@core/model/training-course.model';
-import { TrainingCertificate, TrainingRecordRequest } from '@core/model/training.model';
+import {
+  TrainingCertificate,
+  TrainingRecord as LegacyIncorrectTrainingRecordType,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -17,16 +27,17 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { DateValidator } from '@shared/validators/date.validator';
-import dayjs from 'dayjs';
-import { Subscription } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+
+type JourneyType = 'ApplyCourseToExistingRecord' | 'AddNewTrainingRecordWithCourse' | 'ViewExistingRecord';
+type FormGroupDateValues = { day: number; month: number; year: number };
+type TrainingRecord = LegacyIncorrectTrainingRecordType & { completed: string; expires: string; accredited?: string };
 
 @Component({
   selector: 'app-training-course-matching-layout',
   templateUrl: './training-course-matching-layout.component.html',
   standalone: false,
 })
-export class TrainingCourseMatchingLayoutComponent implements OnInit {
+export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public workplace: Establishment;
@@ -35,57 +46,56 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
   public workerId: string;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
-  public submitButtonDisabled: boolean = false;
-  public buttonText: string;
   public notesOpen = false;
   public notesMaxLength = 1000;
   public remainingCharacterCount: number = this.notesMaxLength;
   public subscriptions: Subscription = new Subscription();
   public notesValue = '';
-  public trainingRecord: any;
+  public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
-  public expiryMismatchWarning: any;
+  public expiryMismatchWarning: boolean;
   public certificateErrors: string[] | null;
   private _filesToUpload: File[];
   public trainingCertificates: TrainingCertificate[] = [];
   public filesToRemove: TrainingCertificate[] = [];
   public trainingCategory: { id: number; category: string };
-  public selectedTrainingCourse: any;
+
+  public selectedTrainingCourse: TrainingCourse;
   public trainingCourses: TrainingCourse[];
 
-  public record: any;
+  public journeyType: JourneyType;
+  public headingText: string;
+  public trainingToDisplay:
+    | TrainingCourse
+    | (TrainingRecord & { name: string; trainingCategoryName: string; trainingCategoryId: number });
 
   constructor(
     private workerService: WorkerService,
     private establishmentService: EstablishmentService,
-    protected formBuilder: UntypedFormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    protected errorSummaryService: ErrorSummaryService,
-    protected backLinkService: BackLinkService,
-    public trainingService: TrainingService,
+    private errorSummaryService: ErrorSummaryService,
+    private backLinkService: BackLinkService,
+    private trainingService: TrainingService,
     private alertService: AlertService,
     private certificateService: TrainingCertificateService,
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
     this.trainingRecord = this.route.snapshot.data?.trainingRecord;
-    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
     this.worker = this.workerService.worker;
     this.establishmentUid = this.route.snapshot.params?.establishmentuid;
     this.workerId = this.route.snapshot.params?.id;
     this.workplace = this.establishmentService.establishment;
-    this.selectedTrainingCourse = this.trainingService.getSelectedTrainingCourse();
-    this.setupForm();
-    this.fillForm();
-    this.autoFillExpiry();
-    this.checkExpiryMismatch();
 
-    this.form.valueChanges.subscribe(() => {
-      this.autoFillExpiry();
-      this.checkExpiryMismatch();
-    });
+    this.loadTrainingCourse();
+    this.determineJourneyType();
+    this.setupForm();
+    this.loadTrainingToDisplay();
+    this.loadDataAccordingToJourneyType();
 
     this.setBackLink();
     this.setupFormErrorsMap();
@@ -95,19 +105,93 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
+  private determineJourneyType(): void {
+    const isExistingRecord = this.trainingRecordId && this.trainingRecord;
+    if (!isExistingRecord) {
+      this.journeyType = 'AddNewTrainingRecordWithCourse';
+      return;
+    }
+
+    if (this.selectedTrainingCourse) {
+      this.journeyType = 'ApplyCourseToExistingRecord';
+      return;
+    }
+
+    const isMatchedToTrainingCourse = this.trainingRecord.isMatchedToTrainingCourse;
+    if (isMatchedToTrainingCourse) {
+      this.journeyType = 'ViewExistingRecord';
+      return;
+    }
+
+    // if not matching any of the expected journey
+    this.returnToWorkerTrainingRecordPage();
+  }
+
+  private loadTrainingCourse(): void {
+    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
+    this.selectedTrainingCourse = this.trainingService.getSelectedTrainingCourse();
+  }
+
+  private loadDataAccordingToJourneyType(): void {
+    switch (this.journeyType) {
+      case 'ApplyCourseToExistingRecord': {
+        this.fillForm();
+        this.autoFillExpiry();
+        this.checkExpiryMismatch();
+        this.setupCheckExpiryMismatch();
+        this.headingText = 'Training record details';
+        break;
+      }
+      case 'ViewExistingRecord': {
+        this.fillForm();
+        this.checkExpiryMismatch();
+        this.setupCheckExpiryMismatch();
+        this.headingText = 'Training record details';
+        break;
+      }
+      case 'AddNewTrainingRecordWithCourse': {
+        this.headingText = 'Add training record details';
+      }
+    }
+  }
+
+  private loadTrainingToDisplay(): void {
+    switch (this.journeyType) {
+      case 'ApplyCourseToExistingRecord':
+      case 'AddNewTrainingRecordWithCourse': {
+        this.trainingToDisplay = this.selectedTrainingCourse;
+        break;
+      }
+      case 'ViewExistingRecord': {
+        const trainingToDisplay = {
+          ...this.trainingRecord,
+          name: this.trainingRecord.title,
+          trainingCategoryName: this.trainingRecord.trainingCategory.category,
+          trainingCategoryId: this.trainingRecord.trainingCategory.id,
+        };
+
+        this.trainingToDisplay = trainingToDisplay;
+        break;
+      }
+    }
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      completed: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
+      completed: this.formBuilder.group(
+        {
+          day: null,
+          month: null,
+          year: null,
+        },
+        { updateOn: this.journeyType === 'AddNewTrainingRecordWithCourse' ? 'submit' : 'change' },
+      ),
       expires: this.formBuilder.group({
         day: null,
         month: null,
         year: null,
       }),
-      notes: [null, Validators.maxLength(this.notesMaxLength)],
+      notes: [null, { validators: [Validators.maxLength(this.notesMaxLength)], updateOn: 'submit' }],
     });
 
     const minDate = dayjs().subtract(100, 'years');
@@ -124,7 +208,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       ]);
   }
 
-  private toDayjs(input: string | { day: number; month: number; year: number } | null): dayjs.Dayjs | null {
+  private toDayjs(input: string | FormGroupDateValues): dayjs.Dayjs {
     if (!input) return null;
 
     // Case 1: DB string "2025-01-20"
@@ -134,12 +218,15 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
     // Case 2: Form group object { day, month, year }
     const { day, month, year } = input;
-    if (!day || !month || !year) return null;
+    if (!day || !month || !year || year < 1000) return null;
 
-    return dayjs(`${year}-${month}-${day}`, DATE_PARSE_FORMAT);
+    const dateString = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+    const isValid = DateValidator.validate(dateString, DATE_PARSE_FORMAT);
+
+    return isValid ? dayjs(dateString, DATE_PARSE_FORMAT) : null;
   }
 
-  private toFormDate(date: dayjs.Dayjs | null): { day: number; month: number; year: number } | null {
+  private toFormDate(date: dayjs.Dayjs | null): FormGroupDateValues | null {
     return date
       ? {
           day: date.date(),
@@ -163,18 +250,32 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       expires: this.toFormDate(this.toDayjs(expires)),
       notes,
     });
+
     if (this.trainingRecord?.notes?.length > 0) {
       this.notesOpen = true;
       this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
     }
   }
 
+  private setupCheckExpiryMismatch(): void {
+    this.form.valueChanges.subscribe(() => {
+      this.checkExpiryMismatch();
+    });
+
+    this.form.get('completed').statusChanges.subscribe((status) => {
+      if (status === 'VALID') {
+        this.autoFillExpiry();
+      }
+    });
+  }
+
   public autoFillExpiry(): void {
     const completed = this.toDayjs(this.form.get('completed')?.value);
-    const expires = this.toDayjs(this.form.get('expires')?.value);
-    const validity = this.selectedTrainingCourse?.validityPeriodInMonth;
+    const validity = this.trainingToDisplay?.validityPeriodInMonth;
 
-    if (completed && !expires && validity) {
+    const expiryDateIsEmpty = Object.values(this.form.get('expires').value).every((input) => input == null);
+
+    if (completed && validity && expiryDateIsEmpty) {
       const newExpiry = completed.add(validity, 'month');
 
       this.form.patchValue(
@@ -189,24 +290,36 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       );
     }
   }
+
   public checkExpiryMismatch(): void {
     const { completed, expires } = this.form.value;
-    const validityPeriodInMonth = this.selectedTrainingCourse?.validityPeriodInMonth;
+    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
 
     if (!completed?.day || !expires?.day || !validityPeriodInMonth) {
       this.expiryMismatchWarning = false;
       return;
     }
-    const completedDate = this.toDayjs(completed);
-    const expiresDate = this.toDayjs(expires);
-    const expectedExpiry = completedDate?.add(validityPeriodInMonth, 'month');
 
-    if (completedDate && expiresDate && expectedExpiry && this.form.valid) {
+    const expiresDate = this.toDayjs(expires);
+    const expectedExpiry = this.getExpectedExpiryDate();
+
+    if (expectedExpiry && expiresDate) {
       const diff = !expiresDate.isSame(expectedExpiry, 'day');
       this.expiryMismatchWarning = diff;
     } else {
       this.expiryMismatchWarning = false;
     }
+  }
+
+  private getExpectedExpiryDate(): dayjs.Dayjs {
+    const { completed } = this.form.value;
+    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
+    if (!completed || !validityPeriodInMonth) {
+      return null;
+    }
+
+    const completedDate = this.toDayjs(completed);
+    return completedDate?.add(validityPeriodInMonth, 'month');
   }
 
   private setupFormErrorsMap(): void {
@@ -261,15 +374,40 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
-  private buildUpdatedRecord(): TrainingRecordRequest {
+
+  private buildRequestBody(): TrainingRecordRequest {
     const { completed, expires, notes } = this.form.controls;
 
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
-    const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
+    const expiresDate =
+      this.journeyType === 'AddNewTrainingRecordWithCourse'
+        ? this.getExpectedExpiryDate()
+        : this.dateGroupToDayjs(expires as UntypedFormGroup);
+
+    if (this.journeyType === 'ViewExistingRecord') {
+      return {
+        ...this.trainingRecord,
+        completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
+        expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
+        notes: notes.value ?? null,
+      };
+    }
+
+    const fieldsToCopyFromCourse = [
+      'accredited',
+      'deliveredBy',
+      'trainingProviderId',
+      'otherTrainingProviderName',
+      'howWasItDelivered',
+      'doesNotExpire',
+      'validityPeriodInMonth',
+    ];
+    const dataFromTrainingCourse = lodash.pick(this.selectedTrainingCourse, fieldsToCopyFromCourse);
 
     return {
-      ...this.selectedTrainingCourse,
-      trainingCategory: { id: this.selectedTrainingCourse?.category.id },
+      ...dataFromTrainingCourse,
+      title: this.trainingToDisplay.name,
+      trainingCategory: { id: this.trainingToDisplay.trainingCategoryId },
       trainingCourseFK: this.selectedTrainingCourse.id,
       completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
       expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
@@ -279,6 +417,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
 
   public onSubmit(): void {
     this.submitted = true;
+    this.triggerValidatorForExpiresDate();
 
     if (!this.form.valid) {
       if (this.form.controls.notes?.errors?.maxlength) {
@@ -287,18 +426,25 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
-    const record = this.buildUpdatedRecord();
 
-    if (!this.trainingRecordId) {
-      return;
+    const trainingRecord = this.buildRequestBody();
+
+    let submitTrainingRecord;
+
+    if (this.trainingRecordId) {
+      submitTrainingRecord = this.workerService.updateTrainingRecord(
+        this.workplace.uid,
+        this.worker.uid,
+        this.trainingRecordId,
+        trainingRecord,
+      );
+    } else {
+      submitTrainingRecord = this.workerService.createTrainingRecord(
+        this.workplace.uid,
+        this.worker.uid,
+        trainingRecord,
+      );
     }
-
-    let submitTrainingRecord = this.workerService.updateTrainingRecord(
-      this.workplace.uid,
-      this.worker.uid,
-      this.trainingRecordId,
-      record,
-    );
 
     if (this.filesToRemove?.length > 0) {
       this.deleteTrainingCertificate(this.filesToRemove);
@@ -311,11 +457,20 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     this.subscriptions.add(submitTrainingRecord.subscribe(() => this.onSubmitSuccess()));
   }
 
+  private triggerValidatorForExpiresDate(): void {
+    this.form.get('expires').markAsTouched();
+    this.form.get('expires').markAsDirty();
+    this.form.get('expires').updateValueAndValidity();
+  }
+
   private onSubmitSuccess(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
+    const alertMessage =
+      this.journeyType === 'AddNewTrainingRecordWithCourse' ? 'Training record added' : 'Training record updated';
+
+    this.returnToWorkerTrainingRecordPage().then(() => {
       this.alertService.addAlert({
         type: 'success',
-        message: 'Training record updated',
+        message: alertMessage,
       });
     });
   }
@@ -359,6 +514,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     this.filesToUpload = filesToKeep;
     this.certificateErrors = [];
   }
+
   private uploadNewCertificate(trainingRecordResponse: any) {
     const trainingRecordId = this.trainingRecordId ?? trainingRecordResponse.uid;
 
@@ -387,6 +543,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
         : this.trainingCertificates.map((certificate) => {
             return this.formatForCertificateDownload(certificate);
           });
+
     this.subscriptions.add(
       this.certificateService
         .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
@@ -427,15 +584,32 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit {
     ]);
   }
 
+  public returnToSelectTrainingCoursePage(event: Event): void {
+    event.preventDefault();
+
+    switch (this.journeyType) {
+      case 'ApplyCourseToExistingRecord': {
+        this.router.navigate(['../include-training-course-details'], { relativeTo: this.route });
+        return;
+      }
+      case 'ViewExistingRecord': {
+        this.router.navigate(['../include-training-course-details'], { relativeTo: this.route });
+        return;
+      }
+      case 'AddNewTrainingRecordWithCourse': {
+        this.location.back();
+        return;
+      }
+    }
+  }
+
   public onCancel(event: Event): void {
     event.preventDefault();
-    this.router.navigate(['/dashboard'], { fragment: 'home' });
+    this.returnToWorkerTrainingRecordPage();
   }
-  public handleOnInput(event: Event) {
-    this.notesValue = (<HTMLInputElement>event.target).value;
-    this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
-  }
-  public toggleNotesOpen(): void {
-    this.notesOpen = !this.notesOpen;
+
+  private returnToWorkerTrainingRecordPage(): Promise<boolean> {
+    const url = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'];
+    return this.router.navigate(url);
   }
 }

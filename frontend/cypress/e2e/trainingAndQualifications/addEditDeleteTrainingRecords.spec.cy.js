@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { expectTrainingRecordPageToHaveCourseDetails } from './trainingCourse/helpers';
 
 describe('training record', () => {
   const workerName1 = 'Test worker';
@@ -110,10 +111,21 @@ describe('training record', () => {
     });
   });
 
-  describe('training courses', () => {
+  describe('with training courses', () => {
+    const trainingCourseDetails = {
+      name: 'Test add new training record with training course',
+      accredited: 'Yes',
+      deliveredBy: 'External provider',
+      providerName: '',
+      howWasItDelivered: 'E-learning',
+      doesNotExpire: false,
+      validityPeriodInMonth: 24,
+    };
+    const trainingCourseName = trainingCourseDetails.name;
+
     before(() => {
       cy.deleteAllTrainingCourses(establishmentID);
-      cy.insertTrainingCourse({ establishmentID, categoryId: 1, name: trainingCourseName });
+      cy.insertTrainingCourse({ establishmentID, categoryId: 1, ...trainingCourseDetails });
       cy.reload();
     });
 
@@ -165,7 +177,30 @@ describe('training record', () => {
       cy.getByLabel(trainingCourseName).click();
       cy.contains('button', 'Continue').click();
 
-      // this needs finishing once the journey is complete
+      cy.getByLabel('Day').type('15');
+      cy.getByLabel('Month').type('06');
+      cy.getByLabel('Year').type('2025');
+
+      cy.contains('Open notes').click();
+      cy.getByLabel('Add a note').type('some notes');
+
+      cy.get('button').contains('Save training record').click();
+
+      cy.get('h1').should('contain', 'Training and qualifications');
+      cy.get('[data-testid="workerNameAndRole"]').should('contain', workerName1);
+      cy.get('app-alert span').should('contain', 'Training record added');
+
+      // verify that the training record has picked up training course details
+      cy.get('a').contains(trainingCourseName).click();
+      cy.get('h1').should('contain', 'Training record details');
+
+      expectTrainingRecordPageToHaveCourseDetails({
+        ...trainingCourseDetails,
+        courseName: trainingCourseName,
+        completedDate: '2025-06-15',
+        expiryDate: '2027-06-15',
+        notes: 'some notes',
+      });
     });
   });
 
@@ -222,148 +257,176 @@ describe('training record', () => {
     cy.get('[data-testid="generic_alert"]').contains('Training record deleted');
   });
 
-  describe('including training course details', () => {
-    beforeEach(() => {
-      cy.addWorkerTraining({ establishmentID: StandAloneEstablishment.id, workerName: workerName1, categoryId: 1 });
-      cy.insertTrainingCourse({ establishmentID: StandAloneEstablishment.id, categoryId: 1 });
-      cy.reload();
-    });
+  describe('update existing training record (related to training course)', () => {
+    const trainingCourseDetails = {
+      name: 'Test add course detail to record',
+      accredited: 'No',
+      deliveredBy: 'In-house staff',
+      howWasItDelivered: 'E-learning',
+      doesNotExpire: false,
+      validityPeriodInMonth: 12,
+    };
 
-    afterEach(() => {
-      cy.deleteAllTrainingCourses(establishmentID);
-    });
+    const anotherTrainingCourse = {
+      name: 'Another training course for test',
+      accredited: 'Yes',
+      deliveredBy: 'External provider',
+      trainingProviderId: 1,
+      trainingProviderName: '1Stop Training',
+      howWasItDelivered: 'Face to face',
+      doesNotExpire: true,
+      validityPeriodInMonth: null,
+    };
 
-    describe('when there is one training course that matches the training record', () => {
-      it('should include training course details successfully', () => {
-        cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
-        cy.contains('a', trainingName).click();
-
-        cy.contains('button', 'Select a training course').click();
-        cy.get('[data-testid="workerName"]').contains(workerName1);
-        cy.get('[data-testid="checkbox-label"]').contains('Test training course');
-        cy.get('[data-testid="training-course-name-checkbox"]').check();
-        // Click Continue
-        cy.get('[data-testid="continue-button"]').click();
-
-        // Assert navigation
-        cy.url().should('include', `matching-layout`);
-      });
-    });
-
-    describe('when there are multiple training course that match the training record', () => {
-      it('should include training course details successfully', () => {
-        cy.insertTrainingCourse({
-          establishmentID: StandAloneEstablishment.id,
-          categoryId: 1,
-          name: 'Test training course 2',
-        });
-        cy.reload();
-
-        cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
-        cy.contains('a', trainingName).click();
-
-        cy.contains('button', 'Select a training course').click();
-        cy.get('[data-testid="workerName"]').contains(workerName1);
-        cy.contains('label', 'Test training course');
-        cy.contains('label', 'Test training course 2');
-        // Add test for selecting and clicking on Continue button when that functionality is added
-      });
-    });
-  });
-
-  describe('Training Course Matching Layout Page', () => {
-    const workerName = 'Test Worker';
+    const trainingCourseName = trainingCourseDetails.name;
+    const anotherTrainingCourseName = anotherTrainingCourse.name;
 
     before(() => {
-      cy.deleteAllTrainingCourses(establishmentID);
-      cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
-      cy.deleteTestWorkerFromDb(workerName);
-      cy.insertTestWorker({ establishmentID, workerName });
-
-      // Insert 2 training courses so the "Select a different training course" link is visible
-      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Fire Safety' });
-      cy.insertTrainingCourse({ establishmentID, categoryID: 2, name: 'Manual Handling' });
-
-      // Add a training record
-      cy.addWorkerTraining({
-        establishmentID,
-        workerName,
-        courseName: 'Fire Safety',
-        completed: '2024-01-01',
-        expires: '2025-01-01',
-        notes: 'Test notes',
+      cy.insertTrainingCourse({
+        ...trainingCourseDetails,
+        establishmentID: StandAloneEstablishment.id,
+        categoryId: 1,
+      });
+      cy.insertTrainingCourse({
+        ...anotherTrainingCourse,
+        establishmentID: StandAloneEstablishment.id,
+        categoryId: 1,
       });
     });
 
     beforeEach(() => {
-      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
-      cy.contains('a', trainingName).click();
-      cy.contains('button', 'Select a training course').click();
+      cy.deleteWorkerTrainingRecord({ establishmentID, workerName: workerName1 });
     });
 
     after(() => {
-      cy.deleteWorkerTrainingRecord({ establishmentID, workerName });
-      cy.deleteTestWorkerFromDb(workerName);
+      cy.deleteAllTrainingCourses(establishmentID);
     });
 
-    it('should submit the form successfully and redirect', () => {
-      cy.get('h1').should('contain.text', 'Select a training course');
-      cy.getByLabel('Fire Safety').click();
+    it('should be able to apply course details to a training record that is not linked to a course', () => {
+      cy.addWorkerTraining({
+        establishmentID: StandAloneEstablishment.id,
+        workerName: workerName1,
+        categoryId: 1,
+        completedDate: '2025-03-30',
+      });
+      cy.reload();
 
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', trainingName).click();
+
+      cy.contains('button', 'Select a training course').click();
+      cy.get('[data-testid="workerName"]').contains(workerName1).should('be.visible');
+      cy.getByLabel(trainingCourseName).should('exist');
+      cy.getByLabel(anotherTrainingCourseName).should('exist');
+      cy.getByLabel(trainingCourseName).click();
+
+      // Click Continue
       cy.get('[data-testid="continue-button"]').click();
 
+      // Assert navigation
       cy.url().should('include', `matching-layout`);
+      cy.contains('button', 'Save and return').click();
 
-      cy.get('h1').should('contain.text', 'Training record details');
+      cy.get('h1').should('contain', 'Training and qualifications');
+      cy.get('[data-testid="workerNameAndRole"]').should('contain', workerName1);
+      cy.get('app-alert span').should('contain', 'Training record updated');
 
-      cy.contains('.govuk-summary-list__key', 'Training course name').next().should('contain.text', 'Fire Safety');
+      // verify that the training record has picked up training course details
+      cy.get('a').contains(trainingCourseName).click();
+      cy.get('h1').should('contain', 'Training record details');
+      expectTrainingRecordPageToHaveCourseDetails({
+        ...trainingCourseDetails,
+        courseName: trainingCourseName,
+        completedDate: '2025-03-30',
+        expiryDate: '2026-03-30',
+      });
+    });
 
-      cy.get('a').contains('Select a different training course').should('be.visible');
+    it('should allow updating the expiry date, completion date and notes for a training record that is linked to a course', () => {
+      cy.addWorkerTrainingLinkedToCourse({
+        establishmentID: StandAloneEstablishment.id,
+        workerName: workerName1,
+        categoryId: 1,
+        trainingCourseName,
+        trainingTitle: trainingCourseName,
+        completedDate: '2025-03-30',
+      });
 
-      cy.contains('button', 'Open notes').click();
+      cy.reload();
 
-      cy.get('[data-testid="notesSection"] textarea').should('be.visible').clear().type('Updated notes via E2E');
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', trainingCourseName).click();
 
-      cy.get('[data-testid="notesSection"]').should('exist').and('be.visible');
+      cy.get('h1').should('contain', 'Training record details');
 
       cy.get('[data-testid="completedDate"]').within(() => {
-        cy.get('input').each(($input) => cy.wrap($input).clear());
-        cy.get('input').eq(0).type('01');
-        cy.get('input').eq(1).type('02');
-        cy.get('input').eq(2).type('2024');
+        cy.getByLabel('Day').clear().type(31);
+        cy.getByLabel('Month').clear().type(3);
+        cy.getByLabel('Year').clear().type(2025);
       });
 
       cy.get('[data-testid="expiresDate"]').within(() => {
-        cy.get('input').each(($input) => cy.wrap($input).clear());
-        cy.get('input').eq(0).type('01');
-        cy.get('input').eq(1).type('03');
-        cy.get('input').eq(2).type('2025');
+        cy.getByLabel('Day').clear().type(1);
+        cy.getByLabel('Month').clear().type(4);
+        cy.getByLabel('Year').clear().type(2026);
       });
 
-      cy.get('app-select-upload-certificate').should('exist');
+      cy.contains('button', 'Open notes').click();
+      cy.get('[data-testid="notesSection"]').clear().type('Some notes about training record');
+      cy.contains('button', 'Save and return').click();
 
-      cy.get('[data-testid="deleteButton"]').should('exist');
+      cy.get('h1').should('contain', 'Training and qualifications');
+      cy.get('[data-testid="workerNameAndRole"]').should('contain', workerName1);
+      cy.get('app-alert span').should('contain', 'Training record updated');
 
-      cy.get('button[type="submit"]').click();
+      // verify that the updates are saved
+      cy.get('a').contains(trainingCourseName).click();
+      cy.get('h1').should('contain', 'Training record details');
 
-      cy.get('app-alert span', { timeout: 10000 }).should('contain.text', 'Training record updated');
-
-      cy.url().should('include', '/dashboard');
+      expectTrainingRecordPageToHaveCourseDetails({
+        courseName: trainingCourseName,
+        completedDate: '2025-03-31',
+        expiryDate: '2026-04-01',
+        notes: 'Some notes about training record',
+      });
     });
 
-    it('should NOT show the link when only one course exists', () => {
-      cy.deleteAllTrainingCourses(establishmentID);
-      cy.insertTrainingCourse({ establishmentID, categoryID: 1, name: 'Fire Safety' });
+    it('should be able to change to another training course', () => {
+      cy.addWorkerTrainingLinkedToCourse({
+        establishmentID: StandAloneEstablishment.id,
+        workerName: workerName1,
+        categoryId: 1,
+        trainingCourseName,
+        trainingTitle: trainingCourseName,
+        completedDate: '2025-03-30',
+      });
 
       cy.reload();
-      cy.get('h1').should('contain.text', 'Select a training course');
 
-      cy.getByLabel('Fire Safety').click();
+      cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+      cy.contains('a', trainingCourseName).click();
 
-      cy.get('[data-testid="continue-button"]').click();
+      cy.contains('Select a different training course').click();
+
+      cy.get('h1').should('contain', 'Select a training course');
+      cy.getByLabel(anotherTrainingCourseName).click();
+      cy.get('button').contains('Continue').click();
 
       cy.url().should('include', `matching-layout`);
-      cy.get('a').contains('Select a different training course').should('not.exist');
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('h1').should('contain', 'Training and qualifications');
+      cy.get('[data-testid="workerNameAndRole"]').should('contain', workerName1);
+      cy.get('app-alert span').should('contain', 'Training record updated');
+
+      // verify that the training record has picked up the details of another training course
+      cy.get('a').contains(anotherTrainingCourseName).click();
+      cy.get('h1').should('contain', 'Training record details');
+      expectTrainingRecordPageToHaveCourseDetails({
+        ...anotherTrainingCourse,
+        courseName: anotherTrainingCourseName,
+        completedDate: '2025-03-30',
+      });
     });
   });
 
@@ -546,7 +609,7 @@ describe('training record', () => {
         cy.get('[data-testid="notesSection"]').clear().type('Group training');
 
         cy.contains('button', 'Continue').click();
-      //  update when next page of journey is completed
+        //  update when next page of journey is completed
       });
     });
   });
