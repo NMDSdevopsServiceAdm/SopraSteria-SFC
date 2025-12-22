@@ -5,8 +5,10 @@ import { TrainingCourseResolver } from './training-course.resolver';
 import { TrainingCourseService } from '@core/services/training-course.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 
-describe('trainingCourseResolver', () => {
+fdescribe('trainingCourseResolver', () => {
   const mockEstablishmentUid = 'mock-uid';
 
   const mockParent = {
@@ -14,12 +16,14 @@ describe('trainingCourseResolver', () => {
       trainingRecord: {
         trainingCategory: {
           id: 10,
-        }
-      }
-    }
+        },
+      },
+    },
   };
 
   function setup(overrides: any = {}) {
+    const permissions = overrides?.permissions ?? ['canViewWorker'];
+
     TestBed.configureTestingModule({
       imports: [],
       providers: [
@@ -34,6 +38,10 @@ describe('trainingCourseResolver', () => {
               parent: overrides?.parent,
             },
           },
+        },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(permissions, false),
         },
         TrainingCourseResolver,
         TrainingCourseService,
@@ -83,10 +91,22 @@ describe('trainingCourseResolver', () => {
   });
 
   it('should call getTrainingCoursesByCategorySpy if there is a training categoryId', () => {
-    const { resolver, route, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = setup({parent:mockParent});
+    const { resolver, route, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = setup({
+      parent: mockParent,
+    });
     resolver.resolve(route.snapshot);
 
     expect(getAllTrainingCoursesSpy).not.toHaveBeenCalled();
     expect(getTrainingCoursesByCategorySpy).toHaveBeenCalledWith(mockEstablishmentUid, 10);
+  });
+
+  it('should not make call to backend if the user does not have canViewWorker permission', () => {
+    const { resolver, route, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = setup({
+      permissions: [],
+    });
+    resolver.resolve(route.snapshot);
+
+    expect(getAllTrainingCoursesSpy).not.toHaveBeenCalled();
+    expect(getTrainingCoursesByCategorySpy).not.toHaveBeenCalled();
   });
 });
