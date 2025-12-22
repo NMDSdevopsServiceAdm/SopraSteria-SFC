@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, mandatoryTrainingJobOption } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecord, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
@@ -42,6 +42,8 @@ import { of, throwError } from 'rxjs';
 import { mockQualificationCertificates } from '../../../core/test-utils/MockCertificateService';
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
+import { TrainingCourse } from '@core/model/training-course.model';
+import { trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
@@ -130,6 +132,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     careCert: boolean;
     mandatoryTraining: TrainingRecordCategory[];
     nonMandatoryTraining: TrainingRecordCategory[];
+    trainingCourses: TrainingCourse[];
     fragment: 'all-records' | 'mandatory-training' | 'non-mandatory-training' | 'qualifications';
     isOwnWorkplace: boolean;
     qualifications: QualificationsByGroup;
@@ -139,18 +142,28 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     careCert: true,
     mandatoryTraining: [],
     nonMandatoryTraining: mockTrainingData.nonMandatory,
+    trainingCourses: [],
     fragment: 'all-records',
     isOwnWorkplace: true,
     qualifications: { count: 0, groups: [], lastUpdated: qualificationsByGroup.lastUpdated },
   };
 
   async function setup(options: Partial<SetupOptions> = {}) {
-    const { otherJob, careCert, mandatoryTraining, nonMandatoryTraining, fragment, isOwnWorkplace, qualifications } = {
+    const {
+      otherJob,
+      careCert,
+      mandatoryTraining,
+      nonMandatoryTraining,
+      trainingCourses,
+      fragment,
+      isOwnWorkplace,
+      qualifications,
+    } = {
       ...defaults,
       ...options,
     };
 
-    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
+    const { fixture, getByText, getAllByText, getByRole, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
         imports: [SharedModule, RouterModule, WorkersModule],
@@ -179,6 +192,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     },
                     careCertificate: careCert ? 'Yes, in progress or partially completed' : null,
                   },
+                  trainingCourses: trainingCourses,
                   trainingAndQualificationRecords: {
                     training: {
                       ...mockTrainingData,
@@ -398,6 +412,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       trainingService,
       getByText,
       getAllByText,
+      getByRole,
       getByTestId,
       queryByText,
       workplaceUid,
@@ -466,6 +481,47 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
       expect(getByText('Not answered', { exact: false })).toBeTruthy();
+    });
+
+    it('should display the "Add a training record" button', async () => {
+      const { getByRole } = await setup();
+      const button = getByRole('button', { name: 'Add a training record' });
+
+      expect(button).toBeTruthy();
+    });
+
+    it('should have correct href on the "Add a training record" button when courses have been added', async () => {
+      const { workplaceUid, workerUid, getByRole } = await setup({ trainingCourses: [trainingCourseBuilder()] });
+      const button = getByRole('button', { name: 'Add a training record' });
+
+      expect(button.getAttribute('href')).toEqual(
+        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/add-a-training-record`,
+      );
+    });
+
+    it('should have correct href on the "Add a training record" button when no courses have been added', async () => {
+      const { workplaceUid, workerUid, getByRole } = await setup();
+      const button = getByRole('button', { name: 'Add a training record' });
+
+      expect(button.getAttribute('href')).toEqual(
+        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/add-training`,
+      );
+    });
+
+    it('should display the "Add a qualification record" button', async () => {
+      const { getByRole } = await setup();
+      const button = getByRole('button', { name: 'Add a qualification record' });
+
+      expect(button).toBeTruthy();
+    });
+
+    it('should have correct href on the "Add a qualification record" button', async () => {
+      const { workplaceUid, workerUid, getByRole } = await setup();
+      const button = getByRole('button', { name: 'Add a qualification record' });
+
+      expect(button.getAttribute('href')).toEqual(
+        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/add-qualification`,
+      );
     });
   });
 

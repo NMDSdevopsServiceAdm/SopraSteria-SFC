@@ -24,6 +24,7 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
   @Input() workerCount: number;
   @Input() trainingCounts: TrainingCounts;
   @Input() tAndQsLastUpdated: string;
+  @Input() hasTrainingCourse: boolean;
 
   private subscriptions: Subscription = new Subscription();
 

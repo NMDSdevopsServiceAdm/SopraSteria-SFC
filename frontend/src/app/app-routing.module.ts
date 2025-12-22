@@ -36,6 +36,7 @@ import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-
 import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 import { LoginComponent } from '@features/login/login.component';
 import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
+import { TrainingCoursesLoginMessage } from '@features/login/training-courses-login-message/training-courses-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
@@ -47,6 +48,7 @@ import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
+import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 
 const routes: Routes = [
   {
@@ -155,6 +157,11 @@ const routes: Routes = [
         data: { title: 'Update your vacancies and turnover data' },
       },
       {
+        path: 'new-training-courses',
+        component: TrainingCoursesLoginMessage,
+        data: { title: "What's new in ASC-WDS" },
+      },
+      {
         path: 'help',
         loadChildren: () => import('@features/help/help.module').then((m) => m.HelpModule),
       },
@@ -199,6 +206,7 @@ const routes: Routes = [
             GetNoOfWorkersWhoRequireCareWorkforcePathwayRoleAnswerResolver,
           noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer:
             GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
+          trainingCourses: TrainingCourseResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },

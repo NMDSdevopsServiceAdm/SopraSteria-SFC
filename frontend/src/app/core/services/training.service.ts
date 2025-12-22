@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { mandatoryTraining } from '@core/model/establishment.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 import { allMandatoryTrainingCategories, SelectedTraining, TrainingCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -16,6 +17,10 @@ export class TrainingService {
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
   public updatingSelectedStaffForMultipleTraining: boolean = null;
+  private _isTrainingCourseSelected: boolean = null;
+  private _selectedTrainingCourse: TrainingCourse;
+  private _courseCompletionDate: Date = null;
+  private _notes: string = null;
 
   constructor(private http: HttpClient) {}
 
@@ -96,6 +101,8 @@ export class TrainingService {
     this.resetSelectedStaff();
     this.resetSelectedTraining();
     this.clearSelectedTrainingCategory();
+    this.clearIsTrainingCourseSelected();
+    this.clearSelectedTrainingCourse();
   }
 
   public setSelectedTrainingCategory(trainingCategory: TrainingCategory) {
@@ -124,6 +131,46 @@ export class TrainingService {
 
   public clearUpdatingSelectedStaffForMultipleTraining(): void {
     this.updatingSelectedStaffForMultipleTraining = null;
+  }
+
+  public setIsTrainingCourseSelected(isCourseSelected: boolean): void {
+    this._isTrainingCourseSelected = isCourseSelected;
+  }
+
+  public getIsTrainingCourseSelected(): boolean {
+    return this._isTrainingCourseSelected;
+  }
+
+  public clearIsTrainingCourseSelected(): void {
+    this._isTrainingCourseSelected = null;
+  }
+
+  public setSelectedTrainingCourse(selectedTrainingCourse: TrainingCourse): void {
+    this._selectedTrainingCourse = selectedTrainingCourse;
+  }
+
+  public getSelectedTrainingCourse(): TrainingCourse {
+    return this._selectedTrainingCourse;
+  }
+
+  public clearSelectedTrainingCourse(): void {
+    this._selectedTrainingCourse = null;
+  }
+
+  public setCourseCompletionDate(date: Date): void {
+    this._courseCompletionDate = date;
+  }
+
+  public getCourseCompletionDate(): Date {
+    return this._courseCompletionDate;
+  }
+
+  public setNotes(notes: string): void {
+    this._notes = notes;
+  }
+
+  public getNotes(): string {
+    return this._notes;
   }
 }
 

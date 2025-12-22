@@ -81,6 +81,158 @@ export const trainingCategories = [
   { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
 ];
 
+export const mockTrainingCategoriesWithAllGroups = [
+  {
+    id: 1,
+    seq: 0,
+    category: 'Activity provision, wellbeing',
+    trainingCategoryGroup: 'Care skills and knowledge',
+  },
+  {
+    id: 43,
+    seq: 0,
+    category: 'Assisted digital and accessibility',
+    trainingCategoryGroup: 'IT, digital and data in the workplace',
+  },
+  {
+    id: 27,
+    seq: 0,
+    category: 'Assisting and moving people',
+    trainingCategoryGroup: 'Care skills and knowledge',
+  },
+  {
+    id: 2,
+    seq: 0,
+    category: 'Autism',
+    trainingCategoryGroup: 'Specific conditions and disabilities',
+  },
+  {
+    id: 18,
+    seq: 0,
+    category: 'Basic life support and first aid',
+    trainingCategoryGroup: 'Health and safety in the workplace',
+  },
+  {
+    id: 9,
+    seq: 0,
+    category: 'COSHH',
+    trainingCategoryGroup: 'Health and safety in the workplace',
+  },
+  {
+    id: 3,
+    seq: 0,
+    category: "Children's, young people's related training",
+    trainingCategoryGroup: 'Staff development',
+  },
+  {
+    id: 4,
+    seq: 0,
+    category: 'Communication',
+    trainingCategoryGroup: 'Staff development',
+  },
+  {
+    id: 5,
+    seq: 0,
+    category: 'Complaints handling, conflict resolution',
+    trainingCategoryGroup: 'Staff development',
+  },
+  {
+    id: 7,
+    seq: 0,
+    category: 'Continence care',
+    trainingCategoryGroup: 'Care skills and knowledge',
+  },
+  {
+    id: 37,
+    seq: 1,
+    category: 'Other',
+    trainingCategoryGroup: null,
+  },
+];
+
+export const expectedTrainingCategoryGroupsAfterSorting = [
+  {
+    title: 'Care skills and knowledge',
+    descriptionText: "Training like 'duty of care', 'safeguarding adults'",
+    items: [
+      {
+        label: 'Activity provision, wellbeing',
+        id: 1,
+        seq: 0,
+      },
+      {
+        label: 'Assisting and moving people',
+        id: 27,
+        seq: 0,
+      },
+      {
+        label: 'Continence care',
+        id: 7,
+        seq: 0,
+      },
+    ],
+  },
+  {
+    title: 'Health and safety in the workplace',
+    descriptionText: "Training like 'fire safety', 'first aid'",
+    items: [
+      {
+        label: 'Basic life support and first aid',
+        id: 18,
+        seq: 0,
+      },
+      {
+        label: 'COSHH',
+        id: 9,
+        seq: 0,
+      },
+    ],
+  },
+  {
+    title: 'IT, digital and data in the workplace',
+    descriptionText: "Training like 'online safety and security', 'working with digital technology'",
+    items: [
+      {
+        label: 'Assisted digital and accessibility',
+        id: 43,
+        seq: 0,
+      },
+    ],
+  },
+  {
+    title: 'Specific conditions and disabilities',
+    descriptionText: "Training like 'dementia care', 'Oliver McGowan Mandatory Training'",
+    items: [
+      {
+        label: 'Autism',
+        id: 2,
+        seq: 0,
+      },
+    ],
+  },
+  {
+    title: 'Staff development',
+    descriptionText: "Training like 'communication', 'leadership and management' ",
+    items: [
+      {
+        label: "Children's, young people's related training",
+        id: 3,
+        seq: 0,
+      },
+      {
+        label: 'Communication',
+        id: 4,
+        seq: 0,
+      },
+      {
+        label: 'Complaints handling, conflict resolution',
+        id: 5,
+        seq: 0,
+      },
+    ],
+  },
+];
+
 @Injectable()
 export class MockTrainingCategoryService extends TrainingCategoryService {
   getCategoriesWithTraining(establishmentId): Observable<TrainingRecordCategories[]> {

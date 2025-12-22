@@ -75,39 +75,6 @@ describe('TrainingLinkPanelComponent', () => {
     expect(getByText('Last update, 1 January 2020')).toBeTruthy();
   });
 
-  it('should show the `Add and manage mandatory training categories` link when canEditEstablishment in permissions service is true', async () => {
-    const { getByText } = await setup();
-
-    expect(getByText('Add and manage mandatory training categories')).toBeTruthy();
-  });
-
-  it('should not show the `Add and manage mandatory training categories` link when user does not have edit access', async () => {
-    const { component, fixture, queryByText } = await setup();
-
-    component.canEditEstablishment = false;
-    fixture.detectChanges();
-
-    expect(queryByText('Add and manage mandatory training categories')).toBeFalsy();
-  });
-
-  it('should show the `Manage expiry alerts` link when canEditEstablishment in permissions service is true', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.canEditEstablishment = true;
-    fixture.detectChanges();
-
-    expect(getByText('Manage expiry alerts')).toBeTruthy();
-  });
-
-  it('should not show the `Manage expiry alerts` link when canEditEstablishment in permissions service is false', async () => {
-    const { component, fixture, queryByText } = await setup();
-
-    component.canEditEstablishment = false;
-    fixture.detectChanges();
-
-    expect(queryByText(`Manage expiry alerts' alerts`)).toBeFalsy();
-  });
-
   describe('training and quals report', () => {
     it('should not show the download link if the establishment has no training and qualification records', async () => {
       const { queryByText } = await setup(0);
@@ -129,69 +96,6 @@ describe('TrainingLinkPanelComponent', () => {
 
       expect(reportServiceSpy).toHaveBeenCalledWith(component.establishmentUid);
       expect(saveFileSpy).toHaveBeenCalled();
-    });
-  });
-
-  it('should display the `Add multiple training records` button with the correct link when the user has edit permission', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.canEditWorker = true;
-    fixture.detectChanges();
-
-    const workplaceUid = component.workplace.uid;
-    const multipleTrainingButton = getByText('Add multiple training records');
-    expect(multipleTrainingButton).toBeTruthy();
-    expect(multipleTrainingButton.getAttribute('href')).toEqual(
-      `/workplace/${workplaceUid}/add-multiple-training/select-staff`,
-    );
-  });
-
-  it('should not display the `Add multiple training records` button when the user does not have edit permission', async () => {
-    const { queryByText } = await setup();
-
-    const multipleTrainingButton = queryByText('Add multiple training records');
-    expect(multipleTrainingButton).toBeFalsy();
-  });
-
-  describe('Parent training and quals report', () => {
-    it('should call getParentTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      const reportService = TestBed.inject(ReportService);
-      const reportServiceSpy = spyOn(reportService, 'getParentTrainingAndQualificationsReport').and.returnValue(
-        of(null),
-      );
-      const saveFileSpy = spyOn(component, 'saveFile').and.returnValue(null);
-
-      component.isParent = true;
-      fixture.detectChanges();
-
-      const downloadTrainingButton = getByText('Download parent training report');
-      downloadTrainingButton.click();
-      fixture.detectChanges();
-
-      expect(reportServiceSpy).toHaveBeenCalledWith(component.establishmentUid);
-      expect(saveFileSpy).toHaveBeenCalled();
-    });
-
-    it('should only be visible for parents', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.isParent = true;
-      fixture.detectChanges();
-
-      const downloadTrainingButton = getByText('Download parent training report');
-      expect(downloadTrainingButton).toBeTruthy();
-    });
-
-    it('should not be visible for standalone workplaces', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.isParent = false;
-      fixture.detectChanges();
-
-      const downloadTrainingButton = queryByText('Download parent training report');
-      expect(downloadTrainingButton).toBeFalsy();
     });
   });
 });

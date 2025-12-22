@@ -223,13 +223,14 @@ describe('download', () => {
         ],
       },
     ]);
+
     sinon.stub(s3, 'saveResponse').callsFake((req, res, statusCode, body) => {
       expect(statusCode).to.deep.equal(200);
       expect(body).to.contain(establishment.LocalIdentifierValue);
       expect(body).to.contain(worker.LocalIdentifierValue);
       expect(body).to.contain(trainingRecord.title);
       expect(body).to.contain(trainingRecord.notes);
-      expect(body).to.contain(mockTraining.knownHeaders);
+      expect(body).to.contain(mockTraining.trainingHeadersAsArray);
     });
     const req = httpMocks.createRequest({
       method: 'GET',

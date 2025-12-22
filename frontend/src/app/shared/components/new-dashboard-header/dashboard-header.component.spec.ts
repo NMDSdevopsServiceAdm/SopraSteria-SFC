@@ -94,6 +94,7 @@ describe('NewDashboardHeaderComponent', () => {
         hasWorkers: override.hasWorkers,
         isParent: false,
         workplace: establishment,
+        hasTrainingCourse: true,
       },
     });
 
@@ -131,7 +132,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not show parent above workplace name if it is not a parent', async () => {
-      const { component, queryByTestId } = await setup();
+      const { queryByTestId } = await setup();
 
       expect(queryByTestId('parentLabel')).toBeFalsy();
     });
@@ -389,43 +390,146 @@ describe('NewDashboardHeaderComponent', () => {
       expect(queryByTestId('contact-info')).toBeFalsy();
     });
 
-    it('should display the add multiple staff records button if canEditWorker is true with correct href', async () => {
-      const override = {
-        tab: 'training-and-qualifications',
-        updateDate: false,
-        canAddWorker: false,
-        canEditWorker: true,
-        hasWorkers: true,
-      };
-      const { component, getByText } = await setup(override);
+    describe('"Add and manage training" button', () => {
+      it('should be visible if canEditWorker is true', async () => {
+        const override = {
+          tab: 'training-and-qualifications',
+          updateDate: false,
+          canAddWorker: false,
+          canEditWorker: true,
+          hasWorkers: true,
+        };
 
-      const workplaceUid = component.workplace.uid;
-      const button = getByText('Add multiple training records');
+        const { getByText } = await setup(override);
+        const button = getByText('Add and manage training');
 
-      expect(button).toBeTruthy();
-      expect(button.getAttribute('href')).toEqual(`/workplace/${workplaceUid}/add-multiple-training/select-staff`);
-    });
+        expect(button).toBeTruthy();
+      });
 
-    it('should not display the add multiple staff records button if canEditWorker is not true', async () => {
-      const override = {
-        tab: 'training-and-qualifications',
-      };
-      const { queryByText } = await setup(override);
+      it('should not be visible if canEditWorker is not true', async () => {
+        const override = {
+          tab: 'training-and-qualifications',
+        };
+        const { queryByText } = await setup(override);
 
-      expect(queryByText('Add multiple training records')).toBeFalsy();
-    });
+        expect(queryByText('Add and manage training')).toBeFalsy();
+      });
 
-    it('should not display the add multiple staff records button if there are no workers', async () => {
-      const override = {
-        tab: 'training-and-qualifications',
-        updateDate: false,
-        canAddWorker: false,
-        canEditWorker: true,
-        hasWorkers: false,
-      };
-      const { queryByText } = await setup(override);
+      it('should not be visible if there are no workers', async () => {
+        const override = {
+          tab: 'training-and-qualifications',
+          updateDate: false,
+          canAddWorker: false,
+          canEditWorker: true,
+          hasWorkers: false,
+        };
+        const { queryByText } = await setup(override);
 
-      expect(queryByText('Add multiple training records')).toBeFalsy();
+        expect(queryByText('Add and manage training')).toBeFalsy();
+      });
+
+      it('should not display the sub-menus initially', async () => {
+        const override = {
+          tab: 'training-and-qualifications',
+          updateDate: false,
+          canAddWorker: false,
+          canEditWorker: true,
+          hasWorkers: true,
+        };
+
+        const { fixture } = await setup(override);
+        const subMenus: HTMLElement = fixture.nativeElement.querySelector('.asc-button-menu__wrapper');
+
+        expect(subMenus.hidden).toBeTruthy();
+      });
+
+      it('should display the sub-menus when the button is clicked', async () => {
+        const override = {
+          tab: 'training-and-qualifications',
+          updateDate: false,
+          canAddWorker: false,
+          canEditWorker: true,
+          hasWorkers: true,
+        };
+
+        const { fixture, getByText } = await setup(override);
+        const subMenus: HTMLElement = fixture.nativeElement.querySelector('.asc-button-menu__wrapper');
+        const button = getByText('Add and manage training');
+
+        button.click();
+        fixture.detectChanges();
+
+        expect(subMenus.hidden).toBeFalsy();
+      });
+
+      it('should display the correct sub-menu links', async () => {
+        const override = {
+          tab: 'training-and-qualifications',
+          updateDate: false,
+          canAddWorker: false,
+          canEditWorker: true,
+          hasWorkers: true,
+        };
+
+        const { component, fixture, getByText } = await setup(override);
+        const button = getByText('Add and manage training');
+
+        button.click();
+        fixture.detectChanges();
+
+        const workplaceUid = component.workplace.uid;
+
+        const addMultipleTrainingRecordsSubMenu = getByText('Add multiple training records');
+        expect(addMultipleTrainingRecordsSubMenu).toBeTruthy();
+        expect(addMultipleTrainingRecordsSubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/add-multiple-training/select-staff`,
+        );
+
+        const addAndManageTrainingCoursesSubMenu = getByText('Add and manage training courses');
+        expect(addAndManageTrainingCoursesSubMenu).toBeTruthy();
+        expect(addAndManageTrainingCoursesSubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/training-course/add-and-manage-training-courses`,
+        );
+
+        const updateRecordsWithTrainingCourseDetailsSubMenu = getByText('Update records with training course details');
+        expect(updateRecordsWithTrainingCourseDetailsSubMenu).toBeTruthy();
+        expect(updateRecordsWithTrainingCourseDetailsSubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/update-records-with-training-course-details/select-a-training-course`,
+        );
+
+        const addAMandatoryTrainingCategorySubMenu = getByText('Add a mandatory training category');
+        expect(addAMandatoryTrainingCategorySubMenu).toBeTruthy();
+        expect(addAMandatoryTrainingCategorySubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/add-and-manage-mandatory-training`,
+        );
+
+        const manageExpiryAlertsSubMenu = getByText('Manage expiry alerts');
+        expect(manageExpiryAlertsSubMenu).toBeTruthy();
+        expect(manageExpiryAlertsSubMenu.getAttribute('href')).toEqual(
+          `/workplace/${workplaceUid}/change-expires-soon-alerts`,
+        );
+      });
+
+      it('should not  display the `Update records with training course details` in the sub-menu links', async () => {
+        const override = {
+          tab: 'training-and-qualifications',
+          updateDate: false,
+          canAddWorker: false,
+          canEditWorker: true,
+          hasWorkers: true,
+        };
+
+        const { component, fixture, getByText, queryByText } = await setup(override);
+        const button = getByText('Add and manage training');
+
+        component.hasTrainingCourse = false;
+
+        button.click();
+        fixture.detectChanges();
+
+        const addAndManageTrainingCourseDetailsSubMenu = queryByText('Update records with training course details');
+        expect(addAndManageTrainingCourseDetailsSubMenu).toBeNull();
+      });
     });
 
     it('should render conditional column width classes', async () => {

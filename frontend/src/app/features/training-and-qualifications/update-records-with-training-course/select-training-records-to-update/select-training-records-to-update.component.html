@@ -1,0 +1,72 @@
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-0">
+          <span class="govuk-caption-l" data-testid="section-heading">Update records with training course details</span>
+          <h1 class="govuk-heading-l">Select the training records that you want to update</h1>
+        </legend>
+      </fieldset>
+
+      <app-details [title]="revealText.title" data-testid="reveal-why-is-it-a-good-idea">
+        <p class="govuk-body asc__negative-margin-right-4">
+          {{ revealText.paragraph }}
+        </p>
+        <ul class="govuk-list govuk-list--bullet">
+          @for(bullet of revealText.bullets; track bullet){
+          <li>{{ bullet }}</li>
+          }
+        </ul>
+      </app-details>
+
+      <dl class="asc__name-value-pair govuk-!-margin-bottom-6" data-testid="training-course-name">
+        <dt>Training course name</dt>
+        <dd>
+          {{ selectedTrainingCourse?.name }}
+        </dd>
+      </dl>
+
+      <div class="govuk-form-group">
+        <p class="govuk-body govuk-!-margin-bottom-0"><strong>Training record name</strong></p>
+        <p id="training-records-hint" class="govuk-hint">
+          This is the training name you saved when you added the record
+        </p>
+        <div class="govuk-checkboxes checkbox-shaded-background">
+          @for(group of trainingRecordsGroupedByTitle; track group.title; let index = $index) {
+          <div class="govuk-checkboxes__item" [formArrayName]="'selectedTrainingRecordGroups'">
+            <input
+              class="govuk-checkboxes__input"
+              type="checkbox"
+              [id]="'training-records-group-' + index"
+              [name]="group.title"
+              [value]="index"
+              [formControlName]="index"
+            />
+            <label class="govuk-label govuk-checkboxes__label" [for]="'training-records-group-' + index">
+              {{ group.title }}
+              <ng-container [ngPlural]="group.count">
+                <ng-template ngPluralCase="=1">({{ group.count }} record)</ng-template>
+                <ng-template ngPluralCase="other">({{ group.count }} records)</ng-template>
+              </ng-container>
+            </label>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="govuk-button-group govuk-!-margin-top-8">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Continue</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          href="#"
+          [routerLink]="['../../select-a-training-course']"
+        >
+          Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</form>

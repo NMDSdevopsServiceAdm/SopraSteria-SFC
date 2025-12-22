@@ -1,3 +1,4 @@
+import { TrainingProvider } from './training-provider.model';
 import { Certificate, CertificateDownload } from './trainingAndQualifications.model';
 
 export interface TrainingCategory {
@@ -6,6 +7,12 @@ export interface TrainingCategory {
   category: string;
   trainingCategoryGroup: string;
 }
+
+export type TrainingCategorySortedByGroup = Array<{
+  title: string;
+  descriptionText: string;
+  items: Array<{ label: string; id: number; seq: number }>;
+}>;
 
 export interface TrainingCategoryResponse {
   trainingCategories: TrainingCategory[];
@@ -21,9 +28,16 @@ export interface TrainingRecordRequest {
   };
   title: string;
   accredited?: string;
+  deliveredBy?: string;
+  externalProviderName?: string;
+  howWasItDelivered?: string;
+  validityPeriodInMonth?: number;
+  doesNotExpire?: boolean;
   completed?: string;
   expires?: string;
   notes?: string;
+  trainingProviderId?: number;
+  otherTrainingProviderName?: string;
 }
 
 export interface CreateTrainingRecordResponse extends TrainingRecordRequest {
@@ -61,6 +75,12 @@ export interface TrainingRecord {
     category: string;
   };
   trainingCertificates: TrainingCertificate[];
+  deliveredBy?: string;
+  externalProviderName?: string;
+  trainingProvider?: TrainingProvider;
+  howWasItDelivered?: string;
+  validityPeriodInMonth?: number;
+  doesNotExpire?: boolean;
   completed?: Date;
   created: Date;
   expires?: Date;
@@ -71,6 +91,7 @@ export interface TrainingRecord {
   updatedBy: string;
   trainingStatus?: number;
   missing?: boolean;
+  isMatchedToTrainingCourse?: boolean;
 }
 
 export interface TrainingRecordCategory {
@@ -134,4 +155,14 @@ export interface TrainingRecordCategories {
   category: string;
   training: Training[];
   isMandatory: boolean;
+}
+
+export enum DeliveredBy {
+  InHouseStaff = 'In-house staff',
+  ExternalProvider = 'External provider',
+}
+
+export enum HowWasItDelivered {
+  FaceToFace = 'Face to face',
+  ELearning = 'E-learning',
 }
