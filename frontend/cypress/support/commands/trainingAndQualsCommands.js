@@ -111,11 +111,16 @@ Cypress.Commands.add('insertTrainingCourse', (args) => {
     howWasItDelivered = null,
     doesNotExpire = false,
     validityPeriodInMonth = null,
+    trainingProviderId = null,
+    otherTrainingProviderName = null,
   } = args;
 
   const queryString = `INSERT INTO cqc."TrainingCourse"
-  ("EstablishmentFK", "CategoryFK", "Name", "Accredited", "DeliveredBy", "HowWasItDelivered", "DoesNotExpire", "ValidityPeriodInMonth")
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "ID";`;
+  ("EstablishmentFK", "CategoryFK", "Name", "Accredited", "DeliveredBy",
+    "HowWasItDelivered", "DoesNotExpire", "ValidityPeriodInMonth", "TrainingProviderFK", "OtherTrainingProviderName"
+   )
+
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "ID";`;
 
   const parameters = [
     establishmentID,
@@ -126,6 +131,8 @@ Cypress.Commands.add('insertTrainingCourse', (args) => {
     howWasItDelivered,
     doesNotExpire,
     validityPeriodInMonth,
+    trainingProviderId,
+    otherTrainingProviderName,
   ];
 
   return cy.task('dbQuery', { queryString, parameters });

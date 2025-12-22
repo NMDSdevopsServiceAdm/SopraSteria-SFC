@@ -7,6 +7,7 @@ import {
   clickIntoTrainingCourse,
   clickIntoWorkerTAndQRecordPage,
   expectPageToHaveDetails,
+  expectTrainingRecordPageToHaveCourseDetails,
   fillInCourseDetails,
 } from './helpers';
 
@@ -102,7 +103,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         cy.deleteAllTrainingCourses(establishmentID);
       });
 
-      const changedCourseDetail = {
+      const changedCourseDetails = {
         courseName: 'Changed course name',
         categoryName: 'Medication management',
         accredited: 'No',
@@ -123,12 +124,12 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         // change category
         cy.get('a').contains('Change').click();
         cy.get('button').contains('Show all categories').click();
-        cy.getByLabel(changedCourseDetail.categoryName).click();
+        cy.getByLabel(changedCourseDetails.categoryName).click();
         cy.get('button').contains('Continue').click();
 
         // fill in other details
         cy.get('h1').should('contain', 'Training course details');
-        fillInCourseDetails(changedCourseDetail);
+        fillInCourseDetails(changedCourseDetails);
         cy.get('button').contains('Continue').click();
 
         cy.getByLabel(radioLabels.existingAndNew).click();
@@ -142,25 +143,20 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         );
 
         // Verify that the training course details is changed
-        clickIntoTrainingCourse(changedCourseDetail.courseName);
+        clickIntoTrainingCourse(changedCourseDetails.courseName);
         cy.get('h1').should('contain', 'Training course details');
-        expectPageToHaveDetails(changedCourseDetail);
-        cy.get('[data-testid="training-category"]').should('contain', changedCourseDetail.categoryName);
+        expectPageToHaveDetails(changedCourseDetails);
+        cy.get('[data-testid="training-category"]').should('contain', changedCourseDetails.categoryName);
 
         // Verify that the change to training course is applied to the linked training record
         clickIntoWorkerTAndQRecordPage(workerName);
 
         cy.get('a').contains(trainingRecordTitle).should('not.exist');
-        cy.get('a').contains(changedCourseDetail.courseName).should('exist');
+        cy.get('a').contains(changedCourseDetails.courseName).should('exist');
 
-        cy.contains('a', changedCourseDetail.courseName).click();
+        cy.contains('a', changedCourseDetails.courseName).click();
 
-        cy.get('[data-testid="trainingCategoryDisplay"]').should('contain', changedCourseDetail.categoryName);
-        expectPageToHaveDetails({
-          ...changedCourseDetail,
-          trainingRecordTitle: changedCourseDetail.courseName,
-          courseName: null,
-        });
+        expectTrainingRecordPageToHaveCourseDetails(changedCourseDetails);
       });
 
       it('should be able to edit the training course only', () => {
@@ -173,12 +169,12 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         // change category
         cy.get('a').contains('Change').click();
         cy.get('button').contains('Show all categories').click();
-        cy.getByLabel(changedCourseDetail.categoryName).click();
+        cy.getByLabel(changedCourseDetails.categoryName).click();
         cy.get('button').contains('Continue').click();
 
         // fill in other details
         cy.get('h1').should('contain', 'Training course details');
-        fillInCourseDetails(changedCourseDetail);
+        fillInCourseDetails(changedCourseDetails);
         cy.get('button').contains('Continue').click();
 
         cy.get('h1').should('contain', confirmationPageHeading);
@@ -191,15 +187,15 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
         cy.get('app-alert span').should('contain', 'Course details updated and will apply to NEW training records');
 
         // Verify that the training course details is changed
-        clickIntoTrainingCourse(changedCourseDetail.courseName);
+        clickIntoTrainingCourse(changedCourseDetails.courseName);
         cy.get('h1').should('contain', 'Training course details');
-        expectPageToHaveDetails(changedCourseDetail);
-        cy.get('[data-testid="training-category"]').should('contain', changedCourseDetail.categoryName);
+        expectPageToHaveDetails(changedCourseDetails);
+        cy.get('[data-testid="training-category"]').should('contain', changedCourseDetails.categoryName);
 
         // Verify that the linked training record is not changed
         clickIntoWorkerTAndQRecordPage(workerName);
 
-        cy.get('a').contains(changedCourseDetail.courseName).should('not.exist');
+        cy.get('a').contains(changedCourseDetails.courseName).should('not.exist');
         cy.get('a').contains(trainingRecordTitle).should('exist');
       });
     });
