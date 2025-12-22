@@ -19,6 +19,7 @@ export const showCorrectTrainingValidity = (training: {
 
 @Pipe({
   name: 'showTrainingValidity',
+  standalone: false,
 })
 export class ShowTrainingValidityPipe implements PipeTransform {
   transform(training: { validityPeriodInMonth: number; doesNotExpire: boolean }): string {
