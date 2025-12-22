@@ -1,5 +1,9 @@
 import { onHomePage } from '../../../support/page_objects/onHomePage';
-import { clickIntoWorkerTAndQRecordPage, expectPageToHaveDetails } from './helpers';
+import {
+  clickIntoWorkerTAndQRecordPage,
+  expectPageToHaveDetails,
+  expectTrainingRecordPageToHaveCourseDetails,
+} from './helpers';
 
 export const runTestsForUpdateTrainingRecordsWithCourseDetails = (mockEstablishmentData) => {
   describe('Update records with training course details', () => {
@@ -92,10 +96,9 @@ export const runTestsForUpdateTrainingRecordsWithCourseDetails = (mockEstablishm
 
       cy.contains('a', expectedTrainingRecordName).click();
 
-      expectPageToHaveDetails({
+      expectTrainingRecordPageToHaveCourseDetails({
         ...traininCourseDetails,
-        trainingRecordTitle: expectedTrainingRecordName,
-        courseName: null,
+        courseName: trainingCourseName,
         completedDate: mockTrainingRecordCompletedDate,
         expiryDate: expectedExpiryDate,
       });

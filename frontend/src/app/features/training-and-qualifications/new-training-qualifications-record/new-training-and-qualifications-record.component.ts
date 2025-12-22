@@ -305,17 +305,46 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   public actionsListNavigate(event: Event, actionListItem): void {
     event.preventDefault();
-    const url = actionListItem.uid
-      ? [
-          'workplace',
-          this.workplace.uid,
-          'training-and-qualifications-record',
-          this.worker.uid,
-          'training',
-          actionListItem.uid,
-        ]
-      : ['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'add-training'];
-    this.router.navigate(url, { queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) } });
+
+    const isUpdatingTraining = !!actionListItem.uid;
+
+    if (isUpdatingTraining) {
+      this.navigateToUpdateTrainingRecord(actionListItem.uid);
+      return;
+    }
+
+    // at this point, the action list is about adding Mandatory training
+
+    const trainingCategoryId = actionListItem.trainingCategory.id;
+    const haveCourseOfThatCategory = this.trainingCourses.some(
+      (course) => course.trainingCategoryId === trainingCategoryId,
+    );
+
+    const commonRoute = ['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid];
+    const selectCoursePage = [...commonRoute, 'add-a-training-record'];
+    const continueWithoutSelectingCourse = [...commonRoute, 'add-training'];
+
+    if (haveCourseOfThatCategory) {
+      this.router.navigate(selectCoursePage, {
+        queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
+      });
+    } else {
+      this.router.navigate(continueWithoutSelectingCourse, {
+        queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
+      });
+    }
+  }
+
+  private navigateToUpdateTrainingRecord(trainingUid: string) {
+    const url = [
+      'workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'training',
+      trainingUid,
+    ];
+    this.router.navigate(url);
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]): TrainingRecordCategory[] {

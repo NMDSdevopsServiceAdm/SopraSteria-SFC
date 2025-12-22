@@ -187,6 +187,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     uid: 123,
                     nameOrId: 'John',
                     mainJob: {
+                      jobId: 10,
                       title: 'Care Worker',
                       other: otherJob ? 'Care taker' : undefined,
                     },
@@ -640,7 +641,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should render Autism as an expired training without an update link if canEditWorker is false', async () => {
-      const { component, fixture } = await setup();
+      const { component, fixture } = await setup({ mandatoryTraining: [] });
 
       component.canEditWorker = false;
       fixture.detectChanges();
@@ -678,6 +679,63 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(rowTwo.cells['1'].innerHTML).toBe('Non-mandatory');
       expect(rowTwo.cells['2'].innerHTML).toContain('Expires soon');
       expect(rowTwo.cells['3'].innerHTML).not.toContain('Update');
+    });
+
+    describe('Add a mandatory training from action list', () => {
+      const getMandatoryTrainingAddLink = (getByTestId) => {
+        const actionListTable = getByTestId('actions-list-table');
+        const mandatoryTrainingRow = within(actionListTable).queryByText('Mandatory').closest('tr');
+        return within(mandatoryTrainingRow).queryByRole('link', { name: 'Add' }) as HTMLAnchorElement;
+      };
+
+      it('should show an Add link for any missing Mandatory training', async () => {
+        const { getByTestId } = await setup({ mandatoryTraining: [] });
+
+        const addLink = getMandatoryTrainingAddLink(getByTestId);
+
+        expect(addLink).toBeTruthy();
+      });
+
+      it('should not show the add link if user do not have canEditWorker permission', async () => {
+        const { component, fixture, getByTestId } = await setup({ mandatoryTraining: [] });
+
+        component.canEditWorker = false;
+        fixture.detectChanges();
+
+        const addLink = getMandatoryTrainingAddLink(getByTestId);
+
+        expect(addLink).toBeFalsy();
+      });
+
+      it('the Add link should navigate to add-training (continue without selecting a course) if there are no training course for that category', async () => {
+        const { getByTestId, routerSpy, workplaceUid, workerUid } = await setup({
+          mandatoryTraining: [],
+          trainingCourses: [],
+        });
+
+        const addLink = getMandatoryTrainingAddLink(getByTestId);
+
+        userEvent.click(addLink);
+        expect(routerSpy).toHaveBeenCalledWith(
+          ['workplace', workplaceUid, 'training-and-qualifications-record', workerUid, 'add-training'],
+          { queryParams: jasmine.objectContaining({ trainingCategory: '{"id":9,"category":"Coshh"}' }) },
+        );
+      });
+
+      it('the Add link should navigate to add-a-training-record (Select course page) if got training course for that category', async () => {
+        const { getByTestId, routerSpy, workplaceUid, workerUid } = await setup({
+          mandatoryTraining: [],
+          trainingCourses: [{ trainingCategoryId: 9, trainingCategoryName: 'Coshh' } as TrainingCourse],
+        });
+
+        const addLink = getMandatoryTrainingAddLink(getByTestId);
+
+        userEvent.click(addLink);
+        expect(routerSpy).toHaveBeenCalledWith(
+          ['workplace', workplaceUid, 'training-and-qualifications-record', workerUid, 'add-a-training-record'],
+          { queryParams: jasmine.objectContaining({ trainingCategory: '{"id":9,"category":"Coshh"}' }) },
+        );
+      });
     });
   });
 
@@ -1076,6 +1134,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         spyOn(workerService, 'getAllTrainingAndQualificationRecords').and.returnValue(of(mockUpdatedData));
         spyOn(trainingCertificateService, 'addCertificates').and.returnValue(of(null));
 
+        const actionsListTable = getByTestId('actions-list-table');
+
+        const actionListLengthBeforeUpload = actionsListTable.querySelectorAll('tr').length;
+
         const trainingRecordRow = getByTestId('someHealthuid');
         const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
 
@@ -1083,16 +1145,15 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
         await fixture.whenStable();
 
-        const actionsListTable = getByTestId('actions-list-table');
-        const actionListTableRows = actionsListTable.querySelectorAll('tr');
+        const actionListTableRowsAfterUpload = actionsListTable.querySelectorAll('tr');
 
-        const rowOne = actionListTableRows[1];
+        const rowOne = actionListTableRowsAfterUpload[1];
         expect(rowOne.cells['0'].innerHTML).toBe('Autism');
 
-        const rowTwo = actionListTableRows[2];
+        const rowTwo = actionListTableRowsAfterUpload[2];
         expect(rowTwo.cells['0'].innerHTML).toBe('Coshh');
 
-        expect(actionListTableRows.length).toBe(3);
+        expect(actionListTableRowsAfterUpload.length).toBe(actionListLengthBeforeUpload);
       });
 
       it('should display an error message on the training category when certificate upload fails', async () => {

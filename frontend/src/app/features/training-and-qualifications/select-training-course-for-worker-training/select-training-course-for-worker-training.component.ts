@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -8,11 +8,11 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { TrainingService } from '@core/services/training.service';
 import { SelectTrainingCourseForTrainingRecordDirective } from '@shared/directives/select-training-course-for-training-record/select-training-course-for-training-record.directive';
-
+import { filter, take } from 'rxjs/operators';
 @Component({
   selector: 'app-select-training-course-for-worker-training',
   templateUrl:
-    '../../../shared//directives/select-training-course-for-training-record/select-training-course-for-training-record.component.html',
+    '../../../shared/directives/select-training-course-for-training-record/select-training-course-for-training-record.component.html',
 })
 export class SelectTrainingCourseForWorkerTraining
   extends SelectTrainingCourseForTrainingRecordDirective
@@ -65,6 +65,30 @@ export class SelectTrainingCourseForWorkerTraining
     ];
   }
 
+  protected loadTrainingCourses(): void {
+    const allTrainingCourseInWorkplace = this.route.snapshot.data?.trainingCourses;
+    const categoryToShow: string = this.route.snapshot.queryParams?.trainingCategory;
+
+    if (categoryToShow) {
+      const categoryId = JSON.parse(categoryToShow)?.id;
+
+      this.trainingCourses = allTrainingCourseInWorkplace.filter((course) => course.trainingCategoryId === categoryId);
+      return;
+    }
+
+    this.trainingCourses = allTrainingCourseInWorkplace;
+  }
+
+  protected continueWithoutTrainingCourse(): void {
+    const queryParamsFromPreviousPage = this.route.snapshot.queryParams;
+
+    if (queryParamsFromPreviousPage) {
+      this.router.navigate(this.routeWithoutTrainingCourse, { queryParams: queryParamsFromPreviousPage });
+    } else {
+      this.router.navigate(this.routeWithoutTrainingCourse);
+    }
+  }
+
   protected navigateOnCancelClick() {
     this.router.navigate([
       '/workplace',
@@ -73,5 +97,19 @@ export class SelectTrainingCourseForWorkerTraining
       this.worker.uid,
       'training',
     ]);
+  }
+
+  protected clearSelectedTrainingCourseWhenClickedAway() {
+    const parentPath = this.worker.uid;
+
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes(parentPath)),
+        take(1),
+      )
+      .subscribe(() => {
+        this.trainingService.setSelectedTrainingCourse(null);
+      });
   }
 }

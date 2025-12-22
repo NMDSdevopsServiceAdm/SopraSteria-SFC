@@ -917,7 +917,12 @@ const routes: Routes = [
         resolve: { trainingCourses: TrainingCourseResolver },
         data: { title: 'Add a Training Record' },
       },
-
+      {
+        path: 'matching-layout',
+        component: TrainingCourseMatchingLayoutComponent,
+        resolve: { trainingCourses: TrainingCourseResolver },
+        data: { title: 'Add training record details' },
+      },
       {
         path: 'long-term-absence',
         component: LongTermAbsenceComponent,
