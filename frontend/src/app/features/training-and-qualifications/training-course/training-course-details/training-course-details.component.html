@@ -98,11 +98,13 @@
                 {{ deliveredByOptions.ExternalProvider }}
               </label>
             </div>
-            <app-external-training-provider-input
-              [trainingProviders]="trainingProviders"
-              [hideInput]="form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider"
-              [form]="form"
-            ></app-external-training-provider-input>
+            <div class="govuk-!-width-two-thirds">
+              <app-external-training-provider-input
+                [trainingProviders]="trainingProviders"
+                [hideInput]="form.get('deliveredBy').value !== deliveredByOptions.ExternalProvider"
+                [form]="form"
+              ></app-external-training-provider-input>
+            </div>
           </div>
         </fieldset>
       </div>
