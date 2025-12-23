@@ -216,7 +216,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
 
         cy.url().should('include', '/remove');
 
-        cy.get('[data-testid="heading"]').contains('What happens when you remove');
+        cy.get('[data-testid="heading"]').contains('What happens when you remove a training course?');
 
         cy.contains(`Training course name: ${trainingCourseName}`).should('exist');
 
@@ -262,7 +262,7 @@ export const runTestsForTrainingCourseJourney = (mockEstablishmentData) => {
 
         cy.url().should('include', '/remove');
 
-        cy.get('h1').contains('What happens when you remove all training courses');
+        cy.get('h1').contains('What happens when you remove all training courses?');
 
         cy.get('[data-testid="training-courses"]').within(() => {
           trainingCourseNames.forEach((trainingCourseName) => {

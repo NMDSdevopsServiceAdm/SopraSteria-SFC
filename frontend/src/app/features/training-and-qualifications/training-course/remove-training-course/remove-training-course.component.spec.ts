@@ -81,13 +81,18 @@ describe('RemoveTrainingCourseComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('when removing one training course', () => {
-    it('should show the heading and caption for the page', async () => {
-      const { getByRole, getByText } = await setup();
+  it('should show the caption for the page', async () => {
+    const { getByText } = await setup();
 
-      const expectedHeadingText = 'What happens when you remove a training course';
+    expect(getByText('Add and update training courses')).toBeTruthy();
+  });
+
+  describe('when removing one training course', () => {
+    it('should show the correct heading referencing a single training course', async () => {
+      const { getByRole } = await setup();
+
+      const expectedHeadingText = 'What happens when you remove a training course?';
       expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
-      expect(getByText('Add and update training courses')).toBeTruthy();
     });
 
     it('should initialise workplace, trainingCourseUid and trainingName', async () => {
@@ -123,7 +128,7 @@ describe('RemoveTrainingCourseComponent', () => {
     it('should show different texts in the page', async () => {
       const { getByRole, getByText } = await setup({ journeyType: 'RemoveAll' });
 
-      const expectedHeadingText = 'What happens when you remove all training courses';
+      const expectedHeadingText = 'What happens when you remove all training courses?';
       expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeadingText);
 
       const expectedConfirmButtonText = 'Remove all training courses';
