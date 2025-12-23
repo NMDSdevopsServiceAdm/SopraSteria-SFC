@@ -1,13 +1,10 @@
 import dayjs from 'dayjs';
-// import utc from 'dayjs/locale/utc';
-
 import { FormatUtil } from './format-util';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { DateValidator } from '@shared/validators/date.validator';
 
 type FormGroupDateValues = { day: number; month: number; year: number };
 
-// dayjs.extend(utc);
 export class DateUtil {
   public static getDateForOneYearAgo(): string {
     const today = new Date();
