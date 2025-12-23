@@ -14,7 +14,8 @@ import { DeliveredBy } from '@core/model/training.model';
 @Component({
   selector: 'app-confirm-multiple-training-with-course',
   templateUrl: './confirm-multiple-training-with-course.component.html',
-  styleUrl: './confirm-multiple-training-with-course.component.scss'
+  styleUrl: './confirm-multiple-training-with-course.component.scss',
+  standalone: false,
 })
 export class ConfirmMultipleTrainingWithCourseComponent {
   public notes: string;
@@ -41,9 +42,7 @@ export class ConfirmMultipleTrainingWithCourseComponent {
     this.workers = this.trainingService.getSelectedStaff();
 
     if (!this.trainingCourse) {
-      this.router.navigate([
-        `workplace/${this.workplace.uid}/add-multiple-training/select-staff`,
-      ]);
+      this.router.navigate([`workplace/${this.workplace.uid}/add-multiple-training/select-staff`]);
       return;
     }
 
@@ -59,9 +58,9 @@ export class ConfirmMultipleTrainingWithCourseComponent {
     const selectedStaff = this.workers.map((worker) => worker.uid);
 
     const trainingCourse = this.trainingCourse;
-    const completedDate =
-      this.trainingRecordCompletionDate ? dayjs(this.trainingRecordCompletionDate).
-      format('YYYY-MM-DD') : null;
+    const completedDate = this.trainingRecordCompletionDate
+      ? dayjs(this.trainingRecordCompletionDate).format('YYYY-MM-DD')
+      : null;
     const trainingRecordDetails = {
       trainingCategory: { id: trainingCourse.trainingCategoryId },
       title: trainingCourse.name,
@@ -74,7 +73,7 @@ export class ConfirmMultipleTrainingWithCourseComponent {
       validityPeriodInMonth: trainingCourse.validityPeriodInMonth,
       completed: completedDate,
       notes: this.notes,
-    }
+    };
 
     this.workerService
       .createMultipleTrainingRecords(this.workplace.uid, selectedStaff, trainingRecordDetails)
@@ -87,8 +86,14 @@ export class ConfirmMultipleTrainingWithCourseComponent {
       { key: 'Training course name', value: trainingCourse.name ? trainingCourse.name : '-' },
       { key: 'Training category', value: trainingCourse.trainingCategoryName },
       { key: 'Is the training course accredited?', value: trainingCourse.accredited ? trainingCourse.accredited : '-' },
-      { key: 'Who delivered the training course?', value: trainingCourse.deliveredBy ? trainingCourse.deliveredBy : '-' },
-      { key: 'Training provider name', value: trainingCourse.externalProviderName ? trainingCourse.externalProviderName : '-' },
+      {
+        key: 'Who delivered the training course?',
+        value: trainingCourse.deliveredBy ? trainingCourse.deliveredBy : '-',
+      },
+      {
+        key: 'Training provider name',
+        value: trainingCourse.externalProviderName ? trainingCourse.externalProviderName : '-',
+      },
       {
         key: 'How was the training course delivered?',
         value: trainingCourse.howWasItDelivered ? trainingCourse.howWasItDelivered : '-',
@@ -130,7 +135,7 @@ export class ConfirmMultipleTrainingWithCourseComponent {
   private async onSuccess() {
     this.trainingService.resetState();
 
-    let record = 'record'
+    let record = 'record';
     if (this.workers.length !== 1) {
       record += 's';
     }
@@ -145,7 +150,7 @@ export class ConfirmMultipleTrainingWithCourseComponent {
 
   private removeTrainingProviderNameFromSummaryListData(): void {
     this.trainingCourseDataForSummaryList = this.trainingCourseDataForSummaryList.filter(
-      (item) => item.key !== 'Training provider name'
+      (item) => item.key !== 'Training provider name',
     );
   }
 }
