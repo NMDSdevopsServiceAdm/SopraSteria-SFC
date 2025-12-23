@@ -23,9 +23,10 @@
         [attr.id]="formControlName"
         [attr.name]="formControlName"
         type="text"
+        [ngClass]="{'overflow-ellipsis': showEllipsis}"
       />
       <ul *ngIf="dataProvider().length > 0" data-testid="tray-list" [ngClass]="{ 'tray-list': showBackground }">
-        <li *ngFor="let item of dataProvider()" (click)="onClick(item)">
+        <li [ngClass]="{'tray-list-item': showEllipsis}" *ngFor="let item of dataProvider()" (click)="onClick(item)">
           {{ item }}
         </li>
       </ul>

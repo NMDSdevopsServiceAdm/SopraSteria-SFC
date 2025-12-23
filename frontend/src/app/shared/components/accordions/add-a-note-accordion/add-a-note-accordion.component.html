@@ -1,0 +1,61 @@
+<div class="govuk-form-group" [class.govuk-form-group--error]="submitted && notes.invalid">
+  <label
+    data-testid="notes-heading"
+    class="govuk-label govuk-!-font-weight-bold notes-heading"
+    for="notes">
+    Add a note
+  </label>
+  <span *ngIf="submitted && notes.invalid" id="notes-error" class="govuk-error-message">
+    <span class="govuk-visually-hidden">Error:</span> {{ errorMessage }}</span>
+  <button
+    type="button"
+    (click)="toggleNotesOpen()"
+    class="govuk-accordion__show-all govuk-!-margin-bottom-0"
+    [attr.aria-expanded]="notesOpen">
+    <span data-testid="notes-toggle-arrow"
+          class="govuk-accordion-nav__chevron"
+          [class]="{
+        'govuk-accordion-nav__chevron--up': notesOpen,
+        'govuk-accordion-nav__chevron--down': !notesOpen
+      }"
+    ></span>
+    <span data-testid="notes-toggle-label" class="govuk-accordion__show-all-text">{{ !notesOpen ? 'Open notes' : 'Close notes' }}</span>
+  </button>
+  <div data-testid="notesSection"  class="govuk-!-margin-top-3 govuk-!-padding-bottom-1" [class.govuk-visually-hidden]="!notesOpen">
+    <textarea
+      data-testid="text-area"
+      class="govuk-textarea text-area"
+      [class.govuk-textarea--error]="submitted && notes.invalid"
+      [formControl]="notes"
+      id="notes"
+      name="notes"
+      rows="5"
+      [value]="notesValue"
+      (input)="handleOnInput($event)"
+    ></textarea>
+    <span
+      data-testid="character-count-reminder"
+      class="govuk-character-count__message govuk-hint character-count-reminder"
+      [ngClass]="{
+        'govuk-hint': remainingCharacterCount >= 0,
+        'govuk-error-message': remainingCharacterCount < 0
+      }"
+      aria-live="polite"
+    >
+    <noscript> You can enter up to {{ notesMaxLength }} characters </noscript>
+      <ng-container>
+        You have {{ remainingCharacterCount | absoluteNumber | number }}
+        {{
+          remainingCharacterCount
+            | absoluteNumber
+            | i18nPlural
+            : {
+              '=1': 'character',
+              other: 'characters'
+            }
+        }}
+        {{ remainingCharacterCount >= 0 ? 'remaining' : 'too many' }}
+      </ng-container>
+    </span>
+  </div>
+</div>

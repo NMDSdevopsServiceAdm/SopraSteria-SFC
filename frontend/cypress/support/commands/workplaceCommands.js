@@ -295,3 +295,13 @@ Cypress.Commands.add('deleteOwnershipRequest', (workplaceName) => {
 
   cy.task('dbQuery', { queryString, parameters });
 });
+
+Cypress.Commands.add('updateEmployerTypeValue', (establishmentID, employerTypeValue) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "EmployerTypeValue" = $2
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID, employerTypeValue];
+
+  cy.task('dbQuery', { queryString: queryString, parameters: parameters });
+});

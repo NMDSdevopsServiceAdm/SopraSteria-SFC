@@ -7,6 +7,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { showCorrectTrainingValidity } from '@shared/pipes/show-training-validity.pipe';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
@@ -43,10 +44,22 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     const training = this.trainingService.selectedTraining;
     this.trainingRecords = [
       { key: 'Training category', value: training.trainingCategory.category },
-      { key: 'Training name', value: training.title ? training.title : '-' },
-      { key: 'Training accredited', value: training.accredited ? training.accredited : '-' },
-      { key: 'Date completed', value: training.completed ? dayjs(training.completed).format('D MMMM YYYY') : '-' },
-      { key: 'Expiry date', value: training.expires ? dayjs(training.expires).format('D MMMM YYYY') : '-' },
+      { key: 'Training record name', value: training.title ? training.title : '-' },
+      { key: 'Is the training course accredited?', value: training.accredited ? training.accredited : '-' },
+      { key: 'Who delivered the training course?', value: training.deliveredBy ? training.deliveredBy : '-' },
+      { key: 'Training provider name', value: training.externalProviderName ? training.externalProviderName : '-' },
+      {
+        key: 'How was the training course delivered?',
+        value: training.howWasItDelivered ? training.howWasItDelivered : '-',
+      },
+      {
+        key: 'How long is the training valid for?',
+        value: showCorrectTrainingValidity(training),
+      },
+      {
+        key: 'Training completion date',
+        value: training.completed ? dayjs(training.completed).format('D MMMM YYYY') : '-',
+      },
       { key: 'Notes', value: training.notes ? training.notes : 'No notes added' },
     ];
   }
@@ -67,7 +80,12 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   }
 
   private async onSuccess() {
-    const message = `${this.workers.length} training records added`;
+    let record = 'record'
+    if (this.workers.length !== 1) {
+      record += 's';
+    }
+    const message = `${this.workers.length} training ${record} added`;
+
     this.trainingService.resetState();
 
     await this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });

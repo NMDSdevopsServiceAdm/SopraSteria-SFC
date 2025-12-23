@@ -6,6 +6,10 @@ const dbmodels = require('../../../../../backend/server/models');
 sinon.stub(dbmodels.status, 'ready').value(false);
 const TrainingCsvValidator = require('../../../classes/trainingCSVValidator').TrainingCsvValidator;
 const mappings = require('../../../../../backend/reference/BUDIMappings').mappings;
+const {
+  TrainingCourseDeliveredBy,
+  TrainingCourseDeliveryMode,
+} = require('../../../../../backend/reference/databaseEnumTypes');
 
 describe('trainingCSVValidator', () => {
   describe('Validation', () => {
@@ -16,12 +20,26 @@ describe('trainingCSVValidator', () => {
         LOCALESTID: 'foo',
         UNIQUEWORKERID: 'bar',
         CATEGORY: 1,
-        DESCRIPTION: 'training',
+        TRAININGNAME: 'training',
+        ACCREDITED: '',
+        WHODELIVERED: '',
+        PROVIDERNAME: '',
+        HOWDELIVERED: '',
+        VALIDITY: '',
         DATECOMPLETED: '01/01/2022',
         EXPIRYDATE: '15/04/2022',
-        ACCREDITED: '',
         NOTES: '',
       };
+    });
+
+    before(() => {
+      // patch the imported mapping object, as TRAINING_PROVIDER mapping is fetched from database data, not hard-coded
+      const mockTrainingProviderMappings = [
+        { ASC: 1, BUDI: 1 },
+        { ASC: 2, BUDI: 2 },
+        { ASC: 63, BUDI: 999 },
+      ];
+      Object.assign(mappings, { TRAINING_PROVIDER: mockTrainingProviderMappings });
     });
 
     describe('_validateAccredited()', () => {
@@ -538,40 +556,477 @@ describe('trainingCSVValidator', () => {
     });
 
     describe('_validateDescription()', async () => {
-      it('should pass validation and set description to DESCRIPTION if a valid DESCRIPTION is provided', async () => {
+      it('should pass validation and set description to TRAININGNAME if a valid TRAININGNAME is provided', async () => {
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
         await validator._validateDescription();
 
         expect(validator.validationErrors).to.deep.equal([]);
-        expect(validator.description).to.equal('training');
+        expect(validator.trainingName).to.equal('training');
       });
     });
 
     describe('_getValidateDescriptionErrMessage()', async () => {
-      it('should add DESCRIPTION_ERROR to validationErrors and set description as null if DESCRIPTION is longer than MAX_LENGTH', async () => {
-        trainingCsv.DESCRIPTION =
+      it('should add TRAININGNAME_ERROR to validationErrors and set description as null if TRAININGNAME is longer than MAX_LENGTH', async () => {
+        trainingCsv.TRAININGNAME =
           'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis nato';
 
         const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
 
         await validator._validateDescription();
 
-        expect(validator.description).to.equal(null);
+        expect(validator.trainingName).to.equal(null);
         expect(validator.validationErrors).to.deep.equal([
           {
             origin: 'Training',
             errCode: 1040,
-            errType: 'DESCRIPTION_ERROR',
-            error: 'DESCRIPTION is longer than 120 characters',
-            source: trainingCsv.DESCRIPTION,
-            column: 'DESCRIPTION',
+            errType: 'TRAININGNAME_ERROR',
+            error: 'TRAININGNAME is longer than 120 characters',
+            source: trainingCsv.TRAININGNAME,
+            column: 'TRAININGNAME',
             lineNumber: 1,
             name: 'foo',
             worker: 'bar',
           },
         ]);
       });
+    });
+
+    describe('_validateWhoDelivered()', () => {
+      it('should pass validation if WHODELIVERED is empty', () => {
+        trainingCsv.WHODELIVERED = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      const validValues = [
+        { WHODELIVERED: '1', expected: TrainingCourseDeliveredBy.InHouseStaff },
+        { WHODELIVERED: '2', expected: TrainingCourseDeliveredBy.ExternalProvider },
+      ];
+
+      validValues.forEach(({ WHODELIVERED, expected }) => {
+        it(`should pass validation and set deliveredBy if a valid WHODELIVERED is provided: ${WHODELIVERED}`, () => {
+          trainingCsv.WHODELIVERED = WHODELIVERED;
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator._validateWhoDelivered();
+
+          expect(validator.deliveredBy).to.equal(expected);
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+      });
+
+      it('should add WHODELIVERED_ERROR if WHODELIVERED is invalid', () => {
+        trainingCsv.WHODELIVERED = 'some invalid value';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+
+        expect(validator.deliveredBy).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            errCode: 1080,
+            errType: 'WHODELIVERED_ERROR',
+            error: 'The code you have entered for WHODELIVERED is invalid',
+            source: trainingCsv.WHODELIVERED,
+            column: 'WHODELIVERED',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
+
+    describe('_validateProviderName()', () => {
+      it('should pass validation if PROVIDERNAME is empty', () => {
+        trainingCsv.PROVIDERNAME = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+        validator._validateProviderName();
+
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      it('should pass validation and set the trainingProviderFk if WHODELIVERED is "2" and PROVIDERNAME is given with a valid number', () => {
+        trainingCsv.WHODELIVERED = '2'; // external provider
+        trainingCsv.PROVIDERNAME = '1';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+        validator._validateProviderName();
+
+        expect(validator.trainingProviderFk).to.deep.equal(1);
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      it('should add a PROVIDERNAME_ERROR if PROVIDERNAME is given and WHODELIVERED is not 2', () => {
+        trainingCsv.WHODELIVERED = '1'; // in-house staff
+        trainingCsv.PROVIDERNAME = '1';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+        validator._validateProviderName();
+
+        expect(validator.trainingProviderFk).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            warnCode: 2090,
+            warnType: 'PROVIDERNAME_WARNING',
+            warning: 'PROVIDERNAME will be ignored as WHODELIVERED is not 2 (External provider)',
+            source: trainingCsv.PROVIDERNAME,
+            column: 'WHODELIVERED/PROVIDERNAME',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add a PROVIDERNAME_ERROR if PROVIDERNAME is not a valid value', () => {
+        trainingCsv.WHODELIVERED = '2'; // external provider
+        trainingCsv.PROVIDERNAME = '1000';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateWhoDelivered();
+        validator._validateProviderName();
+
+        expect(validator.trainingProviderFk).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            errCode: 1090,
+            errType: 'PROVIDERNAME_ERROR',
+            error: 'The code you have entered for PROVIDERNAME is invalid',
+            source: trainingCsv.PROVIDERNAME,
+            column: 'PROVIDERNAME',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
+
+    describe('_validateHowDelivered()', () => {
+      it('should pass validation if HOWDELIVERED is empty', () => {
+        trainingCsv.HOWDELIVERED = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateHowDelivered();
+
+        expect(validator.howWasItDelivered).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      const validValues = [
+        { HOWDELIVERED: '1', expected: TrainingCourseDeliveryMode.FaceToFace },
+        { HOWDELIVERED: '2', expected: TrainingCourseDeliveryMode.ELearning },
+      ];
+
+      validValues.forEach(({ HOWDELIVERED, expected }) => {
+        it(`should pass validation and set howWasItDelivered if a valid HOWDELIVERED is provided: ${HOWDELIVERED}`, () => {
+          trainingCsv.HOWDELIVERED = HOWDELIVERED;
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator._validateHowDelivered();
+
+          expect(validator.howWasItDelivered).to.equal(expected);
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+      });
+
+      it('should add a HOWDELIVERED_ERROR if HOWDELIVERED is invalid', () => {
+        trainingCsv.HOWDELIVERED = 'some invalid value';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator._validateHowDelivered();
+
+        expect(validator.howWasItDelivered).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            errCode: 1100,
+            errType: 'HOWDELIVERED_ERROR',
+            error: 'The code you have entered for HOWDELIVERED is invalid',
+            source: trainingCsv.HOWDELIVERED,
+            column: 'HOWDELIVERED',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+    });
+
+    describe('_validateValidity()', () => {
+      it('should pass validation if VALIDITY is empty', () => {
+        trainingCsv.VALIDITY = '';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator.validate();
+
+        expect(validator.doesNotExpire).to.equal(undefined);
+        expect(validator.validityPeriodInMonth).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      it('should set doesNotExpire to true if VALIDITY is "none"', () => {
+        trainingCsv.DATECOMPLETED = '';
+        trainingCsv.EXPIRYDATE = '';
+        trainingCsv.VALIDITY = 'none';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator.validate();
+
+        expect(validator.doesNotExpire).to.equal(true);
+        expect(validator.validityPeriodInMonth).to.equal(null);
+        expect(validator.validationErrors).to.deep.equal([]);
+      });
+
+      it('should add a warning if VALIDITY is "none" and expiry date is given', () => {
+        trainingCsv.VALIDITY = 'none';
+        trainingCsv.DATECOMPLETED = '01/04/2024';
+        trainingCsv.EXPIRYDATE = '01/04/2026';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator.validate();
+
+        expect(validator.doesNotExpire).to.equal(true);
+        expect(validator.validityPeriodInMonth).to.equal(null);
+        expect(validator.expiry?.format('YYYY-MM-DD')).to.deep.equal('2026-04-01');
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            warnCode: 2110,
+            warnType: 'VALIDITY_WARNING',
+            warning: 'The VALIDITY you have entered does not match the EXPIRYDATE',
+            source: trainingCsv.VALIDITY,
+            column: 'EXPIRYDATE/VALIDITY',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      it('should add a VALIDITY_ERROR if VALIDITY is not none and is not a number', () => {
+        trainingCsv.VALIDITY = 'some invalid value';
+        const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+        validator.validate();
+
+        expect(validator.doesNotExpire).to.equal(undefined);
+        expect(validator.validityPeriodInMonth).to.equal(undefined);
+        expect(validator.validationErrors).to.deep.equal([
+          {
+            origin: 'Training',
+            errCode: 1110,
+            errType: 'VALIDITY_ERROR',
+            error: 'VALIDITY should be either "none" or a number between 1 and 999',
+            source: trainingCsv.VALIDITY,
+            column: 'VALIDITY',
+            lineNumber: 1,
+            name: 'foo',
+            worker: 'bar',
+          },
+        ]);
+      });
+
+      const invalidNumbers = ['0', '-1', '1000'];
+
+      invalidNumbers.forEach((invalidNumber) => {
+        it(`should add a VALIDITY_ERROR, if VALIDITY is out of the range 1-999: ${invalidNumber}`, () => {
+          trainingCsv.VALIDITY = invalidNumber;
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator.validate();
+
+          expect(validator.doesNotExpire).to.equal(undefined);
+          expect(validator.validityPeriodInMonth).to.equal(undefined);
+          expect(validator.validationErrors).to.deep.equal([
+            {
+              origin: 'Training',
+              errCode: 1110,
+              errType: 'VALIDITY_ERROR',
+              error: 'VALIDITY should be either "none" or a number between 1 and 999',
+              source: trainingCsv.VALIDITY,
+              column: 'VALIDITY',
+              lineNumber: 1,
+              name: 'foo',
+              worker: 'bar',
+            },
+          ]);
+        });
+      });
+
+      describe('when VALIDITY given as a valid number of month', () => {
+        it('should set doesNotExpire to false and validityPeriodInMonth to VALIDITY', () => {
+          trainingCsv.VALIDITY = '24';
+          trainingCsv.DATECOMPLETED = '';
+          trainingCsv.EXPIRYDATE = '';
+
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator.validate();
+
+          expect(validator.doesNotExpire).to.equal(false);
+          expect(validator.validityPeriodInMonth).to.equal(24);
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+
+        it('should set the expiry date if expiry date is empty and completion date is given', () => {
+          trainingCsv.VALIDITY = '24';
+          trainingCsv.DATECOMPLETED = '21/04/2024';
+          trainingCsv.EXPIRYDATE = '';
+
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator.validate();
+
+          expect(validator.doesNotExpire).to.equal(false);
+          expect(validator.validityPeriodInMonth).to.equal(24);
+          expect(validator.dateCompleted?.format('YYYY-MM-DD')).to.deep.equal('2024-04-21');
+          expect(validator.expiry?.format('YYYY-MM-DD')).to.deep.equal('2026-04-20');
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+
+        it('should add a soft warning but still accept both values, if EXPIRYDATE does not agree with VALIDITY', () => {
+          trainingCsv.VALIDITY = '24';
+          trainingCsv.DATECOMPLETED = '21/04/2024';
+          trainingCsv.EXPIRYDATE = '31/12/2030';
+
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator.validate();
+
+          expect(validator.doesNotExpire).to.equal(false);
+          expect(validator.validityPeriodInMonth).to.equal(24);
+          expect(validator.dateCompleted?.format('YYYY-MM-DD')).to.deep.equal('2024-04-21');
+          expect(validator.expiry?.format('YYYY-MM-DD')).to.deep.equal('2030-12-31');
+
+          expect(validator.validationErrors).to.deep.equal([
+            {
+              origin: 'Training',
+              warnCode: 2110,
+              warnType: 'VALIDITY_WARNING',
+              warning: 'The EXPIRYDATE you have entered does not match the VALIDITY',
+              source: trainingCsv.VALIDITY,
+              column: 'EXPIRYDATE/VALIDITY',
+              lineNumber: 1,
+              name: 'foo',
+              worker: 'bar',
+            },
+          ]);
+        });
+
+        it('should not add the soft warning if EXPIRYDATE agree with VALIDITY', () => {
+          trainingCsv.VALIDITY = '24';
+          trainingCsv.DATECOMPLETED = '21/04/2024';
+          trainingCsv.EXPIRYDATE = '20/04/2026';
+
+          const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+
+          validator.validate();
+
+          expect(validator.doesNotExpire).to.equal(false);
+          expect(validator.validityPeriodInMonth).to.equal(24);
+          expect(validator.dateCompleted?.format('YYYY-MM-DD')).to.deep.equal('2024-04-21');
+          expect(validator.expiry?.format('YYYY-MM-DD')).to.deep.equal('2026-04-20');
+          expect(validator.validationErrors).to.deep.equal([]);
+        });
+      });
+    });
+  });
+
+  describe('toJSON', () => {
+    it('should return the training record values in a suitable format', () => {
+      const trainingCsv = {
+        LOCALESTID: 'foo',
+        UNIQUEWORKERID: 'bar',
+        CATEGORY: 1,
+        TRAININGNAME: 'training',
+        ACCREDITED: '1',
+        WHODELIVERED: '2',
+        PROVIDERNAME: '999',
+        HOWDELIVERED: '1',
+        VALIDITY: '24',
+        DATECOMPLETED: '01/01/2022',
+        EXPIRYDATE: '15/04/2022',
+        NOTES: 'some notes',
+      };
+
+      const expectedOutput = {
+        localId: 'foo',
+        uniqueWorkerId: 'bar',
+        lineNumber: 1,
+        category: 8,
+        completed: '01/01/2022',
+        expiry: '15/04/2022',
+        trainingName: 'training',
+        notes: 'some notes',
+        accredited: 'Yes',
+        deliveredBy: 'External provider',
+        trainingProviderFk: 63,
+        howWasItDelivered: 'Face to face',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+      };
+
+      const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+      validator.validate();
+
+      const actual = validator.toJSON();
+
+      expect(actual).to.deep.equal(expectedOutput);
+    });
+  });
+
+  describe('toAPI', () => {
+    it('should return the training record values in a suitable format', () => {
+      const trainingCsv = {
+        LOCALESTID: 'foo',
+        UNIQUEWORKERID: 'bar',
+        CATEGORY: 1,
+        TRAININGNAME: 'training',
+        ACCREDITED: '1',
+        WHODELIVERED: '2',
+        PROVIDERNAME: '999',
+        HOWDELIVERED: '1',
+        VALIDITY: '24',
+        DATECOMPLETED: '01/01/2022',
+        EXPIRYDATE: '15/04/2022',
+        NOTES: 'some notes',
+      };
+
+      const expectedOutput = {
+        trainingCategory: {
+          id: 8, // because of mapping { ASC: 8, BUDI: 1 },
+        },
+        completed: '2022-01-01',
+        expires: '2022-04-15',
+        title: 'training',
+        notes: 'some notes',
+        accredited: 'Yes',
+        deliveredBy: 'External provider',
+        trainingProviderFk: 63,
+        howWasItDelivered: 'Face to face',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+      };
+
+      const validator = new TrainingCsvValidator(trainingCsv, 1, mappings);
+      validator.validate();
+
+      const actual = validator.toAPI();
+
+      expect(actual).to.deep.equal(expectedOutput);
     });
   });
 });

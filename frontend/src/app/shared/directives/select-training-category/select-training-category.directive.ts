@@ -6,6 +6,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -32,14 +33,6 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   public requiredErrorMessage: string = 'Select the training category';
   public submitButtonText: string = 'Continue';
   public hideOtherCheckbox: boolean = false;
-
-  private summaryText = {
-    'Care skills and knowledge': "'duty of care', 'safeguarding adults'",
-    'Health and safety in the workplace': "'fire safety', 'first aid'",
-    'IT, digital and data in the workplace': "'online safety and security', 'working with digital technology'",
-    'Specific conditions and disabilities': "'dementia care', 'Oliver McGowan Mandatory Training'",
-    'Staff development': "'communication', 'leadership and management' ",
-  };
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -88,32 +81,8 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
 
   protected getCategories(): void {
     this.categories = this.route.snapshot.data.trainingCategories;
-    this.sortCategoriesByTrainingGroup(this.categories);
+    this.trainingGroups = TrainingCategoryService.sortTrainingCategoryByGroups(this.categories);
     this.otherCategory = this.categories.filter((category) => category.trainingCategoryGroup === null)[0];
-  }
-
-  protected sortCategoriesByTrainingGroup(trainingCategories) {
-    this.trainingGroups = [];
-    for (const group of Object.keys(this.summaryText)) {
-      let currentTrainingGroup = {
-        title: group,
-        descriptionText: '',
-        items: [],
-      };
-      const categoryArray = [];
-      trainingCategories.map((x) => {
-        if (x.trainingCategoryGroup === group) {
-          categoryArray.push({
-            label: x.category,
-            id: x.id,
-            seq: x.seq,
-          });
-        }
-      });
-      currentTrainingGroup.items = categoryArray;
-      currentTrainingGroup.descriptionText = this.getTrainingGroupSummary(currentTrainingGroup);
-      this.trainingGroups.push(currentTrainingGroup);
-    }
   }
 
   ngAfterViewInit(): void {
@@ -144,10 +113,6 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
 
   public setBackLink(): void {
     this.backLinkService.showBackLink();
-  }
-
-  private getTrainingGroupSummary(trainingGroup) {
-    return `Training like ${this.summaryText[trainingGroup.title]}`;
   }
 
   private setupForm(): void {

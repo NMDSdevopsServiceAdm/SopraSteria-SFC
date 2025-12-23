@@ -1,5 +1,9 @@
+const { isEmpty } = require('lodash');
+
+const { build_training_provider_mappings } = require('./trainingProvider');
 const { CONTRACT_TYPE } = require('./contractType');
 const { COUNTRY } = require('./country');
+const { CWP_CATEGORY } = require('./cwpCategory');
 const { ETHNICITY } = require('./ethnicity');
 const { JOB_ROLES } = require('./jobRoles');
 const { NATIONALITY } = require('./nationality');
@@ -8,7 +12,18 @@ const { QUALIFICATION_LEVELS } = require('./qualificationLevels');
 const { QUALIFICATIONS } = require('./qualifications');
 const { RECRUITMENT } = require('./recruitment');
 const { TRAINING_CATEGORY } = require('./trainingCategory');
-const { CWP_CATEGORY } = require('./cwpCategory');
+
+let mappingsFromDatabase = {};
+
+const mappingBuilder = async () => {
+  if (isEmpty(mappingsFromDatabase)) {
+    mappingsFromDatabase = {
+      TRAINING_PROVIDER: await build_training_provider_mappings(),
+    };
+  }
+
+  return mappingsFromDatabase;
+};
 
 exports.mappings = {
   CONTRACT_TYPE,
@@ -23,3 +38,5 @@ exports.mappings = {
   TRAINING_CATEGORY,
   CWP_CATEGORY,
 };
+
+exports.mappingBuilder = mappingBuilder;

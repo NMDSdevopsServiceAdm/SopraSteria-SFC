@@ -1,0 +1,37 @@
+@import 'govuk-frontend/govuk/base';
+
+.first-line-of-details-text {
+  margin-top: -5px;
+  margin-bottom: 0px;
+}
+
+.radio-background {
+  background-color: govuk-colour('light-grey');
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  margin-right: 70px;
+  margin-top: -30px;
+}
+
+.govuk-radios__label:after,
+.govuk-radios__label:before {
+  background: govuk-colour('white');
+}
+
+.first-grid-row {
+  margin-top: -40px;
+}
+
+.second-grid-row {
+  margin-top: 10px;
+}
+
+.last-grid-row {
+  margin-top: 25px;
+  margin-bottom: -80px;
+}
+
+.cancel-link {
+  margin-left: 70px;
+}

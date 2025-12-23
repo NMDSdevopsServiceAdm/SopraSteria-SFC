@@ -97,6 +97,7 @@ export const mockAuthenticateResponse = (isAdmin = false, employerTypeSet = true
         uid: 'mockuid',
         dataOwner: WorkplaceDataOwner.Workplace,
       },
+      trainingCoursesMessageViewedQuantity: 3,
     },
   };
 };

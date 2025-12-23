@@ -21,60 +21,66 @@ import sinon from 'sinon';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
+import { DeliveredBy } from '@core/model/training.model';
 
 describe('MultipleTrainingDetailsComponent', () => {
+  const mockTrainingProviders = [
+    { id: 1, name: 'Preset provider name #1', isOther: false },
+    { id: 63, name: 'other', isOther: true },
+  ];
   async function setup(
-    accessedFromSummary = false,
-    prefill = false,
-    isPrimaryWorkplace = true,
-    qsParamGetMock = sinon.fake(),
+    overrides: any = {
+      accessedFromSummary: false,
+      prefill: false,
+      isPrimaryWorkplace: true,
+      qsParamGetMock: sinon.fake(),
+    },
   ) {
-    const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByTestId } = await render(
-      MultipleTrainingDetailsComponent,
-      {
-        imports: [SharedModule, RouterModule, AddMultipleTrainingModule],
-        providers: [
-          WindowRef,
-          { provide: EstablishmentService, useClass: MockEstablishmentService },
-          { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
-          {
-            provide: ActivatedRoute,
-            useValue: new MockActivatedRoute({
-              snapshot: {
-                params: { trainingRecordId: '1' },
-                parent: {
-                  url: [{ path: accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
-                },
+    const setupTools = await render(MultipleTrainingDetailsComponent, {
+      imports: [SharedModule, RouterModule, AddMultipleTrainingModule],
+      providers: [
+        WindowRef,
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            snapshot: {
+              params: { trainingRecordId: overrides?.trainingRecordId ?? '1' },
+              data: {
+                trainingProviders: mockTrainingProviders,
               },
               parent: {
-                snapshot: {
-                  data: {
-                    establishment: {
-                      uid: isPrimaryWorkplace ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : 'mock-uid',
-                    },
+                url: [{ path: overrides.accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
+              },
+            },
+            parent: {
+              snapshot: {
+                data: {
+                  establishment: {
+                    uid: overrides.isPrimaryWorkplace ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : 'mock-uid',
                   },
                 },
               },
-            }),
-          },
-          UntypedFormBuilder,
-          ErrorSummaryService,
-          {
-            provide: TrainingService,
-            useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
-          },
-          { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-          {
-            provide: TrainingCategoryService,
-            useClass: MockTrainingCategoryService,
-          },
-          provideHttpClient(),
-          provideHttpClientTesting(),
-        ],
-      },
-    );
+            },
+          }),
+        },
+        UntypedFormBuilder,
+        ErrorSummaryService,
+        {
+          provide: TrainingService,
+          useClass: overrides.prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
+        },
+        { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+        {
+          provide: TrainingCategoryService,
+          useClass: MockTrainingCategoryService,
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
 
-    const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService) as WorkerService;
@@ -90,25 +96,35 @@ describe('MultipleTrainingDetailsComponent', () => {
     );
 
     return {
-      component,
-      fixture,
-      getByText,
-      getByLabelText,
-      getAllByText,
-      getByTestId,
+      component: setupTools.fixture.componentInstance,
+      ...setupTools,
       spy,
       workerSpy,
       trainingService,
       trainingSpy,
       setSelectedTrainingSpy,
       setUpdatingSelectedStaffForMultipleTrainingSpy,
-      queryByTestId,
     };
   }
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show the caption and heading', async () => {
+    const { getByRole, getByTestId } = await setup();
+
+    const caption = getByTestId('section-heading');
+
+    expect(caption.textContent).toBe('Add multiple training records');
+    expect(getByRole('heading', { name: 'Add training record details' })).toBeTruthy();
+  });
+
+  it('should not show the "Include training course details" link if there is no trainingRecordId', async () => {
+    const { queryByTestId } = await setup({ trainingRecordId: null });
+
+    expect(queryByTestId('includeTraining')).toBeFalsy();
   });
 
   it('should render `Continue` and `Cancel` buttons when it is not accessed from the confirm training page', async () => {
@@ -119,7 +135,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should render `Save and return` and `Cancel` buttons when it is accessed from the confirm training page', async () => {
-    const { getByText } = await setup(true);
+    const { getByText } = await setup({ accessedFromSummary: true });
 
     expect(getByText('Save and return')).toBeTruthy();
     expect(getByText('Cancel')).toBeTruthy();
@@ -135,26 +151,31 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should store the selected training in training service and navigate to the next page when filling out the form and clicking continue', async () => {
-    const { component, getByText, getByLabelText, getByTestId, fixture, setSelectedTrainingSpy, spy } = await setup();
+    const { component, getByText, getByLabelText, getByTestId, fixture, setSelectedTrainingSpy, spy } = await setup({
+      trainingRecordId: null,
+    });
 
     component.trainingCategory = {
       id: component.categories[0].id,
       category: component.categories[0].category,
     };
+
     const openNotesButton = getByText('Open notes');
     openNotesButton.click();
     fixture.detectChanges();
 
-    userEvent.type(getByLabelText('Training name'), 'Training');
+    userEvent.type(getByLabelText('Training record name'), 'Training');
     userEvent.click(getByLabelText('Yes'));
+    userEvent.click(getByLabelText('External provider'));
+    userEvent.type(getByLabelText('Provider name'), 'Care skills academy');
+    userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '');
+    userEvent.type(getByLabelText('This training does not expire'), 'true');
+    userEvent.click(getByLabelText('E-learning'));
     const completedDate = getByTestId('completedDate');
     userEvent.type(within(completedDate).getByLabelText('Day'), '1');
     userEvent.type(within(completedDate).getByLabelText('Month'), '1');
     userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
-    const expiryDate = getByTestId('expiresDate');
-    userEvent.type(within(expiryDate).getByLabelText('Day'), '1');
-    userEvent.type(within(expiryDate).getByLabelText('Month'), '1');
-    userEvent.type(within(expiryDate).getByLabelText('Year'), '2022');
+
     userEvent.type(getByLabelText('Add a note'), 'Notes for training');
 
     const finishButton = getByText('Continue');
@@ -166,9 +187,15 @@ describe('MultipleTrainingDetailsComponent', () => {
       trainingCategory: component.categories[0],
       title: 'Training',
       accredited: 'Yes',
+      deliveredBy: 'External provider',
+      howWasItDelivered: 'E-learning',
+      validityPeriodInMonth: null,
+      doesNotExpire: true,
       completed: '2020-01-01',
-      expires: '2022-01-01',
+      expires: null,
       notes: 'Notes for training',
+      trainingProviderId: 63,
+      otherTrainingProviderName: 'Care skills academy',
     });
     expect(spy).toHaveBeenCalledWith([
       'workplace',
@@ -179,7 +206,10 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should navigate to the confirm training page when page has been accessed from that page and pressing Save and return', async () => {
-    const { component, fixture, getByText, setSelectedTrainingSpy, spy } = await setup(true, true);
+    const { component, fixture, getByText, setSelectedTrainingSpy, spy } = await setup({
+      accessedFromSummary: true,
+      prefill: true,
+    });
 
     component.trainingCategory = {
       id: component.categories[0].id,
@@ -194,9 +224,16 @@ describe('MultipleTrainingDetailsComponent', () => {
       trainingCategory: component.categories[0],
       title: 'Title',
       accredited: 'Yes',
+      deliveredBy: null,
+      externalProviderName: null,
+      howWasItDelivered: 'Face to face',
+      validityPeriodInMonth: null,
+      doesNotExpire: null,
       completed: '2020-01-01',
       expires: '2021-01-01',
       notes: 'This is a note',
+      trainingProviderId: null,
+      otherTrainingProviderName: null,
     });
     expect(spy).toHaveBeenCalledWith([
       'workplace',
@@ -217,7 +254,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should not clear selected staff and navigate when pressing cancel when in the flow', async () => {
-    const { getByText, spy, trainingSpy } = await setup(true);
+    const { getByText, spy, trainingSpy } = await setup({ accessedFromSummary: true });
 
     const cancelButton = getByText('Cancel');
     fireEvent.click(cancelButton);
@@ -227,24 +264,77 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should prefill the form if it has already been filled out', async () => {
-    const { component } = await setup(false, true);
+    const { component } = await setup({ accessedFromSummary: false, prefill: true });
 
     const form = component.form;
-    const { title, accredited, completed, expires, notes } = component.trainingService.selectedTraining;
+    const {
+      title,
+      accredited,
+      deliveredBy = null,
+      externalProviderName = null,
+      howWasItDelivered = null,
+      validityPeriodInMonth = null,
+      doesNotExpire = null,
+      completed,
+      expires,
+      notes,
+    } = component.trainingService.selectedTraining;
     const completedArr = completed.split('-');
     const expiresArr = expires.split('-');
 
     expect(form.value).toEqual({
       title,
       accredited,
+      deliveredBy,
+      externalProviderName,
+      howWasItDelivered,
+      validityPeriodInMonth,
+      doesNotExpire,
       completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
       expires: { day: +expiresArr[2], month: +expiresArr[1], year: +expiresArr[0] },
       notes,
     });
   });
 
+  describe('auto suggest', () => {
+    it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
+      const { getByTestId, getByRole, fixture } = await setup({ trainingRecordId: null });
+
+      const providerName = getByTestId('conditional-external-provider-name');
+
+      expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+      expect(within(providerName).getByRole('textbox', { name: 'Provider name' })).toBeTruthy();
+
+      userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
+      fixture.detectChanges();
+      expect(providerName).not.toHaveClass('govuk-radios__conditional--hidden');
+
+      userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
+      fixture.detectChanges();
+      expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+    });
+
+    it('should remove the suggested tray on click of the matching provider name', async () => {
+      const { queryByTestId, getByTestId, fixture } = await setup({ trainingRecordId: null });
+
+      const providerName = getByTestId('conditional-external-provider-name');
+
+      userEvent.type(within(providerName).getByRole('textbox', { name: 'Provider name' }), 'provider');
+      fixture.detectChanges();
+
+      const getTrayList = getByTestId('tray-list');
+      expect(getTrayList).toBeTruthy();
+
+      userEvent.click(within(getTrayList).getByText(mockTrainingProviders[0].name));
+      fixture.detectChanges();
+
+      const queryTrayList = queryByTestId('tray-list');
+      expect(queryTrayList).toBeFalsy();
+    });
+  });
+
   it('should set the notes section as open if there are some notes', async () => {
-    const { component, getByText, getByTestId } = await setup(false, true);
+    const { component, getByText, getByTestId } = await setup({ accessedFromSummary: false, prefill: true });
 
     const { notes } = component.trainingService.selectedTraining;
 
@@ -257,7 +347,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should display the remaining character count correctly if there are some notes', async () => {
-    const { component, getByText } = await setup(false, true);
+    const { component, getByText } = await setup({ accessedFromSummary: false, prefill: true });
 
     const { notes } = component.trainingService.selectedTraining;
 
@@ -269,6 +359,14 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { queryByTestId } = await setup();
     const uploadSection = queryByTestId('uploadCertificate');
     expect(uploadSection).toBeFalsy();
+  });
+
+  it('expiresDate should not show', async () => {
+    const { queryByTestId } = await setup({ trainingRecordId: null });
+
+    const expiresDate = queryByTestId('expiresDate');
+
+    expect(expiresDate).toBeFalsy();
   });
 
   describe('Notes section', () => {
@@ -296,18 +394,18 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   describe('errors', () => {
-    it('should show an error when training name less than 3 characters', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
+    it('should show an error when Training record name less than 3 characters', async () => {
+      const { component, getByText, fixture, getAllByText } = await setup({ trainingRecordId: '1' });
       component.form.markAsDirty();
       component.form.get('title').setValue('a');
       component.form.get('title').markAsDirty();
       const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
+      expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
     });
 
-    it('should show an error when training name more than 120 characters', async () => {
+    it('should show an error when Training record name more than 120 characters', async () => {
       const { component, getByText, fixture, getAllByText } = await setup();
       component.form.markAsDirty();
       component.form
@@ -319,7 +417,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       const finishButton = getByText('Continue');
       fireEvent.click(finishButton);
       fixture.detectChanges();
-      expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
+      expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
     });
 
     it('should show an error when completed date not valid', async () => {
@@ -359,52 +457,12 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(getAllByText('Date completed cannot be more than 100 years ago').length).toEqual(2);
     });
 
-    it('should show an error when expiry date not valid', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      component.form.get('expires').setValue({ day: 32, month: 12, year: 2000 });
-      component.form.get('expires').markAsDirty();
-      const finishButton = getByText('Continue');
-      fireEvent.click(finishButton);
-      fixture.detectChanges();
-      expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
-    });
-
-    it('should show an error when expiry date not valid and 0s are entered in the input fields', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      component.form.get('expires').setValue({ day: 0, month: 0, year: 0 });
-      component.form.get('expires').markAsDirty();
-      const finishButton = getByText('Continue');
-      fireEvent.click(finishButton);
-      fixture.detectChanges();
-      expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
-    });
-
-    it('should show an error when expiry date is before the completed date', async () => {
-      const { component, getByTestId, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      const today = new Date();
-      const completedDate = getByTestId('completedDate');
-      userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
-      userEvent.type(within(completedDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
-      userEvent.type(within(completedDate).getByLabelText('Year'), `${today.getFullYear()}`);
-      const expiresDate = getByTestId('expiresDate');
-      userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
-      userEvent.type(within(expiresDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
-      userEvent.type(within(expiresDate).getByLabelText('Year'), `${today.getFullYear()}`);
-      fireEvent.click(getByText('Continue'));
-      fixture.detectChanges();
-
-      expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
-    });
-
     describe('notes errors', () => {
       const veryLongString =
         'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
 
       it('should show an error message if the notes is over 1000 characters', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
@@ -420,7 +478,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       });
 
       it('should open the notes section if the notes input is over 1000 characters and section is closed on submit', async () => {
-        const { fixture, getByText, getByLabelText, getByTestId } = await setup(null);
+        const { fixture, getByText, getByLabelText, getByTestId } = await setup({ accessedFromSummary: null });
 
         const openNotesButton = getByText('Open notes');
         openNotesButton.click();
@@ -444,19 +502,8 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   describe('change links', () => {
-    it('should display a change link for number of staff selected', async () => {
-      const { getByTestId } = await setup(false, true);
-
-      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
-
-      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
-
-      expect(numberOfStaffSelected).toBeTruthy();
-      expect(changeStaffSelectedLink).toBeTruthy();
-    });
-
     it('should display a change link for training category selected if not accessed from summary page', async () => {
-      const { component, fixture, getByTestId } = await setup(false, true);
+      const { component, fixture, getByTestId } = await setup({ accessedFromSummary: false, prefill: true });
 
       component.trainingCategory = {
         id: component.categories[0].id,
@@ -473,26 +520,12 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(changeTrainingCaegorySelectedLink).toBeTruthy();
     });
 
-    it('should not display the number of staff and training category if accessed from summary page', async () => {
-      const { queryByTestId } = await setup(true, true);
+    it('should not display the training category if accessed from summary page', async () => {
+      const { queryByTestId } = await setup({ accessedFromSummary: true, prefill: true });
 
-      const numberOfStaffSelected = queryByTestId('numberOfStaffSelected');
       const trainingCategoryDisplay = queryByTestId('trainingCategoryDisplay');
 
-      expect(numberOfStaffSelected).toBeFalsy();
       expect(trainingCategoryDisplay).toBeFalsy();
-    });
-
-    it('should call setIsSelectStaffChange when change is clicked for staff', async () => {
-      const { setUpdatingSelectedStaffForMultipleTrainingSpy, getByTestId } = await setup(false, true);
-
-      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
-
-      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
-
-      fireEvent.click(changeStaffSelectedLink);
-
-      expect(setUpdatingSelectedStaffForMultipleTrainingSpy).toHaveBeenCalledWith(true);
     });
   });
 });

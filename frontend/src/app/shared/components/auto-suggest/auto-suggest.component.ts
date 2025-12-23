@@ -27,6 +27,7 @@ export class AutoSuggestComponent implements ControlValueAccessor {
   @Input() label: string;
   @Input() accessibleLabel: string = null;
   @Input() showClickedSuggestionInInput: boolean = true;
+  @Input() showEllipsis: boolean = false;
   @Output() searchButtonEvent: EventEmitter<Event> = new EventEmitter();
   @Output() clickItemEvent: EventEmitter<string> = new EventEmitter();
 

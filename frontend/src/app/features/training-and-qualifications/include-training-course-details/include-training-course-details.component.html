@@ -1,0 +1,111 @@
+<form #formEl (ngSubmit)="onSubmit()">
+  <div class="govuk-width-container">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+          <span data-testid="workerName" class="govuk-caption-l">{{ worker.nameOrId }}</span>
+          <h1 data-testid="page-heading" class="govuk-heading-l">Select a training course</h1>
+      </div>
+    </div>
+    <div class="govuk-grid-row second-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <app-details [title]="revealText.title" data-testid="reveal-why-is-it-a-good-idea">
+          <p class="govuk-body asc__negative-margin-right-4">
+            {{ revealText.paragraph }}
+          </p>
+          <ul class="govuk-list govuk-list--bullet">
+            @for(bullet of revealText.bullets; track bullet; let index = $index){
+            <li>{{ bullet }}</li>
+            }
+          </ul>
+        </app-details>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div>
+          <h2 data-testid="training-record-heading" class="govuk-heading-s govuk-!-margin-bottom-1">
+            Training record name
+          </h2>
+          <p data-testid="training-record-name" class="govuk-body-m govuk-!-margin-bottom-5">
+            {{ trainingRecord.title }}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-form-group govuk-!-margin-bottom-1">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+              <h3 data-testid="training-course-heading" class="govuk-fieldset__heading">Training course name</h3>
+            </legend>
+          </fieldset>
+        </div>
+        <div class="govuk-form-group">
+          <div *ngIf="trainingCourses.length < 2">
+            <div class="checkbox-shaded-background">
+              <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    data-testid="training-course-name-checkbox"
+                    id="course"
+                    [formControl]="userSelectedTrainingCourse"
+                    name="course"
+                    type="checkbox"
+                    [value]="trainingCourses[0].name"
+                  />
+                  <label class="govuk-body-m govuk-checkboxes__label" data-testid="checkbox-label" for="course">
+                    {{ trainingCourses[0].name }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="trainingCourses.length > 1">
+          <div class="radio-background">
+            <div class="govuk-radios" data-module="govuk-radios">
+              <div class="govuk-radios__item" *ngFor="let course of trainingCourses">
+                <input
+                  class="govuk-radios__input"
+                  [attr.data-testid]="'radio-' + course.id"
+                  [id]="course.id"
+                  name="trainingCourses"
+                  [formControl]="userSelectedTrainingCourse"
+                  type="radio"
+                  [value]="course.id"
+                />
+                <label class="govuk-label govuk-radios__label" [for]="course.id">
+                  {{ course.name }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-row last-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-button-group">
+          <button data-testid="continue-button" type="submit" class="govuk-button govuk-!-margin-right-9">
+            Continue
+          </button>
+          <a
+            class="govuk-link cancel-link"
+            data-testid="cancel-link"
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'training',
+              trainingRecord.uid
+            ]"
+            >Cancel</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

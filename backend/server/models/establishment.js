@@ -1005,6 +1005,12 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'delegatedHealthcareActivities',
     });
+
+    Establishment.hasMany(models.trainingCourse, {
+      foreignKey: 'establishmentFk',
+      sourceKey: 'id',
+      as: 'trainingCourse',
+    });
   };
 
   Establishment.turnoverAndVacanciesData = function (establishmentId) {
@@ -1050,7 +1056,7 @@ module.exports = function (sequelize, DataTypes) {
           {
             model: sequelize.models.workerTraining,
             as: 'workerTraining',
-            attributes: ['id', 'uid', 'title', 'expires', 'categoryFk'],
+            attributes: ['id', 'uid', 'title', 'expires', 'categoryFk', 'trainingCourseFK'],
           },
         ],
       },
@@ -1713,13 +1719,29 @@ module.exports = function (sequelize, DataTypes) {
           },
           include: [
             {
-              attributes: ['title', 'completed', 'expires', 'accredited', 'notes'],
+              attributes: [
+                'title',
+                'completed',
+                'expires',
+                'accredited',
+                'notes',
+                'deliveredBy',
+                'howWasItDelivered',
+                'doesNotExpire',
+                'validityPeriodInMonth',
+              ],
               model: sequelize.models.workerTraining,
               as: 'workerTraining',
-              include: {
-                model: sequelize.models.workerTrainingCategories,
-                as: 'category',
-              },
+              include: [
+                {
+                  model: sequelize.models.workerTrainingCategories,
+                  as: 'category',
+                },
+                {
+                  model: sequelize.models.trainingProvider.scope('bulkUpload'),
+                  as: 'trainingProvider',
+                },
+              ],
             },
           ],
         },
@@ -2670,4 +2692,4 @@ module.exports = function (sequelize, DataTypes) {
   Establishment.addHook('beforeSave', 'clearDoDHAWorkplaceOnMainServiceChange', clearDoDHAWorkplaceOnMainServiceChange);
 
   return Establishment;
-};;
+};

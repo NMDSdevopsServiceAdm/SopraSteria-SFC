@@ -1,0 +1,24 @@
+@import 'govuk-frontend/govuk/base';
+
+.includeTrainingCourseInformation table {
+  border-collapse: collapse;
+  width: 108%;
+  border: 4px solid rgba(230, 229, 227, 1);
+}
+
+.includeTrainingCourseInformation h2 {
+  caption-side: top;
+  padding: 10px 15px 10px 25px;
+  background-color: #e6e5e3;
+  font-size: 19px;
+  font-weight: 700;
+  font-weight: bold;
+}
+
+.includeTrainingCourseInformation td {
+  padding: 15px 15px 5px 25px;
+}
+
+.includeTrainingCourseInformation button, a {
+  color: govuk-colour('blue');
+}

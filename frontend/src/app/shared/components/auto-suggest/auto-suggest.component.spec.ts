@@ -146,4 +146,44 @@ describe('AutoSuggestComponent', () => {
 
     expect(component.formGroup.value).toEqual({ search: 'staff record' });
   });
+
+  describe('ellipsis', () => {
+    const inputName = 'Provider name';
+    const dataList = ['Coleman Training', 'First Response Training'];
+    const overrides = {
+      label: inputName,
+      dataList,
+    };
+
+    it('should show when showEllipsis is true', async () => {
+      const updatedOverrides = {
+        ...overrides,
+        showEllipsis: true,
+      };
+
+      const { getByRole, getAllByRole } = await setup(updatedOverrides);
+
+      const input = getByRole('textbox', { name: inputName });
+
+      expect(input).toHaveClass('overflow-ellipsis');
+
+      dataList.forEach((item, index) => {
+        const listItem = within(getAllByRole('listitem')[index]).getByText(item);
+        expect(listItem).toHaveClass('tray-list-item');
+      });
+    });
+
+    it('should not show when showEllipsis is false', async () => {
+      const { getByRole, getAllByRole } = await setup({ ...overrides, showEllipsis: false });
+
+      const input = getByRole('textbox', { name: inputName });
+
+      expect(input).not.toHaveClass('overflow-ellipsis');
+
+      dataList.forEach((item, index) => {
+        const listItem = within(getAllByRole('listitem')[index]).getByText(item);
+        expect(listItem).not.toHaveClass('tray-list-item');
+      });
+    });
+  });
 });

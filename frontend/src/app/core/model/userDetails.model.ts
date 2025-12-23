@@ -25,6 +25,7 @@ export interface UserDetails {
   updatedBy?: string;
   username?: string;
   lastViewedVacanciesAndTurnoverMessage?: string;
+  trainingCoursesMessageViewedQuantity?: number;
 }
 
 export enum UserStatus {

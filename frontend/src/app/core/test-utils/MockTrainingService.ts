@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
+import { allMandatoryTrainingCategories, TrainingCategory, TrainingRecord } from '@core/model/training.model';
 import { MandatoryTrainingService, TrainingService } from '@core/services/training.service';
 import { Observable, of } from 'rxjs';
 
 import { AllJobs, JobsWithDuplicates } from '../../../mockdata/jobs';
 import { workerBuilder } from './MockWorkerService';
+import { build, BuildTimeConfig, fake, oneOf } from '@jackfranklin/test-data-bot';
+import { trainingCategories } from './MockTrainingCategoriesService';
 
 const workers = [workerBuilder(), workerBuilder()];
 @Injectable()
@@ -62,6 +64,10 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     expires: '2021-01-01',
     notes: 'This is a note',
     title: 'Title',
+    howWasItDelivered: 'Face to face',
+    externalProviderName: null,
+    deliveredBy: null,
+    validityPeriodInMonth: null,
   };
 
   public get trainingOrQualificationPreviouslySelected() {
@@ -74,6 +80,21 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
       if (incompleteTraining) {
         service._selectedTraining = { ...service._selectedTraining, completed: null, expires: null, notes: null };
       }
+      return service;
+    };
+  }
+}
+
+@Injectable()
+export class MockTrainingServiceWithOverrides extends TrainingService {
+  public static factory(overrides: any = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockTrainingServiceWithOverrides(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        service[overrideName] = overrides[overrideName];
+      });
+
       return service;
     };
   }
@@ -122,3 +143,15 @@ export const mockMandatoryTraining = (duplicateJobRoles = false) => {
     mandatoryTrainingCount: 2,
   };
 };
+
+export const trainingRecordBuilder = build('TrainingRecord', {
+  fields: {
+    uid: fake((f) => f.datatype.uuid()),
+    title: fake((f) => f.lorem.words()),
+    trainingCategory: oneOf(trainingCategories[0], trainingCategories[1]),
+    trainingCertificates: [],
+    created: fake((f) => f.date.past(1).toISOString()),
+    updated: fake((f) => f.date.past(1).toISOString()),
+    updatedBy: fake((f) => f.lorem.words()),
+  },
+}) as unknown as (buildTimeConfig?: BuildTimeConfig<any>) => TrainingRecord;

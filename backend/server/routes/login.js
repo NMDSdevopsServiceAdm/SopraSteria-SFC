@@ -80,6 +80,7 @@ router.post('/', async (req, res) => {
                   'registrationSurveyCompleted',
                   'tribalId',
                   'lastViewedVacanciesAndTurnoverMessage',
+                  'trainingCoursesMessageViewedQuantity',
                 ],
                 include: [
                   {
@@ -287,6 +288,7 @@ router.post('/', async (req, res) => {
             },
             establishmentUser.user.registrationSurveyCompleted,
             establishmentUser.user.lastViewedVacanciesAndTurnoverMessage,
+            establishmentUser.user.trainingCoursesMessageViewedQuantity,
           );
 
           await models.sequelize.transaction(async (t) => {

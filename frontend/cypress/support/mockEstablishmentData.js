@@ -3,6 +3,7 @@ export const StandAloneEstablishment = {
   id: 180,
   nmdsId: 'J1001043',
   editUserLoginName: Cypress.env('editStandAloneUser'),
+  editUserId: 769,
 };
 
 export const ParentEstablishment = {

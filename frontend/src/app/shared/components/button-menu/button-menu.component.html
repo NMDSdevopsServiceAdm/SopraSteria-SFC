@@ -1,0 +1,35 @@
+<div class="asc-button-menu" data-module="asc-button-menu" data-button-text="Menu title" data-asc-button-menu-init="">
+  <button
+    type="button"
+    class="govuk-button asc-button-menu__toggle-button"
+    aria-haspopup="true"
+    [attr.aria-expanded]="menuOpen"
+    (click)="toggleMenu()"
+  >
+    <span>
+      {{ buttonText }}
+      <svg
+        width="14px"
+        height="14px"
+        viewBox="0 0 14 14"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+      >
+        <title>CTA arrow</title>
+        <g id="CTA-arrow" stroke="none" fill="none" stroke-linecap="square" stroke-width="2">
+          <g id="CTA-arrow-2" stroke="currentColor">
+            <polyline
+              id="Path-5"
+              transform="translate(6.969, 8) rotate(90) translate(-6.969, -8)"
+              points="4.46895926 3 9.46895926 8 4.46895926 13"
+            ></polyline>
+          </g>
+        </g>
+      </svg>
+    </span>
+  </button>
+  <ul role="list" class="asc-button-menu__wrapper" [attr.hidden]="menuOpen ? null : true">
+    <ng-content></ng-content>
+  </ul>
+</div>

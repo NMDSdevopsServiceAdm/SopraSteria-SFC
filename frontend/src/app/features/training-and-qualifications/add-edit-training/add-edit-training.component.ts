@@ -10,6 +10,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingProviderService } from '@core/services/training-provider.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AddEditTrainingDirective } from '@shared/directives/add-edit-training/add-edit-training.directive';
@@ -18,9 +19,10 @@ import dayjs from 'dayjs';
 import { mergeMap } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-add-edit-training',
-    templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
-    standalone: false
+  selector: 'app-add-edit-training',
+  templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
+  styleUrl: './add-edit-training.component.scss',
+  standalone: false,
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public category: string;
@@ -29,6 +31,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   private _filesToUpload: File[];
   public filesToRemove: TrainingCertificate[] = [];
   public certificateErrors: string[] | null;
+  public isTrainingRecordMatchedToTrainingCourse: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -42,6 +45,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected workerService: WorkerService,
     protected alertService: AlertService,
     protected http: HttpClient,
+    protected trainingProviderService: TrainingProviderService,
   ) {
     super(
       formBuilder,
@@ -53,6 +57,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       trainingCategoryService,
       workerService,
       alertService,
+      trainingProviderService,
     );
   }
 
@@ -60,6 +65,8 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.trainingService.trainingOrQualificationPreviouslySelected = 'training';
     this.worker = this.workerService.worker;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
+    this.trainingCourses = this.route.snapshot.data?.trainingCourses ?? [];
+    this.showCategory = true;
     if (this.trainingRecordId) {
       this.fillForm();
     } else if (this.trainingCategory) {
@@ -101,6 +108,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
             this.category = trainingRecord.trainingCategory.category;
             this.trainingCategory = trainingRecord.trainingCategory;
             this.trainingCertificates = trainingRecord.trainingCertificates;
+            this.isTrainingRecordMatchedToTrainingCourse = trainingRecord.isMatchedToTrainingCourse;
 
             const completed = this.trainingRecord.completed
               ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)
@@ -109,6 +117,12 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
             this.form.patchValue({
               title: this.trainingRecord.title,
               accredited: this.trainingRecord.accredited,
+              deliveredBy: this.trainingRecord.deliveredBy,
+              externalProviderName: this.trainingRecord.externalProviderName,
+              howWasItDelivered: this.trainingRecord.howWasItDelivered,
+              validityPeriodInMonth: this.trainingRecord.validityPeriodInMonth,
+              doesNotExpire: this.trainingRecord.doesNotExpire,
+
               ...(completed && {
                 completed: {
                   day: completed.date(),
@@ -130,6 +144,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
               this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
             }
           }
+          this.updateShowUpdateRecordsWithTrainingCourseDetails();
         },
         (error) => {
           console.error(error.error);
@@ -257,6 +272,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   private onSuccess() {
     this.trainingService.clearSelectedTrainingCategory();
+    this.trainingService.clearIsTrainingCourseSelected();
     const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
 
     this.router.navigate(this.previousUrl).then(() => {
@@ -270,5 +286,22 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   private onError(error) {
     console.log(error);
     this.submitButtonDisabled = false;
+  }
+
+  public onSelectATrainingCourse(): void {
+    this.router.navigate([
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'training',
+      this.trainingRecordId,
+      'include-training-course-details',
+    ]);
+  }
+
+  public updateShowUpdateRecordsWithTrainingCourseDetails(): void {
+    this.showUpdateRecordsWithTrainingCourseDetails =
+      this.trainingRecordId && this.trainingCourses.length > 0 && !this.isTrainingRecordMatchedToTrainingCourse;
   }
 }

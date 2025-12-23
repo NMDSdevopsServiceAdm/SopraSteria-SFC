@@ -49,7 +49,7 @@
   </div>
 </div>
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half govuk-!-margin-top-2">
+  <div class="govuk-grid-column-one-third govuk-!-margin-top-2">
     <a
       *ngIf="canEditWorker"
       class="govuk-list govuk-list--inline"
@@ -60,15 +60,35 @@
       View staff record
     </a>
   </div>
-  <div class="govuk-grid-column-one-half">
+  <div class="govuk-grid-column-two-thirds govuk-!-text-align-right">
     <a
       *ngIf="canEditWorker"
-      class="govuk-button govuk-util__float-right"
+      class="govuk-button govuk-button--primary"
       role="button"
       draggable="false"
-      [routerLink]="['../select-record-type']"
+      [routerLink]="
+        trainingCourses.length > 0
+          ? ['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'add-a-training-record']
+          : ['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'add-training']
+      "
     >
-      Add a record
+      Add a training record
+    </a>
+
+    <a
+      *ngIf="canEditWorker"
+      class="govuk-button govuk-button--secondary govuk-util__float-right"
+      role="button"
+      draggable="false"
+      [routerLink]="[
+        '/workplace',
+        workplace.uid,
+        'training-and-qualifications-record',
+        worker.uid,
+        'add-qualification'
+      ]"
+    >
+      Add a qualification record
     </a>
   </div>
 </div>

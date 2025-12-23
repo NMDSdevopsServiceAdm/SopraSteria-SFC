@@ -1,0 +1,44 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l" data-testid="section-heading">Training and qualifications</span>
+    <h1 class="govuk-heading-l">
+      You've selected {{ selectedTrainingRecords?.length === 1 ? '1 training record' : selectedTrainingRecords?.length +
+      ' training records' }} to update with course details
+    </h1>
+
+    <div>
+      <p>
+        Details from the '{{selectedTrainingCourse.name}}' training course will be added to the training records that
+        you called:
+      </p>
+      <ul data-testid="selected-training-records" class="govuk-list govuk-list--bullet">
+        @for(item of trainingRecordsGroupedByName; track item) {
+        <li>{{item}}</li>
+        }
+      </ul>
+
+      <p>The training records will:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>take the name of the training course</li>
+        <li>show how the training was delivered and who delivered it</li>
+        <li>show how long the training is valid for and display its expiry date</li>
+      </ul>
+    </div>
+
+    <div class="govuk-button-group govuk-!-margin-top-8">
+      <button type="button" class="govuk-button govuk-!-margin-right-9" (click)="onSubmit()">
+        Update training records
+      </button>
+
+      <a
+        class="govuk-button govuk-button--link govuk-!-margin-left-9"
+        role="button"
+        draggable="false"
+        href="#"
+        [routerLink]="this.startingPageUrl"
+      >
+        Cancel
+      </a>
+    </div>
+  </div>
+</div>

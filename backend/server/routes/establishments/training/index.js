@@ -92,7 +92,16 @@ const viewTrainingRecord = async (req, res) => {
 
 const createSingleTrainingRecord = async (req, res, establishmentId, workerUid, trainingRecord) => {
   const thisTrainingRecord = new Training(establishmentId, workerUid);
-  const isValidRecord = await thisTrainingRecord.load(trainingRecord);
+
+  const trainingRecordToCreate = trainingRecord;
+  const trainingProviderFk = trainingRecordToCreate.trainingProviderId;
+
+  if (trainingProviderFk || trainingProviderFk === null) {
+    trainingRecordToCreate.trainingProviderFk = trainingProviderFk;
+    delete trainingRecordToCreate.trainingProviderId;
+  }
+
+  const isValidRecord = await thisTrainingRecord.load(trainingRecordToCreate);
 
   if (isValidRecord) {
     await thisTrainingRecord.save(req.username);
@@ -125,6 +134,14 @@ const updateTrainingRecord = async (req, res) => {
 
   const thisTrainingRecord = new Training(establishmentId, workerUid);
 
+  const trainingRecordUpdates = req.body;
+  const trainingProviderFk = trainingRecordUpdates.trainingProviderId;
+
+  if (trainingProviderFk || trainingProviderFk === null) {
+    trainingRecordUpdates.trainingProviderFk = trainingProviderFk;
+    delete trainingRecordUpdates.trainingProviderId;
+  }
+
   try {
     // before updating a Worker, we need to be sure the Worker is
     //  available to the given establishment. The best way of doing that
@@ -134,7 +151,7 @@ const updateTrainingRecord = async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  PUT body will be updated (peristed)
-      const isValidRecord = await thisTrainingRecord.load(req.body);
+      const isValidRecord = await thisTrainingRecord.load(trainingRecordUpdates);
 
       // this is an update to an existing User, so no mandatory properties!
       if (isValidRecord) {

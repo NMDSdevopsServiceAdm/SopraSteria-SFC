@@ -32,3 +32,19 @@
     border-bottom: 1px solid $govuk-border-colour;
   }
 }
+
+.govuk-button.govuk-button--primary {
+  margin-right: 25px;
+  margin-top: 3px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.govuk-button.govuk-button--secondary {
+  color: $govuk-link-colour;
+  margin-top: 3px;
+  padding-left: 15px;
+  padding-right: 20px;
+}
+
+

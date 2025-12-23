@@ -42,4 +42,17 @@ describe('UserService', () => {
       expect(req.request.body).toEqual(updatedAdminUser);
     });
   });
+
+  describe('updateTrainingCoursesMessageViewedQuantity', () => {
+    it('should call the endpoint to update trainingCoursesMessageViewedQuantity', () => {
+      const userUid = 'mock-userId';
+
+      service.updateTrainingCoursesMessageViewedQuantity(userUid).subscribe();
+
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/user/update-training-courses-message-viewed-quantity/${userUid}`,
+      );
+      expect(req.request.method).toBe('POST');
+    });
+  });
 });

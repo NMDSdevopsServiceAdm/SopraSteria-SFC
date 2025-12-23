@@ -1,0 +1,322 @@
+const { Enum } = require('../../reference/databaseEnumTypes');
+const { NotFoundError } = require('../utils/errors/customErrors');
+const { ensureProviderInfoCorrect } = require('./hooks/trainingHooks');
+const lodash = require('lodash');
+
+module.exports = function (sequelize, DataTypes) {
+  const TrainingCourse = sequelize.define(
+    'trainingCourse',
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true,
+        field: 'ID',
+      },
+      uid: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        unique: true,
+        field: 'UID',
+      },
+      establishmentFk: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'EstablishmentFK',
+      },
+      categoryFk: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: 'CategoryFK',
+      },
+      name: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'Name',
+      },
+      accredited: {
+        type: DataTypes.ENUM(Enum.YesNoDontKnow),
+        allowNull: true,
+        field: 'Accredited',
+        validate: { isIn: [Enum.YesNoDontKnow] },
+      },
+      deliveredBy: {
+        type: DataTypes.ENUM(Enum.TrainingCourseDeliveredBy),
+        allowNull: true,
+        field: 'DeliveredBy',
+        validate: {
+          isIn: [Enum.TrainingCourseDeliveredBy],
+        },
+      },
+      trainingProviderFk: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'TrainingProviderFK',
+      },
+      otherTrainingProviderName: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'OtherTrainingProviderName',
+      },
+
+      howWasItDelivered: {
+        type: DataTypes.ENUM(Enum.TrainingCourseDeliveryMode),
+        allowNull: true,
+        field: 'HowWasItDelivered',
+        validate: { isIn: [Enum.TrainingCourseDeliveryMode] },
+      },
+      doesNotExpire: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+        field: 'DoesNotExpire',
+        validate: {
+          clearValidityPeriod() {
+            if (this.doesNotExpire === true) {
+              this.validityPeriodInMonth = null;
+            }
+          },
+        },
+        set(value) {
+          this.setDataValue('doesNotExpire', Boolean(value));
+        },
+      },
+      validityPeriodInMonth: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'ValidityPeriodInMonth',
+        validate: { min: 1 },
+      },
+      created: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      updated: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      createdBy: {
+        type: DataTypes.TEXT,
+      },
+      updatedBy: {
+        type: DataTypes.TEXT,
+      },
+      archived: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+    },
+    {
+      tableName: 'TrainingCourse',
+      schema: 'cqc',
+      createdAt: 'created',
+      updatedAt: 'updated',
+
+      defaultScope: {
+        include: ['category', 'trainingProvider'],
+        nest: true,
+      },
+    },
+  );
+
+  TrainingCourse.associate = (models) => {
+    TrainingCourse.belongsTo(models.establishment, {
+      foreignKey: 'establishmentFk',
+      targetKey: 'id',
+      as: 'establishment',
+    });
+
+    TrainingCourse.belongsTo(models.workerTrainingCategories, {
+      foreignKey: 'categoryFk',
+      targetKey: 'id',
+      as: 'category',
+    });
+
+    TrainingCourse.hasMany(models.workerTraining, {
+      foreignKey: 'trainingCourseFK',
+      targetKey: 'id',
+      as: 'workerTraining',
+    });
+
+    TrainingCourse.belongsTo(models.trainingProvider, {
+      foreignKey: 'trainingProviderFk',
+      targetKey: 'id',
+      as: 'trainingProvider',
+    });
+  };
+
+  TrainingCourse.addHook('beforeSave', 'ensureProviderInfoCorrect', ensureProviderInfoCorrect);
+
+  TrainingCourse.updateTrainingCourse = async ({
+    establishmentId,
+    trainingCourseUid,
+    updates,
+    updatedBy,
+    transaction,
+  }) => {
+    const models = sequelize.models;
+
+    const recordFound = await models.trainingCourse.findOne({
+      where: {
+        establishmentFk: establishmentId,
+        uid: trainingCourseUid,
+        archived: false,
+      },
+      attributes: { exclude: ['establishmentFk'] },
+      transaction,
+    });
+
+    if (!recordFound) {
+      throw new NotFoundError('Training course not found');
+    }
+    return await recordFound.update({ ...updates, updatedBy }, { transaction });
+  };
+
+  TrainingCourse.updateTrainingRecordsWithCourseData = async function ({
+    trainingCourseUid,
+    trainingRecordUids,
+    transaction,
+    updatedBy,
+  }) {
+    const models = sequelize.models;
+
+    const trainingCourse = await models.trainingCourse.findOne({
+      where: {
+        uid: trainingCourseUid,
+        archived: false,
+      },
+      transaction,
+    });
+
+    if (!trainingCourse) {
+      throw new NotFoundError('Could not find the training course');
+    }
+
+    const fieldsToCopy = [
+      'categoryFk',
+      'accredited',
+      'deliveredBy',
+      'trainingProviderFk',
+      'otherTrainingProviderName',
+      'howWasItDelivered',
+      'doesNotExpire',
+      'validityPeriodInMonth',
+    ];
+
+    const updatesToApply = {
+      ...lodash.pick(trainingCourse.toJSON(), fieldsToCopy),
+      title: trainingCourse.name,
+      trainingCourseFK: trainingCourse.id,
+      updatedBy,
+      updated: new Date(),
+    };
+
+    const trainingRecordsToUpdate = await sequelize.models.workerTraining.findAll({
+      where: {
+        uid: trainingRecordUids,
+        trainingCourseFK: trainingCourse.id,
+      },
+      include: [
+        {
+          model: sequelize.models.worker,
+          as: 'worker',
+          attributes: ['establishmentFk', 'archived'],
+          where: {
+            establishmentFk: trainingCourse.establishmentFk,
+            archived: false,
+          },
+        },
+      ],
+      transaction,
+    });
+
+    if (!trainingRecordsToUpdate.length) {
+      return [];
+    }
+
+    await sequelize.models.workerTraining.update(updatesToApply, {
+      where: {
+        id: trainingRecordsToUpdate.map((record) => record.id),
+        trainingCourseFK: trainingCourse.id,
+      },
+      transaction,
+    });
+
+    const updateExpiryDateForEachRecord = trainingRecordsToUpdate.map((record) => {
+      const trainingRecordId = record.id;
+      return models.workerTraining.autoFillInExpiryDate({
+        trainingRecordId,
+        transaction,
+        updatedBy,
+      });
+    });
+
+    await Promise.all(updateExpiryDateForEachRecord);
+
+    const updatedRecords = await sequelize.models.workerTraining.findAll({
+      where: {
+        id: trainingRecordsToUpdate.map((record) => record.id),
+        trainingCourseFK: trainingCourse.id,
+      },
+      transaction,
+    });
+
+    return updatedRecords;
+  };
+
+  TrainingCourse.linkRecordsToCourse = async function ({
+    trainingCourseUid,
+    trainingRecordUids,
+    establishmentId,
+    updatedBy,
+    transaction,
+  }) {
+    const models = sequelize.models;
+
+    const trainingCourse = await models.trainingCourse.findOne({
+      where: {
+        uid: trainingCourseUid,
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      transaction,
+    });
+
+    if (!trainingCourse) {
+      throw new NotFoundError('Could not find the training course');
+    }
+
+    const trainingRecordsToUpdate = await models.workerTraining.findAll({
+      where: {
+        uid: trainingRecordUids,
+      },
+      include: [
+        {
+          model: models.worker,
+          as: 'worker',
+          attributes: ['establishmentFk', 'archived'],
+          where: {
+            establishmentFk: trainingCourse.establishmentFk,
+            archived: false,
+          },
+        },
+      ],
+      transaction,
+    });
+
+    return models.workerTraining.update(
+      { trainingCourseFK: trainingCourse.id, updatedBy, updated: new Date() },
+      {
+        where: {
+          id: trainingRecordsToUpdate.map((record) => record.id),
+        },
+        transaction,
+      },
+    );
+  };
+
+  return TrainingCourse;
+};

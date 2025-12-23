@@ -71,8 +71,13 @@ class BUDI {
   trainingCategory(direction, originalCode) {
     return this.convertValue(direction, originalCode, this.mappings.TRAINING_CATEGORY);
   }
+
   cwpCategory(direction, originalCode) {
     return this.convertValue(direction, originalCode, this.mappings.CWP_CATEGORY);
+  }
+
+  trainingProvider(direction, originalCode) {
+    return this.convertValue(direction, originalCode, this.mappings.TRAINING_PROVIDER);
   }
 }
 

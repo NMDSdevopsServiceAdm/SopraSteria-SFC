@@ -89,7 +89,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
   it('should show the page caption', async () => {
     const { getByText } = await setup(true);
 
-    const caption = getByText('Add multiple records');
+    const caption = getByText('Add multiple training records');
 
     expect(caption).toBeTruthy();
   });
