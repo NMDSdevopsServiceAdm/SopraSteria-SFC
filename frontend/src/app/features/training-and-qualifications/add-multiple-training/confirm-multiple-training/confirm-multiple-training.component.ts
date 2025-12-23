@@ -80,7 +80,12 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   }
 
   private async onSuccess() {
-    const message = `${this.workers.length} training records added`;
+    let record = 'record'
+    if (this.workers.length !== 1) {
+      record += 's';
+    }
+    const message = `${this.workers.length} training ${record} added`;
+
     this.trainingService.resetState();
 
     await this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });

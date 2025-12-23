@@ -15,7 +15,9 @@ import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.
 import { SelectTrainingCourseForMultipleTrainingRecords } from './select-training-course-for-multiple-training-records/select-training-course-for-multiple-training-records.component';
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import { ViewSelectedTrainingCourseDetailsComponent} from '@features/training-and-qualifications/add-multiple-training/view-selected-training-course-details/view-selected-training-course-details.component';
-import { DatePickerComponent } from '@shared/components/date-picker/date-picker.component';
+import {
+  ConfirmMultipleTrainingWithCourseComponent
+} from '@features/training-and-qualifications/add-multiple-training/confirm-multiple-training-with-course/confirm-multiple-training-with-course.component';
 
 @NgModule({
   imports: [
@@ -34,7 +36,8 @@ import { DatePickerComponent } from '@shared/components/date-picker/date-picker.
     ConfirmMultipleTrainingComponent,
     SelectTrainingCategoryMultipleComponent,
     SelectTrainingCourseForMultipleTrainingRecords,
-    ViewSelectedTrainingCourseDetailsComponent
+    ViewSelectedTrainingCourseDetailsComponent,
+    ConfirmMultipleTrainingWithCourseComponent
   ],
   providers: [TrainingCategoriesResolver, TrainingCourseResolver],
 })

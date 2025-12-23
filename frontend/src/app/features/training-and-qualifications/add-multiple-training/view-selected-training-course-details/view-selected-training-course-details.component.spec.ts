@@ -393,14 +393,16 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
         });
       })
 
-      it(`should navigate to the correct page`, async () => {
+      it(`should navigate to "confirm-training-record-details"`, async () => {
         courseCompletionDate = null;
-        const { getByRole, routerSpy } = await setup();
+        const { component, getByRole, routerSpy } = await setup();
 
         const button = getByRole('button', { name: 'Continue' });
         button.click();
-        // to be updated when next page is developed
-        expect(routerSpy).toHaveBeenCalledWith(['/']);
+
+        expect(routerSpy).toHaveBeenCalledWith(
+          ['/workplace', component.workplace.uid, 'add-multiple-training', 'confirm-training-record-details']
+        );
       });
     })
 

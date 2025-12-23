@@ -16,6 +16,7 @@ import userEvent from '@testing-library/user-event';
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { SelectStaffComponent } from './select-staff.component';
 import { trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 const createWorkers = (noOfWorkers) => {
   const workers: Worker[] = [];
@@ -60,6 +61,14 @@ describe('SelectStaffComponent', () => {
               params: {
                 establishmentuid: '1234-5678',
               },
+            },
+          },
+        },
+        {
+          provide: PreviousRouteService,
+          useValue: {
+            getPreviousPage() {
+              return overrides.previousPage ?? null;
             },
           },
         },
@@ -111,7 +120,7 @@ describe('SelectStaffComponent', () => {
   });
 
   it('should show the heading and caption', async () => {
-    const { component, getByTestId } = await setup();
+    const { getByTestId } = await setup();
 
     const caption = getByTestId('caption');
     const heading = getByTestId('heading');
@@ -558,6 +567,31 @@ describe('SelectStaffComponent', () => {
         component.workplaceUid,
         'add-multiple-training',
         'confirm-training',
+      ]);
+    });
+
+    it('should navigate to the confirm-training-record-details page when page has been accessed from that page', async () => {
+      const { component, fixture, getByText, spy, workers } = await setup({
+        noOfWorkers: 3,
+        previousPage: 'confirm-training-record-details',
+      });
+
+      component.paginatedWorkers = workers;
+      fixture.detectChanges();
+
+      const selectAllLink = getByText('Select all');
+      fireEvent.click(selectAllLink);
+      fixture.detectChanges();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledWith([
+        'workplace',
+        component.workplaceUid,
+        'add-multiple-training',
+        'confirm-training-record-details',
       ]);
     });
   });

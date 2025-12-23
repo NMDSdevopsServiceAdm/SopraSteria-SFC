@@ -92,8 +92,9 @@ export class ViewSelectedTrainingCourseDetailsComponent implements OnInit {
     this.callTrainingServiceWithCourseCompletionDate();
     this.trainingService.setNotes(this.notesValue);
 
-    // to be updated when next page is developed
-    this.router.navigate(['/']);
+    this.router.navigate(
+      ['/workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training-record-details']
+    );
   }
 
   private setupFormErrorsMap(): void {

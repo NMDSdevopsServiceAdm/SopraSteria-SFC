@@ -52,6 +52,10 @@ export class TrainingService {
     this.selectedStaff = formValue;
   }
 
+  public getSelectedStaff(): Worker[] {
+    return this.selectedStaff;
+  }
+
   public resetSelectedStaff(): void {
     this.selectedStaff = [];
   }
@@ -103,6 +107,8 @@ export class TrainingService {
     this.clearSelectedTrainingCategory();
     this.clearIsTrainingCourseSelected();
     this.clearSelectedTrainingCourse();
+    this.clearCourseCompletionDate();
+    this.clearNotes();
   }
 
   public setSelectedTrainingCategory(trainingCategory: TrainingCategory) {
@@ -165,12 +171,20 @@ export class TrainingService {
     return this._courseCompletionDate;
   }
 
+  public clearCourseCompletionDate(): void {
+    this._courseCompletionDate = null;
+  }
+
   public setNotes(notes: string): void {
     this._notes = notes;
   }
 
   public getNotes(): string {
     return this._notes;
+  }
+
+  public clearNotes(): void {
+    this._notes = null;
   }
 }
 

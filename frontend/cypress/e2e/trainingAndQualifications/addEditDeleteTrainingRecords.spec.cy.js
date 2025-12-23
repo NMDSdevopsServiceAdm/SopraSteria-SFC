@@ -609,7 +609,15 @@ describe('training record', () => {
         cy.get('[data-testid="notesSection"]').clear().type('Group training');
 
         cy.contains('button', 'Continue').click();
-        //  update when next page of journey is completed
+
+        // final summary and submit page in journey
+        cy.url().should('include', 'add-multiple-training/confirm-training-record-details');
+        cy.get('h1').should('contain', 'Summary');
+
+        cy.contains('button', 'Save training records').click();
+
+        // staff training and qualifications page
+        cy.get('[data-testid="generic_alert"]').contains('2 training records added');
       });
     });
   });
