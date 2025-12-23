@@ -14,12 +14,24 @@
               <span class="govuk-caption-xl" data-testid="parentLabel">Parent</span>
             </ng-container>
 
-            <span
-              *ngIf="workplace?.parentName && !isParentSubsidiaryView"
-              class="govuk-caption-xl"
-              data-testid="parentNameLabel"
-              >{{ workplace?.parentName }}</span
-            >
+            <ng-container *ngIf="workplace?.parentName && !isParentSubsidiaryView">
+              <span class="govuk-caption-xl" data-testid="parentNameLabel">
+                <ng-container *ngIf="isAdmin; else parentNameText">
+                  <a
+                    href="#"
+                    class="govuk-link--no-visited-state"
+                    data-testid="name-link"
+                    (click)="navigateToParentWorkplace(workplace?.parentUid, '', '', $event)"
+                  >
+                    {{ workplace.parentName }}
+                  </a>
+                </ng-container>
+
+                <ng-template #parentNameText>
+                  {{ workplace.parentName }}
+                </ng-template>
+              </span>
+            </ng-container>
 
             <span *ngIf="isParentSubsidiaryView" class="govuk-caption-xl" data-testid="selectedWorkplaceLabel"
               >Selected workplace</span
