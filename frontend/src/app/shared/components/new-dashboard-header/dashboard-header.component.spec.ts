@@ -485,7 +485,7 @@ describe('NewDashboardHeaderComponent', () => {
           `/workplace/${workplaceUid}/add-multiple-training/select-staff`,
         );
 
-        const addAndManageTrainingCoursesSubMenu = getByText('Add and manage training courses');
+        const addAndManageTrainingCoursesSubMenu = getByText('Add training courses');
         expect(addAndManageTrainingCoursesSubMenu).toBeTruthy();
         expect(addAndManageTrainingCoursesSubMenu.getAttribute('href')).toEqual(
           `/workplace/${workplaceUid}/training-course/add-and-manage-training-courses`,
@@ -497,7 +497,7 @@ describe('NewDashboardHeaderComponent', () => {
           `/workplace/${workplaceUid}/update-records-with-training-course-details/select-a-training-course`,
         );
 
-        const addAMandatoryTrainingCategorySubMenu = getByText('Add a mandatory training category');
+        const addAMandatoryTrainingCategorySubMenu = getByText('Manage mandatory training');
         expect(addAMandatoryTrainingCategorySubMenu).toBeTruthy();
         expect(addAMandatoryTrainingCategorySubMenu.getAttribute('href')).toEqual(
           `/workplace/${workplaceUid}/add-and-manage-mandatory-training`,
