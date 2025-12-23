@@ -9,7 +9,6 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment } from '@core/model/establishment.model';
 import { TrainingCourse } from '@core/model/training-course.model';
 import {
   TrainingCertificate,
@@ -22,7 +21,6 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
@@ -40,17 +38,13 @@ type TrainingRecord = LegacyIncorrectTrainingRecordType & { completed: string; e
 export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
-  public workplace: Establishment;
-  public worker: Worker;
   public establishmentUid: string;
-  public workerId: string;
+  public worker: Worker;
+  public workerUid: string;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
-  public notesOpen = false;
   public notesMaxLength = 1000;
-  public remainingCharacterCount: number = this.notesMaxLength;
   public subscriptions: Subscription = new Subscription();
-  public notesValue = '';
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
   public expiryMismatchWarning: boolean;
@@ -58,11 +52,8 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   private _filesToUpload: File[];
   public trainingCertificates: TrainingCertificate[] = [];
   public filesToRemove: TrainingCertificate[] = [];
-  public trainingCategory: { id: number; category: string };
-
   public selectedTrainingCourse: TrainingCourse;
   public trainingCourses: TrainingCourse[];
-
   public journeyType: JourneyType;
   public headingText: string;
   public trainingToDisplay:
@@ -71,7 +62,6 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   constructor(
     private workerService: WorkerService,
-    private establishmentService: EstablishmentService,
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private route: ActivatedRoute,
@@ -86,10 +76,9 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   ngOnInit(): void {
     this.trainingRecord = this.route.snapshot.data?.trainingRecord;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
-    this.worker = this.workerService.worker;
     this.establishmentUid = this.route.snapshot.params?.establishmentuid;
-    this.workerId = this.route.snapshot.params?.id;
-    this.workplace = this.establishmentService.establishment;
+    this.worker = this.workerService.worker;
+    this.workerUid = this.route.snapshot.params?.id;
 
     this.loadTrainingCourse();
     this.determineJourneyType();
@@ -250,11 +239,6 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       expires: this.toFormDate(this.toDayjs(expires)),
       notes,
     });
-
-    if (this.trainingRecord?.notes?.length > 0) {
-      this.notesOpen = true;
-      this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
-    }
   }
 
   private setupCheckExpiryMismatch(): void {
@@ -304,8 +288,8 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     const expectedExpiry = this.getExpectedExpiryDate();
 
     if (expectedExpiry && expiresDate) {
-      const diff = !expiresDate.isSame(expectedExpiry, 'day');
-      this.expiryMismatchWarning = diff;
+      const dateNotMatching = !expiresDate.isSame(expectedExpiry, 'day');
+      this.expiryMismatchWarning = dateNotMatching;
     } else {
       this.expiryMismatchWarning = false;
     }
@@ -420,9 +404,6 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     this.triggerValidatorForExpiresDate();
 
     if (!this.form.valid) {
-      if (this.form.controls.notes?.errors?.maxlength) {
-        this.notesOpen = true;
-      }
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
@@ -433,15 +414,15 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
     if (this.trainingRecordId) {
       submitTrainingRecord = this.workerService.updateTrainingRecord(
-        this.workplace.uid,
-        this.worker.uid,
+        this.establishmentUid,
+        this.workerUid,
         this.trainingRecordId,
         trainingRecord,
       );
     } else {
       submitTrainingRecord = this.workerService.createTrainingRecord(
-        this.workplace.uid,
-        this.worker.uid,
+        this.establishmentUid,
+        this.workerUid,
         trainingRecord,
       );
     }
@@ -519,16 +500,16 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     const trainingRecordId = this.trainingRecordId ?? trainingRecordResponse.uid;
 
     return this.certificateService.addCertificates(
-      this.workplace.uid,
-      this.worker.uid,
+      this.establishmentUid,
+      this.workerUid,
       trainingRecordId,
       this.filesToUpload,
     );
   }
 
   public removeSavedFile(fileIndexToRemove: number): void {
-    let tempTrainingCertificates = this.trainingCertificates.filter(
-      (certificate, index) => index !== fileIndexToRemove,
+    const tempTrainingCertificates = this.trainingCertificates.filter(
+      (_certificate, index) => index !== fileIndexToRemove,
     );
 
     this.filesToRemove.push(this.trainingCertificates[fileIndexToRemove]);
@@ -546,7 +527,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
     this.subscriptions.add(
       this.certificateService
-        .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
+        .downloadCertificates(this.establishmentUid, this.workerUid, this.trainingRecordId, filesToDownload)
         .subscribe(
           () => {
             this.certificateErrors = [];
@@ -564,7 +545,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   private deleteTrainingCertificate(files: TrainingCertificate[]) {
     this.subscriptions.add(
       this.certificateService
-        .deleteCertificates(this.establishmentUid, this.workerId, this.trainingRecordId, files)
+        .deleteCertificates(this.establishmentUid, this.workerUid, this.trainingRecordId, files)
         .subscribe(() => {}),
     );
   }
@@ -575,9 +556,9 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   public navigateToDeleteTrainingRecord(): void {
     this.router.navigate([
       '/workplace',
-      this.workplace.uid,
+      this.establishmentUid,
       'training-and-qualifications-record',
-      this.worker.uid,
+      this.workerUid,
       'training',
       this.trainingRecordId,
       'delete',
@@ -609,7 +590,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   }
 
   private returnToWorkerTrainingRecordPage(): Promise<boolean> {
-    const url = ['/workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'training'];
+    const url = ['/workplace', this.establishmentUid, 'training-and-qualifications-record', this.workerUid, 'training'];
     return this.router.navigate(url);
   }
 }
