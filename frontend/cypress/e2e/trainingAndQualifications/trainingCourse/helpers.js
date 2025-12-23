@@ -117,7 +117,7 @@ export const expectTrainingRecordPageToHaveCourseDetails = (details) => {
     cy.contains('Who delivered the training course?')
       .siblings('dd')
       .should('contain', deliveredBy ?? '-');
-    cy.contains('How is this training course delivered?')
+    cy.contains('How was the training course delivered?')
       .siblings('dd')
       .should('contain', howWasItDelivered ?? '-');
 
