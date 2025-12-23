@@ -8,7 +8,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingCourse } from '@core/model/training-course.model';
-import { TrainingCategory } from '@core/model/training.model';
+import { DeliveredBy, TrainingCategory } from '@core/model/training.model';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
 @Component({
@@ -31,6 +31,7 @@ export class ViewSelectedTrainingCourseDetailsComponent implements OnInit {
   public trainingCourse: TrainingCourse;
   public trainingCategory: TrainingCategory;
   public workplace: Establishment;
+  public externalProvider: string = DeliveredBy.ExternalProvider;
 
   constructor(
     private backLinkService: BackLinkService,

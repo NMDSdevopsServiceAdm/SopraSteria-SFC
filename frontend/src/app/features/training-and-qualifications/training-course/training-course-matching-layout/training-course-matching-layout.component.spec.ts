@@ -1,7 +1,8 @@
 import { of } from 'rxjs';
 
 import { Location } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -22,12 +23,10 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { SelectUploadFileComponent } from '../../../../shared/components/select-upload-file/select-upload-file.component';
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
-import { TrainingCourse } from '@core/model/training-course.model';
 
 describe('TrainingCourseMatchingLayoutComponent', () => {
-  const mockTrainingRecordData = {
+  const defaultTrainingRecord = {
     title: 'Training record title',
     accredited: 'Yes',
     deliveredBy: 'External provider',
@@ -71,40 +70,37 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
   ];
   const mockWorkerUid = 'worker-uid';
   const mockEstablishmentUid = 'establishment-uid';
-
-  const overridesForViewRecord = {
-    selectedTrainingCourse: null,
-    trainingRecord: { ...mockTrainingRecordData, isMatchedToTrainingCourse: true },
+  const mockTrainingRecordUid = 'mock-training-record-uid';
+  const mockWorker = {
+    uid: mockWorkerUid,
+    mainJob: {
+      jobId: '1',
+      title: 'Admin',
+    },
+    nameOrId: 'Someone',
   };
 
+  const overridesForViewingRecord = {
+    selectedTrainingCourse: null,
+    trainingRecord: { ...defaultTrainingRecord, isMatchedToTrainingCourse: true },
+  };
   const overridesForAddingNewRecord = { trainingRecordId: null, trainingRecord: null };
-  const mockTrainingRecordUid = 'mock-training-record-uid';
 
   async function setup(overrides: any = {}) {
-    const defaultTrainingRecord = { ...mockTrainingRecordData };
-
     const selectedTrainingCourse =
       overrides?.selectedTrainingCourse !== undefined
         ? overrides?.selectedTrainingCourse
         : defaultSelectedTrainingCourse;
+    const trainingCourses = overrides?.trainingCourses ?? defaultTrainingCourses;
+
     const trainingRecordId =
       overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : mockTrainingRecordUid;
-
-    const trainingCourses = overrides?.trainingCourses ?? defaultTrainingCourses;
     const mockTrainingRecord =
-      overrides?.trainingRecord !== undefined ? overrides.trainingRecord : defaultTrainingRecord;
-    const mockWorker = {
-      uid: mockWorkerUid,
-      mainJob: {
-        jobId: '1',
-        title: 'Admin',
-      },
-      nameOrId: 'Someone',
-    };
+      overrides?.trainingRecord !== undefined ? overrides.trainingRecord : { ...defaultTrainingRecord };
 
     const setupTools = await render(TrainingCourseMatchingLayoutComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
-      declarations: [CertificationsTableComponent, SelectUploadFileComponent],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
+      declarations: [CertificationsTableComponent],
       providers: [
         WindowRef,
         {
@@ -128,8 +124,6 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
             },
           },
         },
-        UntypedFormBuilder,
-        ErrorSummaryService,
         {
           provide: TrainingService,
           useFactory: MockTrainingServiceWithOverrides.factory({
@@ -153,6 +147,8 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
           provide: TrainingCertificateService,
           useClass: MockTrainingCertificateService,
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -209,7 +205,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
   describe('fillForm', () => {
     const mockTrainingRecordWithoutDates = {
-      ...mockTrainingRecordData,
+      ...defaultTrainingRecord,
       expires: null,
       completed: null,
     };
@@ -227,7 +223,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
       it('should auto-calc expiry date on page load if expiry date is missing', async () => {
         const mockRecord = {
-          ...mockTrainingRecordData,
+          ...defaultTrainingRecord,
           expires: null,
           completed: '2025-01-01',
         };
@@ -241,7 +237,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
       it('should auto-calc expiry date when user input a completed date', async () => {
         const mockRecord = {
-          ...mockTrainingRecordData,
+          ...defaultTrainingRecord,
           expires: null,
           completed: null,
         };
@@ -263,7 +259,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
       it('should not change the expiry date if it is already filled in', async () => {
         const mockRecord = {
-          ...mockTrainingRecordData,
+          ...defaultTrainingRecord,
           expires: '2027-07-31',
           completed: null,
         };
@@ -334,10 +330,10 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
     describe('when viewing an existing training record', () => {
       it('should show the expiryMismatchWarning if the dates does not match', async () => {
-        const validityMonths = mockTrainingRecordData.validityPeriodInMonth;
+        const validityMonths = defaultTrainingRecord.validityPeriodInMonth;
         const expectedWarningText = `This training is usually valid for ${validityMonths} months`;
 
-        const { queryByTestId, queryByText } = await setup(overridesForViewRecord);
+        const { queryByTestId, queryByText } = await setup(overridesForViewingRecord);
 
         expect(queryByTestId('expiresDate')).toBeTruthy();
         expect(queryByText(expectedWarningText)).toBeTruthy();
@@ -377,9 +373,16 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       expect(link).toBeNull();
     });
 
+    it('should not display the row of "Provider name" if "In-house staff" is chosen as course provider', async () => {
+      const mockTrainingCourse = { ...defaultSelectedTrainingCourse, deliveredBy: 'In-house staff' };
+      const { queryByText } = await setup({ selectedTrainingCourse: mockTrainingCourse });
+
+      expect(queryByText('Training provider name')).toBeFalsy();
+    });
+
     describe('when applying a course to exiting record', () => {
       it('the "Select a different training course" link should point to the include-training-course-details page', async () => {
-        const { getByTestId, routerSpy, route } = await setup();
+        const { component, getByTestId, routerSpy, route } = await setup();
 
         const span = getByTestId('includeTraining');
         const link = span.closest('a');
@@ -437,20 +440,20 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
     describe('when viewing an existing training record', () => {
       it('should show the data of training record instead of training course', async () => {
-        const { getByTestId } = await setup(overridesForViewRecord);
+        const { getByTestId } = await setup(overridesForViewingRecord);
 
         const trainingRecordDetails = getByTestId('trainingRecordDetails');
 
-        expect(within(trainingRecordDetails).getByText(mockTrainingRecordData.title)).toBeTruthy();
-        expect(within(trainingRecordDetails).getByText(mockTrainingRecordData.trainingCategory.category)).toBeTruthy();
-        expect(within(trainingRecordDetails).getByText(mockTrainingRecordData.accredited)).toBeTruthy();
-        expect(within(trainingRecordDetails).getByText(mockTrainingRecordData.deliveredBy)).toBeTruthy();
-        const validityMonths = `${mockTrainingRecordData.validityPeriodInMonth} months`;
+        expect(within(trainingRecordDetails).getByText(defaultTrainingRecord.title)).toBeTruthy();
+        expect(within(trainingRecordDetails).getByText(defaultTrainingRecord.trainingCategory.category)).toBeTruthy();
+        expect(within(trainingRecordDetails).getByText(defaultTrainingRecord.accredited)).toBeTruthy();
+        expect(within(trainingRecordDetails).getByText(defaultTrainingRecord.deliveredBy)).toBeTruthy();
+        const validityMonths = `${defaultTrainingRecord.validityPeriodInMonth} months`;
         expect(within(trainingRecordDetails).getByText(validityMonths)).toBeTruthy();
       });
 
       it('the "Select a different training course" link should point to the include-training-course-details page', async () => {
-        const { getByTestId, routerSpy, route } = await setup(overridesForViewRecord);
+        const { getByTestId, routerSpy, route } = await setup(overridesForViewingRecord);
 
         const span = getByTestId('includeTraining');
         const link = span.closest('a');
@@ -484,9 +487,9 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
           doesNotExpire: selectedCourse.doesNotExpire,
           validityPeriodInMonth: selectedCourse.validityPeriodInMonth,
 
-          completed: mockTrainingRecordData.completed,
-          expires: mockTrainingRecordData.expires,
-          notes: mockTrainingRecordData.notes,
+          completed: defaultTrainingRecord.completed,
+          expires: defaultTrainingRecord.expires,
+          notes: defaultTrainingRecord.notes,
         });
       });
 
@@ -640,7 +643,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
     describe('when viewing a training record', () => {
       it('should call updateTrainingRecord when form is valid', async () => {
-        const { getByRole, updateSpy } = await setup(overridesForViewRecord);
+        const { getByRole, updateSpy } = await setup(overridesForViewingRecord);
 
         const notes = getByRole('textbox', { name: 'Add a note' });
 
@@ -653,16 +656,16 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
           mockWorkerUid,
           mockTrainingRecordUid,
           jasmine.objectContaining({
-            completed: mockTrainingRecordData.completed,
-            expires: mockTrainingRecordData.expires,
-            notes: `${mockTrainingRecordData.notes} some notes`,
+            completed: defaultTrainingRecord.completed,
+            expires: defaultTrainingRecord.expires,
+            notes: `${defaultTrainingRecord.notes} some notes`,
           }),
         );
       });
 
       it('should show an error message when the input are not valid', async () => {
         const { fixture, getByRole, updateSpy, getByText, getByTestId, getAllByText } =
-          await setup(overridesForViewRecord);
+          await setup(overridesForViewingRecord);
 
         const completedDate = within(getByTestId('completedDate'));
         const expiryDate = within(getByTestId('expiresDate'));
@@ -688,7 +691,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       });
 
       it("should navigate to worker's training and qualifications page and show banner after successful submit", async () => {
-        const { fixture, routerSpy, alertServiceSpy, getByRole } = await setup(overridesForViewRecord);
+        const { fixture, routerSpy, alertServiceSpy, getByRole } = await setup(overridesForViewingRecord);
 
         userEvent.click(getByRole('button', { name: 'Save and return' }));
         await fixture.whenStable();
@@ -780,7 +783,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
       describe('when viewing an existing training record', () => {
         it('should navigate to delete record page when delete link is clicked', async () => {
-          const { getByText, routerSpy } = await setup(overridesForViewRecord);
+          const { getByText, routerSpy } = await setup(overridesForViewingRecord);
 
           const deleteLink = getByText('Delete this training record');
           userEvent.click(deleteLink);
