@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { DateUtil } from './date-util';
 import { FormatDate } from './date-util';
 
-fdescribe('DateUtil', () => {
+describe('DateUtil', () => {
   describe('getDateForOneYearAgo', () => {
     beforeEach(() => {
       jasmine.clock().install();
