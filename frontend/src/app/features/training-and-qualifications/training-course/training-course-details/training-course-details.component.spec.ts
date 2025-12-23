@@ -181,27 +181,26 @@ describe('TrainingCourseDetailsComponent', () => {
   describe('prefill', () => {
     const mockTrainingCourse = {
       ...trainingCourseBuilder(),
-      trainingProvider: { id: 1, name: 'Care skills academy', isOther: false },
       trainingProviderId: 1,
-      trainingProviderName: 'Care skills academy',
       otherTrainingProviderName: null,
       howWasItDelivered: 'E-learning',
       doesNotExpire: false,
       validityPeriodInMonth: 24,
     };
+    const expectedTrainingProviderName = mockTrainingProviders[0].name;
 
     describe('when adding new training course', () => {
       // for the case when user return from select category page to this page
       it('should prefill the form with data from TrainingCourseService.newTrainingCourseToBeAdded', async () => {
         const { getInputByRole, getInputByLabelText } = await setup({
           journeyType: 'Add',
-          newTrainingCourseToBeAdded: mockTrainingCourse,
+          newTrainingCourseToBeAdded: { ...mockTrainingCourse },
         });
 
         expect(getInputByLabelText('Training course name').value).toEqual(mockTrainingCourse.name);
         expect(getInputByRole('radio', { name: mockTrainingCourse.accredited }).checked).toBeTrue();
         expect(getInputByRole('radio', { name: mockTrainingCourse.deliveredBy }).checked).toBeTrue();
-        expect(getInputByLabelText('Provider name').value).toEqual(mockTrainingCourse.trainingProvider.name);
+        expect(getInputByLabelText('Provider name').value).toEqual(expectedTrainingProviderName);
         expect(getInputByRole('radio', { name: 'E-learning' }).checked).toBeTrue();
         expect(getInputByLabelText(/How many months is/).value).toEqual('24');
         expect(getInputByRole('checkbox', { name: 'This training does not expire' }).checked).toBeFalse();
@@ -212,13 +211,13 @@ describe('TrainingCourseDetailsComponent', () => {
       it('should prefill the form with the data of the selected training course', async () => {
         const { getInputByRole, getInputByLabelText } = await setup({
           journeyType: 'Edit',
-          selectedTrainingCourse: mockTrainingCourse,
+          selectedTrainingCourse: { ...mockTrainingCourse },
         });
 
         expect(getInputByLabelText('Training course name').value).toEqual(mockTrainingCourse.name);
         expect(getInputByRole('radio', { name: mockTrainingCourse.accredited }).checked).toBeTrue();
         expect(getInputByRole('radio', { name: mockTrainingCourse.deliveredBy }).checked).toBeTrue();
-        expect(getInputByLabelText('Provider name').value).toEqual(mockTrainingCourse.trainingProvider.name);
+        expect(getInputByLabelText('Provider name').value).toEqual(expectedTrainingProviderName);
         expect(getInputByRole('radio', { name: mockTrainingCourse.howWasItDelivered }).checked).toBeTrue();
         expect(getInputByLabelText(/How many months is/).value).toEqual('24');
         expect(getInputByRole('checkbox', { name: 'This training does not expire' }).checked).toBeFalse();
@@ -229,7 +228,7 @@ describe('TrainingCourseDetailsComponent', () => {
       name: 'Fire safety course',
       accredited: 'Yes',
       deliveredBy: 'External provider',
-      trainingProvider: { id: 63, name: 'Others', isOther: true },
+      trainingProviderId: 63,
       otherTrainingProviderName: 'Some other training',
       howWasItDelivered: 'Face to face',
       doesNotExpire: true,

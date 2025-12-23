@@ -161,13 +161,27 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (trainingCourse?.trainingProvider) {
-      const trainingProvider = trainingCourse.trainingProvider;
-      const providerName = trainingProvider.isOther ? trainingCourse.otherTrainingProviderName : trainingProvider.name;
-      trainingCourse.externalProviderName = providerName;
-    }
+    const externalProviderName = this.getExternalProviderName(trainingCourse);
 
-    this.form.patchValue(trainingCourse);
+    this.form.patchValue({ ...trainingCourse, externalProviderName });
+  }
+
+  private prefillFromSelectedCourse() {
+    const trainingCourse = this.selectedTrainingCourse;
+    const externalProviderName = this.getExternalProviderName(trainingCourse);
+
+    this.form.patchValue({ ...trainingCourse, externalProviderName });
+  }
+
+  private getExternalProviderName(trainingCourse: Partial<TrainingCourse>): string {
+    const trainingProvider = this.trainingProviders.find(
+      (provider) => provider.id === trainingCourse?.trainingProviderId,
+    );
+    if (trainingProvider) {
+      const providerName = trainingProvider.isOther ? trainingCourse.otherTrainingProviderName : trainingProvider.name;
+      return providerName;
+    }
+    return null;
   }
 
   private loadSelectedTrainingCourse() {
@@ -203,10 +217,6 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   private storeTempDataInLocalService() {
     this.trainingCourseService.trainingCourseToBeUpdated = this.selectedTrainingCourse;
-  }
-
-  private prefillFromSelectedCourse() {
-    this.form.patchValue(this.selectedTrainingCourse);
   }
 
   public handleValidityPeriodChange(newValue: string | number): void {
