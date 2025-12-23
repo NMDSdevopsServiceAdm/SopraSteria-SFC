@@ -32,8 +32,8 @@ describe('Sub training and quals page as edit user', () => {
     cy.contains('button', 'Add and manage training');
 
     cy.get('a').contains('Add multiple training records').should('not.be.visible');
-    cy.get('a').contains('Add and manage training courses').should('not.be.visible');
-    cy.get('a').contains('mandatory training category').should('not.be.visible');
+    cy.get('a').contains('Add training courses').should('not.be.visible');
+    cy.get('a').contains('Manage mandatory training').should('not.be.visible');
     cy.get('a').contains('Manage expiry alerts').should('not.be.visible');
 
     cy.contains('Download training report');
@@ -48,15 +48,15 @@ describe('Sub training and quals page as edit user', () => {
       cy.get('span').should('contain', 'Add multiple training records');
     });
 
-    it('should show the "Add and manage training courses" item', () => {
+    it('should show the "Add training courses" item', () => {
       cy.contains('button', 'Add and manage training').click();
-      cy.contains('Add and manage training courses').click();
+      cy.contains('Add training courses').click();
       cy.get('h1').should('contain', 'Add and manage training courses');
     });
 
-    it('should show the "Add a mandatory training category" item with the correct link', () => {
+    it('should show the "Manage mandatory training" item with the correct link', () => {
       cy.contains('button', 'Add and manage training').click();
-      cy.contains('Add a mandatory training category').click();
+      cy.contains('Manage mandatory training').click();
       cy.url().should('include', 'add-and-manage-mandatory-training');
       cy.get('span').should('contain', 'Add a mandatory training category');
     });

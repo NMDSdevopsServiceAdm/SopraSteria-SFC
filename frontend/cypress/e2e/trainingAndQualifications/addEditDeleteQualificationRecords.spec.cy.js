@@ -15,12 +15,12 @@ describe('qualification record', () => {
     cy.deleteTestWorkerFromDb(workerName2);
 
     cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: workerName1 });
+    cy.reload();
   });
 
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
-    cy.reload();
   });
 
   afterEach(() => {
