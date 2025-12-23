@@ -1,7 +1,6 @@
 import { of } from 'rxjs';
 
 import { Location } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -24,9 +23,10 @@ import userEvent from '@testing-library/user-event';
 
 import { SelectUploadFileComponent } from '../../../../shared/components/select-upload-file/select-upload-file.component';
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
-import { TrainingCourse } from '@core/model/training-course.model';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-describe('TrainingCourseMatchingLayoutComponent', () => {
+fdescribe('TrainingCourseMatchingLayoutComponent', () => {
   const mockTrainingRecordData = {
     title: 'Training record title',
     accredited: 'Yes',
@@ -76,7 +76,6 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     selectedTrainingCourse: null,
     trainingRecord: { ...mockTrainingRecordData, isMatchedToTrainingCourse: true },
   };
-
   const overridesForAddingNewRecord = { trainingRecordId: null, trainingRecord: null };
   const mockTrainingRecordUid = 'mock-training-record-uid';
 
@@ -103,7 +102,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     };
 
     const setupTools = await render(TrainingCourseMatchingLayoutComponent, {
-      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       declarations: [CertificationsTableComponent, SelectUploadFileComponent],
       providers: [
         WindowRef,
@@ -153,6 +152,8 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
           provide: TrainingCertificateService,
           useClass: MockTrainingCertificateService,
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -375,6 +376,13 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
       const link = queryByTestId('includeTraining');
       expect(link).toBeNull();
+    });
+
+    it('should not display the row of "Provider name" if "In-house staff" is chosen as course provider', async () => {
+      const mockTrainingCourse = { ...defaultSelectedTrainingCourse, deliveredBy: 'In-house staff' };
+      const { queryByText } = await setup({ selectedTrainingCourse: mockTrainingCourse });
+
+      expect(queryByText('Training provider name')).toBeFalsy();
     });
 
     describe('when applying a course to exiting record', () => {

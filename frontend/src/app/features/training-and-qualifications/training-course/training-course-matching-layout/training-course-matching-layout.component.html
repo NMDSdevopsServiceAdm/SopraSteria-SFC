@@ -48,12 +48,14 @@
                   {{ trainingToDisplay?.deliveredBy ?? '-' }}
                 </dd>
               </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">Training provider name</dt>
-                <dd class="govuk-summary-list__value">
-                  {{ trainingToDisplay?.externalProviderName ?? '-' }}
-                </dd>
-              </div>
+              @if (trainingToDisplay?.deliveredBy === 'External provider') {
+                <div class="govuk-summary-list__row">
+                  <dt class="govuk-summary-list__key">Training provider name</dt>
+                  <dd class="govuk-summary-list__value">
+                    {{ trainingToDisplay?.externalProviderName ?? '-' }}
+                  </dd>
+                </div>
+              }
               <div class="govuk-summary-list__row">
                 <dt class="govuk-summary-list__key govuk__nowrap">How is this training course delivered?</dt>
                 <dd class="govuk-summary-list__value">
