@@ -8,7 +8,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 
-fdescribe('trainingCourseResolver', () => {
+describe('trainingCourseResolver', () => {
   const mockEstablishmentUid = 'mock-uid';
 
   const mockParent = {
