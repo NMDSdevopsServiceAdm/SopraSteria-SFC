@@ -5,16 +5,17 @@ import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-new-dashboard-header',
-    templateUrl: './dashboard-header.component.html',
-    styleUrls: ['./dashboard-header.component.scss'],
-    standalone: false
+  selector: 'app-new-dashboard-header',
+  templateUrl: './dashboard-header.component.html',
+  styleUrls: ['./dashboard-header.component.scss'],
+  standalone: false,
 })
 export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   private subscriptions: Subscription = new Subscription();
@@ -43,6 +44,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   public isParent: boolean;
   public isParentSubsidiaryView: boolean;
   public user: UserDetails;
+  public isAdmin: boolean;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -50,7 +52,10 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     private userService: UserService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private establishmentService: EstablishmentService,
-  ) {}
+    private switchWorkplaceService: SwitchWorkplaceService,
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  }
 
   ngOnInit(): void {
     this.isParent = this.workplace.isParent;
@@ -64,6 +69,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.getPermissions();
 
     this.getHeader();
+    this.isAdmin = isAdminRole(this.user?.role);
   }
 
   ngOnChanges(): void {
@@ -71,6 +77,11 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.setSubsidiaryCount();
     this.getPermissions();
     this.getHeader();
+  }
+
+  public navigateToParentWorkplace(id: string, username: string, nmdsId: string, event: Event): void {
+    event.preventDefault();
+    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
   }
 
   public setIsParentSubsidiaryView(): void {
