@@ -101,12 +101,19 @@ export class SelectTrainingCourseForWorkerTraining
   }
 
   protected clearSelectedTrainingCourseWhenClickedAway() {
-    const parentPath = this.worker.uid;
+    const thisPageUrl = this.router.url;
+    const nextPageWithTrainingCourse = this.routeWithTrainingCourse.join('/');
+    const hasClickedAway = (event: NavigationEnd) => {
+      const isThisPage = event.urlAfterRedirects?.includes(thisPageUrl);
+      const isConfirmationPage = event.urlAfterRedirects?.includes(nextPageWithTrainingCourse);
+
+      return !isThisPage && !isConfirmationPage;
+    };
 
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
-        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes(parentPath)),
+        filter(hasClickedAway),
         take(1),
       )
       .subscribe(() => {
