@@ -2,24 +2,29 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">What's new in ASC-WDS?</h1>
     <p class="govuk-!-padding-top-1">
-      <span class="govuk-!-font-weight-bold">We've added NEW functionality</span> that lets you create a list of training courses that people in your workplace do.
+      <span class="govuk-!-font-weight-bold">We've added NEW functionality</span> that lets you create a list of
+      training courses that people in your workplace take.
     </p>
     <p class="govuk-!-padding-top-1">
-      Then, when you add a training record, you can select a course and the details of that course will be automatically populated for you (for example, the training course name and expiry date).
+      Then, when you add a training record, you can select a course and the details of that course will automatically
+      populate for you (for example, the training course name and expiry date).
     </p>
     <p class="govuk-!-padding-top-1">This will save you time and make your training records more accurate.</p>
 
     <p class="govuk-body">To add a training course to the list:</p>
     <ul class="govuk-list govuk-list--number">
-      <li>Go to
-        @if (canEditWorker && isDataOwner){
-          <a [routerLink]="['/dashboard']" [fragment]="'training-and-qualifications'" href="#" class="govuk-link govuk-link--no-visited-state">training and qualifications</a>.
-        } @else {
-          training and qualifications.
-        }</li>
+      <li>
+        Go to @if (canEditWorker && isDataOwner){
+        <a
+          [routerLink]="['/dashboard']"
+          [fragment]="'training-and-qualifications'"
+          href="#"
+          class="govuk-link govuk-link--no-visited-state"
+          >training and qualifications</a
+        >. } @else { training and qualifications. }
+      </li>
       <li>Click the 'Add and manage training' button.</li>
-      <li>Select the 'Add and manage training courses' option.</li>
-      <li>Click the 'Add a training course' button and add the course details.</li>
+      <li>Select the 'Add training courses' option.</li>
     </ul>
 
     <a [routerLink]="['/dashboard']" [fragment]="'home'" class="govuk-button govuk-!-margin-top-5">Close this page</a>
