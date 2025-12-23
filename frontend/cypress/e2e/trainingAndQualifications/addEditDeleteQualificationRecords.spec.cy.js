@@ -7,6 +7,7 @@ describe('qualification record', () => {
   const workerName2 = 'Test worker 2';
 
   before(() => {
+    cy.revertUserAttributes(StandAloneEstablishment.editUserLoginName);
     cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName1 });
     cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName2 });
 
