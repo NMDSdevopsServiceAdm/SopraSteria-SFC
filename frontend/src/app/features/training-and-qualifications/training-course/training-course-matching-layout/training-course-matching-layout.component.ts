@@ -14,6 +14,7 @@ import {
   TrainingCertificate,
   TrainingRecord as LegacyIncorrectTrainingRecordType,
   TrainingRecordRequest,
+  DeliveredBy,
 } from '@core/model/training.model';
 import { CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
@@ -25,9 +26,10 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { DateValidator } from '@shared/validators/date.validator';
+import { showCorrectTrainingValidity } from '@shared/pipes/show-training-validity.pipe';
+import { DateUtil } from '@core/utils/date-util';
 
 type JourneyType = 'ApplyCourseToExistingRecord' | 'AddNewTrainingRecordWithCourse' | 'ViewExistingRecord';
-type FormGroupDateValues = { day: number; month: number; year: number };
 type TrainingRecord = LegacyIncorrectTrainingRecordType & { completed: string; expires: string; accredited?: string };
 
 @Component({
@@ -47,6 +49,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   public subscriptions: Subscription = new Subscription();
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
+  public summaryRowItems: { key: string; value: string }[];
   public expiryMismatchWarning: boolean;
   public certificateErrors: string[] | null;
   private _filesToUpload: File[];
@@ -84,6 +87,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     this.determineJourneyType();
     this.setupForm();
     this.loadTrainingToDisplay();
+    this.buildSummaryRowItems();
     this.loadDataAccordingToJourneyType();
 
     this.setBackLink();
@@ -165,6 +169,31 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     }
   }
 
+  private buildSummaryRowItems(): void {
+    const training = this.trainingToDisplay;
+
+    const providerNameRow =
+      training?.deliveredBy === DeliveredBy.ExternalProvider
+        ? [{ key: 'Training provider name', value: training.externalProviderName ?? '-' }]
+        : [];
+
+    this.summaryRowItems = [
+      { key: 'Training course name', value: training?.name ?? '-' },
+      { key: 'Training category', value: training?.trainingCategoryName },
+      { key: 'Is the training course accredited?', value: training?.accredited ?? '-' },
+      { key: 'Who delivered the training course?', value: training?.deliveredBy ?? '-' },
+      ...providerNameRow,
+      {
+        key: 'How was the training course delivered?',
+        value: training?.howWasItDelivered ?? '-',
+      },
+      {
+        key: 'How long is the training valid for?',
+        value: showCorrectTrainingValidity(training),
+      },
+    ];
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
       completed: this.formBuilder.group(
@@ -197,36 +226,8 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       ]);
   }
 
-  private toDayjs(input: string | FormGroupDateValues): dayjs.Dayjs {
-    if (!input) return null;
-
-    // Case 1: DB string "2025-01-20"
-    if (typeof input === 'string') {
-      return dayjs(input, DATE_PARSE_FORMAT);
-    }
-
-    // Case 2: Form group object { day, month, year }
-    const { day, month, year } = input;
-    if (!day || !month || !year || year < 1000) return null;
-
-    const dateString = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-    const isValid = DateValidator.validate(dateString, DATE_PARSE_FORMAT);
-
-    return isValid ? dayjs(dateString, DATE_PARSE_FORMAT) : null;
-  }
-
-  private toFormDate(date: dayjs.Dayjs | null): FormGroupDateValues | null {
-    return date
-      ? {
-          day: date.date(),
-          month: date.month() + 1,
-          year: date.year(),
-        }
-      : null;
-  }
-
   private dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs | null {
-    return this.toDayjs(group.value);
+    return DateUtil.toDayjs(group.value);
   }
 
   private fillForm(): void {
@@ -235,8 +236,8 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     this.trainingCertificates = trainingCertificates;
 
     this.form.patchValue({
-      completed: this.toFormDate(this.toDayjs(completed)),
-      expires: this.toFormDate(this.toDayjs(expires)),
+      completed: DateUtil.toFormDate(completed),
+      expires: DateUtil.toFormDate(expires),
       notes,
     });
   }
@@ -254,7 +255,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   }
 
   public autoFillExpiry(): void {
-    const completed = this.toDayjs(this.form.get('completed')?.value);
+    const completed = DateUtil.toDayjs(this.form.get('completed')?.value);
     const validity = this.trainingToDisplay?.validityPeriodInMonth;
 
     const expiryDateIsEmpty = Object.values(this.form.get('expires').value).every((input) => input == null);
@@ -284,7 +285,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       return;
     }
 
-    const expiresDate = this.toDayjs(expires);
+    const expiresDate = DateUtil.toDayjs(expires);
     const expectedExpiry = this.getExpectedExpiryDate();
 
     if (expectedExpiry && expiresDate) {
@@ -302,7 +303,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       return null;
     }
 
-    const completedDate = this.toDayjs(completed);
+    const completedDate = DateUtil.toDayjs(completed);
     return completedDate?.add(validityPeriodInMonth, 'month');
   }
 

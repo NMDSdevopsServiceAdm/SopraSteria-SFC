@@ -1,4 +1,6 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+@if (submitted && form.invalid) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
 <form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -6,7 +8,7 @@
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds-from-desktop">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
-              <span *ngIf="worker" class="govuk-caption-l" data-testid="workerName">{{ worker.nameOrId }}</span>
+              <span class="govuk-caption-l" data-testid="workerName">{{ worker.nameOrId }}</span>
               <h1 class="govuk-fieldset__heading">{{ headingText }}</h1>
             </legend>
             <dl
@@ -14,61 +16,30 @@
               style="width: 150%"
               data-testid="trainingRecordDetails"
             >
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">Training course name</dt>
-                <dd class="govuk-summary-list__value">
-                  {{ trainingToDisplay?.name }}
-                  <a
-                    *ngIf="trainingCourses?.length > 1"
-                    class="govuk-button govuk-!-padding-left-0 govuk-!-padding-bottom-0 govuk-button--link govuk__flex govuk-link--no-visited-state"
-                    draggable="false"
-                    href="#"
-                    (click)="returnToSelectTrainingCoursePage($event)"
-                  >
-                    <img src="/assets/images/Addtraining.svg" alt="" />
-                    <span class="govuk__nowrap" data-testid="includeTraining">Select a different training course </span>
-                  </a>
-                </dd>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">Training category</dt>
-                <dd class="govuk-summary-list__value">
-                  {{ trainingToDisplay?.trainingCategoryName ?? '-' }}
-                </dd>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk__nowrap">Is the training course accredited?</dt>
-                <dd class="govuk-summary-list__value">
-                  {{ trainingToDisplay?.accredited ?? '-' }}
-                </dd>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk__nowrap">Who delivered the training course?</dt>
-                <dd class="govuk-summary-list__value">
-                  {{ trainingToDisplay?.deliveredBy ?? '-' }}
-                </dd>
-              </div>
-              @if (trainingToDisplay?.deliveredBy === 'External provider') {
+              @for (row of this.summaryRowItems; track row.key) {
                 <div class="govuk-summary-list__row">
-                  <dt class="govuk-summary-list__key">Training provider name</dt>
+                  <dt class="govuk-summary-list__key">{{ row.key }}</dt>
                   <dd class="govuk-summary-list__value">
-                    {{ trainingToDisplay?.externalProviderName ?? '-' }}
+                    {{ row.value }}
+                    @if (row.key === 'Training course name' && trainingCourses?.length > 1) {
+                      <a
+                        *ngIf="trainingCourses?.length > 1"
+                        class="govuk-button govuk-!-padding-left-0 govuk-!-padding-bottom-0 govuk-button--link govuk__flex govuk-link--no-visited-state"
+                        draggable="false"
+                        href="#"
+                        (click)="returnToSelectTrainingCoursePage($event)"
+                      >
+                        <img src="/assets/images/Addtraining.svg" alt="" />
+                        <span class="govuk__nowrap" data-testid="includeTraining"
+                          >Select a different training course
+                        </span>
+                      </a>
+                    }
                   </dd>
                 </div>
               }
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk__nowrap">How is this training course delivered?</dt>
-                <dd class="govuk-summary-list__value">
-                  {{ trainingToDisplay?.howWasItDelivered ?? '-' }}
-                </dd>
-              </div>
-              <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key govuk__nowrap">How long is the training valid for?</dt>
-                <dd class="govuk-summary-list__value">
-                  {{ trainingToDisplay | showTrainingValidity }}
-                </dd>
-              </div>
             </dl>
+
             <div class="govuk-form-group govuk-!-margin-bottom-4">
               <div class="govuk-grid-row">
                 <div class="govuk-grid-column-one-half">
@@ -85,13 +56,13 @@
                         Training completion date
                       </legend>
                       <legend id="completed-hint" class="govuk-hint">For example, 31 3 2024</legend>
-                      <span
-                        *ngIf="submitted && form.get('completed').invalid"
-                        id="completed-error"
-                        class="govuk-error-message"
-                      >
-                        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('completed') }}
-                      </span>
+
+                      @if (submitted && form.get('completed').invalid) {
+                        <span id="completed-error" class="govuk-error-message">
+                          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('completed') }}
+                        </span>
+                      }
+
                       <app-date-picker
                         [formGroup]="form"
                         [formGroupName]="'completed'"
@@ -161,15 +132,16 @@
               [certificateErrors]="certificateErrors"
             />
             <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4" />
-            <app-certifications-table
-              *ngIf="trainingCertificates?.length > 0 || filesToUpload?.length > 0"
-              data-testid="trainingCertificatesTable"
-              [certificates]="trainingCertificates"
-              [filesToUpload]="filesToUpload"
-              (removeFileToUpload)="removeFileToUpload($event)"
-              (removeSavedFile)="removeSavedFile($event)"
-              (downloadCertificate)="downloadCertificates($event)"
-            ></app-certifications-table>
+            @if (trainingCertificates?.length > 0 || filesToUpload?.length > 0) {
+              <app-certifications-table
+                data-testid="trainingCertificatesTable"
+                [certificates]="trainingCertificates"
+                [filesToUpload]="filesToUpload"
+                (removeFileToUpload)="removeFileToUpload($event)"
+                (removeSavedFile)="removeSavedFile($event)"
+                (downloadCertificate)="downloadCertificates($event)"
+              ></app-certifications-table>
+            }
           </div>
         </div>
         <div class="govuk-grid-row">
