@@ -1,6 +1,5 @@
 import { getTestBed } from '@angular/core/testing';
 import { render } from '@testing-library/angular';
-import { HttpClientTestingModule} from '@angular/common/http/testing';
 import { ViewSelectedTrainingCourseDetailsComponent } from './view-selected-training-course-details.component';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingService } from '@core/services/training.service';
@@ -11,13 +10,15 @@ import { CommonModule } from '@angular/common';
 import userEvent from '@testing-library/user-event';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('ViewSelectedTrainingCourseDetailsComponent', () => {
   const workplace = {
     uid: '1',
-  }
+  };
 
-  let selectedTrainingCourse = {
+  const selectedTrainingCourse = {
     id: 2,
     uid: 'uid-2',
     trainingCategoryId: 2,
@@ -29,16 +30,19 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
     otherTrainingProviderName: 'Care skills academy',
     howWasItDelivered: HowWasItDelivered.ELearning,
     validityPeriodInMonth: 12,
-  }
+  };
 
   let courseCompletionDate = null;
 
   let previousNotes = null;
-  const notes = "Hello";
+  const notes = 'Hello';
 
-  async function setup() {
+  async function setup(overrides: any = {}) {
+    const mockSelectedTrainingCourse =
+      overrides?.selectedTrainingCourse === undefined ? selectedTrainingCourse : overrides?.selectedTrainingCourse;
+
     const setupTools = await render(ViewSelectedTrainingCourseDetailsComponent, {
-      imports: [SharedModule, ReactiveFormsModule, FormsModule, CommonModule, HttpClientTestingModule, RouterModule],
+      imports: [SharedModule, ReactiveFormsModule, FormsModule, CommonModule, RouterModule],
       providers: [
         BackLinkService,
         {
@@ -55,7 +59,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
           provide: TrainingService,
           useValue: {
             getSelectedTrainingCourse() {
-              return selectedTrainingCourse;
+              return mockSelectedTrainingCourse;
             },
             getCourseCompletionDate() {
               return courseCompletionDate;
@@ -68,9 +72,11 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
             },
             setNotes() {
               return notes;
-            }
+            },
           },
         },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
@@ -96,7 +102,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
       routerSpy,
       showBackLinkSpy,
       workplace,
-    }
+    };
   }
 
   it('should create', async () => {
@@ -155,11 +161,11 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
           const link = getByTestId('different-training-course-link');
 
           expect(link.getAttribute('href')).toEqual(
-            `/workplace/${component.workplace.uid}/add-multiple-training/select-training-course`
+            `/workplace/${component.workplace.uid}/add-multiple-training/select-training-course`,
           );
         });
-      })
-    })
+      });
+    });
 
     describe('Training category', () => {
       it('should show the Training category key', async () => {
@@ -173,7 +179,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
         const key = getByTestId('training-category-value');
         expect(key.textContent.trim()).toEqual('Safeguarding adults');
       });
-    })
+    });
 
     describe('Accreditation', () => {
       it('should show the Accreditation key', async () => {
@@ -187,7 +193,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
         const key = getByTestId('accreditation-value');
         expect(key.textContent.trim()).toEqual('-');
       });
-    })
+    });
 
     describe('Delivered by', () => {
       it('should show the Delivered by key', async () => {
@@ -201,7 +207,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
         const key = getByTestId('delivered-by-value');
         expect(key.textContent.trim()).toEqual('External provider');
       });
-    })
+    });
 
     describe('Training provider name', () => {
       it('should show the Training provider name key', async () => {
@@ -215,9 +221,19 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
         const key = getByTestId('training-provider-name-value');
         expect(key.textContent.trim()).toEqual('Care skills academy');
       });
-    })
 
-    describe('Course delivery method' , () => {
+      it('should not show the training provider row if deliveredBy is "In-house staff"', async () => {
+        const courseWithInHouseStaff = { ...selectedTrainingCourse, deliveredBy: DeliveredBy.InHouseStaff };
+        const { queryByTestId } = await setup({ selectedTrainingCourse: courseWithInHouseStaff });
+        const key = queryByTestId('training-provider-name-key');
+        const value = queryByTestId('training-provider-name-value');
+
+        expect(key).toBeFalsy();
+        expect(value).toBeFalsy();
+      });
+    });
+
+    describe('Course delivery method', () => {
       it('should show the How was the training course delivered key', async () => {
         const { getByTestId } = await setup();
         const key = getByTestId('course-delivery-method-key');
@@ -229,9 +245,9 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
         const key = getByTestId('course-delivery-method-value');
         expect(key.textContent.trim()).toEqual('E-learning');
       });
-    })
+    });
 
-    describe('Training validity period' , () => {
+    describe('Training validity period', () => {
       it('should show the How long is the training valid for key', async () => {
         const { getByTestId } = await setup();
         const key = getByTestId('training-validity-period-key');
@@ -243,10 +259,10 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
         const key = getByTestId('training-validity-period-value');
         expect(key.textContent.trim()).toEqual('12 months');
       });
-    })
-  })
+    });
+  });
 
-  describe('Course completion date' , () => {
+  describe('Course completion date', () => {
     it('should show the heading', async () => {
       const { getByTestId } = await setup();
       const key = getByTestId('course-completion-date-heading');
@@ -269,20 +285,20 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
         const errorMessages = queryAllByText('Course completion date must be a valid date');
         expect(errorMessages.length).toEqual(0);
-      })
-    })
+      });
+    });
 
     describe('Population of fields', async () => {
       describe('When a date has previously been entered', () => {
         it('should populate the fields ', async () => {
-          courseCompletionDate = new Date('2025-10-21')
+          courseCompletionDate = new Date('2025-10-21');
           const { component } = await setup();
 
           expect(component.form.value.courseCompletionDate.day).toEqual(21);
           expect(component.form.value.courseCompletionDate.month).toEqual(10);
           expect(component.form.value.courseCompletionDate.year).toEqual(2025);
         });
-      })
+      });
 
       describe('When a date has not previously been entered', () => {
         it('should not populate the fields ', async () => {
@@ -293,19 +309,19 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
           expect(component.form.value.courseCompletionDate.month).toEqual(null);
           expect(component.form.value.courseCompletionDate.year).toEqual(null);
         });
-      })
-    })
-  })
+      });
+    });
+  });
 
   describe('Notes', () => {
     describe('When notes have been entered previously', () => {
       it('should populate the field', async () => {
-        previousNotes = 'Hello, World!'
+        previousNotes = 'Hello, World!';
         const { component } = await setup();
 
         expect(component.form.value.notes).toEqual(previousNotes);
       });
-    })
+    });
 
     describe('When notes have not been entered previously', () => {
       it('should not populate the field', async () => {
@@ -313,15 +329,15 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
         expect(component.form.value.notes).toEqual(previousNotes);
       });
-    })
-  })
+    });
+  });
 
   describe('Continue button', () => {
     it('should be displayed correctly', async () => {
       const { getByRole } = await setup();
       const button = getByRole('button', { name: 'Continue' });
       expect(button).toBeTruthy();
-    })
+    });
 
     describe('When there are no validation errors', () => {
       describe('When a course completion date is entered', () => {
@@ -348,7 +364,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
           expect(setCourseCompletionDateSpy).toHaveBeenCalledWith(date);
         });
-      })
+      });
 
       describe('When a course completion date is not entered', () => {
         it('should call the training service', async () => {
@@ -360,12 +376,12 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
           expect(setCourseCompletionDateSpy).toHaveBeenCalledWith(courseCompletionDate);
         });
-      })
+      });
 
       describe('When notes are entered', () => {
         it(`should call the training service with the notes`, async () => {
-          previousNotes = null
-          const { fixture, getByRole, setNotesSpy, getByTestId} = await setup();
+          previousNotes = null;
+          const { fixture, getByRole, setNotesSpy, getByTestId } = await setup();
 
           const arrow = getByTestId('notes-toggle-arrow');
           arrow.click();
@@ -380,7 +396,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
           expect(setNotesSpy).toHaveBeenCalledWith(notes);
         });
-      })
+      });
 
       describe('When the notes field is blank', () => {
         it(`should call the training service with the notes`, async () => {
@@ -391,7 +407,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
           expect(setNotesSpy).toHaveBeenCalledWith(null);
         });
-      })
+      });
 
       it(`should navigate to "confirm-training-record-details"`, async () => {
         courseCompletionDate = null;
@@ -404,8 +420,7 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
           ['/workplace', component.workplace.uid, 'add-multiple-training', 'confirm-training-record-details']
         );
       });
-    })
-
+    });
 
     describe('When there are validation errors', () => {
       it('should not navigate away from the page', async () => {
@@ -436,8 +451,8 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
           const errorMessages = getAllByText('Course completion date must be a valid date');
           expect(errorMessages.length).toEqual(2);
-        })
-      })
+        });
+      });
 
       describe('when a future date is entered in the completion date', () => {
         it('should raise the correct error message ', async () => {
@@ -464,8 +479,8 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
           expect(errorMessages.length).toEqual(2);
           jasmine.clock().uninstall();
-        })
-      })
+        });
+      });
 
       describe('when a date more than 100 years ago is entered in the completion date', () => {
         it('should raise the correct error message ', async () => {
@@ -486,8 +501,8 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
           const errorMessages = getAllByText('Course completion date cannot be more than 100 years ago');
           expect(errorMessages.length).toEqual(2);
-        })
-      })
+        });
+      });
 
       describe('When more than 1000 characters are entered in the notes box', () => {
         it('should raise the correct error message ', async () => {
@@ -508,10 +523,10 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
 
           const errorMessages = getAllByText('Notes must be 1000 characters or fewer');
           expect(errorMessages.length).toEqual(2);
-        })
-      })
-    })
-  })
+        });
+      });
+    });
+  });
 
   describe('Cancel link', () => {
     it('should be displayed correctly', async () => {
@@ -523,20 +538,17 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
     it('should have the correct href', async () => {
       const { getByRole } = await setup();
       const link = getByRole('link', { name: 'Cancel' });
-      expect(link.getAttribute('href')).toEqual(
-        `/dashboard#training-and-qualifications`,
-      );
+      expect(link.getAttribute('href')).toEqual(`/dashboard#training-and-qualifications`);
     });
-  })
+  });
 
   describe('Page refresh', () => {
     it('Returns to page to select those you want to add a record for', async () => {
-      const { component, routerSpy } = await setup();
-      selectedTrainingCourse = null
+      const { component, routerSpy } = await setup({ selectedTrainingCourse: null });
       component.ngOnInit();
-      expect(routerSpy).toHaveBeenCalledWith(
-        [`workplace/${component.workplace.uid}/add-multiple-training/select-staff`]
-      );
+      expect(routerSpy).toHaveBeenCalledWith([
+        `workplace/${component.workplace.uid}/add-multiple-training/select-staff`,
+      ]);
     });
-  })
-})
+  });
+});
