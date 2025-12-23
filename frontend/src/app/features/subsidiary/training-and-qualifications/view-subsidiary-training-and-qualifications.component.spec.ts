@@ -28,6 +28,8 @@ import { TrainingAndQualificationsSummaryComponent } from '@shared/components/tr
 import { TrainingAndQualificationsCategoriesComponent } from '@shared/components/training-and-qualifications-categories/training-and-qualifications-categories.component';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '@core/services/user.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
   const setup = async (override: any = {}) => {
@@ -49,6 +51,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: TrainingCategoryService,
           useClass: MockTrainingCategoryService,
