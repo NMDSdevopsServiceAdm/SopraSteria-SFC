@@ -12,6 +12,7 @@ import { SelectTrainingCourseForMultipleTrainingRecords } from './select-trainin
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import { ViewSelectedTrainingCourseDetailsComponent } from '@features/training-and-qualifications/add-multiple-training/view-selected-training-course-details/view-selected-training-course-details.component';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
+import { ConfirmMultipleTrainingWithCourseComponent } from '@features/training-and-qualifications/add-multiple-training/confirm-multiple-training-with-course/confirm-multiple-training-with-course.component';
 
 const selectStaffRoute = {
   path: 'select-staff',
@@ -71,8 +72,15 @@ const viewSelectedTrainingCourseDetailsRoute = {
   },
 };
 
+const confirmMultipleTrainingWithCourseComponentRoute = {
+  path: 'confirm-training-record-details',
+  component: ConfirmMultipleTrainingWithCourseComponent,
+  data: { title: 'Confirm training record details' },
+};
+
 const routes: Routes = [
   viewSelectedTrainingCourseDetailsRoute,
+  confirmMultipleTrainingWithCourseComponentRoute,
   selectStaffRoute,
   selectTrainingCourseRoute,
   selectTrainingCategoryRouteWithGuard,

@@ -5,6 +5,8 @@ import { environment } from 'src/environments/environment';
 import { TrainingService } from './training.service';
 import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { Worker } from '@core/model/worker.model';
 
 describe('TrainingService', () => {
   let service: TrainingService;
@@ -83,6 +85,23 @@ describe('TrainingService', () => {
     });
   });
 
+  describe('selectedStaff', () => {
+    it('should update and get the selectedStaff', () => {
+      const workers = [workerBuilder(), workerBuilder()] as Worker[];
+      service.updateSelectedStaff(workers);
+
+      expect(service.getSelectedStaff()).toEqual(workers);
+    })
+
+    it('should reset the selectedStaff to an empty array', () => {
+      const workers = [workerBuilder(), workerBuilder()] as Worker[];
+      service.updateSelectedStaff(workers);
+      service.resetSelectedStaff();
+
+      expect(service.getSelectedStaff()).toEqual([]);
+    })
+  })
+
   describe('isSelectStaffChange', () => {
     it('sets isSelectStaffChange when true is passed', async () => {
       service.setUpdatingSelectedStaffForMultipleTraining(true);
@@ -152,7 +171,13 @@ describe('TrainingService', () => {
 
       expect(service.getCourseCompletionDate()).toEqual(date);
     })
-  })
+
+    it ('clears the set date', async () => {
+      service.clearCourseCompletionDate();
+
+      expect(service.getCourseCompletionDate()).toEqual(null);
+    });
+  });
 
   describe('Notes', () => {
     it('sets and gets the notes', async () => {
@@ -160,5 +185,11 @@ describe('TrainingService', () => {
 
       expect(service.getNotes()).toEqual('Hello, world!');
     })
+
+    it ('clears the notes', async () => {
+      service.clearNotes();
+
+      expect(service.getNotes()).toEqual(null);
+    });
   })
 });
