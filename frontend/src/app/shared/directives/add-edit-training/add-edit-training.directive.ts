@@ -30,7 +30,7 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Directive({
-    standalone: false
+  standalone: false,
 })
 export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   @ViewChild('validityPeriodInMonthRef') validityPeriodInMonth: NumberInputWithButtonsComponent;
@@ -68,6 +68,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public showUpdateRecordsWithTrainingCourseDetails: boolean = false;
   public updateTrainingRecordWithTrainingCourseText = TrainingCourseService.RevealText;
   public trainingProviders: TrainingProvider[];
+  public expiryMismatchWarning: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
