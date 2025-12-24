@@ -12,10 +12,11 @@ import {
   HowWasItDelivered,
   TrainingCategory,
   TrainingCertificate,
-  TrainingRecord,
+  TrainingRecord as LegacyIncorrectTrainingRecordType,
   TrainingRecordRequest,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
+import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -29,6 +30,11 @@ import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
+type TrainingRecord = LegacyIncorrectTrainingRecordType & {
+  completed: string;
+  expires: string;
+  accredited?: YesNoDontKnow;
+};
 @Directive({
   standalone: false,
 })
