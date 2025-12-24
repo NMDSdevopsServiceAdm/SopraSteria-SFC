@@ -48,6 +48,7 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
   ngOnInit(): void {
     this.worker = this.workerService.worker;
     this.workplace = this.establishmentService.establishment;
+    this.resetTrainingState();
 
     this.loadTrainingCourses();
     this.setUpVariables();
@@ -68,6 +69,7 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
   protected setUpVariables(): void {}
   protected navigateOnCancelClick(): void {}
   protected clearSelectedTrainingCourseWhenClickedAway(): void {}
+  protected resetTrainingState(): void {}
 
   protected loadTrainingCourses(): void {
     this.trainingCourses = this.route.snapshot.data?.trainingCourses;

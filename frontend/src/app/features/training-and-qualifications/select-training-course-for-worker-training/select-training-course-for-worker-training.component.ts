@@ -120,4 +120,11 @@ export class SelectTrainingCourseForWorkerTraining
         this.trainingService.setSelectedTrainingCourse(null);
       });
   }
+
+  protected resetTrainingState() {
+    const previousPage = this.previousRouteService.getPreviousPage();
+    if (previousPage === 'training' || previousPage === 'all-records') {
+      this.trainingService.resetState();
+    }
+  }
 }
