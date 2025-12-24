@@ -48,6 +48,28 @@ export class DateUtil {
     }
     return DateUtil.dayJStoFormDate(input);
   }
+
+  public static expectedExpiryDate(completed: dayjs.Dayjs, validityPeriodInMonth: number): dayjs.Dayjs {
+    if (!dayjs.isDayjs(completed) || validityPeriodInMonth < 1) {
+      return null;
+    }
+
+    return completed?.add(validityPeriodInMonth, 'months');
+  }
+
+  public static expiryDateDoesNotMatch(
+    completed: dayjs.Dayjs,
+    expiresDate: dayjs.Dayjs,
+    validityPeriodInMonth: number,
+  ): boolean {
+    const expectedExpiryDate = DateUtil.expectedExpiryDate(completed, validityPeriodInMonth);
+
+    if (!expiresDate || !expectedExpiryDate) {
+      return false;
+    }
+
+    return !expiresDate.isSame(expectedExpiryDate, 'day');
+  }
 }
 
 export class FormatDate {
