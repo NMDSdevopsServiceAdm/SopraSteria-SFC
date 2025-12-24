@@ -6,6 +6,8 @@
           Day
         </label>
         <input
+          #dayEl
+          (input)="handleChange()"
           class="govuk-input govuk-date-input__input govuk-input--width-2"
           [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
           [formControlName]="'day'"
@@ -23,6 +25,8 @@
           Month
         </label>
         <input
+          #monthEl
+          (input)="handleChange()"
           class="govuk-input govuk-date-input__input govuk-input--width-2"
           [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
           [formControlName]="'month'"
@@ -40,6 +44,8 @@
           Year
         </label>
         <input
+          #yearEl
+          (input)="handleChange()"
           class="govuk-input govuk-date-input__input govuk-input--width-4"
           [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
           [formControlName]="'year'"
