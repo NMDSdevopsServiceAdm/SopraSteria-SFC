@@ -382,4 +382,32 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       );
     });
   });
+
+  describe('resetTrainingState', () => {
+    const previousPages = ['training', 'all-records'];
+
+    previousPages.forEach((previousPage) => {
+      it(`should call resetState() when the previous page is ${previousPage}`, async () => {
+        const overrides = {
+          previousUrl: previousPage,
+        };
+
+        const { component, resetStateSpy } = await setup(overrides);
+
+        component.ngOnInit();
+        expect(resetStateSpy).toHaveBeenCalled();
+      });
+    });
+
+    it(`should not call resetState()`, async () => {
+      const overrides = {
+        previousUrl: 'all-training',
+      };
+
+      const { component, resetStateSpy } = await setup(overrides);
+
+      component.ngOnInit();
+      expect(resetStateSpy).not.toHaveBeenCalled();
+    });
+  });
 });
