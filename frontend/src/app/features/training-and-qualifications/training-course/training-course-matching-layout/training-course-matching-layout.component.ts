@@ -280,31 +280,19 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     const { completed, expires } = this.form.value;
     const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
 
-    if (!completed?.day || !expires?.day || !validityPeriodInMonth) {
-      this.expiryMismatchWarning = false;
-      return;
-    }
-
+    const completedDate = DateUtil.toDayjs(completed);
     const expiresDate = DateUtil.toDayjs(expires);
-    const expectedExpiry = this.getExpectedExpiryDate();
+    const expiryDateDoesNotMatch = DateUtil.expiryDateDoesNotMatch(completedDate, expiresDate, validityPeriodInMonth);
 
-    if (expectedExpiry && expiresDate) {
-      const dateNotMatching = !expiresDate.isSame(expectedExpiry, 'day');
-      this.expiryMismatchWarning = dateNotMatching;
-    } else {
-      this.expiryMismatchWarning = false;
-    }
+    this.expiryMismatchWarning = expiryDateDoesNotMatch;
   }
 
   private getExpectedExpiryDate(): dayjs.Dayjs {
     const { completed } = this.form.value;
-    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
-    if (!completed || !validityPeriodInMonth) {
-      return null;
-    }
-
     const completedDate = DateUtil.toDayjs(completed);
-    return completedDate?.add(validityPeriodInMonth, 'month');
+    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
+
+    return DateUtil.expectedExpiryDate(completedDate, validityPeriodInMonth);
   }
 
   private setupFormErrorsMap(): void {
