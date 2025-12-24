@@ -37,7 +37,6 @@ describe('AddEditTrainingComponent', () => {
     const trainingRecordId = overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : '1';
     const mockTrainingRecord =
       overrides?.trainingRecord !== undefined ? overrides.trainingRecord : { ...trainingRecord };
-    const workerServiceSpy = jasmine.createSpy().and.returnValue(of(mockTrainingRecord));
     const mockWorker = {
       uid: '2',
       mainJob: {
@@ -59,7 +58,7 @@ describe('AddEditTrainingComponent', () => {
               params: { trainingRecordId, establishmentuid: '24', id: 2 },
               data: {
                 trainingCourses: overrides?.trainingCourses ?? [],
-                trainingRecord: trainingRecord,
+                trainingRecord: mockTrainingRecord,
                 trainingProviders: mockTrainingProviders,
               },
             },
@@ -86,7 +85,6 @@ describe('AddEditTrainingComponent', () => {
         {
           provide: WorkerService,
           useFactory: MockWorkerServiceWithOverrides.factory({
-            getTrainingRecord: workerServiceSpy,
             worker: mockWorker,
           }),
         },
@@ -123,7 +121,6 @@ describe('AddEditTrainingComponent', () => {
       updateSpy,
       createSpy,
       workerService,
-      workerServiceSpy,
       alertServiceSpy,
       trainingService,
       certificateService,
@@ -271,10 +268,10 @@ describe('AddEditTrainingComponent', () => {
       const { getInputByRole, getByTestId, fixture } = await setup();
 
       const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
-      doesNotExpireCheckbox.click();
+      fireEvent.click(doesNotExpireCheckbox);
       expect(doesNotExpireCheckbox.checked).toBeTrue();
 
-      getByTestId('plus-button-validity-period').click();
+      fireEvent.click(getByTestId('plus-button-validity-period'));
       fixture.detectChanges();
 
       expect(doesNotExpireCheckbox.checked).toBeFalse();
@@ -302,14 +299,67 @@ describe('AddEditTrainingComponent', () => {
       });
       const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
 
-      getByTestId('plus-button-validity-period').click();
+      fireEvent.click(getByTestId('plus-button-validity-period'));
       fixture.detectChanges();
       expect(validityPeriodInMonth.value).toEqual('1');
 
-      doesNotExpireCheckbox.click();
+      fireEvent.click(doesNotExpireCheckbox);
       fixture.detectChanges();
 
       expect(validityPeriodInMonth.value).toEqual('');
+    });
+
+    it('should update expiry date soft warning message when filling the form', async () => {
+      const { getInputByRole, getByTestId, fixture, getByText } = await setup({ trainingRecord: null });
+
+      const validityPeriodInMonth = getInputByRole('textbox', {
+        name: 'How many months is the training valid for before it expires?',
+      });
+
+      userEvent.type(validityPeriodInMonth, '24');
+
+      const completedDate = getByTestId('completedDate');
+      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
+      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
+      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+
+      const expiryDate = getByTestId('expiresDate');
+      userEvent.type(within(expiryDate).getByLabelText('Day'), '10');
+      userEvent.type(within(expiryDate).getByLabelText('Month'), '4');
+      userEvent.type(within(expiryDate).getByLabelText('Year'), '2023');
+
+      fixture.detectChanges();
+
+      expect(getByText('This training is usually valid for 24 months')).toBeTruthy();
+    });
+
+    it('should clear the expiry date soft warning if expire date matches validity period', async () => {
+      const { getInputByRole, getByTestId, fixture, queryByText } = await setup({ trainingRecord: null });
+
+      const validityPeriodInMonth = getInputByRole('textbox', {
+        name: 'How many months is the training valid for before it expires?',
+      });
+
+      userEvent.type(validityPeriodInMonth, '24');
+
+      const completedDate = getByTestId('completedDate');
+      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
+      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
+      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+
+      const expiryDate = getByTestId('expiresDate');
+      userEvent.type(within(expiryDate).getByLabelText('Day'), '10');
+      userEvent.type(within(expiryDate).getByLabelText('Month'), '4');
+      userEvent.type(within(expiryDate).getByLabelText('Year'), '2023');
+
+      fixture.detectChanges();
+
+      expect(queryByText('This training is usually valid for 24 months')).toBeTruthy();
+
+      userEvent.type(within(expiryDate).getByLabelText('Year'), '2021');
+      fixture.detectChanges();
+
+      expect(queryByText('This training is usually valid for 24 months')).toBeFalsy();
     });
   });
 
@@ -326,7 +376,7 @@ describe('AddEditTrainingComponent', () => {
     it('should display the notes section after clicking Open notes', async () => {
       const { fixture, getByText, getByTestId } = await setup();
       const openNotesButton = getByText('Open notes');
-      openNotesButton.click();
+      fireEvent.click(openNotesButton);
 
       fixture.detectChanges();
 
@@ -339,9 +389,9 @@ describe('AddEditTrainingComponent', () => {
 
   describe('fillForm', () => {
     it('should prefill the form if there is a training record id and there is a training record', async () => {
-      const { component, workerServiceSpy } = await setup();
+      const { component } = await setup();
 
-      const { form, workplace, worker, trainingRecordId } = component;
+      const { form } = component;
       const expectedFormValue = {
         title: 'Communication Training 1',
         accredited: 'Yes',
@@ -356,7 +406,6 @@ describe('AddEditTrainingComponent', () => {
       };
 
       expect(form.value).toEqual(expectedFormValue);
-      expect(workerServiceSpy).toHaveBeenCalledWith(workplace.uid, worker.uid, trainingRecordId);
     });
 
     it('should open the notes section if there are some notes in record', async () => {
@@ -405,10 +454,20 @@ describe('AddEditTrainingComponent', () => {
       expect(form.value).toEqual(expectedFormValue);
     });
 
-    it('should not call getTrainingRecord if there is no trainingRecordId', async () => {
-      const { workerServiceSpy } = await setup({ trainingRecordId: null });
+    it('should show a soft warning message when expiry date is not matching with validity period', async () => {
+      const mockTrainingRecord = {
+        ...trainingRecord,
+        completed: '2021-01-01',
+        expires: '2022-05-01',
+        validityPeriodInMonth: 12,
+        doesNotExpire: false,
+      };
 
-      expect(workerServiceSpy).not.toHaveBeenCalled();
+      const { getByText, fixture } = await setup({ trainingRecord: mockTrainingRecord });
+
+      await fixture.whenStable();
+
+      expect(getByText('This training is usually valid for 12 months')).toBeTruthy();
     });
   });
 
@@ -650,7 +709,7 @@ describe('AddEditTrainingComponent', () => {
 
       component.previousUrl = ['/goToPreviousUrl'];
       const openNotesButton = getByText('Open notes');
-      openNotesButton.click();
+      fireEvent.click(openNotesButton);
       fixture.detectChanges();
 
       userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
@@ -707,7 +766,7 @@ describe('AddEditTrainingComponent', () => {
 
       component.previousUrl = ['/goToPreviousUrl'];
       const openNotesButton = getByText('Open notes');
-      openNotesButton.click();
+      fireEvent.click(openNotesButton);
       fixture.detectChanges();
 
       component.trainingCategory = {
@@ -837,7 +896,7 @@ describe('AddEditTrainingComponent', () => {
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         const addCertificatesSpy = spyOn(certificateService, 'addCertificates').and.returnValue(of(null));
@@ -882,7 +941,7 @@ describe('AddEditTrainingComponent', () => {
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         const addCertificatesSpy = spyOn(certificateService, 'addCertificates');
@@ -955,7 +1014,7 @@ describe('AddEditTrainingComponent', () => {
           id: 2,
         };
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         const addCertificatesSpy = spyOn(certificateService, 'addCertificates');
@@ -1188,7 +1247,7 @@ describe('AddEditTrainingComponent', () => {
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         userEvent.type(getByLabelText('Add a note'), veryLongString);
@@ -1203,13 +1262,13 @@ describe('AddEditTrainingComponent', () => {
         const { fixture, getByText, getByLabelText, getByTestId } = await setup({ trainingRecordId: null });
 
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         userEvent.type(getByLabelText('Add a note'), veryLongString);
 
         const closeNotesButton = getByText('Close notes');
-        closeNotesButton.click();
+        fireEvent.click(closeNotesButton);
         fixture.detectChanges();
 
         fireEvent.click(getByText('Save record'));
@@ -1378,7 +1437,7 @@ describe('AddEditTrainingComponent', () => {
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
         const firstCertDownloadButton = within(certificatesTable).getAllByText('Download')[0];
-        firstCertDownloadButton.click();
+        fireEvent.click(firstCertDownloadButton);
 
         expect(downloadCertificatesSpy).toHaveBeenCalledWith(
           component.workplace.uid,
@@ -1399,7 +1458,7 @@ describe('AddEditTrainingComponent', () => {
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
         const downloadButton = within(certificatesTable).getByText('Download all');
-        downloadButton.click();
+        fireEvent.click(downloadButton);
 
         expect(downloadCertificatesSpy).toHaveBeenCalledWith(
           component.workplace.uid,
@@ -1422,7 +1481,7 @@ describe('AddEditTrainingComponent', () => {
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
         const downloadButton = within(certificatesTable).getAllByText('Download')[1];
-        downloadButton.click();
+        fireEvent.click(downloadButton);
         fixture.detectChanges();
 
         const expectedErrorMessage = getByText(
@@ -1441,7 +1500,7 @@ describe('AddEditTrainingComponent', () => {
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
         const downloadAllButton = within(certificatesTable).getByText('Download all');
-        downloadAllButton.click();
+        fireEvent.click(downloadAllButton);
         fixture.detectChanges();
 
         const expectedErrorMessage = getByText(
