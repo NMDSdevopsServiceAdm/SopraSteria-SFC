@@ -105,7 +105,7 @@ describe('NewDashboardHeaderComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const switchWorkplaceService = injector.inject(SwitchWorkplaceService);
-    const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToWorkplace');
+    const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToParentWorkplace');
 
     return {
       component,

@@ -53,9 +53,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private establishmentService: EstablishmentService,
     private switchWorkplaceService: SwitchWorkplaceService,
-  ) {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-  }
+  ) {}
 
   ngOnInit(): void {
     this.isParent = this.workplace.isParent;
@@ -81,7 +79,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
 
   public navigateToParentWorkplace(id: string, username: string, nmdsId: string, event: Event): void {
     event.preventDefault();
-    this.switchWorkplaceService.navigateToWorkplace(id, username, nmdsId);
+    this.switchWorkplaceService.navigateToParentWorkplace(id, username, nmdsId);
   }
 
   public setIsParentSubsidiaryView(): void {
