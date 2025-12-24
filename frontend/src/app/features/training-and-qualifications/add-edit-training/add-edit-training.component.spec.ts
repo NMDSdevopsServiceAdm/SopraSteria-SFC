@@ -400,8 +400,8 @@ describe('AddEditTrainingComponent', () => {
         howWasItDelivered: 'E-learning',
         doesNotExpire: false,
         validityPeriodInMonth: 24,
-        completed: { day: 2, month: '1', year: 2020 },
-        expires: { day: 2, month: '1', year: 2021 },
+        completed: { day: 2, month: 1, year: 2020 },
+        expires: { day: 2, month: 1, year: 2021 },
         notes: undefined,
       };
 
@@ -724,8 +724,8 @@ describe('AddEditTrainingComponent', () => {
         howWasItDelivered: 'E-learning',
         doesNotExpire: false,
         validityPeriodInMonth: 24,
-        completed: { day: 2, month: '1', year: 2020 },
-        expires: { day: 2, month: '1', year: 2021 },
+        completed: { day: 2, month: 1, year: 2020 },
+        expires: { day: 2, month: 1, year: 2021 },
         notes: 'Some notes added to this training',
       };
 

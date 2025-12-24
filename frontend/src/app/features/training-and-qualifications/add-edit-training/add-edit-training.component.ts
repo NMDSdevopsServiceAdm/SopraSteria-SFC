@@ -6,9 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, effect, OnInit, viewChild } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { TrainingCertificate, TrainingRecord as LegacyIncorrectTrainingRecordType } from '@core/model/training.model';
 import { CertificateDownload } from '@core/model/trainingAndQualifications.model';
+import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
@@ -21,7 +21,6 @@ import { DateUtil } from '@core/utils/date-util';
 import { DatePickerComponent } from '@shared/components/date-picker/date-picker.component';
 import { AddEditTrainingDirective } from '@shared/directives/add-edit-training/add-edit-training.directive';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 
 type TrainingRecord = LegacyIncorrectTrainingRecordType & {
   completed: string;
@@ -45,7 +44,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public isTrainingRecordMatchedToTrainingCourse: boolean;
 
   public completedDate = viewChild<DatePickerComponent>('completed');
-  public expiryDate = viewChild<DatePickerComponent>('expires');
+  public expiresDate = viewChild<DatePickerComponent>('expires');
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -76,7 +75,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
 
     effect(() => {
-      if (this.completedDate() && this.expiryDate()) {
+      if (this.completedDate() && this.expiresDate()) {
         this.setupCheckExpiryMismatch();
       }
     });
@@ -126,7 +125,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private fillForm(): void {
-    const trainingRecord = this.route.snapshot.data?.trainingRecord;
+    const trainingRecord: TrainingRecord = this.route.snapshot.data?.trainingRecord;
     if (!trainingRecord) {
       return;
     }
@@ -136,9 +135,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.trainingCertificates = trainingRecord.trainingCertificates;
     this.isTrainingRecordMatchedToTrainingCourse = trainingRecord.isMatchedToTrainingCourse;
 
-    const completed = this.trainingRecord.completed ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT) : null;
-    const expires = this.trainingRecord.expires ? dayjs(this.trainingRecord.expires, DATE_PARSE_FORMAT) : null;
-    this.form.patchValue({
+    const formValueToPatch = {
       title: this.trainingRecord.title,
       accredited: this.trainingRecord.accredited,
       deliveredBy: this.trainingRecord.deliveredBy,
@@ -146,34 +143,24 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       howWasItDelivered: this.trainingRecord.howWasItDelivered,
       validityPeriodInMonth: this.trainingRecord.validityPeriodInMonth,
       doesNotExpire: this.trainingRecord.doesNotExpire,
-
-      ...(completed && {
-        completed: {
-          day: completed.date(),
-          month: completed.format('M'),
-          year: completed.year(),
-        },
-      }),
-      ...(expires && {
-        expires: {
-          day: expires.date(),
-          month: expires.format('M'),
-          year: expires.year(),
-        },
-      }),
+      completed: DateUtil.toFormDate(this.trainingRecord.completed),
+      expires: DateUtil.toFormDate(this.trainingRecord.expires),
       notes: this.trainingRecord.notes,
-    });
+    };
+
+    this.form.patchValue(formValueToPatch);
+
     if (this.trainingRecord?.notes?.length > 0) {
       this.notesOpen = true;
       this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
     }
-    this.updateShowUpdateRecordsWithTrainingCourseDetails();
+    this.checkIfCanUpdateWithTrainingCourse();
     this.checkExpiryMismatchOnInit(trainingRecord);
   }
 
   public removeSavedFile(fileIndexToRemove: number): void {
-    let tempTrainingCertificates = this.trainingCertificates.filter(
-      (certificate, index) => index !== fileIndexToRemove,
+    const tempTrainingCertificates = this.trainingCertificates.filter(
+      (_certificate, index) => index !== fileIndexToRemove,
     );
 
     this.filesToRemove.push(this.trainingCertificates[fileIndexToRemove]);
@@ -187,44 +174,39 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private setupCheckExpiryMismatch(): void {
-    merge(this.completedDate().onChange.asObservable(), this.expiryDate().onChange.asObservable()).subscribe(() => {
-      this.checkExpiryMismatch();
-    });
+    const completedDateOrExpiresDateChanged = merge(
+      this.completedDate().onChange.asObservable(),
+      this.expiresDate().onChange.asObservable(),
+    );
+
+    this.subscriptions.add(
+      completedDateOrExpiresDateChanged.subscribe(() => {
+        this.checkExpiryMismatch();
+      }),
+    );
   }
 
-  private checkExpiryMismatchOnInit(training: TrainingRecord): boolean {
+  private checkExpiryMismatchOnInit(training: AddEditTrainingComponent['trainingRecord']): void {
     const completedDate = DateUtil.toDayjs(training.completed);
     const expiresDate = DateUtil.toDayjs(training.expires);
     const validityPeriodInMonth = training.validityPeriodInMonth;
 
-    if (!completedDate || !expiresDate || !validityPeriodInMonth) {
-      return;
+    const expiryDateDoesNotMatch = DateUtil.expiryDateDoesNotMatch(completedDate, expiresDate, validityPeriodInMonth);
+
+    if (expiryDateDoesNotMatch) {
+      this.expiryMismatchWarning = true;
+      this.changeDetectorRef.detectChanges();
     }
-
-    const expectedExpiryDate = completedDate.add(validityPeriodInMonth, 'months');
-    const dateNotMatching = !expiresDate.isSame(expectedExpiryDate, 'day');
-
-    this.expiryMismatchWarning = dateNotMatching;
-    this.changeDetectorRef.detectChanges();
   }
 
   private checkExpiryMismatch(): void {
-    // to co-exist with {updateOn: 'submit'},
-    // we read the native element values instead of Angular form values
-
+    // In order to co-exist with {updateOn: 'submit'},
+    // here we read the values from the native html elements instead of Angular FormGroup
     const completedDate = DateUtil.toDayjs(this.completedDate()?.internalState);
-    const expiresDate = DateUtil.toDayjs(this.expiryDate()?.internalState);
+    const expiresDate = DateUtil.toDayjs(this.expiresDate()?.internalState);
     const validityPeriodInMonth = this.validityPeriodInMonth?.currentNumber;
 
-    if (!completedDate || !expiresDate || !validityPeriodInMonth) {
-      this.expiryMismatchWarning = false;
-      return;
-    }
-
-    const expectedExpiryDate = completedDate.add(validityPeriodInMonth, 'months');
-    const dateNotMatching = !expiresDate.isSame(expectedExpiryDate, 'day');
-
-    this.expiryMismatchWarning = dateNotMatching;
+    this.expiryMismatchWarning = DateUtil.expiryDateDoesNotMatch(completedDate, expiresDate, validityPeriodInMonth);
   }
 
   protected submit(record: any): void {
@@ -364,7 +346,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     ]);
   }
 
-  public updateShowUpdateRecordsWithTrainingCourseDetails(): void {
+  public checkIfCanUpdateWithTrainingCourse(): void {
     this.showUpdateRecordsWithTrainingCourseDetails =
       this.trainingRecordId && this.trainingCourses.length > 0 && !this.isTrainingRecordMatchedToTrainingCourse;
   }
