@@ -7,6 +7,8 @@ import { Establishment } from '@core/model/establishment.model';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 import { ViewSubsidiaryBenchmarksComponent } from './view-subsidiary-benchmarks.component';
 
@@ -15,6 +17,7 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
     const setupTools = await render(ViewSubsidiaryBenchmarksComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -23,7 +26,9 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     });
 
