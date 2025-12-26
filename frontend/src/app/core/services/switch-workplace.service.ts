@@ -107,7 +107,7 @@ export class SwitchWorkplaceService {
             this.establishmentService.establishmentId = workplace.uid;
             this.establishmentService.standAloneAccount = !(workplace.isParent || workplace.parentUid);
 
-            // 🔹 call the passed-in navigation function
+            //call the passed-in navigation function
             navigateFn('/dashboard');
           });
         },
