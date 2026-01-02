@@ -25,6 +25,7 @@ import { TrainingCourseService } from '@core/services/training-course.service';
 import { TrainingProviderService } from '@core/services/training-provider.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { DateUtil } from '@core/utils/date-util';
 import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
@@ -35,6 +36,7 @@ type TrainingRecord = LegacyIncorrectTrainingRecordType & {
   expires: string;
   accredited?: YesNoDontKnow;
 };
+
 @Directive({
   standalone: false,
 })
@@ -293,6 +295,12 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       return;
     }
 
+    const trainingRecordToSubmit = this.getAndProcessFormValue();
+
+    this.submit(trainingRecordToSubmit);
+  }
+
+  private getAndProcessFormValue(): TrainingRecordRequest {
     const trainingCategorySelected = this.trainingCategory;
 
     const {
@@ -307,8 +315,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       expires,
       notes,
     } = this.form.controls;
-    const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
-    const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
+
+    const completedDate = DateUtil.toDayjs(completed.value);
+    const expiresDate = DateUtil.toDayjs(expires.value);
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
@@ -326,17 +335,28 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       notes: notes.value,
     };
 
-    const updatedRecord = this.trainingProviderService.getAndProcessFormValue(
-      record,
+    const withTrainingProviderFilled = this.trainingProviderService.fillInTrainingProvider(
+      // @ts-ignore
+      record as TrainingData,
       this.trainingProviders,
       this.getOtherTrainingProviderId(),
-    );
-    this.submit(updatedRecord);
+    ) as TrainingRecordRequest;
+    const withExpiryDateFilled = this.fillInExpiryDate(withTrainingProviderFilled, completedDate);
+
+    return withExpiryDateFilled;
   }
 
-  dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs {
-    const { day, month, year } = group.value;
-    return day && month && year ? dayjs(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
+  private fillInExpiryDate(record: TrainingRecordRequest, completedDate: dayjs.Dayjs): TrainingRecordRequest {
+    if (record.expires || !completedDate || !record.validityPeriodInMonth) {
+      return record;
+    }
+
+    const calculatedExpiryDate = DateUtil.expectedExpiryDate(completedDate, record.validityPeriodInMonth);
+    if (!calculatedExpiryDate) {
+      return record;
+    }
+
+    return { ...record, expires: calculatedExpiryDate.format(DATE_PARSE_FORMAT) };
   }
 
   // TODO: Expiry Date validation cannot be before completed date

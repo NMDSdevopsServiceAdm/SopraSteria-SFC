@@ -7,6 +7,13 @@ import { TrainingProvider, GetTrainingProvidersResponse } from '@core/model/trai
 import { map } from 'rxjs/operators';
 import { DeliveredBy } from '@core/model/training.model';
 
+type TrainingData = {
+  deliveredBy?: DeliveredBy;
+  trainingProviderId?: number;
+  otherTrainingProviderName?: string;
+  externalProviderName?: string;
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,7 +26,11 @@ export class TrainingProviderService {
       .pipe(map((res) => res.trainingProviders));
   }
 
-  public getAndProcessFormValue(trainingData, trainingProviders: TrainingProvider[], otherTrainingProviderId: number) {
+  public fillInTrainingProvider(
+    trainingData: TrainingData,
+    trainingProviders: TrainingProvider[],
+    otherTrainingProviderId: number,
+  ) {
     const externalProviderName = trainingData.externalProviderName;
     delete trainingData.externalProviderName;
 
