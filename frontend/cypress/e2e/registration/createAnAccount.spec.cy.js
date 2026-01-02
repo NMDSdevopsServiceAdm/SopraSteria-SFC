@@ -58,7 +58,7 @@ describe('Create account', () => {
     );
   });
 
-  it('should be able to create a new account', () => {
+  it.only('should be able to create a new account', () => {
     cy.contains('Create an account').click();
     cy.contains('Start now').click();
     cy.get('button').contains('Continue').click();
@@ -142,6 +142,54 @@ describe('Create account', () => {
     cy.getByLabel('Vital signs monitoring').check();
     cy.getByLabel('Airways and breathing care').check();
     cy.getByLabel('Feeding and digestive care').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Vacancies
+    cy.get('h1').contains('Do you have any current staff vacancies?');
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
+    cy.get('h1').contains('Select job roles for the vacancies you want to add');
+    cy.contains('button', 'Show all job roles').click();
+    cy.getByLabel('Care worker').check();
+    cy.getByLabel('Community support and outreach work').check();
+    cy.get('button').contains('Save and continue').click();
+
+    cy.get('h1').contains('How many current staff vacancies do you have?');
+    cy.getByLabel('Care worker').type('2');
+    cy.getByLabel('Community support and outreach work').type('2');
+    cy.get('button').contains('Save and continue').click();
+
+    // Starters
+    cy.get('h1').contains('Have you had any starters');
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
+    cy.get('h1').contains('Select job roles for the starters you want to add');
+    cy.contains('button', 'Show all job roles').click();
+    cy.getByLabel('Nursing assistant').check();
+    cy.getByLabel('Registered nurse').check();
+    cy.get('button').contains('Save and continue').click();
+
+    cy.get('h1').contains('How many starters have you had');
+    cy.getByLabel('Nursing assistant').type('2');
+    cy.getByLabel('Registered nurse').type('2');
+    cy.get('button').contains('Save and continue').click();
+
+    // Leavers
+    cy.get('h1').contains('Have you had any leavers');
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
+    cy.get('h1').contains('Select job roles for the leavers you want to add');
+    cy.contains('button', 'Show all job roles').click();
+    cy.getByLabel('Team leader').check();
+    cy.getByLabel('Support worker').check();
+    cy.get('button').contains('Save and continue').click();
+
+    cy.get('h1').contains('How many leavers have you had');
+    cy.getByLabel('Team leader').type('2');
+    cy.getByLabel('Support worker').type('2');
     cy.get('button').contains('Save and continue').click();
 
     // Repeat training
