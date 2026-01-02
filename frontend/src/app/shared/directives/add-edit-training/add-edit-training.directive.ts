@@ -319,7 +319,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     const completedDate = DateUtil.toDayjs(completed.value);
     const expiresDate = DateUtil.toDayjs(expires.value);
 
-    const record: TrainingRecordRequest = {
+    const record = {
       trainingCategory: {
         id: trainingCategorySelected.id,
       },
@@ -336,8 +336,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     };
 
     const withTrainingProviderFilled = this.trainingProviderService.fillInTrainingProvider(
-      // @ts-ignore
-      record as TrainingData,
+      record,
       this.trainingProviders,
       this.getOtherTrainingProviderId(),
     ) as TrainingRecordRequest;
