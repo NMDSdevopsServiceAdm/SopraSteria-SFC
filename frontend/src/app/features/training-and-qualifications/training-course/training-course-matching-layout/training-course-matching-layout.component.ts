@@ -226,10 +226,6 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       ]);
   }
 
-  private dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs | null {
-    return DateUtil.toDayjs(group.value);
-  }
-
   private fillForm(): void {
     const { completed, expires, notes, trainingCertificates } = this.trainingRecord;
 
@@ -351,11 +347,11 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   private buildRequestBody(): TrainingRecordRequest {
     const { completed, expires, notes } = this.form.controls;
 
-    const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
+    const completedDate = DateUtil.toDayjs(completed?.value);
     const expiresDate =
       this.journeyType === 'AddNewTrainingRecordWithCourse'
         ? this.getExpectedExpiryDate()
-        : this.dateGroupToDayjs(expires as UntypedFormGroup);
+        : DateUtil.toDayjs(expires?.value);
 
     if (this.journeyType === 'ViewExistingRecord') {
       return {
