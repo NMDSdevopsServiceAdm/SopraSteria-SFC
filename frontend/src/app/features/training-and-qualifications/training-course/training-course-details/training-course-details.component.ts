@@ -281,7 +281,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   private storeNewCourseAndContinueToNextPage() {
     const trainingCourseData: Partial<TrainingCourse> = this.form.value;
-    const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.trainingProviderService.getAndProcessFormValue(
+    const newTrainingCourseToBeAdded: Partial<TrainingCourse> = this.trainingProviderService.fillInTrainingProvider(
       trainingCourseData,
       this.trainingProviders,
       this.otherTrainingProviderId,
@@ -294,7 +294,7 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
 
   private storeUpdatedCourseAndContinueToConfirmationPage() {
     const trainingCourseData: Partial<TrainingCourse> = this.form.value;
-    const updatedCourse: Partial<TrainingCourse> = this.trainingProviderService.getAndProcessFormValue(
+    const updatedCourse: Partial<TrainingCourse> = this.trainingProviderService.fillInTrainingProvider(
       trainingCourseData,
       this.trainingProviders,
       this.otherTrainingProviderId,

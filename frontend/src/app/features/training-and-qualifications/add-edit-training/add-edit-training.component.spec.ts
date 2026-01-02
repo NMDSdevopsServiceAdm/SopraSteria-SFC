@@ -830,6 +830,72 @@ describe('AddEditTrainingComponent', () => {
       });
     });
 
+    it('should auto fill in the expiry date if validity period and completed date are given', async () => {
+      const selectedTraining = { trainingCategory: { category: 'Autism', id: 2 } };
+      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy } = await setup({
+        trainingRecordId: null,
+        selectedTraining,
+      });
+
+      userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '12');
+
+      const completedDate = getByTestId('completedDate');
+      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
+      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
+      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+
+      userEvent.click(getByText('Save record'));
+
+      expect(createSpy).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+        jasmine.objectContaining({
+          trainingCategory: { id: 2 },
+          validityPeriodInMonth: 12,
+          doesNotExpire: null,
+          completed: '2020-04-10',
+          expires: '2021-04-10',
+        }),
+      );
+    });
+
+    it('should not change the expiry date if user has already input one', async () => {
+      const { component, getByText, updateSpy, getByLabelText, getByTestId } = await setup();
+
+      userEvent.clear(getByLabelText(/How many months/));
+      userEvent.type(getByLabelText(/How many months/), '12');
+
+      const completedDate = getByTestId('completedDate');
+      userEvent.clear(within(completedDate).getByLabelText('Day'));
+      userEvent.clear(within(completedDate).getByLabelText('Month'));
+      userEvent.clear(within(completedDate).getByLabelText('Year'));
+      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
+      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
+      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+
+      const expiryDate = getByTestId('expiresDate');
+      userEvent.clear(within(expiryDate).getByLabelText('Day'));
+      userEvent.clear(within(expiryDate).getByLabelText('Month'));
+      userEvent.clear(within(expiryDate).getByLabelText('Year'));
+      userEvent.type(within(expiryDate).getByLabelText('Day'), '31');
+      userEvent.type(within(expiryDate).getByLabelText('Month'), '12');
+      userEvent.type(within(expiryDate).getByLabelText('Year'), '2023');
+
+      userEvent.click(getByText('Save and return'));
+
+      expect(updateSpy).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+        component.trainingRecordId,
+        jasmine.objectContaining({
+          validityPeriodInMonth: 12,
+          doesNotExpire: null,
+          completed: '2020-04-10',
+          expires: '2023-12-31',
+        }),
+      );
+    });
+
     it('should reset the training category selected for training record in the service on submit', async () => {
       const { component, fixture, getByText, getByLabelText, trainingService, routerSpy } = await setup({
         trainingRecordId: null,
@@ -865,7 +931,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should disable the submit button to prevent it being triggered more than once', async () => {
-      const { component, fixture, getByText, getByLabelText, trainingService, createSpy } = await setup({
+      const { fixture, getByText, getByLabelText } = await setup({
         trainingRecordId: null,
         selectedTraining: {
           trainingCategory: {
