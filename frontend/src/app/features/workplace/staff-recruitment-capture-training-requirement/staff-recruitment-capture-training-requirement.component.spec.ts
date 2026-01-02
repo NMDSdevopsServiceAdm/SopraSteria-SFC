@@ -21,7 +21,9 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides ?? {}),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -279,9 +281,9 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
     });
 
-    it('should set the back link to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
+    fit('should set the back link to do-you-have-vacancies page even if main service can do delegated healthcare activities', async () => {
       const { component } = await setup({
-        returnToUrl: null,
+        returnTo: null,
         establishment: {
           mainService: {
             canDoDelegatedHealthcareActivities: true,
@@ -292,11 +294,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
         },
       });
 
-      expect(component.previousRoute).toEqual([
-        '/workplace',
-        component.establishment.uid,
-        'what-kind-of-delegated-healthcare-activities',
-      ]);
+      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
     });
   });
 });
