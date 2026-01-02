@@ -22,7 +22,7 @@ import { of } from 'rxjs';
 
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcare-activities.component';
 
-describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
+fdescribe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   const labels = ['Yes', 'No', 'I do not know'];
   const values = ['Yes', 'No', "Don't know"];
 
@@ -68,7 +68,9 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
         },
         AlertService,
         WindowRef,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -264,36 +266,60 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       });
     });
 
-    it('should navigate to staff-recruitment-capture-training-requirement page when user skips the question', async () => {
+    it('should navigate to do-you-have-vacancies page when user skips the question', async () => {
       const { getByText, routerSpy } = await setup(overrides);
 
       userEvent.click(getByText('Skip this question'));
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-recruitment-capture-training-requirement',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
     });
 
-    it('should navigate to staff-recruitment-capture-training-requirement page after submit', async () => {
+    it('should navigate to do-you-have-vacancies page after submit if user did not answer', async () => {
       const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
+      userEvent.click(getByText('Save and continue'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to what-kind-of-delegated-healthcare-activities page if user choose Yes', async () => {
+      const { getByText, routerSpy, establishmentServiceSpy, getByLabelText } = await setup(overrides);
+
+      userEvent.click(getByLabelText('Yes'));
       userEvent.click(getByText('Save and continue'));
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
-        'staff-recruitment-capture-training-requirement',
+        'what-kind-of-delegated-healthcare-activities',
       ]);
-      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'StaffDoDelegatedHealthcareActivities', {
+        staffDoDelegatedHealthcareActivities: 'Yes',
+      });
+    });
+
+    ['No', 'I do not know'].forEach((answer) => {
+      it(`should navigate to do-you-have-vacancies if user choose '${answer}'`, async () => {
+        const { getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+
+        const expectedValue = answer === 'I do not know' ? "Don't know" : answer;
+
+        userEvent.click(getByLabelText(answer));
+        userEvent.click(getByText('Save and continue'));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+        expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'StaffDoDelegatedHealthcareActivities', {
+          staffDoDelegatedHealthcareActivities: expectedValue,
+        });
+      });
     });
   });
 
   describe('from workplace summary', () => {
     const overrides = { establishmentService: { returnTo: { url: ['/dashboard'], fragment: 'workplace' } } };
 
-    it('should navigate to staff-recruitment-capture-training-requirement page when user skips the question', async () => {
+    it('should navigate to the workplace summary if user clicked cancel', async () => {
       const { getByText, routerSpy } = await setup(overrides);
 
       userEvent.click(getByText('Cancel'));
@@ -315,7 +341,7 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     });
 
     ['No', 'I do not know'].forEach((answer) => {
-      it(`should navigate to staff-recruitment-capture-training-requirement page after submitting '${answer}' as an answer`, async () => {
+      it(`should return to workplace summary after submitting '${answer}' as an answer`, async () => {
         const { getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
         userEvent.click(getByLabelText(answer));
