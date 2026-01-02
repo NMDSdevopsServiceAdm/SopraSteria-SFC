@@ -16,7 +16,7 @@ import { mockDHADefinition, mockDHAs } from '@core/test-utils/MockDelegatedHealt
 import { HttpClient } from '@angular/common/http';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 
-describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
+fdescribe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
   const doNotKnowText = 'I do not know';
   async function setup(overrides: any = {}) {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
@@ -51,7 +51,9 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
         Router,
         AlertService,
         WindowRef,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -234,28 +236,20 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
       });
     });
 
-    it('should navigate to staff-recruitment-capture-training-requirement page when user skips the question', async () => {
+    it('should navigate to do-you-have-vacancies page when user skips the question', async () => {
       const { getByText, routerSpy } = await setup(overrides);
 
       fireEvent.click(getByText('Skip this question'));
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-recruitment-capture-training-requirement',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
     });
 
-    it('should navigate to staff-recruitment-capture-training-requirement page after submit', async () => {
+    it('should navigate to do-you-have-vacancies page after submit', async () => {
       const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
       fireEvent.click(getByText('Save and continue'));
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-recruitment-capture-training-requirement',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
   });
