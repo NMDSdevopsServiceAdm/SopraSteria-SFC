@@ -10,9 +10,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-    selector: 'app-staff-recruitment-capture-training-requirement',
-    templateUrl: './staff-recruitment-capture-training-requirement.component.html',
-    standalone: false
+  selector: 'app-staff-recruitment-capture-training-requirement',
+  templateUrl: './staff-recruitment-capture-training-requirement.component.html',
+  standalone: false,
 })
 export class StaffRecruitmentCaptureTrainingRequirementComponent extends Question implements OnInit, OnDestroy {
   public trainingRequiredOptions = [
@@ -54,11 +54,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   }
 
   private setPreviousRoute(): void {
-    const previousPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
-      ? 'what-kind-of-delegated-healthcare-activities'
-      : 'how-many-leavers';
-
-    this.previousRoute = ['/workplace', this.establishment.uid, previousPage];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'how-many-leavers'];
   }
 
   private setupForm(): void {

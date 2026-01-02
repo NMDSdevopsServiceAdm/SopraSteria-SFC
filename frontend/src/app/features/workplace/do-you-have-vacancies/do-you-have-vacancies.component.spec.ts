@@ -1,5 +1,4 @@
 import { provideHttpClient } from '@angular/common/http';
-import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -7,13 +6,13 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 
-describe('DoYouHaveVacanciesComponent', () => {
+fdescribe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(DoYouHaveVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -22,12 +21,10 @@ describe('DoYouHaveVacanciesComponent', () => {
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory(
-            { cqc: null, localAuthorities: null },
-            overrides?.returnUrl,
-            overrides?.workplace,
-          ),
-          deps: [HttpClient],
+          useFactory: MockEstablishmentServiceWithOverrides.factory({
+            returnToUrl: overrides?.returnUrl ?? true,
+            establishment: overrides?.workplace,
+          }),
         },
         {
           provide: ActivatedRoute,
@@ -38,7 +35,9 @@ describe('DoYouHaveVacanciesComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
 
@@ -107,12 +106,46 @@ describe('DoYouHaveVacanciesComponent', () => {
     expect(getByLabelText('I do not know')).toBeTruthy();
   });
 
-  it('should return to service users page when you click on the back link', async () => {
-    const overrides = { returnUrl: false };
+  describe('back link', () => {
+    it('should set the previous page to service-users page when main service cannot do delegated healthcare activities', async () => {
+      const overrides = {
+        returnUrl: false,
+        workplace: {
+          mainService: {
+            canDoDelegatedHealthcareActivities: null,
+            id: 11,
+            name: 'Domestic services and home help',
+            reportingID: 10,
+          },
+        },
+      };
 
-    const { component } = await setup(overrides);
+      const { component } = await setup(overrides);
 
-    expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'service-users']);
+      expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'service-users']);
+    });
+
+    it('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
+      const overrides = {
+        returnUrl: false,
+        workplace: {
+          mainService: {
+            canDoDelegatedHealthcareActivities: true,
+            id: 9,
+            name: 'Day care and day services',
+            reportingID: 6,
+          },
+        },
+      };
+
+      const { component } = await setup(overrides);
+
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        `${component.establishment.uid}`,
+        'what-kind-of-delegated-healthcare-activities',
+      ]);
+    });
   });
 
   describe('prefill form', () => {
