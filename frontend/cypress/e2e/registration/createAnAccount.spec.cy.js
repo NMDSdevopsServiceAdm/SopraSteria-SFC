@@ -58,7 +58,7 @@ describe('Create account', () => {
     );
   });
 
-  it.only('should be able to create a new account', () => {
+  it('should be able to create a new account', () => {
     cy.contains('Create an account').click();
     cy.contains('Start now').click();
     cy.get('button').contains('Continue').click();
