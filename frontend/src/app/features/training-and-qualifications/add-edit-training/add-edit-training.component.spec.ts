@@ -26,6 +26,16 @@ import { AddEditTrainingComponent } from './add-edit-training.component';
 import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { TrainingCourse } from '@core/model/training-course.model';
 
+const fillInDate = (containerDiv: HTMLElement, year: string, month: string, day: string) => {
+  ['Day', 'Month', 'Year'].forEach((label) => {
+    userEvent.clear(within(containerDiv).getByLabelText(label));
+  });
+
+  userEvent.type(within(containerDiv).getByLabelText('Day'), day);
+  userEvent.type(within(containerDiv).getByLabelText('Month'), month);
+  userEvent.type(within(containerDiv).getByLabelText('Year'), year);
+};
+
 describe('AddEditTrainingComponent', () => {
   const mockTrainingProviders = [
     { id: 1, name: 'Preset provider name #1', isOther: false },
@@ -319,14 +329,10 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(validityPeriodInMonth, '24');
 
       const completedDate = getByTestId('completedDate');
-      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
-      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
-      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+      fillInDate(completedDate, '2020', '4', '10');
 
       const expiryDate = getByTestId('expiresDate');
-      userEvent.type(within(expiryDate).getByLabelText('Day'), '10');
-      userEvent.type(within(expiryDate).getByLabelText('Month'), '4');
-      userEvent.type(within(expiryDate).getByLabelText('Year'), '2023');
+      fillInDate(expiryDate, '2023', '4', '10');
 
       fixture.detectChanges();
 
@@ -343,14 +349,10 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(validityPeriodInMonth, '24');
 
       const completedDate = getByTestId('completedDate');
-      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
-      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
-      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+      fillInDate(completedDate, '2020', '4', '10');
 
       const expiryDate = getByTestId('expiresDate');
-      userEvent.type(within(expiryDate).getByLabelText('Day'), '10');
-      userEvent.type(within(expiryDate).getByLabelText('Month'), '4');
-      userEvent.type(within(expiryDate).getByLabelText('Year'), '2023');
+      fillInDate(expiryDate, '2023', '4', '10');
 
       fixture.detectChanges();
 
@@ -781,10 +783,9 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '');
       userEvent.type(getByLabelText('This training does not expire'), 'true');
       userEvent.click(getByLabelText('E-learning'));
+
       const completedDate = getByTestId('completedDate');
-      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
-      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
-      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+      fillInDate(completedDate, '2020', '4', '10');
 
       userEvent.type(getByLabelText('Add a note'), 'Some notes for this training');
 
@@ -832,7 +833,7 @@ describe('AddEditTrainingComponent', () => {
 
     it('should auto fill in the expiry date if validity period and completed date are given', async () => {
       const selectedTraining = { trainingCategory: { category: 'Autism', id: 2 } };
-      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy } = await setup({
+      const { component, getByText, getByTestId, getByLabelText, createSpy } = await setup({
         trainingRecordId: null,
         selectedTraining,
       });
@@ -840,9 +841,7 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '12');
 
       const completedDate = getByTestId('completedDate');
-      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
-      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
-      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+      fillInDate(completedDate, '2020', '4', '10');
 
       userEvent.click(getByText('Save record'));
 
@@ -866,20 +865,10 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(getByLabelText(/How many months/), '12');
 
       const completedDate = getByTestId('completedDate');
-      userEvent.clear(within(completedDate).getByLabelText('Day'));
-      userEvent.clear(within(completedDate).getByLabelText('Month'));
-      userEvent.clear(within(completedDate).getByLabelText('Year'));
-      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
-      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
-      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+      fillInDate(completedDate, '2020', '4', '10');
 
       const expiryDate = getByTestId('expiresDate');
-      userEvent.clear(within(expiryDate).getByLabelText('Day'));
-      userEvent.clear(within(expiryDate).getByLabelText('Month'));
-      userEvent.clear(within(expiryDate).getByLabelText('Year'));
-      userEvent.type(within(expiryDate).getByLabelText('Day'), '31');
-      userEvent.type(within(expiryDate).getByLabelText('Month'), '12');
-      userEvent.type(within(expiryDate).getByLabelText('Year'), '2023');
+      fillInDate(expiryDate, '2023', '12', '31');
 
       userEvent.click(getByText('Save and return'));
 
@@ -1141,9 +1130,7 @@ describe('AddEditTrainingComponent', () => {
         fixture.detectChanges();
 
         const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), '44');
-        userEvent.type(within(completedDate).getByLabelText('Month'), '33');
-        userEvent.type(within(completedDate).getByLabelText('Year'), '2');
+        fillInDate(completedDate, '2', '33', '44');
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
@@ -1159,11 +1146,14 @@ describe('AddEditTrainingComponent', () => {
 
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + 1);
+        const [year, month, day] = [
+          `${futureDate.getFullYear()}`,
+          `${futureDate.getMonth() + 1}`,
+          `${futureDate.getDate()}`,
+        ];
 
         const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), `${futureDate.getDate()}`);
-        userEvent.type(within(completedDate).getByLabelText('Month'), `${futureDate.getMonth() + 1}`);
-        userEvent.type(within(completedDate).getByLabelText('Year'), `${futureDate.getFullYear()}`);
+        fillInDate(completedDate, year, month, day);
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
@@ -1179,11 +1169,10 @@ describe('AddEditTrainingComponent', () => {
 
         const pastDate = new Date();
         pastDate.setFullYear(pastDate.getFullYear() - 101);
+        const [year, month, day] = [`${pastDate.getFullYear()}`, `${pastDate.getMonth() + 1}`, `${pastDate.getDate()}`];
 
         const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), `${pastDate.getDate()}`);
-        userEvent.type(within(completedDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
-        userEvent.type(within(completedDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
+        fillInDate(completedDate, year, month, day);
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
@@ -1202,9 +1191,7 @@ describe('AddEditTrainingComponent', () => {
         fixture.detectChanges();
 
         const expiresDate = getByTestId('expiresDate');
-        userEvent.type(within(expiresDate).getByLabelText('Day'), '44');
-        userEvent.type(within(expiresDate).getByLabelText('Month'), '33');
-        userEvent.type(within(expiresDate).getByLabelText('Year'), '2');
+        fillInDate(expiresDate, '2', '33', '44');
 
         fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
@@ -1222,16 +1209,11 @@ describe('AddEditTrainingComponent', () => {
 
         const pastDate = new Date();
         pastDate.setFullYear(pastDate.getFullYear() - 101);
+        const [year, month, day] = [`${pastDate.getFullYear()}`, `${pastDate.getMonth() + 1}`, `${pastDate.getDate()}`];
 
         const expiresDate = getByTestId('expiresDate');
 
-        dateInputs.forEach((input) => {
-          userEvent.clear(within(expiresDate).getByLabelText(`${input}`));
-        });
-
-        userEvent.type(within(expiresDate).getByLabelText('Day'), `${pastDate.getDate()}`);
-        userEvent.type(within(expiresDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
-        userEvent.type(within(expiresDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
+        fillInDate(expiresDate, year, month, day);
 
         fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
@@ -1250,21 +1232,16 @@ describe('AddEditTrainingComponent', () => {
         const completedDate = getByTestId('completedDate');
         const expiresDate = getByTestId('expiresDate');
 
-        dateInputs.forEach((input) => {
-          userEvent.clear(within(completedDate).getByLabelText(`${input}`));
-          userEvent.clear(within(expiresDate).getByLabelText(`${input}`));
-        });
-
-        userEvent.type(within(completedDate).getByLabelText('Day'), `${dateCompleted.getDate()}`);
-        userEvent.type(within(completedDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
-        userEvent.type(within(completedDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
+        fillInDate(
+          completedDate,
+          `${dateCompleted.getFullYear()}`,
+          `${dateCompleted.getMonth() + 1}`,
+          `${dateCompleted.getDate()}`,
+        );
 
         const pastDate = new Date();
         pastDate.setFullYear(pastDate.getFullYear() - 101);
-
-        userEvent.type(within(expiresDate).getByLabelText('Day'), `${pastDate.getDate()}`);
-        userEvent.type(within(expiresDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
-        userEvent.type(within(expiresDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
+        fillInDate(expiresDate, `${pastDate.getFullYear()}`, `${pastDate.getMonth() + 1}`, `${pastDate.getDate()}`);
 
         fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
@@ -1284,18 +1261,8 @@ describe('AddEditTrainingComponent', () => {
         const completedDate = getByTestId('completedDate');
         const expiresDate = getByTestId('expiresDate');
 
-        dateInputs.forEach((input) => {
-          userEvent.clear(within(completedDate).getByLabelText(`${input}`));
-          userEvent.clear(within(expiresDate).getByLabelText(`${input}`));
-        });
-
-        userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
-        userEvent.type(within(completedDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
-        userEvent.type(within(completedDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
-
-        userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
-        userEvent.type(within(expiresDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
-        userEvent.type(within(expiresDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
+        fillInDate(completedDate, `${dateCompleted.getFullYear()}`, `${dateCompleted.getMonth() + 1}`, `7`);
+        fillInDate(expiresDate, `${dateCompleted.getFullYear()}`, `${dateCompleted.getMonth() + 1}`, `6`);
 
         fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
