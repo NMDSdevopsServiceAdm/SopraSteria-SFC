@@ -18,7 +18,7 @@ import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteServ
 import { TrainingService } from '@core/services/training.service';
 import { TrainingCourse } from '@core/model/training-course.model';
 
-fdescribe('SelectTrainingCourseForWorkerTraining', () => {
+describe('SelectTrainingCourseForWorkerTraining', () => {
   const continueWithOutCourseOptionText = 'Continue without selecting a training course';
   const trainingCourses = [
     {

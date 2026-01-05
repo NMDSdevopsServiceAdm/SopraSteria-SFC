@@ -38,7 +38,7 @@ const workers = [
   },
 ];
 
-fdescribe('MissingMandatoryTrainingStatusComponent', () => {
+describe('MissingMandatoryTrainingStatusComponent', () => {
   async function setup(overrides = {} as any) {
     let workerObj = {
       workers,

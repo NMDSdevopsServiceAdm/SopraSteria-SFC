@@ -1399,7 +1399,7 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
-  fit('should redirect to the add training select category page on page refresh', async () => {
+  it('should redirect to the add training select category page on page refresh', async () => {
     const { component, routerSpy } = await setup({ trainingRecordId: null, selectedTraining: null });
 
     component.ngOnInit();

@@ -22,7 +22,7 @@ import sinon from 'sinon';
 
 import { SelectTrainingCategoryComponent } from './select-training-category.component';
 
-fdescribe('SelectTrainingCategoryComponent', () => {
+describe('SelectTrainingCategoryComponent', () => {
   async function setup(prefill = false, qsParamGetMock = sinon.fake()) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
