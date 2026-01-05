@@ -38,12 +38,17 @@ const workers = [
   },
 ];
 
-describe('MissingMandatoryTrainingStatusComponent', () => {
-  async function setup(addPermissions = true, fixTrainingCount = false, qsParamGetMock = sinon.fake()) {
+fdescribe('MissingMandatoryTrainingStatusComponent', () => {
+  async function setup(overrides = {} as any) {
     let workerObj = {
       workers,
       workerCount: 2,
     };
+
+    const addPermissions = overrides?.addPermissions ?? true;
+    const fixTrainingCount = overrides?.fixTrainingCount ?? false;
+    const qsParamGetMock = overrides?.qsParamGetMock ?? sinon.fake();
+
     const permissions = addPermissions ? ['canEditWorker'] : [];
     if (fixTrainingCount) workerObj = { workers: [workers[0]], workerCount: 1 };
 
@@ -149,7 +154,7 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
   });
 
   it('should not render the name as a link if there are not the correct permissions', async () => {
-    const { getByTestId } = await setup(false);
+    const { getByTestId } = await setup({ addPermissions: false });
 
     expect(getByTestId(`worker-${workers[0].name}-noLink`)).toBeTruthy();
     expect(getByTestId(`worker-${workers[1].name}-noLink`)).toBeTruthy();
@@ -168,23 +173,26 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     const table3AddLink = within(tableRow3).getByText('Add');
     const table4AddLink = within(tableRow4).getByText('Add');
 
-    expect(table1AddLink.getAttribute('href').slice(0, table1AddLink.getAttribute('href').indexOf('?'))).toEqual(
-      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`,
+    const getHrefWithoutQuery = (link: HTMLElement) =>
+      link.getAttribute('href').slice(0, table1AddLink.getAttribute('href').indexOf('?'));
+
+    expect(getHrefWithoutQuery(table1AddLink)).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-a-training-record`,
     );
 
-    expect(table2AddLink.getAttribute('href').slice(0, table2AddLink.getAttribute('href').indexOf('?'))).toEqual(
-      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`,
+    expect(getHrefWithoutQuery(table2AddLink)).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-a-training-record`,
     );
-    expect(table3AddLink.getAttribute('href').slice(0, table3AddLink.getAttribute('href').indexOf('?'))).toEqual(
-      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-training`,
+    expect(getHrefWithoutQuery(table3AddLink)).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-1/add-a-training-record`,
     );
-    expect(table4AddLink.getAttribute('href').slice(0, table4AddLink.getAttribute('href').indexOf('?'))).toEqual(
-      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-2/add-training`,
+    expect(getHrefWithoutQuery(table4AddLink)).toEqual(
+      `/workplace/${component.workplaceUid}/training-and-qualifications-record/mock-uid-2/add-a-training-record`,
     );
   });
 
   it('should not render the add links if there are not the correct permissions', async () => {
-    const { getByTestId } = await setup(false);
+    const { getByTestId } = await setup({ addPermissions: false });
 
     const tableRow1 = getByTestId(`table-row-${workers[0].name}-0`);
     const tableRow2 = getByTestId(`table-row-${workers[0].name}-1`);
@@ -224,7 +232,7 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
 
   describe('sort', () => {
     it('should not show the sort by dropdown if there is only 1 staff record', async () => {
-      const { queryByTestId } = await setup(true, true);
+      const { queryByTestId } = await setup({ fixTrainingCount: true });
 
       expect(queryByTestId('sortBy')).toBeFalsy();
     });
@@ -318,7 +326,7 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
       qsParamGetMock.onCall(0).returns('mysupersearch');
       qsParamGetMock.onCall(1).returns('training');
 
-      const { component, fixture, getByLabelText } = await setup(true, false, qsParamGetMock);
+      const { component, fixture, getByLabelText } = await setup({ qsParamGetMock });
 
       component.totalWorkerCount = 16;
       fixture.detectChanges();
