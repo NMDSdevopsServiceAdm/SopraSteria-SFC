@@ -59,8 +59,6 @@ describe('As a workplace primary user I want to register a new user', () => {
       // try login as the new user
       cy.loginAsUser(loginId, mockPassword);
 
-      getPassInterstitialLoginMessage();
-
       cy.get('h1').contains(StandAloneEstablishment.name).should('be.visible');
       onHomePage.allTabs(userType);
     });
