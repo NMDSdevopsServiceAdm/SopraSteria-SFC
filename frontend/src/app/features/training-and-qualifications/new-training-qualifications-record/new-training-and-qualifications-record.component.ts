@@ -31,10 +31,10 @@ import { PdfMakeService } from '../../../core/services/pdf-make.service';
 import { TrainingCourse } from '@core/model/training-course.model';
 
 @Component({
-    selector: 'app-new-training-and-qualifications-record',
-    templateUrl: './new-training-and-qualifications-record.component.html',
-    styleUrls: ['./new-training-and-qualification.component.scss'],
-    standalone: false
+  selector: 'app-new-training-and-qualifications-record',
+  templateUrl: './new-training-and-qualifications-record.component.html',
+  styleUrls: ['./new-training-and-qualification.component.scss'],
+  standalone: false,
 })
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   @ViewChild('tabEl') tabEl;
@@ -323,7 +323,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     const commonRoute = ['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid];
     const selectCoursePage = [...commonRoute, 'add-a-training-record'];
-    const continueWithoutSelectingCourse = [...commonRoute, 'add-training'];
+    const continueWithoutSelectingCourse = [...commonRoute, 'add-training-without-course'];
 
     if (haveCourseOfThatCategory) {
       this.router.navigate(selectCoursePage, {

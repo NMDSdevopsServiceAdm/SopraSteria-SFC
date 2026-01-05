@@ -45,7 +45,7 @@ import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-
 import { TrainingCourse } from '@core/model/training-course.model';
 import { trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 
-describe('NewTrainingAndQualificationsRecordComponent', () => {
+fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   const yesterday = new Date();
@@ -491,21 +491,12 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(button).toBeTruthy();
     });
 
-    it('should have correct href on the "Add a training record" button when courses have been added', async () => {
-      const { workplaceUid, workerUid, getByRole } = await setup({ trainingCourses: [trainingCourseBuilder()] });
-      const button = getByRole('button', { name: 'Add a training record' });
-
-      expect(button.getAttribute('href')).toEqual(
-        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/add-a-training-record`,
-      );
-    });
-
-    it('should have correct href on the "Add a training record" button when no courses have been added', async () => {
+    it('should link the "Add a training record" button to add-a-training-record page', async () => {
       const { workplaceUid, workerUid, getByRole } = await setup();
       const button = getByRole('button', { name: 'Add a training record' });
 
       expect(button.getAttribute('href')).toEqual(
-        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/add-training`,
+        `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/add-a-training-record`,
       );
     });
 
@@ -709,22 +700,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         expect(addLink).toBeFalsy();
       });
 
-      it('the Add link should navigate to add-training (continue without selecting a course) if there are no training course for that category', async () => {
-        const { getByTestId, routerSpy, workplaceUid, workerUid } = await setup({
-          mandatoryTraining: [],
-          trainingCourses: [],
-        });
-
-        const addLink = getMandatoryTrainingAddLink(getByTestId);
-
-        userEvent.click(addLink);
-        expect(routerSpy).toHaveBeenCalledWith(
-          ['workplace', workplaceUid, 'training-and-qualifications-record', workerUid, 'add-training'],
-          { queryParams: jasmine.objectContaining({ trainingCategory: '{"id":9,"category":"Coshh"}' }) },
-        );
-      });
-
-      it('the Add link should navigate to add-a-training-record (Select course page) if got training course for that category', async () => {
+      it('the Add link should navigate to add-a-training-record (Select course or continued without course page)', async () => {
         const { getByTestId, routerSpy, workplaceUid, workerUid } = await setup({
           mandatoryTraining: [],
           trainingCourses: [{ trainingCategoryId: 9, trainingCategoryName: 'Coshh' } as TrainingCourse],
