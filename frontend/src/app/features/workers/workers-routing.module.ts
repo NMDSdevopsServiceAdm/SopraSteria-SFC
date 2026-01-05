@@ -550,6 +550,7 @@ const routes: Routes = [
                 component: AddEditTrainingComponent,
                 data: { title: 'Training' },
                 resolve: {
+                  trainingRecord: TrainingRecordResolver,
                   trainingCourses: TrainingCourseResolver,
                 },
               },

@@ -44,16 +44,14 @@ describe('TrainingProviderService', () => {
         ...trainingRecord,
         externalProviderName: 'Udemy',
         deliveredBy: DeliveredBy.ExternalProvider,
-        isOther: true,
       };
 
-      const request = service.getAndProcessFormValue(mockTrainingData, mockTrainingProviders, 63);
+      const request = service.fillInTrainingProvider(mockTrainingData, mockTrainingProviders, 63);
 
       expect(service.getTrainingProviderIdFromName).toHaveBeenCalled;
       expect(request).toEqual({
         ...mockTrainingData,
         trainingProviderId: 63,
-        isOther: mockTrainingData.isOther,
       });
     });
 
@@ -63,7 +61,7 @@ describe('TrainingProviderService', () => {
         deliveredBy: DeliveredBy.InHouseStaff,
       };
 
-      const request = service.getAndProcessFormValue(mockTrainingData, mockTrainingProviders, 63);
+      const request = service.fillInTrainingProvider(mockTrainingData, mockTrainingProviders, 63);
 
       expect(service.getTrainingProviderIdFromName).not.toHaveBeenCalled;
       expect(request).toEqual({

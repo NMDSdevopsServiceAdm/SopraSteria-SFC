@@ -226,10 +226,6 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       ]);
   }
 
-  private dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs | null {
-    return DateUtil.toDayjs(group.value);
-  }
-
   private fillForm(): void {
     const { completed, expires, notes, trainingCertificates } = this.trainingRecord;
 
@@ -280,31 +276,19 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     const { completed, expires } = this.form.value;
     const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
 
-    if (!completed?.day || !expires?.day || !validityPeriodInMonth) {
-      this.expiryMismatchWarning = false;
-      return;
-    }
-
+    const completedDate = DateUtil.toDayjs(completed);
     const expiresDate = DateUtil.toDayjs(expires);
-    const expectedExpiry = this.getExpectedExpiryDate();
+    const expiryDateDoesNotMatch = DateUtil.expiryDateDoesNotMatch(completedDate, expiresDate, validityPeriodInMonth);
 
-    if (expectedExpiry && expiresDate) {
-      const dateNotMatching = !expiresDate.isSame(expectedExpiry, 'day');
-      this.expiryMismatchWarning = dateNotMatching;
-    } else {
-      this.expiryMismatchWarning = false;
-    }
+    this.expiryMismatchWarning = expiryDateDoesNotMatch;
   }
 
   private getExpectedExpiryDate(): dayjs.Dayjs {
     const { completed } = this.form.value;
-    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
-    if (!completed || !validityPeriodInMonth) {
-      return null;
-    }
-
     const completedDate = DateUtil.toDayjs(completed);
-    return completedDate?.add(validityPeriodInMonth, 'month');
+    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
+
+    return DateUtil.expectedExpiryDate(completedDate, validityPeriodInMonth);
   }
 
   private setupFormErrorsMap(): void {
@@ -363,11 +347,11 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   private buildRequestBody(): TrainingRecordRequest {
     const { completed, expires, notes } = this.form.controls;
 
-    const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
+    const completedDate = DateUtil.toDayjs(completed?.value);
     const expiresDate =
       this.journeyType === 'AddNewTrainingRecordWithCourse'
         ? this.getExpectedExpiryDate()
-        : this.dateGroupToDayjs(expires as UntypedFormGroup);
+        : DateUtil.toDayjs(expires?.value);
 
     if (this.journeyType === 'ViewExistingRecord') {
       return {
