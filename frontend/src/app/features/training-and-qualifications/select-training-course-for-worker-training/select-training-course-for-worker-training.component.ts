@@ -9,6 +9,7 @@ import { PreviousRouteService } from '@core/services/previous-route.service';
 import { TrainingService } from '@core/services/training.service';
 import { SelectTrainingCourseForTrainingRecordDirective } from '@shared/directives/select-training-course-for-training-record/select-training-course-for-training-record.directive';
 import { filter, take } from 'rxjs/operators';
+
 @Component({
   selector: 'app-select-training-course-for-worker-training',
   templateUrl:
@@ -46,7 +47,7 @@ export class SelectTrainingCourseForWorkerTraining
   public setUpVariables(): void {
     this.headingText = 'Add a training record';
     this.sectionText = this.workerService.worker.nameOrId;
-    this.previousPageToCheckWithoutTrainingCourse = 'add-training';
+    this.previousPageToCheckWithoutTrainingCourse = 'add-training-without-course';
     this.previousPageToCheckWithTrainingCourse = 'matching-layout';
     this.courseOptionsSubText = 'Select a training course for this record';
     this.routeWithoutTrainingCourse = [
@@ -54,7 +55,7 @@ export class SelectTrainingCourseForWorkerTraining
       this.workplace.uid,
       'training-and-qualifications-record',
       this.worker.uid,
-      'add-training',
+      'add-training-without-course',
     ];
 
     this.routeWithTrainingCourse = [
@@ -74,10 +75,21 @@ export class SelectTrainingCourseForWorkerTraining
       const categoryId = JSON.parse(categoryToShow)?.id;
 
       this.trainingCourses = allTrainingCourseInWorkplace.filter((course) => course.trainingCategoryId === categoryId);
-      return;
+    } else {
+      this.trainingCourses = allTrainingCourseInWorkplace;
     }
 
-    this.trainingCourses = allTrainingCourseInWorkplace;
+    if (!this.trainingCourses?.length) {
+      const queryParamsFromPreviousPage = this.route.snapshot.queryParams;
+
+      if (queryParamsFromPreviousPage) {
+        this.router.navigate(this.routeWithoutTrainingCourse, {
+          queryParams: queryParamsFromPreviousPage,
+        });
+      } else {
+        this.router.navigate(this.routeWithoutTrainingCourse);
+      }
+    }
   }
 
   protected continueWithoutTrainingCourse(): void {

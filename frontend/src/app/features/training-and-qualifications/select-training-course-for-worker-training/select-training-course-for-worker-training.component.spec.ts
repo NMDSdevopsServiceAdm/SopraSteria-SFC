@@ -18,7 +18,7 @@ import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteServ
 import { TrainingService } from '@core/services/training.service';
 import { TrainingCourse } from '@core/model/training-course.model';
 
-describe('SelectTrainingCourseForWorkerTraining', () => {
+fdescribe('SelectTrainingCourseForWorkerTraining', () => {
   const continueWithOutCourseOptionText = 'Continue without selecting a training course';
   const trainingCourses = [
     {
@@ -164,7 +164,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
     expect(button).toBeTruthy();
   });
 
-  it(`should navigate to "add-training" selecting ${continueWithOutCourseOptionText}`, async () => {
+  it(`should navigate to "add-training-without-course" selecting ${continueWithOutCourseOptionText}`, async () => {
     const {
       component,
       fixture,
@@ -187,13 +187,13 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       component.workplace.uid,
       'training-and-qualifications-record',
       component.worker.uid,
-      'add-training',
+      'add-training-without-course',
     ]);
     expect(setIsTrainingCourseSelectedSpy).toHaveBeenCalledWith(false);
     expect(setSelectedTrainingCourseSpy).not.toHaveBeenCalled();
   });
 
-  it(`should navigate to "add-training" after selecting a training course`, async () => {
+  it(`should navigate to "matching-layout" after selecting a training course`, async () => {
     const {
       component,
       fixture,
@@ -257,7 +257,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
   });
 
   describe('prefill', () => {
-    it('should not prefill if the previous page was not "add-training"', async () => {
+    it('should not prefill if the previous page was not "add-training-without-course"', async () => {
       const { getByLabelText } = await setup();
 
       const noCourseRadioButton = getByLabelText(continueWithOutCourseOptionText) as HTMLInputElement;
@@ -269,10 +269,10 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       });
     });
 
-    it('should not prefill if the previous page was "add-training" and isTrainingCourseSelected is null', async () => {
+    it('should not prefill if the previous page was "add-training-without-course" and isTrainingCourseSelected is null', async () => {
       const overrides = {
         isTrainingCourseSelected: null,
-        previousUrl: 'add-training',
+        previousUrl: 'add-training-without-course',
       };
       const { getByLabelText } = await setup(overrides);
 
@@ -285,10 +285,10 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       });
     });
 
-    it('should not prefill if the previous page was "add-training" and isTrainingCourseSelected is undefined', async () => {
+    it('should not prefill if the previous page was "add-training-without-course" and isTrainingCourseSelected is undefined', async () => {
       const overrides = {
         isTrainingCourseSelected: undefined,
-        previousUrl: 'add-training',
+        previousUrl: 'add-training-without-course',
       };
       const { getByLabelText } = await setup(overrides);
 
@@ -301,10 +301,10 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       });
     });
 
-    it('should not prefill if the previous page was "add-training" and isTrainingCourseSelected is true', async () => {
+    it('should not prefill if the previous page was "add-training-without-course" and isTrainingCourseSelected is true', async () => {
       const overrides = {
         isTrainingCourseSelected: true,
-        previousUrl: 'add-training',
+        previousUrl: 'add-training-without-course',
       };
       const { getByLabelText } = await setup(overrides);
 
@@ -317,10 +317,10 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       });
     });
 
-    it(`should prefill if the previous answer is ${continueWithOutCourseOptionText} and previous page was "add-training"`, async () => {
+    it(`should prefill if the previous answer is ${continueWithOutCourseOptionText} and previous page was "add-training-without-course"`, async () => {
       const overrides = {
         isTrainingCourseSelected: false,
-        previousUrl: 'add-training',
+        previousUrl: 'add-training-without-course',
       };
       const { getByLabelText } = await setup(overrides);
 
@@ -374,7 +374,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
           component.workplace.uid,
           'training-and-qualifications-record',
           component.worker.uid,
-          'add-training',
+          'add-training-without-course',
         ],
         {
           queryParams: mockQueryParams,
