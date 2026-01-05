@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment, mandatoryTrainingJobOption } from '@core/model/establishment.model';
+import { Establishment } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecord, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
@@ -43,7 +43,6 @@ import { mockQualificationCertificates } from '../../../core/test-utils/MockCert
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 import { TrainingCourse } from '@core/model/training-course.model';
-import { trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
 
 fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
