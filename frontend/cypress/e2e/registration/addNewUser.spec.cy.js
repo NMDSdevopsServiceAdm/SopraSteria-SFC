@@ -12,20 +12,8 @@ describe('As a workplace primary user I want to register a new user', () => {
     cy.deleteTestUserFromDb(userFullName);
   });
 
-  const getPassVacanciesAndTurnoverLoginMessage = () => {
-    cy.get('h1').should('not.contain', 'Sign in');
-    cy.get('h1')
-      .invoke('text')
-      .then((headingText) => {
-        if (headingText.includes('Your Workplace vacancies and turnover information')) {
-          cy.get('a').contains('Continue').click();
-        }
-      });
-  };
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
-    getPassVacanciesAndTurnoverLoginMessage();
   });
 
   afterEach(() => {

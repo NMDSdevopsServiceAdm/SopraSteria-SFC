@@ -24,7 +24,20 @@ Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.get('[data-cy="password"]').type(password);
   cy.get('[data-testid="signinButton"]').click();
   cy.wait('@login');
+
+  getPassVacanciesAndTurnoverLoginMessage();
 });
+
+const getPassVacanciesAndTurnoverLoginMessage = () => {
+  cy.get('h1').should('not.contain', 'Sign in');
+  cy.get('h1')
+    .invoke('text')
+    .then((headingText) => {
+      if (headingText.includes('Your Workplace vacancies and turnover information')) {
+        cy.get('a').contains('Continue').click();
+      }
+    });
+};
 
 Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
   const queryStrings = [
