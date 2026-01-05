@@ -132,7 +132,6 @@ import { NursingSpecialismsTextPipe } from './pipes/nursing-specialisms-text.pip
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
 import { RemoveTrailingWhitespacePipe } from './pipes/remove-trailing-whitespace.pipe';
-import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
@@ -163,7 +162,6 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
     NewDataViewPermissionsPipe,
-    SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
     EligibilityIconComponent,
@@ -307,7 +305,6 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
     NewDataViewPermissionsPipe,
-    SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
     EligibilityIconComponent,
