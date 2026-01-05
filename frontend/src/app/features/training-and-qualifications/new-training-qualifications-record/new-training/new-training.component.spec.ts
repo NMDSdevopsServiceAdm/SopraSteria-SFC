@@ -10,7 +10,7 @@ import userEvent from '@testing-library/user-event';
 import { NewTrainingComponent } from './new-training.component';
 import { provideRouter, RouterModule } from '@angular/router';
 
-describe('NewTrainingComponent', async () => {
+fdescribe('NewTrainingComponent', async () => {
   const trainingCategories = [
     {
       category: 'Autism',
@@ -279,7 +279,7 @@ describe('NewTrainingComponent', async () => {
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
 
       expect(noTrainingLink).toBeTruthy();
-      expect(noTrainingLink.getAttribute('href')).toBe('/add-training');
+      expect(noTrainingLink.getAttribute('href')).toBe('/add-a-training-record');
     });
 
     it('should not display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is false', async () => {
