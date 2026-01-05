@@ -102,7 +102,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
     if (!this.trainingCategory && !this.trainingRecordId) {
       this.router.navigate([
-        `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training`,
+        `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training-without-course`,
       ]);
       return;
     }
