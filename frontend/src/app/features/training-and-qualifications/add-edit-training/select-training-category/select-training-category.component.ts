@@ -8,9 +8,9 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
-    selector: 'app-select-training-category',
-    templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
-    standalone: false
+  selector: 'app-select-training-category',
+  templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
+  standalone: false,
 })
 export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirective implements OnInit {
   constructor(
@@ -38,7 +38,7 @@ export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirec
   protected submit(selectedCategory): void {
     this.trainingService.setSelectedTrainingCategory(selectedCategory);
     this.router.navigate([
-      `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training/details`,
+      `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training-without-course/details`,
     ]);
   }
 

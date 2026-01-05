@@ -22,7 +22,7 @@ import sinon from 'sinon';
 
 import { SelectTrainingCategoryComponent } from './select-training-category.component';
 
-describe('SelectTrainingCategoryComponent', () => {
+fdescribe('SelectTrainingCategoryComponent', () => {
   async function setup(prefill = false, qsParamGetMock = sinon.fake()) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
@@ -159,7 +159,7 @@ describe('SelectTrainingCategoryComponent', () => {
       trainingCategoryGroup: 'Specific conditions and disabilities',
     });
     expect(routerSpy).toHaveBeenCalledWith([
-      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training/details`,
+      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training-without-course/details`,
     ]);
   });
 
