@@ -12,20 +12,8 @@ describe('As a workplace primary user I want to register a new user', () => {
     cy.deleteTestUserFromDb(userFullName);
   });
 
-  const getPassInterstitialLoginMessage = () => {
-    cy.get('h1').should('not.contain', 'Sign in');
-    cy.get('h1')
-      .invoke('text')
-      .then((headingText) => {
-        if (headingText.includes("What's new in ASC-WDS?")) {
-          cy.get('a').contains('Close this page').click();
-        }
-      });
-  };
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
-    getPassInterstitialLoginMessage();
   });
 
   afterEach(() => {
