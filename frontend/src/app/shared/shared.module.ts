@@ -14,7 +14,6 @@ import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
 import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
-import { MissingMandatoryTrainingComponent } from '@features/training-and-qualifications/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/check-cqc-details.component';
@@ -241,7 +240,6 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
     RegistrationSubmitButtonsComponent,
     NewBackLinkComponent,
     ViewTrainingComponent,
-    MissingMandatoryTrainingComponent,
     TrainingSelectViewPanelComponent,
     TablePaginationWrapperComponent,
     DontKnowPipe,
@@ -382,7 +380,6 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
     RegistrationSubmitButtonsComponent,
     NewBackLinkComponent,
     ViewTrainingComponent,
-    MissingMandatoryTrainingComponent,
     TrainingSelectViewPanelComponent,
     TablePaginationWrapperComponent,
     DontKnowPipe,
