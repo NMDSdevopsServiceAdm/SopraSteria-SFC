@@ -99,7 +99,7 @@ describe('NewTrainingComponent', async () => {
 
   async function setup(override: any = {}) {
     const mockTrainingCategories = override?.trainingCategories ?? trainingCategories;
-    const { fixture, getByTestId, getByLabelText } = await render(NewTrainingComponent, {
+    const { fixture, getByTestId, getByLabelText, queryAllByText } = await render(NewTrainingComponent, {
       imports: [SharedModule, RouterModule],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
@@ -116,6 +116,7 @@ describe('NewTrainingComponent', async () => {
       component,
       getByTestId,
       getByLabelText,
+      queryAllByText,
       fixture,
     };
   }
@@ -124,6 +125,54 @@ describe('NewTrainingComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
+
+  describe('training record table headings', () => {
+    describe('when there are 3 training categories on the record', () => {
+      it('should render the 5 headings for the 3 categories', async () => {
+        const { queryAllByText } = await setup();
+
+        expect(queryAllByText('Training or course name').length).toEqual(3);
+        expect(queryAllByText('Accredited').length).toEqual(3);
+        expect(queryAllByText('Completion date').length).toEqual(3);
+        expect(queryAllByText('Expiry date').length).toEqual(3);
+        expect(queryAllByText('Certificate').length).toEqual(3);
+      });
+    })
+
+    describe('when there is 1 training category on the record', () => {
+      it('should render the 5 headings for the 1 training category', async () => {
+        const trainingCategory = [
+          {
+            category: 'Communication',
+            id: 3,
+            trainingRecords: [
+              {
+                accredited: true,
+                completed: new Date('09/20/2020'),
+                expires: new Date('09/20/2021'),
+                title: 'Communication training',
+                trainingCategory: { id: 3, category: 'Communication' },
+                trainingCertificates: [],
+                uid: 'someCommunicationUid',
+                trainingStatus: 3,
+                created: new Date('09/20/2020'),
+                updatedBy: 'admin',
+                updated: new Date('09/20/2020'),
+              },
+            ],
+          },
+        ]
+
+        const { queryAllByText } = await setup({trainingCategories: trainingCategory});
+
+        expect(queryAllByText('Training or course name').length).toEqual(1);
+        expect(queryAllByText('Accredited').length).toEqual(1);
+        expect(queryAllByText('Completion date').length).toEqual(1);
+        expect(queryAllByText('Expiry date').length).toEqual(1);
+        expect(queryAllByText('Certificate').length).toEqual(1);
+      });
+    })
+  })
 
   describe('training record table contents', async () => {
     it('should render a category heading name for each training record category', async () => {
