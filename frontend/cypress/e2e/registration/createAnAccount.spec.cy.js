@@ -99,7 +99,7 @@ describe('Create account', () => {
     cy.get('span').contains('Your account is now being checked by Skills for Care').should('be.visible');
 
     // try login as the new user
-    cy.loginAsUser(loginId, mockPassword);
+    cy.loginAsUserBeforeApproval(loginId, mockPassword);
     cy.contains('Your registration request is awaiting approval').should('be.visible');
 
     // approve the registration request
