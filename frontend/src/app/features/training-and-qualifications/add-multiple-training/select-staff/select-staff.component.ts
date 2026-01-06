@@ -186,13 +186,8 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
       this.updateSelectedStaff();
       this.trainingService.addMultipleTrainingInProgress$.next(true);
 
-      if (this.previousUrl === 'confirm-training-record-details') {
-        this.router.navigate([
-          'workplace',
-          this.workplaceUid,
-          'add-multiple-training',
-          'confirm-training-record-details',
-        ]);
+      if (this.previousUrl === 'confirm-training' || this.previousUrl === 'confirm-training-record-details') {
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', this.previousUrl]);
       } else if (this.isChangeStaffSelected) {
         this.trainingService.clearUpdatingSelectedStaffForMultipleTraining();
         this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);

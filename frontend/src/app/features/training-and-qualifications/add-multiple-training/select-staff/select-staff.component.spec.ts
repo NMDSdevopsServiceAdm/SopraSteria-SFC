@@ -572,6 +572,31 @@ describe('SelectStaffComponent', () => {
       ]);
     });
 
+    it('should navigate to the confirm-training page when page has been accessed from that page', async () => {
+      const { component, fixture, getByText, spy, workers } = await setup({
+        noOfWorkers: 3,
+        previousPage: 'confirm-training',
+      });
+
+      component.paginatedWorkers = workers;
+      fixture.detectChanges();
+
+      const selectAllLink = getByText('Select all');
+      fireEvent.click(selectAllLink);
+      fixture.detectChanges();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledWith([
+        'workplace',
+        component.workplaceUid,
+        'add-multiple-training',
+        'confirm-training',
+      ]);
+    });
+
     it('should navigate to the confirm-training-record-details page when page has been accessed from that page', async () => {
       const { component, fixture, getByText, spy, workers } = await setup({
         noOfWorkers: 3,
