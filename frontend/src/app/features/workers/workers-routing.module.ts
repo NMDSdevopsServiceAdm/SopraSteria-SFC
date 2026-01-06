@@ -83,7 +83,7 @@ import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from 
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
-import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
+import { TrainingCourseResolver, TrainingCoursesToLoad } from '@core/resolvers/training/training-course.resolver';
 import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
@@ -538,7 +538,10 @@ const routes: Routes = [
               {
                 path: '',
                 component: AddEditTrainingComponent,
-                data: { title: 'Training' },
+                data: {
+                  title: 'Training',
+                  trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+                },
                 resolve: {
                   trainingRecord: TrainingRecordResolver,
                   trainingCourses: TrainingCourseResolver,
@@ -564,13 +567,17 @@ const routes: Routes = [
               mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
               trainingCourses: TrainingCourseResolver,
             },
-            data: { title: 'Training and qualification record' },
+            data: { title: 'Training and qualification record', trainingCoursesToLoad: TrainingCoursesToLoad.ALL },
           },
           {
             path: 'add-a-training-record',
             component: SelectTrainingCourseForWorkerTraining,
+            data: {
+              title: 'Add a Training Record',
+              trainingCoursesToLoad: TrainingCoursesToLoad.BY_QUERY_PARAM,
+              redirectWhenNoCourses: ['../add-training-without-course'],
+            },
             resolve: { trainingCourses: TrainingCourseResolver },
-            data: { title: 'Add a Training Record', redirectWhenNoCourses: ['../add-training-without-course'] },
           },
 
           {
@@ -844,7 +851,7 @@ const routes: Routes = [
           {
             path: '',
             component: AddEditTrainingComponent,
-            data: { title: 'Training' },
+            data: { title: 'Training', trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID },
             resolve: {
               trainingCourses: TrainingCourseResolver,
               trainingProviders: TrainingProvidersResolver,
@@ -855,6 +862,7 @@ const routes: Routes = [
             component: IncludeTrainingCourseDetailsComponent,
             data: {
               title: 'Include training course details',
+              trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
             },
             resolve: {
               trainingCourses: TrainingCourseResolver,
@@ -873,6 +881,7 @@ const routes: Routes = [
             component: TrainingCourseMatchingLayoutComponent,
             data: {
               title: 'Match the training record',
+              trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
             },
             resolve: {
               trainingRecord: TrainingRecordResolver,
@@ -897,13 +906,19 @@ const routes: Routes = [
         path: 'add-a-training-record',
         component: SelectTrainingCourseForWorkerTraining,
         resolve: { trainingCourses: TrainingCourseResolver },
-        data: { title: 'Add a Training Record', redirectWhenNoCourses: ['../add-training-without-course'] },
+        data: {
+          title: 'Add a Training Record',
+          trainingCoursesToLoad: TrainingCoursesToLoad.BY_QUERY_PARAM,
+          redirectWhenNoCourses: ['../add-training-without-course'],
+        },
       },
       {
         path: 'matching-layout',
         component: TrainingCourseMatchingLayoutComponent,
         resolve: { trainingCourses: TrainingCourseResolver },
-        data: { title: 'Add training record details' },
+        data: {
+          title: 'Add training record details',
+        },
       },
       {
         path: 'long-term-absence',

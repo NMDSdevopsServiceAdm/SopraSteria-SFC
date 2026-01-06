@@ -1,65 +1,107 @@
-import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter, RedirectCommand } from '@angular/router';
+import { of } from 'rxjs';
 
-import { TrainingCourseResolver } from './training-course.resolver';
-import { TrainingCourseService } from '@core/services/training-course.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { of } from 'rxjs';
+import { Component } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, provideRouter, Router } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { TrainingCourse } from '@core/model/training-course.model';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingCourseService } from '@core/services/training-course.service';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+
+import { TrainingCourseResolver, TrainingCoursesToLoad } from './training-course.resolver';
+
+@Component({ template: '' })
+class MockComponentForTest {
+  constructor(public route: ActivatedRoute) {}
+}
 
 fdescribe('trainingCourseResolver', () => {
   const mockEstablishmentUid = 'mock-uid';
-
-  const mockParentWithTrainingCategoryId = {
-    data: {
-      trainingRecord: {
-        trainingCategory: {
-          id: 10,
-        },
-      },
-    },
-  };
-
+  const baseRoute = `workplace/${mockEstablishmentUid}`;
   const mockTrainingCoursesFromBackend = [{ id: 1, name: 'mockTrainingCourse' }] as TrainingCourse[];
 
-  function setup(overrides: any = {}) {
+  async function setup(overrides: any = {}) {
     const permissions = overrides?.permissions ?? ['canViewWorker'];
     const trainingCoursesFromBackend = overrides?.trainingCoursesFromBackend ?? mockTrainingCoursesFromBackend;
-    const snapshotData = { title: 'Mock page title' };
-    if (overrides?.redirectWhenNoCourses) {
-      snapshotData['redirectWhenNoCourses'] = overrides.redirectWhenNoCourses;
-    }
+    const snapshotData = overrides?.snapshotData ?? { title: 'Mock page title' };
+    const mockTrainingRecordResolver = jasmine.createSpy();
+
+    const mockRoutes = [
+      {
+        path: 'workplace/:establishmentuid',
+        children: [
+          {
+            path: '',
+            component: MockComponentForTest,
+            resolve: { trainingCourses: TrainingCourseResolver },
+            data: snapshotData,
+          },
+          {
+            path: 'add-a-training-record',
+            component: MockComponentForTest,
+            data: {
+              title: 'Add a Training Record', // select a course or continue without course
+              trainingCoursesToLoad: TrainingCoursesToLoad.BY_QUERY_PARAM,
+              redirectWhenNoCourses: ['../add-training-without-course'],
+            },
+            resolve: { trainingCourses: TrainingCourseResolver },
+          },
+          {
+            path: 'add-training-without-course',
+            children: [
+              {
+                path: '',
+                component: MockComponentForTest,
+                data: { title: 'Add Training' }, // continue without course
+              },
+            ],
+          },
+          {
+            path: 'training/:trainingRecordId',
+            resolve: { trainingRecord: mockTrainingRecordResolver },
+            children: [
+              {
+                path: '',
+                component: MockComponentForTest,
+                data: {
+                  title: 'Training',
+                  trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+                },
+                resolve: {
+                  trainingCourses: TrainingCourseResolver,
+                },
+              },
+            ],
+          },
+          {
+            path: 'page-to-show-when-no-training-course',
+            component: MockComponentForTest,
+          },
+        ],
+      },
+    ];
 
     TestBed.configureTestingModule({
       imports: [],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideRouter([]),
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: snapshotData,
-              paramMap: convertToParamMap({ establishmentuid: mockEstablishmentUid }),
-              parent: overrides?.parent,
-            },
-          },
-        },
+        provideRouter(mockRoutes),
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(permissions, false),
         },
-        TrainingCourseResolver,
-        TrainingCourseService,
       ],
     });
 
     const resolver = TestBed.inject(TrainingCourseResolver);
     const route = TestBed.inject(ActivatedRoute);
+    const router = TestBed.inject(Router);
+
+    const harness = await RouterTestingHarness.create();
 
     const trainingCourseService = TestBed.inject(TrainingCourseService);
     const getAllTrainingCoursesSpy = spyOn(trainingCourseService, 'getAllTrainingCourses').and.returnValue(
@@ -71,130 +113,177 @@ fdescribe('trainingCourseResolver', () => {
     ).and.returnValue(of(trainingCoursesFromBackend));
 
     return {
+      harness,
       route,
+      router,
       resolver,
       getAllTrainingCoursesSpy,
       getTrainingCoursesByCategorySpy,
+      mockTrainingRecordResolver,
     };
   }
 
-  it('should be created', () => {
-    const { resolver } = setup();
+  it('should be created', async () => {
+    const { resolver } = await setup();
     expect(resolver).toBeTruthy();
   });
 
   it('should call getAllTrainingCourses by default', async () => {
-    const { resolver, route, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = setup();
+    const { harness, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = await setup();
 
-    const result = await resolver.resolve(route.snapshot);
+    const component = await harness.navigateByUrl(baseRoute, MockComponentForTest);
 
     expect(getAllTrainingCoursesSpy).toHaveBeenCalledWith(mockEstablishmentUid);
     expect(getTrainingCoursesByCategorySpy).not.toHaveBeenCalled();
 
-    expect(result).toEqual(mockTrainingCoursesFromBackend);
+    expect(component.route.snapshot.data.trainingCourses).toEqual(mockTrainingCoursesFromBackend);
   });
 
   it('should call getAllTrainingCourses if trainingCoursesToLoad is "ALL"', async () => {
-    const { resolver, route, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = setup();
+    const { harness, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = await setup({
+      snapshotData: { trainingCoursesToLoad: 'ALL' },
+    });
 
-    route.snapshot.data = { trainingCoursesToLoad: 'ALL' };
-    const result = await resolver.resolve(route.snapshot);
+    const component = await harness.navigateByUrl(baseRoute, MockComponentForTest);
 
     expect(getAllTrainingCoursesSpy).toHaveBeenCalledWith(mockEstablishmentUid);
     expect(getTrainingCoursesByCategorySpy).not.toHaveBeenCalled();
 
-    expect(result).toEqual(mockTrainingCoursesFromBackend);
-  });
-
-  it('should call getTrainingCoursesByCategorySpy if there is a training categoryId', async () => {
-    const { resolver, route, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = setup({
-      parent: mockParentWithTrainingCategoryId,
-    });
-    const result = await resolver.resolve(route.snapshot);
-
-    expect(getAllTrainingCoursesSpy).not.toHaveBeenCalled();
-    expect(getTrainingCoursesByCategorySpy).toHaveBeenCalledWith(mockEstablishmentUid, 10);
-
-    expect(result).toEqual(mockTrainingCoursesFromBackend);
+    expect(component.route.snapshot.data.trainingCourses).toEqual(mockTrainingCoursesFromBackend);
   });
 
   it('should not make call to backend if the user does not have canViewWorker permission', async () => {
-    const { resolver, route, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = setup({
+    const { harness, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = await setup({
       permissions: [],
     });
-    const result = await resolver.resolve(route.snapshot);
+
+    const component = await harness.navigateByUrl(baseRoute, MockComponentForTest);
 
     expect(getAllTrainingCoursesSpy).not.toHaveBeenCalled();
     expect(getTrainingCoursesByCategorySpy).not.toHaveBeenCalled();
 
-    expect(result).toEqual([]);
+    expect(component.route.snapshot.data.trainingCourses).toEqual([]);
   });
 
-  describe('when backend call return with an empty array', () => {
-    it('should redirect to a specific page if "redirectWhenNoCourses" is defined in route', async () => {
-      const { resolver, route, getAllTrainingCoursesSpy } = setup({
-        redirectWhenNoCourses: ['/page-to-show-when-no-training-course'],
+  describe('when use with trainingCoursesToLoad: BY_TRAINING_RECORD_CATEGORY_ID', async () => {
+    const mockTrainingRecord = {
+      id: '1',
+      title: 'some mock training record',
+      trainingCategory: {
+        id: 10,
+      },
+    };
+
+    it('should call getTrainingCoursesByCategory with the category id of training record', async () => {
+      const { harness, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy, mockTrainingRecordResolver } =
+        await setup();
+
+      mockTrainingRecordResolver.and.resolveTo(mockTrainingRecord);
+
+      const component = await harness.navigateByUrl(
+        `${baseRoute}/training/mock-training-record-uid`,
+        MockComponentForTest,
+      );
+
+      expect(getAllTrainingCoursesSpy).not.toHaveBeenCalled();
+      expect(getTrainingCoursesByCategorySpy).toHaveBeenCalledWith(
+        mockEstablishmentUid,
+        mockTrainingRecord.trainingCategory.id,
+      );
+
+      expect(component.route.snapshot.data.trainingCourses).toEqual(mockTrainingCoursesFromBackend);
+    });
+
+    it('should just call getAllTrainingCourses if category id is missing', async () => {
+      const { harness, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy, mockTrainingRecordResolver } =
+        await setup();
+
+      mockTrainingRecordResolver.and.resolveTo({});
+
+      const component = await harness.navigateByUrl(
+        `${baseRoute}/training/mock-training-record-uid`,
+        MockComponentForTest,
+      );
+
+      expect(getAllTrainingCoursesSpy).toHaveBeenCalledWith(mockEstablishmentUid);
+      expect(getTrainingCoursesByCategorySpy).not.toHaveBeenCalled();
+
+      expect(component.route.snapshot.data.trainingCourses).toEqual(mockTrainingCoursesFromBackend);
+    });
+  });
+
+  describe('redirectWhenNoCourses', () => {
+    it('should redirect to a given page if "redirectWhenNoCourses" is defined in route and no training course was found', async () => {
+      const { router, harness, getAllTrainingCoursesSpy } = await setup({
+        snapshotData: {
+          redirectWhenNoCourses: ['page-to-show-when-no-training-course'],
+        },
         trainingCoursesFromBackend: [],
       });
 
-      const result = await resolver.resolve(route.snapshot);
+      await harness.navigateByUrl(baseRoute, MockComponentForTest);
 
       expect(getAllTrainingCoursesSpy).toHaveBeenCalled();
 
-      expect(result).toBeInstanceOf(RedirectCommand);
-      expect((result as RedirectCommand).redirectTo.toString()).toEqual('/page-to-show-when-no-training-course');
+      expect(router.url).toEqual(`/${baseRoute}/page-to-show-when-no-training-course`);
     });
 
-    it('should redirect to a specific page if "redirectWhenNoCourses" is defined in route (with category id given)', async () => {
-      const { resolver, route, getTrainingCoursesByCategorySpy } = setup({
-        redirectWhenNoCourses: ['/page-to-show-when-no-training-course'],
-        trainingCoursesFromBackend: [],
-        parent: mockParentWithTrainingCategoryId,
+    it('should ignore "redirectWhenNoCourses" and not to redirect if there are some training courses in the backend response', async () => {
+      const { router, harness, getAllTrainingCoursesSpy } = await setup({
+        snapshotData: {
+          redirectWhenNoCourses: ['page-to-show-when-no-training-course'],
+        },
+        trainingCoursesFromBackend: mockTrainingCoursesFromBackend,
       });
 
-      const result = await resolver.resolve(route.snapshot);
+      const component = await harness.navigateByUrl(baseRoute, MockComponentForTest);
 
-      expect(getTrainingCoursesByCategorySpy).toHaveBeenCalled();
+      expect(getAllTrainingCoursesSpy).toHaveBeenCalled();
 
-      expect(result).toBeInstanceOf(RedirectCommand);
-      expect((result as RedirectCommand).redirectTo.toString()).toEqual('/page-to-show-when-no-training-course');
-    });
-
-    it('should just return an empty array [] if redirectWhenNoCourses is not defined', async () => {
-      const { resolver, route } = setup({
-        trainingCoursesFromBackend: [],
-      });
-
-      const result = await resolver.resolve(route.snapshot);
-
-      expect(result).toEqual([]);
+      expect(router.url).toEqual(`/${baseRoute}`);
+      expect(component.route.snapshot.data.trainingCourses).toEqual(mockTrainingCoursesFromBackend);
     });
   });
 
-  it('should ignore redirectWhenNoCourses if backend return with some training courses', async () => {
-    const { resolver, route, getAllTrainingCoursesSpy } = setup({
-      redirectWhenNoCourses: ['/page-to-show-when-no-training-course'],
-      trainingCoursesFromBackend: mockTrainingCoursesFromBackend,
+  describe('when use with trainingCoursesToLoad: BY_QUERY_PARAM', async () => {
+    const mockQueryParamSuffix = `?trainingCategory=${JSON.stringify({ category: 'Autism', id: 2 })}`;
+
+    it('should call getTrainingCoursesByCategory with the category id from query param', async () => {
+      const { harness, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = await setup();
+
+      const component = await harness.navigateByUrl(
+        `${baseRoute}/add-a-training-record${mockQueryParamSuffix}`,
+        MockComponentForTest,
+      );
+
+      expect(getAllTrainingCoursesSpy).not.toHaveBeenCalled();
+      expect(getTrainingCoursesByCategorySpy).toHaveBeenCalledWith(mockEstablishmentUid, 2);
+      expect(component.route.snapshot.data.trainingCourses).toEqual(mockTrainingCoursesFromBackend);
     });
 
-    const result = await resolver.resolve(route.snapshot);
+    it('should just call getAllTrainingCourses if category id is missing', async () => {
+      const { router, harness, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = await setup();
 
-    expect(getAllTrainingCoursesSpy).toHaveBeenCalled();
+      const component = await harness.navigateByUrl(`${baseRoute}/add-a-training-record`, MockComponentForTest);
 
-    expect(result).toEqual(mockTrainingCoursesFromBackend);
-  });
+      expect(getAllTrainingCoursesSpy).toHaveBeenCalledWith(mockEstablishmentUid);
+      expect(getTrainingCoursesByCategorySpy).not.toHaveBeenCalled();
 
-  it('should ignore redirectWhenNoCourses if backend return with some training courses (with category id given)', async () => {
-    const { resolver, route, getTrainingCoursesByCategorySpy } = setup({
-      redirectWhenNoCourses: ['/page-to-show-when-no-training-course'],
-      parent: mockParentWithTrainingCategoryId,
-      trainingCoursesFromBackend: mockTrainingCoursesFromBackend,
+      expect(router.url).toEqual(`/${baseRoute}/add-a-training-record`);
+      expect(component.route.snapshot.data.trainingCourses).toEqual(mockTrainingCoursesFromBackend);
     });
 
-    const result = await resolver.resolve(route.snapshot);
+    it('should redirect if "redirectWhenNoCourses" is given and there are no training courses in the specific category', async () => {
+      // note: redirectWhenNoCourses is configured in routes in setup function
+      const { harness, router, getAllTrainingCoursesSpy, getTrainingCoursesByCategorySpy } = await setup({
+        trainingCoursesFromBackend: [],
+      });
 
-    expect(getTrainingCoursesByCategorySpy).toHaveBeenCalled();
+      await harness.navigateByUrl(`${baseRoute}/add-a-training-record`, MockComponentForTest);
 
-    expect(result).toEqual(mockTrainingCoursesFromBackend);
+      expect(getAllTrainingCoursesSpy).toHaveBeenCalledWith(mockEstablishmentUid);
+      expect(getTrainingCoursesByCategorySpy).not.toHaveBeenCalled();
+      expect(router.url).toEqual(`/${baseRoute}/add-training-without-course`);
+    });
   });
 });
