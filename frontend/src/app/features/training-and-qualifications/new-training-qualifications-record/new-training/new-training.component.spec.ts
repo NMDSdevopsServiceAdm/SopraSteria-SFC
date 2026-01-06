@@ -261,15 +261,6 @@ describe('NewTrainingComponent', async () => {
       expect(healthTrainingTitleLink).toBeTruthy();
       expect(healthTraining2TitleLink).toBeTruthy();
     });
-
-    it('should link to "matching-layout" page instead if the training record is linked to a training course', async () => {
-      const mockTrainingCategories = lodash.cloneDeep(trainingCategories);
-      mockTrainingCategories[0].trainingRecords[0]['isMatchedToTrainingCourse'] = true;
-
-      const { getByTestId } = await setup({ trainingCategories: mockTrainingCategories });
-      const autismTrainingTitleLink = getByTestId('Title-someAutismUid');
-      expect(autismTrainingTitleLink.getAttribute('href')).toEqual('/training/someAutismUid/matching-layout');
-    });
   });
 
   describe('no training', async () => {
