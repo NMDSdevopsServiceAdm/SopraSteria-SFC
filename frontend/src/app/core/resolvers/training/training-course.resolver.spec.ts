@@ -18,7 +18,7 @@ class MockComponentForTest {
   constructor(public route: ActivatedRoute) {}
 }
 
-fdescribe('trainingCourseResolver', () => {
+describe('trainingCourseResolver', () => {
   const mockEstablishmentUid = 'mock-uid';
   const baseRoute = `workplace/${mockEstablishmentUid}`;
   const mockTrainingCoursesFromBackend = [{ id: 1, name: 'mockTrainingCourse' }] as TrainingCourse[];

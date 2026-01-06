@@ -342,19 +342,6 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
   });
 
   describe('when trainingCategory is passed in query params from previous page', async () => {
-    it('should show only the training courses of the given trainingCategory', async () => {
-      const mockQueryParams = {
-        trainingCategory: JSON.stringify({
-          id: trainingCourses[1].trainingCategoryId,
-          category: trainingCourses[1].trainingCategoryName,
-        }),
-      };
-      const { queryByLabelText } = await setup({ queryParams: mockQueryParams });
-
-      expect(queryByLabelText(trainingCourses[0].name)).toBeFalsy();
-      expect(queryByLabelText(trainingCourses[1].name)).toBeTruthy();
-    });
-
     it('should pass the query params to next page if user chose continue without a training course', async () => {
       const mockQueryParams = {
         trainingCategory: JSON.stringify({

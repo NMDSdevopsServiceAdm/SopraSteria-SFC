@@ -68,27 +68,10 @@ export class SelectTrainingCourseForWorkerTraining
   }
 
   protected loadTrainingCourses(): void {
-    const allTrainingCourseInWorkplace = this.route.snapshot.data?.trainingCourses;
-    const categoryToShow: string = this.route.snapshot.queryParams?.trainingCategory;
-
-    if (categoryToShow) {
-      const categoryId = JSON.parse(categoryToShow)?.id;
-
-      this.trainingCourses = allTrainingCourseInWorkplace.filter((course) => course.trainingCategoryId === categoryId);
-    } else {
-      this.trainingCourses = allTrainingCourseInWorkplace;
-    }
+    this.trainingCourses = this.route.snapshot.data?.trainingCourses;
 
     if (!this.trainingCourses?.length) {
-      const queryParamsFromPreviousPage = this.route.snapshot.queryParams;
-
-      if (queryParamsFromPreviousPage) {
-        this.router.navigate(this.routeWithoutTrainingCourse, {
-          queryParams: queryParamsFromPreviousPage,
-        });
-      } else {
-        this.router.navigate(this.routeWithoutTrainingCourse);
-      }
+      this.continueWithoutTrainingCourse();
     }
   }
 
