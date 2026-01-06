@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, CanActivateFn, provideRouter, RedirectCommand, UrlTree } from '@angular/router';
+import { ActivatedRoute, CanActivateFn, provideRouter, UrlTree } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 

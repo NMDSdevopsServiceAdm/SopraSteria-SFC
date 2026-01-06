@@ -87,6 +87,7 @@ import { TrainingCourseResolver, TrainingCoursesToLoad } from '@core/resolvers/t
 import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
+import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
 
 const routes: Routes = [
   {
@@ -541,11 +542,13 @@ const routes: Routes = [
                 data: {
                   title: 'Training',
                   trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+                  routeForTrainingRecordWithCourse: ['./matching-layout'],
                 },
                 resolve: {
                   trainingRecord: TrainingRecordResolver,
                   trainingCourses: TrainingCourseResolver,
                 },
+                canActivate: [redirectIfLinkedToTrainingCourse],
               },
               {
                 path: 'delete',
@@ -851,11 +854,16 @@ const routes: Routes = [
           {
             path: '',
             component: AddEditTrainingComponent,
-            data: { title: 'Training', trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID },
+            data: {
+              title: 'Training',
+              trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+              routeForTrainingRecordWithCourse: ['./matching-layout'],
+            },
             resolve: {
               trainingCourses: TrainingCourseResolver,
               trainingProviders: TrainingProvidersResolver,
             },
+            canActivate: [redirectIfLinkedToTrainingCourse],
           },
           {
             path: 'include-training-course-details',
