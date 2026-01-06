@@ -14,9 +14,9 @@ import { take } from 'rxjs/operators';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
-    selector: 'app-select-staff',
-    templateUrl: './select-staff.component.html',
-    standalone: false
+  selector: 'app-select-staff',
+  templateUrl: './select-staff.component.html',
+  standalone: false,
 })
 export class SelectStaffComponent implements OnInit, AfterViewInit {
   @ViewChild('table') table: ElementRef;
@@ -188,8 +188,8 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
       this.updateSelectedStaff();
       this.trainingService.addMultipleTrainingInProgress$.next(true);
 
-      if (this.previousUrl === 'confirm-training-record-details') {
-        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'confirm-training-record-details']);
+      if (this.previousUrl === 'confirm-training' || this.previousUrl === 'confirm-training-record-details') {
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', this.previousUrl]);
       } else if (this.isChangeStaffSelected) {
         this.trainingService.clearUpdatingSelectedStaffForMultipleTraining();
         this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
