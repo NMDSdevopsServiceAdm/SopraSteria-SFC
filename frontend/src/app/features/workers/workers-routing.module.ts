@@ -89,6 +89,76 @@ import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qu
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
 
+const editTrainingRecordRoute = {
+  path: 'training/:trainingRecordId',
+  resolve: { trainingRecord: TrainingRecordResolver },
+  children: [
+    {
+      path: '',
+      redirectTo: 'edit-training-without-course',
+      pathMatch: 'full',
+    },
+    {
+      path: 'edit-training-without-course',
+      component: AddEditTrainingComponent,
+      data: {
+        title: 'Training',
+        trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+        routeForTrainingRecordWithCourse: ['../edit-training-with-course'],
+      },
+      resolve: {
+        trainingCourses: TrainingCourseResolver,
+        trainingProviders: TrainingProvidersResolver,
+      },
+      canActivate: [redirectIfLinkedToTrainingCourse],
+    },
+    {
+      path: 'edit-training-with-course',
+      component: TrainingCourseMatchingLayoutComponent,
+      data: {
+        title: 'Training record details',
+        trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+      },
+      resolve: {
+        trainingRecord: TrainingRecordResolver,
+        trainingCourses: TrainingCourseResolver,
+      },
+    },
+    {
+      path: 'include-training-course-details',
+      component: IncludeTrainingCourseDetailsComponent,
+      data: {
+        title: 'Include training course details',
+        trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+      },
+      resolve: {
+        trainingCourses: TrainingCourseResolver,
+      },
+    },
+    {
+      path: 'delete',
+      component: DeleteRecordComponent,
+      data: { title: 'Delete Training' },
+      resolve: {
+        trainingRecord: TrainingRecordResolver,
+      },
+    },
+
+    {
+      path: 'matching-layout',
+      component: TrainingCourseMatchingLayoutComponent,
+      data: {
+        title: 'Match the training record',
+        trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+      },
+      resolve: {
+        trainingRecord: TrainingRecordResolver,
+        trainingCourses: TrainingCourseResolver,
+      },
+    },
+  ] as Routes,
+};
+
 const routes: Routes = [
   {
     path: 'total-staff',
@@ -533,33 +603,7 @@ const routes: Routes = [
               },
             ],
           },
-          {
-            path: 'training/:trainingRecordId',
-            children: [
-              {
-                path: '',
-                component: AddEditTrainingComponent,
-                data: {
-                  title: 'Training',
-                  trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
-                  routeForTrainingRecordWithCourse: ['./matching-layout'],
-                },
-                resolve: {
-                  trainingRecord: TrainingRecordResolver,
-                  trainingCourses: TrainingCourseResolver,
-                },
-                canActivate: [redirectIfLinkedToTrainingCourse],
-              },
-              {
-                path: 'delete',
-                component: DeleteRecordComponent,
-                data: { title: 'Delete Training' },
-                resolve: {
-                  trainingRecord: TrainingRecordResolver,
-                },
-              },
-            ],
-          },
+          editTrainingRecordRoute,
           {
             path: 'training',
             component: NewTrainingAndQualificationsRecordComponent,
@@ -582,7 +626,6 @@ const routes: Routes = [
             },
             resolve: { trainingCourses: TrainingCourseResolver },
           },
-
           {
             path: 'long-term-absence',
             component: LongTermAbsenceComponent,
@@ -847,57 +890,7 @@ const routes: Routes = [
           },
         ],
       },
-      {
-        path: 'training/:trainingRecordId',
-        resolve: { trainingRecord: TrainingRecordResolver },
-        children: [
-          {
-            path: '',
-            component: AddEditTrainingComponent,
-            data: {
-              title: 'Training',
-              trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
-              routeForTrainingRecordWithCourse: ['./matching-layout'],
-            },
-            resolve: {
-              trainingCourses: TrainingCourseResolver,
-              trainingProviders: TrainingProvidersResolver,
-            },
-            canActivate: [redirectIfLinkedToTrainingCourse],
-          },
-          {
-            path: 'include-training-course-details',
-            component: IncludeTrainingCourseDetailsComponent,
-            data: {
-              title: 'Include training course details',
-              trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
-            },
-            resolve: {
-              trainingCourses: TrainingCourseResolver,
-            },
-          },
-          {
-            path: 'delete',
-            component: DeleteRecordComponent,
-            data: { title: 'Delete Training' },
-            resolve: {
-              trainingRecord: TrainingRecordResolver,
-            },
-          },
-          {
-            path: 'matching-layout',
-            component: TrainingCourseMatchingLayoutComponent,
-            data: {
-              title: 'Match the training record',
-              trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
-            },
-            resolve: {
-              trainingRecord: TrainingRecordResolver,
-              trainingCourses: TrainingCourseResolver,
-            },
-          },
-        ],
-      },
+      editTrainingRecordRoute,
       {
         path: 'training',
         component: NewTrainingAndQualificationsRecordComponent,
