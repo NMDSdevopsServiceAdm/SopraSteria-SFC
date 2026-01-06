@@ -512,7 +512,7 @@ const routes: Routes = [
             ],
           },
           {
-            path: 'add-training',
+            path: 'add-training-without-course',
             children: [
               {
                 path: '',
@@ -570,7 +570,7 @@ const routes: Routes = [
             path: 'add-a-training-record',
             component: SelectTrainingCourseForWorkerTraining,
             resolve: { trainingCourses: TrainingCourseResolver },
-            data: { title: 'Add a Training Record' },
+            data: { title: 'Add a Training Record', redirectWhenNoCourses: ['../add-training-without-course'] },
           },
 
           {
@@ -817,7 +817,7 @@ const routes: Routes = [
         ],
       },
       {
-        path: 'add-training',
+        path: 'add-training-without-course',
         children: [
           {
             path: '',
@@ -897,7 +897,7 @@ const routes: Routes = [
         path: 'add-a-training-record',
         component: SelectTrainingCourseForWorkerTraining,
         resolve: { trainingCourses: TrainingCourseResolver },
-        data: { title: 'Add a Training Record' },
+        data: { title: 'Add a Training Record', redirectWhenNoCourses: ['../add-training-without-course'] },
       },
       {
         path: 'matching-layout',
