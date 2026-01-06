@@ -338,6 +338,7 @@ module.exports = function (sequelize, DataTypes) {
   User.searchUsers = async function (where) {
     const userQuery = buildSearchQuery(where.name, '$user.FullNameValue$');
     const emailQuery = buildSearchQuery(where.emailAddress, '$user.EmailValue$');
+    const phoneQuery = buildSearchQuery(where.phoneNumber, '$user.PhoneValue$');
 
     const whereClause = where.username
       ? {
@@ -347,6 +348,7 @@ module.exports = function (sequelize, DataTypes) {
           '$user.Archived$': false,
           ...userQuery,
           ...emailQuery,
+          ...phoneQuery,
         };
 
     return await this.findAll({

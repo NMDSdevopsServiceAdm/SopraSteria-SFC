@@ -9,6 +9,7 @@ const search = async function (req, res) {
       name: req.body.name,
       username: req.body.username,
       emailAddress: req.body.emailAddress,
+      phoneNumber: req.body.phoneNumber,
     };
 
     const users = await models.user.searchUsers(where);
