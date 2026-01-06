@@ -96,6 +96,7 @@ describe('SelectStaffComponent', () => {
     const clearSelectedTrainingCategorySpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
     const clearIsTrainingCourseSelectedSpy = spyOn(trainingService, 'clearIsTrainingCourseSelected').and.callThrough();
     const clearSelectedTrainingCourseSpy = spyOn(trainingService, 'clearSelectedTrainingCourse').and.callThrough();
+    const resetSelectedTrainingSpy = spyOn(trainingService, 'resetSelectedTraining').and.callThrough();
 
     return {
       component,
@@ -111,6 +112,7 @@ describe('SelectStaffComponent', () => {
       clearSelectedTrainingCategorySpy,
       clearIsTrainingCourseSelectedSpy,
       clearSelectedTrainingCourseSpy,
+      resetSelectedTrainingSpy,
     };
   }
 
@@ -658,6 +660,7 @@ describe('SelectStaffComponent', () => {
       clearSelectedTrainingCategorySpy,
       clearIsTrainingCourseSelectedSpy,
       clearSelectedTrainingCourseSpy,
+      resetSelectedTrainingSpy,
     } = await setup();
 
     component.ngOnInit();
@@ -665,5 +668,6 @@ describe('SelectStaffComponent', () => {
     expect(clearSelectedTrainingCategorySpy).toHaveBeenCalled();
     expect(clearIsTrainingCourseSelectedSpy).toHaveBeenCalled();
     expect(clearSelectedTrainingCourseSpy).toHaveBeenCalled();
+    expect(resetSelectedTrainingSpy).toHaveBeenCalled();
   });
 });
