@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.directive';
 
 @Component({
-    selector: 'app-do-you-have-vacancies',
-    templateUrl: '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
-    standalone: false
+  selector: 'app-do-you-have-vacancies',
+  templateUrl:
+    '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
+  standalone: false,
 })
 export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanciesDirective {
   public heading = 'Do you have any current staff vacancies?';
@@ -17,8 +18,16 @@ export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanci
   public requiredWarningMessage = "Select yes if you've got current staff vacancies";
 
   protected setupRoutes(): void {
-    this.previousRoute = ['/workplace', this.establishment?.uid, 'service-users'];
+    this.setPreviousRoute();
     this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'do-you-have-starters'];
     this.startersLeaversOrVacanciesPageTwo = 'select-vacancy-job-roles';
+  }
+
+  private setPreviousRoute(): void {
+    const previousPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
+      ? 'what-kind-of-delegated-healthcare-activities'
+      : 'service-users';
+
+    this.previousRoute = ['/workplace', this.establishment.uid, previousPage];
   }
 }
