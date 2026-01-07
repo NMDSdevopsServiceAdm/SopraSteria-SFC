@@ -7,7 +7,15 @@
   </li>
   <li routerLinkActive="active">
     <a routerLink="/sfcadmin/parent-requests" class="govuk-link">Parent requests</a>
+    <span *ngIf="showFlag">
+      <img
+        src="/assets/images/flag-red.png"
+        alt="red warning flag"
+        class="govuk-util__vertical-align-top govuk-!-margin-left-2"
+      />
+    </span>
   </li>
+
   <li routerLinkActive="active">
     <a routerLink="/sfcadmin/cqc-main-service-change" class="govuk-link">CQC main service change</a>
   </li>
