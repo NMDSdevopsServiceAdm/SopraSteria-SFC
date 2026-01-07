@@ -750,6 +750,7 @@ describe('AddEditTrainingComponent', () => {
           notes: 'Some notes added to this training',
           trainingProviderId: 63,
           otherTrainingProviderName: 'Care skills academy',
+          externalProviderName: null,
         },
       );
 
@@ -820,6 +821,7 @@ describe('AddEditTrainingComponent', () => {
         notes: 'Some notes for this training',
         trainingProviderId: 63,
         otherTrainingProviderName: 'Care skills academy',
+        externalProviderName: null,
       });
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
@@ -978,6 +980,7 @@ describe('AddEditTrainingComponent', () => {
             notes: 'Some notes added to this training',
             trainingProviderId: 63,
             otherTrainingProviderName: 'Care skills academy',
+            externalProviderName: null,
           },
         );
 

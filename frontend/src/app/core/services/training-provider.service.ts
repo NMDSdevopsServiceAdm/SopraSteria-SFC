@@ -32,9 +32,9 @@ export class TrainingProviderService {
     otherTrainingProviderId: number,
   ) {
     const externalProviderName = trainingData.externalProviderName;
-    delete trainingData.externalProviderName;
 
-    if (trainingData.deliveredBy !== DeliveredBy.ExternalProvider) {
+    if (trainingData.deliveredBy !== DeliveredBy.ExternalProvider ||
+      externalProviderName === null) {
       trainingData.trainingProviderId = null;
       trainingData.otherTrainingProviderName = null;
       trainingData.externalProviderName = null;
@@ -48,6 +48,10 @@ export class TrainingProviderService {
     );
     trainingData.trainingProviderId = trainingProvider.id;
     trainingData.otherTrainingProviderName = trainingProvider.isOther ? externalProviderName : null;
+
+    if (trainingData.otherTrainingProviderName !== null) {
+      trainingData.externalProviderName = null;
+    }
 
     return trainingData;
   }

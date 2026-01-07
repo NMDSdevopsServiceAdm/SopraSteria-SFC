@@ -47,7 +47,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
       { key: 'Training record name', value: training.title ? training.title : '-' },
       { key: 'Is the training course accredited?', value: training.accredited ? training.accredited : '-' },
       { key: 'Who delivered the training course?', value: training.deliveredBy ? training.deliveredBy : '-' },
-      { key: 'Training provider name', value: training.externalProviderName ? training.externalProviderName : '-' },
+      { key: 'Training provider name', value: training.externalProviderName ?? training.otherTrainingProviderName ?? '-' },
       {
         key: 'How was the training course delivered?',
         value: training.howWasItDelivered ? training.howWasItDelivered : '-',

@@ -39,25 +39,61 @@ describe('TrainingProviderService', () => {
       { id: 63, name: 'other', isOther: true },
     ];
 
-    it('should return the updated training data if deliveredBy is externalProvider', async () => {
-      const mockTrainingData = {
-        ...trainingRecord,
-        externalProviderName: 'Udemy',
-        deliveredBy: DeliveredBy.ExternalProvider,
-      };
+    describe('When training is delivered by an external provider', () => {
+      it('should return the updated training data if provider is from the pre-defined list', async () => {
+        const mockTrainingData = {
+          deliveredBy: DeliveredBy.ExternalProvider,
+          externalProviderName: 'Preset provider name #1',
+        };
 
-      const request = service.fillInTrainingProvider(mockTrainingData, mockTrainingProviders, 63);
+        const request = service.fillInTrainingProvider(mockTrainingData, mockTrainingProviders, 63);
 
-      expect(service.getTrainingProviderIdFromName).toHaveBeenCalled;
-      expect(request).toEqual({
-        ...mockTrainingData,
-        trainingProviderId: 63,
+        expect(service.getTrainingProviderIdFromName).toHaveBeenCalled;
+        expect(request).toEqual({
+          deliveredBy: DeliveredBy.ExternalProvider,
+          trainingProviderId: 1,
+          otherTrainingProviderName: null,
+          externalProviderName: 'Preset provider name #1',
+        });
       });
-    });
+
+      it('should return the updated training data if provider is entered as free text', async () => {
+        const mockTrainingData = {
+          deliveredBy: DeliveredBy.ExternalProvider,
+          externalProviderName: 'Udemy',
+        };
+
+        const request = service.fillInTrainingProvider(mockTrainingData, mockTrainingProviders, 63);
+
+        expect(service.getTrainingProviderIdFromName).toHaveBeenCalled;
+        expect(request).toEqual({
+          deliveredBy: DeliveredBy.ExternalProvider,
+          trainingProviderId: 63,
+          otherTrainingProviderName: 'Udemy',
+          externalProviderName: null,
+        });
+      });
+
+      it('should return the updated training data if provider is left blank', async () => {
+        const mockTrainingData = {
+          deliveredBy: DeliveredBy.ExternalProvider,
+          externalProviderName: null,
+        };
+
+        const request = service.fillInTrainingProvider(mockTrainingData, mockTrainingProviders, 63);
+
+        expect(service.getTrainingProviderIdFromName).toHaveBeenCalled;
+        expect(request).toEqual({
+          deliveredBy: DeliveredBy.ExternalProvider,
+          trainingProviderId: null,
+          otherTrainingProviderName: null,
+          externalProviderName: null,
+        });
+      });
+    })
 
     it('should return the updated training data if deliveredBy is inHouseStaff', async () => {
       const mockTrainingData = {
-        ...trainingRecord,
         deliveredBy: DeliveredBy.InHouseStaff,
       };
 
@@ -65,7 +101,7 @@ describe('TrainingProviderService', () => {
 
       expect(service.getTrainingProviderIdFromName).not.toHaveBeenCalled;
       expect(request).toEqual({
-        ...mockTrainingData,
+        deliveredBy: DeliveredBy.InHouseStaff,
         trainingProviderId: null,
         otherTrainingProviderName: null,
         externalProviderName: null,
