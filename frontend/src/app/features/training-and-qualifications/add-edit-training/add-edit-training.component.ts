@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import { merge } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { filter, mergeMap, take } from 'rxjs/operators';
 
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Component, effect, OnInit, viewChild } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TrainingCertificate, TrainingRecord as LegacyIncorrectTrainingRecordType } from '@core/model/training.model';
 import { CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
@@ -349,5 +349,19 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public checkIfCanUpdateWithTrainingCourse(): void {
     this.showUpdateRecordsWithTrainingCourseDetails =
       this.trainingRecordId && this.trainingCourses.length > 0 && !this.isTrainingRecordMatchedToTrainingCourse;
+  }
+
+  protected resetTrainingRecordsStateWhenClickedAway(): void {
+    const parentPath = 'add-training';
+
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes(parentPath)),
+        take(1),
+      )
+      .subscribe(() => {
+        this.trainingService.resetState();
+      });
   }
 }

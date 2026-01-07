@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { AfterViewInit, Directive, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -105,6 +105,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setBackLink();
     this.getCategories();
     this.setupFormErrorsMap();
+    this.resetTrainingRecordsStateWhenClickedAway()
   }
 
   ngAfterViewInit(): void {
@@ -136,6 +137,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   protected setSectionHeading(): void {}
 
   protected setButtonText(): void {}
+
+  protected resetTrainingRecordsStateWhenClickedAway(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group(
