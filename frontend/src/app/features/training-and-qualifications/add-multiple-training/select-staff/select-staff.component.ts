@@ -85,9 +85,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
 
   private clearSelectedTrainingCoursesAndCategoryOnPageEntry() {
     if (this.selectedWorkers.length === 0) {
-      this.trainingService.clearSelectedTrainingCategory();
-      this.trainingService.clearIsTrainingCourseSelected();
-      this.trainingService.clearSelectedTrainingCourse();
+      this.trainingService.resetState();
     }
   }
 
