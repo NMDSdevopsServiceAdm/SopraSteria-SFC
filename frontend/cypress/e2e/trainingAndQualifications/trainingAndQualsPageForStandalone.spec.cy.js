@@ -1,19 +1,21 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 import { onTrainingAndQualsPage } from '../../support/page_objects/onTrainingAndQualsPage';
 
 describe('Standalone training and qualifications page as edit user', () => {
-  beforeEach(() => {
-    cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: 'Cypress test worker' });
+  const workerName = 'Cypress test worker';
+  const establishmentID = StandAloneEstablishment.id;
 
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
-    cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
-    cy.reload();
+  before(() => {
+    cy.archiveAllWorkersInWorkplace(establishmentID);
+    cy.insertTestWorker({ establishmentID, workerName });
   });
 
-  after(() => {
-    cy.deleteTestWorkerFromDb('Cypress test worker');
+  beforeEach(() => {
+    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    onHomePage.clickTab('Training and qualifications');
   });
 
   it('should see the standalone establishment training and quals page', () => {
