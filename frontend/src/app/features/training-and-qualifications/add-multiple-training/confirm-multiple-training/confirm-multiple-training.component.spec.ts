@@ -144,11 +144,11 @@ describe('ConfirmMultipleTrainingComponent', () => {
             externalProviderName: 'Care Skills Academy',
             deliveredBy: 'Face to face',
             validityPeriodInMonth: 12,
+            otherTrainingProviderName: null,
           },
         },
       };
       const { getByTestId } = await setup(overrides);
-
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
 
       expect(within(trainingRecordDetails).getByText('Category')).toBeTruthy();
@@ -161,9 +161,29 @@ describe('ConfirmMultipleTrainingComponent', () => {
       expect(within(trainingRecordDetails).getByText('Face to face')).toBeTruthy();
     });
 
+    describe('When the external training provider is recorded as free text', () => {
+      it('should display the training record information', async () => {
+        const overrides = {
+          selectedTraining: {
+            selectedTraining: {
+              ...selectedTraining,
+              howWasItDelivered: 'External',
+              externalProviderName: null,
+              deliveredBy: 'Face to face',
+              validityPeriodInMonth: 12,
+              otherTrainingProviderName: 'Udemy',
+            },
+          },
+        };
+
+        const { getByTestId } = await setup(overrides);
+        const trainingRecordDetails = getByTestId('trainingRecordDetails');
+        expect(within(trainingRecordDetails).getByText('Udemy')).toBeTruthy();
+      });
+    })
+
     it('should display a `-` if there are no dates and `No notes added` if there are no notes', async () => {
       const { getByTestId } = await setup({ incompleteTraining: true });
-
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
 
       expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(4);
@@ -171,7 +191,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
     });
 
     describe('validity', () => {
-      it('should show the non plurarised amount', async () => {
+      it('should show the non pluralised amount', async () => {
         const overrides = {
           selectedTraining: {
             selectedTraining: {
@@ -190,7 +210,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
         expect(within(trainingRecordDetails).getByText('1 month')).toBeTruthy();
       });
 
-      it('should show the plurarised amount', async () => {
+      it('should show the pluralised amount', async () => {
         const overrides = {
           selectedTraining: { selectedTraining: { ...selectedTraining, validityPeriodInMonth: 12 } },
         };

@@ -196,6 +196,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       notes: 'Notes for training',
       trainingProviderId: 63,
       otherTrainingProviderName: 'Care skills academy',
+      externalProviderName: null,
     });
     expect(spy).toHaveBeenCalledWith([
       'workplace',
