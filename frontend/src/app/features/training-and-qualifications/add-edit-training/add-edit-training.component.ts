@@ -352,7 +352,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected resetTrainingRecordsStateWhenClickedAway(): void {
-    const parentPath = 'add-training';
+    const parentPath = 'add-training-without-course';
 
     this.router.events
       .pipe(
