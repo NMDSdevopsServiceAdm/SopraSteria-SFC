@@ -41,28 +41,23 @@ export class AdminUsersService {
 @Injectable({ providedIn: 'root' })
 export class ParentRequestsStateService {
   private readonly STORAGE_KEY = 'parentRequests';
-  private readonly parentRequests$ = new BehaviorSubject<any[] | null>(this.loadFromStorage());
 
-  private loadFromStorage(): any[] | null {
-    const json = localStorage.getItem(this.STORAGE_KEY);
-    return json ? JSON.parse(json) : null;
-  }
+  private readonly parentRequests$ = new BehaviorSubject<any[] | null>(null);
 
-  private saveToStorage(data: any[]): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+  constructor() {
+    const stored = localStorage.getItem(this.STORAGE_KEY);
+    if (stored) {
+      this.parentRequests$.next(JSON.parse(stored));
+    }
   }
 
   set(data: any[]): void {
-    this.saveToStorage(data);
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     this.parentRequests$.next(data);
   }
 
   get$(): Observable<any[] | null> {
     return this.parentRequests$.asObservable();
-  }
-
-  getSnapshot(): any[] | null {
-    return this.parentRequests$.value;
   }
 
   clear(): void {
