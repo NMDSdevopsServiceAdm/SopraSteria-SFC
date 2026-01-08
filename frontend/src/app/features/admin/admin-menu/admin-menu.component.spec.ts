@@ -3,35 +3,32 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { AdminMenuComponent } from './admin-menu.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('AdminMenuComponent', () => {
   async function setup() {
-    const component = await render(AdminMenuComponent, {
-      imports: [SharedModule, RouterModule],
+    return render(AdminMenuComponent, {
+      imports: [SharedModule, HttpClientTestingModule],
       providers: [provideRouter([])],
     });
-
-    return {
-      component,
-    };
   }
 
-  it('should render a AdminMenuComponent', async () => {
-    const { component } = await setup();
-    expect(component).toBeTruthy();
+  it('should render AdminMenuComponent', async () => {
+    const { fixture } = await setup();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should contain a local authority return link that links to admin/local-authorities-return url', async () => {
-    const { component } = await setup();
+  it('should contain a local authority return link', async () => {
+    const { getByText } = await setup();
 
-    const laCompletionsLink = component.getByText('Local authority returns');
-    expect(laCompletionsLink.getAttribute('href')).toBe('/sfcadmin/local-authorities-return');
+    const link = getByText('Local authority returns');
+    expect(link.getAttribute('href')).toBe('/sfcadmin/local-authorities-return');
   });
 
-  it('should contain a CQC main service change link that links to sfcadmin/cqc-main-service-change url', async () => {
-    const { component } = await setup();
+  it('should contain a CQC main service change link', async () => {
+    const { getByText } = await setup();
 
-    const cqcMainServiceChangeLink = component.getByText('CQC main service change');
-    expect(cqcMainServiceChangeLink.getAttribute('href')).toBe('/sfcadmin/cqc-main-service-change');
+    const link = getByText('CQC main service change');
+    expect(link.getAttribute('href')).toBe('/sfcadmin/cqc-main-service-change');
   });
 });

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CreateAccountRequest, CreateAccountResponse } from '@core/model/account.model';
 import { UserDetails } from '@core/model/userDetails.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -35,33 +35,5 @@ export class AdminUsersService {
     return this.http.post(`${environment.appRunnerEndpoint}/api/user/${useruid}/resend-activation-admin`, null, {
       responseType: 'text' as 'json',
     });
-  }
-}
-
-@Injectable({ providedIn: 'root' })
-export class ParentRequestsStateService {
-  private readonly STORAGE_KEY = 'parentRequests';
-
-  private readonly parentRequests$ = new BehaviorSubject<any[] | null>(null);
-
-  constructor() {
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored) {
-      this.parentRequests$.next(JSON.parse(stored));
-    }
-  }
-
-  set(data: any[]): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-    this.parentRequests$.next(data);
-  }
-
-  get$(): Observable<any[] | null> {
-    return this.parentRequests$.asObservable();
-  }
-
-  clear(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
-    this.parentRequests$.next(null);
   }
 }

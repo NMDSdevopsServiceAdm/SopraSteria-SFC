@@ -2,21 +2,19 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { Roles } from '@core/model/roles.enum';
 
-import { AdminUsersService, ParentRequestsStateService } from './admin-users.service';
+import { AdminUsersService } from './admin-users.service';
 import { environment } from 'src/environments/environment';
 import { provideHttpClient } from '@angular/common/http';
 describe('AdminUsersService', () => {
   let service: AdminUsersService;
-  let parentRequestService: ParentRequestsStateService;
   let http: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [AdminUsersService, ParentRequestsStateService, provideHttpClient(), provideHttpClientTesting()],
+      providers: [AdminUsersService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(AdminUsersService);
-    parentRequestService = TestBed.inject(ParentRequestsStateService);
     http = TestBed.inject(HttpTestingController);
   });
 
@@ -87,64 +85,6 @@ describe('AdminUsersService', () => {
 
       const req = http.expectOne(`${environment.appRunnerEndpoint}/api/user/admin/mock-userId`);
       expect(req.request.method).toBe('DELETE');
-    });
-  });
-
-  describe('ParentRequestsStateService', () => {
-    const mockData = [
-      { id: 1, status: 'Pending' },
-      { id: 2, status: 'InProgress' },
-    ];
-
-    beforeEach(() => {
-      localStorage.clear();
-    });
-
-    it('should be created', () => {
-      expect(service).toBeTruthy();
-    });
-
-    it('should load data from localStorage on init', () => {
-      localStorage.setItem('parentRequests', JSON.stringify(mockData));
-
-      const service = new ParentRequestsStateService();
-
-      service.get$().subscribe((data) => {
-        expect(data).toEqual(mockData);
-      });
-    });
-
-    it('should save data to localStorage and emit it when set() is called', () => {
-      parentRequestService.set(mockData);
-
-      const stored = JSON.parse(localStorage.getItem('parentRequests')!);
-      expect(stored).toEqual(mockData);
-
-      parentRequestService.get$().subscribe((data) => {
-        expect(data).toEqual(mockData);
-      });
-    });
-
-    it('should emit new values to subscribers when set() is called', () => {
-      const spy = jasmine.createSpy('subscriber');
-
-      parentRequestService.get$().subscribe(spy);
-
-      parentRequestService.set(mockData);
-
-      expect(spy).toHaveBeenCalledWith(mockData);
-    });
-
-    it('should clear localStorage and emit null when clear() is called', () => {
-      parentRequestService.set(mockData);
-
-      parentRequestService.clear();
-
-      expect(localStorage.getItem('parentRequests')).toBeNull();
-
-      parentRequestService.get$().subscribe((data) => {
-        expect(data).toBeNull();
-      });
     });
   });
 });

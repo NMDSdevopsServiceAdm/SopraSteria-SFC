@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { ParentRequestsStateService } from '@core/services/admin/admin-users/admin-users.service';
+import { ParentRequestsStateService } from '@core/services/admin/admin-parent-request-status/admin-parent-request-status.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { filter, take } from 'rxjs/operators';
 
@@ -23,12 +23,10 @@ export class AdminMenuComponent implements OnInit {
     // Initial load
     this.loadParentRequests();
 
-    // Reload when navigation ends
     this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
       this.loadParentRequests();
     });
 
-    // React to state
     this.parentRequestsState
       .get$()
       .pipe(filter((data): data is any[] => Array.isArray(data)))
