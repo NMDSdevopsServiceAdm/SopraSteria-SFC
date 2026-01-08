@@ -167,10 +167,18 @@ export const clickIntoWorkerTAndQRecordPage = (workerName) => {
   cy.url().should('contain', 'training-and-qualifications-record');
 };
 
-export const clickAddLinkOfRow = (textToMatch) => {
+export const clickAddLinkForRow = (textToMatch) => {
   cy.contains('td', textToMatch)
     .closest('tr')
     .within(() => {
       cy.get('a').contains('Add').click();
+    });
+};
+
+export const clickUpdateLinkForRow = (textToMatch) => {
+  cy.contains('td', textToMatch)
+    .closest('tr')
+    .within(() => {
+      cy.get('a').contains('Update').click();
     });
 };
