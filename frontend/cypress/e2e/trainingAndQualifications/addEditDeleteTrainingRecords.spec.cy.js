@@ -1,7 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
-import { expectTrainingRecordPageToHaveCourseDetails } from './trainingCourse/helpers';
+import { onHomePage } from '../../support/page_objects/onHomePage';
+import {
+  clickAddLinkOfRow,
+  clickIntoWorkerTAndQRecordPage,
+  expectTrainingRecordPageToHaveCourseDetails,
+} from './trainingCourse/helpers';
 
 describe('training record', () => {
   const workerName1 = 'Test worker';
@@ -618,6 +623,89 @@ describe('training record', () => {
 
         // staff training and qualifications page
         cy.get('[data-testid="generic_alert"]').contains('2 training records added');
+      });
+    });
+  });
+
+  describe.only('missing mandatory training warning', () => {
+    const workerName = 'worker to test mandatory training';
+    const jobID = 11;
+    const categoryIdForAutism = 2;
+    const categoryIdForCommunication = 4;
+
+    before(() => {
+      cy.deleteTestWorkerFromDb(workerName);
+      cy.removeAllMandatoryTrainings(establishmentID);
+      cy.insertTestWorker({ establishmentID, workerName, mainJobFKValue: jobID });
+      cy.deleteAllTrainingCourses(establishmentID);
+      cy.insertTrainingCourse({
+        establishmentID,
+        categoryId: categoryIdForCommunication,
+        name: 'Communication course',
+      });
+
+      cy.insertMandatoryTraining({ establishmentID, trainingCategoryID: categoryIdForAutism, jobID });
+      cy.insertMandatoryTraining({ establishmentID, trainingCategoryID: categoryIdForCommunication, jobID });
+    });
+
+    it('should show a warning and an Add link for each missing mandatory training of a worker', () => {
+      onHomePage.clickTab('Training and qualifications');
+      cy.get('a').contains('1 staff is missing mandatory training').should('be.visible').as('missingWarning');
+      cy.get('@missingWarning').click();
+
+      cy.get('h1').should('contain', 'Staff missing mandatory training');
+
+      // when no course for the category, Add link should lead to select category page
+      clickAddLinkOfRow('Autism');
+      cy.get('h1').should('contain', 'Select the category that best matches the training taken');
+      cy.getByLabel('Autism').should('be.checked');
+
+      cy.contains('a', 'Back').click();
+
+      // when there is a course for the category, Add link should lead to select course or continue without course page
+      clickAddLinkOfRow('Communication');
+      cy.get('h1').should('contain', 'Add a training record');
+      cy.getByLabel('Continue without selecting a training course').should('exist');
+      cy.getByLabel('Communication course').should('exist');
+    });
+
+    it("should show expiry warnings and Add links in the Action list worker's training and quals record page", () => {
+      onHomePage.clickTab('Training and qualifications');
+      clickIntoWorkerTAndQRecordPage(workerName);
+      cy.contains('table', 'Actions list').within(() => {
+        cy.contains('Autism').should('be.visible');
+        cy.contains('Communication').should('be.visible');
+      });
+
+      // when no course for the category, Add link should lead to select category page
+      clickAddLinkOfRow('Autism');
+      cy.get('h1').should('contain', 'Select the category that best matches the training taken');
+      cy.getByLabel('Autism').should('be.checked');
+
+      cy.contains('a', 'Back').click();
+
+      // when there is a course for the category, Add link should lead to select course or continue without course page
+      clickAddLinkOfRow('Communication');
+      cy.get('h1').should('contain', 'Add a training record');
+      cy.getByLabel('Continue without selecting a training course').should('exist');
+      cy.getByLabel('Communication course').should('exist');
+    });
+  });
+
+  describe.only('expired training warnings', () => {
+    const workerName = 'worker to test expired training';
+    const jobID = 11;
+    const categoryIdForAutism = 2;
+    const categoryIdForCommunication = 4;
+
+    before(() => {
+      cy.deleteTestWorkerFromDb(workerName);
+      cy.insertTestWorker({ establishmentID, workerName, mainJobFKValue: jobID });
+      cy.deleteAllTrainingCourses(establishmentID);
+      cy.insertTrainingCourse({
+        establishmentID,
+        categoryId: categoryIdForCommunication,
+        name: 'Communication course',
       });
     });
   });

@@ -157,3 +157,26 @@ Cypress.Commands.add('unlinkAllWorkerTrainingFromCourse', () => {
 
   cy.task('dbQuery', { queryString });
 });
+
+Cypress.Commands.add('insertMandatoryTraining', (args, userFullName = 'editstandalone') => {
+  const { establishmentID, trainingCategoryID, jobID } = args;
+
+  cy.getUserUuid(userFullName).then((userUUID) => {
+    const queryString = `INSERT INTO cqc."MandatoryTraining"
+  ( "EstablishmentFK", "TrainingCategoryFK", "JobFK", "CreatedByUserUID", "UpdatedByUserUID")
+  VALUES ($1, $2, $3, $4, $4)`;
+
+    const parameters = [establishmentID, trainingCategoryID, jobID, userUUID];
+
+    return cy.task('dbQuery', { queryString, parameters });
+  });
+});
+
+Cypress.Commands.add('removeAllMandatoryTrainings', (establishmentID) => {
+  const queryString = `DELETE FROM cqc."MandatoryTraining"
+    WHERE "EstablishmentFK" = $1`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
+});

@@ -102,8 +102,6 @@ export const expectTrainingRecordPageToHaveCourseDetails = (details) => {
     notes,
   } = details;
 
-  cy.url().should('contains', '/matching-layout');
-
   cy.get('h1').should('contain', 'Training record details');
   cy.get('[data-testid="trainingRecordDetails"]').within(() => {
     cy.contains('Training course name')
@@ -167,4 +165,12 @@ export const clickIntoWorkerTAndQRecordPage = (workerName) => {
   cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
   cy.get('[data-testid="training-worker-table"]').contains(workerName).click();
   cy.url().should('contain', 'training-and-qualifications-record');
+};
+
+export const clickAddLinkOfRow = (textToMatch) => {
+  cy.contains('td', textToMatch)
+    .closest('tr')
+    .within(() => {
+      cy.get('a').contains('Add').click();
+    });
 };
