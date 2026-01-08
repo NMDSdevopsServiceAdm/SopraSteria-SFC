@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,7 +17,7 @@ import { DeliveredBy } from '@core/model/training.model';
   styleUrl: './confirm-multiple-training-with-course.component.scss',
   standalone: false,
 })
-export class ConfirmMultipleTrainingWithCourseComponent {
+export class ConfirmMultipleTrainingWithCourseComponent implements OnInit {
   public notes: string;
   public trainingRecordCompletionDate: Date;
   public trainingCourseDataForSummaryList: { key: string; value: string }[];
@@ -57,22 +57,22 @@ export class ConfirmMultipleTrainingWithCourseComponent {
   public onSubmit(): void {
     const selectedStaff = this.workers.map((worker) => worker.uid);
 
-    const trainingCourse = this.trainingCourse;
     const completedDate = this.trainingRecordCompletionDate
       ? dayjs(this.trainingRecordCompletionDate).format('YYYY-MM-DD')
       : null;
     const trainingRecordDetails = {
-      trainingCategory: { id: trainingCourse.trainingCategoryId },
-      title: trainingCourse.name,
-      trainingCategoryName: trainingCourse.trainingCategoryName,
-      accredited: trainingCourse.accredited,
-      deliveredBy: trainingCourse.deliveredBy,
-      externalProviderName: trainingCourse.externalProviderName,
-      otherTrainingProviderName: trainingCourse.otherTrainingProviderName,
-      howWasItDelivered: trainingCourse.howWasItDelivered,
-      validityPeriodInMonth: trainingCourse.validityPeriodInMonth,
+      trainingCategory: { id: this.trainingCourse.trainingCategoryId },
+      title: this.trainingCourse.name,
+      trainingCategoryName: this.trainingCourse.trainingCategoryName,
+      accredited: this.trainingCourse.accredited,
+      deliveredBy: this.trainingCourse.deliveredBy,
+      externalProviderName: this.trainingCourse.externalProviderName,
+      otherTrainingProviderName: this.trainingCourse.otherTrainingProviderName,
+      howWasItDelivered: this.trainingCourse.howWasItDelivered,
+      validityPeriodInMonth: this.trainingCourse.validityPeriodInMonth,
       completed: completedDate,
       notes: this.notes,
+      trainingCourseFK: this.trainingCourse.id,
     };
 
     this.workerService
@@ -118,7 +118,7 @@ export class ConfirmMultipleTrainingWithCourseComponent {
     this.backLinkService.showBackLink();
   }
 
-  private showCorrectTrainingValidity(trainingCourse: any): string {
+  private showCorrectTrainingValidity(trainingCourse: TrainingCourse): string {
     if (!trainingCourse.validityPeriodInMonth && !trainingCourse.doesNotExpire) {
       return '-';
     }
