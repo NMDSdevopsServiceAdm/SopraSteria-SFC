@@ -663,21 +663,21 @@ describe('training record', () => {
 
       cy.get('h1').should('contain', 'Staff missing mandatory training');
 
-      // when no course for the category, Add link should lead to select category page
+      // when no course for the category, Add link should skip the course selection and show select category page
       clickAddLinkForRow('Autism');
       cy.get('h1').should('contain', 'Select the category that best matches the training taken');
       cy.getByLabel('Autism').should('be.checked');
 
       cy.contains('a', 'Back').click();
 
-      // when there is a course for the category, Add link should lead to select course or continue without course page
+      // when there is a course for the category, Add link should lead to the new 'Add a training record' page
       clickAddLinkForRow('Communication');
       cy.get('h1').should('contain', 'Add a training record');
       cy.getByLabel('Continue without selecting a training course').should('exist');
       cy.getByLabel('Communication course').should('exist');
     });
 
-    it('should show expiry warnings and Add links in the Action list', () => {
+    it('should show missing mandatory training warning and Add links in the Action list', () => {
       onHomePage.clickTab('Training and qualifications');
       clickIntoWorkerTAndQRecordPage(workerName);
       cy.contains('table', 'Actions list').within(() => {
@@ -685,14 +685,14 @@ describe('training record', () => {
         cy.contains('Communication').should('be.visible');
       });
 
-      // when no course for the category, Add link should lead to select category page
+      // when no course for the category, Add link should skip the course selection and show select category page
       clickAddLinkForRow('Autism');
       cy.get('h1').should('contain', 'Select the category that best matches the training taken');
       cy.getByLabel('Autism').should('be.checked');
 
       cy.contains('a', 'Back').click();
 
-      // when there is a course for the category, Add link should lead to select course or continue without course page
+      // when there is a course for the category, Add link should lead to the new 'Add a training record' page
       clickAddLinkForRow('Communication');
       cy.get('h1').should('contain', 'Add a training record');
       cy.getByLabel('Continue without selecting a training course').should('exist');
@@ -749,7 +749,7 @@ describe('training record', () => {
 
       cy.get('h1').should('contain', 'Expired training records');
 
-      // if training record is not linked to a course, update link should lead to old style edit training page
+      // if training record is not linked to a course, Update link should lead to old style edit training page
       clickUpdateLinkForRow('Autism');
       cy.get('h1').should('contain', 'Training record details');
       cy.url().should('contain', 'edit-training-without-course');
@@ -757,7 +757,7 @@ describe('training record', () => {
 
       cy.contains('a', 'Back').click();
 
-      // if training record is linked to a course, update link should lead to course details page
+      // if training record is linked to a course, Update link should lead to course details page
       clickUpdateLinkForRow('Communication');
       cy.get('h1').should('contain', 'Training record details');
       cy.url().should('contain', 'edit-training-with-course');
@@ -768,7 +768,7 @@ describe('training record', () => {
       });
     });
 
-    it('should show expiry warnings and Add links in the Action list', () => {
+    it('should show expiry warnings and Update links in the Action list', () => {
       onHomePage.clickTab('Training and qualifications');
       clickIntoWorkerTAndQRecordPage(workerName);
       cy.contains('table', 'Actions list').within(() => {
@@ -776,7 +776,7 @@ describe('training record', () => {
         cy.contains('Communication').should('be.visible');
       });
 
-      // if training record is not linked to a course, update link should lead to old style edit training page
+      // if training record is not linked to a course, Update link should lead to old style edit training page
       clickUpdateLinkForRow('Autism');
       cy.get('h1').should('contain', 'Training record details');
       cy.url().should('contain', 'edit-training-without-course');
@@ -784,7 +784,7 @@ describe('training record', () => {
 
       cy.contains('a', 'Back').click();
 
-      // if training record is linked to a course, update link should lead to course details page
+      // if training record is linked to a course, Update link should lead to course details page
       clickUpdateLinkForRow('Communication');
       cy.get('h1').should('contain', 'Training record details');
       cy.url().should('contain', 'edit-training-with-course');
