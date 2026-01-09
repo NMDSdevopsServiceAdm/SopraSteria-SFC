@@ -41,12 +41,13 @@ describe('AddEditTrainingComponent', () => {
     { id: 1, name: 'Preset provider name #1', isOther: false },
     { id: 63, name: 'other', isOther: true },
   ];
+  const defaultMockTrainingRecord = { ...trainingRecord };
 
   async function setup(overrides: any = {}) {
     const selectedTraining = overrides?.selectedTraining ?? null;
     const trainingRecordId = overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : '1';
     const mockTrainingRecord =
-      overrides?.trainingRecord !== undefined ? overrides.trainingRecord : { ...trainingRecord };
+      overrides?.trainingRecord !== undefined ? overrides.trainingRecord : defaultMockTrainingRecord;
     const mockWorker = {
       uid: '2',
       mainJob: {
@@ -319,49 +320,101 @@ describe('AddEditTrainingComponent', () => {
       expect(validityPeriodInMonth.value).toEqual('');
     });
 
-    it('should update expiry date soft warning message when filling the form', async () => {
-      const { getInputByRole, getByTestId, fixture, getByText } = await setup({ trainingRecord: null });
+    describe('expiry date input box', () => {
+      describe('when editing an existing training record', () => {
+        it('should show the expiry date input boxes if and only if doesNotExpire is not ticked', async () => {
+          const mockTrainingRecord = { ...defaultMockTrainingRecord, doesNotExpire: true };
+          const { queryByTestId, getByLabelText, fixture } = await setup({
+            trainingRecord: mockTrainingRecord,
+          });
 
-      const validityPeriodInMonth = getInputByRole('textbox', {
-        name: 'How many months is the training valid for before it expires?',
+          const checkbox = getByLabelText('This training does not expire') as HTMLInputElement;
+
+          expect(checkbox.checked).toBeTrue();
+          expect(queryByTestId('expiresDate')).toBeFalsy();
+
+          userEvent.click(checkbox);
+          fixture.detectChanges();
+
+          expect(checkbox.checked).toBeFalse();
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+
+          userEvent.click(checkbox);
+          fixture.detectChanges();
+
+          expect(checkbox.checked).toBeTrue();
+          expect(queryByTestId('expiresDate')).toBeFalsy();
+        });
+
+        it('should clear the expiry date value when user ticked doesNotExpire', async () => {
+          const mockTrainingRecord = { ...defaultMockTrainingRecord, doesNotExpire: false, expires: '2025-12-03' };
+          const { getByLabelText, getByTestId } = await setup({
+            trainingRecord: mockTrainingRecord,
+          });
+
+          let expiryDate = getByTestId('expiresDate');
+
+          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('3');
+          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('12');
+          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2025');
+
+          const checkbox = getByLabelText('This training does not expire') as HTMLInputElement;
+          userEvent.click(checkbox);
+          userEvent.click(checkbox);
+
+          expiryDate = getByTestId('expiresDate');
+          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('');
+          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('');
+          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('');
+        });
       });
 
-      userEvent.type(validityPeriodInMonth, '24');
+      it('should update expiry date soft warning message when filling the form', async () => {
+        const { getInputByRole, getByTestId, fixture, getByText } = await setup();
 
-      const completedDate = getByTestId('completedDate');
-      fillInDate(completedDate, '2020', '4', '10');
+        const validityPeriodInMonth = getInputByRole('textbox', {
+          name: 'How many months is the training valid for before it expires?',
+        });
 
-      const expiryDate = getByTestId('expiresDate');
-      fillInDate(expiryDate, '2023', '4', '10');
+        userEvent.clear(validityPeriodInMonth);
+        userEvent.type(validityPeriodInMonth, '24');
 
-      fixture.detectChanges();
+        const completedDate = getByTestId('completedDate');
+        fillInDate(completedDate, '2020', '4', '10');
 
-      expect(getByText('This training is usually valid for 24 months')).toBeTruthy();
-    });
+        const expiryDate = getByTestId('expiresDate');
+        fillInDate(expiryDate, '2023', '4', '10');
 
-    it('should clear the expiry date soft warning if expire date matches validity period', async () => {
-      const { getInputByRole, getByTestId, fixture, queryByText } = await setup({ trainingRecord: null });
+        fixture.detectChanges();
 
-      const validityPeriodInMonth = getInputByRole('textbox', {
-        name: 'How many months is the training valid for before it expires?',
+        expect(getByText('This training is usually valid for 24 months')).toBeTruthy();
       });
 
-      userEvent.type(validityPeriodInMonth, '24');
+      it('should clear the expiry date soft warning if expire date matches validity period', async () => {
+        const { getInputByRole, getByTestId, fixture, queryByText } = await setup();
 
-      const completedDate = getByTestId('completedDate');
-      fillInDate(completedDate, '2020', '4', '10');
+        const validityPeriodInMonth = getInputByRole('textbox', {
+          name: 'How many months is the training valid for before it expires?',
+        });
 
-      const expiryDate = getByTestId('expiresDate');
-      fillInDate(expiryDate, '2023', '4', '10');
+        userEvent.clear(validityPeriodInMonth);
+        userEvent.type(validityPeriodInMonth, '24');
 
-      fixture.detectChanges();
+        const completedDate = getByTestId('completedDate');
+        fillInDate(completedDate, '2020', '4', '10');
 
-      expect(queryByText('This training is usually valid for 24 months')).toBeTruthy();
+        const expiryDate = getByTestId('expiresDate');
+        fillInDate(expiryDate, '2023', '4', '10');
 
-      userEvent.type(within(expiryDate).getByLabelText('Year'), '2021');
-      fixture.detectChanges();
+        fixture.detectChanges();
 
-      expect(queryByText('This training is usually valid for 24 months')).toBeFalsy();
+        expect(queryByText('This training is usually valid for 24 months')).toBeTruthy();
+
+        userEvent.type(within(expiryDate).getByLabelText('Year'), '2021');
+        fixture.detectChanges();
+
+        expect(queryByText('This training is usually valid for 24 months')).toBeFalsy();
+      });
     });
   });
 
@@ -1185,8 +1238,6 @@ describe('AddEditTrainingComponent', () => {
     });
 
     describe('expires date errors when there is a trainingRecordId', () => {
-      const dateInputs = ['Day', 'Month', 'Year'];
-
       it('should show an error message if the expiry date is invalid', async () => {
         const { component, fixture, getByText, getAllByText, getByTestId } = await setup();
 

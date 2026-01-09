@@ -77,6 +77,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public updateTrainingRecordWithTrainingCourseText = TrainingCourseService.RevealText;
   public trainingProviders: TrainingProvider[];
   public expiryMismatchWarning: boolean = false;
+  public showExpiryDateInput: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -104,13 +105,13 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
+    this.setupFormChangeListeners();
     this.setupFormErrorsMap();
     this.resetTrainingRecordsStateWhenClickedAway();
   }
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
-    this.validityPeriodInMonth.registerOnChange((newValue) => this.handleValidityPeriodChange(newValue));
   }
 
   public checkForCategoryId(): void {
@@ -148,8 +149,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         deliveredBy: [null, { updateOn: 'change' }],
         externalProviderName: [null, { updateOn: 'change' }],
         howWasItDelivered: null,
-        validityPeriodInMonth: null,
-        doesNotExpire: null,
+        validityPeriodInMonth: [null, { updateOn: 'change' }],
+        doesNotExpire: [null, { updateOn: 'change' }],
         completed: this.formBuilder.group({
           day: null,
           month: null,
@@ -194,22 +195,24 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     );
   }
 
-  public handleValidityPeriodChange(newValue: string | number): void {
-    if (newValue && newValue !== '') {
-      this.clearFormControlAndKeepErrorMessages('doesNotExpire');
-    }
-  }
+  protected setupFormChangeListeners() {
+    const validityPeriodInMonth = this.form.get('validityPeriodInMonth');
+    const doesNotExpire = this.form.get('doesNotExpire');
 
-  public handleDoesNotExpireChange(event: Event): void {
-    const checkboxTicked = (event.target as HTMLInputElement).checked;
-    if (checkboxTicked) {
-      this.clearFormControlAndKeepErrorMessages('validityPeriodInMonth');
-    }
-  }
+    const clearCheckboxOnValidityPeriodInput = validityPeriodInMonth.valueChanges.subscribe((newValue) => {
+      if (newValue) {
+        doesNotExpire.patchValue(null);
+      }
+    });
 
-  private clearFormControlAndKeepErrorMessages(formControlName: string): void {
-    const formControl = this.form.get(formControlName);
-    formControl.patchValue(null, { emitEvent: false });
+    const clearValidityPeriodOnCheckboxTicked = doesNotExpire.valueChanges.subscribe((newValue) => {
+      if (newValue) {
+        validityPeriodInMonth.patchValue(null);
+      }
+    });
+
+    this.subscriptions.add(clearCheckboxOnValidityPeriodInput);
+    this.subscriptions.add(clearValidityPeriodOnCheckboxTicked);
   }
 
   private setupFormErrorsMap(): void {

@@ -1,5 +1,4 @@
-import dayjs from 'dayjs';
-import { merge } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 import { filter, mergeMap, take } from 'rxjs/operators';
 
 import { HttpClient } from '@angular/common/http';
@@ -45,6 +44,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   public completedDate = viewChild<DatePickerComponent>('completed');
   public expiresDate = viewChild<DatePickerComponent>('expires');
+  private dateInputEventsListener$: Subscription;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -75,8 +75,13 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
 
     effect(() => {
-      if (this.completedDate() && this.expiresDate()) {
+      const completedDateInputBoxesExist = this.completedDate();
+      const expiresDateInputboxesExist = this.expiresDate();
+
+      if (completedDateInputBoxesExist && expiresDateInputboxesExist) {
         this.setupCheckExpiryMismatch();
+      } else {
+        this.clearEventListenerForDateInputs();
       }
     });
   }
@@ -87,29 +92,24 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
     this.trainingCourses = this.route.snapshot.data?.trainingCourses ?? [];
     this.showCategory = true;
+    this.establishmentUid = this.route.snapshot.params?.establishmentuid;
+    this.workerId = this.route.snapshot.params?.id;
 
-    if (this.trainingRecordId) {
+    const isEditingTraining = !!this.trainingRecordId;
+
+    if (isEditingTraining) {
       this.fillForm();
     } else if (this.trainingCategory) {
       this.category = this.trainingCategory.category;
       this.form.patchValue({
         category: this.trainingCategory.id,
       });
-    }
-
-    this.establishmentUid = this.route.snapshot.params?.establishmentuid;
-    this.workerId = this.route.snapshot.params?.id;
-
-    if (!this.trainingCategory && !this.trainingRecordId) {
+    } else {
       this.router.navigate([
         `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training-without-course`,
       ]);
       return;
     }
-  }
-
-  ngAfterViewInit(): void {
-    super.ngAfterViewInit();
   }
 
   public setTitle(): void {
@@ -154,6 +154,8 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       this.notesOpen = true;
       this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
     }
+
+    this.showExpiryDateInput = !this.trainingRecord.doesNotExpire;
     this.checkIfCanUpdateWithTrainingCourse();
     this.checkExpiryMismatchOnInit(trainingRecord);
   }
@@ -168,9 +170,40 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.trainingCertificates = tempTrainingCertificates;
   }
 
-  public handleValidityPeriodChange(newValue: string | number): void {
-    super.handleValidityPeriodChange(newValue);
-    this.checkExpiryMismatch();
+  protected setupFormChangeListeners(): void {
+    super.setupFormChangeListeners();
+    this.setupExpiryDateDisplayLogic();
+  }
+
+  private setupExpiryDateDisplayLogic(): void {
+    const isAddingNewTraining = !this.trainingRecordId;
+    if (isAddingNewTraining) {
+      return;
+    }
+
+    const doesNotExpireCheckbox = this.form.get('doesNotExpire');
+
+    const updateExpiryDateOnCheckboxChange = doesNotExpireCheckbox.valueChanges.subscribe((doesNotExpire) => {
+      if (doesNotExpire) {
+        this.showExpiryDateInput = false;
+        this.clearExpiryDate();
+      } else {
+        this.showExpiryDateInput = true;
+      }
+    });
+
+    this.subscriptions.add(updateExpiryDateOnCheckboxChange);
+  }
+
+  private clearExpiryDate(): void {
+    this.form.patchValue({ expires: { day: null, month: null, year: null } });
+  }
+
+  private clearEventListenerForDateInputs(): void {
+    const oldSubscription = this.dateInputEventsListener$;
+    if (oldSubscription) {
+      oldSubscription.unsubscribe();
+    }
   }
 
   private setupCheckExpiryMismatch(): void {
@@ -179,11 +212,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       this.expiresDate().onChange.asObservable(),
     );
 
-    this.subscriptions.add(
-      completedDateOrExpiresDateChanged.subscribe(() => {
-        this.checkExpiryMismatch();
-      }),
-    );
+    this.dateInputEventsListener$ = completedDateOrExpiresDateChanged.subscribe(() => {
+      this.checkExpiryMismatch();
+    });
+
+    this.subscriptions.add(this.dateInputEventsListener$);
   }
 
   private checkExpiryMismatchOnInit(training: AddEditTrainingComponent['trainingRecord']): void {

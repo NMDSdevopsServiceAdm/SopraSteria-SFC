@@ -241,7 +241,6 @@
                 formControlName="validityPeriodInMonth"
                 [hasError]="submitted && form.get('validityPeriodInMonth').invalid"
                 suffix="months"
-                (change)="handleValidityPeriodChange($event)"
               ></app-number-input-with-buttons>
             </div>
             <div
@@ -263,7 +262,6 @@
                   name="doesNotExpire"
                   type="checkbox"
                   [formControlName]="'doesNotExpire'"
-                  (click)="handleDoesNotExpireChange($event)"
                 />
                 <label class="govuk-label govuk-checkboxes__label" for="doesNotExpire">
                   This training does not expire
@@ -300,7 +298,7 @@
                     </fieldset>
                   </div>
                 </div>
-                @if (trainingRecordId) {
+                @if (trainingRecordId && showExpiryDateInput) {
                   <div class="govuk-grid-column-one-half">
                     <div
                       data-testid="expiresDate"
