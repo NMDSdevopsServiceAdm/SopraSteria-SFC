@@ -66,25 +66,17 @@ export class TrainingCourseResolver {
     routeSnapshot: ActivatedRouteSnapshot,
     trainingCourses: TrainingCourse[],
   ): TrainingCourse[] | RedirectCommand {
-    const categoryIdFromQueryParem = routeSnapshot.queryParams?.trainingCategory?.id;
-    if (categoryIdFromQueryParem) {
-      trainingCourses = trainingCourses.filter((course) => course.id === categoryIdFromQueryParem);
-    }
-
     const noTrainingCoursesFound = trainingCourses?.length === 0;
 
-    if (noTrainingCoursesFound) {
-      const redirectUrl = routeSnapshot.data?.redirectWhenNoCourses;
-
-      if (redirectUrl) {
-        const destinationUrl = createUrlTreeFromSnapshot(routeSnapshot, redirectUrl, routeSnapshot.queryParams);
-
-        return new RedirectCommand(destinationUrl);
-      }
-
-      return [];
+    if (noTrainingCoursesFound && routeSnapshot.data?.redirectWhenNoCourses) {
+      const destinationUrl = createUrlTreeFromSnapshot(
+        routeSnapshot,
+        routeSnapshot.data.redirectWhenNoCourses,
+        routeSnapshot.queryParams,
+      );
+      return new RedirectCommand(destinationUrl);
     }
 
-    return trainingCourses;
+    return trainingCourses ?? [];
   }
 }
