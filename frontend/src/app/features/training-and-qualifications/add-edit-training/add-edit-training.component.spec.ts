@@ -470,7 +470,7 @@ describe('AddEditTrainingComponent', () => {
         fillInDate(completedDate, '2020', '4', '10');
 
         const expiryDate = getByTestId('expiresDate');
-        fillInDate(expiryDate, '2023', '4', '10');
+        fillInDate(expiryDate, '2023', '4', '09');
 
         fixture.detectChanges();
 
@@ -969,7 +969,7 @@ describe('AddEditTrainingComponent', () => {
           validityPeriodInMonth: 12,
           doesNotExpire: null,
           completed: '2020-04-10',
-          expires: '2021-04-10',
+          expires: '2021-04-09',
         }),
       );
     });

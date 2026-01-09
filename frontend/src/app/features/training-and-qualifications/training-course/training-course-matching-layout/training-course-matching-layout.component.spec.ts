@@ -307,9 +307,9 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
         userEvent.type(expiryDate.getByLabelText('Month'), '2');
         userEvent.type(expiryDate.getByLabelText('Year'), '2025');
 
-        userEvent.type(completedDate.getByLabelText('Day'), '1');
-        userEvent.type(completedDate.getByLabelText('Month'), '1');
-        userEvent.type(completedDate.getByLabelText('Year'), '2024');
+        userEvent.type(completedDate.getByLabelText('Day'), '22');
+        userEvent.type(completedDate.getByLabelText('Month'), '08');
+        userEvent.type(completedDate.getByLabelText('Year'), '2025');
 
         fixture.detectChanges();
 
@@ -317,9 +317,9 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
         ['Day', 'Month', 'Year'].forEach((field) => userEvent.clear(expiryDate.getByLabelText(field)));
 
-        userEvent.type(expiryDate.getByLabelText('Day'), '1');
-        userEvent.type(expiryDate.getByLabelText('Month'), '1');
-        userEvent.type(expiryDate.getByLabelText('Year'), '2025');
+        userEvent.type(expiryDate.getByLabelText('Day'), '21');
+        userEvent.type(expiryDate.getByLabelText('Month'), '08');
+        userEvent.type(expiryDate.getByLabelText('Year'), '2026');
 
         fixture.detectChanges();
 
@@ -574,7 +574,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
           validityPeriodInMonth: selectedCourse.validityPeriodInMonth,
 
           completed: '2025-02-15',
-          expires: '2026-02-15', // 2025-02-15 + 12 months
+          expires: '2026-02-14',
           notes: 'some notes',
         });
       });
@@ -588,7 +588,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
         userEvent.type(completedDate.getByLabelText('Month'), '2');
         userEvent.type(completedDate.getByLabelText('Year'), '2025');
 
-        const expectedExpiryDate = '2026-02-15';
+        const expectedExpiryDate = '2026-02-14';
 
         userEvent.click(getByRole('button', { name: 'Save training record' }));
 
