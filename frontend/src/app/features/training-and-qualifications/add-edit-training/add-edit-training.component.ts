@@ -135,6 +135,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.trainingCertificates = trainingRecord.trainingCertificates;
     this.isTrainingRecordMatchedToTrainingCourse = trainingRecord.isMatchedToTrainingCourse;
 
+    const gotExpiresDate = !!this.trainingRecord.expires;
+    if (gotExpiresDate && this.trainingRecord.doesNotExpire) {
+      this.trainingRecord.doesNotExpire = null;
+    }
+
     const formValueToPatch = {
       title: this.trainingRecord.title,
       accredited: this.trainingRecord.accredited,
@@ -210,6 +215,8 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     const completedDateOrExpiresDateChanged = merge(
       this.completedDate().onChange.asObservable(),
       this.expiresDate().onChange.asObservable(),
+      this.form.get('validityPeriodInMonth').valueChanges,
+      this.form.get('doesNotExpire').valueChanges,
     );
 
     this.dateInputEventsListener$ = completedDateOrExpiresDateChanged.subscribe(() => {

@@ -321,52 +321,118 @@ describe('AddEditTrainingComponent', () => {
     });
 
     describe('expiry date input box', () => {
-      describe('when editing an existing training record', () => {
-        it('should show the expiry date input boxes if and only if doesNotExpire is not ticked', async () => {
-          const mockTrainingRecord = { ...defaultMockTrainingRecord, doesNotExpire: true };
-          const { queryByTestId, getByLabelText, fixture } = await setup({
-            trainingRecord: mockTrainingRecord,
+      const trainingRecordThatDoesNotExpire = {
+        ...defaultMockTrainingRecord,
+        doesNotExpire: true,
+        validityPeriodInMonth: undefined,
+        expires: undefined,
+      };
+
+      it('should not render the expires date inputs when adding a new training record', async () => {
+        const { queryByTestId } = await setup({ trainingRecordId: null });
+        expect(queryByTestId('expiresDate')).toBeFalsy();
+      });
+
+      describe('when editing a record', () => {
+        it('should render the expires date inputs when doesNotExpire is false', async () => {
+          const { queryByTestId } = await setup({
+            trainingRecord: { ...defaultMockTrainingRecord, doesNotExpire: false },
           });
-
-          const checkbox = getByLabelText('This training does not expire') as HTMLInputElement;
-
-          expect(checkbox.checked).toBeTrue();
-          expect(queryByTestId('expiresDate')).toBeFalsy();
-
-          userEvent.click(checkbox);
-          fixture.detectChanges();
-
-          expect(checkbox.checked).toBeFalse();
           expect(queryByTestId('expiresDate')).toBeTruthy();
+        });
 
-          userEvent.click(checkbox);
-          fixture.detectChanges();
+        it('should render the expires date inputs when doesNotExpire is empty', async () => {
+          const { queryByTestId } = await setup({
+            trainingRecord: {
+              ...defaultMockTrainingRecord,
+              doesNotExpire: undefined,
+              expires: undefined,
+            },
+          });
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+        });
 
-          expect(checkbox.checked).toBeTrue();
+        it('should not render the expires date inputs when doesNotExpire is true and expires date is empty', async () => {
+          const { queryByTestId } = await setup({
+            trainingRecord: trainingRecordThatDoesNotExpire,
+          });
           expect(queryByTestId('expiresDate')).toBeFalsy();
         });
 
-        it('should clear the expiry date value when user ticked doesNotExpire', async () => {
-          const mockTrainingRecord = { ...defaultMockTrainingRecord, doesNotExpire: false, expires: '2025-12-03' };
-          const { getByLabelText, getByTestId } = await setup({
-            trainingRecord: mockTrainingRecord,
+        it('should render the expires date and untick doesNotExpire, if expires date is not empty but doesNotExpire is also true', async () => {
+          const { queryByTestId, getByLabelText } = await setup({
+            trainingRecord: { ...defaultMockTrainingRecord, doesNotExpire: true, expires: '2025-12-03' },
           });
 
-          let expiryDate = getByTestId('expiresDate');
+          const expiryDate = queryByTestId('expiresDate');
+          expect(expiryDate).toBeTruthy();
 
           expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('3');
           expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('12');
           expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2025');
 
-          const checkbox = getByLabelText('This training does not expire') as HTMLInputElement;
-          userEvent.click(checkbox);
-          userEvent.click(checkbox);
-
-          expiryDate = getByTestId('expiresDate');
-          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('');
-          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('');
-          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('');
+          const doesNotExpire = getByLabelText('This training does not expire') as HTMLInputElement;
+          expect(doesNotExpire.checked).toBeFalse();
         });
+      });
+
+      it('should show and hide the expiry date input boxes when user changed doesNotExpire', async () => {
+        const { queryByTestId, getByLabelText, fixture } = await setup({
+          trainingRecord: trainingRecordThatDoesNotExpire,
+        });
+
+        const doesNotExpire = getByLabelText('This training does not expire') as HTMLInputElement;
+
+        expect(doesNotExpire.checked).toBeTrue();
+        expect(queryByTestId('expiresDate')).toBeFalsy();
+
+        userEvent.click(doesNotExpire);
+        fixture.detectChanges();
+
+        expect(doesNotExpire.checked).toBeFalse();
+        expect(queryByTestId('expiresDate')).toBeTruthy();
+
+        userEvent.click(doesNotExpire);
+        fixture.detectChanges();
+
+        expect(doesNotExpire.checked).toBeTrue();
+        expect(queryByTestId('expiresDate')).toBeFalsy();
+      });
+
+      it('should show the expiry date when user fill in the validityMonthInPeriod', async () => {
+        const { queryByTestId, getInputByRole } = await setup({
+          trainingRecord: trainingRecordThatDoesNotExpire,
+        });
+        expect(queryByTestId('expiresDate')).toBeFalsy();
+
+        const validityPeriodInMonth = getInputByRole('textbox', {
+          name: /How many months/,
+        });
+
+        userEvent.type(validityPeriodInMonth, '24');
+        expect(queryByTestId('expiresDate')).toBeTruthy();
+      });
+
+      it('should clear the expiry date value when user ticked doesNotExpire', async () => {
+        const mockTrainingRecord = { ...defaultMockTrainingRecord, doesNotExpire: false, expires: '2025-12-03' };
+        const { getByLabelText, getByTestId } = await setup({
+          trainingRecord: mockTrainingRecord,
+        });
+
+        let expiryDate = getByTestId('expiresDate');
+
+        expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('3');
+        expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('12');
+        expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2025');
+
+        const checkbox = getByLabelText('This training does not expire') as HTMLInputElement;
+        userEvent.click(checkbox);
+        userEvent.click(checkbox);
+
+        expiryDate = getByTestId('expiresDate');
+        expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('');
+        expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('');
+        expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('');
       });
 
       it('should update expiry date soft warning message when filling the form', async () => {
@@ -550,11 +616,6 @@ describe('AddEditTrainingComponent', () => {
       it('should not render the Delete button', async () => {
         const { queryByTestId } = await setup({ trainingRecordId: null });
         expect(queryByTestId('deleteButton')).toBeFalsy();
-      });
-
-      it('should not render the expires date inputs', async () => {
-        const { queryByTestId } = await setup({ trainingRecordId: null });
-        expect(queryByTestId('expiresDate')).toBeFalsy();
       });
     });
   });
@@ -1446,6 +1507,26 @@ describe('AddEditTrainingComponent', () => {
         userEvent.click(removeButton);
 
         expect(queryByText('The certificate must be a PDF file')).toBeFalsy();
+      });
+    });
+
+    describe('validityPeriodInMonth', () => {
+      const invalidValuesForTesting = ['-10', '0', '99999', 'apple', '   '];
+
+      invalidValuesForTesting.forEach((invalidValue) => {
+        it(`should show an error message if validityPeriodInMonth got an invalid value - ${invalidValue}`, async () => {
+          const { getByRole, fixture, getByText, getByLabelText, getAllByText } = await setup();
+          const expectedErrorMsg = 'Number of months must be between 1 and 999';
+
+          const inputBox = getByLabelText(/^How many months/);
+          userEvent.clear(inputBox);
+          userEvent.type(inputBox, invalidValue);
+          userEvent.click(getByRole('button', { name: 'Save and return' }));
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+          expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        });
       });
     });
   });
