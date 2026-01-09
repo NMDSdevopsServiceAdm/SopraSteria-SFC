@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { ParentRequestsStateService } from '@core/services/admin/admin-parent-request-status/admin-parent-request-status.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { filter, take } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-admin-menu',
@@ -17,15 +18,22 @@ export class AdminMenuComponent implements OnInit {
     private router: Router,
     private parentRequestsState: ParentRequestsStateService,
     private parentRequestsService: ParentRequestsService,
+    private destroyRef: DestroyRef,
   ) {}
 
   ngOnInit(): void {
     // Initial load
     this.loadParentRequests();
 
-    this.router.events.pipe(filter((e) => e instanceof NavigationEnd)).subscribe(() => {
-      this.loadParentRequests();
-    });
+    // reload on navigation
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.loadParentRequests();
+      });
 
     this.parentRequestsState
       .get$()
