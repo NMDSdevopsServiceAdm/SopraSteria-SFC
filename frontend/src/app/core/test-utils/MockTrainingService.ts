@@ -66,6 +66,7 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     title: 'Title',
     howWasItDelivered: 'Face to face',
     externalProviderName: null,
+    otherTrainingProviderName: null,
     deliveredBy: null,
     validityPeriodInMonth: null,
   };
@@ -83,6 +84,42 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
       return service;
     };
   }
+}
+
+@Injectable()
+export class MockTrainingServiceWithProviderNameFromList extends MockTrainingService {
+  public selectedStaff = workers;
+  protected _selectedTraining = {
+    accredited: 'Yes',
+    trainingCategory: { id: 1, seq: 3, category: 'Category' },
+    completed: '2020-01-01',
+    expires: '2021-01-01',
+    notes: 'This is a note',
+    title: 'Title',
+    howWasItDelivered: 'Face to face',
+    externalProviderName: 'Care Skills Academy',
+    otherTrainingProviderName: null,
+    deliveredBy: 'External provider',
+    validityPeriodInMonth: null,
+  };
+}
+
+@Injectable()
+export class MockTrainingServiceWithProviderNameFromFreeText extends MockTrainingService {
+  public selectedStaff = workers;
+  protected _selectedTraining = {
+    accredited: 'Yes',
+    trainingCategory: { id: 1, seq: 3, category: 'Category' },
+    completed: '2020-01-01',
+    expires: '2021-01-01',
+    notes: 'This is a note',
+    title: 'Title',
+    howWasItDelivered: 'Face to face',
+    externalProviderName: null,
+    otherTrainingProviderName: 'Free text provider',
+    deliveredBy: 'External provider',
+    validityPeriodInMonth: null,
+  };
 }
 
 @Injectable()
