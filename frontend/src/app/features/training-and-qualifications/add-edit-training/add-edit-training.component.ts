@@ -178,6 +178,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   protected setupFormChangeListeners(): void {
     super.setupFormChangeListeners();
     this.setupExpiryDateDisplayLogic();
+    this.setupExpiryDateAutofill();
   }
 
   private setupExpiryDateDisplayLogic(): void {
@@ -202,6 +203,39 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   private clearExpiryDate(): void {
     this.form.patchValue({ expires: { day: null, month: null, year: null } });
+  }
+
+  private setupExpiryDateAutofill(): void {
+    const isAddingNewTraining = !this.trainingRecordId;
+    if (isAddingNewTraining) {
+      return;
+    }
+
+    this.completedDate().onChange.subscribe(() => {
+      this.autoFillExpiry();
+    });
+  }
+
+  public autoFillExpiry(): void {
+    if (!this.showExpiryDateInput || !this.expiresDate()) {
+      return;
+    }
+    const completedDate = DateUtil.toDayjs(this.completedDate().internalState);
+    const validity = this.validityPeriodInMonth.currentNumber;
+
+    const expiryDateIsEmpty = Object.values(this.expiresDate().internalState).every((input) => input === null);
+
+    if (completedDate && validity && expiryDateIsEmpty) {
+      const newExpiryDate = DateUtil.expectedExpiryDate(completedDate, validity);
+
+      this.form.patchValue({
+        expires: {
+          day: newExpiryDate.date(),
+          month: newExpiryDate.month() + 1,
+          year: newExpiryDate.year(),
+        },
+      });
+    }
   }
 
   private clearEventListenerForDateInputs(): void {
