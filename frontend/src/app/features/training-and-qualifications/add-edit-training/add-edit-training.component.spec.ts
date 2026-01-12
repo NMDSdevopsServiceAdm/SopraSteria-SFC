@@ -1399,13 +1399,13 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
-  it('should redirect to the add training select category on page refresh', async () => {
+  it('should redirect to the add training select category page on page refresh', async () => {
     const { component, routerSpy } = await setup({ trainingRecordId: null, selectedTraining: null });
 
     component.ngOnInit();
 
     expect(routerSpy).toHaveBeenCalledWith([
-      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training`,
+      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training-without-course`,
     ]);
   });
 

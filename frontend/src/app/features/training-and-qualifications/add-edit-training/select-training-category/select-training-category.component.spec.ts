@@ -159,7 +159,7 @@ describe('SelectTrainingCategoryComponent', () => {
       trainingCategoryGroup: 'Specific conditions and disabilities',
     });
     expect(routerSpy).toHaveBeenCalledWith([
-      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training/details`,
+      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training-without-course/details`,
     ]);
   });
 

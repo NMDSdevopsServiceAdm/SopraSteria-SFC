@@ -69,7 +69,6 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level/
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
-import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
 import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
@@ -132,7 +131,6 @@ import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qu
     TotalStaffChangeComponent,
     WeeklyContractedHoursComponent,
     YearArrivedUkComponent,
-    SelectRecordTypeComponent,
     MoveWorkerDialogComponent,
     MandatoryDetailsComponent,
     LongTermAbsenceComponent,

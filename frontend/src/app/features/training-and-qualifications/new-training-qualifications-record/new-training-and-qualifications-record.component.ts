@@ -31,10 +31,10 @@ import { PdfMakeService } from '../../../core/services/pdf-make.service';
 import { TrainingCourse } from '@core/model/training-course.model';
 
 @Component({
-    selector: 'app-new-training-and-qualifications-record',
-    templateUrl: './new-training-and-qualifications-record.component.html',
-    styleUrls: ['./new-training-and-qualification.component.scss'],
-    standalone: false
+  selector: 'app-new-training-and-qualifications-record',
+  templateUrl: './new-training-and-qualifications-record.component.html',
+  styleUrls: ['./new-training-and-qualification.component.scss'],
+  standalone: false,
 })
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   @ViewChild('tabEl') tabEl;
@@ -314,26 +314,17 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       return;
     }
 
-    // at this point, the action list is about adding Mandatory training
+    const addTrainingRecordPage = [
+      'workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'add-a-training-record',
+    ];
 
-    const trainingCategoryId = actionListItem.trainingCategory.id;
-    const haveCourseOfThatCategory = this.trainingCourses.some(
-      (course) => course.trainingCategoryId === trainingCategoryId,
-    );
-
-    const commonRoute = ['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid];
-    const selectCoursePage = [...commonRoute, 'add-a-training-record'];
-    const continueWithoutSelectingCourse = [...commonRoute, 'add-training'];
-
-    if (haveCourseOfThatCategory) {
-      this.router.navigate(selectCoursePage, {
-        queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
-      });
-    } else {
-      this.router.navigate(continueWithoutSelectingCourse, {
-        queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
-      });
-    }
+    this.router.navigate(addTrainingRecordPage, {
+      queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
+    });
   }
 
   private navigateToUpdateTrainingRecord(trainingUid: string) {

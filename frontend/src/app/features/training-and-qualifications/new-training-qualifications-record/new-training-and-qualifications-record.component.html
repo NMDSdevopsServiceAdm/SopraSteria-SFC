@@ -66,11 +66,13 @@
       class="govuk-button govuk-button--primary"
       role="button"
       draggable="false"
-      [routerLink]="
-        trainingCourses.length > 0
-          ? ['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'add-a-training-record']
-          : ['/workplace', workplace.uid, 'training-and-qualifications-record', worker.uid, 'add-training']
-      "
+      [routerLink]="[
+        '/workplace',
+        workplace.uid,
+        'training-and-qualifications-record',
+        worker.uid,
+        'add-a-training-record',
+      ]"
     >
       Add a training record
     </a>
@@ -85,7 +87,7 @@
         workplace.uid,
         'training-and-qualifications-record',
         worker.uid,
-        'add-qualification'
+        'add-qualification',
       ]"
     >
       Add a qualification record

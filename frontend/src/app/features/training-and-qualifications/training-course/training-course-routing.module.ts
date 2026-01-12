@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddAndManageTrainingCoursesComponent } from './add-and-manage-training-courses/add-and-manage-training-courses.component';
-import { TrainingCourseResolver, TrainingCoursesToLoad } from '@core/resolvers/training/training-course.resolver';
+import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import { TrainingCourseDetailsComponent } from './training-course-details/training-course-details.component';
 import { TrainingCourseCategoryComponent } from './training-course-category/training-course-category.component';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
@@ -21,7 +21,6 @@ const routes: Routes = [
     data: {
       permissions: ['canEditWorker'],
       title: 'Add and manage training course',
-      trainingCoursesToLoad: 'ALL' as TrainingCoursesToLoad,
     },
     resolve: { trainingCourses: TrainingCourseResolver },
   },

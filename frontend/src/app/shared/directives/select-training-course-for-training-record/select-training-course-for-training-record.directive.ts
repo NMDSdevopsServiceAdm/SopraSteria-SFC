@@ -49,8 +49,8 @@ export class SelectTrainingCourseForTrainingRecordDirective implements OnInit, A
     this.worker = this.workerService.worker;
     this.workplace = this.establishmentService.establishment;
 
-    this.loadTrainingCourses();
     this.setUpVariables();
+    this.loadTrainingCourses();
     this.continueWithOutCourseOption.name = this.continueWithOutCourseOptionText;
     this.init();
     this.setupForm();

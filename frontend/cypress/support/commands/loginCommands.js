@@ -171,3 +171,25 @@ Cypress.Commands.add('updateUserFieldForLoginTests', (userFullName, fieldNameToU
     cy.task('dbQuery', { queryString: queryString, parameters: parameters });
   }
 });
+
+Cypress.Commands.add('getLoginToken', (username, password) => {
+  cy.intercept('POST', '/api/login').as('login');
+
+  cy.visit('/');
+  cy.get('[data-cy="username"]').type(username);
+  cy.get('[data-cy="password"]').type(password);
+  cy.get('[data-testid="signinButton"]').click();
+  return cy.wait('@login').then(({ response }) => {
+    return response.headers.authorization;
+  });
+});
+
+Cypress.Commands.add('getUserUuid', (userFullName) => {
+  const queryString = `SELECT "FullNameValue", "UserUID" FROM cqc."User"
+    WHERE "FullNameValue" = $1
+    LIMIT 1;`;
+  const parameters = [userFullName];
+  return cy.task('dbQuery', { queryString, parameters }).then((response) => {
+    return response.rows[0].UserUID;
+  });
+});

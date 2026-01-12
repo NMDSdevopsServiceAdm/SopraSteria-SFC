@@ -261,15 +261,6 @@ describe('NewTrainingComponent', async () => {
       expect(healthTrainingTitleLink).toBeTruthy();
       expect(healthTraining2TitleLink).toBeTruthy();
     });
-
-    it('should link to "matching-layout" page instead if the training record is linked to a training course', async () => {
-      const mockTrainingCategories = lodash.cloneDeep(trainingCategories);
-      mockTrainingCategories[0].trainingRecords[0]['isMatchedToTrainingCourse'] = true;
-
-      const { getByTestId } = await setup({ trainingCategories: mockTrainingCategories });
-      const autismTrainingTitleLink = getByTestId('Title-someAutismUid');
-      expect(autismTrainingTitleLink.getAttribute('href')).toEqual('/training/someAutismUid/matching-layout');
-    });
   });
 
   describe('no training', async () => {
@@ -279,7 +270,7 @@ describe('NewTrainingComponent', async () => {
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
 
       expect(noTrainingLink).toBeTruthy();
-      expect(noTrainingLink.getAttribute('href')).toBe('/add-training');
+      expect(noTrainingLink.getAttribute('href')).toBe('/add-a-training-record');
     });
 
     it('should not display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is false', async () => {

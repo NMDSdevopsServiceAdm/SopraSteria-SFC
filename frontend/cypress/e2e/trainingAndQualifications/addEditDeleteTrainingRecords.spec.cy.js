@@ -1,7 +1,14 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
-import { expectTrainingRecordPageToHaveCourseDetails } from './trainingCourse/helpers';
+import { onHomePage } from '../../support/page_objects/onHomePage';
+import {
+  clickAddLinkForRow,
+  clickUpdateLinkForRow,
+  clickIntoWorkerTAndQRecordPage,
+  expectTrainingRecordPageToHaveCourseDetails,
+  expectPageToHaveDetails,
+} from './trainingCourse/helpers';
 
 describe('training record', () => {
   const workerName1 = 'Test worker';
@@ -618,6 +625,173 @@ describe('training record', () => {
 
         // staff training and qualifications page
         cy.get('[data-testid="generic_alert"]').contains('2 training records added');
+      });
+    });
+  });
+
+  describe('missing mandatory training warning', () => {
+    const workerName = 'worker to test mandatory training';
+    const jobID = 11;
+    const categoryIdForAutism = 2;
+    const categoryIdForCommunication = 4;
+
+    before(() => {
+      cy.deleteWorkerTrainingRecord({ workerName, establishmentID });
+      cy.deleteTestWorkerFromDb(workerName);
+      cy.removeAllMandatoryTrainings(establishmentID);
+      cy.insertTestWorker({ establishmentID, workerName, mainJobFKValue: jobID });
+      cy.deleteAllTrainingCourses(establishmentID);
+      cy.insertTrainingCourse({
+        establishmentID,
+        categoryId: categoryIdForCommunication,
+        name: 'Communication course',
+      });
+
+      cy.insertMandatoryTraining({ establishmentID, trainingCategoryID: categoryIdForAutism, jobID });
+      cy.insertMandatoryTraining({ establishmentID, trainingCategoryID: categoryIdForCommunication, jobID });
+    });
+
+    after(() => {
+      cy.deleteWorkerTrainingRecord({ workerName, establishmentID });
+      cy.deleteTestWorkerFromDb(workerName);
+    });
+
+    it('should show a warning and an Add link for each missing mandatory training of a worker', () => {
+      onHomePage.clickTab('Training and qualifications');
+      cy.contains('a', '1 staff is missing mandatory training').should('be.visible').as('missingWarning');
+      cy.get('@missingWarning').click();
+
+      cy.get('h1').should('contain', 'Staff missing mandatory training');
+
+      // when no course for the category, Add link should skip the course selection and show select category page
+      clickAddLinkForRow('Autism');
+      cy.get('h1').should('contain', 'Select the category that best matches the training taken');
+      cy.getByLabel('Autism').should('be.checked');
+
+      cy.contains('a', 'Back').click();
+
+      // when there is a course for the category, Add link should lead to the new 'Add a training record' page
+      clickAddLinkForRow('Communication');
+      cy.get('h1').should('contain', 'Add a training record');
+      cy.getByLabel('Continue without selecting a training course').should('exist');
+      cy.getByLabel('Communication course').should('exist');
+    });
+
+    it('should show missing mandatory training warning and Add links in the Action list', () => {
+      onHomePage.clickTab('Training and qualifications');
+      clickIntoWorkerTAndQRecordPage(workerName);
+      cy.contains('table', 'Actions list').within(() => {
+        cy.contains('Autism').should('be.visible');
+        cy.contains('Communication').should('be.visible');
+      });
+
+      // when no course for the category, Add link should skip the course selection and show select category page
+      clickAddLinkForRow('Autism');
+      cy.get('h1').should('contain', 'Select the category that best matches the training taken');
+      cy.getByLabel('Autism').should('be.checked');
+
+      cy.contains('a', 'Back').click();
+
+      // when there is a course for the category, Add link should lead to the new 'Add a training record' page
+      clickAddLinkForRow('Communication');
+      cy.get('h1').should('contain', 'Add a training record');
+      cy.getByLabel('Continue without selecting a training course').should('exist');
+      cy.getByLabel('Communication course').should('exist');
+    });
+  });
+
+  describe('expired training warnings', () => {
+    const workerName = 'worker to test expired training';
+    const jobID = 11;
+    const categoryIdForAutism = 2;
+    const categoryIdForCommunication = 4;
+
+    before(() => {
+      cy.deleteWorkerTrainingRecord({ workerName, establishmentID });
+      cy.deleteTestWorkerFromDb(workerName);
+      cy.insertTestWorker({ establishmentID, workerName, mainJobFKValue: jobID });
+      cy.deleteAllTrainingCourses(establishmentID);
+      cy.insertTrainingCourse({
+        establishmentID,
+        categoryId: categoryIdForCommunication,
+        name: 'Communication course',
+      });
+
+      cy.addWorkerTraining({
+        establishmentID,
+        workerName,
+        categoryId: categoryIdForAutism,
+        trainingTitle: 'Autism training',
+        completedDate: '2020-01-01',
+        expiryDate: '2021-01-01',
+      });
+
+      cy.addWorkerTrainingLinkedToCourse({
+        establishmentID,
+        workerName,
+        categoryId: categoryIdForCommunication,
+        trainingCourseName: 'Communication course',
+        trainingTitle: 'Communication course',
+        completedDate: '2020-06-01',
+        expiryDate: '2021-06-01',
+      });
+    });
+
+    after(() => {
+      cy.deleteWorkerTrainingRecord({ workerName, establishmentID });
+      cy.deleteTestWorkerFromDb(workerName);
+    });
+
+    it('should show a warning and an Update link for each expired training of a worker', () => {
+      onHomePage.clickTab('Training and qualifications');
+      cy.contains('a', '2 records have expired').should('be.visible').as('expiryWarning');
+      cy.get('@expiryWarning').click();
+
+      cy.get('h1').should('contain', 'Expired training records');
+
+      // if training record is not linked to a course, Update link should lead to old style edit training page
+      clickUpdateLinkForRow('Autism');
+      cy.get('h1').should('contain', 'Training record details');
+      cy.url().should('contain', 'edit-training-without-course');
+      cy.getByLabel('Training record name').should('have.value', 'Autism training');
+
+      cy.contains('a', 'Back').click();
+
+      // if training record is linked to a course, Update link should lead to course details page
+      clickUpdateLinkForRow('Communication');
+      cy.get('h1').should('contain', 'Training record details');
+      cy.url().should('contain', 'edit-training-with-course');
+      expectTrainingRecordPageToHaveCourseDetails({
+        courseName: 'Communication course',
+        completedDate: '2020-06-01',
+        expiryDate: '2021-06-01',
+      });
+    });
+
+    it('should show expiry warnings and Update links in the Action list', () => {
+      onHomePage.clickTab('Training and qualifications');
+      clickIntoWorkerTAndQRecordPage(workerName);
+      cy.contains('table', 'Actions list').within(() => {
+        cy.contains('Autism').should('be.visible');
+        cy.contains('Communication').should('be.visible');
+      });
+
+      // if training record is not linked to a course, Update link should lead to old style edit training page
+      clickUpdateLinkForRow('Autism');
+      cy.get('h1').should('contain', 'Training record details');
+      cy.url().should('contain', 'edit-training-without-course');
+      cy.getByLabel('Training record name').should('have.value', 'Autism training');
+
+      cy.contains('a', 'Back').click();
+
+      // if training record is linked to a course, Update link should lead to course details page
+      clickUpdateLinkForRow('Communication');
+      cy.get('h1').should('contain', 'Training record details');
+      cy.url().should('contain', 'edit-training-with-course');
+      expectTrainingRecordPageToHaveCourseDetails({
+        courseName: 'Communication course',
+        completedDate: '2020-06-01',
+        expiryDate: '2021-06-01',
       });
     });
   });
