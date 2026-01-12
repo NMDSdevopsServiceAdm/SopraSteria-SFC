@@ -16,17 +16,24 @@ describe('dateUtils', () => {
     });
 
     const testCases = [
-      { completionDate: '2025-11-01', validityPeriodInMonth: 1, expected: '2025-11-30' },
-      { completionDate: '2025-11-15', validityPeriodInMonth: 1, expected: '2025-12-14' },
-      { completionDate: '2025-11-30', validityPeriodInMonth: 1, expected: '2025-12-29' },
-      { completionDate: '2025-12-31', validityPeriodInMonth: 1, expected: '2026-01-30' },
-      { completionDate: '2025-12-31', validityPeriodInMonth: 2, expected: '2026-02-28' },
-      { completionDate: '2024-02-29', validityPeriodInMonth: 12, expected: '2025-02-28' },
+      { completed: '2025-01-01', validityPeriodInMonth: 1, expected: '2025-01-31' },
+      { completed: '2025-01-01', validityPeriodInMonth: 2, expected: '2025-02-28' },
+      { completed: '2025-01-01', validityPeriodInMonth: 3, expected: '2025-03-31' },
+      { completed: '2025-02-01', validityPeriodInMonth: 1, expected: '2025-02-28' },
+      { completed: '2025-02-01', validityPeriodInMonth: 2, expected: '2025-03-31' },
+      { completed: '2025-02-01', validityPeriodInMonth: 3, expected: '2025-04-30' },
+      { completed: '2025-03-01', validityPeriodInMonth: 1, expected: '2025-03-31' },
+      { completed: '2025-03-01', validityPeriodInMonth: 2, expected: '2025-04-30' },
+      { completed: '2025-11-15', validityPeriodInMonth: 1, expected: '2025-12-14' },
+      { completed: '2025-11-30', validityPeriodInMonth: 1, expected: '2025-12-29' },
+      { completed: '2025-12-31', validityPeriodInMonth: 1, expected: '2026-01-30' },
+      { completed: '2025-12-31', validityPeriodInMonth: 2, expected: '2026-02-28' },
+      { completed: '2024-02-29', validityPeriodInMonth: 12, expected: '2025-02-28' },
     ];
 
-    testCases.forEach(({ completionDate, validityPeriodInMonth, expected }) => {
-      it(`test case: ${completionDate} + ${validityPeriodInMonth} months -> ${expected}`, () => {
-        const actual = calculateTrainingExpiryDate(completionDate, validityPeriodInMonth);
+    testCases.forEach(({ completed, validityPeriodInMonth, expected }) => {
+      it(`test case: ${completed} + ${validityPeriodInMonth} months -> ${expected}`, () => {
+        const actual = calculateTrainingExpiryDate(completed, validityPeriodInMonth);
 
         expect(actual).to.equal(expected);
       });

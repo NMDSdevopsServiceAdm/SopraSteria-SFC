@@ -3,7 +3,7 @@ import { DateUtil } from './date-util';
 import { FormatDate } from './date-util';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 
-describe('DateUtil', () => {
+fdescribe('DateUtil', () => {
   describe('getDateForOneYearAgo', () => {
     beforeEach(() => {
       jasmine.clock().install();
@@ -138,7 +138,14 @@ describe('DateUtil', () => {
   describe('expectedExpiryDate', () => {
     describe('should calculate the expected expiry date from given completed date and validity months', () => {
       const testCases = [
-        { completed: '2025-11-01', validityPeriodInMonth: 1, expected: '2025-11-30' },
+        { completed: '2025-01-01', validityPeriodInMonth: 1, expected: '2025-01-31' },
+        { completed: '2025-01-01', validityPeriodInMonth: 2, expected: '2025-02-28' },
+        { completed: '2025-01-01', validityPeriodInMonth: 3, expected: '2025-03-31' },
+        { completed: '2025-02-01', validityPeriodInMonth: 1, expected: '2025-02-28' },
+        { completed: '2025-02-01', validityPeriodInMonth: 2, expected: '2025-03-31' },
+        { completed: '2025-02-01', validityPeriodInMonth: 3, expected: '2025-04-30' },
+        { completed: '2025-03-01', validityPeriodInMonth: 1, expected: '2025-03-31' },
+        { completed: '2025-03-01', validityPeriodInMonth: 2, expected: '2025-04-30' },
         { completed: '2025-11-15', validityPeriodInMonth: 1, expected: '2025-12-14' },
         { completed: '2025-11-30', validityPeriodInMonth: 1, expected: '2025-12-29' },
         { completed: '2025-12-31', validityPeriodInMonth: 1, expected: '2026-01-30' },

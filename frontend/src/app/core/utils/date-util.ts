@@ -54,7 +54,11 @@ export class DateUtil {
       return null;
     }
 
-    return completed?.subtract(1, 'day')?.add(validityPeriodInMonth, 'months');
+    if (completed.date() === 1) {
+      return completed.add(validityPeriodInMonth - 1, 'months').endOf('month');
+    }
+
+    return completed.subtract(1, 'day').add(validityPeriodInMonth, 'months');
   }
 
   public static expiryDateDoesNotMatch(
