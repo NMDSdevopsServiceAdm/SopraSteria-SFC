@@ -205,7 +205,7 @@ describe('training record', () => {
         ...trainingCourseDetails,
         courseName: trainingCourseName,
         completedDate: '2025-06-15',
-        expiryDate: '2027-06-15',
+        expiryDate: '2027-06-14',
         notes: 'some notes',
       });
     });
@@ -235,12 +235,6 @@ describe('training record', () => {
       cy.getByLabel('Day').clear().type(31);
       cy.getByLabel('Month').clear().type(3);
       cy.getByLabel('Year').clear().type(2025);
-    });
-
-    cy.get('[data-testid="expiresDate"]').within(() => {
-      cy.getByLabel('Day').clear().type(31);
-      cy.getByLabel('Month').clear().type(3);
-      cy.getByLabel('Year').clear().type(2026);
     });
 
     cy.contains('button', 'Save and return').click();
