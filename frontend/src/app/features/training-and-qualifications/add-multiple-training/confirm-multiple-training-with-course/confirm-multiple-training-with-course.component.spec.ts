@@ -103,7 +103,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     const resetTrainingServiceStateSpy = spyOn(trainingService, 'resetState');
 
     const workerService = injector.inject(WorkerService) as WorkerService;
-    const createMultipleTrainingRecordsSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.returnValue(of({"savedRecords":2}));
+    const createMultipleTrainingRecordsSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.returnValue(of({'savedRecords': 2}));
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert');
@@ -160,7 +160,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       const { getByTestId } = await setup();
       const heading = getByTestId('selected-staff-heading');
       expect(heading.textContent).toEqual('Selected staff');
-    })
+    });
 
     it('should display details of worker 1', async () => {
       const { getByText } = await setup();
@@ -208,7 +208,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       expect(within(trainingRecordDetails).getByText('How long is the training valid for?')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('Training completion date')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('Notes')).toBeTruthy();
-    })
+    });
 
     it('should display the summary list values', async () => {
       const { getByTestId } = await setup();
@@ -221,9 +221,9 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       expect(within(trainingRecordDetails).getByText('Care skills academy')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('E-learning')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('12 months')).toBeTruthy();
-      expect(within(trainingRecordDetails).getByText('21 Aug 2024')).toBeTruthy();
+      expect(within(trainingRecordDetails).getByText('21 August 2024')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('Some notes')).toBeTruthy();
-    })
+    });
 
     describe('When the training delivery method is "In-house"', () => {
       it('should not display the Training provider key or value', async () => {
@@ -233,8 +233,8 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
 
         expect(within(trainingRecordDetails).queryByText('Training provider name')).toBeFalsy();
         expect(within(trainingRecordDetails).queryByText('Care skills academy')).toBeFalsy();
-      })
-    })
+      });
+    });
 
     describe('Select a different training course link', () => {
       it('should be displayed', async () => {
@@ -252,7 +252,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
           `/workplace/${component.workplace.uid}/add-multiple-training/select-training-course`
         );
       });
-    })
+    });
 
     describe('Change training completion date link', () => {
       it('should be displayed', async () => {
@@ -270,7 +270,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
           `/workplace/${component.workplace.uid}/add-multiple-training/view-selected-training-course-details`
         );
       });
-    })
+    });
 
     describe('When there is missing data', () => {
       it('should display "-" if training course data from the training service is missing', async () => {
@@ -278,7 +278,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
         const { getByTestId } = await setup();
         const trainingRecordDetails = getByTestId('training-record-details');
         expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(1);
-      })
+      });
 
       it('should display "-" if the completion date is missing', async () => {
         selectedTrainingCourse.accredited = 'Yes';
@@ -288,7 +288,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
         const trainingRecordDetails = getByTestId('training-record-details');
 
         expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(1);
-      })
+      });
 
       it('should display "No notes added" if there are no notes', async () => {
         notes = null;
@@ -296,8 +296,8 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
         const trainingRecordDetails = getByTestId('training-record-details');
 
         expect(within(trainingRecordDetails).getByText('No notes added')).toBeTruthy();
-      })
-    })
+      });
+    });
 
     describe('Pluralisation', () => {
       describe('When the training is valid for more than 1 month', () => {
@@ -305,8 +305,8 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
           const { getByTestId } = await setup();
           const trainingRecordDetails = getByTestId('training-record-details');
           expect(within(trainingRecordDetails).getByText('12 months')).toBeTruthy();
-        })
-      })
+        });
+      });
 
       describe('When the training is valid for 1 month', () => {
         it('should display the singular amount', async () => {
@@ -314,28 +314,10 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
           const { getByTestId } = await setup();
           const trainingRecordDetails = getByTestId('training-record-details');
           expect(within(trainingRecordDetails).getByText('1 month')).toBeTruthy();
-        })
-      })
-    })
-
-    describe('Month in Training completion date', () => {
-      describe('Should show the first 3 letters of the month name', () => {
-        it('should display "Aug" when the month is August', async () => {
-          courseCompletionDate = new Date('2024-08-21');
-          const { getByTestId } = await setup();
-          const trainingRecordDetails = getByTestId('training-record-details');
-          expect(within(trainingRecordDetails).getByText('21 Aug 2024')).toBeTruthy();
-        })
-
-        it('should display "May" when the month is May', async () => {
-          courseCompletionDate = new Date('2024-05-21');
-          const { getByTestId } = await setup();
-          const trainingRecordDetails = getByTestId('training-record-details');
-          expect(within(trainingRecordDetails).getByText('21 May 2024')).toBeTruthy();
-        })
-      })
-    })
-  })
+        });
+      });
+    });
+  });
 
   describe('When refreshing the page', () => {
     it('Returns to page to select those you want to add a record for', async () => {
@@ -346,12 +328,12 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
         [`workplace/${component.workplace.uid}/add-multiple-training/select-staff`]
       );
     });
-  })
+  });
 
   describe('Save training records button', () => {
     it('should call createMultipleTrainingRecords function when clicked', async () => {
       courseCompletionDate = new Date('2024-08-21');
-      notes = "Some notes";
+      notes = 'Some notes';
       selectedTrainingCourse = {
         id: 2,
         uid: 'uid-2',
@@ -467,5 +449,5 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
         message: '1 training record added',
       } as Alert );
     });
-  })
-})
+  });
+});
