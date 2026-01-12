@@ -14,6 +14,7 @@ import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { DateUtil } from '@core/utils/date-util';
 
 describe('ConfirmMultipleTrainingWithCourseComponent', () => {
   const workplace = { uid: '1' };
@@ -45,12 +46,13 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     otherTrainingProviderName: 'Care skills academy',
     howWasItDelivered: HowWasItDelivered.ELearning,
     validityPeriodInMonth: 12,
+    doesNotExpire: false,
   };
 
   let courseCompletionDate = new Date('2024-08-21');
   let notes = 'Some notes';
 
-  async function setup() {
+  async function setup(overrides: any = {}) {
     const setupTools = await render(ConfirmMultipleTrainingWithCourseComponent, {
       imports: [RouterModule, SharedModule],
       providers: [
@@ -84,6 +86,9 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
               return notes;
             },
             resetState() {},
+            fillInExpiryDate() {
+              return overrides?.trainingRecordDetails ?? null;
+            },
           },
         },
         provideHttpClient(),
@@ -108,6 +113,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     const createMultipleTrainingRecordsSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.returnValue(
       of({ savedRecords: 2 }),
     );
+    const fillInExpiryDateSpy = spyOn(trainingService, 'fillInExpiryDate').and.callThrough();
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert');
@@ -123,6 +129,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       resetTrainingServiceStateSpy,
       routerSpy,
       showBackLinkSpy,
+      fillInExpiryDateSpy,
       ...setupTools,
     };
   }
@@ -354,39 +361,34 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     it('should call createMultipleTrainingRecords function when clicked', async () => {
       courseCompletionDate = new Date('2024-08-21');
       notes = 'Some notes';
+
       selectedTrainingCourse = {
-        id: 2,
-        uid: 'uid-2',
-        trainingCategoryId: 2,
-        name: 'Basic safeguarding for support staff',
-        trainingCategoryName: 'Safeguarding adults',
-        accredited: 'Yes',
+        ...selectedTrainingCourse,
         deliveredBy: DeliveredBy.ExternalProvider,
         externalProviderName: 'Care skills academy',
         otherTrainingProviderName: 'Care skills academy',
-        howWasItDelivered: HowWasItDelivered.ELearning,
         validityPeriodInMonth: 12,
       };
-      const { createMultipleTrainingRecordsSpy, fixture, getByText } = await setup();
-
-      const button = getByText('Save training records');
-      fireEvent.click(button);
-      fixture.detectChanges();
 
       const trainingRecordDetails = {
-        trainingCategory: { id: 2 },
-        title: 'Basic safeguarding for support staff',
-        trainingCategoryName: 'Safeguarding adults',
-        accredited: 'Yes',
-        deliveredBy: DeliveredBy.ExternalProvider,
-        externalProviderName: 'Care skills academy',
-        otherTrainingProviderName: 'Care skills academy',
-        howWasItDelivered: HowWasItDelivered.ELearning,
-        validityPeriodInMonth: 12,
+        trainingCategory: { id: selectedTrainingCourse.trainingCategoryId },
+        title: selectedTrainingCourse.name,
+        trainingCategoryName: selectedTrainingCourse.trainingCategoryName,
+        accredited: selectedTrainingCourse.accredited,
+        deliveredBy: selectedTrainingCourse.deliveredBy,
+        externalProviderName: selectedTrainingCourse.externalProviderName,
+        otherTrainingProviderName: selectedTrainingCourse.otherTrainingProviderName,
+        howWasItDelivered: selectedTrainingCourse.howWasItDelivered,
+        validityPeriodInMonth: selectedTrainingCourse.validityPeriodInMonth,
         completed: '2024-08-21',
         notes: notes,
         trainingCourseFK: selectedTrainingCourse.id,
       };
+      const { createMultipleTrainingRecordsSpy, fixture, getByText } = await setup({ trainingRecordDetails });
+
+      const button = getByText('Save training records');
+      fireEvent.click(button);
+      fixture.detectChanges();
 
       expect(createMultipleTrainingRecordsSpy).toHaveBeenCalledWith(
         workplace.uid,
@@ -399,9 +401,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       courseCompletionDate = null;
       notes = null;
       selectedTrainingCourse = {
-        id: 2,
-        uid: 'uid-2',
-        trainingCategoryId: 2,
+        ...selectedTrainingCourse,
         name: 'Basic safeguarding for support staff',
         trainingCategoryName: 'Safeguarding adults',
         accredited: 'Yes',
@@ -411,31 +411,81 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
         howWasItDelivered: HowWasItDelivered.ELearning,
         validityPeriodInMonth: 12,
       };
-      const { createMultipleTrainingRecordsSpy, fixture, getByText } = await setup();
+
+      const trainingRecordDetails = {
+        trainingCategory: { id: selectedTrainingCourse.trainingCategoryId },
+        title: selectedTrainingCourse.name,
+        trainingCategoryName: selectedTrainingCourse.trainingCategoryName,
+        accredited: selectedTrainingCourse.accredited,
+        deliveredBy: selectedTrainingCourse.deliveredBy,
+        externalProviderName: selectedTrainingCourse.externalProviderName,
+        otherTrainingProviderName: selectedTrainingCourse.otherTrainingProviderName,
+        howWasItDelivered: selectedTrainingCourse.howWasItDelivered,
+        validityPeriodInMonth: selectedTrainingCourse.validityPeriodInMonth,
+        completed: null,
+        notes: null,
+        trainingCourseFK: selectedTrainingCourse.id,
+      };
+      const { createMultipleTrainingRecordsSpy, fixture, getByText } = await setup({ trainingRecordDetails });
 
       const button = getByText('Save training records');
       fireEvent.click(button);
       fixture.detectChanges();
 
-      const trainingRecordDetails = {
-        trainingCategory: { id: 2 },
-        title: 'Basic safeguarding for support staff',
-        trainingCategoryName: 'Safeguarding adults',
-        accredited: 'Yes',
-        deliveredBy: DeliveredBy.ExternalProvider,
-        externalProviderName: 'Care skills academy',
-        otherTrainingProviderName: 'Care skills academy',
-        howWasItDelivered: HowWasItDelivered.ELearning,
-        validityPeriodInMonth: 12,
-        completed: null,
-        notes: null,
-        trainingCourseFK: selectedTrainingCourse.id,
-      };
-
       expect(createMultipleTrainingRecordsSpy).toHaveBeenCalledWith(
         workplace.uid,
         [workers[0].uid, workers[1].uid],
         trainingRecordDetails,
+      );
+    });
+
+    it('should set the expiry whe there is a completed date and validityPeriodInMonth', async () => {
+      courseCompletionDate = new Date('2024-08-21');
+      notes = null;
+      selectedTrainingCourse = {
+        ...selectedTrainingCourse,
+        validityPeriodInMonth: 12,
+        doesNotExpire: false,
+      };
+
+      const trainingRecordDetails = {
+        trainingCategory: { id: selectedTrainingCourse.trainingCategoryId },
+        title: 'Basic safeguarding for support staff',
+        trainingCategoryName: selectedTrainingCourse.trainingCategoryName,
+        accredited: selectedTrainingCourse.accredited,
+        deliveredBy: selectedTrainingCourse.deliveredBy,
+        externalProviderName: selectedTrainingCourse.externalProviderName,
+        otherTrainingProviderName: selectedTrainingCourse.otherTrainingProviderName,
+        howWasItDelivered: selectedTrainingCourse.howWasItDelivered,
+        validityPeriodInMonth: selectedTrainingCourse.validityPeriodInMonth,
+        completed: '2024-08-21',
+        notes: notes,
+        trainingCourseFK: selectedTrainingCourse.id,
+        doesNotExpire: false,
+      };
+
+      const trainingRecordDetailsWithExpiry = {
+        ...trainingRecordDetails,
+        expires: '2025-08-21',
+        doesNotExpire: false,
+      };
+
+      const { createMultipleTrainingRecordsSpy, fixture, getByText, fillInExpiryDateSpy } = await setup({
+        trainingRecordDetails: trainingRecordDetailsWithExpiry,
+      });
+
+      const button = getByText('Save training records');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(fillInExpiryDateSpy).toHaveBeenCalledWith(
+        trainingRecordDetails,
+        DateUtil.toDayjs({ day: 21, month: 8, year: 2024 }),
+      );
+      expect(createMultipleTrainingRecordsSpy).toHaveBeenCalledWith(
+        workplace.uid,
+        [workers[0].uid, workers[1].uid],
+        trainingRecordDetailsWithExpiry,
       );
     });
 

@@ -10,6 +10,8 @@ import { WorkerService } from '@core/services/worker.service';
 import { Alert } from '@core/model/alert.model';
 import { AlertService } from '@core/services/alert.service';
 import { DeliveredBy } from '@core/model/training.model';
+import { DateUtil } from '@core/utils/date-util';
+import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 
 @Component({
   selector: 'app-confirm-multiple-training-with-course',
@@ -56,10 +58,15 @@ export class ConfirmMultipleTrainingWithCourseComponent implements OnInit {
 
   public onSubmit(): void {
     const selectedStaff = this.workers.map((worker) => worker.uid);
+    let completedDate;
 
-    const completedDate = this.trainingRecordCompletionDate
-      ? dayjs(this.trainingRecordCompletionDate).format('YYYY-MM-DD')
-      : null;
+    if (this.trainingRecordCompletionDate) {
+      const day = this.trainingRecordCompletionDate?.getDate();
+      const month = this.trainingRecordCompletionDate.getMonth() + 1;
+      const year = this.trainingRecordCompletionDate?.getFullYear();
+      completedDate = DateUtil.toDayjs({ day, month, year });
+    }
+
     const trainingRecordDetails = {
       trainingCategory: { id: this.trainingCourse.trainingCategoryId },
       title: this.trainingCourse.name,
@@ -70,13 +77,16 @@ export class ConfirmMultipleTrainingWithCourseComponent implements OnInit {
       otherTrainingProviderName: this.trainingCourse.otherTrainingProviderName,
       howWasItDelivered: this.trainingCourse.howWasItDelivered,
       validityPeriodInMonth: this.trainingCourse.validityPeriodInMonth,
-      completed: completedDate,
+      completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
       notes: this.notes,
       trainingCourseFK: this.trainingCourse.id,
+      doesNotExpire: this.trainingCourse?.doesNotExpire,
     };
 
+    const withExpiryDateFilled = this.trainingService.fillInExpiryDate(trainingRecordDetails, completedDate);
+
     this.workerService
-      .createMultipleTrainingRecords(this.workplace.uid, selectedStaff, trainingRecordDetails)
+      .createMultipleTrainingRecords(this.workplace.uid, selectedStaff, withExpiryDateFilled)
       .subscribe(() => this.onSuccess());
   }
 

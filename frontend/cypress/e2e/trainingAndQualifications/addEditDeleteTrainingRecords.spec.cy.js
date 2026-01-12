@@ -502,7 +502,12 @@ describe('training record', () => {
     describe('with training courses', () => {
       before(() => {
         cy.deleteAllTrainingCourses(establishmentID);
-        cy.insertTrainingCourse({ establishmentID, categoryId: 1, name: trainingCourseName });
+        cy.insertTrainingCourse({
+          establishmentID,
+          categoryId: 1,
+          name: trainingCourseName,
+          validityPeriodInMonth: 12,
+        });
         cy.reload();
       });
 
@@ -618,6 +623,22 @@ describe('training record', () => {
 
         // staff training and qualifications page
         cy.get('[data-testid="generic_alert"]').contains('2 training records added');
+
+        //check dates have been saved correctly
+        cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
+        cy.contains('a', trainingCourseName).click();
+
+        cy.get('[data-testid="completedDate"]').within(() => {
+          cy.getByLabel('Day').clear().type(31);
+          cy.getByLabel('Month').clear().type(3);
+          cy.getByLabel('Year').clear().type(2025);
+        });
+
+        cy.get('[data-testid="expiresDate"]').within(() => {
+          cy.getByLabel('Day').clear().type(31);
+          cy.getByLabel('Month').clear().type(3);
+          cy.getByLabel('Year').clear().type(2026);
+        });
       });
     });
   });
