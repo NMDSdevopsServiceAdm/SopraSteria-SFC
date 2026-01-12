@@ -72,7 +72,8 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   protected prefill(): void {
-    if (this.trainingService.selectedTraining) {
+    const selectedTraining = this.trainingService.selectedTraining;
+    if (selectedTraining) {
       const {
         accredited,
         trainingCategory,
@@ -81,11 +82,15 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
         notes,
         title,
         deliveredBy,
-        externalProviderName,
+        otherTrainingProviderName,
         howWasItDelivered,
         validityPeriodInMonth,
         doesNotExpire,
-      } = this.trainingService.selectedTraining;
+      } = selectedTraining;
+
+      const externalProviderName = selectedTraining.externalProviderName ??
+        selectedTraining.otherTrainingProviderName;
+
       const completedArr = completed?.split('-');
       const expiresArr = expires?.split('-');
       this.form.patchValue({

@@ -12,7 +12,11 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
-import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import {
+  MockTrainingService,
+  MockTrainingServiceWithPreselectedStaff, MockTrainingServiceWithProviderNameFromFreeText,
+  MockTrainingServiceWithProviderNameFromList,
+} from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -21,7 +25,7 @@ import sinon from 'sinon';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
-import { DeliveredBy } from '@core/model/training.model';
+import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 
 describe('MultipleTrainingDetailsComponent', () => {
   const mockTrainingProviders = [
@@ -33,9 +37,10 @@ describe('MultipleTrainingDetailsComponent', () => {
       accessedFromSummary: false,
       prefill: false,
       isPrimaryWorkplace: true,
-      qsParamGetMock: sinon.fake(),
     },
   ) {
+    const additionalProviders = overrides?.additionalProviders ?? [];
+
     const setupTools = await render(MultipleTrainingDetailsComponent, {
       imports: [SharedModule, RouterModule, AddMultipleTrainingModule],
       providers: [
@@ -78,6 +83,7 @@ describe('MultipleTrainingDetailsComponent', () => {
         },
         provideHttpClient(),
         provideHttpClientTesting(),
+        ...additionalProviders,
       ],
     });
 
@@ -264,38 +270,94 @@ describe('MultipleTrainingDetailsComponent', () => {
     expect(spy.calls.mostRecent().args[0]).toEqual(['../']);
   });
 
-  it('should prefill the form if it has already been filled out', async () => {
-    const { component } = await setup({ accessedFromSummary: false, prefill: true });
+  describe('When pre-filling the form', () => {
+    it('should prefill the form if it has already been filled out', async () => {
+      const { component } = await setup({ accessedFromSummary: false, prefill: true });
 
-    const form = component.form;
-    const {
-      title,
-      accredited,
-      deliveredBy = null,
-      externalProviderName = null,
-      howWasItDelivered = null,
-      validityPeriodInMonth = null,
-      doesNotExpire = null,
-      completed,
-      expires,
-      notes,
-    } = component.trainingService.selectedTraining;
-    const completedArr = completed.split('-');
-    const expiresArr = expires.split('-');
+      const form = component.form;
+      const {
+        title,
+        accredited,
+        deliveredBy = null,
+        externalProviderName = null,
+        howWasItDelivered = null,
+        validityPeriodInMonth = null,
+        doesNotExpire = null,
+        completed,
+        expires,
+        notes,
+      } = component.trainingService.selectedTraining;
+      const completedArr = completed.split('-');
+      const expiresArr = expires.split('-');
 
-    expect(form.value).toEqual({
-      title,
-      accredited,
-      deliveredBy,
-      externalProviderName,
-      howWasItDelivered,
-      validityPeriodInMonth,
-      doesNotExpire,
-      completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
-      expires: { day: +expiresArr[2], month: +expiresArr[1], year: +expiresArr[0] },
-      notes,
+      expect(form.value).toEqual({
+        title,
+        accredited,
+        deliveredBy,
+        externalProviderName,
+        howWasItDelivered,
+        validityPeriodInMonth,
+        doesNotExpire,
+        completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
+        expires: { day: +expiresArr[2], month: +expiresArr[1], year: +expiresArr[0] },
+        notes,
+      });
     });
-  });
+
+    describe('When accessed from the summary page', () => {
+      describe('When the training provider name has been entered from the list', () => {
+        it('should prefill the form if it has already been filled out', async () => {
+          const { component } = await setup({
+            accessedFromSummary: true,
+            additionalProviders: [
+              { provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromList }
+            ]
+          });
+
+          const form = component.form;
+
+          expect(form.value).toEqual({
+            title: 'Title',
+            accredited: 'Yes',
+            deliveredBy: 'External provider',
+            externalProviderName: 'Care Skills Academy',
+            howWasItDelivered: 'Face to face',
+            validityPeriodInMonth: null,
+            doesNotExpire: null,
+            completed: { day: 1, month: 1, year: 2020 },
+            expires: { day: 1, month: 1, year: 2021 },
+            notes: 'This is a note',
+          });
+        });
+      })
+
+      describe('When the training provider name is entered using free text', () => {
+        it('should prefill the form if it has already been filled out', async () => {
+          const { component } = await setup({
+            accessedFromSummary: true,
+            additionalProviders: [
+              { provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromFreeText }
+            ]
+          });
+
+          const form = component.form;
+
+          expect(form.value).toEqual({
+            title: 'Title',
+            accredited: 'Yes',
+            deliveredBy: 'External provider',
+            externalProviderName: 'Free text provider',
+            howWasItDelivered: 'Face to face',
+            validityPeriodInMonth: null,
+            doesNotExpire: null,
+            completed: { day: 1, month: 1, year: 2020 },
+            expires: { day: 1, month: 1, year: 2021 },
+            notes: 'This is a note',
+          });
+        });
+      });
+    })
+  })
 
   describe('auto suggest', () => {
     it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
