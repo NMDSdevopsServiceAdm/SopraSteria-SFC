@@ -137,7 +137,7 @@ describe('NewTrainingComponent', async () => {
         expect(queryAllByText('Expiry date').length).toEqual(3);
         expect(queryAllByText('Certificate').length).toEqual(3);
       });
-    })
+    });
 
     describe('when there is 1 training category on the record', () => {
       it('should render the 5 headings for the 1 training category', async () => {
@@ -161,9 +161,9 @@ describe('NewTrainingComponent', async () => {
               },
             ],
           },
-        ]
+        ];
 
-        const { queryAllByText } = await setup({trainingCategories: trainingCategory});
+        const { queryAllByText } = await setup({ trainingCategories: trainingCategory });
 
         expect(queryAllByText('Training or course name').length).toEqual(1);
         expect(queryAllByText('Accredited').length).toEqual(1);
@@ -171,8 +171,8 @@ describe('NewTrainingComponent', async () => {
         expect(queryAllByText('Expiry date').length).toEqual(1);
         expect(queryAllByText('Certificate').length).toEqual(1);
       });
-    })
-  })
+    });
+  });
 
   describe('training record table contents', async () => {
     it('should render a category heading name for each training record category', async () => {
@@ -432,6 +432,37 @@ describe('NewTrainingComponent', async () => {
 
       expect(expiredAutismTrainingExpired).toBeFalsy();
       expect(expiredAutismTrainingExpiring).toBeTruthy();
+    });
+  });
+
+  describe('expiry date column', () => {
+    it('should show the expiry date in format of dd-MMM-YYYY', async () => {
+      const mockTrainingCategories = lodash.cloneDeep(trainingCategories);
+      // @ts-ignore
+      mockTrainingCategories[0].trainingRecords[0].expires = '2023-05-01';
+      const { getByTestId } = await setup({ trainingCategories: mockTrainingCategories });
+
+      expect(getByTestId('expiry-date-someAutismUid').textContent).toContain('01 May 2023');
+    });
+
+    it('should show "Does not expire" if the training record has doesNotExpire = true', async () => {
+      const mockTrainingCategories = lodash.cloneDeep(trainingCategories);
+      // @ts-ignore
+      mockTrainingCategories[0].trainingRecords[0].doesNotExpire = true;
+      mockTrainingCategories[0].trainingRecords[0].expires = null;
+      const { getByTestId } = await setup({ trainingCategories: mockTrainingCategories });
+
+      expect(getByTestId('expiry-date-someAutismUid').textContent?.trim()).toEqual('Does not expire');
+    });
+
+    it('should show a dash "-" if the training record does not have an expiry date and also doesNotExpire is not set', async () => {
+      const mockTrainingCategories = lodash.cloneDeep(trainingCategories);
+      // @ts-ignore
+      mockTrainingCategories[0].trainingRecords[0].doesNotExpire = undefined;
+      mockTrainingCategories[0].trainingRecords[0].expires = null;
+      const { getByTestId } = await setup({ trainingCategories: mockTrainingCategories });
+
+      expect(getByTestId('expiry-date-someAutismUid').textContent?.trim()).toEqual('-');
     });
   });
 

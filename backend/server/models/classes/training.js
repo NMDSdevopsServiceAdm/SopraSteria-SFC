@@ -1232,6 +1232,7 @@ class Training extends EntityValidator {
         recordFromDatabase.expires !== null
           ? new Date(recordFromDatabase.expires).toISOString().slice(0, 10)
           : undefined,
+      doesNotExpire: recordFromDatabase.doesNotExpire,
       isMatchedToTrainingCourse: recordFromDatabase.trainingCourseFK ? true : false,
       notes: recordFromDatabase.notes !== null ? unescape(recordFromDatabase.notes) : undefined,
       created: recordFromDatabase.created.toISOString(),
