@@ -54,15 +54,15 @@
             </dd>
           </div>
           @if (trainingCourse?.deliveredBy === externalProvider) {
-            <div class="govuk-summary-list__row">
-              <dt data-testid="training-provider-name-key" class="govuk-summary-list__key">Training provider name</dt>
-              <dd
-                data-testid="training-provider-name-value"
-                class="training-provider-name-value govuk-summary-list__value"
-              >
-                {{ trainingCourse?.otherTrainingProviderName ? trainingCourse?.otherTrainingProviderName : '-' }}
-              </dd>
-            </div>
+          <div class="govuk-summary-list__row">
+            <dt data-testid="training-provider-name-key" class="govuk-summary-list__key">Training provider name</dt>
+            <dd
+              data-testid="training-provider-name-value"
+              class="training-provider-name-value govuk-summary-list__value"
+            >
+              {{ trainingCourse?.otherTrainingProviderName ? trainingCourse?.otherTrainingProviderName : '-' }}
+            </dd>
+          </div>
           }
           <div class="govuk-summary-list__row">
             <dt data-testid="course-delivery-method-key" class="govuk-summary-list__key govuk__nowrap">
@@ -83,13 +83,7 @@
               data-testid="training-validity-period-value"
               class="training-validity-period-value govuk-summary-list__value"
             >
-              {{
-                trainingCourse?.validityPeriodInMonth != null
-                  ? trainingCourse.validityPeriodInMonth +
-                    ' month' +
-                    (trainingCourse?.validityPeriodInMonth === 1 ? '' : 's')
-                  : '-'
-              }}
+              {{ trainingCourse | showTrainingValidity }}
             </dd>
           </div>
         </dl>

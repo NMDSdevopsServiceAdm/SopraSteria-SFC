@@ -254,10 +254,37 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
         expect(key.textContent.trim()).toEqual('How long is the training valid for?');
       });
 
-      it('should show the How long is the training valid for value', async () => {
-        const { getByTestId } = await setup();
+      it('should show the pluraised value when training is valid for more than 1 month', async () => {
+        const updatedSelectedTrainingCourse = {
+          ...selectedTrainingCourse,
+          validityPeriodInMonth: 12,
+          doesNotExpire: false,
+        };
+        const { getByTestId } = await setup(updatedSelectedTrainingCourse);
         const key = getByTestId('training-validity-period-value');
         expect(key.textContent.trim()).toEqual('12 months');
+      });
+
+      it('should show the singular value when training is valid for 1 month', async () => {
+        const updatedSelectedTrainingCourse = {
+          ...selectedTrainingCourse,
+          validityPeriodInMonth: 1,
+        };
+
+        const { getByTestId } = await setup({ selectedTrainingCourse: updatedSelectedTrainingCourse });
+        const key = getByTestId('training-validity-period-value');
+        expect(key.textContent.trim()).toEqual('1 month');
+      });
+
+      it('should show the value when the training does not expire', async () => {
+        const updatedSelectedTrainingCourse = {
+          ...selectedTrainingCourse,
+          validityPeriodInMonth: null,
+          doesNotExpire: true,
+        };
+        const { getByTestId } = await setup({ selectedTrainingCourse: updatedSelectedTrainingCourse });
+        const key = getByTestId('training-validity-period-value');
+        expect(key.textContent.trim()).toEqual('Does not expire');
       });
     });
   });
@@ -416,9 +443,12 @@ describe('ViewSelectedTrainingCourseDetailsComponent', () => {
         const button = getByRole('button', { name: 'Continue' });
         button.click();
 
-        expect(routerSpy).toHaveBeenCalledWith(
-          ['/workplace', component.workplace.uid, 'add-multiple-training', 'confirm-training-record-details']
-        );
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'add-multiple-training',
+          'confirm-training-record-details',
+        ]);
       });
     });
 
