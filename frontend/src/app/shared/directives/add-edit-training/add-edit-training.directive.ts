@@ -105,7 +105,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setBackLink();
     this.getCategories();
     this.setupFormErrorsMap();
-    this.resetTrainingRecordsStateWhenClickedAway()
+    this.resetTrainingRecordsStateWhenClickedAway();
   }
 
   ngAfterViewInit(): void {
@@ -343,22 +343,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       this.trainingProviders,
       this.getOtherTrainingProviderId(),
     ) as TrainingRecordRequest;
-    const withExpiryDateFilled = this.fillInExpiryDate(withTrainingProviderFilled, completedDate);
+    const withExpiryDateFilled = this.trainingService.fillInExpiryDate(withTrainingProviderFilled, completedDate);
 
     return withExpiryDateFilled;
-  }
-
-  private fillInExpiryDate(record: TrainingRecordRequest, completedDate: dayjs.Dayjs): TrainingRecordRequest {
-    if (record.expires || !completedDate || !record.validityPeriodInMonth) {
-      return record;
-    }
-
-    const calculatedExpiryDate = DateUtil.expectedExpiryDate(completedDate, record.validityPeriodInMonth);
-    if (!calculatedExpiryDate) {
-      return record;
-    }
-
-    return { ...record, expires: calculatedExpiryDate.format(DATE_PARSE_FORMAT) };
   }
 
   // TODO: Expiry Date validation cannot be before completed date

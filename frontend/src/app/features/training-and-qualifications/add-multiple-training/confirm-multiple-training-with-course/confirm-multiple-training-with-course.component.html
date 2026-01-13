@@ -32,68 +32,64 @@
           </div>
         </ng-container>
       </dl>
-  </div>
-  <div class="govuk-grid-row govuk-!-margin-left-0">
-    <div class="govuk-grid-column-full">
-      <h2 data-testid="training-record-details-heading" class="govuk-heading-m">Training record details</h2>
-      <dl
-        class="govuk-summary-list govuk-summary-list asc-summarylist-border-top govuk-!-width-full"
-        data-testid="training-record-details"
-      >
-        <ng-container>
-          <div *ngFor="let record of trainingCourseDataForSummaryList; index as i"
-            class="govuk-summary-list__row"
-            [class.govuk-summary-list__row--no-border]="i === 7">
-            <dt class="govuk-summary-list__key govuk__nowrap" style="width: 38%">
-              {{ record.key }}
-            </dt>
-            <dd class="govuk-summary-list__value" style="width: 25%">
-              {{ record.value | dontKnow }}
-            </dd>
-            <dd class="govuk-summary-list__actions" style="width: 31%">
-            <ng-container *ngIf="i === 0">
-              <span class="different-training-course-link-and-arrow">
-                <a data-testid="different-training-course-link"
-                   class="govuk-link govuk__nowrap"
-                   [routerLink]="[
-                '/workplace',
-                workplace.uid,
-                'add-multiple-training',
-                'select-training-course'
-                ]"
-                >
-                <img src="/assets/images/Addtraining.svg" alt="" class="different-training-course-arrow"/>
-                <span>Select a different training course</span>
-                </a>
-              </span>
-            </ng-container>
-            <ng-container *ngIf="i === 7">
-              <app-summary-record-change
-                [link]="getRoutePath('view-selected-training-course-details')"
-                [hasData]="true"
-              ></app-summary-record-change>
-            </ng-container>
-            <ng-container *ngIf="i !== 0 && i !== 7">&nbsp;</ng-container>
-          </dd>
-          </div>
-        </ng-container>
-      </dl>
     </div>
-  </div>
     <div class="govuk-grid-row govuk-!-margin-left-0">
-      <div class="govuk-grid-column-two-thirds">
-         <div class="govuk-grid-column govuk-!-margin-bottom-8" >
-           <button
-             type="submit"
-             class="govuk-button
-             govuk-util__float-left
-             govuk-!-margin-top-4
-             govuk-!-margin-bottom-4"
-             (click)="onSubmit()">
-              Save training records
-            </button>
-          </div>`
+      <div class="govuk-grid-column-full">
+        <h2 data-testid="training-record-details-heading" class="govuk-heading-m">Training record details</h2>
+        <dl
+          class="govuk-summary-list govuk-summary-list asc-summarylist-border-top govuk-!-width-full"
+          data-testid="training-record-details"
+        >
+          <ng-container>
+            <div
+              *ngFor="let record of trainingCourseDataForSummaryList; index as i"
+              class="govuk-summary-list__row"
+              [class.govuk-summary-list__row--no-border]="i === 7"
+            >
+              <dt class="govuk-summary-list__key govuk__nowrap" style="width: 38%">
+                {{ record.key }}
+              </dt>
+              <dd class="govuk-summary-list__value" style="width: 25%">
+                {{ record.value | dontKnow }}
+              </dd>
+              <dd class="govuk-summary-list__actions" style="width: 31%">
+                <ng-container *ngIf="i === 0">
+                  <span class="different-training-course-link-and-arrow">
+                    <a
+                      data-testid="different-training-course-link"
+                      class="govuk-link govuk__nowrap"
+                      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-training-course']"
+                    >
+                      <img src="/assets/images/Addtraining.svg" alt="" class="different-training-course-arrow" />
+                      <span>Select a different training course</span>
+                    </a>
+                  </span>
+                </ng-container>
+                <ng-container *ngIf="i === 7">
+                  <app-summary-record-change
+                    [link]="getRoutePath('view-selected-training-course-details')"
+                    [hasData]="true"
+                  ></app-summary-record-change>
+                </ng-container>
+                <ng-container *ngIf="i !== 0 && i !== 7">&nbsp;</ng-container>
+              </dd>
+            </div>
+          </ng-container>
+        </dl>
       </div>
     </div>
+    <div class="govuk-grid-row govuk-!-margin-left-0">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column govuk-!-margin-bottom-8">
+          <button
+            type="submit"
+            class="govuk-button govuk-util__float-left govuk-!-margin-top-4 govuk-!-margin-bottom-4"
+            (click)="onSubmit()"
+          >
+            Save training records
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-

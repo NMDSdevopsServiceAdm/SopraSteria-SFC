@@ -7,6 +7,7 @@ import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { Worker } from '@core/model/worker.model';
+import { DateUtil } from '@core/utils/date-util';
 
 describe('TrainingService', () => {
   let service: TrainingService;
@@ -190,6 +191,69 @@ describe('TrainingService', () => {
       service.clearNotes();
 
       expect(service.getNotes()).toEqual(null);
+    });
+  });
+
+  describe('fillInExpiryDate', () => {
+    let trainingRecord = {
+      trainingCategory: { id: 2 },
+      title: 'Basic safeguarding for support staff',
+      trainingCategoryName: 'Safeguarding adults',
+      accredited: 'Yes',
+      deliveredBy: DeliveredBy.ExternalProvider,
+      externalProviderName: 'Care skills academy',
+      otherTrainingProviderName: 'Care skills academy',
+      howWasItDelivered: HowWasItDelivered.ELearning,
+      validityPeriodInMonth: 12,
+      completed: '2024-08-21',
+      notes: null,
+      trainingCourseFK: 2,
+    };
+
+    let completedDate = DateUtil.toDayjs({ day: 21, month: 8, year: 2024 });
+
+    it('returns the training record with an expiry date', async () => {
+      const sentTrainingRecord = { ...trainingRecord };
+      const returnedTrainingRecord = {
+        ...trainingRecord,
+        expires: '2025-08-21',
+      };
+      const response = service.fillInExpiryDate(sentTrainingRecord, completedDate);
+
+      expect(response).toEqual(returnedTrainingRecord);
+    });
+
+    it('returns an unchanged training record when there is no completed date', async () => {
+      const sentTrainingRecord = { ...trainingRecord, completed: null };
+
+      const returnedTrainingRecord = {
+        ...trainingRecord,
+        completed: null,
+      };
+
+      const response = service.fillInExpiryDate(sentTrainingRecord, null);
+
+      expect(response).toEqual(returnedTrainingRecord);
+    });
+
+    it('returns an unchanged training record when there is no value in validityPeriodInMonth and doesNotExpire is true', async () => {
+      const sentTrainingRecord = {
+        ...trainingRecord,
+        completed: '2024-08-21',
+        validityPeriodInMonth: null,
+        doesNotExpire: true,
+      };
+
+      const returnedTrainingRecord = {
+        ...trainingRecord,
+        completed: '2024-08-21',
+        validityPeriodInMonth: null,
+        doesNotExpire: true,
+      };
+
+      const response = service.fillInExpiryDate(sentTrainingRecord, completedDate);
+
+      expect(response).toEqual(returnedTrainingRecord);
     });
   });
 });

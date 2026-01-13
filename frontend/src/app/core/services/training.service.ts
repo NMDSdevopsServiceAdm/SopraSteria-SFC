@@ -3,10 +3,18 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { mandatoryTraining } from '@core/model/establishment.model';
 import { TrainingCourse } from '@core/model/training-course.model';
-import { allMandatoryTrainingCategories, SelectedTraining, TrainingCategory } from '@core/model/training.model';
+import {
+  allMandatoryTrainingCategories,
+  SelectedTraining,
+  TrainingCategory,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { DATE_PARSE_FORMAT } from '@core/constants/constants';
+import { DateUtil } from '@core/utils/date-util';
+import dayjs from 'dayjs';
 
 @Injectable({
   providedIn: 'root',
@@ -185,6 +193,19 @@ export class TrainingService {
 
   public clearNotes(): void {
     this._notes = null;
+  }
+
+  public fillInExpiryDate(record: TrainingRecordRequest, completedDate: dayjs.Dayjs): TrainingRecordRequest {
+    if (record.expires || !completedDate || !record.validityPeriodInMonth) {
+      return record;
+    }
+
+    const calculatedExpiryDate = DateUtil.expectedExpiryDate(completedDate, record.validityPeriodInMonth);
+    if (!calculatedExpiryDate) {
+      return record;
+    }
+
+    return { ...record, expires: calculatedExpiryDate.format(DATE_PARSE_FORMAT) };
   }
 }
 

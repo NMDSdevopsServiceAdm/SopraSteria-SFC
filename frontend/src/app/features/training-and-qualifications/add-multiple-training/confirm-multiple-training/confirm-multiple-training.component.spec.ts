@@ -180,7 +180,7 @@ describe('ConfirmMultipleTrainingComponent', () => {
         const trainingRecordDetails = getByTestId('trainingRecordDetails');
         expect(within(trainingRecordDetails).getByText('Udemy')).toBeTruthy();
       });
-    })
+    });
 
     it('should display a `-` if there are no dates and `No notes added` if there are no notes', async () => {
       const { getByTestId } = await setup({ incompleteTraining: true });

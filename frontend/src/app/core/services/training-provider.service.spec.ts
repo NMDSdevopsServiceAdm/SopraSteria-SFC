@@ -90,7 +90,7 @@ describe('TrainingProviderService', () => {
           externalProviderName: null,
         });
       });
-    })
+    });
 
     it('should return the updated training data if deliveredBy is inHouseStaff', async () => {
       const mockTrainingData = {

@@ -33,8 +33,7 @@ export class TrainingProviderService {
   ) {
     const externalProviderName = trainingData.externalProviderName;
 
-    if (trainingData.deliveredBy !== DeliveredBy.ExternalProvider ||
-      externalProviderName === null) {
+    if (trainingData.deliveredBy !== DeliveredBy.ExternalProvider || externalProviderName === null) {
       trainingData.trainingProviderId = null;
       trainingData.otherTrainingProviderName = null;
       trainingData.externalProviderName = null;

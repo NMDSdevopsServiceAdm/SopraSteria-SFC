@@ -12,9 +12,9 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-confirm-multiple-training',
-    templateUrl: './confirm-multiple-training.component.html',
-    standalone: false
+  selector: 'app-confirm-multiple-training',
+  templateUrl: './confirm-multiple-training.component.html',
+  standalone: false,
 })
 export class ConfirmMultipleTrainingComponent implements OnInit {
   public workers: Worker[];
@@ -47,7 +47,10 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
       { key: 'Training record name', value: training.title ? training.title : '-' },
       { key: 'Is the training course accredited?', value: training.accredited ? training.accredited : '-' },
       { key: 'Who delivered the training course?', value: training.deliveredBy ? training.deliveredBy : '-' },
-      { key: 'Training provider name', value: training.externalProviderName ?? training.otherTrainingProviderName ?? '-' },
+      {
+        key: 'Training provider name',
+        value: training.externalProviderName ?? training.otherTrainingProviderName ?? '-',
+      },
       {
         key: 'How was the training course delivered?',
         value: training.howWasItDelivered ? training.howWasItDelivered : '-',
@@ -80,7 +83,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
   }
 
   private async onSuccess() {
-    let record = 'record'
+    let record = 'record';
     if (this.workers.length !== 1) {
       record += 's';
     }

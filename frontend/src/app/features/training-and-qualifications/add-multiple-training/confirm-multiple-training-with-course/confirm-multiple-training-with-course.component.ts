@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,6 +10,8 @@ import { WorkerService } from '@core/services/worker.service';
 import { Alert } from '@core/model/alert.model';
 import { AlertService } from '@core/services/alert.service';
 import { DeliveredBy } from '@core/model/training.model';
+import { DateUtil } from '@core/utils/date-util';
+import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 
 @Component({
   selector: 'app-confirm-multiple-training-with-course',
@@ -17,7 +19,7 @@ import { DeliveredBy } from '@core/model/training.model';
   styleUrl: './confirm-multiple-training-with-course.component.scss',
   standalone: false,
 })
-export class ConfirmMultipleTrainingWithCourseComponent {
+export class ConfirmMultipleTrainingWithCourseComponent implements OnInit {
   public notes: string;
   public trainingRecordCompletionDate: Date;
   public trainingCourseDataForSummaryList: { key: string; value: string }[];
@@ -56,27 +58,35 @@ export class ConfirmMultipleTrainingWithCourseComponent {
 
   public onSubmit(): void {
     const selectedStaff = this.workers.map((worker) => worker.uid);
+    let completedDate;
 
-    const trainingCourse = this.trainingCourse;
-    const completedDate = this.trainingRecordCompletionDate
-      ? dayjs(this.trainingRecordCompletionDate).format('YYYY-MM-DD')
-      : null;
+    if (this.trainingRecordCompletionDate) {
+      const day = this.trainingRecordCompletionDate?.getDate();
+      const month = this.trainingRecordCompletionDate.getMonth() + 1;
+      const year = this.trainingRecordCompletionDate?.getFullYear();
+      completedDate = DateUtil.toDayjs({ day, month, year });
+    }
+
     const trainingRecordDetails = {
-      trainingCategory: { id: trainingCourse.trainingCategoryId },
-      title: trainingCourse.name,
-      trainingCategoryName: trainingCourse.trainingCategoryName,
-      accredited: trainingCourse.accredited,
-      deliveredBy: trainingCourse.deliveredBy,
-      externalProviderName: trainingCourse.externalProviderName,
-      otherTrainingProviderName: trainingCourse.otherTrainingProviderName,
-      howWasItDelivered: trainingCourse.howWasItDelivered,
-      validityPeriodInMonth: trainingCourse.validityPeriodInMonth,
-      completed: completedDate,
+      trainingCategory: { id: this.trainingCourse.trainingCategoryId },
+      title: this.trainingCourse.name,
+      trainingCategoryName: this.trainingCourse.trainingCategoryName,
+      accredited: this.trainingCourse.accredited,
+      deliveredBy: this.trainingCourse.deliveredBy,
+      externalProviderName: this.trainingCourse.externalProviderName,
+      otherTrainingProviderName: this.trainingCourse.otherTrainingProviderName,
+      howWasItDelivered: this.trainingCourse.howWasItDelivered,
+      validityPeriodInMonth: this.trainingCourse.validityPeriodInMonth,
+      completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
       notes: this.notes,
+      trainingCourseFK: this.trainingCourse.id,
+      doesNotExpire: this.trainingCourse?.doesNotExpire,
     };
 
+    const withExpiryDateFilled = this.trainingService.fillInExpiryDate(trainingRecordDetails, completedDate);
+
     this.workerService
-      .createMultipleTrainingRecords(this.workplace.uid, selectedStaff, trainingRecordDetails)
+      .createMultipleTrainingRecords(this.workplace.uid, selectedStaff, withExpiryDateFilled)
       .subscribe(() => this.onSuccess());
   }
 
@@ -118,7 +128,7 @@ export class ConfirmMultipleTrainingWithCourseComponent {
     this.backLinkService.showBackLink();
   }
 
-  private showCorrectTrainingValidity(trainingCourse: any): string {
+  private showCorrectTrainingValidity(trainingCourse: TrainingCourse): string {
     if (!trainingCourse.validityPeriodInMonth && !trainingCourse.doesNotExpire) {
       return '-';
     }
