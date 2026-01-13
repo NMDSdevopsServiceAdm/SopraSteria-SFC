@@ -96,7 +96,7 @@ describe('SelectTrainingRecordsToUpdateComponent', () => {
     const { getByRole, getByTestId } = await setup();
 
     const expectedHeading = 'Select the training records that you want to update';
-    const expectedCaption = 'Update records with training course details';
+    const expectedCaption = 'Training records';
 
     expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeading);
     expect(getByTestId('section-heading').textContent).toContain(expectedCaption);

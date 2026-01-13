@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <span class="govuk-caption-l" data-testid="section-heading">Training and qualifications</span>
-    <h1 class="govuk-heading-l">Update records with training course details</h1>
+    <span class="govuk-caption-l" data-testid="section-heading">Training records</span>
+    <h1 class="govuk-heading-l">Select a training course to see the records you can update</h1>
   </div>
 </div>
 
@@ -12,8 +12,8 @@
         {{ revealText.paragraph }}
       </p>
       <ul class="govuk-list govuk-list--bullet">
-        @for(bullet of revealText.bullets; track bullet; let index = $index){
-        <li>{{ bullet }}</li>
+        @for (bullet of revealText.bullets; track bullet; let index = $index) {
+          <li>{{ bullet }}</li>
         }
       </ul>
     </app-details>
@@ -23,9 +23,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <table class="govuk-table" data-testid="training-course-table">
-      <caption class="govuk-table__caption govuk-table__caption--m asc__width-three-fifths">
-        Select a training course to see the records you can update
-      </caption>
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">Training course name</th>
@@ -33,19 +30,19 @@
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        @for(course of trainingCoursesWithLinkableRecords; track course.uid; let index = $index){
-        <tr class="govuk-table__row" [attr.data-testid]="'training-course-' + i">
-          <td class="govuk-table__cell">
-            @if(course?.linkableTrainingRecords?.length > 0) {
-            <a href="#" [routerLink]="['../', course.uid, 'select-training-records']">{{ course.name }}</a>
-            } @else {
-            {{ course.name }}
-            }
-          </td>
-          <td class="govuk-table__cell">
-            {{ course?.linkableTrainingRecords?.length > 0 ? 'Records' : 'No records' }} available to update
-          </td>
-        </tr>
+        @for (course of trainingCoursesWithLinkableRecords; track course.uid; let index = $index) {
+          <tr class="govuk-table__row" [attr.data-testid]="'training-course-' + i">
+            <td class="govuk-table__cell">
+              @if (course?.linkableTrainingRecords?.length > 0) {
+                <a href="#" [routerLink]="['../', course.uid, 'select-training-records']">{{ course.name }}</a>
+              } @else {
+                {{ course.name }}
+              }
+            </td>
+            <td class="govuk-table__cell">
+              {{ course?.linkableTrainingRecords?.length > 0 ? 'Records' : 'No records' }} available to update
+            </td>
+          </tr>
         }
       </tbody>
     </table>

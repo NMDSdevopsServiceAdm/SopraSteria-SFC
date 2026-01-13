@@ -127,7 +127,7 @@ describe('YouHaveSelectedTrainingRecords', () => {
     const { getByRole, getByTestId } = await setup();
 
     const expectedHeading = `You've selected ${mocktrainingRecordsSelectedForUpdate.length} training records to update with course details`;
-    const expectedCaption = 'Training and qualifications';
+    const expectedCaption = 'Training records';
 
     expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeading);
     expect(getByTestId('section-heading').textContent).toContain(expectedCaption);
