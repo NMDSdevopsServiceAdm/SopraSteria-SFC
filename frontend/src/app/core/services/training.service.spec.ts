@@ -216,7 +216,7 @@ describe('TrainingService', () => {
       const sentTrainingRecord = { ...trainingRecord };
       const returnedTrainingRecord = {
         ...trainingRecord,
-        expires: '2025-08-21',
+        expires: '2025-08-20',
       };
       const response = service.fillInExpiryDate(sentTrainingRecord, completedDate);
 
