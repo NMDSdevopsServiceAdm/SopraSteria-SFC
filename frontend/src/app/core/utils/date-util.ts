@@ -3,7 +3,7 @@ import { FormatUtil } from './format-util';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { DateValidator } from '@shared/validators/date.validator';
 
-type FormGroupDateValues = { day: number; month: number; year: number };
+export type FormGroupDateValues = { day: number; month: number; year: number };
 
 export class DateUtil {
   public static getDateForOneYearAgo(): string {
@@ -54,7 +54,11 @@ export class DateUtil {
       return null;
     }
 
-    return completed?.add(validityPeriodInMonth, 'months');
+    if (completed.date() === 1) {
+      return completed.add(validityPeriodInMonth - 1, 'months').endOf('month');
+    }
+
+    return completed.subtract(1, 'day').add(validityPeriodInMonth, 'months');
   }
 
   public static expiryDateDoesNotMatch(

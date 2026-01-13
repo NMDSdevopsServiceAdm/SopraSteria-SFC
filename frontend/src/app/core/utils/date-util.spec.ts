@@ -138,10 +138,17 @@ describe('DateUtil', () => {
   describe('expectedExpiryDate', () => {
     describe('should calculate the expected expiry date from given completed date and validity months', () => {
       const testCases = [
-        { completed: '2025-11-01', validityPeriodInMonth: 1, expected: '2025-12-01' },
-        { completed: '2025-11-15', validityPeriodInMonth: 1, expected: '2025-12-15' },
-        { completed: '2025-11-30', validityPeriodInMonth: 1, expected: '2025-12-30' },
-        { completed: '2025-12-31', validityPeriodInMonth: 1, expected: '2026-01-31' },
+        { completed: '2025-01-01', validityPeriodInMonth: 1, expected: '2025-01-31' },
+        { completed: '2025-01-01', validityPeriodInMonth: 2, expected: '2025-02-28' },
+        { completed: '2025-01-01', validityPeriodInMonth: 3, expected: '2025-03-31' },
+        { completed: '2025-02-01', validityPeriodInMonth: 1, expected: '2025-02-28' },
+        { completed: '2025-02-01', validityPeriodInMonth: 2, expected: '2025-03-31' },
+        { completed: '2025-02-01', validityPeriodInMonth: 3, expected: '2025-04-30' },
+        { completed: '2025-03-01', validityPeriodInMonth: 1, expected: '2025-03-31' },
+        { completed: '2025-03-01', validityPeriodInMonth: 2, expected: '2025-04-30' },
+        { completed: '2025-11-15', validityPeriodInMonth: 1, expected: '2025-12-14' },
+        { completed: '2025-11-30', validityPeriodInMonth: 1, expected: '2025-12-29' },
+        { completed: '2025-12-31', validityPeriodInMonth: 1, expected: '2026-01-30' },
         { completed: '2025-12-31', validityPeriodInMonth: 2, expected: '2026-02-28' },
         { completed: '2024-02-29', validityPeriodInMonth: 12, expected: '2025-02-28' },
       ];
@@ -242,17 +249,22 @@ describe('DateUtil', () => {
       });
     });
 
-    describe('should return false if the given dates and validity agree with each other', () => {
+    describe('should return false if all values are valid and the given dates and validity agree with each other', () => {
       const testCases = [
         {
-          completed: DateUtil.toDayjs('2025-11-01'),
-          expires: DateUtil.toDayjs('2026-11-01'),
-          validityPeriodInMonth: 12,
+          completed: DateUtil.toDayjs('2025-01-08'),
+          expires: DateUtil.toDayjs('2027-01-07'),
+          validityPeriodInMonth: 24,
         },
         {
-          completed: DateUtil.toDayjs('2025-04-15'),
-          expires: DateUtil.toDayjs('2025-06-15'),
-          validityPeriodInMonth: 2,
+          completed: DateUtil.toDayjs('2025-08-22'),
+          expires: DateUtil.toDayjs('2027-08-21'),
+          validityPeriodInMonth: 24,
+        },
+        {
+          completed: DateUtil.toDayjs('2025-01-01'),
+          expires: DateUtil.toDayjs('2025-12-31'),
+          validityPeriodInMonth: 12,
         },
         {
           completed: DateUtil.toDayjs('2025-01-31'),

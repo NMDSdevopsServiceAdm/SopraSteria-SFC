@@ -69,7 +69,10 @@
                 {{ trainingRecord?.completed ? (trainingRecord.completed | date: 'dd MMM y') : '-' }}
               </td>
               <td class="govuk-table__cell" [attr.data-testid]="'expiry-date-' + trainingRecord.uid">
-                {{ trainingRecord?.expires ? (trainingRecord.expires | date: 'dd MMM y') : '-' }}
+                @let doesNotexpires = trainingRecord.doesNotExpire ? 'Does not expire' : '-';
+                @let expiryDate =
+                  trainingRecord?.expires ? (trainingRecord.expires | date: 'dd MMM y') : doesNotexpires;
+                {{ expiryDate }}
                 <div
                   *ngIf="trainingRecord?.trainingStatus === trainingStatusService.EXPIRED && trainingRecord.expires"
                   [attr.data-testid]="'status-expired-' + trainingRecord.uid"

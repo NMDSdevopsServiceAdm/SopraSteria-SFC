@@ -1,7 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, viewChild } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
-
-type FormGroupDateValues = { day: number; month: number; year: number };
+import { FormGroupDateValues } from '@core/utils/date-util';
 
 const parseStringAsNumber = (inputValue: string) => {
   return inputValue === '' ? null : parseInt(inputValue);

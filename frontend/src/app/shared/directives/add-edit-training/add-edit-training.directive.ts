@@ -41,7 +41,7 @@ type TrainingRecord = LegacyIncorrectTrainingRecordType & {
   standalone: false,
 })
 export class AddEditTrainingDirective implements OnInit, AfterViewInit {
-  @ViewChild('validityPeriodInMonthRef') validityPeriodInMonth: NumberInputWithButtonsComponent;
+  @ViewChild('validityPeriodInMonthRef', { static: true }) validityPeriodInMonth: NumberInputWithButtonsComponent;
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public submitted = false;
@@ -77,6 +77,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public updateTrainingRecordWithTrainingCourseText = TrainingCourseService.RevealText;
   public trainingProviders: TrainingProvider[];
   public expiryMismatchWarning: boolean = false;
+  public showExpiryDateInput: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -104,13 +105,13 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
+    this.setupFormChangeListeners();
     this.setupFormErrorsMap();
     this.resetTrainingRecordsStateWhenClickedAway();
   }
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
-    this.validityPeriodInMonth.registerOnChange((newValue) => this.handleValidityPeriodChange(newValue));
   }
 
   public checkForCategoryId(): void {
@@ -148,8 +149,13 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         deliveredBy: [null, { updateOn: 'change' }],
         externalProviderName: [null, { updateOn: 'change' }],
         howWasItDelivered: null,
-        validityPeriodInMonth: null,
-        doesNotExpire: null,
+        validityPeriodInMonth: [
+          null,
+          {
+            validators: [Validators.min(1), Validators.max(999), Validators.pattern('^[0-9]+$')],
+          },
+        ],
+        doesNotExpire: [null, { updateOn: 'change' }],
         completed: this.formBuilder.group({
           day: null,
           month: null,
@@ -194,22 +200,24 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     );
   }
 
-  public handleValidityPeriodChange(newValue: string | number): void {
-    if (newValue && newValue !== '') {
-      this.clearFormControlAndKeepErrorMessages('doesNotExpire');
-    }
-  }
+  protected setupFormChangeListeners() {
+    const validityPeriodInMonth = this.form.get('validityPeriodInMonth');
+    const doesNotExpire = this.form.get('doesNotExpire');
 
-  public handleDoesNotExpireChange(event: Event): void {
-    const checkboxTicked = (event.target as HTMLInputElement).checked;
-    if (checkboxTicked) {
-      this.clearFormControlAndKeepErrorMessages('validityPeriodInMonth');
-    }
-  }
+    const clearCheckboxOnValidityPeriodInput = this.validityPeriodInMonth.registerOnChange((newValue) => {
+      if (newValue) {
+        doesNotExpire.patchValue(null);
+      }
+    });
 
-  private clearFormControlAndKeepErrorMessages(formControlName: string): void {
-    const formControl = this.form.get(formControlName);
-    formControl.patchValue(null, { emitEvent: false });
+    const clearValidityPeriodOnCheckboxTicked = doesNotExpire.valueChanges.subscribe((newValue) => {
+      if (newValue) {
+        validityPeriodInMonth.patchValue(null);
+      }
+    });
+
+    this.subscriptions.add(clearCheckboxOnValidityPeriodInput);
+    this.subscriptions.add(clearValidityPeriodOnCheckboxTicked);
   }
 
   private setupFormErrorsMap(): void {
@@ -227,7 +235,14 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
           },
         ],
       },
-
+      {
+        item: 'validityPeriodInMonth',
+        type: [
+          { name: 'min', message: 'Number of months must be between 1 and 999' },
+          { name: 'max', message: 'Number of months must be between 1 and 999' },
+          { name: 'pattern', message: 'Number of months must be between 1 and 999' },
+        ],
+      },
       {
         item: 'completed',
         type: [

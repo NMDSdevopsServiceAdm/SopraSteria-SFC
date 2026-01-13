@@ -562,6 +562,26 @@ describe('MultipleTrainingDetailsComponent', () => {
         expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
       });
     });
+
+    describe('validityPeriodInMonth', () => {
+      const invalidValuesForTesting = ['-10', '0', '99999', 'apple', '   '];
+
+      invalidValuesForTesting.forEach((invalidValue) => {
+        it(`should show an error message if validityPeriodInMonth got an invalid value - ${invalidValue}`, async () => {
+          const { getByRole, fixture, getByText, getByLabelText, getAllByText } = await setup();
+          const expectedErrorMsg = 'Number of months must be between 1 and 999';
+
+          const inputBox = getByLabelText(/^How many months/);
+          userEvent.clear(inputBox);
+          userEvent.type(inputBox, invalidValue);
+          userEvent.click(getByRole('button', { name: 'Continue' }));
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+          expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        });
+      });
+    });
   });
 
   describe('change links', () => {
