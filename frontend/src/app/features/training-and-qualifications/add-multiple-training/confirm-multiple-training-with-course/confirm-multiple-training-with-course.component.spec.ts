@@ -439,7 +439,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       );
     });
 
-    it('should set the expiry whe there is a completed date and validityPeriodInMonth', async () => {
+    it('should set the expiry when there is a completed date and validityPeriodInMonth', async () => {
       courseCompletionDate = new Date('2024-08-21');
       notes = null;
       selectedTrainingCourse = {
