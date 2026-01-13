@@ -113,6 +113,7 @@ export class SelectTrainingCourseForWorkerTraining
       )
       .subscribe(() => {
         this.trainingService.setSelectedTrainingCourse(null);
+        this.trainingService.resetState();
       });
   }
 }
