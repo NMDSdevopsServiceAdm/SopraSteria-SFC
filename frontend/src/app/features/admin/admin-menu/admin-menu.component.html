@@ -7,7 +7,7 @@
   </li>
   <li routerLinkActive="active">
     <a routerLink="/sfcadmin/parent-requests" class="govuk-link">Parent requests</a>
-    <span *ngIf="showFlag">
+    <span *ngIf="showParentFlag$ | async">
       <img
         src="/assets/images/flag-red.png"
         alt="red warning flag"
@@ -18,7 +18,7 @@
 
   <li routerLinkActive="active">
     <a routerLink="/sfcadmin/cqc-main-service-change" class="govuk-link">CQC main service change</a>
-    <span>
+    <span *ngIf="showCqcFlag$ | async">
       <img
         src="/assets/images/flag-red.png"
         alt="red warning flag"
