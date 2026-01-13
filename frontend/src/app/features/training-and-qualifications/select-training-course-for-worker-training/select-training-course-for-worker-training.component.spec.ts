@@ -173,6 +173,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
       routerSpy,
       setIsTrainingCourseSelectedSpy,
       setSelectedTrainingCourseSpy,
+      resetStateSpy,
     } = await setup();
 
     const button = getByRole('button', { name: 'Continue' });
@@ -191,6 +192,7 @@ describe('SelectTrainingCourseForWorkerTraining', () => {
     ]);
     expect(setIsTrainingCourseSelectedSpy).toHaveBeenCalledWith(false);
     expect(setSelectedTrainingCourseSpy).not.toHaveBeenCalled();
+    expect(resetStateSpy).not.toHaveBeenCalled();
   });
 
   it(`should navigate to "matching-layout" after selecting a training course`, async () => {
