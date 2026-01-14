@@ -42,6 +42,7 @@ import { LocalAuthoritiesReturnComponent } from './local-authorities-return/loca
 import { LocalAuthorityComponent } from './local-authorities-return/monitor/local-authority/local-authority.component';
 import { MonitorComponent } from './local-authorities-return/monitor/monitor.component';
 import { SetDatesComponent } from './local-authorities-return/set-dates/set-dates.component';
+import { StatusSummaryComponent} from './local-authorities-return/status-summary/status-summary.component';
 import { ParentRequestIndividualComponent } from './parent-requests/parent-request-individual/parent-request-individual.component';
 import { ParentRequestsListComponent } from './parent-requests/parent-requests-list.component';
 import { PendingRegistrationRequestsComponent } from './registration-requests/pending-registration-requests/pending-registration-requests.component';
@@ -77,6 +78,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
     SearchForUserComponent,
     SearchForGroupComponent,
     SetDatesComponent,
+    StatusSummaryComponent,
     MonitorComponent,
     LocalAuthorityComponent,
     RegistrationRequestComponent,

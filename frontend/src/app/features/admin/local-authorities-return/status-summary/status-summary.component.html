@@ -1,0 +1,38 @@
+<div class="govuk-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 data-testid="heading" class="govuk-heading-m govuk-!-margin-bottom-7">Status summary</h2>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+      <table class="govuk-table">
+        <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th data-testid='year-heading' scope="col" class="govuk-table__header">Year</th>
+          <th scope="col" class="govuk-table__header govuk-table__header--numeric">2025</th>
+        </tr>
+        </thead>
+        <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+          <th data-testid='signed-off-heading' scope="row" class="govuk-table__header">Signed off</th>
+          <td data-testid='signed-off-value' class="govuk-table__cell govuk-table__header--numeric">{{ signedOffNumber() }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th data-testid='active-heading' scope="row" class="govuk-table__header">Active</th>
+          <td data-testid='active-value' class="govuk-table__cell govuk-table__header--numeric">{{ activeNumber() }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th data-testid='failed-data-quality-heading' scope="row" class="govuk-table__header">Failed data quality</th>
+          <td data-testid='failed-data-quality-value' class="govuk-table__cell govuk-table__header--numeric">{{ failedDataQualityNumber() }}</td>
+        </tr>
+        <tr class="govuk-table__row">
+          <th data-testid='no-activity-heading' scope="row" class="govuk-table__header">No sign of activity on account</th>
+          <td data-testid='no-activity-value' class="govuk-table__cell govuk-table__header--numeric">{{ noActivityNumber() }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
