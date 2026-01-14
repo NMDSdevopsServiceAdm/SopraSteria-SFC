@@ -14,7 +14,8 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import {
   MockTrainingService,
-  MockTrainingServiceWithPreselectedStaff, MockTrainingServiceWithProviderNameFromFreeText,
+  MockTrainingServiceWithPreselectedStaff,
+  MockTrainingServiceWithProviderNameFromFreeText,
   MockTrainingServiceWithProviderNameFromList,
 } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
@@ -325,6 +326,64 @@ describe('MultipleTrainingDetailsComponent', () => {
             completed: { day: 1, month: 1, year: 2020 },
             expires: { day: 1, month: 1, year: 2021 },
             notes: 'This is a note',
+          });
+        });
+
+        it('should update the expires value when validityPeriodInMonth has been updated', async () => {
+          const { component, getByLabelText, getByText, fixture, setSelectedTrainingSpy } = await setup({
+            accessedFromSummary: true,
+            additionalProviders: [{ provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromList }],
+          });
+
+          userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '24');
+
+          const cointinueButton = getByText('Save and return');
+          userEvent.click(cointinueButton);
+          fixture.detectChanges();
+
+          expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
+            trainingCategory: component.categories[0],
+            title: 'Title',
+            accredited: 'Yes',
+            deliveredBy: DeliveredBy.ExternalProvider,
+            howWasItDelivered: HowWasItDelivered.FaceToFace,
+            validityPeriodInMonth: 24,
+            doesNotExpire: null,
+            completed: '2020-01-01',
+            expires: '2022-01-01',
+            notes: 'This is a note',
+            trainingProviderId: 63,
+            otherTrainingProviderName: 'Care Skills Academy',
+            externalProviderName: null,
+          });
+        });
+
+        it('should remove the expires value when does not expire has been ticked', async () => {
+          const { component, getByLabelText, getByText, fixture, setSelectedTrainingSpy } = await setup({
+            accessedFromSummary: true,
+            additionalProviders: [{ provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromList }],
+          });
+
+          userEvent.type(getByLabelText('This training does not expire'), 'true');
+
+          const cointinueButton = getByText('Save and return');
+          userEvent.click(cointinueButton);
+          fixture.detectChanges();
+
+          expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
+            trainingCategory: component.categories[0],
+            title: 'Title',
+            accredited: 'Yes',
+            deliveredBy: DeliveredBy.ExternalProvider,
+            howWasItDelivered: HowWasItDelivered.FaceToFace,
+            validityPeriodInMonth: null,
+            doesNotExpire: true,
+            completed: '2020-01-01',
+            expires: null,
+            notes: 'This is a note',
+            trainingProviderId: 63,
+            otherTrainingProviderName: 'Care Skills Academy',
+            externalProviderName: null,
           });
         });
       });
