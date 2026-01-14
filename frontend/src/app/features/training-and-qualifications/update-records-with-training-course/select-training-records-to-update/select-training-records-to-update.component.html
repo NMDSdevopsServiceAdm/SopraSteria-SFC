@@ -3,8 +3,8 @@
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-0">
-          <span class="govuk-caption-l" data-testid="section-heading">Update records with training course details</span>
-          <h1 class="govuk-heading-l">Select the training records that you want to update</h1>
+          <span class="govuk-caption-l" data-testid="section-heading">Training records</span>
+          <h1 class="govuk-heading-l govuk-!-padding-right-8">Select the training records that you want to update</h1>
         </legend>
       </fieldset>
 
@@ -13,8 +13,8 @@
           {{ revealText.paragraph }}
         </p>
         <ul class="govuk-list govuk-list--bullet">
-          @for(bullet of revealText.bullets; track bullet){
-          <li>{{ bullet }}</li>
+          @for (bullet of revealText.bullets; track bullet) {
+            <li>{{ bullet }}</li>
           }
         </ul>
       </app-details>
@@ -32,24 +32,24 @@
           This is the training name you saved when you added the record
         </p>
         <div class="govuk-checkboxes checkbox-shaded-background">
-          @for(group of trainingRecordsGroupedByTitle; track group.title; let index = $index) {
-          <div class="govuk-checkboxes__item" [formArrayName]="'selectedTrainingRecordGroups'">
-            <input
-              class="govuk-checkboxes__input"
-              type="checkbox"
-              [id]="'training-records-group-' + index"
-              [name]="group.title"
-              [value]="index"
-              [formControlName]="index"
-            />
-            <label class="govuk-label govuk-checkboxes__label" [for]="'training-records-group-' + index">
-              {{ group.title }}
-              <ng-container [ngPlural]="group.count">
-                <ng-template ngPluralCase="=1">({{ group.count }} record)</ng-template>
-                <ng-template ngPluralCase="other">({{ group.count }} records)</ng-template>
-              </ng-container>
-            </label>
-          </div>
+          @for (group of trainingRecordsGroupedByTitle; track group.title; let index = $index) {
+            <div class="govuk-checkboxes__item" [formArrayName]="'selectedTrainingRecordGroups'">
+              <input
+                class="govuk-checkboxes__input"
+                type="checkbox"
+                [id]="'training-records-group-' + index"
+                [name]="group.title"
+                [value]="index"
+                [formControlName]="index"
+              />
+              <label class="govuk-label govuk-checkboxes__label" [for]="'training-records-group-' + index">
+                {{ group.title }}
+                <ng-container [ngPlural]="group.count">
+                  <ng-template ngPluralCase="=1">({{ group.count }} record)</ng-template>
+                  <ng-template ngPluralCase="other">({{ group.count }} records)</ng-template>
+                </ng-container>
+              </label>
+            </div>
           }
         </div>
       </div>

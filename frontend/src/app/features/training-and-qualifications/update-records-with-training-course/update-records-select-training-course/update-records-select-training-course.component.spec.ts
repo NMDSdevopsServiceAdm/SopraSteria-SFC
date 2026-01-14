@@ -102,8 +102,8 @@ describe('UpdateRecordsSelectTrainingCourseComponent', () => {
   it('should show a heading and a caption', async () => {
     const { getByRole, getByTestId } = await setup();
 
-    const expectedHeading = 'Update records with training course details';
-    const expectedCaption = 'Training and qualifications';
+    const expectedHeading = 'Select a training course to see the records you can update';
+    const expectedCaption = 'Training records';
 
     expect(getByRole('heading', { level: 1 }).textContent).toContain(expectedHeading);
     expect(getByTestId('section-heading').textContent).toContain(expectedCaption);
@@ -138,11 +138,8 @@ describe('UpdateRecordsSelectTrainingCourseComponent', () => {
     it('should show a table of training courses in the workplace', async () => {
       const { getByTestId } = await setup();
 
-      const expectedSubheading = 'Select a training course to see the records you can update';
-
       const table = getByTestId('training-course-table');
       expect(table).toBeTruthy();
-      expect(within(table).getByText(expectedSubheading)).toBeTruthy();
     });
 
     describe('if a course can be linked to training records', () => {

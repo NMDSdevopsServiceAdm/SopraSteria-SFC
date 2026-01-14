@@ -8,7 +8,7 @@ enum Path {
 export const updateRecordsWithTrainingCourseDetailsJourney: JourneyRoute = {
   children: [
     {
-      title: 'Update records with training course details',
+      title: 'Select a training course',
       path: Path.UPDATE_RECORDS_WITH_TRAINING_COURSE_DETAILS,
       referrer: {
         path: Path.DASHBOARD,
