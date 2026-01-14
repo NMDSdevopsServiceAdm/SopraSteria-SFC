@@ -68,7 +68,7 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     externalProviderName: null,
     otherTrainingProviderName: null,
     deliveredBy: null,
-    validityPeriodInMonth: null,
+    validityPeriodInMonth: 12,
   };
 
   public get trainingOrQualificationPreviouslySelected() {
@@ -79,7 +79,13 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     return (http: HttpClient) => {
       const service = new MockTrainingServiceWithPreselectedStaff(http);
       if (incompleteTraining) {
-        service._selectedTraining = { ...service._selectedTraining, completed: null, expires: null, notes: null };
+        service._selectedTraining = {
+          ...service._selectedTraining,
+          completed: null,
+          expires: null,
+          notes: null,
+          validityPeriodInMonth: null,
+        };
       }
       return service;
     };

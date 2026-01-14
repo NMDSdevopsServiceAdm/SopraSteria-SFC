@@ -234,7 +234,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       deliveredBy: null,
       externalProviderName: null,
       howWasItDelivered: 'Face to face',
-      validityPeriodInMonth: null,
+      validityPeriodInMonth: 12,
       doesNotExpire: null,
       completed: '2020-01-01',
       expires: '2021-01-01',
@@ -309,9 +309,7 @@ describe('MultipleTrainingDetailsComponent', () => {
         it('should prefill the form if it has already been filled out', async () => {
           const { component } = await setup({
             accessedFromSummary: true,
-            additionalProviders: [
-              { provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromList }
-            ]
+            additionalProviders: [{ provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromList }],
           });
 
           const form = component.form;
@@ -329,15 +327,15 @@ describe('MultipleTrainingDetailsComponent', () => {
             notes: 'This is a note',
           });
         });
-      })
+      });
 
       describe('When the training provider name is entered using free text', () => {
         it('should prefill the form if it has already been filled out', async () => {
           const { component } = await setup({
             accessedFromSummary: true,
             additionalProviders: [
-              { provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromFreeText }
-            ]
+              { provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromFreeText },
+            ],
           });
 
           const form = component.form;
@@ -356,8 +354,8 @@ describe('MultipleTrainingDetailsComponent', () => {
           });
         });
       });
-    })
-  })
+    });
+  });
 
   describe('auto suggest', () => {
     it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
