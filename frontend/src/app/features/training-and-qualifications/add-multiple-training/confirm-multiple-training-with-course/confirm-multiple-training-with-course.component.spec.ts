@@ -18,7 +18,7 @@ import { DateUtil } from '@core/utils/date-util';
 
 describe('ConfirmMultipleTrainingWithCourseComponent', () => {
   const workplace = { uid: '1' };
-  let workers = [
+  const workers = [
     {
       uid: '123',
       nameOrId: 'Hank Aaron',
@@ -34,7 +34,8 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       },
     },
   ];
-  let selectedTrainingCourse = {
+
+  const selectedTrainingCourse = {
     id: 2,
     uid: 'uid-2',
     trainingCategoryId: 2,
@@ -43,16 +44,21 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     accredited: 'Yes',
     deliveredBy: DeliveredBy.ExternalProvider,
     externalProviderName: 'Care skills academy',
-    otherTrainingProviderName: 'Care skills academy',
+    otherTrainingProviderName: null,
     howWasItDelivered: HowWasItDelivered.ELearning,
     validityPeriodInMonth: 12,
     doesNotExpire: false,
   };
 
-  let courseCompletionDate = new Date('2024-08-21');
-  let notes = 'Some notes';
+  const courseCompletionDate = new Date('2024-08-21');
+  const notes = 'Some notes';
 
   async function setup(overrides: any = {}) {
+    const selectedTrainingCourseToUse = 'customTrainingCourse' in overrides ? overrides.customTrainingCourse : selectedTrainingCourse;
+    const courseCompletionDateToUse = 'customCourseCompletionDate' in overrides ? overrides.customCourseCompletionDate : courseCompletionDate;
+    const notesToUse = 'customNotes' in overrides ? overrides.customNotes : notes;
+    const workersToUse = 'customWorkers' in overrides ? overrides.customWorkers : workers;
+
     const setupTools = await render(ConfirmMultipleTrainingWithCourseComponent, {
       imports: [RouterModule, SharedModule],
       providers: [
@@ -74,16 +80,16 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
           provide: TrainingService,
           useValue: {
             getSelectedStaff() {
-              return workers;
+              return workersToUse;
             },
             getSelectedTrainingCourse() {
-              return selectedTrainingCourse;
+              return selectedTrainingCourseToUse;
             },
             getCourseCompletionDate() {
-              return courseCompletionDate;
+              return courseCompletionDateToUse;
             },
             getNotes() {
-              return notes;
+              return notesToUse;
             },
             resetState() {},
             fillInExpiryDate() {
@@ -139,7 +145,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it(`displays a Back link`, async () => {
+  it('displays a Back link', async () => {
     const { component, showBackLinkSpy, fixture } = await setup();
 
     component.ngOnInit();
@@ -230,14 +236,18 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       expect(within(trainingRecordDetails).getByText('Care skills academy')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('E-learning')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('12 months')).toBeTruthy();
-      expect(within(trainingRecordDetails).getByText('21 Aug 2024')).toBeTruthy();
+      expect(within(trainingRecordDetails).getByText('21 August 2024')).toBeTruthy();
       expect(within(trainingRecordDetails).getByText('Some notes')).toBeTruthy();
     });
 
     describe('When the training delivery method is "In-house"', () => {
       it('should not display the Training provider key or value', async () => {
-        selectedTrainingCourse.deliveredBy = DeliveredBy.InHouseStaff;
-        const { getByTestId } = await setup();
+        const { getByTestId } = await setup({
+          customTrainingCourse: {
+            ...selectedTrainingCourse,
+            deliveredBy: DeliveredBy.InHouseStaff,
+          }
+        });
         const trainingRecordDetails = getByTestId('training-record-details');
 
         expect(within(trainingRecordDetails).queryByText('Training provider name')).toBeFalsy();
@@ -283,25 +293,29 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
 
     describe('When there is missing data', () => {
       it('should display "-" if training course data from the training service is missing', async () => {
-        selectedTrainingCourse.accredited = null;
-        const { getByTestId } = await setup();
+        const { getByTestId } = await setup({
+          customTrainingCourse: {
+            ...selectedTrainingCourse,
+            accredited: null,
+          }
+        });
         const trainingRecordDetails = getByTestId('training-record-details');
         expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(1);
       });
 
       it('should display "-" if the completion date is missing', async () => {
-        selectedTrainingCourse.accredited = 'Yes';
-        courseCompletionDate = null;
-
-        const { getByTestId } = await setup();
+        const { getByTestId } = await setup({
+          customCourseCompletionDate: null,
+        });
         const trainingRecordDetails = getByTestId('training-record-details');
 
         expect(within(trainingRecordDetails).queryAllByText('-').length).toEqual(1);
       });
 
       it('should display "No notes added" if there are no notes', async () => {
-        notes = null;
-        const { getByTestId } = await setup();
+        const { getByTestId } = await setup({
+          customNotes: null
+        });
         const trainingRecordDetails = getByTestId('training-record-details');
 
         expect(within(trainingRecordDetails).getByText('No notes added')).toBeTruthy();
@@ -319,28 +333,14 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
 
       describe('When the training is valid for 1 month', () => {
         it('should display the singular amount', async () => {
-          selectedTrainingCourse.validityPeriodInMonth = 1;
-          const { getByTestId } = await setup();
+          const { getByTestId } = await setup({
+            customTrainingCourse: {
+              ...selectedTrainingCourse,
+              validityPeriodInMonth: 1
+            }
+          });
           const trainingRecordDetails = getByTestId('training-record-details');
           expect(within(trainingRecordDetails).getByText('1 month')).toBeTruthy();
-        });
-      });
-    });
-
-    describe('Month in Training completion date', () => {
-      describe('Should show the first 3 letters of the month name', () => {
-        it('should display "Aug" when the month is August', async () => {
-          courseCompletionDate = new Date('2024-08-21');
-          const { getByTestId } = await setup();
-          const trainingRecordDetails = getByTestId('training-record-details');
-          expect(within(trainingRecordDetails).getByText('21 Aug 2024')).toBeTruthy();
-        });
-
-        it('should display "May" when the month is May', async () => {
-          courseCompletionDate = new Date('2024-05-21');
-          const { getByTestId } = await setup();
-          const trainingRecordDetails = getByTestId('training-record-details');
-          expect(within(trainingRecordDetails).getByText('21 May 2024')).toBeTruthy();
         });
       });
     });
@@ -348,8 +348,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
 
   describe('When refreshing the page', () => {
     it('Returns to page to select those you want to add a record for', async () => {
-      selectedTrainingCourse = null;
-      const { component, routerSpy } = await setup();
+      const { component, routerSpy } = await setup({ customTrainingCourse: null });
       component.ngOnInit();
       expect(routerSpy).toHaveBeenCalledWith([
         `workplace/${component.workplace.uid}/add-multiple-training/select-staff`,
@@ -359,17 +358,6 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
 
   describe('Save training records button', () => {
     it('should call createMultipleTrainingRecords function when clicked', async () => {
-      courseCompletionDate = new Date('2024-08-21');
-      notes = 'Some notes';
-
-      selectedTrainingCourse = {
-        ...selectedTrainingCourse,
-        deliveredBy: DeliveredBy.ExternalProvider,
-        externalProviderName: 'Care skills academy',
-        otherTrainingProviderName: 'Care skills academy',
-        validityPeriodInMonth: 12,
-      };
-
       const trainingRecordDetails = {
         trainingCategory: { id: selectedTrainingCourse.trainingCategoryId },
         title: selectedTrainingCourse.name,
@@ -398,20 +386,6 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     });
 
     it('should call createMultipleTrainingRecords when completion date and notes are null', async () => {
-      courseCompletionDate = null;
-      notes = null;
-      selectedTrainingCourse = {
-        ...selectedTrainingCourse,
-        name: 'Basic safeguarding for support staff',
-        trainingCategoryName: 'Safeguarding adults',
-        accredited: 'Yes',
-        deliveredBy: DeliveredBy.ExternalProvider,
-        externalProviderName: 'Care skills academy',
-        otherTrainingProviderName: 'Care skills academy',
-        howWasItDelivered: HowWasItDelivered.ELearning,
-        validityPeriodInMonth: 12,
-      };
-
       const trainingRecordDetails = {
         trainingCategory: { id: selectedTrainingCourse.trainingCategoryId },
         title: selectedTrainingCourse.name,
@@ -426,7 +400,9 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
         notes: null,
         trainingCourseFK: selectedTrainingCourse.id,
       };
-      const { createMultipleTrainingRecordsSpy, fixture, getByText } = await setup({ trainingRecordDetails });
+      const { createMultipleTrainingRecordsSpy, fixture, getByText } = await setup(
+        { trainingRecordDetails, customCourseCompletionDate: null, customNotes: null }
+      );
 
       const button = getByText('Save training records');
       fireEvent.click(button);
@@ -440,14 +416,6 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     });
 
     it('should set the expiry when there is a completed date and validityPeriodInMonth', async () => {
-      courseCompletionDate = new Date('2024-08-21');
-      notes = null;
-      selectedTrainingCourse = {
-        ...selectedTrainingCourse,
-        validityPeriodInMonth: 12,
-        doesNotExpire: false,
-      };
-
       const trainingRecordDetails = {
         trainingCategory: { id: selectedTrainingCourse.trainingCategoryId },
         title: 'Basic safeguarding for support staff',
@@ -467,7 +435,6 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       const trainingRecordDetailsWithExpiry = {
         ...trainingRecordDetails,
         expires: '2025-08-21',
-        doesNotExpire: false,
       };
 
       const { createMultipleTrainingRecordsSpy, fixture, getByText, fillInExpiryDateSpy } = await setup({
@@ -515,8 +482,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
     });
 
     it('should navigate back to the dashboard and add an alert', async () => {
-      workers = workers.slice(0, -1);
-      const { fixture, getByText, routerSpy, alertSpy } = await setup();
+      const { fixture, getByText, routerSpy, alertSpy,  } = await setup({ customWorkers: workers.slice(0, -1), });
 
       const button = getByText('Save training records');
       fireEvent.click(button);

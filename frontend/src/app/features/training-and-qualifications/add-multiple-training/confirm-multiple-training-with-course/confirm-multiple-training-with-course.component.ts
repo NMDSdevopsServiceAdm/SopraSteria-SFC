@@ -114,7 +114,7 @@ export class ConfirmMultipleTrainingWithCourseComponent implements OnInit {
       },
       {
         key: 'Training completion date',
-        value: this.trainingRecordCompletionDate ? dayjs(this.trainingRecordCompletionDate).format('D MMM YYYY') : '-',
+        value: this.trainingRecordCompletionDate ? dayjs(this.trainingRecordCompletionDate).format('D MMMM YYYY') : '-',
       },
       { key: 'Notes', value: this.notes ? this.notes : 'No notes added' },
     ];
