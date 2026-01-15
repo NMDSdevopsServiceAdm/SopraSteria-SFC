@@ -358,6 +358,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       this.trainingProviders,
       this.getOtherTrainingProviderId(),
     ) as TrainingRecordRequest;
+
+    if (this.multipleTrainingDetails && withTrainingProviderFilled.expires) {
+      withTrainingProviderFilled.expires = null;
+    }
+
     const withExpiryDateFilled = this.trainingService.fillInExpiryDate(withTrainingProviderFilled, completedDate);
 
     return withExpiryDateFilled;

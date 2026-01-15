@@ -14,7 +14,8 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import {
   MockTrainingService,
-  MockTrainingServiceWithPreselectedStaff, MockTrainingServiceWithProviderNameFromFreeText,
+  MockTrainingServiceWithPreselectedStaff,
+  MockTrainingServiceWithProviderNameFromFreeText,
   MockTrainingServiceWithProviderNameFromList,
 } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
@@ -234,7 +235,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       deliveredBy: null,
       externalProviderName: null,
       howWasItDelivered: 'Face to face',
-      validityPeriodInMonth: null,
+      validityPeriodInMonth: 12,
       doesNotExpire: null,
       completed: '2020-01-01',
       expires: '2021-01-01',
@@ -309,9 +310,7 @@ describe('MultipleTrainingDetailsComponent', () => {
         it('should prefill the form if it has already been filled out', async () => {
           const { component } = await setup({
             accessedFromSummary: true,
-            additionalProviders: [
-              { provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromList }
-            ]
+            additionalProviders: [{ provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromList }],
           });
 
           const form = component.form;
@@ -329,15 +328,15 @@ describe('MultipleTrainingDetailsComponent', () => {
             notes: 'This is a note',
           });
         });
-      })
+      });
 
       describe('When the training provider name is entered using free text', () => {
         it('should prefill the form if it has already been filled out', async () => {
           const { component } = await setup({
             accessedFromSummary: true,
             additionalProviders: [
-              { provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromFreeText }
-            ]
+              { provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromFreeText },
+            ],
           });
 
           const form = component.form;
@@ -356,8 +355,67 @@ describe('MultipleTrainingDetailsComponent', () => {
           });
         });
       });
-    })
-  })
+
+      it('should update the expires value when validityPeriodInMonth has been updated', async () => {
+        const { component, getByLabelText, getByText, fixture, setSelectedTrainingSpy } = await setup({
+          prefill: true,
+          accessedFromSummary: true,
+        });
+
+        userEvent.clear(getByLabelText('How many months is the training valid for before it expires?'));
+        userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '24');
+
+        const continueButton = getByText('Save and return');
+        userEvent.click(continueButton);
+        fixture.detectChanges();
+
+        expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
+          trainingCategory: component.categories[0],
+          title: 'Title',
+          accredited: 'Yes',
+          deliveredBy: null,
+          howWasItDelivered: HowWasItDelivered.FaceToFace,
+          validityPeriodInMonth: 24,
+          doesNotExpire: null,
+          completed: '2020-01-01',
+          expires: '2022-01-01',
+          notes: 'This is a note',
+          trainingProviderId: null,
+          otherTrainingProviderName: null,
+          externalProviderName: null,
+        });
+      });
+
+      it('should remove the expires value when does not expire has been ticked', async () => {
+        const { component, getByLabelText, getByText, fixture, setSelectedTrainingSpy } = await setup({
+          prefill: true,
+          accessedFromSummary: true,
+        });
+
+        userEvent.type(getByLabelText('This training does not expire'), 'true');
+
+        const continueButton = getByText('Save and return');
+        userEvent.click(continueButton);
+        fixture.detectChanges();
+
+        expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
+          trainingCategory: component.categories[0],
+          title: 'Title',
+          accredited: 'Yes',
+          deliveredBy: null,
+          howWasItDelivered: HowWasItDelivered.FaceToFace,
+          validityPeriodInMonth: null,
+          doesNotExpire: true,
+          completed: '2020-01-01',
+          expires: null,
+          notes: 'This is a note',
+          trainingProviderId: null,
+          otherTrainingProviderName: null,
+          externalProviderName: null,
+        });
+      });
+    });
+  });
 
   describe('auto suggest', () => {
     it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
