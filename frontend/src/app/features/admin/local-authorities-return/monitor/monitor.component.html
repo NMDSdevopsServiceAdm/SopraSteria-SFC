@@ -38,6 +38,7 @@
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">
             <th scope="col" class="govuk-table__header govuk-!-width-one-half">Local authority</th>
+            <th scope="col" class="govuk-table__header">Workplace Id</th>
             <th scope="col" class="govuk-table__header">Workers</th>
             <th scope="col" class="govuk-table__header">Status</th>
             <th scope="col" class="govuk-table__header">Notes</th>
@@ -47,6 +48,9 @@
           <tr class="govuk-table__row" *ngFor="let localAuthority of localAuthorities[area.letter]">
             <td class="govuk-table__cell">
               <a [routerLink]="[localAuthority.localAuthorityUID]">{{ localAuthority.name }}</a>
+            </td>
+            <td class="govuk-table__cell">
+              {{ localAuthority.workplaceId === 0 ? 'None added' : localAuthority.workplaceId }}
             </td>
             <td class="govuk-table__cell">
               {{ localAuthority.workers === 0 ? 'None added' : localAuthority.workers }}
