@@ -25,6 +25,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             Status: 'Not updated',
             Notes: null,
             LocalAuthorityUID: 'SomeUID1',
+            workplaceId: 'B123456',
             establishment: {
               nmdsId: 'B123456',
             },
@@ -35,8 +36,9 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             Status: 'Update, not complete',
             Notes: 'This is a comment',
             LocalAuthorityUID: 'SomeUID2',
+            workplaceId: 'B123456',
             establishment: {
-              nmdsId: 'B112583',
+              nmdsId: 'B123456',
             },
           },
           {
@@ -45,8 +47,9 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             Status: 'Update, complete',
             Notes: 'Hello',
             LocalAuthorityUID: 'SomeUID3',
+            workplaceId: 'C123456',
             establishment: {
-              nmdsId: 'C223485',
+              nmdsId: 'C123456',
             },
           },
           {
@@ -55,8 +58,9 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             Status: 'Confirmed, complete',
             Notes: null,
             LocalAuthorityUID: 'SomeUID4',
+            workplaceId: 'C123456',
             establishment: {
-              nmdsId: 'C223485',
+              nmdsId: 'C123456',
             },
           },
         ];
@@ -91,6 +95,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             workers: 10,
             notes: false,
             localAuthorityUID: 'SomeUID1',
+            workplaceId: 'B123456',
           },
           {
             name: 'Example B Authority 2',
@@ -98,6 +103,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             workers: 50,
             notes: true,
             localAuthorityUID: 'SomeUID2',
+            workplaceId: 'B123456',
           },
         ],
         C: [
@@ -107,6 +113,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             workers: 54,
             notes: true,
             localAuthorityUID: 'SomeUID3',
+            workplaceId: 'C123456',
           },
           {
             name: 'Example C Authority 2',
@@ -114,6 +121,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             workers: 155,
             notes: false,
             localAuthorityUID: 'SomeUID4',
+            workplaceId: 'C123456',
           },
         ],
       };
@@ -257,8 +265,9 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             Status: 'Not updated',
             Notes: null,
             LocalAuthorityUID: 'SomeUID2',
+            workplaceId: 'B123456',
             establishment: {
-              nmdsId: 'B112583',
+              nmdsId: 'B123456',
             },
           },
           {
@@ -267,8 +276,9 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             Status: 'Not updated',
             Notes: null,
             LocalAuthorityUID: 'SomeUID3',
+            workplaceId: 'C123456',
             establishment: {
-              nmdsId: 'C223485',
+              nmdsId: 'C123456',
             },
           },
           {
@@ -277,8 +287,9 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             Status: 'Not updated',
             Notes: null,
             LocalAuthorityUID: 'SomeUID4',
+            workplaceId: 'C123456',
             establishment: {
-              nmdsId: 'C223485',
+              nmdsId: 'C123456',
             },
           },
         ];
@@ -313,6 +324,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             workers: 10,
             notes: false,
             localAuthorityUID: 'SomeUID1',
+            workplaceId: 'B123456',
           },
           {
             name: 'Example B Authority 2',
@@ -320,6 +332,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             workers: 50,
             notes: false,
             localAuthorityUID: 'SomeUID2',
+            workplaceId: 'B123456',
           },
         ],
         C: [
@@ -329,6 +342,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             workers: 54,
             notes: false,
             localAuthorityUID: 'SomeUID3',
+            workplaceId: 'C123456',
           },
           {
             name: 'Example C Authority 2',
@@ -336,6 +350,7 @@ describe('server/routes/admin/local-authority-returns/monitor', async () => {
             workers: 155,
             notes: false,
             localAuthorityUID: 'SomeUID4',
+            workplaceId: 'C123456',
           },
         ],
       };
