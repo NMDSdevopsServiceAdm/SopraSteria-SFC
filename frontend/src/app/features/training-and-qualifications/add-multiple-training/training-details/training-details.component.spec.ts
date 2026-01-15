@@ -328,64 +328,6 @@ describe('MultipleTrainingDetailsComponent', () => {
             notes: 'This is a note',
           });
         });
-
-        it('should update the expires value when validityPeriodInMonth has been updated', async () => {
-          const { component, getByLabelText, getByText, fixture, setSelectedTrainingSpy } = await setup({
-            accessedFromSummary: true,
-            additionalProviders: [{ provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromList }],
-          });
-
-          userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '24');
-
-          const cointinueButton = getByText('Save and return');
-          userEvent.click(cointinueButton);
-          fixture.detectChanges();
-
-          expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
-            trainingCategory: component.categories[0],
-            title: 'Title',
-            accredited: 'Yes',
-            deliveredBy: DeliveredBy.ExternalProvider,
-            howWasItDelivered: HowWasItDelivered.FaceToFace,
-            validityPeriodInMonth: 24,
-            doesNotExpire: null,
-            completed: '2020-01-01',
-            expires: '2022-01-01',
-            notes: 'This is a note',
-            trainingProviderId: 63,
-            otherTrainingProviderName: 'Care Skills Academy',
-            externalProviderName: null,
-          });
-        });
-
-        it('should remove the expires value when does not expire has been ticked', async () => {
-          const { component, getByLabelText, getByText, fixture, setSelectedTrainingSpy } = await setup({
-            accessedFromSummary: true,
-            additionalProviders: [{ provide: TrainingService, useClass: MockTrainingServiceWithProviderNameFromList }],
-          });
-
-          userEvent.type(getByLabelText('This training does not expire'), 'true');
-
-          const cointinueButton = getByText('Save and return');
-          userEvent.click(cointinueButton);
-          fixture.detectChanges();
-
-          expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
-            trainingCategory: component.categories[0],
-            title: 'Title',
-            accredited: 'Yes',
-            deliveredBy: DeliveredBy.ExternalProvider,
-            howWasItDelivered: HowWasItDelivered.FaceToFace,
-            validityPeriodInMonth: null,
-            doesNotExpire: true,
-            completed: '2020-01-01',
-            expires: null,
-            notes: 'This is a note',
-            trainingProviderId: 63,
-            otherTrainingProviderName: 'Care Skills Academy',
-            externalProviderName: null,
-          });
-        });
       });
 
       describe('When the training provider name is entered using free text', () => {
@@ -411,6 +353,65 @@ describe('MultipleTrainingDetailsComponent', () => {
             expires: { day: 1, month: 1, year: 2021 },
             notes: 'This is a note',
           });
+        });
+      });
+
+      it('should update the expires value when validityPeriodInMonth has been updated', async () => {
+        const { component, getByLabelText, getByText, fixture, setSelectedTrainingSpy } = await setup({
+          prefill: true,
+          accessedFromSummary: true,
+        });
+
+        userEvent.clear(getByLabelText('How many months is the training valid for before it expires?'));
+        userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '24');
+
+        const continueButton = getByText('Save and return');
+        userEvent.click(continueButton);
+        fixture.detectChanges();
+
+        expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
+          trainingCategory: component.categories[0],
+          title: 'Title',
+          accredited: 'Yes',
+          deliveredBy: null,
+          howWasItDelivered: HowWasItDelivered.FaceToFace,
+          validityPeriodInMonth: 24,
+          doesNotExpire: null,
+          completed: '2020-01-01',
+          expires: '2022-01-01',
+          notes: 'This is a note',
+          trainingProviderId: null,
+          otherTrainingProviderName: null,
+          externalProviderName: null,
+        });
+      });
+
+      it('should remove the expires value when does not expire has been ticked', async () => {
+        const { component, getByLabelText, getByText, fixture, setSelectedTrainingSpy } = await setup({
+          prefill: true,
+          accessedFromSummary: true,
+        });
+
+        userEvent.type(getByLabelText('This training does not expire'), 'true');
+
+        const continueButton = getByText('Save and return');
+        userEvent.click(continueButton);
+        fixture.detectChanges();
+
+        expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
+          trainingCategory: component.categories[0],
+          title: 'Title',
+          accredited: 'Yes',
+          deliveredBy: null,
+          howWasItDelivered: HowWasItDelivered.FaceToFace,
+          validityPeriodInMonth: null,
+          doesNotExpire: true,
+          completed: '2020-01-01',
+          expires: null,
+          notes: 'This is a note',
+          trainingProviderId: null,
+          otherTrainingProviderName: null,
+          externalProviderName: null,
         });
       });
     });
