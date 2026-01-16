@@ -34,7 +34,9 @@ describe('BenefitsBundleComponent', () => {
           useClass: MockFeatureFlagsService,
         },
         provideRouter([]),
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -86,7 +88,6 @@ describe('BenefitsBundleComponent', () => {
 
       expect(getByText(`Discounts from Skills for Care’s endorsed training providers`)).toBeTruthy();
       expect(getByText(`10% off Skills for Care’s eLearning modules`)).toBeTruthy();
-      expect(getByText('10% off all publications in the Skills for Care bookshop')).toBeTruthy();
       expect(getByText('10% off tailored seminars from Skills for Care')).toBeTruthy();
       expect(getByText('5 FREE resources')).toBeTruthy();
     });
@@ -169,7 +170,6 @@ describe('BenefitsBundleComponent', () => {
         fixture.detectChanges();
         fireEvent.click(getByText(`Discounts from Skills for Care’s endorsed training providers`));
         fireEvent.click(getByText(`10% off Skills for Care’s eLearning modules`));
-        fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
         fireEvent.click(getByText('10% off tailored seminars from Skills for Care'));
         fireEvent.click(getByText('5 FREE resources'));
 
@@ -184,7 +184,7 @@ describe('BenefitsBundleComponent', () => {
         fireEvent.click(getByText('Show all'));
         fixture.detectChanges();
 
-        fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
+        fireEvent.click(getByText('10% off tailored seminars from Skills for Care'));
         fixture.detectChanges();
 
         expect(getByText('Show all')).toBeTruthy();
@@ -193,15 +193,6 @@ describe('BenefitsBundleComponent', () => {
   });
 
   describe('Links', () => {
-    it('should display the SfC bookshop link in the bookshop content', async () => {
-      const { getByText } = await setup();
-
-      const link = getByText('Visit the Skills for Care bookshop');
-
-      expect(link.getAttribute('href')).toBe('https://bookshop.skillsforcare.org.uk/Shop');
-      expect(link.getAttribute('target')).toBe('_blank');
-    });
-
     it('should display the Supporting the development of leadership skills link the 5 free downloads content', async () => {
       const { getByText } = await setup();
 
