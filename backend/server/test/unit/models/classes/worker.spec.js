@@ -4,9 +4,10 @@ const sinon = require('sinon');
 
 const models = require('../../../../models');
 const Worker = require('../../../../models/classes/worker').Worker;
-const TrainingCertificateRoute = require('../../../../routes/establishments/workerCertificate/trainingCertificate');
 const { Training } = require('../../../../models/classes/training');
 const WorkerCertificateService = require('../../../../routes/establishments/workerCertificate/workerCertificateService');
+const { WdfCalculator } = require('../../../../models/classes/wdfCalculator');
+const { WorkerExceptions } = require('../../../../models/classes/worker');
 
 const worker = new Worker();
 
@@ -374,7 +375,117 @@ describe('Worker Class', () => {
     });
   });
 
-  describe('setWdfProperties()', async () => {
+  describe('archive()', () => {
+    const worker = new Worker();
+    worker._uid = 'mock-worker-uid';
+
+    const mockSequelizeReturnValue = [
+      1,
+      [
+        {
+          ID: 'mock-id',
+          updated: 'mock-updated-date',
+          get: () => {
+            return this;
+          },
+        },
+      ],
+    ];
+    const mockTransaction = { rollback: sinon.spy() };
+
+    beforeEach(() => {
+      sinon.stub(worker, 'deleteAllTrainingCertificatesAssociatedWithWorker');
+      sinon.stub(worker, 'deleteAllQualificationCertificatesAssociatedWithWorker');
+      sinon.stub(models.workerAudit, 'bulkCreate');
+      sinon.stub(WdfCalculator, 'calculate');
+    });
+
+    it('should update the worker record in database with archived: true', async () => {
+      sinon.stub(models.worker, 'update').resolves(mockSequelizeReturnValue);
+
+      await worker.archive('admin', mockTransaction);
+
+      expect(models.worker.update).to.have.been.calledWith(
+        sinon.match({ archived: true }),
+        sinon.match({
+          transaction: mockTransaction,
+          where: { uid: 'mock-worker-uid' },
+        }),
+      );
+    });
+
+    it('should trigger the deletion of assciated certificates', async () => {
+      sinon.stub(models.worker, 'update').resolves(mockSequelizeReturnValue);
+
+      await worker.archive('admin', mockTransaction);
+
+      expect(worker.deleteAllTrainingCertificatesAssociatedWithWorker).to.have.been.called;
+      expect(worker.deleteAllQualificationCertificatesAssociatedWithWorker).to.have.been.called;
+    });
+
+    it('should remove the personal data of the worker from database', async () => {
+      const expectedFieldsToRemove = [
+        'NameOrIdValue',
+        'DateOfBirthValue',
+        'NationalInsuranceNumberValue',
+        'PostcodeValue',
+        'GenderValue',
+        'DisabilityValue',
+        'EthnicityFkValue',
+        'NationalityValue',
+        'NationalityOtherFK',
+        'BritishCitizenshipValue',
+        'CountryOfBirthValue',
+        'CountryOfBirthOtherFK',
+        'YearArrivedValue',
+        'YearArrivedYear',
+        'HealthAndCareVisaValue',
+      ];
+
+      sinon.stub(models.worker, 'update').resolves(mockSequelizeReturnValue);
+
+      await worker.archive('admin', mockTransaction);
+
+      const updates = models.worker.update.getCall(0).args[0];
+
+      // use empty string for NameOrIdValue as the column has non-nullable requirement
+      expect(updates).to.haveOwnProperty(expectedFieldsToRemove[0], '');
+
+      expectedFieldsToRemove.slice(1).forEach((fieldName) => {
+        expect(updates).to.haveOwnProperty(fieldName, null);
+      });
+    });
+
+    it('should throw an error if failed to find the worker', async () => {
+      sinon.stub(models.worker, 'update').resolves([0, []]);
+      sinon.stub(console, 'error');
+
+      let error;
+      try {
+        await worker.archive('admin', mockTransaction);
+      } catch (thrownError) {
+        error = thrownError;
+      }
+
+      expect(error).to.be.instanceof(WorkerExceptions.WorkerDeleteException);
+    });
+
+    it('should throw an error on database error', async () => {
+      sinon.stub(console, 'error');
+      sinon.stub(models.worker, 'update').rejects(new Error('some database error'));
+
+      let error;
+      try {
+        await worker.archive('admin', mockTransaction);
+      } catch (thrownError) {
+        error = thrownError;
+      }
+
+      expect(error).to.be.instanceof(WorkerExceptions.WorkerDeleteException);
+    });
+  });
+
+  describe('setWdfProperties()', () => {
     it('should set wdfEligible inside the document if true', async () => {
       sinon.stub(worker, 'isWdfEligible').callsFake(() => {
         return { isEligible: true };
