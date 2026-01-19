@@ -11,7 +11,6 @@ const { v4: uuidv4 } = require('uuid');
 uuidv4();
 
 // database models
-const { Op } = require('sequelize');
 const models = require('../index');
 
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
@@ -28,13 +27,13 @@ const WorkerProperties = require('./worker/workerProperties').WorkerPropertyMana
 const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_DOCUMENT;
 
-const TrainingCertificateRoute = require('../../routes/establishments/workerCertificate/trainingCertificate');
 const WorkerCertificateService = require('../../routes/establishments/workerCertificate/workerCertificateService');
 
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
 const BulkUploadQualificationHelper = require('./helpers/bulkUploadQualificationHelper');
+const { removePersonalInformationForWorker } = require('./helpers/workerClassHelper');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
@@ -1148,6 +1147,7 @@ class Worker extends EntityValidator {
         LocalIdentifierValue: null,
         updated: updatedTimestamp,
         updatedBy: deletedBy,
+        ...removePersonalInformationForWorker,
       };
 
       if (this._reason) {
