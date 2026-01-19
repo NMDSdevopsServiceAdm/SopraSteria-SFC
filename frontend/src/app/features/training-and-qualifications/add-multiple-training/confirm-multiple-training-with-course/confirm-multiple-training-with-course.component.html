@@ -13,7 +13,8 @@
         class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summarylist-border-bottom govuk-!-width-full"
         data-testid="selected-staff-summary-list"
       >
-        <ng-container *ngFor="let worker of workers; index as i">
+        <ng-container>
+          @for(worker of workers; track $index) {
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
               {{ worker.nameOrId }}
@@ -21,15 +22,16 @@
             <dd class="govuk-summary-list__value" style="width: 25%; padding-left: 15px">
               {{ worker.mainJob.title }}
             </dd>
-            <ng-container *ngIf="i === 0">
+            @if($index === 0) {
               <dd class="govuk-summary-list__actions">
                 <app-summary-record-change
                   [link]="getRoutePath('select-staff')"
                   [hasData]="true"
                 ></app-summary-record-change>
               </dd>
-            </ng-container>
+            }
           </div>
+          }
         </ng-container>
       </dl>
     </div>
@@ -41,11 +43,10 @@
           data-testid="training-record-details"
         >
           <ng-container>
-            <div
-              *ngFor="let record of trainingCourseDataForSummaryList; index as i"
+            @for(record of trainingCourseDataForSummaryList; track $index) {
+              <div
               class="govuk-summary-list__row"
-              [class.govuk-summary-list__row--no-border]="i === 7"
-            >
+              [class.govuk-summary-list__row--no-border]="record.key === 'Training completion date'">
               <dt class="govuk-summary-list__key govuk__nowrap" style="width: 38%">
                 {{ record.key }}
               </dt>
@@ -53,7 +54,7 @@
                 {{ record.value | dontKnow }}
               </dd>
               <dd class="govuk-summary-list__actions" style="width: 31%">
-                <ng-container *ngIf="i === 0">
+                @if(record.key === 'Training course name') {
                   <span class="different-training-course-link-and-arrow">
                     <a
                       data-testid="different-training-course-link"
@@ -64,16 +65,16 @@
                       <span>Select a different training course</span>
                     </a>
                   </span>
-                </ng-container>
-                <ng-container *ngIf="i === 7">
+                }
+                @if(record?.changeLink) {
                   <app-summary-record-change
                     [link]="getRoutePath('view-selected-training-course-details')"
                     [hasData]="true"
                   ></app-summary-record-change>
-                </ng-container>
-                <ng-container *ngIf="i !== 0 && i !== 7">&nbsp;</ng-container>
+                }
               </dd>
             </div>
+            }
           </ng-container>
         </dl>
       </div>
