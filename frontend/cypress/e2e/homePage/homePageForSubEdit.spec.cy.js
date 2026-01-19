@@ -18,13 +18,11 @@ describe('Sub home page as edit user', () => {
   });
 
   it('should show the correct cards and links', () => {
-    cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
-    cy.get('[data-cy="cards-and-links"]').should('contain', 'See how you compare against other workplaces');
+    onHomePage.cards();
+    onHomePage.otherLinksDefault();
+
     cy.get('[data-cy="home-other-links"]').should('contain', 'Change data permissions');
     cy.get('[data-cy="home-other-links"]').should('contain', 'Remove the link to your parent workplace');
     cy.get('[data-cy="home-other-links"]').should('contain', 'Bulk upload your data');
-    cy.get('[data-cy="home-other-links"]').should('contain', 'View the ASC-WDS Benefits Bundle');
-    cy.get('[data-cy="home-other-links"]').should('contain', 'Get your ASC-WDS certificate');
-    cy.get('[data-cy="home-other-links"]').should('contain', 'About ASC-WDS');
   });
 });

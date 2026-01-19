@@ -17,11 +17,8 @@ describe('Standalone home page as read only user', () => {
   });
 
   it('should only show links it has permissions for', () => {
-    cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
-    cy.get('[data-cy="cards-and-links"]').should('contain', 'See how you compare against other workplaces');
-    cy.get('[data-cy="home-other-links"]').should('contain', 'View the ASC-WDS Benefits Bundle');
-    cy.get('[data-cy="home-other-links"]').should('contain', 'Get your ASC-WDS certificate');
-    cy.get('[data-cy="home-other-links"]').should('contain', 'About ASC-WDS');
+    onHomePage.cards();
+    onHomePage.otherLinksDefault();
 
     cy.get('[data-cy="home-other-links"]').should('not.contain', 'Bulk upload your data');
     cy.get('[data-cy="home-other-links"]').should('not.contain', 'Link to my parent organisation');
