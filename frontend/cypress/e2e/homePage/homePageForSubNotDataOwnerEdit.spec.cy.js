@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { SubEstablishmentNotDataOwner } from '../../../support/mockEstablishmentData';
-import { onHomePage } from '../../../support/page_objects/onHomePage';
+import { SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 
 describe('Sub home page as edit user where parent owns the data', () => {
   beforeEach(() => {
@@ -17,19 +17,16 @@ describe('Sub home page as edit user where parent owns the data', () => {
     onHomePage.allTabs();
   });
 
-  it('should show funding link', () => {
+  it('should only show links it has permissions for', () => {
     cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
-  });
-
-  it('should not show bulk upload link', () => {
-    cy.get('[data-cy="home-other-links"]').should('not.contain', 'Bulk upload your data');
-  });
-
-  it('should show remove link to parent organisation', () => {
+    cy.get('[data-cy="cards-and-links"]').should('contain', 'See how you compare against other workplaces');
+    cy.get('[data-cy="home-other-links"]').should('contain', 'Change data owner');
     cy.get('[data-cy="home-other-links"]').should('contain', 'Remove the link to your parent workplace');
-  });
+    cy.get('[data-cy="home-other-links"]').should('contain', 'View the ASC-WDS Benefits Bundle');
+    cy.get('[data-cy="home-other-links"]').should('contain', 'Get your ASC-WDS certificate');
+    cy.get('[data-cy="home-other-links"]').should('contain', 'About ASC-WDS');
 
-  it('should not show change data permissions', () => {
+    cy.get('[data-cy="home-other-links"]').should('not.contain', 'Bulk upload your data');
     cy.get('[data-cy="home-other-links"]').should('not.contain', 'Change data permissions');
   });
 });
