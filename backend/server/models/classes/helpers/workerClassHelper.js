@@ -1,5 +1,5 @@
 export const removePersonalInformationForWorker = Object.freeze({
-  NameOrIdValue: '',
+  NameOrIdValue: '', // use empty string as column is non-nullable
   NationalInsuranceNumberValue: null,
   DateOfBirthValue: null,
   PostcodeValue: null,
