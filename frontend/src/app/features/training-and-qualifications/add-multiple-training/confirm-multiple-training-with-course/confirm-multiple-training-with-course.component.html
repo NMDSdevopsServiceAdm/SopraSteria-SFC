@@ -21,14 +21,14 @@
             <dd class="govuk-summary-list__value" style="width: 25%; padding-left: 15px">
               {{ worker.mainJob.title }}
             </dd>
-            <ng-container *ngIf="i === 0">
+            @if(i === 0) {
               <dd class="govuk-summary-list__actions">
                 <app-summary-record-change
                   [link]="getRoutePath('select-staff')"
                   [hasData]="true"
                 ></app-summary-record-change>
               </dd>
-            </ng-container>
+            }
           </div>
         </ng-container>
       </dl>
@@ -53,7 +53,7 @@
                 {{ record.value | dontKnow }}
               </dd>
               <dd class="govuk-summary-list__actions" style="width: 31%">
-                <ng-container *ngIf="i === 0">
+                @if(i === 0) {
                   <span class="different-training-course-link-and-arrow">
                     <a
                       data-testid="different-training-course-link"
@@ -64,13 +64,14 @@
                       <span>Select a different training course</span>
                     </a>
                   </span>
-                </ng-container>
-                <ng-container *ngIf="i === 7">
+                }
+                @if(record?.changeLink) {
+                >
                   <app-summary-record-change
                     [link]="getRoutePath('view-selected-training-course-details')"
                     [hasData]="true"
                   ></app-summary-record-change>
-                </ng-container>
+                }
                 <ng-container *ngIf="i !== 0 && i !== 7">&nbsp;</ng-container>
               </dd>
             </div>

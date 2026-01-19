@@ -16,7 +16,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { DateUtil } from '@core/utils/date-util';
 
-describe('ConfirmMultipleTrainingWithCourseComponent', () => {
+fdescribe('ConfirmMultipleTrainingWithCourseComponent', () => {
   const workplace = { uid: '1' };
   const workers = [
     {
@@ -240,6 +240,32 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       expect(within(trainingRecordDetails).getByText('Some notes')).toBeTruthy();
     });
 
+    describe('Change training completion date link', () => {
+      it('should be displayed next to the Training completion date value', async () => {
+        const { getByTestId } = await setup();
+        const trainingRecordDetails = getByTestId('training-record-details');
+        const trainingCourseCompletionDateKey = within(trainingRecordDetails).getByText('Training completion date');
+
+        const trainingCourseCompletionDateRow = trainingCourseCompletionDateKey.parentElement
+
+        const trainingCourseCompletionDateValue = within(trainingCourseCompletionDateRow).getByText('21 August 2024');
+        const changeLink = within(trainingCourseCompletionDateRow).getByRole('link', { name: 'Change' });
+
+        expect(trainingCourseCompletionDateValue).toBeTruthy();
+        expect(changeLink).toBeTruthy();
+      });
+
+      it('should link to the previous page to change the date', async () => {
+        const { component, getByTestId } = await setup();
+        const trainingRecordDetails = getByTestId('training-record-details');
+        const link = within(trainingRecordDetails).getByText('Change');
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/add-multiple-training/view-selected-training-course-details`,
+        );
+      });
+    });
+
     describe('When the training delivery method is "In-house"', () => {
       it('should not display the Training provider key or value', async () => {
         const { getByTestId } = await setup({
@@ -252,6 +278,27 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
 
         expect(within(trainingRecordDetails).queryByText('Training provider name')).toBeFalsy();
         expect(within(trainingRecordDetails).queryByText('Care skills academy')).toBeFalsy();
+      });
+
+      describe('Change training completion date link', () => {
+        it('should still be displayed next to the Training completion date value', async () => {
+          const { getByTestId } = await setup({
+            customTrainingCourse: {
+              ...selectedTrainingCourse,
+              deliveredBy: DeliveredBy.InHouseStaff,
+            }
+          });
+          const trainingRecordDetails = getByTestId('training-record-details');
+          const trainingCourseCompletionDateKey = within(trainingRecordDetails).getByText('Training completion date');
+
+          const trainingCourseCompletionDateRow = trainingCourseCompletionDateKey.parentElement
+
+          const trainingCourseCompletionDateValue = within(trainingCourseCompletionDateRow).getByText('21 August 2024');
+          const changeLink = within(trainingCourseCompletionDateRow).getByRole('link', { name: 'Change' });
+
+          expect(trainingCourseCompletionDateValue).toBeTruthy();
+          expect(changeLink).toBeTruthy();
+        });
       });
     });
 
@@ -273,23 +320,7 @@ describe('ConfirmMultipleTrainingWithCourseComponent', () => {
       });
     });
 
-    describe('Change training completion date link', () => {
-      it('should be displayed', async () => {
-        const { getByTestId } = await setup();
-        const trainingRecordDetails = getByTestId('training-record-details');
-        expect(within(trainingRecordDetails).getByText('Change')).toBeTruthy();
-      });
 
-      it('should link to the previous page to change the date', async () => {
-        const { component, getByTestId } = await setup();
-        const trainingRecordDetails = getByTestId('training-record-details');
-        const link = within(trainingRecordDetails).getByText('Change');
-
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/add-multiple-training/view-selected-training-course-details`,
-        );
-      });
-    });
 
     describe('When there is missing data', () => {
       it('should display "-" if training course data from the training service is missing', async () => {

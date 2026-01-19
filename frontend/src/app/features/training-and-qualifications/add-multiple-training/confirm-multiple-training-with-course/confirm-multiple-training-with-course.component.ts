@@ -22,7 +22,7 @@ import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 export class ConfirmMultipleTrainingWithCourseComponent implements OnInit {
   public notes: string;
   public trainingRecordCompletionDate: Date;
-  public trainingCourseDataForSummaryList: { key: string; value: string }[];
+  public trainingCourseDataForSummaryList: { key: string; value: string, changeLink?: boolean }[];
   public trainingCourse: TrainingCourse;
   public workers: Worker[];
   public workplace: Establishment;
@@ -115,6 +115,7 @@ export class ConfirmMultipleTrainingWithCourseComponent implements OnInit {
       {
         key: 'Training completion date',
         value: this.trainingRecordCompletionDate ? dayjs(this.trainingRecordCompletionDate).format('D MMMM YYYY') : '-',
+        changeLink: true,
       },
       { key: 'Notes', value: this.notes ? this.notes : 'No notes added' },
     ];
