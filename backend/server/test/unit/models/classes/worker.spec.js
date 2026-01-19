@@ -448,7 +448,6 @@ describe('Worker Class', () => {
 
       const updates = models.worker.update.getCall(0).args[0];
 
-      // use empty string for NameOrIdValue as the column has non-nullable requirement
       expect(updates).to.haveOwnProperty(expectedFieldsToRemove[0], '');
 
       expectedFieldsToRemove.slice(1).forEach((fieldName) => {
@@ -471,8 +470,8 @@ describe('Worker Class', () => {
     });
 
     it('should throw an error on database error', async () => {
-      sinon.stub(console, 'error');
       sinon.stub(models.worker, 'update').rejects(new Error('some database error'));
+      sinon.stub(console, 'error');
 
       let error;
       try {
