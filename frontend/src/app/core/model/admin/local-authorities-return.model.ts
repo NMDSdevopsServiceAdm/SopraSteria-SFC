@@ -11,6 +11,7 @@ export interface Area {
 
 export interface LA {
   name: string;
+  workplaceId: string;
   workers: number;
   notes: boolean;
   status: string;

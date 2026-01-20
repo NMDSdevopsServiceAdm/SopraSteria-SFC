@@ -50,7 +50,7 @@
               <a [routerLink]="[localAuthority.localAuthorityUID]">{{ localAuthority.name }}</a>
             </td>
             <td class="govuk-table__cell">
-              {{ localAuthority.workplaceId === 0 ? 'None added' : localAuthority.workplaceId }}
+              {{ localAuthority?.workplaceId }}
             </td>
             <td class="govuk-table__cell">
               {{ localAuthority.workers === 0 ? 'None added' : localAuthority.workers }}

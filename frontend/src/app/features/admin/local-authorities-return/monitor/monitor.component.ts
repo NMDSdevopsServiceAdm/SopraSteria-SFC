@@ -2,18 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Area, LAs } from '@core/model/admin/local-authorities-return.model';
-import {
-  LocalAuthoritiesReturnService,
-} from '@core/services/admin/local-authorities-return/local-authorities-return.service';
+import { LocalAuthoritiesReturnService } from '@core/services/admin/local-authorities-return/local-authorities-return.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 
 import { ResetDialogComponent } from './reset-dialog/reset-dialog.component';
 
 @Component({
-    selector: 'app-monitor',
-    templateUrl: './monitor.component.html',
-    standalone: false
+  selector: 'app-monitor',
+  templateUrl: './monitor.component.html',
+  standalone: false,
 })
 export class MonitorComponent implements OnInit {
   public allOpen = false;
@@ -76,6 +74,7 @@ export class MonitorComponent implements OnInit {
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ADMIN);
     this.localAuthorities = this.route.snapshot.data.localAuthorities;
+    console.log(this.localAuthorities);
   }
 
   public conditionalClass(status: string): string {
