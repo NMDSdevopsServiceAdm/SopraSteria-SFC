@@ -33,7 +33,7 @@ const WorkerCertificateService = require('../../routes/establishments/workerCert
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
 const BulkUploadQualificationHelper = require('./helpers/bulkUploadQualificationHelper');
-const { removePersonalInformationForWorker } = require('./helpers/workerClassHelper');
+const { removePersonalInformationOfWorker } = require('./helpers/workerClassHelper');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
@@ -1147,7 +1147,7 @@ class Worker extends EntityValidator {
         LocalIdentifierValue: null,
         updated: updatedTimestamp,
         updatedBy: deletedBy,
-        ...removePersonalInformationForWorker,
+        ...removePersonalInformationOfWorker,
       };
 
       if (this._reason) {
