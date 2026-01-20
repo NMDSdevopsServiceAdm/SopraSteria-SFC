@@ -74,7 +74,6 @@ export class MonitorComponent implements OnInit {
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.ADMIN);
     this.localAuthorities = this.route.snapshot.data.localAuthorities;
-    console.log(this.localAuthorities);
   }
 
   public conditionalClass(status: string): string {
