@@ -50,7 +50,6 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
   public summaryRowItems: { key: string; value: string }[];
-  public expiryMismatchWarning: boolean;
   public certificateErrors: string[] | null;
   private _filesToUpload: File[];
   public trainingCertificates: TrainingCertificate[] = [];
@@ -62,7 +61,11 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   public trainingToDisplay:
     | TrainingCourse
     | (TrainingRecord & { name: string; trainingCategoryName: string; trainingCategoryId: number });
+
+  public expiryMismatchWarning: boolean;
   public showExpiryDateInput: boolean = false;
+  public doesNotExpireWasTicked: boolean;
+  public showWarningOnDoesNotExpireWithDate: boolean;
 
   constructor(
     private workerService: WorkerService,
@@ -132,15 +135,13 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       case 'ApplyCourseToExistingRecord': {
         this.fillForm();
         this.autoFillExpiry();
-        this.checkExpiryMismatch();
-        this.setupCheckExpiryMismatch();
+        this.setupChecksForSoftWarnings();
         this.headingText = 'Training record details';
         break;
       }
       case 'ViewExistingRecord': {
         this.fillForm();
-        this.checkExpiryMismatch();
-        this.setupCheckExpiryMismatch();
+        this.setupChecksForSoftWarnings();
         this.headingText = 'Training record details';
         break;
       }
@@ -152,19 +153,20 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   private checkWhetherShouldShowExpiryDateInput() {
     switch (this.journeyType) {
-      case 'ApplyCourseToExistingRecord': {
-        const recordHasExpiryDate = !!this.trainingRecord?.expires;
-        const doesNotExpireNotTicked = !this.selectedTrainingCourse.doesNotExpire;
-        this.showExpiryDateInput = recordHasExpiryDate || doesNotExpireNotTicked;
-        break;
-      }
+      case 'ApplyCourseToExistingRecord':
       case 'ViewExistingRecord': {
-        const recordHasExpiryDate = !!this.trainingRecord.expires;
-        const doesNotExpireNotTicked = !this.trainingRecord.doesNotExpire;
-        this.showExpiryDateInput = recordHasExpiryDate || doesNotExpireNotTicked;
+        const recordHasExpiryDate = !!this.trainingRecord?.expires;
+        this.doesNotExpireWasTicked =
+          this.journeyType === 'ApplyCourseToExistingRecord'
+            ? this.selectedTrainingCourse.doesNotExpire
+            : this.trainingRecord.doesNotExpire;
+
+        const allowInputExpiryDate = !this.doesNotExpireWasTicked;
+        this.showExpiryDateInput = recordHasExpiryDate || allowInputExpiryDate;
         break;
       }
       case 'AddNewTrainingRecordWithCourse': {
+        this.doesNotExpireWasTicked = false;
         this.showExpiryDateInput = false;
         break;
       }
@@ -261,6 +263,15 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     });
   }
 
+  private setupChecksForSoftWarnings(): void {
+    this.checkExpiryMismatch();
+    this.setupCheckExpiryMismatch();
+
+    if (this.doesNotExpireWasTicked) {
+      this.setupShouldNotHaveExpiryDateSoftwarning();
+    }
+  }
+
   private setupCheckExpiryMismatch(): void {
     this.form.valueChanges.subscribe(() => {
       this.checkExpiryMismatch();
@@ -271,6 +282,31 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
         this.autoFillExpiry();
       }
     });
+  }
+
+  private checkExpiryMismatch(): void {
+    const { completed, expires } = this.form.value;
+    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
+
+    const completedDate = DateUtil.toDayjs(completed);
+    const expiresDate = DateUtil.toDayjs(expires);
+    const expiryDateDoesNotMatch = DateUtil.expiryDateDoesNotMatch(completedDate, expiresDate, validityPeriodInMonth);
+
+    this.expiryMismatchWarning = expiryDateDoesNotMatch;
+  }
+
+  private setupShouldNotHaveExpiryDateSoftwarning(): void {
+    this.showWarningOnDoesNotExpireWithDate = !this.expiryDateIsEmpty;
+
+    this.form.get('expires').valueChanges.subscribe((dateInputs) => {
+      const expireDateIsFilled = Object.values(dateInputs).every((x) => x);
+
+      this.showWarningOnDoesNotExpireWithDate = expireDateIsFilled;
+    });
+  }
+
+  get expiryDateIsEmpty(): boolean {
+    return Object.values(this.form.get('expires').value).every((input) => input == null);
   }
 
   public autoFillExpiry(): void {
@@ -293,17 +329,6 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
         { emitEvent: false },
       );
     }
-  }
-
-  public checkExpiryMismatch(): void {
-    const { completed, expires } = this.form.value;
-    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
-
-    const completedDate = DateUtil.toDayjs(completed);
-    const expiresDate = DateUtil.toDayjs(expires);
-    const expiryDateDoesNotMatch = DateUtil.expiryDateDoesNotMatch(completedDate, expiresDate, validityPeriodInMonth);
-
-    this.expiryMismatchWarning = expiryDateDoesNotMatch;
   }
 
   private getExpectedExpiryDate(): dayjs.Dayjs {

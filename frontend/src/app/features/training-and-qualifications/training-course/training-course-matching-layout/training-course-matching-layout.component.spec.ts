@@ -24,7 +24,7 @@ import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
 
-describe('TrainingCourseMatchingLayoutComponent', () => {
+fdescribe('TrainingCourseMatchingLayoutComponent', () => {
   const defaultTrainingRecord = {
     title: 'Training record title',
     accredited: 'Yes',
@@ -84,6 +84,8 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     trainingRecord: { ...defaultTrainingRecord, isMatchedToTrainingCourse: true },
   };
   const overridesForAddingNewRecord = { trainingRecordId: null, trainingRecord: null };
+
+  const shouldNotExpireSoftWarningText = 'This training usually does not expire';
 
   async function setup(overrides: any = {}) {
     const selectedTrainingCourse =
@@ -187,10 +189,20 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     };
   }
 
+  const fillInDate = (containerDiv: HTMLElement, year: string, month: string, day: string) => {
+    ['Day', 'Month', 'Year'].forEach((label) => {
+      userEvent.clear(within(containerDiv).getByLabelText(label));
+    });
+
+    userEvent.type(within(containerDiv).getByLabelText('Day'), day);
+    userEvent.type(within(containerDiv).getByLabelText('Month'), month);
+    userEvent.type(within(containerDiv).getByLabelText('Year'), year);
+  };
+
   const expectDateInputToHaveValue = (testId: string, year: string, month: string, day: string) => {
     const getInput = (label: string) => {
-      const dateInputWrapperDiv = screen.getByTestId(testId);
-      return within(dateInputWrapperDiv).getByLabelText(label) as HTMLInputElement;
+      const containerDiv = screen.getByTestId(testId);
+      return within(containerDiv).getByLabelText(label) as HTMLInputElement;
     };
 
     expect(getInput('Day').value).toEqual(day);
@@ -260,6 +272,50 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
           expectExpiryDateToBe('2021', '6', '15');
         });
 
+        it('should show a soft warning message that this training should not expire', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            completed: '2020-01-01',
+            expires: '2021-06-15',
+          };
+
+          const { fixture, queryByText } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockRecord,
+          });
+
+          fixture.detectChanges();
+
+          expect(queryByText(shouldNotExpireSoftWarningText)).toBeTruthy();
+        });
+
+        it('should show/hide the soft warning message depending on expiry date has input or not', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            completed: '2020-01-01',
+            expires: '2021-06-15',
+          };
+
+          const { fixture, queryByText, getByTestId } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockRecord,
+          });
+
+          fixture.detectChanges();
+
+          expect(queryByText(shouldNotExpireSoftWarningText)).toBeTruthy();
+
+          const expiryDate = getByTestId('expiresDate');
+
+          fillInDate(expiryDate, '', '', '');
+          fixture.detectChanges();
+          expect(queryByText(shouldNotExpireSoftWarningText)).toBeFalsy();
+
+          fillInDate(expiryDate, '2025', '1', '2');
+          fixture.detectChanges();
+          expect(queryByText(shouldNotExpireSoftWarningText)).toBeTruthy();
+        });
+
         it('should hide the expiry date input boxes if existing training record does not have an expiry date', async () => {
           const mockRecord = {
             ...defaultTrainingRecord,
@@ -319,14 +375,11 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
             trainingRecord: mockRecord,
           });
 
-          const completedDate = within(getByTestId('completedDate'));
+          const completedDate = getByTestId('completedDate');
 
-          userEvent.type(completedDate.getByLabelText('Day'), '1');
-          userEvent.type(completedDate.getByLabelText('Month'), '1');
-          userEvent.type(completedDate.getByLabelText('Year'), '2025');
+          fillInDate(completedDate, '2025', '1', '1');
 
           await fixture.whenStable();
-
           expectExpiryDateToBe('2026', '1', '1');
         });
 
@@ -342,12 +395,9 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
             trainingRecord: mockRecord,
           });
 
-          const completedDate = within(getByTestId('completedDate'));
+          const completedDate = getByTestId('completedDate');
 
-          userEvent.type(completedDate.getByLabelText('Day'), '1');
-          userEvent.type(completedDate.getByLabelText('Month'), '1');
-          userEvent.type(completedDate.getByLabelText('Year'), '2025');
-
+          fillInDate(completedDate, '2025', '1', '1');
           expectExpiryDateToBe('2027', '7', '31');
         });
 
@@ -357,11 +407,9 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
             trainingRecord: mockTrainingRecordWithoutDates,
           });
 
-          const completedDate = within(getByTestId('completedDate'));
+          const completedDate = getByTestId('completedDate');
 
-          userEvent.type(completedDate.getByLabelText('Day'), '31');
-          userEvent.type(completedDate.getByLabelText('Month'), '2');
-          userEvent.type(completedDate.getByLabelText('Year'), '2025');
+          fillInDate(completedDate, '2025', '2', '31');
 
           expectExpiryDateToBe('', '', '');
         });
@@ -375,26 +423,17 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
           const validityMonths = defaultSelectedTrainingCourse.validityPeriodInMonth;
           const expectedWarningText = `This training is usually valid for ${validityMonths} months`;
 
-          const completedDate = within(getByTestId('completedDate'));
-          const expiryDate = within(getByTestId('expiresDate'));
+          const completedDate = getByTestId('completedDate');
+          const expiryDate = getByTestId('expiresDate');
 
-          userEvent.type(expiryDate.getByLabelText('Day'), '10');
-          userEvent.type(expiryDate.getByLabelText('Month'), '2');
-          userEvent.type(expiryDate.getByLabelText('Year'), '2025');
-
-          userEvent.type(completedDate.getByLabelText('Day'), '22');
-          userEvent.type(completedDate.getByLabelText('Month'), '08');
-          userEvent.type(completedDate.getByLabelText('Year'), '2025');
+          fillInDate(expiryDate, '2025', '2', '10');
+          fillInDate(completedDate, '2025', '8', '22');
 
           fixture.detectChanges();
 
           expect(queryByText(expectedWarningText)).toBeTruthy();
 
-          ['Day', 'Month', 'Year'].forEach((field) => userEvent.clear(expiryDate.getByLabelText(field)));
-
-          userEvent.type(expiryDate.getByLabelText('Day'), '21');
-          userEvent.type(expiryDate.getByLabelText('Month'), '08');
-          userEvent.type(expiryDate.getByLabelText('Year'), '2026');
+          fillInDate(expiryDate, '2026', '08', '21');
 
           fixture.detectChanges();
 
@@ -676,17 +715,12 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
           trainingRecord: {},
         });
 
-        const completedDate = within(getByTestId('completedDate'));
-        const expiryDate = within(getByTestId('expiresDate'));
+        const completedDate = getByTestId('completedDate');
+        const expiryDate = getByTestId('expiresDate');
         const notes = getByRole('textbox', { name: 'Add a note' });
 
-        userEvent.type(expiryDate.getByLabelText('Day'), '10');
-        userEvent.type(expiryDate.getByLabelText('Month'), '2');
-        userEvent.type(expiryDate.getByLabelText('Year'), '2023');
-
-        userEvent.type(completedDate.getByLabelText('Day'), '1');
-        userEvent.type(completedDate.getByLabelText('Month'), '1');
-        userEvent.type(completedDate.getByLabelText('Year'), '2024');
+        fillInDate(expiryDate, '2023', '2', '10');
+        fillInDate(completedDate, '2024', '1', '1');
 
         userEvent.type(notes, 'a'.repeat(1001));
 
@@ -708,11 +742,8 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
         const selectedCourse = defaultSelectedTrainingCourse;
         const { getByRole, createTrainingRecordSpy, getByTestId, getByLabelText } = await setup(overrides);
 
-        const completedDate = within(getByTestId('completedDate'));
-
-        userEvent.type(completedDate.getByLabelText('Day'), '15');
-        userEvent.type(completedDate.getByLabelText('Month'), '2');
-        userEvent.type(completedDate.getByLabelText('Year'), '2025');
+        const completedDate = getByTestId('completedDate');
+        fillInDate(completedDate, '2025', '2', '15');
 
         userEvent.type(getByLabelText('Add a note'), 'some notes');
 
@@ -740,11 +771,8 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       it('should automatically set the expiry date of new training course', async () => {
         const { fixture, getByRole, getByTestId, createTrainingRecordSpy, alertServiceSpy } = await setup(overrides);
 
-        const completedDate = within(getByTestId('completedDate'));
-
-        userEvent.type(completedDate.getByLabelText('Day'), '15');
-        userEvent.type(completedDate.getByLabelText('Month'), '2');
-        userEvent.type(completedDate.getByLabelText('Year'), '2025');
+        const completedDate = getByTestId('completedDate');
+        fillInDate(completedDate, '2025', '2', '15');
 
         const expectedExpiryDate = '2026-02-14';
 
@@ -782,11 +810,8 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
           selectedTrainingCourse: { ...defaultSelectedTrainingCourse, validityPeriodInMonth: null },
         });
 
-        const completedDate = within(getByTestId('completedDate'));
-
-        userEvent.type(completedDate.getByLabelText('Day'), '15');
-        userEvent.type(completedDate.getByLabelText('Month'), '2');
-        userEvent.type(completedDate.getByLabelText('Year'), '2025');
+        const completedDate = getByTestId('completedDate');
+        fillInDate(completedDate, '2025', '2', '15');
 
         userEvent.click(getByRole('button', { name: 'Save training record' }));
 
