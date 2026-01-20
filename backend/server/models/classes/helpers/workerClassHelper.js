@@ -1,4 +1,4 @@
-export const removePersonalInformationForWorker = Object.freeze({
+const removePersonalInformationOfWorker = Object.freeze({
   NameOrIdValue: '', // use empty string as column is non-nullable
   NationalInsuranceNumberValue: null,
   DateOfBirthValue: null,
@@ -20,3 +20,5 @@ export const removePersonalInformationForWorker = Object.freeze({
   NationalInsuranceNumberEncryptedValue: null,
   HealthAndCareVisaValue: null,
 });
+
+module.exports = { removePersonalInformationOfWorker };
