@@ -19,7 +19,7 @@ import { MockTrainingServiceWithOverrides } from '@core/test-utils/MockTrainingS
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
@@ -187,6 +187,25 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     };
   }
 
+  const expectDateInputToHaveValue = (testId: string, year: string, month: string, day: string) => {
+    const getInput = (label: string) => {
+      const dateInputWrapperDiv = screen.getByTestId(testId);
+      return within(dateInputWrapperDiv).getByLabelText(label) as HTMLInputElement;
+    };
+
+    expect(getInput('Day').value).toEqual(day);
+    expect(getInput('Month').value).toEqual(month);
+    expect(getInput('Year').value).toEqual(year);
+  };
+
+  const expectCompletedDateToBe = (year: string, month: string, day: string) => {
+    expectDateInputToHaveValue('completedDate', year, month, day);
+  };
+
+  const expectExpiryDateToBe = (year: string, month: string, day: string) => {
+    expectDateInputToHaveValue('expiresDate', year, month, day);
+  };
+
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -198,7 +217,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
   });
 
   it('should display a different page heading if adding a new training record', async () => {
-    const { getByRole } = await setup({ trainingRecord: null, trainingRecordId: null });
+    const { getByRole } = await setup(overridesForAddingNewRecord);
     expect(getByRole('heading', { level: 1, name: 'Add training record details' })).toBeTruthy();
   });
 
@@ -213,121 +232,230 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       it('should populate the form on init', async () => {
         const { component } = await setup();
 
-        expect(component.form.value.completed.day).toBe(1);
-        expect(component.form.value.completed.month).toBe(1);
-        expect(component.form.value.completed.year).toBe(2024);
+        expectCompletedDateToBe('2024', '1', '1');
 
         expect(component.form.value.notes).toBe('Test notes');
       });
 
-      it('should auto-calc expiry date on page load if expiry date is missing', async () => {
-        const mockRecord = {
-          ...defaultTrainingRecord,
-          expires: null,
-          completed: '2025-01-01',
-        };
-        const { component } = await setup({ trainingRecord: mockRecord });
-
-        const expiry = component.form.value.expires;
-        expect(expiry.year).toBe(2025);
-        expect(expiry.month).toBe(12);
-        expect(expiry.day).toBe(31);
-      });
-
-      it('should auto-calc expiry date when user input a completed date', async () => {
-        const mockRecord = {
-          ...defaultTrainingRecord,
-          expires: null,
-          completed: null,
-        };
-        const { fixture, component, getByTestId } = await setup({ trainingRecord: mockRecord });
-
-        const completedDate = within(getByTestId('completedDate'));
-
-        userEvent.type(completedDate.getByLabelText('Day'), '1');
-        userEvent.type(completedDate.getByLabelText('Month'), '1');
-        userEvent.type(completedDate.getByLabelText('Year'), '2025');
-
-        await fixture.whenStable();
-
-        const expiry = component.form.value.expires;
-        expect(expiry.year).toBe(2025);
-        expect(expiry.month).toBe(12);
-        expect(expiry.day).toBe(31);
-      });
-
-      it('should not change the expiry date if it is already filled in', async () => {
-        const mockRecord = {
-          ...defaultTrainingRecord,
-          expires: '2027-07-31',
-          completed: null,
+      describe('when the course has doesNotExpire = true', () => {
+        const mockTrainingCourse = {
+          ...defaultSelectedTrainingCourse,
+          doesNotExpire: true,
+          validityPeriodInMonth: null,
         };
 
-        const { component, getByTestId } = await setup({ trainingRecord: mockRecord });
+        it('should show the expiry date input boxes if existing training record has got an expiry date', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            completed: '2020-01-01',
+            expires: '2021-06-15',
+          };
 
-        const completedDate = within(getByTestId('completedDate'));
+          const { queryByTestId } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockRecord,
+          });
 
-        userEvent.type(completedDate.getByLabelText('Day'), '1');
-        userEvent.type(completedDate.getByLabelText('Month'), '1');
-        userEvent.type(completedDate.getByLabelText('Year'), '2025');
-
-        const expiry = component.form.value.expires;
-        expect(expiry.year).toBe(2027);
-        expect(expiry.month).toBe(7);
-        expect(expiry.day).toBe(31);
-      });
-
-      it('should not auto fill in expiry if the value in completed date is not a valid date', async () => {
-        const { component, getByTestId } = await setup({ trainingRecord: mockTrainingRecordWithoutDates });
-
-        const completedDate = within(getByTestId('completedDate'));
-
-        userEvent.type(completedDate.getByLabelText('Day'), '31');
-        userEvent.type(completedDate.getByLabelText('Month'), '2');
-        userEvent.type(completedDate.getByLabelText('Year'), '2025');
-
-        const expiry = component.form.value.expires;
-        expect(expiry.year).toEqual(null);
-        expect(expiry.month).toEqual(null);
-        expect(expiry.day).toEqual(null);
-      });
-
-      it('should set expiryMismatchWarning when expiry date does not match the completed date and validity period', async () => {
-        const { fixture, getByTestId, queryByText } = await setup({
-          trainingRecord: mockTrainingRecordWithoutDates,
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+          expectExpiryDateToBe('2021', '6', '15');
         });
 
-        const validityMonths = defaultSelectedTrainingCourse.validityPeriodInMonth;
-        const expectedWarningText = `This training is usually valid for ${validityMonths} months`;
+        it('should hide the expiry date input boxes if existing training record does not have an expiry date', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            expires: null,
+            completed: '2020-01-01',
+          };
+          const { queryByTestId } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockRecord,
+          });
 
-        const completedDate = within(getByTestId('completedDate'));
-        const expiryDate = within(getByTestId('expiresDate'));
+          expect(queryByTestId('expiresDate')).toBeFalsy();
+        });
+      });
 
-        userEvent.type(expiryDate.getByLabelText('Day'), '10');
-        userEvent.type(expiryDate.getByLabelText('Month'), '2');
-        userEvent.type(expiryDate.getByLabelText('Year'), '2025');
+      describe('when the course has a validityPeriodInMonth', () => {
+        const mockTrainingCourse = {
+          ...defaultSelectedTrainingCourse,
+          doesNotExpire: false,
+          validityPeriodInMonth: 12,
+        };
 
-        userEvent.type(completedDate.getByLabelText('Day'), '22');
-        userEvent.type(completedDate.getByLabelText('Month'), '08');
-        userEvent.type(completedDate.getByLabelText('Year'), '2025');
+        it('should show the expiry date input boxes', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            completed: '2020-01-01',
+            expires: '2021-06-15',
+          };
+          const { queryByTestId } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockRecord,
+          });
 
-        fixture.detectChanges();
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+          expectExpiryDateToBe('2021', '6', '15');
+        });
 
-        expect(queryByText(expectedWarningText)).toBeTruthy();
+        it('should auto-calc expiry date on page load if expiry date is missing', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            expires: null,
+            completed: '2025-01-01',
+          };
+          await setup({ selectedTrainingCourse: mockTrainingCourse, trainingRecord: mockRecord });
 
-        ['Day', 'Month', 'Year'].forEach((field) => userEvent.clear(expiryDate.getByLabelText(field)));
+          expectExpiryDateToBe('2026', '1', '1');
+        });
 
-        userEvent.type(expiryDate.getByLabelText('Day'), '21');
-        userEvent.type(expiryDate.getByLabelText('Month'), '08');
-        userEvent.type(expiryDate.getByLabelText('Year'), '2026');
+        it('should auto-calc expiry date when user input a completed date', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            expires: null,
+            completed: null,
+          };
+          const { fixture, getByTestId } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockRecord,
+          });
 
-        fixture.detectChanges();
+          const completedDate = within(getByTestId('completedDate'));
 
-        expect(queryByText(expectedWarningText)).toBeFalsy();
+          userEvent.type(completedDate.getByLabelText('Day'), '1');
+          userEvent.type(completedDate.getByLabelText('Month'), '1');
+          userEvent.type(completedDate.getByLabelText('Year'), '2025');
+
+          await fixture.whenStable();
+
+          expectExpiryDateToBe('2026', '1', '1');
+        });
+
+        it('should not change the expiry date if it is already filled in', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            expires: '2027-07-31',
+            completed: null,
+          };
+
+          const { getByTestId } = await setup({
+            tselectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockRecord,
+          });
+
+          const completedDate = within(getByTestId('completedDate'));
+
+          userEvent.type(completedDate.getByLabelText('Day'), '1');
+          userEvent.type(completedDate.getByLabelText('Month'), '1');
+          userEvent.type(completedDate.getByLabelText('Year'), '2025');
+
+          expectExpiryDateToBe('2027', '7', '31');
+        });
+
+        it('should not auto fill in expiry if the value in completed date is not a valid date', async () => {
+          const { getByTestId } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockTrainingRecordWithoutDates,
+          });
+
+          const completedDate = within(getByTestId('completedDate'));
+
+          userEvent.type(completedDate.getByLabelText('Day'), '31');
+          userEvent.type(completedDate.getByLabelText('Month'), '2');
+          userEvent.type(completedDate.getByLabelText('Year'), '2025');
+
+          expectExpiryDateToBe('', '', '');
+        });
+
+        it('should set expiryMismatchWarning when expiry date does not match the completed date and validity period', async () => {
+          const { fixture, getByTestId, queryByText } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockTrainingRecordWithoutDates,
+          });
+
+          const validityMonths = defaultSelectedTrainingCourse.validityPeriodInMonth;
+          const expectedWarningText = `This training is usually valid for ${validityMonths} months`;
+
+          const completedDate = within(getByTestId('completedDate'));
+          const expiryDate = within(getByTestId('expiresDate'));
+
+          userEvent.type(expiryDate.getByLabelText('Day'), '10');
+          userEvent.type(expiryDate.getByLabelText('Month'), '2');
+          userEvent.type(expiryDate.getByLabelText('Year'), '2025');
+
+          userEvent.type(completedDate.getByLabelText('Day'), '22');
+          userEvent.type(completedDate.getByLabelText('Month'), '08');
+          userEvent.type(completedDate.getByLabelText('Year'), '2025');
+
+          fixture.detectChanges();
+
+          expect(queryByText(expectedWarningText)).toBeTruthy();
+
+          ['Day', 'Month', 'Year'].forEach((field) => userEvent.clear(expiryDate.getByLabelText(field)));
+
+          userEvent.type(expiryDate.getByLabelText('Day'), '21');
+          userEvent.type(expiryDate.getByLabelText('Month'), '08');
+          userEvent.type(expiryDate.getByLabelText('Year'), '2026');
+
+          fixture.detectChanges();
+
+          expect(queryByText(expectedWarningText)).toBeFalsy();
+        });
+      });
+
+      describe('when the course has doesNotExpire = false and validityPeriodInMonth = null', () => {
+        const mockTrainingCourse = {
+          ...defaultSelectedTrainingCourse,
+          doesNotExpire: false,
+          validityPeriodInMonth: null,
+        };
+        const mockTrainingRecord = {
+          ...defaultTrainingRecord,
+          completed: '2020-01-01',
+          expires: '2021-06-15',
+        };
+
+        it('should show the expiry date input boxes', async () => {
+          const { queryByTestId } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockTrainingRecord,
+          });
+
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+          expectExpiryDateToBe('2021', '6', '15');
+        });
+
+        it('should not show a mismatch warning', async () => {
+          const { queryByText } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockTrainingRecord,
+          });
+
+          expect(queryByText(/This training is usually valid/)).toBeFalsy();
+        });
+
+        it('should show the expiry date input boxes even if there is no expiry date', async () => {
+          const { queryByTestId } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: {
+              ...defaultTrainingRecord,
+              completed: '2020-01-01',
+              expires: null,
+            },
+          });
+
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+          expectExpiryDateToBe('', '', '');
+        });
       });
     });
 
     describe('when viewing an existing training record', () => {
+      it('should show the input boxes for expiry date if the record has an expiry date', async () => {
+        const { queryByTestId } = await setup(overridesForViewingRecord);
+
+        expect(queryByTestId('expiresDate')).toBeTruthy();
+      });
+
       it('should show the expiryMismatchWarning if the dates does not match', async () => {
         const validityMonths = defaultTrainingRecord.validityPeriodInMonth;
         const expectedWarningText = `This training is usually valid for ${validityMonths} months`;
@@ -337,10 +465,40 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
         expect(queryByTestId('expiresDate')).toBeTruthy();
         expect(queryByText(expectedWarningText)).toBeTruthy();
       });
+
+      it('should hide the input boxes for expiry date if the record has doesNotExpire = true and expiry date is null', async () => {
+        const overrides = {
+          selectedTrainingCourse: null,
+          trainingRecord: {
+            ...defaultTrainingRecord,
+            isMatchedToTrainingCourse: true,
+            doesNotExpire: true,
+            expires: null,
+          },
+        };
+        const { queryByTestId } = await setup(overrides);
+
+        expect(queryByTestId('expiresDate')).toBeFalsy();
+      });
+
+      it('should show the input boxes for expiry date if the record has doesNotExpire = false and expiry date is null', async () => {
+        const overrides = {
+          selectedTrainingCourse: null,
+          trainingRecord: {
+            ...defaultTrainingRecord,
+            isMatchedToTrainingCourse: true,
+            doesNotExpire: false,
+            expires: null,
+          },
+        };
+        const { queryByTestId } = await setup(overrides);
+
+        expect(queryByTestId('expiresDate')).toBeTruthy();
+      });
     });
 
     describe('when adding a new training record', () => {
-      it('should not show the input boxes for expiry date', async () => {
+      it('should hide the input boxes for expiry date', async () => {
         const { queryByTestId } = await setup(overridesForAddingNewRecord);
 
         expect(queryByTestId('expiresDate')).toBeFalsy();
@@ -381,7 +539,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
 
     describe('when applying a course to exiting record', () => {
       it('the "Select a different training course" link should point to the include-training-course-details page', async () => {
-        const { component, getByTestId, routerSpy, route } = await setup();
+        const { getByTestId, routerSpy, route } = await setup();
 
         const span = getByTestId('includeTraining');
         const link = span.closest('a');
@@ -544,7 +702,7 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
     });
 
     describe('when adding a new training record', () => {
-      const overrides = { trainingRecordId: null, trainingRecord: null };
+      const overrides = overridesForAddingNewRecord;
 
       it('should call createTrainingRecord when form is valid', async () => {
         const selectedCourse = defaultSelectedTrainingCourse;
@@ -800,10 +958,8 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
       });
 
       describe('when adding a new training record', () => {
-        const overrides = { trainingRecordId: null, selectedTrainingCourse: null };
-
         it('should not show the delete link when user is adding a new training record', async () => {
-          const { queryByText } = await setup(overrides);
+          const { queryByText } = await setup(overridesForAddingNewRecord);
 
           const deleteLink = queryByText('Delete this training record');
           expect(deleteLink).toBeFalsy();

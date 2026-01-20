@@ -62,6 +62,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   public trainingToDisplay:
     | TrainingCourse
     | (TrainingRecord & { name: string; trainingCategoryName: string; trainingCategoryId: number });
+  public showExpiryDateInput: boolean = false;
 
   constructor(
     private workerService: WorkerService,
@@ -87,6 +88,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     this.determineJourneyType();
     this.setupForm();
     this.loadTrainingToDisplay();
+    this.checkWhetherShouldShowExpiryDateInput();
     this.buildSummaryRowItems();
     this.loadDataAccordingToJourneyType();
 
@@ -144,6 +146,27 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
       }
       case 'AddNewTrainingRecordWithCourse': {
         this.headingText = 'Add training record details';
+      }
+    }
+  }
+
+  private checkWhetherShouldShowExpiryDateInput() {
+    switch (this.journeyType) {
+      case 'ApplyCourseToExistingRecord': {
+        const recordHasExpiryDate = !!this.trainingRecord?.expires;
+        const doesNotExpireNotTicked = !this.selectedTrainingCourse.doesNotExpire;
+        this.showExpiryDateInput = recordHasExpiryDate || doesNotExpireNotTicked;
+        break;
+      }
+      case 'ViewExistingRecord': {
+        const recordHasExpiryDate = !!this.trainingRecord.expires;
+        const doesNotExpireNotTicked = !this.trainingRecord.doesNotExpire;
+        this.showExpiryDateInput = recordHasExpiryDate || doesNotExpireNotTicked;
+        break;
+      }
+      case 'AddNewTrainingRecordWithCourse': {
+        this.showExpiryDateInput = false;
+        break;
       }
     }
   }
