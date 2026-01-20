@@ -82,14 +82,25 @@
                       <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Training expiry date</legend>
                         <legend id="expires-hint" class="govuk-hint">For example, 31 3 2025</legend>
-                        <div *ngIf="expiryMismatchWarning">
-                          <span
-                            class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
-                          >
-                            This training is usually valid for
-                            {{ trainingToDisplay?.validityPeriodInMonth }} months
-                          </span>
-                        </div>
+                        @if (expiryMismatchWarning) {
+                          <div>
+                            <span
+                              class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
+                            >
+                              This training is usually valid for
+                              {{ trainingToDisplay?.validityPeriodInMonth }} months
+                            </span>
+                          </div>
+                        } @else if (showWarningOnDoesNotExpireWithDate) {
+                          <div>
+                            <span
+                              class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
+                            >
+                              This training usually does not expire
+                            </span>
+                          </div>
+                        }
+
                         <span
                           *ngIf="submitted && form.get('expires').invalid"
                           id="expires-error"
