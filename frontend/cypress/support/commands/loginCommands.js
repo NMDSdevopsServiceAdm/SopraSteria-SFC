@@ -25,6 +25,8 @@ Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.get('[data-cy="password"]').type(password);
   cy.get('[data-testid="signinButton"]').click();
   cy.wait('@login');
+
+  getPassVacanciesAndTurnoverLoginMessage();
 });
 
 Cypress.Commands.add('loginAsUserForInterstitialPages', (username, password) => {

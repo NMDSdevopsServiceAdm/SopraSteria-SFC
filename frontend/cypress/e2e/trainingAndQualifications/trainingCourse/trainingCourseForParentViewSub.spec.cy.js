@@ -11,7 +11,7 @@ describe('Training course for parent workplace edit user', () => {
 
     cy.get('app-navigate-to-workplace-dropdown select').select(subsidaryToView.name);
 
-    cy.url().should('contain', 'dashboard#home');
+    cy.url().should('contain', 'dashboard');
     cy.get('h1').should('contain', subsidaryToView.name);
   });
 
