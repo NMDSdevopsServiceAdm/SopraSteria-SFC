@@ -229,9 +229,9 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
         const { component } = await setup({ trainingRecord: mockRecord });
 
         const expiry = component.form.value.expires;
-        expect(expiry.year).toBe(2026);
-        expect(expiry.month).toBe(1);
-        expect(expiry.day).toBe(1);
+        expect(expiry.year).toBe(2025);
+        expect(expiry.month).toBe(12);
+        expect(expiry.day).toBe(31);
       });
 
       it('should auto-calc expiry date when user input a completed date', async () => {
@@ -251,9 +251,9 @@ describe('TrainingCourseMatchingLayoutComponent', () => {
         await fixture.whenStable();
 
         const expiry = component.form.value.expires;
-        expect(expiry.year).toBe(2026);
-        expect(expiry.month).toBe(1);
-        expect(expiry.day).toBe(1);
+        expect(expiry.year).toBe(2025);
+        expect(expiry.month).toBe(12);
+        expect(expiry.day).toBe(31);
       });
 
       it('should not change the expiry date if it is already filled in', async () => {

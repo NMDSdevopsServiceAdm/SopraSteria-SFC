@@ -339,7 +339,7 @@ describe('training record', () => {
         ...trainingCourseDetails,
         courseName: trainingCourseName,
         completedDate: '2025-03-30',
-        expiryDate: '2026-03-30',
+        expiryDate: '2026-03-29',
       });
     });
 
