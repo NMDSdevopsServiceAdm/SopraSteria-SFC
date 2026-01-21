@@ -1,9 +1,9 @@
 services:
   sfc-e2e-db:
-    image: public.ecr.aws/docker/library/postgres:13
     container_name: sfc-e2e-db
     build:
-      context: ./docker
+      context: .
+      dockerfile: docker/db.Dockerfile
     env_file:
       - .env
     environment:
@@ -19,7 +19,11 @@ services:
       retries: 300
 
   frontend_backend:
-    image: public.ecr.aws/docker/library/node:22-alpine
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+      cache_from:
+        - 636146736465.dkr.ecr.eu-west-1.amazonaws.com/sfc-e2e-test-app-image:latest
     container_name: frontend_backend
     working_dir: /app
     depends_on:
@@ -35,9 +39,6 @@ services:
       - DB_TEST_PORT=5432
       - REDIS_ENDPOINT=sfc-redis
       - NODE_OPTIONS="--max-old-space-size=8192"
-    volumes:
-      - ./:/app
-    command: sh -c "apk add --no-cache make curl; make run-e2e-server"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s
