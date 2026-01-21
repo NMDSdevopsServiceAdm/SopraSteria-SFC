@@ -24,7 +24,7 @@ import userEvent from '@testing-library/user-event';
 
 import { TrainingCourseMatchingLayoutComponent } from './training-course-matching-layout.component';
 
-fdescribe('TrainingCourseMatchingLayoutComponent', () => {
+describe('TrainingCourseMatchingLayoutComponent', () => {
   const defaultTrainingRecord = {
     title: 'Training record title',
     accredited: 'Yes',
