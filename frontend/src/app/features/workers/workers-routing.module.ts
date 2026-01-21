@@ -23,7 +23,6 @@ import { ViewTrainingComponent } from '@shared/components/training-and-qualifica
 import { UpdateLeaversComponent } from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
 import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
 import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
-
 import {
   JobRoleType,
   SelectJobRolesToAddComponent,
@@ -54,6 +53,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
 import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
@@ -68,7 +68,6 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level/
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
-import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
 import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
@@ -84,6 +83,81 @@ import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from 
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
+import { TrainingCourseResolver, TrainingCoursesToLoad } from '@core/resolvers/training/training-course.resolver';
+import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
+import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
+import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
+import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
+
+const editTrainingRecordRoute = {
+  path: 'training/:trainingRecordId',
+  resolve: { trainingRecord: TrainingRecordResolver },
+  children: [
+    {
+      path: '',
+      redirectTo: 'edit-training-without-course',
+      pathMatch: 'full',
+    },
+    {
+      path: 'edit-training-without-course',
+      component: AddEditTrainingComponent,
+      data: {
+        title: 'Training',
+        trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+        routeForTrainingRecordWithCourse: ['../edit-training-with-course'],
+      },
+      resolve: {
+        trainingCourses: TrainingCourseResolver,
+        trainingProviders: TrainingProvidersResolver,
+      },
+      canActivate: [redirectIfLinkedToTrainingCourse],
+    },
+    {
+      path: 'edit-training-with-course',
+      component: TrainingCourseMatchingLayoutComponent,
+      data: {
+        title: 'Training record details',
+        trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+      },
+      resolve: {
+        trainingRecord: TrainingRecordResolver,
+        trainingCourses: TrainingCourseResolver,
+      },
+    },
+    {
+      path: 'include-training-course-details',
+      component: IncludeTrainingCourseDetailsComponent,
+      data: {
+        title: 'Include training course details',
+        trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+      },
+      resolve: {
+        trainingCourses: TrainingCourseResolver,
+      },
+    },
+    {
+      path: 'delete',
+      component: DeleteRecordComponent,
+      data: { title: 'Delete Training' },
+      resolve: {
+        trainingRecord: TrainingRecordResolver,
+      },
+    },
+
+    {
+      path: 'matching-layout',
+      component: TrainingCourseMatchingLayoutComponent,
+      data: {
+        title: 'Match the training record',
+        trainingCoursesToLoad: TrainingCoursesToLoad.BY_TRAINING_RECORD_CATEGORY_ID,
+      },
+      resolve: {
+        trainingRecord: TrainingRecordResolver,
+        trainingCourses: TrainingCourseResolver,
+      },
+    },
+  ] as Routes,
+};
 
 const routes: Routes = [
   {
@@ -309,15 +383,6 @@ const routes: Routes = [
             data: { title: 'Main Job Role Start Date' },
           },
           {
-            path: 'select-record-type',
-            canActivate: [CheckPermissionsGuard],
-            component: SelectRecordTypeComponent,
-            data: {
-              permissions: ['canAddWorker'],
-              title: 'Select Record Type',
-            },
-          },
-          {
             path: 'nursing-category',
             component: NursingCategoryComponent,
             data: { title: 'Nursing Category' },
@@ -518,7 +583,7 @@ const routes: Routes = [
             ],
           },
           {
-            path: 'add-training',
+            path: 'add-training-without-course',
             children: [
               {
                 path: '',
@@ -532,27 +597,13 @@ const routes: Routes = [
                 path: 'details',
                 component: AddEditTrainingComponent,
                 data: { title: 'Add Training' },
-              },
-            ],
-          },
-          {
-            path: 'training/:trainingRecordId',
-            children: [
-              {
-                path: '',
-                component: AddEditTrainingComponent,
-                data: { title: 'Training' },
-              },
-              {
-                path: 'delete',
-                component: DeleteRecordComponent,
-                data: { title: 'Delete Training' },
                 resolve: {
-                  trainingRecord: TrainingRecordResolver,
+                  trainingProviders: TrainingProvidersResolver,
                 },
               },
             ],
           },
+          editTrainingRecordRoute,
           {
             path: 'training',
             component: NewTrainingAndQualificationsRecordComponent,
@@ -561,8 +612,19 @@ const routes: Routes = [
               trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
               expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
               mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
+              trainingCourses: TrainingCourseResolver,
             },
-            data: { title: 'Training and qualification record' },
+            data: { title: 'Training and qualification record', trainingCoursesToLoad: TrainingCoursesToLoad.ALL },
+          },
+          {
+            path: 'add-a-training-record',
+            component: SelectTrainingCourseForWorkerTraining,
+            data: {
+              title: 'Add a Training Record',
+              trainingCoursesToLoad: TrainingCoursesToLoad.BY_QUERY_PARAM,
+              redirectWhenNoCourses: ['../add-training-without-course'],
+            },
+            resolve: { trainingCourses: TrainingCourseResolver },
           },
           {
             path: 'long-term-absence',
@@ -606,15 +668,6 @@ const routes: Routes = [
         path: 'main-job-start-date',
         component: MainJobStartDateComponent,
         data: { title: 'Main Job Role Start Date' },
-      },
-      {
-        path: 'select-record-type',
-        canActivate: [CheckPermissionsGuard],
-        component: SelectRecordTypeComponent,
-        data: {
-          permissions: ['canAddWorker'],
-          title: 'Select Record Type',
-        },
       },
       {
         path: 'nursing-category',
@@ -817,7 +870,7 @@ const routes: Routes = [
         ],
       },
       {
-        path: 'add-training',
+        path: 'add-training-without-course',
         children: [
           {
             path: '',
@@ -831,27 +884,13 @@ const routes: Routes = [
             path: 'details',
             component: AddEditTrainingComponent,
             data: { title: 'Add Training' },
-          },
-        ],
-      },
-      {
-        path: 'training/:trainingRecordId',
-        children: [
-          {
-            path: '',
-            component: AddEditTrainingComponent,
-            data: { title: 'Training' },
-          },
-          {
-            path: 'delete',
-            component: DeleteRecordComponent,
-            data: { title: 'Delete Training' },
             resolve: {
-              trainingRecord: TrainingRecordResolver,
+              trainingProviders: TrainingProvidersResolver,
             },
           },
         ],
       },
+      editTrainingRecordRoute,
       {
         path: 'training',
         component: NewTrainingAndQualificationsRecordComponent,
@@ -860,8 +899,27 @@ const routes: Routes = [
           trainingAndQualificationRecords: TrainingAndQualificationRecordsResolver,
           expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
           mandatoryTrainingCategories: MandatoryTrainingCategoriesResolver,
+          trainingCourses: TrainingCourseResolver,
         },
         data: { title: 'Training and qualification record' },
+      },
+      {
+        path: 'add-a-training-record',
+        component: SelectTrainingCourseForWorkerTraining,
+        resolve: { trainingCourses: TrainingCourseResolver },
+        data: {
+          title: 'Add a Training Record',
+          trainingCoursesToLoad: TrainingCoursesToLoad.BY_QUERY_PARAM,
+          redirectWhenNoCourses: ['../add-training-without-course'],
+        },
+      },
+      {
+        path: 'matching-layout',
+        component: TrainingCourseMatchingLayoutComponent,
+        resolve: { trainingCourses: TrainingCourseResolver },
+        data: {
+          title: 'Add training record details',
+        },
       },
       {
         path: 'long-term-absence',

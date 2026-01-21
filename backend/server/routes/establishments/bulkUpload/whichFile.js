@@ -1,3 +1,5 @@
+const { trainingHeaders } = require('./data/trainingHeaders');
+
 const WorkplaceCSVValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 
 const isWorkerFile = (fileAsString) => {
@@ -20,8 +22,9 @@ const isWorkerFile = (fileAsString) => {
 };
 
 const isTrainingFile = (fileAsString) => {
-  const contentRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
-  return contentRegex.test(fileAsString.substring(0, 50));
+  const headerRow = fileAsString.split('\n')[0];
+  const contentRegex = new RegExp(trainingHeaders);
+  return contentRegex.test(headerRow);
 };
 
 const getFileType = (fileData) => {

@@ -138,7 +138,8 @@ describe('Standalone staff records page as edit user', () => {
     };
 
     const skipAllQuestionsBySaveButton = () => {
-      cy.get('button').contains('Save and continue').click();
+      cy.get('button').as('btn');
+      cy.get('@btn').contains('Save and continue').click();
       cy.location('pathname').then((pathname) => {
         if (pathname.includes('staff-record-summary')) {
           return;

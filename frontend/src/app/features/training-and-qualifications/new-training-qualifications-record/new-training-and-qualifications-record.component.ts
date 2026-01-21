@@ -28,12 +28,13 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
 import { PdfMakeService } from '../../../core/services/pdf-make.service';
+import { TrainingCourse } from '@core/model/training-course.model';
 
 @Component({
-    selector: 'app-new-training-and-qualifications-record',
-    templateUrl: './new-training-and-qualifications-record.component.html',
-    styleUrls: ['./new-training-and-qualification.component.scss'],
-    standalone: false
+  selector: 'app-new-training-and-qualifications-record',
+  templateUrl: './new-training-and-qualifications-record.component.html',
+  styleUrls: ['./new-training-and-qualification.component.scss'],
+  standalone: false,
 })
 export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDestroy {
   @ViewChild('tabEl') tabEl;
@@ -50,6 +51,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
   public missingMandatoryTraining: TrainingRecordCategory[] = [];
+  public trainingCourses: TrainingCourse[];
   public qualificationsByGroup: QualificationsByGroup;
   public lastUpdatedDate: Date;
   public fragmentsObject: Record<string, string> = {
@@ -119,6 +121,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
+    this.trainingCourses = this.route.snapshot.data.trainingCourses;
     this.trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
@@ -303,17 +306,37 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   public actionsListNavigate(event: Event, actionListItem): void {
     event.preventDefault();
-    const url = actionListItem.uid
-      ? [
-          'workplace',
-          this.workplace.uid,
-          'training-and-qualifications-record',
-          this.worker.uid,
-          'training',
-          actionListItem.uid,
-        ]
-      : ['workplace', this.workplace.uid, 'training-and-qualifications-record', this.worker.uid, 'add-training'];
-    this.router.navigate(url, { queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) } });
+
+    const isUpdatingTraining = !!actionListItem.uid;
+
+    if (isUpdatingTraining) {
+      this.navigateToUpdateTrainingRecord(actionListItem.uid);
+      return;
+    }
+
+    const addTrainingRecordPage = [
+      'workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'add-a-training-record',
+    ];
+
+    this.router.navigate(addTrainingRecordPage, {
+      queryParams: { trainingCategory: JSON.stringify(actionListItem.trainingCategory) },
+    });
+  }
+
+  private navigateToUpdateTrainingRecord(trainingUid: string) {
+    const url = [
+      'workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'training',
+      trainingUid,
+    ];
+    this.router.navigate(url);
   }
 
   private sortTrainingAlphabetically(training: TrainingRecordCategory[]): TrainingRecordCategory[] {

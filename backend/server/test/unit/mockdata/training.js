@@ -1,11 +1,15 @@
-exports.knownHeaders = [
+exports.trainingHeadersAsArray = [
   'LOCALESTID',
   'UNIQUEWORKERID',
   'CATEGORY',
-  'DESCRIPTION',
+  'TRAININGNAME',
+  'ACCREDITED',
+  'WHODELIVERED',
+  'PROVIDERNAME',
+  'HOWDELIVERED',
+  'VALIDITY',
   'DATECOMPLETED',
   'EXPIRYDATE',
-  'ACCREDITED',
   'NOTES',
 ];
 

@@ -1,0 +1,96 @@
+<div class="govuk-width-container">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-l" data-testid="caption">Add multiple training records</span>
+      <h1 data-testid="heading" class="govuk-heading-l govuk-!-margin-bottom-7">Summary</h1>
+      <p data-testid="check-reminder-details">Check these details before you save the records.</p>
+    </div>
+  </div>
+  <div class="govuk-grid-row second-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 data-testid="selected-staff-heading" class="govuk-heading-m govuk-!-margin-top-2">Selected staff</h2>
+      <dl
+        class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summarylist-border-bottom govuk-!-width-full"
+        data-testid="selected-staff-summary-list"
+      >
+        <ng-container>
+          @for(worker of workers; track $index) {
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              {{ worker.nameOrId }}
+            </dt>
+            <dd class="govuk-summary-list__value" style="width: 25%; padding-left: 15px">
+              {{ worker.mainJob.title }}
+            </dd>
+            @if($index === 0) {
+              <dd class="govuk-summary-list__actions">
+                <app-summary-record-change
+                  [link]="getRoutePath('select-staff')"
+                  [hasData]="true"
+                ></app-summary-record-change>
+              </dd>
+            }
+          </div>
+          }
+        </ng-container>
+      </dl>
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-left-0">
+      <div class="govuk-grid-column-full">
+        <h2 data-testid="training-record-details-heading" class="govuk-heading-m">Training record details</h2>
+        <dl
+          class="govuk-summary-list govuk-summary-list asc-summarylist-border-top govuk-!-width-full"
+          data-testid="training-record-details"
+        >
+          <ng-container>
+            @for(record of trainingCourseDataForSummaryList; track $index) {
+              <div
+              class="govuk-summary-list__row"
+              [class.govuk-summary-list__row--no-border]="record.key === 'Training completion date'">
+              <dt class="govuk-summary-list__key govuk__nowrap" style="width: 38%">
+                {{ record.key }}
+              </dt>
+              <dd class="govuk-summary-list__value" style="width: 25%">
+                {{ record.value | dontKnow }}
+              </dd>
+              <dd class="govuk-summary-list__actions" style="width: 31%">
+                @if(record.key === 'Training course name') {
+                  <span class="different-training-course-link-and-arrow">
+                    <a
+                      data-testid="different-training-course-link"
+                      class="govuk-link govuk__nowrap"
+                      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-training-course']"
+                    >
+                      <img src="/assets/images/Addtraining.svg" alt="" class="different-training-course-arrow" />
+                      <span>Select a different training course</span>
+                    </a>
+                  </span>
+                }
+                @if(record?.changeLink) {
+                  <app-summary-record-change
+                    [link]="getRoutePath('view-selected-training-course-details')"
+                    [hasData]="true"
+                  ></app-summary-record-change>
+                }
+              </dd>
+            </div>
+            }
+          </ng-container>
+        </dl>
+      </div>
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-left-0">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column govuk-!-margin-bottom-8">
+          <button
+            type="submit"
+            class="govuk-button govuk-util__float-left govuk-!-margin-top-4 govuk-!-margin-bottom-4"
+            (click)="onSubmit()"
+          >
+            Save training records
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

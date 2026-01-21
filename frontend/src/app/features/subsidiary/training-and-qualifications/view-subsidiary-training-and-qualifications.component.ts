@@ -43,6 +43,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   public trainingSortByValue = '0_expired';
   public canEditWorker: boolean;
   public canEditEstablishment: boolean;
+  public hasTrainingCourse: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -66,6 +67,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.workplace = this.route.snapshot.data.establishment;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
+    this.hasTrainingCourse = this.route.snapshot.data.trainingCourses?.length > 0;
 
     this.route.queryParams?.subscribe((params) => {
       if (params.view === 'categories') {

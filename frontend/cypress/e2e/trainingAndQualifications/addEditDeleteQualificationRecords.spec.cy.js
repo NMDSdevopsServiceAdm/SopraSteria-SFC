@@ -7,6 +7,7 @@ describe('qualification record', () => {
   const workerName2 = 'Test worker 2';
 
   before(() => {
+    cy.revertUserAttributes(StandAloneEstablishment.editUserLoginName);
     cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName1 });
     cy.deleteWorkerTrainingRecord({ establishmentID: StandAloneEstablishment.id, workerName: workerName2 });
 
@@ -14,12 +15,12 @@ describe('qualification record', () => {
     cy.deleteTestWorkerFromDb(workerName2);
 
     cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName: workerName1 });
+    cy.reload();
   });
 
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
-    cy.reload();
   });
 
   afterEach(() => {
@@ -34,11 +35,7 @@ describe('qualification record', () => {
 
   it('should add successfully', () => {
     cy.get('[data-testid="training-worker-table"]').contains(workerName1).click();
-    cy.contains('a', 'Add a record').click();
-
-    // select type of record
-    cy.getByLabel('Qualification record').click();
-    cy.contains('button', 'Continue').click();
+    cy.contains('a', 'Add a qualification record').click();
 
     // select qualification
     cy.contains('button', 'Show all categories').click();
