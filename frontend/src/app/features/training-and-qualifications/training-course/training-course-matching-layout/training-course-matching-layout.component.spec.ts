@@ -353,7 +353,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
           expectExpiryDateToBe('2021', '6', '15');
         });
 
-        it('should auto-calc expiry date on page load if expiry date is missing', async () => {
+        it('should auto fill expiry date on page load if expiry date is missing', async () => {
           const mockRecord = {
             ...defaultTrainingRecord,
             expires: null,
@@ -361,10 +361,10 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
           };
           await setup({ selectedTrainingCourse: mockTrainingCourse, trainingRecord: mockRecord });
 
-          expectExpiryDateToBe('2026', '1', '1');
+          expectExpiryDateToBe('2025', '12', '31');
         });
 
-        it('should auto-calc expiry date when user input a completed date', async () => {
+        it('should auto fill expiry date when user input a completed date', async () => {
           const mockRecord = {
             ...defaultTrainingRecord,
             expires: null,
@@ -380,7 +380,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
           fillInDate(completedDate, '2025', '1', '1');
 
           await fixture.whenStable();
-          expectExpiryDateToBe('2026', '1', '1');
+          expectExpiryDateToBe('2025', '12', '31');
         });
 
         it('should not change the expiry date if it is already filled in', async () => {
