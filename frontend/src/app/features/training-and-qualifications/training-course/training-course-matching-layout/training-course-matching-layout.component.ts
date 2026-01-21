@@ -313,17 +313,15 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     const completed = DateUtil.toDayjs(this.form.get('completed')?.value);
     const validity = this.trainingToDisplay?.validityPeriodInMonth;
 
-    const expiryDateIsEmpty = Object.values(this.form.get('expires').value).every((input) => input == null);
-
-    if (completed && validity && expiryDateIsEmpty) {
-      const newExpiry = DateUtil.expectedExpiryDate(completed, validity);
+    if (completed && validity && this.expiryDateIsEmpty) {
+      const expectedExpiryDate = DateUtil.expectedExpiryDate(completed, validity);
 
       this.form.patchValue(
         {
           expires: {
-            day: newExpiry.date(),
-            month: newExpiry.month() + 1,
-            year: newExpiry.year(),
+            day: expectedExpiryDate.date(),
+            month: expectedExpiryDate.month() + 1,
+            year: expectedExpiryDate.year(),
           },
         },
         { emitEvent: false },
