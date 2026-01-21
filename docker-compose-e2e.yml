@@ -3,7 +3,8 @@ services:
     image: public.ecr.aws/docker/library/postgres:13
     container_name: sfc-e2e-db
     build:
-      context: ./docker
+      context: .
+      dockerfile: docker/db.Dockerfile  # Points to the DB file
     env_file:
       - .env
     environment:
@@ -19,6 +20,9 @@ services:
       retries: 300
 
   frontend_backend:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile # Points to the App file
     image: public.ecr.aws/docker/library/node:22-alpine
     container_name: frontend_backend
     working_dir: /app
@@ -35,9 +39,9 @@ services:
       - DB_TEST_PORT=5432
       - REDIS_ENDPOINT=sfc-redis
       - NODE_OPTIONS="--max-old-space-size=8192"
-    volumes:
-      - ./:/app
-    command: sh -c "apk add --no-cache make curl; make run-e2e-server"
+#    volumes:
+#      - ./:/app
+#    command: sh -c "apk add --no-cache make curl; make run-e2e-server"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 30s
