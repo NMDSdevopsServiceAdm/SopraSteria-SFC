@@ -370,7 +370,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
             expires: null,
             completed: null,
           };
-          const { fixture, getByTestId } = await setup({
+          const { getByTestId } = await setup({
             selectedTrainingCourse: mockTrainingCourse,
             trainingRecord: mockRecord,
           });
@@ -379,11 +379,25 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
 
           fillInDate(completedDate, '2025', '1', '1');
 
-          await fixture.whenStable();
           expectExpiryDateToBe('2025', '12', '31');
         });
 
-        it('should not change the expiry date if it is already filled in', async () => {
+        it('should not change the expiry date on init if it is already filled in', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            expires: '2027-07-31',
+            completed: '2025-01-01',
+          };
+
+          await setup({
+            tselectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockRecord,
+          });
+
+          expectExpiryDateToBe('2027', '7', '31');
+        });
+
+        it('should not change the expiry date on user input of completion date, if expiry date is already filled in', async () => {
           const mockRecord = {
             ...defaultTrainingRecord,
             expires: '2027-07-31',
@@ -414,7 +428,25 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
           expectExpiryDateToBe('', '', '');
         });
 
-        it('should set expiryMismatchWarning when expiry date does not match the completed date and validity period', async () => {
+        it('should show a expiryMismatchWarning on rendering when expiry date does not match the completed date and validity period', async () => {
+          const mockRecord = {
+            ...defaultTrainingRecord,
+            expires: '2027-07-31',
+            completed: '2025-01-01',
+          };
+
+          const { queryByText } = await setup({
+            selectedTrainingCourse: mockTrainingCourse,
+            trainingRecord: mockRecord,
+          });
+
+          const validityMonths = defaultSelectedTrainingCourse.validityPeriodInMonth;
+          const expectedWarningText = `This training is usually valid for ${validityMonths} months`;
+
+          expect(queryByText(expectedWarningText)).toBeTruthy();
+        });
+
+        it('should show/hide the expiryMismatchWarning according to user input if expiry date does not match the completed date and validity period', async () => {
           const { fixture, getByTestId, queryByText } = await setup({
             selectedTrainingCourse: mockTrainingCourse,
             trainingRecord: mockTrainingRecordWithoutDates,
@@ -711,9 +743,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
       });
 
       it('should show an error message when the input are not valid', async () => {
-        const { fixture, updateSpy, getByText, getAllByText, getByRole, getByTestId } = await setup({
-          trainingRecord: {},
-        });
+        const { fixture, updateSpy, getByText, getAllByText, getByRole, getByTestId } = await setup();
 
         const completedDate = getByTestId('completedDate');
         const expiryDate = getByTestId('expiresDate');
@@ -732,6 +762,30 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
         expect(getByText('There is a problem')).toBeTruthy();
         expect(getAllByText('Expiry date must be after date completed')).toHaveSize(2);
         expect(getAllByText('Notes must be 1000 characters or fewer')).toHaveSize(2);
+      });
+
+      it('should be able to detect "Expiry date must be after date completed" error even if expiry date is not changed', async () => {
+        const mockRecord = {
+          ...defaultTrainingRecord,
+          completed: '2020-01-01',
+          expires: '2021-12-31',
+        };
+
+        const { fixture, updateSpy, getByText, getAllByText, getByRole, getByTestId } = await setup({
+          trainingRecord: mockRecord,
+        });
+
+        const completedDate = getByTestId('completedDate');
+
+        fillInDate(completedDate, '2022', '1', '1');
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        fixture.detectChanges();
+
+        expect(updateSpy).not.toHaveBeenCalled();
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText('Expiry date must be after date completed')).toHaveSize(2);
       });
     });
 
@@ -768,7 +822,7 @@ fdescribe('TrainingCourseMatchingLayoutComponent', () => {
         });
       });
 
-      it('should automatically set the expiry date of new training course', async () => {
+      it('should automatically set the expiry date according to validity period of training course', async () => {
         const { fixture, getByRole, getByTestId, createTrainingRecordSpy, alertServiceSpy } = await setup(overrides);
 
         const completedDate = getByTestId('completedDate');

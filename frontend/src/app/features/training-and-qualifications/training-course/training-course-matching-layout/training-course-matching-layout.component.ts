@@ -1,10 +1,19 @@
 import dayjs from 'dayjs';
 import lodash from 'lodash';
-import { Subscription } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
 import { Location } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  effect,
+  ElementRef,
+  OnInit,
+  viewChild,
+  ViewChild,
+} from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -28,6 +37,7 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { DateValidator } from '@shared/validators/date.validator';
 import { showCorrectTrainingValidity } from '@shared/pipes/show-training-validity.pipe';
 import { DateUtil } from '@core/utils/date-util';
+import { DatePickerComponent } from '@shared/components/date-picker/date-picker.component';
 
 type JourneyType = 'ApplyCourseToExistingRecord' | 'AddNewTrainingRecordWithCourse' | 'ViewExistingRecord';
 type TrainingRecord = LegacyIncorrectTrainingRecordType & { completed: string; expires: string; accredited?: string };
@@ -65,7 +75,10 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   public expiryMismatchWarning: boolean;
   public showExpiryDateInput: boolean = false;
   public doesNotExpireWasTicked: boolean;
-  public showWarningOnDoesNotExpireWithDate: boolean;
+  public doesNotExpireMismatchWarning: boolean;
+
+  public completedDate = viewChild<DatePickerComponent>('completed');
+  public expiresDate = viewChild<DatePickerComponent>('expires');
 
   constructor(
     private workerService: WorkerService,
@@ -78,7 +91,17 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     private alertService: AlertService,
     private certificateService: TrainingCertificateService,
     private location: Location,
-  ) {}
+    protected changeDetectorRef: ChangeDetectorRef,
+  ) {
+    effect(() => {
+      const completedDateInputBoxesExist = this.completedDate();
+      const expiresDateInputboxesExist = this.expiresDate();
+
+      if (completedDateInputBoxesExist && expiresDateInputboxesExist) {
+        this.setupFormChangeListeners();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.trainingRecord = this.route.snapshot.data?.trainingRecord;
@@ -134,14 +157,14 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     switch (this.journeyType) {
       case 'ApplyCourseToExistingRecord': {
         this.fillForm();
-        this.autoFillExpiry();
-        this.setupChecksForSoftWarnings();
+        this.autoFillExpiryOnInit();
+        this.checkExpiryMismatchOnInit();
         this.headingText = 'Training record details';
         break;
       }
       case 'ViewExistingRecord': {
         this.fillForm();
-        this.setupChecksForSoftWarnings();
+        this.checkExpiryMismatchOnInit();
         this.headingText = 'Training record details';
         break;
       }
@@ -220,22 +243,22 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group({
-      completed: this.formBuilder.group(
-        {
+    this.form = this.formBuilder.group(
+      {
+        completed: this.formBuilder.group({
           day: null,
           month: null,
           year: null,
-        },
-        { updateOn: this.journeyType === 'AddNewTrainingRecordWithCourse' ? 'submit' : 'change' },
-      ),
-      expires: this.formBuilder.group({
-        day: null,
-        month: null,
-        year: null,
-      }),
-      notes: [null, { validators: [Validators.maxLength(this.notesMaxLength)], updateOn: 'submit' }],
-    });
+        }),
+        expires: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+        notes: [null, { validators: [Validators.maxLength(this.notesMaxLength)] }],
+      },
+      { updateOn: 'submit' },
+    );
 
     const minDate = dayjs().subtract(100, 'years');
 
@@ -263,29 +286,35 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     });
   }
 
-  private setupChecksForSoftWarnings(): void {
-    this.checkExpiryMismatch();
+  private setupFormChangeListeners(): void {
+    this.setupExpiryDateAutofill();
     this.setupCheckExpiryMismatch();
+    this.setupCheckDoesNotExpireMismatch();
 
-    if (this.doesNotExpireWasTicked) {
-      this.setupShouldNotHaveExpiryDateSoftwarning();
+    this.changeDetectorRef.detectChanges();
+  }
+
+  private checkExpiryMismatchOnInit(): void {
+    const completedDate = DateUtil.toDayjs(this.trainingRecord.completed);
+    const expiresDate = DateUtil.toDayjs(this.trainingRecord.expires);
+    const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
+
+    const expiryDateDoesNotMatch = DateUtil.expiryDateDoesNotMatch(completedDate, expiresDate, validityPeriodInMonth);
+
+    if (expiryDateDoesNotMatch) {
+      this.expiryMismatchWarning = true;
     }
   }
 
   private setupCheckExpiryMismatch(): void {
-    this.form.valueChanges.subscribe(() => {
-      this.checkExpiryMismatch();
-    });
-
-    this.form.get('completed').statusChanges.subscribe((status) => {
-      if (status === 'VALID') {
-        this.autoFillExpiry();
-      }
-    });
+    merge(this.completedDate().onChange.asObservable(), this.expiresDate().onChange.asObservable()).subscribe(() =>
+      this.checkExpiryMismatch(),
+    );
   }
 
   private checkExpiryMismatch(): void {
-    const { completed, expires } = this.form.value;
+    const completed = this.completedDate().internalState;
+    const expires = this.expiresDate().internalState;
     const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
 
     const completedDate = DateUtil.toDayjs(completed);
@@ -295,34 +324,65 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     this.expiryMismatchWarning = expiryDateDoesNotMatch;
   }
 
-  private setupShouldNotHaveExpiryDateSoftwarning(): void {
-    this.showWarningOnDoesNotExpireWithDate = !this.expiryDateIsEmpty;
+  private setupExpiryDateAutofill(): void {
+    if (!this.showExpiryDateInput) {
+      return;
+    }
 
-    this.form.get('expires').valueChanges.subscribe((dateInputs) => {
-      const expireDateIsFilled = Object.values(dateInputs).every((x) => x);
-
-      this.showWarningOnDoesNotExpireWithDate = expireDateIsFilled;
+    this.completedDate().onChange.subscribe(() => {
+      this.autoFillExpiry();
     });
   }
 
-  get expiryDateIsEmpty(): boolean {
-    return Object.values(this.form.get('expires').value).every((input) => input == null);
+  private setupCheckDoesNotExpireMismatch(): void {
+    if (!this.doesNotExpireWasTicked) {
+      return;
+    }
+
+    this.doesNotExpireMismatchWarning = this.expiryDateInputHasValue;
+
+    this.expiresDate()
+      .onChange.asObservable()
+      .subscribe(() => {
+        this.doesNotExpireMismatchWarning = this.expiryDateInputHasValue;
+      });
   }
 
-  public autoFillExpiry(): void {
-    const completed = DateUtil.toDayjs(this.form.get('completed')?.value);
+  private get expiryDateInputBoxesAreEmpty(): boolean {
+    return Object.values(this.expiresDate().internalState).every((input) => input == null);
+  }
+
+  private get expiryDateInputHasValue(): boolean {
+    return !this.expiryDateInputBoxesAreEmpty;
+  }
+
+  private autoFillExpiryOnInit(): void {
+    const completionDate = DateUtil.toDayjs(this.trainingRecord.completed);
+    const expiryDateIsEmpty = !this.trainingRecord.expires;
     const validity = this.trainingToDisplay?.validityPeriodInMonth;
 
-    if (completed && validity && this.expiryDateIsEmpty) {
-      const expectedExpiryDate = DateUtil.expectedExpiryDate(completed, validity);
+    if (completionDate && validity && expiryDateIsEmpty) {
+      const newExpiryDate = DateUtil.expectedExpiryDate(completionDate, validity);
 
       this.form.patchValue(
         {
-          expires: {
-            day: expectedExpiryDate.date(),
-            month: expectedExpiryDate.month() + 1,
-            year: expectedExpiryDate.year(),
-          },
+          expires: DateUtil.toFormDate(newExpiryDate),
+        },
+        { emitEvent: false },
+      );
+    }
+  }
+
+  private autoFillExpiry(): void {
+    const completionDate = DateUtil.toDayjs(this.completedDate().internalState);
+    const validity = this.trainingToDisplay?.validityPeriodInMonth;
+
+    if (completionDate && validity && this.expiryDateInputBoxesAreEmpty) {
+      const newExpiryDate = DateUtil.expectedExpiryDate(completionDate, validity);
+
+      this.form.patchValue(
+        {
+          expires: DateUtil.toFormDate(newExpiryDate),
         },
         { emitEvent: false },
       );
@@ -330,7 +390,7 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
   }
 
   private getExpectedExpiryDate(): dayjs.Dayjs {
-    const { completed } = this.form.value;
+    const completed = this.completedDate().internalState;
     const completedDate = DateUtil.toDayjs(completed);
     const validityPeriodInMonth = this.trainingToDisplay?.validityPeriodInMonth;
 
@@ -432,7 +492,8 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
 
   public onSubmit(): void {
     this.submitted = true;
-    this.triggerValidatorForExpiresDate();
+    this.form.get('completed').updateValueAndValidity();
+    this.form.get('expires').updateValueAndValidity();
 
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
@@ -467,12 +528,6 @@ export class TrainingCourseMatchingLayoutComponent implements OnInit, AfterViewI
     }
 
     this.subscriptions.add(submitTrainingRecord.subscribe(() => this.onSubmitSuccess()));
-  }
-
-  private triggerValidatorForExpiresDate(): void {
-    this.form.get('expires').markAsTouched();
-    this.form.get('expires').markAsDirty();
-    this.form.get('expires').updateValueAndValidity();
   }
 
   private onSubmitSuccess(): void {
