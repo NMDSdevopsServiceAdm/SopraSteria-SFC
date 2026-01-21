@@ -64,6 +64,7 @@
                       }
 
                       <app-date-picker
+                        #completed
                         [formGroup]="form"
                         [formGroupName]="'completed'"
                         [submitted]="submitted"
@@ -91,7 +92,7 @@
                               {{ trainingToDisplay?.validityPeriodInMonth }} months
                             </span>
                           </div>
-                        } @else if (showWarningOnDoesNotExpireWithDate) {
+                        } @else if (doesNotExpireMismatchWarning) {
                           <div>
                             <span
                               class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
@@ -109,6 +110,7 @@
                           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
                         </span>
                         <app-date-picker
+                          #expires
                           [formGroup]="form"
                           [formGroupName]="'expires'"
                           [submitted]="submitted"
