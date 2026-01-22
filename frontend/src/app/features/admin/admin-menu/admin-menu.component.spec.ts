@@ -1,37 +1,123 @@
-import { provideRouter, RouterModule } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { AdminMenuComponent } from './admin-menu.component';
+import { ParentRequestsService } from '@core/services/parent-requests.service';
+import { ParentRequestsStateService } from '@core/services/admin/admin-parent-request-status/admin-parent-request-status.service';
+import { provideHttpClient } from '@angular/common/http';
+import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
+import { CqcStatusChangeStateService } from '@core/services/admin/admin-cqc-main-service-status/admin-cqc-main-service-status.service';
 
 describe('AdminMenuComponent', () => {
-  async function setup() {
-    const component = await render(AdminMenuComponent, {
-      imports: [SharedModule, RouterModule],
-      providers: [provideRouter([])],
+  async function setup(parentData = [], cqcData = []) {
+    const setupTools = await render(AdminMenuComponent, {
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
 
+    const component = setupTools.fixture.componentInstance;
+
+    const parentRequestsService = TestBed.inject(ParentRequestsService);
+    const parentRequestsState = TestBed.inject(ParentRequestsStateService);
+
+    const cqcStatusChangeService = TestBed.inject(CqcStatusChangeService);
+    const cqcStatusChangeState = TestBed.inject(CqcStatusChangeStateService);
+
+    spyOn(parentRequestsService, 'getParentRequests').and.returnValue(of(parentData));
+    spyOn(cqcStatusChangeService, 'getCqcStatusChanges').and.returnValue(of(cqcData));
+
     return {
+      ...setupTools,
       component,
+      parentRequestsService,
+      parentRequestsState,
+      cqcStatusChangeService,
+      cqcStatusChangeState,
     };
   }
 
-  it('should render a AdminMenuComponent', async () => {
+  it('should render AdminMenuComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
-  it('should contain a local authority return link that links to admin/local-authorities-return url', async () => {
-    const { component } = await setup();
+  it('should contain a local authority return link', async () => {
+    const { getByText } = await setup();
 
-    const laCompletionsLink = component.getByText('Local authority returns');
-    expect(laCompletionsLink.getAttribute('href')).toBe('/sfcadmin/local-authorities-return');
+    const link = getByText('Local authority returns');
+    expect(link.getAttribute('href')).toBe('/sfcadmin/local-authorities-return');
   });
 
-  it('should contain a CQC main service change link that links to sfcadmin/cqc-main-service-change url', async () => {
-    const { component } = await setup();
+  it('should contain a CQC main service change link', async () => {
+    const { getByText } = await setup();
 
-    const cqcMainServiceChangeLink = component.getByText('CQC main service change');
-    expect(cqcMainServiceChangeLink.getAttribute('href')).toBe('/sfcadmin/cqc-main-service-change');
+    const link = getByText('CQC main service change');
+    expect(link.getAttribute('href')).toBe('/sfcadmin/cqc-main-service-change');
+  });
+
+  it('should call services on init', async () => {
+    const { component, parentRequestsService, cqcStatusChangeService } = await setup();
+
+    component.ngOnInit();
+
+    expect(parentRequestsService.getParentRequests).toHaveBeenCalled();
+    expect(cqcStatusChangeService.getCqcStatusChanges).toHaveBeenCalled();
+  });
+
+  it('should set showParentFlag$ = true when a Pending request exists', async () => {
+    const { component, parentRequestsState } = await setup();
+    parentRequestsState.set([{ status: 'Pending' }]);
+
+    component.showParentFlag$.subscribe((value) => {
+      expect(value).toBeTrue();
+    });
+  });
+
+  it('should set showParentFlag$ = false when no Pending request exists', async () => {
+    const { component, parentRequestsState } = await setup();
+    parentRequestsState.set([{ status: 'In Progress' }]);
+
+    component.showParentFlag$.subscribe((value) => {
+      expect(value).toBeFalse();
+    });
+  });
+
+  it('should set showCqcFlag$ = false when no Pending request exists', async () => {
+    const { component, cqcStatusChangeState } = await setup();
+    cqcStatusChangeState.set([{ status: 'In Progress' }]);
+
+    component.showCqcFlag$.subscribe((value) => {
+      expect(value).toBeFalse();
+    });
+  });
+
+  it('should set showCqcFlag$ = true when  Pending request exists', async () => {
+    const { component, cqcStatusChangeState } = await setup();
+    cqcStatusChangeState.set([{ status: 'Pending' }]);
+
+    component.showCqcFlag$.subscribe((value) => {
+      expect(value).toBeTrue();
+    });
+  });
+
+  it('should show the flag when  Pending request exists', async () => {
+    const { fixture, parentRequestsState, getByText } = await setup();
+    parentRequestsState.set([{ status: 'Pending' }]);
+
+    fixture.detectChanges();
+    const parentRequestChangelink = getByText('Parent requests');
+    const redFlag = within(parentRequestChangelink.parentElement).queryByAltText('red warning flag');
+    expect(redFlag).toBeTruthy();
+  });
+
+  it('should show the flag when  Pending request exists', async () => {
+    const { fixture, cqcStatusChangeState, getByText } = await setup();
+    cqcStatusChangeState.set([{ status: 'Pending' }]);
+
+    fixture.detectChanges();
+    const cqcRequestChangelink = getByText('CQC main service change');
+    const redFlag = within(cqcRequestChangelink.parentElement).queryByAltText('red warning flag');
+    expect(redFlag).toBeTruthy();
   });
 });
