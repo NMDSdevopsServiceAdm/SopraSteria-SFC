@@ -1,27 +1,19 @@
 version: 0.2
 
-# env:
-#   variables:
-#     NODE_ENV: e2etest
-#   parameter-store:
-#     DB_FILE_URL: /bnd/e2e-test-db-file-url
-#     POSTGRES_USER: /bnd/e2e-test-db-user
-#     POSTGRES_PASSWORD: /bnd/e2e-test-db-password
-#     POSTGRES_DB: /bnd/e2e-test-db-name
+env:
+  variables:
+    NODE_ENV: e2etest
+  parameter-store:
+    DB_FILE_URL: /bnd/e2e-test-db-file-url
+    POSTGRES_USER: /bnd/e2e-test-db-user
+    POSTGRES_PASSWORD: /bnd/e2e-test-db-password
+    POSTGRES_DB: /bnd/e2e-test-db-name
 
 batch:
   fast-fail: false
   build-matrix:
     static:
       ignore-failure: false
-      env:
-        variables:
-          NODE_ENV: e2etest
-        parameter-store:
-          DB_FILE_URL: /bnd/e2e-test-db-file-url
-          POSTGRES_USER: /bnd/e2e-test-db-user
-          POSTGRES_PASSWORD: /bnd/e2e-test-db-password
-          POSTGRES_DB: /bnd/e2e-test-db-name
     dynamic:
       env:
         variables:
