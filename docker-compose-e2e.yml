@@ -1,6 +1,7 @@
 services:
   sfc-e2e-db:
     image: public.ecr.aws/docker/library/postgres:13
+    attach: false
     container_name: sfc-e2e-db
     build:
       context: ./docker
