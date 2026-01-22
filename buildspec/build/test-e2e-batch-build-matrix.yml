@@ -18,9 +18,10 @@ batch:
       env:
         variables:
           CY_GROUP_SPEC:
-            - 'cypress/e2e/homePage/**/*.cy.js'
-            - 'cypress/e2e/trainingAndQualifications/**/*.cy.js'
+            - 'cypress/e2e/funding/**/*.cy.js'
             - 'cypress/e2e/delegatedHealthcareActivities/**/*.cy.js'
+            - 'cypress/e2e/trainingAndQualifications/**/*.cy.js'
+            - 'cypress/e2e/workplace/**/*.cy.js'
           WORKERS:
             - 1
 
