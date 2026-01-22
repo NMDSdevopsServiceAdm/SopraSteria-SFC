@@ -14,7 +14,6 @@ describe('CqcStatusChangeStateService', () => {
     });
     service = TestBed.inject(CqcStatusChangeStateService);
     http = TestBed.inject(HttpTestingController);
-    localStorage.clear();
   });
 
   afterEach(() => {
@@ -31,21 +30,8 @@ describe('CqcStatusChangeStateService', () => {
       expect(service).toBeTruthy();
     });
 
-    it('should load data from localStorage on init', () => {
-      localStorage.setItem('cqcStatusChanges', JSON.stringify(mockData));
-
-      const service = new CqcStatusChangeStateService();
-
-      service.get$().subscribe((data) => {
-        expect(data).toEqual(mockData);
-      });
-    });
-
-    it('should save data to localStorage and emit it when set() is called', () => {
+    it('should save data  and emit it when set() is called', () => {
       service.set(mockData);
-
-      const stored = JSON.parse(localStorage.getItem('cqcStatusChanges')!);
-      expect(stored).toEqual(mockData);
 
       service.get$().subscribe((data) => {
         expect(data).toEqual(mockData);
@@ -62,12 +48,10 @@ describe('CqcStatusChangeStateService', () => {
       expect(spy).toHaveBeenCalledWith(mockData);
     });
 
-    it('should clear localStorage and emit null when clear() is called', () => {
+    it('should clear and emit null when clear() is called', () => {
       service.set(mockData);
 
       service.clear();
-
-      expect(localStorage.getItem('cqcStatusChanges')).toBeNull();
 
       service.get$().subscribe((data) => {
         expect(data).toBeNull();

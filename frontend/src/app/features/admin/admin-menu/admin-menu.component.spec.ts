@@ -1,4 +1,4 @@
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
@@ -99,5 +99,25 @@ describe('AdminMenuComponent', () => {
     component.showCqcFlag$.subscribe((value) => {
       expect(value).toBeTrue();
     });
+  });
+
+  it('should show the flag when  Pending request exists', async () => {
+    const { fixture, parentRequestsState, getByText } = await setup();
+    parentRequestsState.set([{ status: 'Pending' }]);
+
+    fixture.detectChanges();
+    const parentRequestChangelink = getByText('Parent requests');
+    const redFlag = within(parentRequestChangelink.parentElement).queryByAltText('red warning flag');
+    expect(redFlag).toBeTruthy();
+  });
+
+  it('should show the flag when  Pending request exists', async () => {
+    const { fixture, cqcStatusChangeState, getByText } = await setup();
+    cqcStatusChangeState.set([{ status: 'Pending' }]);
+
+    fixture.detectChanges();
+    const cqcRequestChangelink = getByText('CQC main service change');
+    const redFlag = within(cqcRequestChangelink.parentElement).queryByAltText('red warning flag');
+    expect(redFlag).toBeTruthy();
   });
 });

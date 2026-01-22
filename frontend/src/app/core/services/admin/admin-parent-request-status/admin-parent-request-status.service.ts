@@ -1,21 +1,13 @@
 import { Injectable } from '@angular/core';
+import { ParentRequests } from '@core/model/parent-requests.model';
+
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ParentRequestsStateService {
-  private readonly STORAGE_KEY = 'parentRequests';
-
-  private readonly parentRequests$ = new BehaviorSubject<any[] | null>(null);
-
-  constructor() {
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored) {
-      this.parentRequests$.next(JSON.parse(stored));
-    }
-  }
+  private readonly parentRequests$ = new BehaviorSubject<ParentRequests[] | null>(null);
 
   set(data: any[]): void {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
     this.parentRequests$.next(data);
   }
 
@@ -24,7 +16,6 @@ export class ParentRequestsStateService {
   }
 
   clear(): void {
-    localStorage.removeItem(this.STORAGE_KEY);
     this.parentRequests$.next(null);
   }
 }

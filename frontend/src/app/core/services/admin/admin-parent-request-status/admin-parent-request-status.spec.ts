@@ -13,7 +13,6 @@ describe('ParentRequestsStateService', () => {
     });
     service = TestBed.inject(ParentRequestsStateService);
     http = TestBed.inject(HttpTestingController);
-    localStorage.clear();
   });
 
   afterEach(() => {
@@ -30,21 +29,8 @@ describe('ParentRequestsStateService', () => {
       expect(service).toBeTruthy();
     });
 
-    it('should load data from localStorage on init', () => {
-      localStorage.setItem('parentRequests', JSON.stringify(mockData));
-
-      const service = new ParentRequestsStateService();
-
-      service.get$().subscribe((data) => {
-        expect(data).toEqual(mockData);
-      });
-    });
-
-    it('should save data to localStorage and emit it when set() is called', () => {
+    it('should save data to  and emit it when set() is called', () => {
       service.set(mockData);
-
-      const stored = JSON.parse(localStorage.getItem('parentRequests')!);
-      expect(stored).toEqual(mockData);
 
       service.get$().subscribe((data) => {
         expect(data).toEqual(mockData);
@@ -61,12 +47,10 @@ describe('ParentRequestsStateService', () => {
       expect(spy).toHaveBeenCalledWith(mockData);
     });
 
-    it('should clear localStorage and emit null when clear() is called', () => {
+    it('should clear  and emit null when clear() is called', () => {
       service.set(mockData);
 
       service.clear();
-
-      expect(localStorage.getItem('parentRequests')).toBeNull();
 
       service.get$().subscribe((data) => {
         expect(data).toBeNull();
