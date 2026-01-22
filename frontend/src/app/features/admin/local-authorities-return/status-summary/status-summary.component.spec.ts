@@ -23,7 +23,7 @@ describe('StatusSummaryComponent', () => {
       { name: 'J LA1', notes: false, status: 'Not updated', workers: 0 },
       { name: 'J LA2', notes: true, status: 'Confirmed, complete', workers: 10 },
     ],
-  }
+  };
   async function setup(localAuthoritiesOverrides = defaultLocalAuthorities) {
     const setupTools = await render(StatusSummaryComponent, {
       imports: [SharedModule, RouterModule],
@@ -49,7 +49,6 @@ describe('StatusSummaryComponent', () => {
     };
   }
 
-
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -64,22 +63,22 @@ describe('StatusSummaryComponent', () => {
   describe('Status summary table', () => {
     it('should display the table headers', async () => {
       const { getByTestId } = await setup();
-      expect(getByTestId('year-heading').textContent).toEqual('Year');
-      expect(getByTestId('signed-off-heading').textContent).toEqual('Signed off');
-      expect(getByTestId('active-heading').textContent).toEqual('Active');
-      expect(getByTestId('failed-data-quality-heading').textContent).toEqual('Failed data quality');
-      expect(getByTestId('no-activity-heading').textContent).toEqual('No sign of activity on account');
-    })
+      expect(getByTestId('year-heading').textContent.trim()).toEqual('Year');
+      expect(getByTestId('signed-off-heading').textContent.trim()).toEqual('Signed off');
+      expect(getByTestId('active-heading').textContent.trim()).toEqual('Active');
+      expect(getByTestId('failed-data-quality-heading').textContent.trim()).toEqual('Failed data quality');
+      expect(getByTestId('no-activity-heading').textContent.trim()).toEqual('No sign of activity on account');
+    });
 
     describe('When there are local authorities in each category', () => {
       it('should display the correct table values', async () => {
         const { getByTestId } = await setup();
-        expect(getByTestId('signed-off-value').textContent).toEqual('2');
-        expect(getByTestId('active-value').textContent).toEqual('3');
-        expect(getByTestId('failed-data-quality-value').textContent).toEqual('1');
-        expect(getByTestId('no-activity-value').textContent).toEqual('6');
-      })
-    })
+        expect(getByTestId('signed-off-value').textContent.trim()).toEqual('2');
+        expect(getByTestId('active-value').textContent.trim()).toEqual('3');
+        expect(getByTestId('failed-data-quality-value').textContent.trim()).toEqual('1');
+        expect(getByTestId('no-activity-value').textContent.trim()).toEqual('6');
+      });
+    });
 
     describe('When there are no local authorities in some categories', () => {
       it('should display the correct table values', async () => {
@@ -96,13 +95,13 @@ describe('StatusSummaryComponent', () => {
           H: [{ name: 'H LA1', notes: false, status: 'Confirmed, not complete', workers: 0 }],
           I: [{ name: 'H LA1', notes: false, status: 'Confirmed, not complete', workers: 0 }],
           J: [{ name: 'H LA1', notes: false, status: 'Confirmed, not complete', workers: 0 }],
-        }
+        };
         const { getByTestId } = await setup(customLocalAuthorities);
-        expect(getByTestId('signed-off-value').textContent).toEqual('0');
-        expect(getByTestId('active-value').textContent).toEqual('3');
-        expect(getByTestId('failed-data-quality-value').textContent).toEqual('7');
-        expect(getByTestId('no-activity-value').textContent).toEqual('0');
-      })
-    })
-  })
+        expect(getByTestId('signed-off-value').textContent.trim()).toEqual('0');
+        expect(getByTestId('active-value').textContent.trim()).toEqual('3');
+        expect(getByTestId('failed-data-quality-value').textContent.trim()).toEqual('7');
+        expect(getByTestId('no-activity-value').textContent.trim()).toEqual('0');
+      });
+    });
+  });
 });
