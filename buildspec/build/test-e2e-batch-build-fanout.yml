@@ -11,19 +11,9 @@ env:
 
 batch:
   fast-fail: false
-  build-matrix:
-    static:
-      ignore-failure: false
-    dynamic:
-      env:
-        variables:
-          CY_GROUP_SPEC:
-            # - 'cypress/e2e/funding/**/*.cy.js'
-            - 'cypress/e2e/delegatedHealthcareActivities/**/*.cy.js'
-            - 'cypress/e2e/trainingAndQualifications/**/*.cy.js'
-            # - 'cypress/e2e/workplace/**/*.cy.js'
-          WORKERS:
-            - 1
+  build-fanout:
+    parallelism: 5
+    ignore-failure: false
 
 phases:
   pre_build:
@@ -33,4 +23,10 @@ phases:
       - make install-for-e2e
   build:
     commands:
-      - CYPRESS_PATH=${CY_GROUP_SPEC} docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
+      - docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit
+      - cd frontend
+      - |
+        codebuild-tests-run \
+         --files-search "codebuild-glob-search '**/cypress/e2e/*.cy.js'" \
+         --test-command npx cypress run \
+         --sharding-strategy 'stability'

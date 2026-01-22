@@ -49,6 +49,7 @@ services:
 
   sfc-redis:
     image: public.ecr.aws/docker/library/redis
+    attach: false
     ports:
       - '6379:6379'
 
