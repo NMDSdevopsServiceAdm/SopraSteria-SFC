@@ -31,8 +31,6 @@ batch:
             - 'cypress/e2e/delegatedHealthcareActivities/**/*.cy.js'
           WORKERS:
             - 1
-            - 2
-            - 3
 
 phases:
   pre_build:
