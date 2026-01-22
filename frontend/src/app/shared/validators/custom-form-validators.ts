@@ -222,7 +222,7 @@ export class CustomValidators extends Validators {
       }
 
       validityPeriodInMonth.setErrors({ pattern: true });
-      doesNotExpire.setErrors({ required: true });
+      doesNotExpire.setErrors(null);
       return;
     };
 
