@@ -14,7 +14,6 @@ import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
 import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
-import { MissingMandatoryTrainingComponent } from '@features/training-and-qualifications/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
 import { CheckCQCDetailsComponent } from '@shared/components/check-cqc-details/check-cqc-details.component';
@@ -132,7 +131,6 @@ import { NursingSpecialismsTextPipe } from './pipes/nursing-specialisms-text.pip
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
 import { RemoveTrailingWhitespacePipe } from './pipes/remove-trailing-whitespace.pipe';
-import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
@@ -142,6 +140,11 @@ import { FormatWhatDhaPipe } from './pipes/format-what-dha.pipe';
 import { WorkerPaginationComponent } from './components/worker-pagination/worker-pagination.component';
 import { CookieBannerComponent } from './components/cookie-banner/cookie-banner.component';
 import { A11yModule } from '@angular/cdk/a11y';
+import { ButtonMenuComponent } from '@shared/components/button-menu/button-menu.component';
+import { SeperatorLineComponent } from './components/seperator-line/seperator-line.component';
+import { AddANoteAccordionComponent } from '@shared/components/accordions/add-a-note-accordion/add-a-note-accordion.component';
+import { ExternalTrainingProviderInputComponent } from './components/external-training-provider-input/external-training-provider-input.component';
+import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule, A11yModule],
@@ -158,7 +161,6 @@ import { A11yModule } from '@angular/cdk/a11y';
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
     NewDataViewPermissionsPipe,
-    SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
     EligibilityIconComponent,
@@ -238,7 +240,6 @@ import { A11yModule } from '@angular/cdk/a11y';
     RegistrationSubmitButtonsComponent,
     NewBackLinkComponent,
     ViewTrainingComponent,
-    MissingMandatoryTrainingComponent,
     TrainingSelectViewPanelComponent,
     TablePaginationWrapperComponent,
     DontKnowPipe,
@@ -283,6 +284,11 @@ import { A11yModule } from '@angular/cdk/a11y';
     DetailsDhaExamplesComponent,
     FormatWhatDhaPipe,
     CookieBannerComponent,
+    ButtonMenuComponent,
+    SeperatorLineComponent,
+    AddANoteAccordionComponent,
+    ExternalTrainingProviderInputComponent,
+    ShowTrainingValidityPipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -297,7 +303,6 @@ import { A11yModule } from '@angular/cdk/a11y';
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
     NewDataViewPermissionsPipe,
-    SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
     EligibilityIconComponent,
@@ -375,7 +380,6 @@ import { A11yModule } from '@angular/cdk/a11y';
     RegistrationSubmitButtonsComponent,
     NewBackLinkComponent,
     ViewTrainingComponent,
-    MissingMandatoryTrainingComponent,
     TrainingSelectViewPanelComponent,
     TablePaginationWrapperComponent,
     DontKnowPipe,
@@ -415,6 +419,10 @@ import { A11yModule } from '@angular/cdk/a11y';
     DetailsDhaExamplesComponent,
     FormatWhatDhaPipe,
     CookieBannerComponent,
+    SeperatorLineComponent,
+    AddANoteAccordionComponent,
+    ExternalTrainingProviderInputComponent,
+    ShowTrainingValidityPipe,
   ],
   providers: [
     DialogService,

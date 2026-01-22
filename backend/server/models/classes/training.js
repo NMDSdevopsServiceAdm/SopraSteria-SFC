@@ -38,6 +38,15 @@ class Training extends EntityValidator {
     this._category = null;
     this._title = null;
     this._accredited = null;
+    this._trainingCourseFK = null;
+    this._deliveredBy = null;
+    this._trainingProvider = null;
+    this._trainingProviderFk = null;
+    this._externalProviderName = null;
+    this._otherTrainingProviderName = null;
+    this._howWasItDelivered = null;
+    this._validityPeriodInMonth = null;
+    this._doesNotExpire = null;
     this._completed = null;
     this._expires = null;
     this._notes = null;
@@ -143,6 +152,34 @@ class Training extends EntityValidator {
   get accredited() {
     return this._accredited;
   }
+  get trainingCourseFK() {
+    return this._trainingCourseFK;
+  }
+  get deliveredBy() {
+    return this._deliveredBy;
+  }
+  get trainingProvider() {
+    return this._trainingProvider;
+  }
+  get externalProviderName() {
+    return this._externalProviderName;
+  }
+  get trainingProviderFk() {
+    return this._trainingProviderFk;
+  }
+  get otherTrainingProviderName() {
+    return this._otherTrainingProviderName;
+  }
+  get howWasItDelivered() {
+    return this._howWasItDelivered;
+  }
+  get validityPeriodInMonth() {
+    return this._validityPeriodInMonth;
+  }
+  get doesNotExpire() {
+    return this._doesNotExpire;
+  }
+
   get completed() {
     return this._completed;
   }
@@ -171,6 +208,34 @@ class Training extends EntityValidator {
   set accredited(accredited) {
     this._accredited = accredited;
   }
+  set trainingCourseFK(trainingCourseFK) {
+    this._trainingCourseFK = trainingCourseFK;
+  }
+  set deliveredBy(deliveredBy) {
+    this._deliveredBy = deliveredBy;
+  }
+  set trainingProvider(trainingProvider) {
+    this._trainingProvider = trainingProvider;
+  }
+  set trainingProviderFk(trainingProviderFk) {
+    this._trainingProviderFk = trainingProviderFk;
+  }
+  set externalProviderName(externalProviderName) {
+    this._externalProviderName = externalProviderName;
+  }
+  set otherTrainingProviderName(otherTrainingProviderName) {
+    this._otherTrainingProviderName = otherTrainingProviderName;
+  }
+  set howWasItDelivered(howWasItDelivered) {
+    this._howWasItDelivered = howWasItDelivered;
+  }
+  set validityPeriodInMonth(validityPeriodInMonth) {
+    this._validityPeriodInMonth = validityPeriodInMonth;
+  }
+  set doesNotExpire(doesNotExpire) {
+    this._doesNotExpire = doesNotExpire;
+  }
+
   set completed(completed) {
     this._completed = completed;
   }
@@ -328,6 +393,95 @@ class Training extends EntityValidator {
       validatedTrainingRecord.accredited = null;
     }
 
+    // training course FK
+    if (document.trainingCourseFK) {
+      validatedTrainingRecord.trainingCourseFK = document.trainingCourseFK;
+    } else {
+      validatedTrainingRecord.trainingCourseFK = null;
+    }
+
+    //deliveredBy
+    if (document.deliveredBy) {
+      const ALLOWED_VALUES = ['In-house staff', 'External provider'];
+      if (!ALLOWED_VALUES.includes(document.deliveredBy)) {
+        this._validations.push(
+          new ValidationMessage(ValidationMessage.WARNING, 120, `unexpected value - ${document.deliveredBy}`, [
+            'DeliveredBy',
+          ]),
+        );
+        this._log(
+          Training.LOG_ERROR,
+          `deliveredBy failed validation: deliveredBy failed validation: unexpected value - ${document.deliveredBy}`,
+        );
+        returnStatus = false;
+      }
+
+      validatedTrainingRecord.deliveredBy = document.deliveredBy;
+    } else {
+      validatedTrainingRecord.deliveredBy = null;
+    }
+
+    // externalProviderName
+    if (document.externalProviderName) {
+      validatedTrainingRecord.externalProviderName = document.externalProviderName;
+    } else {
+      validatedTrainingRecord.externalProviderName = null;
+    }
+
+    if (document.otherTrainingProviderName) {
+      validatedTrainingRecord.otherTrainingProviderName = document.otherTrainingProviderName;
+    } else {
+      validatedTrainingRecord.otherTrainingProviderName = null;
+    }
+
+    // trainingProviderFk
+    if (document?.trainingProviderFk || document?.trainingProvider?.id) {
+      const trainingProviderFk = document?.trainingProviderFk ?? document?.trainingProvider?.id;
+      const trainingProvider = await models.trainingProvider.findByPk(trainingProviderFk, { raw: true });
+
+      if (trainingProvider) {
+        validatedTrainingRecord.trainingProvider = trainingProvider;
+        validatedTrainingRecord.trainingProviderFk = trainingProvider.id;
+      }
+    } else {
+      validatedTrainingRecord.trainingProviderFk = null;
+    }
+
+    //howWasItDelivered
+    if (document.howWasItDelivered) {
+      const ALLOWED_VALUES = ['Face to face', 'E-learning'];
+      if (!ALLOWED_VALUES.includes(document.howWasItDelivered)) {
+        this._validations.push(
+          new ValidationMessage(ValidationMessage.WARNING, 120, `unexpected value - ${document.howWasItDelivered}`, [
+            'HowWasItDelivered',
+          ]),
+        );
+        this._log(
+          Training.LOG_ERROR,
+          `howWasItDelivered failed validation: howWasItDelivered failed validation: unexpected value - ${document.howWasItDelivered}`,
+        );
+        returnStatus = false;
+      }
+
+      validatedTrainingRecord.howWasItDelivered = document.howWasItDelivered;
+    } else {
+      validatedTrainingRecord.howWasItDelivered = null;
+    }
+
+    // doesNotExpire
+    if (document.doesNotExpire) {
+      validatedTrainingRecord.doesNotExpire = document.doesNotExpire;
+    } else {
+      validatedTrainingRecord.doesNotExpire = false;
+    }
+
+    // validityPeriodInMonth
+    if (document.validityPeriodInMonth) {
+      validatedTrainingRecord.validityPeriodInMonth = document.validityPeriodInMonth;
+    } else {
+      validatedTrainingRecord.validityPeriodInMonth = null;
+    }
+
     // completed
     if (document.completed) {
       // validate completed - must be a valid date
@@ -420,6 +574,15 @@ class Training extends EntityValidator {
         this.category = validatedTrainingRecord.trainingCategory;
         this.title = validatedTrainingRecord.title;
         this.accredited = validatedTrainingRecord.accredited;
+        this.trainingCourseFK = validatedTrainingRecord.trainingCourseFK;
+        this.deliveredBy = validatedTrainingRecord.deliveredBy;
+        this.externalProviderName = validatedTrainingRecord.externalProviderName;
+        this.otherTrainingProviderName = validatedTrainingRecord.otherTrainingProviderName;
+        this.trainingProvider = validatedTrainingRecord.trainingProvider;
+        this.trainingProviderFk = validatedTrainingRecord.trainingProviderFk;
+        this.howWasItDelivered = validatedTrainingRecord.howWasItDelivered;
+        this.validityPeriodInMonth = validatedTrainingRecord.validityPeriodInMonth;
+        this.doesNotExpire = validatedTrainingRecord.doesNotExpire;
         this.completed = validatedTrainingRecord.completed
           ? validatedTrainingRecord.completed.toJSON().slice(0, 10)
           : null;
@@ -489,6 +652,13 @@ class Training extends EntityValidator {
             categoryFk: this._category.id,
             title: this.title,
             accredited: this._accredited,
+            trainingCourseFK: this._trainingCourseFK,
+            deliveredBy: this._deliveredBy,
+            otherTrainingProviderName: this._otherTrainingProviderName,
+            trainingProviderFk: this._trainingProviderFk,
+            howWasItDelivered: this._howWasItDelivered,
+            validityPeriodInMonth: this._validityPeriodInMonth,
+            doesNotExpire: this._doesNotExpire,
             completed: this._completed,
             expires: this._expires,
             notes: this._notes,
@@ -501,7 +671,6 @@ class Training extends EntityValidator {
             // the saving of an Training record can be initiated within
             //  an external transaction
             const thisTransaction = externalTransaction ? externalTransaction : t;
-
             // now save the document
             let creation = await models.workerTraining.create(creationDocument, { transaction: thisTransaction });
 
@@ -538,6 +707,13 @@ class Training extends EntityValidator {
             categoryFk: this._category.id,
             title: this.title,
             accredited: this._accredited,
+            trainingCourseFK: this.trainingCourseFK,
+            deliveredBy: this._deliveredBy,
+            otherTrainingProviderName: this._otherTrainingProviderName,
+            trainingProviderFk: this._trainingProviderFk,
+            howWasItDelivered: this._howWasItDelivered,
+            validityPeriodInMonth: this._validityPeriodInMonth,
+            doesNotExpire: this._doesNotExpire,
             completed: this._completed,
             expires: this._expires,
             notes: this._notes,
@@ -617,6 +793,11 @@ class Training extends EntityValidator {
             as: 'trainingCertificates',
             attributes: ['uid', 'filename', 'uploadDate'],
           },
+          {
+            model: models.trainingProvider,
+            as: 'trainingProvider',
+            attributes: ['id', 'name', 'isOther'],
+          },
         ],
         order: [
           [models.trainingCertificates, 'uploadDate', 'DESC'],
@@ -637,6 +818,16 @@ class Training extends EntityValidator {
         };
         this._title = fetchResults.title;
         this._accredited = fetchResults.accredited;
+        this._trainingCourseFK = fetchResults.trainingCourseFK;
+        this._deliveredBy = fetchResults.deliveredBy;
+        this._trainingProvider = fetchResults.trainingProvider;
+        this._trainingProviderFk = fetchResults.trainingProviderFk;
+        this._externalProviderName = fetchResults.otherTrainingProviderName
+          ? fetchResults.otherTrainingProviderName
+          : fetchResults.trainingProvider?.name;
+        this._howWasItDelivered = fetchResults.howWasItDelivered;
+        this._validityPeriodInMonth = fetchResults.validityPeriodInMonth;
+        this._doesNotExpire = fetchResults.doesNotExpire;
         this._completed = fetchResults.completed ? new Date(fetchResults.completed).toISOString().slice(0, 10) : null;
         this._expires =
           fetchResults.expires !== null ? new Date(fetchResults.expires).toISOString().slice(0, 10) : null;
@@ -852,6 +1043,11 @@ class Training extends EntityValidator {
           as: 'trainingCertificates',
           attributes: ['uid', 'filename', 'uploadDate'],
         },
+        {
+          model: models.trainingProvider,
+          as: 'trainingProvider',
+          attributes: ['id', 'name', 'isOther'],
+        },
       ],
       order: [['updated', 'DESC']],
       ...(categoryId
@@ -885,10 +1081,19 @@ class Training extends EntityValidator {
       trainingCategory: this.category,
       title: this.title ? this.title : undefined,
       accredited: this.accredited ? this.accredited : undefined,
+      trainingCourseFK: this.trainingCourseFK ? this.trainingCourseFK : null,
+      deliveredBy: this.deliveredBy ? this.deliveredBy : undefined,
+      trainingProvider: this.trainingProvider ? this.trainingProvider : undefined,
+      trainingProviderFk: this.trainingProviderFk ? this.trainingProviderFk : null,
+      externalProviderName: this.externalProviderName ? this.externalProviderName : undefined,
+      howWasItDelivered: this.howWasItDelivered ? this.howWasItDelivered : undefined,
+      validityPeriodInMonth: this.validityPeriodInMonth ? this.validityPeriodInMonth : null,
+      doesNotExpire: this.doesNotExpire ? this.doesNotExpire : undefined,
       completed: this.completed ? this.completed : undefined,
       expires: this._expires !== null ? this.expires : undefined,
       notes: this._notes !== null ? this.notes : undefined,
       trainingCertificates: this.trainingCertificates,
+      isMatchedToTrainingCourse: this.trainingCourseFK ? true : false,
     };
 
     return myDefaultJSON;
@@ -1027,6 +1232,8 @@ class Training extends EntityValidator {
         recordFromDatabase.expires !== null
           ? new Date(recordFromDatabase.expires).toISOString().slice(0, 10)
           : undefined,
+      doesNotExpire: recordFromDatabase.doesNotExpire,
+      isMatchedToTrainingCourse: recordFromDatabase.trainingCourseFK ? true : false,
       notes: recordFromDatabase.notes !== null ? unescape(recordFromDatabase.notes) : undefined,
       created: recordFromDatabase.created.toISOString(),
       updated: recordFromDatabase.updated.toISOString(),

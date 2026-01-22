@@ -9,9 +9,9 @@ import {
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 
 @Component({
-    selector: 'app-new-training',
-    templateUrl: './new-training.component.html',
-    standalone: false
+  selector: 'app-new-training',
+  templateUrl: './new-training.component.html',
+  standalone: false,
 })
 export class NewTrainingComponent implements OnChanges, OnInit {
   @Input() public trainingCategories: TrainingRecordCategory[];
@@ -31,7 +31,10 @@ export class NewTrainingComponent implements OnChanges, OnInit {
   public trainingCategoryToDisplay: (TrainingRecordCategory & { error?: string })[];
   public workplaceUid: string;
 
-  constructor(protected trainingStatusService: TrainingStatusService, private route: ActivatedRoute) {}
+  constructor(
+    protected trainingStatusService: TrainingStatusService,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit() {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;

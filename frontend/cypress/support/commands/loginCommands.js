@@ -18,6 +18,33 @@ Cypress.Commands.add('loginAsAdmin', () => {
 Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.intercept('POST', '/api/login').as('login');
 
+  cy.updateUserFieldForLoginTests(username, 'TrainingCoursesMessageViewedQuantity', 3);
+  cy.setCookie('cookies_preferences_set', 'true');
+  cy.visit('/');
+  cy.get('[data-cy="username"]').type(username);
+  cy.get('[data-cy="password"]').type(password);
+  cy.get('[data-testid="signinButton"]').click();
+  cy.wait('@login');
+
+  getPassVacanciesAndTurnoverLoginMessage();
+});
+
+Cypress.Commands.add('loginAsUserForInterstitialPages', (username, password) => {
+  cy.intercept('POST', '/api/login').as('login');
+
+  cy.setCookie('cookies_preferences_set', 'true');
+  cy.visit('/');
+  cy.get('[data-cy="username"]').type(username);
+  cy.get('[data-cy="password"]').type(password);
+  cy.get('[data-testid="signinButton"]').click();
+  cy.wait('@login');
+
+  getPassVacanciesAndTurnoverLoginMessage();
+});
+
+Cypress.Commands.add('loginAsUserBeforeApproval', (username, password) => {
+  cy.intercept('POST', '/api/login').as('login');
+
   cy.setCookie('cookies_preferences_set', 'true');
   cy.visit('/');
   cy.get('[data-cy="username"]').type(username);
@@ -25,6 +52,17 @@ Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.get('[data-testid="signinButton"]').click();
   cy.wait('@login');
 });
+
+const getPassVacanciesAndTurnoverLoginMessage = () => {
+  cy.get('h1').should('not.contain', 'Sign in');
+  cy.get('h1')
+    .invoke('text')
+    .then((headingText) => {
+      if (headingText.includes('Your Workplace vacancies and turnover information')) {
+        cy.get('a').contains('Continue').click();
+      }
+    });
+};
 
 Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
   const queryStrings = [
@@ -94,4 +132,66 @@ Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
   const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
 
   cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('revertUserAttributes', (userFullName = 'editstandalone', userId = 769) => {
+  const dateNow = new Date();
+
+  const queryString1 = `UPDATE cqc."User"
+      SET "RegistrationSurveyCompleted" = true,
+          "LastViewedVacanciesAndTurnoverMessage" = $2,
+          "TrainingCoursesMessageViewedQuantity" = 3
+      WHERE "FullNameValue" = $1;`;
+
+  const parameters1 = [userFullName, dateNow];
+
+  const queryString2 = `DELETE FROM cqc."RegistrationSurvey"
+      WHERE "UserFK" = $1;`;
+
+  const parameters2 = [userId];
+
+  cy.task('dbQuery', { queryString: queryString1, parameters: parameters1 });
+  cy.task('dbQuery', { queryString: queryString2, parameters: parameters2 });
+});
+
+Cypress.Commands.add('updateUserFieldForLoginTests', (userFullName, fieldNameToUpdate, fieldValueToUpdate) => {
+  const allowedFields = [
+    'RegistrationSurveyCompleted',
+    'TrainingCoursesMessageViewedQuantity',
+    'LastViewedVacanciesAndTurnoverMessage',
+  ];
+
+  if (allowedFields.includes(fieldNameToUpdate)) {
+    const fieldName = `"${fieldNameToUpdate}"`;
+
+    const queryString = `UPDATE cqc."User"
+      SET ${fieldName} = $2
+      WHERE "FullNameValue" = $1;`;
+
+    const parameters = [userFullName, fieldValueToUpdate];
+
+    cy.task('dbQuery', { queryString: queryString, parameters: parameters });
+  }
+});
+
+Cypress.Commands.add('getLoginToken', (username, password) => {
+  cy.intercept('POST', '/api/login').as('login');
+
+  cy.visit('/');
+  cy.get('[data-cy="username"]').type(username);
+  cy.get('[data-cy="password"]').type(password);
+  cy.get('[data-testid="signinButton"]').click();
+  return cy.wait('@login').then(({ response }) => {
+    return response.headers.authorization;
+  });
+});
+
+Cypress.Commands.add('getUserUuid', (userFullName) => {
+  const queryString = `SELECT "FullNameValue", "UserUID" FROM cqc."User"
+    WHERE "FullNameValue" = $1
+    LIMIT 1;`;
+  const parameters = [userFullName];
+  return cy.task('dbQuery', { queryString, parameters }).then((response) => {
+    return response.rows[0].UserUID;
+  });
 });

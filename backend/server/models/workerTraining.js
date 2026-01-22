@@ -1,6 +1,9 @@
 /* jshint indent: 2 */
 const moment = require('moment');
 const { QueryTypes } = require('sequelize');
+const { Enum } = require('../../reference/databaseEnumTypes');
+const { NotFoundError } = require('../utils/errors/customErrors');
+const { calculateTrainingExpiryDate } = require('../utils/dateUtils');
 
 module.exports = function (sequelize, DataTypes) {
   const WorkerTraining = sequelize.define(
@@ -77,6 +80,44 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'updatedby',
       },
+      trainingCourseFK: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"TrainingCourseFK"',
+      },
+      deliveredBy: {
+        type: DataTypes.ENUM,
+        values: Enum.TrainingCourseDeliveredBy,
+        allowNull: true,
+        field: '"DeliveredBy"',
+      },
+      trainingProviderFk: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'TrainingProviderFK',
+      },
+      otherTrainingProviderName: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'OtherTrainingProviderName',
+      },
+
+      howWasItDelivered: {
+        type: DataTypes.ENUM,
+        values: Enum.TrainingCourseDeliveryMode,
+        allowNull: true,
+        field: '"HowWasItDelivered"',
+      },
+      doesNotExpire: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: '"DoesNotExpire"',
+      },
+      validityPeriodInMonth: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"ValidityPeriodInMonth"',
+      },
     },
     {
       tableName: 'WorkerTraining',
@@ -96,6 +137,16 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'categoryFk',
       targetKey: 'id',
       as: 'category',
+    });
+    WorkerTraining.belongsTo(models.trainingCourse, {
+      foreignKey: 'trainingCourseFK',
+      sourceKey: 'id',
+      as: 'trainingCourse',
+    });
+    WorkerTraining.belongsTo(models.trainingProvider, {
+      foreignKey: 'trainingProviderFk',
+      sourceKey: 'id',
+      as: 'trainingProvider',
     });
     WorkerTraining.hasMany(models.trainingCertificates, {
       foreignKey: 'workerTrainingFk',
@@ -260,6 +311,20 @@ module.exports = function (sequelize, DataTypes) {
     }));
 
     return { count: +count[0][0].count, rows: response, category };
+  };
+
+  WorkerTraining.autoFillInExpiryDate = async function ({ trainingRecordId, transaction, updatedBy }) {
+    const trainingRecord = await sequelize.models.workerTraining.findByPk(trainingRecordId, { transaction });
+    if (!trainingRecord) {
+      throw new NotFoundError('Could not find training record');
+    }
+
+    if (trainingRecord.expires || !trainingRecord.completed || !trainingRecord.validityPeriodInMonth) {
+      return;
+    }
+
+    const newExpiryDate = calculateTrainingExpiryDate(trainingRecord.completed, trainingRecord.validityPeriodInMonth);
+    await trainingRecord.update({ expires: newExpiryDate, updatedBy, updated: new Date() }, { transaction });
   };
 
   return WorkerTraining;

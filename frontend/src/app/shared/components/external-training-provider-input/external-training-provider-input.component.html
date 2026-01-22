@@ -1,0 +1,19 @@
+<div
+  class="govuk-radios__conditional govuk-radios__conditional--hidden govuk-!-margin-top-1 govuk-!-margin-bottom-1 govuk-!-width-three-quarters"
+  [class.govuk-radios__conditional--hidden]="hideInput"
+  id="conditional-external-provider-name"
+  data-testid="conditional-external-provider-name"
+  [formGroup]="form"
+>
+  <app-auto-suggest
+    [formGroup]="form"
+    [dataProvider]="getSuggestedListOfProviders"
+    [formControlName]="'externalProviderName'"
+    [showSearchIcon]="false"
+    [showBackground]="false"
+    [label]="'Provider name'"
+    (clickItemEvent)="setShowSuggestedTray()"
+    [showClickedSuggestionInInput]="true"
+    [showEllipsis]="true"
+  ></app-auto-suggest>
+</div>

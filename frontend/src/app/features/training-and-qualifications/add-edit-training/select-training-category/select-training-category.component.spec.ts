@@ -21,9 +21,11 @@ import { BehaviorSubject } from 'rxjs';
 import sinon from 'sinon';
 
 import { SelectTrainingCategoryComponent } from './select-training-category.component';
+import { PreviousRouteService } from '@core/services/previous-route.service';
+import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 
 describe('SelectTrainingCategoryComponent', () => {
-  async function setup(prefill = false, qsParamGetMock = sinon.fake()) {
+  async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
 
@@ -45,7 +47,12 @@ describe('SelectTrainingCategoryComponent', () => {
         },
         {
           provide: TrainingService,
-          useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
+          useClass: overrides.prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
+        },
+        {
+          provide: PreviousRouteService,
+          useFactory: MockPreviousRouteService.factory(overrides?.previousUrl),
+          deps: [Router],
         },
         {
           provide: ActivatedRoute,
@@ -57,7 +64,7 @@ describe('SelectTrainingCategoryComponent', () => {
                 trainingCategories: trainingCategories,
               },
               queryParamMap: {
-                get: qsParamGetMock,
+                get: overrides.qsParamGetMock ? overrides.qsParamGetMock : sinon.fake(),
               },
             },
           },
@@ -75,6 +82,7 @@ describe('SelectTrainingCategoryComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     const trainingServiceSpy = spyOn(trainingService, 'resetSelectedStaff').and.callThrough();
+    const resetStateSpy = spyOn(trainingService, 'resetState');
 
     return {
       ...setupTools,
@@ -82,23 +90,24 @@ describe('SelectTrainingCategoryComponent', () => {
       routerSpy,
       trainingService,
       trainingServiceSpy,
+      resetStateSpy,
     };
   }
 
   it('should create', async () => {
-    const { component } = await setup(true);
+    const { component } = await setup({ prefill: true });
     expect(component).toBeTruthy();
   });
 
   it('should show the worker name as the section heading', async () => {
-    const { component, getByTestId } = await setup(true);
+    const { component, getByTestId } = await setup({ prefill: true });
     const sectionHeading = getByTestId('section-heading');
 
     expect(sectionHeading.textContent).toContain(component.worker.nameOrId);
   });
 
   it('should show the page heading', async () => {
-    const { getByText } = await setup(true);
+    const { getByText } = await setup({ prefill: true });
 
     const heading = getByText('Select the category that best matches the training taken');
 
@@ -106,7 +115,7 @@ describe('SelectTrainingCategoryComponent', () => {
   });
 
   it('should show the continue button', async () => {
-    const { getByText } = await setup(true);
+    const { getByText } = await setup({ prefill: true });
 
     const button = getByText('Continue');
 
@@ -122,7 +131,7 @@ describe('SelectTrainingCategoryComponent', () => {
   });
 
   it('should show an accordion with the correct categories in', async () => {
-    const { component, getByTestId } = await setup(true);
+    const { component, getByTestId } = await setup({ prefill: true });
     expect(component.categories).toEqual([
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
       { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
@@ -139,7 +148,7 @@ describe('SelectTrainingCategoryComponent', () => {
   });
 
   it('should call the training service and navigate to the details page', async () => {
-    const { component, getByText, routerSpy, trainingService } = await setup(true);
+    const { component, getByText, routerSpy, trainingService } = await setup({ prefill: true });
 
     const trainingServiceSpy = spyOn(trainingService, 'setSelectedTrainingCategory').and.callThrough();
 
@@ -159,12 +168,12 @@ describe('SelectTrainingCategoryComponent', () => {
       trainingCategoryGroup: 'Specific conditions and disabilities',
     });
     expect(routerSpy).toHaveBeenCalledWith([
-      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training/details`,
+      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training-without-course/details`,
     ]);
   });
 
   it('should show an error when no training category selected', async () => {
-    const { component, getByText, fixture, getAllByText } = await setup(true);
+    const { component, getByText, fixture, getAllByText } = await setup({ prefill: true });
     component.form.markAsDirty();
     component.form.get('category').setValue(null);
     component.form.get('category').markAsDirty();
@@ -180,7 +189,7 @@ describe('SelectTrainingCategoryComponent', () => {
   it('should pre-fill when adding a record to a mandatory training category', async () => {
     const qsParamGetMock = sinon.stub().returns(JSON.stringify({ id: 2, category: 'Autism' }));
 
-    const { component, fixture } = await setup(false, qsParamGetMock);
+    const { component, fixture } = await setup({ prefill: false, qsParamGetMock });
 
     fixture.detectChanges();
 
@@ -190,7 +199,7 @@ describe('SelectTrainingCategoryComponent', () => {
   it('should pre-fill when adding a record to a mandatory training category from the training tab', async () => {
     const qsParamGetMock = sinon.stub().returns(JSON.stringify({ id: '2', category: 'Autism' }));
 
-    const { component, fixture } = await setup(false, qsParamGetMock);
+    const { component, fixture } = await setup({ prefill: false, qsParamGetMock });
 
     fixture.detectChanges();
 
@@ -198,7 +207,7 @@ describe('SelectTrainingCategoryComponent', () => {
   });
 
   it('should pre-fill if there is a selected category', async () => {
-    const { component } = await setup(true);
+    const { component } = await setup({ prefill: true });
 
     expect(component.form.value).toEqual({ category: 1 });
   });
@@ -211,5 +220,21 @@ describe('SelectTrainingCategoryComponent', () => {
     expect(getByText("Training like 'online safety and security', 'working with digital technology'")).toBeTruthy();
     expect(getByText("Training like 'dementia care', 'Oliver McGowan Mandatory Training'")).toBeTruthy();
     expect(getByText("Training like 'communication', 'leadership and management'")).toBeTruthy();
+  });
+
+  ['training', 'all-records'].forEach((previousPage) => {
+    it(`should call resetState() if the previous page is ${previousPage}`, async () => {
+      const { component, resetStateSpy } = await setup({ previousUrl: previousPage });
+
+      component.ngOnInit();
+      expect(resetStateSpy).toHaveBeenCalled();
+    });
+
+    it(`should not call resetState()`, async () => {
+      const { component, resetStateSpy } = await setup({ previousUrl: 'add-training-without-course/details' });
+
+      component.ngOnInit();
+      expect(resetStateSpy).not.toHaveBeenCalled();
+    });
   });
 });

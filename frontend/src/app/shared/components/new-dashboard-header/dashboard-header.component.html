@@ -65,7 +65,7 @@
               <div class="govuk-util__float-right" *ngIf="tab === 'home'" data-testid="contact-info">
                 <div
                   *ngIf="
-                    (workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING') ||
+                    (workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus !== 'PENDING') ||
                     (canDeleteEstablishment && isParentSubsidiaryView)
                   "
                 >
@@ -117,18 +117,62 @@
                 </a>
               </div>
             </ng-container>
-
             <ng-container *ngSwitchCase="'training-and-qualifications'">
               <div *ngIf="hasWorkers && canEditWorker" class="govuk-util__align-right">
-                <a
-                  role="button"
-                  href="#"
-                  class="govuk-button govuk-!-margin-bottom-5"
-                  data-cy="add-multiple-training-records-button"
-                  [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
-                >
-                  Add multiple training records
-                </a>
+                <app-button-menu buttonText="Add and manage training">
+                  <li>
+                    <a
+                      [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
+                      role="button"
+                      class="asc-button-menu__item"
+                    >
+                      Add multiple training records
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      [routerLink]="['/workplace', workplace.uid, 'training-course', 'add-and-manage-training-courses']"
+                      href="#"
+                      role="button"
+                      class="asc-button-menu__item"
+                    >
+                      Add training courses
+                    </a>
+                  </li>
+
+                  <li *ngIf="hasTrainingCourse">
+                    <a
+                      [routerLink]="[
+                        '/workplace',
+                        workplace.uid,
+                        'update-records-with-training-course-details',
+                        'select-a-training-course'
+                      ]"
+                      role="button"
+                      class="asc-button-menu__item govuk-!-margin-right-3"
+                    >
+                      Update records with training course details
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      [routerLink]="['/workplace', workplace.uid, 'add-and-manage-mandatory-training']"
+                      role="button"
+                      class="asc-button-menu__item"
+                    >
+                      Manage mandatory training
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      [routerLink]="['/workplace', workplace.uid, 'change-expires-soon-alerts']"
+                      role="button"
+                      class="asc-button-menu__item"
+                    >
+                      Manage expiry alerts
+                    </a>
+                  </li>
+                </app-button-menu>
               </div>
             </ng-container>
           </ng-container>

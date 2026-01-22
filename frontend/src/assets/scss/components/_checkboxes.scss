@@ -13,3 +13,12 @@
     border: none;
   }
 }
+
+.checkbox-shaded-background {
+  background-color: govuk-colour('light-grey');
+  padding: govuk-spacing(4);
+
+  .govuk-checkboxes__label:before {
+    background: govuk-colour('white');
+  }
+}

@@ -13,9 +13,9 @@ import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-h
 import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
-    selector: 'app-staff-what-kind-of-delegated-healthcare-activities',
-    templateUrl: './staff-what-kind-of-delegated-healthcare-activities.component.html',
-    standalone: false
+  selector: 'app-staff-what-kind-of-delegated-healthcare-activities',
+  templateUrl: './staff-what-kind-of-delegated-healthcare-activities.component.html',
+  standalone: false,
 })
 export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Question implements OnInit {
   public section = WorkplaceFlowSections.SERVICES;
@@ -50,7 +50,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     this.allDelegatedHealthcareActivitiesOptions = [...this.delegatedHealthcareActivities, this.doNotKnowOption];
     this.setupForm();
     this.prefill();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
+    this.skipRoute = ['/workplace', this.establishment.uid, 'do-you-have-vacancies'];
     this.setPreviousRoute();
     this.nextRoute = this.skipRoute;
   }
