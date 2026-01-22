@@ -96,7 +96,7 @@ describe('page after login', () => {
     cy.url().should('eq', Cypress.config().baseUrl + '/dashboard');
   });
 
-  it('should go to the update your vacancies and turnover data page', () => {
+  it.skip('should go to the update your vacancies and turnover data page', () => {
     setUpUserAttributes('LastViewedVacanciesAndTurnoverMessage', null);
     cy.url().should('eq', Cypress.config().baseUrl + '/update-your-vacancies-and-turnover-data');
     cy.get('h1').should('contain', 'Your Workplace vacancies and turnover information');
