@@ -21,6 +21,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
+import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 
 const MockWindow = {
   dataLayer: {
@@ -104,6 +105,8 @@ describe('NewDashboardHeaderComponent', () => {
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const switchWorkplaceService = injector.inject(SwitchWorkplaceService);
+    const switchWorkplaceSpy = spyOn(switchWorkplaceService, 'navigateToParentWorkplace');
 
     return {
       component,
@@ -111,6 +114,7 @@ describe('NewDashboardHeaderComponent', () => {
       establishmentService,
       router,
       routerSpy,
+      switchWorkplaceSpy,
     };
   };
 
@@ -194,6 +198,84 @@ describe('NewDashboardHeaderComponent', () => {
       const { queryByTestId } = await setup(override);
 
       expect(queryByTestId('workplace-address')).toBeFalsy();
+    });
+  });
+
+  describe('Parent workplace caption', () => {
+    it('should not render parent label when parentName is missing', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+
+      component.workplace.parentName = null;
+      component.isParentSubsidiaryView = false;
+      fixture.detectChanges();
+
+      expect(queryByTestId('parentNameLabel')).toBeNull();
+    });
+
+    it('should not render parent label when in parent subsidiary view', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+
+      component.workplace.parentName = 'Parent workplace';
+      component.isParentSubsidiaryView = true;
+      fixture.detectChanges();
+
+      expect(queryByTestId('parentNameLabel')).toBeNull();
+    });
+
+    it('should render parent label when parentName exists and not in subsidiary view', async () => {
+      const { component, getByTestId, fixture } = await setup();
+
+      component.workplace.parentName = 'Parent workplace';
+      component.isParentSubsidiaryView = false;
+      fixture.detectChanges();
+
+      const parentLabel = getByTestId('parentNameLabel');
+      expect(parentLabel).toBeTruthy();
+      expect(parentLabel.textContent).toContain('Parent workplace');
+    });
+
+    it('should render a link when user is admin', async () => {
+      const { component, getByTestId, fixture } = await setup();
+      component.isAdmin = true;
+      component.workplace.parentName = 'Parent workplace';
+      component.isParentSubsidiaryView = false;
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const link = getByTestId('name-link');
+
+      expect(link).toBeTruthy();
+      expect(link.tagName.toLowerCase()).toBe('a');
+      expect(link.textContent).toContain('Parent workplace');
+    });
+
+    it('should call navigateToParentWorkplace when admin clicks the parent link', async () => {
+      const { component, getByTestId, fixture, switchWorkplaceSpy } = await setup();
+      component.isAdmin = true;
+      component.workplace.parentName = 'Parent workplace';
+      component.isParentSubsidiaryView = false;
+      fixture.detectChanges();
+
+      const link = getByTestId('name-link');
+      link.click();
+
+      expect(switchWorkplaceSpy).toHaveBeenCalledWith(component.workplace.parentUid, '', '');
+    });
+
+    it('should render text only (no link) when user is not admin', async () => {
+      const { component, getByTestId, queryByTestId, fixture } = await setup();
+      component.isAdmin = false;
+      component.workplace.parentName = 'Parent workplace';
+      component.isParentSubsidiaryView = false;
+      fixture.detectChanges();
+
+      const parentLabel = getByTestId('parentNameLabel');
+      const link = queryByTestId('name-link');
+
+      expect(parentLabel).toBeTruthy();
+      expect(parentLabel.textContent).toContain('Parent workplace');
+      expect(link).toBeNull();
     });
   });
 
