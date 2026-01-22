@@ -55,3 +55,6 @@ test-e2e-inside-docker:
 
 deploy-bu-dev:
 	cd lambdas/bulkUpload && npm ci && npx serverless deploy --stage dev
+
+open-e2etests:
+	cd frontend && npx cypress open

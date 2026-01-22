@@ -306,6 +306,34 @@ describe('LoginComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/registration-survey']);
       });
     });
+
+    describe('new-training-courses', () => {
+      [undefined, null, 0, 1, 2].forEach((login) => {
+        it(`should navigate to new-training-courses when auth response has ${login} for loginAmount`, async () => {
+          const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+          const authenticateResponse = mockAuthenticateResponse();
+          authenticateResponse.body.trainingCoursesMessageViewedQuantity = login;
+
+          authSpy.and.returnValue(of(authenticateResponse));
+
+          signIn(getByLabelText, getByRole, fixture);
+
+          expect(routerSpy).toHaveBeenCalledWith(['/new-training-courses']);
+        });
+      });
+
+      it('should not navigate to new-training-courses', async () => {
+        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+        const authenticateResponse = mockAuthenticateResponse();
+        authenticateResponse.body.trainingCoursesMessageViewedQuantity = 3;
+
+        authSpy.and.returnValue(of(authenticateResponse));
+
+        signIn(getByLabelText, getByRole, fixture);
+
+        expect(routerSpy).not.toHaveBeenCalledWith(['/whats-new-in-asc-wds']);
+      });
+    });
   });
 
   describe('validation', async () => {

@@ -25,7 +25,7 @@
           </caption>
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 30%">Training name</th>
+              <th scope="col" class="govuk-table__header" scope="col" style="width: 30%">Training or course name</th>
               <th scope="col" class="govuk-table__header" scope="col" style="width: 13.5%">Accredited</th>
               <th scope="col" class="govuk-table__header" scope="col" style="width: 20%">Completion date</th>
               <th scope="col" class="govuk-table__header" scope="col" style="width: 17.5%">Expiry date</th>
@@ -49,8 +49,8 @@
                         '../training',
                         trainingRecord.uid,
                         {
-                          trainingCategory: trainingRecord.trainingCategory | json
-                        }
+                          trainingCategory: trainingRecord.trainingCategory | json,
+                        },
                       ]"
                       >{{ trainingRecord.title ? trainingRecord.title : 'Missing training name (Add)' }}</a
                     >
@@ -69,7 +69,10 @@
                 {{ trainingRecord?.completed ? (trainingRecord.completed | date: 'dd MMM y') : '-' }}
               </td>
               <td class="govuk-table__cell" [attr.data-testid]="'expiry-date-' + trainingRecord.uid">
-                {{ trainingRecord?.expires ? (trainingRecord.expires | date: 'dd MMM y') : '-' }}
+                @let doesNotexpires = trainingRecord.doesNotExpire ? 'Does not expire' : '-';
+                @let expiryDate =
+                  trainingRecord?.expires ? (trainingRecord.expires | date: 'dd MMM y') : doesNotexpires;
+                {{ expiryDate }}
                 <div
                   *ngIf="trainingRecord?.trainingStatus === trainingStatusService.EXPIRED && trainingRecord.expires"
                   [attr.data-testid]="'status-expired-' + trainingRecord.uid"
@@ -154,7 +157,7 @@
               *ngIf="canEditWorker"
               class="govuk-link--no-visited-state govuk-!-font-size-19"
               [attr.data-testid]="'mandatory-training-missing-link'"
-              [routerLink]="['../add-training']"
+              [routerLink]="['../add-a-training-record']"
               >Add a training record</a
             >
           </ng-container>
@@ -178,7 +181,7 @@
             *ngIf="canEditWorker"
             class="govuk-link--no-visited-state govuk-!-font-size-19"
             [attr.data-testid]="'no-training-link'"
-            [routerLink]="['../add-training']"
+            [routerLink]="['../add-a-training-record']"
             >Add a training record</a
           >
         </div>

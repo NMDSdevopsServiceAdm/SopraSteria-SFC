@@ -1,0 +1,77 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds" data-testid="heading">
+    <span class="govuk-caption-l">Add and update training courses</span>
+    <h1 class="govuk-heading-l govuk-!-padding-right-8">
+      What happens when you remove
+      {{ journeyType === 'RemoveAll' ? 'all training courses?' : 'a training course?' }}
+    </h1>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-!-padding-top-1">
+      {{
+        journeyType === 'RemoveAll'
+          ? 'When you remove all training courses from ASC-WDS, training records that include those courses:'
+          : 'When you remove a training course from ASC-WDS, training records that include the course:'
+      }}
+    </p>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <ul class="govuk-list govuk-list--bullet">
+      <li>are not deleted</li>
+      <li>
+        keep the details of the removed {{ journeyType === 'RemoveAll' ? 'training courses' : 'training course' }}
+      </li>
+      <li>
+        {{
+          journeyType === 'RemoveAll'
+            ? 'still generate alerts when training is due to expire'
+            : 'still generate an alert when the training is due to expire'
+        }}
+      </li>
+      <li>keep any certificates and notes that were added</li>
+    </ul>
+
+    <div class="govuk-!-margin-top-7">
+      @switch (journeyType) {
+        @case ('RemoveSingle') {
+          <p class="govuk-!-padding-top-1 govuk__nowrap">
+            <strong>Training course name:</strong> {{ trainingCourseName }}
+          </p>
+        }
+
+        @case ('RemoveAll') {
+          <p class="govuk-!-padding-top-1 govuk-!-margin-bottom-2 govuk__nowrap">
+            <strong>Training course name</strong>
+          </p>
+          <ul class="govuk-list" id="training-course-list" data-testid="training-courses">
+            @for (course of trainingCourses; track course.uid) {
+              <li>{{ course.name }}</li>
+            }
+          </ul>
+        }
+      }
+    </div>
+
+    <div class="govuk-button-group govuk-!-margin-top-8">
+      <button type="submit" class="govuk-button govuk-button--warning govuk-!-margin-right-9" (click)="onSubmit()">
+        Remove {{ journeyType === 'RemoveAll' ? 'all training courses' : 'this training course' }}
+      </button>
+
+      <a
+        class="govuk-button govuk-button--link govuk-!-margin-left-9"
+        role="button"
+        draggable="false"
+        href="#"
+        (click)="onCancel($event)"
+      >
+        Cancel
+      </a>
+    </div>
+  </div>
+</div>

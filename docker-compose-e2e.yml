@@ -35,6 +35,7 @@ services:
       - DB_TEST_HOSTNAME=sfc-e2e-db
       - DB_TEST_PORT=5432
       - REDIS_ENDPOINT=sfc-redis
+      - NODE_OPTIONS="--max-old-space-size=8192"
     volumes:
       - ./:/app
     command: sh -c "apk add --no-cache make curl; make run-e2e-server"

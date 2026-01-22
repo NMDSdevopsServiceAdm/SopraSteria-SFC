@@ -190,4 +190,11 @@ export class UserService {
       {},
     );
   }
+
+  public updateTrainingCoursesMessageViewedQuantity(userUid: string) {
+    return this.http.post(
+      `${environment.appRunnerEndpoint}/api/user/update-training-courses-message-viewed-quantity/${userUid}`,
+      {},
+    );
+  }
 }

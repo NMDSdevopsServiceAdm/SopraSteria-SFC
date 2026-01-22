@@ -44,7 +44,7 @@
                   this.workplace.uid,
                   'training-and-qualifications-record',
                   training.worker.uid,
-                  'training'
+                  'training',
                 ]"
               >
                 {{ training.worker.NameOrIdValue }}</a
@@ -100,7 +100,7 @@
                   workplace.uid,
                   'training-and-qualifications-record',
                   training.worker.uid,
-                  'add-training'
+                  'add-a-training-record',
                 ]"
                 [queryParams]="{ trainingCategory: { id: trainingCategoryId, category: category } | json }"
                 >Add</a
@@ -115,7 +115,7 @@
                   'training-and-qualifications-record',
                   training.worker.uid,
                   'training',
-                  training.uid
+                  training.uid,
                 ]"
                 >Update</a
               >

@@ -69,7 +69,6 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level/
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
-import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
 import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
@@ -85,6 +84,11 @@ import { WhoCarryOutDelegatedHealthcareActivitiesComponent } from './who-carry-o
 import { GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/get-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { WorkerHasAnyTrainingOrQualificationsResolver } from '@core/resolvers/worker-has-any-training-or-qualifications.resolver';
 import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-download-train-and-quals/do-you-want-to-download-train-and-quals.component';
+import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
+import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qualifications/training-course/training-course-matching-layout/training-course-matching-layout.component';
+import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
+import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
+import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -127,7 +131,6 @@ import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-downl
     TotalStaffChangeComponent,
     WeeklyContractedHoursComponent,
     YearArrivedUkComponent,
-    SelectRecordTypeComponent,
     MoveWorkerDialogComponent,
     MandatoryDetailsComponent,
     LongTermAbsenceComponent,
@@ -148,6 +151,9 @@ import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-downl
     CarryOutDelegatedHealthcareActivitiesComponent,
     WhoCarryOutDelegatedHealthcareActivitiesComponent,
     DoYouWantToDowloadTrainAndQualsComponent,
+    TrainingCourseMatchingLayoutComponent,
+    SelectTrainingCourseForWorkerTraining,
+    IncludeTrainingCourseDetailsComponent,
   ],
   providers: [
     DialogService,
@@ -156,6 +162,8 @@ import { DoYouWantToDowloadTrainAndQualsComponent } from './do-you-want-to-downl
     QualificationResolver,
     QualificationsResolver,
     TrainingCategoriesResolver,
+    TrainingCourseResolver,
+    TrainingProvidersResolver,
     TrainingRecordResolver,
     TrainingRecordsResolver,
     TrainingAndQualificationRecordsResolver,

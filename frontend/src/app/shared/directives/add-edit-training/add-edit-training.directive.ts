@@ -5,27 +5,43 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingCourse } from '@core/model/training-course.model';
+import { TrainingProvider } from '@core/model/training-provider.model';
 import {
+  DeliveredBy,
+  HowWasItDelivered,
   TrainingCategory,
   TrainingCertificate,
-  TrainingRecord,
+  TrainingRecord as LegacyIncorrectTrainingRecordType,
   TrainingRecordRequest,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
+import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingCourseService } from '@core/services/training-course.service';
+import { TrainingProviderService } from '@core/services/training-provider.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { DateUtil } from '@core/utils/date-util';
+import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
+type TrainingRecord = LegacyIncorrectTrainingRecordType & {
+  completed: string;
+  expires: string;
+  accredited?: YesNoDontKnow;
+};
+
 @Directive({
-    standalone: false
+  standalone: false,
 })
 export class AddEditTrainingDirective implements OnInit, AfterViewInit {
+  @ViewChild('validityPeriodInMonthRef', { static: true }) validityPeriodInMonth: NumberInputWithButtonsComponent;
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public submitted = false;
@@ -53,6 +69,15 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public multipleTrainingDetails: boolean;
   public trainingCertificates: TrainingCertificate[] = [];
   public submitButtonDisabled: boolean = false;
+  public deliveredByOptions = DeliveredBy;
+  public howWasItDeliveredOptions = HowWasItDelivered;
+  public hideExpiresDate: boolean = false;
+  public trainingCourses: TrainingCourse[] = [];
+  public showUpdateRecordsWithTrainingCourseDetails: boolean = false;
+  public updateTrainingRecordWithTrainingCourseText = TrainingCourseService.RevealText;
+  public trainingProviders: TrainingProvider[];
+  public expiryMismatchWarning: boolean = false;
+  public showExpiryDateInput: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -64,10 +89,12 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
+    protected trainingProviderService: TrainingProviderService,
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.trainingProviders = this.route.snapshot.data?.trainingProviders;
     this.checkForCategoryId();
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
@@ -78,7 +105,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
+    this.setupFormChangeListeners();
     this.setupFormErrorsMap();
+    this.resetTrainingRecordsStateWhenClickedAway();
   }
 
   ngAfterViewInit(): void {
@@ -110,11 +139,23 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   protected setButtonText(): void {}
 
+  protected resetTrainingRecordsStateWhenClickedAway(): void {}
+
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
         accredited: null,
+        deliveredBy: [null, { updateOn: 'change' }],
+        externalProviderName: [null, { updateOn: 'change' }],
+        howWasItDelivered: null,
+        validityPeriodInMonth: [
+          null,
+          {
+            validators: [Validators.min(1), Validators.max(999), Validators.pattern('^[0-9]+$')],
+          },
+        ],
+        doesNotExpire: [null, { updateOn: 'change' }],
         completed: this.formBuilder.group({
           day: null,
           month: null,
@@ -159,6 +200,26 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     );
   }
 
+  protected setupFormChangeListeners() {
+    const validityPeriodInMonth = this.form.get('validityPeriodInMonth');
+    const doesNotExpire = this.form.get('doesNotExpire');
+
+    const clearCheckboxOnValidityPeriodInput = this.validityPeriodInMonth.registerOnChange((newValue) => {
+      if (newValue) {
+        doesNotExpire.patchValue(null);
+      }
+    });
+
+    const clearValidityPeriodOnCheckboxTicked = doesNotExpire.valueChanges.subscribe((newValue) => {
+      if (newValue) {
+        validityPeriodInMonth.patchValue(null);
+      }
+    });
+
+    this.subscriptions.add(clearCheckboxOnValidityPeriodInput);
+    this.subscriptions.add(clearValidityPeriodOnCheckboxTicked);
+  }
+
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -166,12 +227,20 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         type: [
           {
             name: 'minlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
+            message: `Training record name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
           },
           {
             name: 'maxlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
+            message: `Training record name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
           },
+        ],
+      },
+      {
+        item: 'validityPeriodInMonth',
+        type: [
+          { name: 'min', message: 'Number of months must be between 1 and 999' },
+          { name: 'max', message: 'Number of months must be between 1 and 999' },
+          { name: 'pattern', message: 'Number of months must be between 1 and 999' },
         ],
       },
       {
@@ -225,6 +294,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
+  public getOtherTrainingProviderId() {
+    return this.trainingProviders?.find((provider) => provider.isOther)?.id;
+  }
+
   public onSubmit(): void {
     this.form.get('completed').updateValueAndValidity();
     this.form.get('expires').updateValueAndValidity();
@@ -240,29 +313,59 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       return;
     }
 
+    const trainingRecordToSubmit = this.getAndProcessFormValue();
+
+    this.submit(trainingRecordToSubmit);
+  }
+
+  private getAndProcessFormValue(): TrainingRecordRequest {
     const trainingCategorySelected = this.trainingCategory;
 
-    const { title, accredited, completed, expires, notes } = this.form.controls;
-    const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
-    const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
+    const {
+      title,
+      accredited,
+      deliveredBy,
+      externalProviderName,
+      howWasItDelivered,
+      validityPeriodInMonth,
+      doesNotExpire,
+      completed,
+      expires,
+      notes,
+    } = this.form.controls;
 
-    const record: TrainingRecordRequest = {
+    const completedDate = DateUtil.toDayjs(completed.value);
+    const expiresDate = DateUtil.toDayjs(expires.value);
+
+    const record = {
       trainingCategory: {
         id: trainingCategorySelected.id,
       },
       title: title.value,
       accredited: accredited.value,
+      deliveredBy: deliveredBy.value,
+      externalProviderName: externalProviderName.value,
+      howWasItDelivered: howWasItDelivered.value,
+      validityPeriodInMonth: validityPeriodInMonth.value,
+      doesNotExpire: doesNotExpire.value,
       completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
       expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
       notes: notes.value,
     };
 
-    this.submit(record);
-  }
+    const withTrainingProviderFilled = this.trainingProviderService.fillInTrainingProvider(
+      record,
+      this.trainingProviders,
+      this.getOtherTrainingProviderId(),
+    ) as TrainingRecordRequest;
 
-  dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs {
-    const { day, month, year } = group.value;
-    return day && month && year ? dayjs(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
+    if (this.multipleTrainingDetails && withTrainingProviderFilled.expires) {
+      withTrainingProviderFilled.expires = null;
+    }
+
+    const withExpiryDateFilled = this.trainingService.fillInExpiryDate(withTrainingProviderFilled, completedDate);
+
+    return withExpiryDateFilled;
   }
 
   // TODO: Expiry Date validation cannot be before completed date

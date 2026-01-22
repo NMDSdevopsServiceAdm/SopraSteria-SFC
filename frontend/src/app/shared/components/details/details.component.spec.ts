@@ -5,7 +5,7 @@ import { DetailsComponent } from './details.component';
 
 describe('DetailsComponent', () => {
   const setup = async () => {
-    const { fixture, getByText } = await render(DetailsComponent, {
+    const { fixture, getByText, getByTestId } = await render(DetailsComponent, {
       imports: [SharedModule],
       providers: [],
     });
@@ -14,6 +14,7 @@ describe('DetailsComponent', () => {
 
     return {
       component,
+      getByTestId,
       getByText,
       fixture,
     };
@@ -32,5 +33,19 @@ describe('DetailsComponent', () => {
 
     const revealTitle = getByText('Why we ask for this information');
     expect(revealTitle).toBeTruthy();
+  });
+
+  it('should hide the additional details initially', async () => {
+    const { getByTestId } = await setup();
+    const details = getByTestId('additional-details');
+    expect(details.hasAttribute('open')).toBeFalsy();
+  });
+
+  it('should display the additional details after clicking on the toggle', async () => {
+    const { getByTestId, fixture} = await setup();
+    getByTestId('details-toggle').click();
+    fixture.detectChanges();
+    const details = getByTestId('additional-details');
+    expect(details.hasAttribute('open')).toBeTruthy();
   });
 });

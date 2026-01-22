@@ -36,6 +36,8 @@ import {
 } from '@core/breadcrumb/journey.parent-requests';
 import { publicJourney } from '@core/breadcrumb/journey.public';
 import { subsidiaryJourney } from '@core/breadcrumb/journey.subsidiary';
+import { trainingCourseJourney } from '@core/breadcrumb/journey.training-course';
+import { updateRecordsWithTrainingCourseDetailsJourney } from '@core/breadcrumb/journey.update-records-with-training-course-details';
 import { wdfJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
@@ -292,6 +294,14 @@ export class BreadcrumbService {
       }
       case JourneyType.TRAINING_AND_QUALIFICATIONS_TAB: {
         routes = trainingAndQualificationsTabJourney;
+        break;
+      }
+      case JourneyType.TRAINING_COURSE: {
+        routes = trainingCourseJourney;
+        break;
+      }
+      case JourneyType.UPDATE_RECORDS_WITH_TRAINING_COURSE_DETAILS: {
+        routes = updateRecordsWithTrainingCourseDetailsJourney;
         break;
       }
       case JourneyType.BENCHMARKS_TAB: {
