@@ -1,7 +1,7 @@
 <div class="govuk-grid-column-full">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <p>Search by name, username or email address.</p>
+      <p>Search by name, username , email address or phone number.</p>
       <div *ngIf="submitted && !results.length" data-testid="no-search-results">
         <div class="govuk-warning-text">
           <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -144,6 +144,16 @@
               name="emailAddress"
               type="text"
               [formControlName]="'emailAddress'"
+            />
+          </div>
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="phoneNumber"> Phone number </label>
+            <input
+              class="govuk-input govuk-!-width-three-quarters"
+              id="phoneNumber"
+              name="phoneNumber"
+              type="text"
+              [formControlName]="'phoneNumber'"
             />
           </div>
         </fieldset>

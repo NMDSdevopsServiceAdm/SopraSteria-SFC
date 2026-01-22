@@ -8,9 +8,9 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { SearchDirective } from '@shared/directives/admin/search/search.directive';
 
 @Component({
-    selector: 'app-search-for-user',
-    templateUrl: './search-for-user.component.html',
-    standalone: false
+  selector: 'app-search-for-user',
+  templateUrl: './search-for-user.component.html',
+  standalone: false,
 })
 export class SearchForUserComponent extends SearchDirective {
   public submitted = false;
@@ -31,6 +31,7 @@ export class SearchForUserComponent extends SearchDirective {
       name: null,
       username: null,
       emailAddress: null,
+      phoneNumber: null,
     });
   }
 
