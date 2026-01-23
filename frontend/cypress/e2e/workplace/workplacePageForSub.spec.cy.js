@@ -3,7 +3,7 @@
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 
-describe('Sub home page as edit user', () => {
+describe('Sub home page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = SubEstablishment.id;
 
   before(() => {

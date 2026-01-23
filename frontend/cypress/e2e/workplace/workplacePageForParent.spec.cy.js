@@ -3,7 +3,7 @@
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 import { ParentEstablishment } from '../../support/mockEstablishmentData';
 
-describe('Standalone home page as edit user', () => {
+describe('Standalone home page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = ParentEstablishment.id;
 
   beforeEach(() => {
