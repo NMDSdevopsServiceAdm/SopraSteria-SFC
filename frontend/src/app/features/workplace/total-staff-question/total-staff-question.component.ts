@@ -10,12 +10,11 @@ import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 import { Question } from '../question/question.component';
 
 @Component({
-    selector: 'app-total-staff-question',
-    templateUrl: './total-staff-question.component.html',
-    standalone: false
+  selector: 'app-total-staff-question',
+  templateUrl: './total-staff-question.component.html',
+  standalone: false,
 })
 export class TotalStaffQuestionComponent extends Question {
-  public nextRoute: string[];
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
 

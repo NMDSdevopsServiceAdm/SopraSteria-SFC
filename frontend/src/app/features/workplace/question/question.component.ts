@@ -20,10 +20,12 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
 
   public return: URLStructure;
-  public previousRoute: string[];
-  public nextRoute: string[];
+
+  private _previousRouteSegment: string;
+  private _nextRouteSegment: string;
+  private _skipRouteSegment: string;
+
   public back: URLStructure;
-  public skipRoute: string[];
   public hideBackLink: boolean;
 
   public formErrorsMap: Array<ErrorDetails> = [];
@@ -84,6 +86,65 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  protected setPreviousRouteSegment(pathSegment: string) {
+    this._previousRouteSegment = pathSegment;
+  }
+
+  protected setNextRouteSegment(pathSegment: string) {
+    this._nextRouteSegment = pathSegment;
+  }
+
+  protected setSkipRouteSegment(pathSegment: string) {
+    this._skipRouteSegment = pathSegment;
+  }
+
+  protected isInAddDetailsFlow(): boolean {
+    // TODO: verify and improve this
+    return !this.return;
+  }
+
+  public get previousRoute(): string[] {
+    if (this.isInAddDetailsFlow) {
+      return this.establishmentService.buildPathForAddWorkplaceDetails(
+        this.establishment.uid,
+        this._previousRouteSegment,
+      );
+    } else {
+      return ['/workplace', `${this.establishment.uid}`, this._previousRouteSegment];
+    }
+  }
+
+  public get nextRoute(): string[] {
+    if (this.isInAddDetailsFlow) {
+      return this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, this._nextRouteSegment);
+    } else {
+      return ['/workplace', `${this.establishment.uid}`, this._nextRouteSegment];
+    }
+  }
+
+  public get skipRoute(): string[] {
+    if (this.isInAddDetailsFlow) {
+      return this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, this._skipRouteSegment);
+    } else {
+      return ['/workplace', `${this.establishment.uid}`, this._skipRouteSegment];
+    }
+  }
+
+  protected set previousRoute(route: string | string[]) {
+    const pathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setPreviousRouteSegment(pathSegment);
+  }
+
+  protected set nextRoute(route: string | string[]) {
+    const pathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setNextRouteSegment(pathSegment);
+  }
+
+  protected set skipRoute(route: string | string[]) {
+    const pathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setSkipRouteSegment(pathSegment);
   }
 
   protected navigate(): Promise<boolean> {
