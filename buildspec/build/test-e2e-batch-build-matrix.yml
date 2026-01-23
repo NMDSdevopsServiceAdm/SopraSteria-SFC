@@ -20,12 +20,13 @@ batch:
           CY_GROUP_TAGS:
             - '@dha'
             - '@trainingAndQualifications'
-            - '@trainingCourses'
+            - '@trainingCourses @changeDataPermissions'
             - '@workplace'
-            - '@admin'
-            - '@others'
-            - '@changeDataPermissions'
+            - '@admin @benchmarks'
+            - '@others @registration'
             - '@funding'
+            - '@staffRecords'
+            - '@home'
           WORKERS:
             - 1
 

@@ -9,16 +9,12 @@ describe('Standalone home page as edit user', { tags: '@workplace' }, () => {
     cy.reload();
   });
 
-  it('should see the parent establishment workplace page', () => {
+  it('should see the parent establishment workplace page and all sections with no add or change links', () => {
     cy.url().should('include', '#workplace');
     cy.contains('Workplace');
-  });
 
-  it('should show all sections', () => {
     onWorkplacePage.allSectionsAreVisible();
-  });
 
-  it('should not show add or change links', () => {
     onWorkplacePage.allSectionsAreNotChangeable();
   });
 });

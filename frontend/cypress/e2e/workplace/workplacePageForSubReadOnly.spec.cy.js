@@ -23,16 +23,12 @@ describe('Standalone home page as edit user', { tags: '@workplace' }, () => {
     cy.setWorkplaceMainService(establishmentId, 1);
   });
 
-  it('should see the standalone establishment workplace page', () => {
+  it('should see the standalone establishment workplace page and all sections with no add or change links', () => {
     cy.url().should('include', '#workplace');
     cy.contains('Workplace');
-  });
 
-  it('should show all sections', () => {
     onWorkplacePage.allSectionsAreVisible();
-  });
 
-  it('should not show add or change links', () => {
     onWorkplacePage.allSectionsAreNotChangeable();
   });
 });

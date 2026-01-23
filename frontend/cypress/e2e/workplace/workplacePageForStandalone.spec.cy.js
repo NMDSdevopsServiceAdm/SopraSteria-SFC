@@ -53,16 +53,12 @@ describe('Standalone home page as edit user', { tags: '@workplace' }, () => {
     cy.deleteTestWorkerFromDb(workerName);
   });
 
-  it('should see the standalone establishment workplace page', () => {
+  it('should see the standalone establishment workplace page and all sections with add or change links', () => {
     cy.url().should('include', '#workplace');
     cy.contains('Workplace');
-  });
 
-  it('should show all sections', () => {
     onWorkplacePage.allSectionsAreVisible();
-  });
 
-  it('All sections have a change link', () => {
     onWorkplacePage.allSectionsAreChangeable();
   });
 

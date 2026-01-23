@@ -12,12 +12,10 @@ describe('Standalone home page as edit user', { tags: '@workplace' }, () => {
     cy.reload();
   });
 
-  it('should see the parent establishment workplace page', () => {
+  it('should see the parent establishment workplace page and all sections', () => {
     cy.url().should('include', '#workplace');
     cy.contains('Workplace');
-  });
 
-  it('should show all sections', () => {
     onWorkplacePage.allSectionsAreVisible();
   });
 

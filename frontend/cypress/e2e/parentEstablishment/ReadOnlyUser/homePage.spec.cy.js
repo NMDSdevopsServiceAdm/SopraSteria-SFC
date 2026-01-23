@@ -21,7 +21,7 @@ describe('Parent home page as read only user', () => {
     onHomePage.allTabs('read');
   });
 
-  it('should show funding link', () => {
+  it('should show funding link', { tags: '@home' }, () => {
     cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
   });
 
