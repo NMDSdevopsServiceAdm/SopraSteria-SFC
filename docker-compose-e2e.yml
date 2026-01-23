@@ -61,7 +61,7 @@ services:
         condition: service_healthy
     volumes:
       - ./frontend:/frontend
-    entrypoint: ["cypress", "run", "--env", "grepTags=${TAGS}, grepFilterSpecs=true"]
+    entrypoint: ["cypress", "run", "--env", "grepTags=${TAGS},grepFilterSpecs=true"]
     env_file:
       - .env
     environment:
