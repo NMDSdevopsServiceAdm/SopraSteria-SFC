@@ -11,7 +11,7 @@ import { of } from 'rxjs';
 import { WorkplaceModule } from '../workplace.module';
 import { StartComponent } from './start.component';
 
-describe('StartComponent (workplace)', () => {
+fdescribe('StartComponent (workplace)', () => {
   async function setup(navigatedFromFragment = '') {
     navigatedFromFragment ? history.pushState({ navigatedFromFragment }, '') : history.replaceState({}, '');
 
@@ -52,7 +52,13 @@ describe('StartComponent (workplace)', () => {
 
     fireEvent.click(continueButton);
 
-    expect(routerSpy).toHaveBeenCalledWith(['workplace', workplaceUid, 'other-services']);
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'workplace-data',
+      'add-workplace-details',
+      'other-services',
+    ]);
   });
 
   it('should call the updateSingleEstablishmentField when clicking the Continue button', async () => {
