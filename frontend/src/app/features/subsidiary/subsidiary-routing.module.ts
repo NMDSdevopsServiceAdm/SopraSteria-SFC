@@ -243,6 +243,7 @@ const routes: Routes = [
           title: 'Add Mandatory Training',
         },
       },
+      // TODO: change this to reuse the same routes definition with workplace-routing.module
       {
         path: 'start',
         component: StartComponent,
@@ -783,9 +784,9 @@ const routes: Routes = [
       {
         path: 'update-records-with-training-course-details',
         loadChildren: () =>
-          import(
-            '@features/training-and-qualifications/update-records-with-training-course/update-records-with-training-course.module'
-          ).then((m) => m.UpdateRecordsWithTrainingCourseModule),
+          import('@features/training-and-qualifications/update-records-with-training-course/update-records-with-training-course.module').then(
+            (m) => m.UpdateRecordsWithTrainingCourseModule,
+          ),
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canEditWorker'],
