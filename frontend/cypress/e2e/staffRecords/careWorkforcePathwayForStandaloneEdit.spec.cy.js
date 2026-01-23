@@ -1,14 +1,14 @@
-import { CWPAwarenessAnswers, CWPUseReasons } from '../../../support/careWorkforcePathwayData';
-import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
-import { onWorkplacePage } from '../../../support/page_objects/onWorkplacePage';
-import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../../support/page_objects/workplaceQuestionPages';
+import { CWPAwarenessAnswers, CWPUseReasons } from '../../support/careWorkforcePathwayData';
+import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
+import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../support/page_objects/workplaceQuestionPages';
 
 const establishmentID = StandAloneEstablishment.id;
 const cwpWorkersSummaryPath = 'care-workforce-pathway-workers-summary';
 const homePagePath = 'dashboard#home';
 const testWorkers = ['test CWP worker 1', 'test CWP worker 2'];
 
-describe('Care workforce pathway journey', () => {
+describe('Care workforce pathway journey', { tags: '@staffRecords' }, () => {
   before(() => {
     cy.archiveAllWorkersInWorkplace(establishmentID);
     cy.resetWorkplaceCWPAnswers(establishmentID);
