@@ -40,7 +40,10 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.showCqcDetailsBanner = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
 
-    this.addWorkplaceDetailsStartLink = ['/workplace', this.workplace.uid, ...ADD_WORKPLACE_DETAILS_ROUTE, 'start'];
+    this.addWorkplaceDetailsStartLink = this.establishmentService.buildPathForAddWorkplaceDetails(
+      this.workplace.uid,
+      'start',
+    );
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {

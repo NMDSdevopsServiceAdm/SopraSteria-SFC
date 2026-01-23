@@ -25,6 +25,7 @@ import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { PostServicesModel } from '../model/postServices.model';
 import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
+import { ADD_WORKPLACE_DETAILS_ROUTE } from '@core/constants/constants';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -495,5 +496,9 @@ export class EstablishmentService {
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/updateStaffKindDelegatedHealthcareActivities`,
       payload,
     );
+  }
+
+  public buildPathForAddWorkplaceDetails(workplaceUid: string, pathSegment: string): Array<string> {
+    return ['/workplace', workplaceUid, ...ADD_WORKPLACE_DETAILS_ROUTE, pathSegment];
   }
 }
