@@ -23,12 +23,16 @@ describe('Sub home page as edit user', { tags: '@workplace' }, () => {
     cy.setWorkplaceMainService(establishmentId, 1);
   });
 
-  it('should see the sub establishment workplace page and all sections with add or change links', () => {
+  it('should see the sub establishment workplace page', () => {
     cy.url().should('include', '#workplace');
     cy.contains('Workplace');
+  });
 
+  it('should show all sections', () => {
     onWorkplacePage.allSectionsAreVisible();
+  });
 
+  it('should show add or change links', () => {
     onWorkplacePage.allSectionsAreChangeable();
   });
 });
