@@ -1,6 +1,7 @@
 import { defineConfig } from 'cypress';
 import * as dotenv from 'dotenv';
 import { Client } from 'pg';
+import { plugin as cypressGrepPlugin } from '@cypress/grep/plugin';
 
 dotenv.config({ path: '../.env' });
 
@@ -63,7 +64,11 @@ export default defineConfig({
           await client.end();
           return null;
         },
+
       });
+
+      cypressGrepPlugin(config);
+      return config;
       // implement node event listeners here
     },
   },

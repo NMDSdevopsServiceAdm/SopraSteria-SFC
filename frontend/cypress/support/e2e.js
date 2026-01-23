@@ -13,6 +13,9 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
+import { register as registerCypressGrep } from '@cypress/grep';
+registerCypressGrep();
+
 // Import commands.js using ES2015 syntax:
 import './commands/loginCommands';
 import './commands/sharedCommands';

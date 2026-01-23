@@ -17,11 +17,9 @@ batch:
     dynamic:
       env:
         variables:
-          CY_GROUP_SPEC:
-            # - 'cypress/e2e/funding/**/*.cy.js'
-            - 'cypress/e2e/delegatedHealthcareActivities/**/*.cy.js'
-            - 'cypress/e2e/trainingAndQualifications/**/*.cy.js'
-            # - 'cypress/e2e/workplace/**/*.cy.js'
+          CY_GROUP_TAGS:
+            - 'dha'
+            - 'trainingAndQualifications'
           WORKERS:
             - 1
 
@@ -33,4 +31,4 @@ phases:
       - make install-for-e2e
   build:
     commands:
-      - CYPRESS_PATH=${CY_GROUP_SPEC} docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
+      - TAGS=${CY_GROUP_TAGS} docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
