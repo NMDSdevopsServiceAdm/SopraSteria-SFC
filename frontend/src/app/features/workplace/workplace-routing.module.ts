@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Route, RouterModule, Routes } from '@angular/router';
 import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edit-user-permissions.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
@@ -326,6 +326,16 @@ const workplaceFlowQuestions: Routes = [
   },
 ];
 
+const addWorkplaceDetails: Route = {
+  path: 'add-workplace-details',
+  children: [...workplaceFlowQuestions],
+};
+
+const workplaceSummary: Route = {
+  path: 'workplace-summary',
+  children: [],
+};
+
 // eslint-disable-next-line max-len
 const routes: Routes = [
   {
@@ -364,7 +374,10 @@ const routes: Routes = [
     canActivate: [HasPermissionsGuard],
     data: { title: 'Workplace' },
     children: [
-      ...workplaceFlowQuestions,
+      // TODO: some routes in workplaceFlowQuestions is to be shared with workplace-summary.
+      // ...workplaceFlowQuestions,
+      { path: 'workplace-data', children: [addWorkplaceDetails, workplaceSummary] },
+
       {
         path: 'users',
         component: UsersComponent,
