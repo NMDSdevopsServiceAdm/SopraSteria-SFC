@@ -34,12 +34,12 @@ describe('Standalone home page as edit user', { tags: '@workplace' }, () => {
     cy.resetWorkplaceDHAAnswers(establishmentId);
     cy.resetNonMandatoryWorkplaceQuestions(establishmentId);
     cy.insertTestWorker({ establishmentID: establishmentId, workerName });
+    cy.reload();
   });
 
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-    cy.reload();
   });
 
   afterEach(() => {

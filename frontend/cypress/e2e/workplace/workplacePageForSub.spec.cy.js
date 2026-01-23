@@ -10,12 +10,12 @@ describe('Sub home page as edit user', { tags: '@workplace' }, () => {
     cy.resetEstablishmentCapacity(establishmentId);
     cy.setWorkplaceMainService(establishmentId, 9);
     cy.insertDummyAnswerForWorkplaceWDFAnswers(establishmentId);
+    cy.reload();
   });
 
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-    cy.reload();
   });
 
   after(() => {
