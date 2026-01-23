@@ -7,7 +7,7 @@ import {
   inputLocationOrPostcode,
 } from '../../support/page_objects/createNewWorkplaceForms';
 
-describe('Parent changing data permissions for a subsidiary', () => {
+describe('Parent changing data permissions for a subsidiary', { tags: '@changeDataPermissions' }, () => {
   const subsidiaryWorkplaceName = 'Workplace for data permissions';
 
   before(() => {

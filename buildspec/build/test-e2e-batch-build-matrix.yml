@@ -22,6 +22,10 @@ batch:
             - '@trainingAndQualifications'
             - '@trainingCourses'
             - '@workplace'
+            - '@admin'
+            - '@others'
+            - '@changeDataPermissions'
+            - '@funding'
           WORKERS:
             - 1
 
