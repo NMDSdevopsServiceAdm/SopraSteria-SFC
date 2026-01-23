@@ -37,7 +37,7 @@ export default defineConfig({
     editParentMainServiceEight: 'editparent',
     apiUrl: 'http://localhost:8080/',
   },
-
+  screenshotOnRunFailure: false,
   video: false,
   viewportWidth: 1000,
   viewportHeight: 1000,
@@ -64,7 +64,6 @@ export default defineConfig({
           await client.end();
           return null;
         },
-
       });
 
       cypressGrepPlugin(config);

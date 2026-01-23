@@ -18,14 +18,11 @@ batch:
       env:
         variables:
           CY_GROUP_TAGS:
-            - '@dha'
-            - '@trainingAndQualifications'
-            - '@trainingCourses @changeDataPermissions'
+            - '@dha @funding @changeDataPermissions'
+            - '@trainingAndQualifications @trainingCourses'
             - '@workplace'
             - '@admin @benchmarks @others @registration'
-            - '@funding'
-            - '@staffRecords'
-            - '@home'
+            - '@staffRecords @home'
           WORKERS:
             - 1
 
