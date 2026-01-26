@@ -19,11 +19,11 @@ batch:
         variables:
           CY_GROUP_TAGS:
             - '@funding @changeDataPermissions'
-            - '@trainingAndQualifications'
+            - '@trainingAndQualifications @home'
             - '@workplace'
             - '@admin @benchmarks @others @registration'
             - '@staffRecords'
-            - '@dha @home @trainingCourses'
+            - '@dha @trainingCourses'
           WORKERS:
             - 1
 
