@@ -36,7 +36,9 @@ describe('TypeOfEmployerComponent', () => {
                 overrides.owner ?? 'Workplace',
               ),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
