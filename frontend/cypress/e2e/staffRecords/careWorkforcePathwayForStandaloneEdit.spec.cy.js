@@ -23,6 +23,8 @@ describe('Care workforce pathway journey', { tags: '@staffRecords' }, () => {
 
   describe('answer Care Workforce Pathway workplace awareness and usage from homepage panel', () => {
     beforeEach(() => {
+      cy.reload();
+
       cy.intercept(
         'GET',
         '/api/establishment/*/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer',
