@@ -298,9 +298,10 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
       cy.intercept('GET', '/api/reports/wdf/establishment/*').as('reports');
 
       cy.get('a').contains('Does your data meet funding requirements?').click();
-      cy.get('h1').should('contain.text', `Does your data meet funding requirements for`);
 
       cy.wait('@reports');
+
+      cy.get('h1').should('contain.text', `Does your data meet funding requirements for`);
 
       if (isTestingForParentViewSub) {
         // for parent view sub, further click into the sub workplace

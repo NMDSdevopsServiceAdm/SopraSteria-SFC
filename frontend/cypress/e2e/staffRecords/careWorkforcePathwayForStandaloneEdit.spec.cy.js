@@ -29,9 +29,10 @@ describe('Care workforce pathway journey', { tags: '@staffRecords' }, () => {
       ).as('careWorkforcePathway');
 
       cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
-      cy.url().should('contain', homePagePath);
 
       cy.wait('@careWorkforcePathway');
+
+      cy.url().should('contain', homePagePath);
     });
 
     const cwpAwarenessFlagMessage = 'How aware of the CWP is your workplace?';
@@ -110,9 +111,10 @@ describe('Care workforce pathway journey', { tags: '@staffRecords' }, () => {
         '/api/establishment/*/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer',
       ).as('careWorkforcePathway');
       cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
-      cy.url().should('contain', homePagePath);
 
       cy.wait('@careWorkforcePathway');
+
+      cy.url().should('contain', homePagePath);
     });
 
     it('should show a flag in homepage summary panel if some workers have not got the answer for CWP questions', () => {
