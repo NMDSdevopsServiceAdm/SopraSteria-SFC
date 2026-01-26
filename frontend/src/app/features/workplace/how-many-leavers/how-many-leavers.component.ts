@@ -37,19 +37,11 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
   }
 
   protected returnToFirstPage(): void {
-    const route = this.establishmentService.buildPathForAddWorkplaceDetails(
-      this.establishment.uid,
-      'do-you-have-leavers',
-    );
-    this.router.navigate(route);
+    this.navigateToQuestionPage('do-you-have-leavers');
   }
 
   protected returnToJobRoleSelectionPage(): void {
-    const route = this.establishmentService.buildPathForAddWorkplaceDetails(
-      this.establishment.uid,
-      'select-leaver-job-roles',
-    );
-    this.router.navigate(route);
+    this.navigateToQuestionPage('select-leaver-job-roles');
   }
 
   protected setPreviousRoute(): void {

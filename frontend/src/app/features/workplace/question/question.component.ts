@@ -1,6 +1,6 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -145,6 +145,18 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected set skipRoute(route: string | string[]) {
     const pathSegment = Array.isArray(route) ? route.at(-1) : route;
     this.setSkipRouteSegment(pathSegment);
+  }
+
+  protected navigateToQuestionPage(pathSegment: string, extras?: NavigationExtras): Promise<boolean> {
+    if (this.isInAddDetailsFlow) {
+      const destinationUrl = this.establishmentService.buildPathForAddWorkplaceDetails(
+        this.establishment.uid,
+        pathSegment,
+      );
+      return this.router.navigate(destinationUrl, extras);
+    } else {
+      return this.router.navigate(['/workplace', `${this.establishment.uid}`, pathSegment], extras);
+    }
   }
 
   protected navigate(): Promise<boolean> {
