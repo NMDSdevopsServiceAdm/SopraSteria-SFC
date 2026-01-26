@@ -34,7 +34,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('NewWorkplaceTabComponent', () => {
+describe('NewWorkplaceTabComponent', () => {
   const setup = async (
     permissions = ['canEditEstablishment'],
     cqcStatusMatch = true,

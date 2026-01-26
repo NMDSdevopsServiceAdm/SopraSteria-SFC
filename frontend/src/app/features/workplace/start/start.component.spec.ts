@@ -11,7 +11,7 @@ import { of } from 'rxjs';
 import { WorkplaceModule } from '../workplace.module';
 import { StartComponent } from './start.component';
 
-fdescribe('StartComponent (workplace)', () => {
+describe('StartComponent (workplace)', () => {
   async function setup(navigatedFromFragment = '') {
     navigatedFromFragment ? history.pushState({ navigatedFromFragment }, '') : history.replaceState({}, '');
 
