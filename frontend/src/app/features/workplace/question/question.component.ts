@@ -100,7 +100,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this._skipRouteSegment = pathSegment;
   }
 
-  protected isInAddDetailsFlow(): boolean {
+  protected get isInAddDetailsFlow(): boolean {
     // TODO: verify and improve this
     return !this.return;
   }
@@ -147,15 +147,15 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this.setSkipRouteSegment(pathSegment);
   }
 
-  protected navigateToQuestionPage(pathSegment: string, extras?: NavigationExtras): Promise<boolean> {
+  protected navigateToQuestionPage(pathSegment: string, ...extras: [NavigationExtras?]): Promise<boolean> {
     if (this.isInAddDetailsFlow) {
       const destinationUrl = this.establishmentService.buildPathForAddWorkplaceDetails(
         this.establishment.uid,
         pathSegment,
       );
-      return this.router.navigate(destinationUrl, extras);
+      return this.router.navigate(destinationUrl, ...extras);
     } else {
-      return this.router.navigate(['/workplace', `${this.establishment.uid}`, pathSegment], extras);
+      return this.router.navigate(['/workplace', `${this.establishment.uid}`, pathSegment], ...extras);
     }
   }
 
