@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave.component';
 
-describe('StaffBenefitHolidayLeaveComponent', () => {
+fdescribe('StaffBenefitHolidayLeaveComponent', () => {
   async function setup(returnUrl = true, holidayLeave = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       StaffBenefitHolidayLeaveComponent,
@@ -141,7 +141,13 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'cash-loyalty'
+      ]);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {

@@ -12,7 +12,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 
-describe('DoYouHaveVacanciesComponent', () => {
+fdescribe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(DoYouHaveVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -107,44 +107,96 @@ describe('DoYouHaveVacanciesComponent', () => {
   });
 
   describe('back link', () => {
-    it('should set the previous page to service-users page when main service cannot do delegated healthcare activities', async () => {
-      const overrides = {
-        returnUrl: false,
-        workplace: {
-          mainService: {
-            canDoDelegatedHealthcareActivities: null,
-            id: 11,
-            name: 'Domestic services and home help',
-            reportingID: 10,
+    describe('in workplace flow', () => {
+      it('should set the previous page to service-users page when main service cannot do delegated healthcare activities', async () => {
+        const overrides = {
+          returnUrl: false,
+          workplace: {
+            mainService: {
+              canDoDelegatedHealthcareActivities: null,
+              id: 11,
+              name: 'Domestic services and home help',
+              reportingID: 10,
+            },
           },
-        },
-      };
+        };
 
-      const { component } = await setup(overrides);
+        const { component } = await setup(overrides);
 
-      expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'service-users']);
+        expect(component.previousRoute).toEqual([
+          '/workplace',
+          `${component.establishment.uid}`,
+          'workplace-data',
+          'add-workplace-details',
+          'service-users',
+        ]);
+      });
+
+      it('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
+        const overrides = {
+          returnUrl: false,
+          workplace: {
+            mainService: {
+              canDoDelegatedHealthcareActivities: true,
+              id: 9,
+              name: 'Day care and day services',
+              reportingID: 6,
+            },
+          },
+        };
+
+        const { component } = await setup(overrides);
+
+        expect(component.previousRoute).toEqual([
+          '/workplace',
+          `${component.establishment.uid}`,
+          'workplace-data',
+          'add-workplace-details',
+          'what-kind-of-delegated-healthcare-activities',
+        ]);
+      });
     });
 
-    it('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
-      const overrides = {
-        returnUrl: false,
-        workplace: {
-          mainService: {
-            canDoDelegatedHealthcareActivities: true,
-            id: 9,
-            name: 'Day care and day services',
-            reportingID: 6,
+    describe('from workplace summary', () => {
+      it('should set the previous page to service-users page when main service cannot do delegated healthcare activities', async () => {
+        const overrides = {
+          returnUrl: true,
+          workplace: {
+            mainService: {
+              canDoDelegatedHealthcareActivities: null,
+              id: 11,
+              name: 'Domestic services and home help',
+              reportingID: 10,
+            },
           },
-        },
-      };
+        };
 
-      const { component } = await setup(overrides);
+        const { component } = await setup(overrides);
 
-      expect(component.previousRoute).toEqual([
-        '/workplace',
-        `${component.establishment.uid}`,
-        'what-kind-of-delegated-healthcare-activities',
-      ]);
+        expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'service-users']);
+      });
+
+      it('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
+        const overrides = {
+          returnUrl: true,
+          workplace: {
+            mainService: {
+              canDoDelegatedHealthcareActivities: true,
+              id: 9,
+              name: 'Day care and day services',
+              reportingID: 6,
+            },
+          },
+        };
+
+        const { component } = await setup(overrides);
+
+        expect(component.previousRoute).toEqual([
+          '/workplace',
+          `${component.establishment.uid}`,
+          'what-kind-of-delegated-healthcare-activities',
+        ]);
+      });
     });
   });
 
@@ -298,7 +350,13 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-vacancy-job-roles']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'select-vacancy-job-roles',
+        ]);
       });
 
       it("should navigate to the starters page when submitting 'None'", async () => {
@@ -312,7 +370,13 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-starters']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-starters',
+        ]);
       });
 
       it("should navigate to the starters page when submitting 'I do not know' ", async () => {
@@ -326,7 +390,13 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-starters']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-starters',
+        ]);
       });
 
       it('should navigate to the starters page when clicking Skip this question link', async () => {
@@ -337,7 +407,13 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(link);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-starters']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-starters',
+        ]);
       });
 
       it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {

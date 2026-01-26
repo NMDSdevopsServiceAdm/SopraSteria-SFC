@@ -498,7 +498,11 @@ export class EstablishmentService {
     );
   }
 
+  public baseRouteForAddWorkplaceDetails(workplaceUid: string): Array<string> {
+    return ['/workplace', workplaceUid, ...ADD_WORKPLACE_DETAILS_ROUTE];
+  }
+
   public buildPathForAddWorkplaceDetails(workplaceUid: string, pathSegment: string): Array<string> {
-    return ['/workplace', workplaceUid, ...ADD_WORKPLACE_DETAILS_ROUTE, pathSegment];
+    return [...this.baseRouteForAddWorkplaceDetails(workplaceUid), pathSegment];
   }
 }

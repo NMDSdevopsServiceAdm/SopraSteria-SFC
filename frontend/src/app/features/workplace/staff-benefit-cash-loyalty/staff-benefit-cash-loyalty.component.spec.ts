@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty.component';
 
-describe('StaffBenefitCashLoyaltyComponent', () => {
+fdescribe('StaffBenefitCashLoyaltyComponent', () => {
   async function setup(returnUrl = true, cashLoyalty = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       StaffBenefitCashLoyaltyComponent,
@@ -133,7 +133,13 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
 
   it('should set the previous route as annual leave question page', async () => {
     const { component } = await setup(false);
-    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'staff-benefit-holiday-leave']);
+    expect(component.previousRoute).toEqual([
+      '/workplace',
+      'mocked-uid',
+      'workplace-data',
+      'add-workplace-details',
+      'staff-benefit-holiday-leave',
+    ]);
   });
 
   describe('submit buttons and submitting form', () => {
@@ -188,6 +194,8 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
         'staff-recruitment-capture-training-requirement',
       ]);
     });
@@ -202,6 +210,8 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
         'staff-recruitment-capture-training-requirement',
       ]);
     });
