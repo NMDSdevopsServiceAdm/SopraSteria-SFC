@@ -27,7 +27,7 @@ import dayjs from 'dayjs';
 import { CheckAnswersWorkplaceSummaryComponent } from './workplace-summary.component';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 
-fdescribe('CheckAnswersWorkplaceSummaryComponent', () => {
+describe('CheckAnswersWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const shareWith = overrides?.shareWith ?? null;
     const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
