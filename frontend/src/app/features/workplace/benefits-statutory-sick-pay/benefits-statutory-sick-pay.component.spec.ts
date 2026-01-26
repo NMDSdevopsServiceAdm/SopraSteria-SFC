@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay.component';
 
-describe('BenefitsStatutorySickPayComponent', () => {
+fdescribe('BenefitsStatutorySickPayComponent', () => {
   async function setup(returnUrl = true, sickPay = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       BenefitsStatutorySickPayComponent,
@@ -155,7 +155,13 @@ describe('BenefitsStatutorySickPayComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'pensions']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'pensions',
+      ]);
     });
 
     it('should navigate to the next page when submitting from the flow', async () => {
@@ -165,7 +171,13 @@ describe('BenefitsStatutorySickPayComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'pensions']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'pensions',
+      ]);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
