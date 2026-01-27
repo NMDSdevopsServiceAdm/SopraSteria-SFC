@@ -410,7 +410,6 @@ describe('SelectVacancyJobRolesComponent', () => {
 
     it('should set the backlink to "do you have vacancy" when not in the flow', async () => {
       const { component } = await setup({ returnToUrl: true });
-      //@ts-ignore
       expect(component.back).toEqual({
         url: ['/workplace', component.establishment.uid, 'do-you-have-vacancies'],
       });
