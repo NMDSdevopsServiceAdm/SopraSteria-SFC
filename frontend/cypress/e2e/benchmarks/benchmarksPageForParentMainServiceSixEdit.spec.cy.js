@@ -1,12 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
-import { onBenchmarksPage } from '../../../../support/page_objects/onBenchmarksPage';
-import { onHomePage } from '../../../../support/page_objects/onHomePage';
+import { onBenchmarksPage } from '../../support/page_objects/onBenchmarksPage';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 
-xdescribe('Parent benchmark page, main service 1, as edit user', () => {
+xdescribe('Parent benchmark page, main service 6, as edit user', { tags: '@benchmarks' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editParentMainServiceOne'), Cypress.env('userPassword'));
+    cy.loginAsUser(Cypress.env('editParentMainServiceSix'), Cypress.env('userPassword'));
     onHomePage.clickTab('Benchmarks');
   });
 

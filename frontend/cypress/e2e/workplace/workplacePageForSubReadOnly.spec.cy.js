@@ -3,19 +3,19 @@
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 
-describe('Standalone home page as edit user', () => {
+describe('Standalone home page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = SubEstablishment.id;
 
   before(() => {
     cy.resetEstablishmentCapacity(establishmentId);
     cy.setWorkplaceMainService(establishmentId, 9);
     cy.insertDummyAnswerForWorkplaceWDFAnswers(establishmentId);
+    cy.reload();
   });
 
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('readOnlySubUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-    cy.reload();
   });
 
   after(() => {

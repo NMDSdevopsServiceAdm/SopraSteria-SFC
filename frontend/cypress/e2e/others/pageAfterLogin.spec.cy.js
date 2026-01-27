@@ -3,7 +3,7 @@
 
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 
-describe('page after login', () => {
+describe('page after login', { tags: '@others' }, () => {
   const fullUserName = StandAloneEstablishment.editUserLoginName;
   const editUserId = StandAloneEstablishment.editUserId;
   const establishmentID = StandAloneEstablishment.id;

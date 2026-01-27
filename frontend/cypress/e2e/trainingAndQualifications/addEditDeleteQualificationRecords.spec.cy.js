@@ -2,7 +2,7 @@
 /// <reference types="cypress" />
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 
-describe('qualification record', () => {
+describe('qualification record', { tags: '@trainingAndQualifications' }, () => {
   const workerName1 = 'Test worker';
   const workerName2 = 'Test worker 2';
 

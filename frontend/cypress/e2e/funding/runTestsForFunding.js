@@ -75,6 +75,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
 
     describe('answer for workplace', () => {
       beforeEach(() => {
+        cy.reload();
         clickIntoFundingSection();
       });
 
@@ -145,6 +146,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
       describe('when some answers are missing', () => {
         before(() => {
           cy.clearWorkplaceWDFAnswers(testWorkplace.id);
+          cy.setWorkplaceMainService(testWorkplace.id, 9);
           cy.reload();
         });
 
@@ -296,6 +298,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
 
     const clickIntoFundingSection = () => {
       cy.get('a').contains('Does your data meet funding requirements?').click();
+
       cy.get('h1').should('contain.text', `Does your data meet funding requirements for`);
 
       if (isTestingForParentViewSub) {
