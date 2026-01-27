@@ -11,7 +11,7 @@ import { of } from 'rxjs';
 
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
 
-fdescribe('StaffRecruitmentCaptureTrainingRequirement', () => {
+describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(StaffRecruitmentCaptureTrainingRequirementComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],

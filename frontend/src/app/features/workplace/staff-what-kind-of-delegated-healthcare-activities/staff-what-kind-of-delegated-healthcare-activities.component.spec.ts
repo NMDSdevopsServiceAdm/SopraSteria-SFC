@@ -16,7 +16,7 @@ import { mockDHADefinition, mockDHAs } from '@core/test-utils/MockDelegatedHealt
 import { HttpClient } from '@angular/common/http';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 
-fdescribe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
+describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
   const doNotKnowText = 'I do not know';
   async function setup(overrides: any = {}) {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);

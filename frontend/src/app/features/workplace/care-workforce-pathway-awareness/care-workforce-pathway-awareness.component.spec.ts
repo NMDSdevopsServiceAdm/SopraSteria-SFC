@@ -129,7 +129,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
   it('should set the previous page to accept-previous-care-certificate page', async () => {
     const { component } = await setup();
 
-    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'accept-previous-care-certificate']);
+    expect(component.previousRoute).toEqual([
+      '/workplace',
+      'mocked-uid',
+      'workplace-data',
+      'add-workplace-details',
+      'accept-previous-care-certificate',
+    ]);
   });
 
   describe('progress bar', () => {
@@ -147,7 +153,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
   });
 
   describe('submit buttons', () => {
-    describe('inside the flow', () => {
+    fdescribe('inside the flow', () => {
       it("should show 'Save and continue' button and 'Skip this question' link", async () => {
         const { getByText } = await setup({ returnToUrl: false });
 
@@ -163,7 +169,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         fireEvent.click(skipLink);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'sharing-data']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          workplaceId,
+          'workplace-data',
+          'add-workplace-details',
+          'sharing-data',
+        ]);
       });
 
       awareAnswers.forEach((awareAnswer) => {
@@ -185,7 +197,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
             careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'care-workforce-pathway-use']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            workplaceId,
+            'workplace-data',
+            'add-workplace-details',
+            'care-workforce-pathway-use',
+          ]);
         });
       });
 
@@ -208,7 +226,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
             careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'sharing-data']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            workplaceId,
+            'workplace-data',
+            'add-workplace-details',
+            'sharing-data'
+          ]);
         });
       });
     });
