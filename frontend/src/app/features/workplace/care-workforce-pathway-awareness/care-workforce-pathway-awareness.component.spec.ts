@@ -126,16 +126,26 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     expect(form.valid).toBeTruthy();
   });
 
-  it('should set the previous page to accept-previous-care-certificate page', async () => {
-    const { component } = await setup();
+  describe('inside the flow', () => {
+    it('should set the previous page to accept-previous-care-certificate page', async () => {
+      const { component } = await setup({ returnToUrl: null });
 
-    expect(component.previousRoute).toEqual([
-      '/workplace',
-      'mocked-uid',
-      'workplace-data',
-      'add-workplace-details',
-      'accept-previous-care-certificate',
-    ]);
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'accept-previous-care-certificate',
+      ]);
+    });
+  });
+
+  describe('outside the flow', () => {
+    it('should set the previous page to accept-previous-care-certificate page', async () => {
+      const { component } = await setup({ returnToUrl: true });
+
+      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'accept-previous-care-certificate']);
+    });
   });
 
   describe('progress bar', () => {
