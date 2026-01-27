@@ -101,10 +101,10 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public get isInAddDetailsFlow(): boolean {
-    // TODO: verify and improve this
-    return !this.return;
+    return !this.return || (this.router.url && this.router.url.includes('add-workplace-details'));
   }
 
+  // TODO: refactor the get/set xxxxRoute methods
   public get previousRoute(): string[] {
     if (this.isInAddDetailsFlow) {
       return this.establishmentService.buildPathForAddWorkplaceDetails(
@@ -133,18 +133,18 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
 
   protected set previousRoute(route: string | string[]) {
-    const pathSegment = Array.isArray(route) ? route.at(-1) : route;
-    this.setPreviousRouteSegment(pathSegment);
+    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setPreviousRouteSegment(lastPathSegment);
   }
 
   protected set nextRoute(route: string | string[]) {
-    const pathSegment = Array.isArray(route) ? route.at(-1) : route;
-    this.setNextRouteSegment(pathSegment);
+    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setNextRouteSegment(lastPathSegment);
   }
 
   protected set skipRoute(route: string | string[]) {
-    const pathSegment = Array.isArray(route) ? route.at(-1) : route;
-    this.setSkipRouteSegment(pathSegment);
+    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setSkipRouteSegment(lastPathSegment);
   }
 
   protected navigateToQuestionPage(pathSegment: string, ...extras: [NavigationExtras?]): Promise<boolean> {
