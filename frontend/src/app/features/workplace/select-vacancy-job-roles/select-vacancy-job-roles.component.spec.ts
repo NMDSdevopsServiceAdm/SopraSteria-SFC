@@ -16,7 +16,7 @@ import { MockJobRoles } from '@core/test-utils/MockJobService';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 
-fdescribe('SelectVacancyJobRolesComponent', () => {
+describe('SelectVacancyJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
 
   const setup = async (override: any = {}) => {

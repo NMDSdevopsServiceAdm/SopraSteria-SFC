@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave.component';
 
-fdescribe('StaffBenefitHolidayLeaveComponent', () => {
+describe('StaffBenefitHolidayLeaveComponent', () => {
   async function setup(returnUrl = true, holidayLeave = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       StaffBenefitHolidayLeaveComponent,

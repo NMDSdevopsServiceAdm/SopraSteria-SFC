@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay.component';
 
-fdescribe('BenefitsStatutorySickPayComponent', () => {
+describe('BenefitsStatutorySickPayComponent', () => {
   async function setup(returnUrl = true, sickPay = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       BenefitsStatutorySickPayComponent,
