@@ -100,7 +100,7 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     this._skipRouteSegment = pathSegment;
   }
 
-  protected get isInAddDetailsFlow(): boolean {
+  public get isInAddDetailsFlow(): boolean {
     // TODO: verify and improve this
     return !this.return;
   }

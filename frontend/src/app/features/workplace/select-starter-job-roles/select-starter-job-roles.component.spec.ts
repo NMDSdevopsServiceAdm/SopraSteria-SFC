@@ -51,7 +51,9 @@ describe('SelectStarterJobRolesComponent', () => {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedStarters }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = renderResults.fixture.componentInstance;
     const injector = getTestBed();
@@ -289,7 +291,13 @@ describe('SelectStarterJobRolesComponent', () => {
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Registered nurse'));
         userEvent.click(getByText('Save and continue'));
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'how-many-starters']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'how-many-starters',
+        ]);
       });
     });
 
@@ -362,7 +370,13 @@ describe('SelectStarterJobRolesComponent', () => {
     it('should set the backlink to "do you have starter" page', async () => {
       const { component } = await setup();
       expect(component.back).toEqual({
-        url: ['/workplace', component.establishment.uid, 'do-you-have-starters'],
+        url: [
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-starters',
+        ],
       });
     });
   });
