@@ -432,6 +432,7 @@ import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
+    AddWorkplaceDetailsPathPipe,
   ],
   providers: [
     DialogService,
