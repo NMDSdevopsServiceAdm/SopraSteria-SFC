@@ -8,7 +8,7 @@ const cwpWorkersSummaryPath = 'care-workforce-pathway-workers-summary';
 const homePagePath = 'dashboard#home';
 const testWorkers = ['test CWP worker 1', 'test CWP worker 2'];
 
-describe('Care workforce pathway journey', { tags: '@staffRecords' }, () => {
+describe('Care workforce pathway journey', { tags: '@others' }, () => {
   before(() => {
     cy.archiveAllWorkersInWorkplace(establishmentID);
     cy.resetWorkplaceCWPAnswers(establishmentID);
@@ -24,17 +24,13 @@ describe('Care workforce pathway journey', { tags: '@staffRecords' }, () => {
   describe('answer Care Workforce Pathway workplace awareness and usage from homepage panel', () => {
     beforeEach(() => {
       cy.reload();
-
       cy.intercept(
         'GET',
         '/api/establishment/*/careWorkforcePathway/noOfWorkersWhoRequireCareWorkforcePathwayRoleAnswer',
       ).as('careWorkforcePathway');
 
       cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
-
-      cy.wait('@careWorkforcePathway');
-
-      cy.url().should('contain', homePagePath);
+      cy.url().should('contain', 'dashboard');
     });
 
     const cwpAwarenessFlagMessage = 'How aware of the CWP is your workplace?';

@@ -75,6 +75,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
 
     describe('answer for workplace', () => {
       beforeEach(() => {
+        cy.reload();
         clickIntoFundingSection();
       });
 
@@ -145,11 +146,11 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
       describe('when some answers are missing', () => {
         before(() => {
           cy.clearWorkplaceWDFAnswers(testWorkplace.id);
+          cy.setWorkplaceMainService(testWorkplace.id, 9);
+          cy.reload();
         });
 
         it('should show non-eligible message for workplace and warnings for the missing answers', () => {
-          cy.reload();
-
           cy.get('div[data-testid="workplace-row"]').as('workplaceRow');
           cy.get('@workplaceRow').within(() => {
             cy.get('img[src*="red-flag"]').should('be.visible');
@@ -296,19 +297,7 @@ export const runTestsForFundingPages = (mockEstablishmentData) => {
     });
 
     const clickIntoFundingSection = () => {
-      cy.intercept('GET', '/api/reports/wdf/establishment/*').as('reports');
-
-      if (isTestingForParentViewSub) {
-        cy.intercept('GET', '/api/user/my/establishments?wdf=true').as('myEstablishments');
-      }
-
       cy.get('a').contains('Does your data meet funding requirements?').click();
-
-      cy.wait('@reports');
-
-      if (isTestingForParentViewSub) {
-        cy.wait('@myEstablishments');
-      }
 
       cy.get('h1').should('contain.text', `Does your data meet funding requirements for`);
 
