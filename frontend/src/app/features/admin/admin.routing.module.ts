@@ -44,6 +44,7 @@ import { SearchForGroupComponent } from './search/search-for-group/search-for-gr
 import { SearchForUserComponent } from './search/search-for-user/search-for-user.component';
 import { SearchForWorkplaceComponent } from './search/search-for-workplace/search-for-workplace.component';
 import { SearchComponent } from './search/search.component';
+import { StatusSummaryComponent} from './local-authorities-return/status-summary/status-summary.component';
 
 const routes: Routes = [
   {
@@ -250,6 +251,16 @@ const routes: Routes = [
         },
         resolve: {
           dates: GetDatesResolver,
+        },
+      },
+      {
+        path: 'status-summary',
+        component: StatusSummaryComponent,
+        data: {
+          title: 'Status Summary',
+        },
+        resolve: {
+          localAuthorities: GetLasResolver,
         },
       },
       {

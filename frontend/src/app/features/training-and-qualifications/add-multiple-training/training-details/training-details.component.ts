@@ -10,6 +10,7 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AddEditTrainingDirective } from '../../../../shared/directives/add-edit-training/add-edit-training.directive';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { TrainingProviderService } from '@core/services/training-provider.service';
 
 @Component({
     selector: 'app-add-edit-training',
@@ -34,6 +35,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected workerService: WorkerService,
     protected alertService: AlertService,
     private establishmentService: EstablishmentService,
+    protected trainingProviderService: TrainingProviderService,
   ) {
     super(
       formBuilder,
@@ -45,6 +47,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
       trainingCategoryService,
       workerService,
       alertService,
+      trainingProviderService,
     );
   }
 
@@ -60,21 +63,34 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     this.checkAccessFromSummaryAndHideElements();
   }
 
-  protected setSection(): void {
-    this.section = 'Add multiple records';
-  }
-
   protected setTitle(): void {
     this.title = 'Add training record details';
   }
 
   protected setSectionHeading(): void {
-    this.section = 'Add multiple records';
+    this.section = 'Add multiple training records';
   }
 
   protected prefill(): void {
-    if (this.trainingService.selectedTraining) {
-      const { accredited, trainingCategory, completed, expires, notes, title } = this.trainingService.selectedTraining;
+    const selectedTraining = this.trainingService.selectedTraining;
+    if (selectedTraining) {
+      const {
+        accredited,
+        trainingCategory,
+        completed,
+        expires,
+        notes,
+        title,
+        deliveredBy,
+        otherTrainingProviderName,
+        howWasItDelivered,
+        validityPeriodInMonth,
+        doesNotExpire,
+      } = selectedTraining;
+
+      const externalProviderName = selectedTraining.externalProviderName ??
+        selectedTraining.otherTrainingProviderName;
+
       const completedArr = completed?.split('-');
       const expiresArr = expires?.split('-');
       this.form.patchValue({
@@ -92,6 +108,11 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
         notes,
         title,
         category: trainingCategory.id,
+        deliveredBy,
+        externalProviderName,
+        howWasItDelivered,
+        validityPeriodInMonth: validityPeriodInMonth ? validityPeriodInMonth : null,
+        doesNotExpire: doesNotExpire ? doesNotExpire : null,
       });
       if (notes?.length > 0) {
         this.notesOpen = true;

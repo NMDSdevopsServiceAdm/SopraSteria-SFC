@@ -32,7 +32,9 @@ describe('SearchForUserComponent', () => {
         WindowRef,
         SearchService,
         AlertService,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       declarations: [AdminUnlockConfirmationDialogComponent],
     });
 
@@ -90,6 +92,7 @@ describe('SearchForUserComponent', () => {
       username: null,
       name: null,
       emailAddress: null,
+      phoneNumber: null,
     });
   });
 
@@ -108,6 +111,7 @@ describe('SearchForUserComponent', () => {
       username: 'bob',
       name: null,
       emailAddress: null,
+      phoneNumber: null,
     });
   });
 
@@ -129,6 +133,26 @@ describe('SearchForUserComponent', () => {
       username: null,
       name: 'Bob Monkhouse',
       emailAddress: 'bob@email.com',
+      phoneNumber: null,
+    });
+  });
+
+  it('should call searchUsers with entered mobile number when clicking search button', async () => {
+    const { component, getByTestId, searchUsersSpy } = await setup();
+
+    const form = component.form;
+
+    form.controls['phoneNumber'].setValue('07515421045');
+    form.controls['phoneNumber'].markAsDirty();
+
+    const searchButton = getByTestId('searchButton');
+    fireEvent.click(searchButton);
+
+    expect(searchUsersSpy).toHaveBeenCalledWith({
+      username: null,
+      name: null,
+      emailAddress: null,
+      phoneNumber: '07515421045',
     });
   });
 

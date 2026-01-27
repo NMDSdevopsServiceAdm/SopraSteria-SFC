@@ -28,11 +28,16 @@ import { TrainingAndQualificationsSummaryComponent } from '@shared/components/tr
 import { TrainingAndQualificationsCategoriesComponent } from '@shared/components/training-and-qualifications-categories/training-and-qualifications-categories.component';
 import { HttpClient } from '@angular/common/http';
 import { UserService } from '@core/services/user.service';
+import { trainingCourseBuilder } from '@core/test-utils/MockTrainingCourseService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
   const setup = async (override: any = {}) => {
     const workers = override?.withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const establishment = establishmentBuilder() as Establishment;
+    const trainingCourses = override?.trainingCourses ?? [];
+
     const setupTools = await render(ViewSubsidiaryTrainingAndQualificationsComponent, {
       imports: [SharedModule, RouterModule],
       declarations: [
@@ -49,6 +54,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
         },
+        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: TrainingCategoryService,
           useClass: MockTrainingCategoryService,
@@ -72,6 +78,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
             snapshot: {
               data: {
                 establishment,
+                trainingCourses,
                 workers: {
                   workers: workers,
                   workerCount: workers.length,
@@ -128,32 +135,6 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     });
   });
 
-  it('should show the manage links', async () => {
-    const override = {
-      withWorkers: true,
-      totalRecords: 4,
-      permissions: ['canEditEstablishment'],
-    };
-
-    const { getByText } = await setup(override);
-
-    expect(getByText('Add and manage mandatory training categories')).toBeTruthy();
-    expect(getByText('Manage expiry alerts')).toBeTruthy();
-  });
-
-  it('should not show the manage links', async () => {
-    const override = {
-      withWorkers: true,
-      totalRecords: 4,
-      canEditEstablishment: false,
-    };
-
-    const { queryByText } = await setup(override);
-
-    expect(queryByText('Add and manage mandatory training categories')).toBeFalsy();
-    expect(queryByText('Manage expiry alerts')).toBeFalsy();
-  });
-
   it('should show a message if there are workers with no records', async () => {
     const override = {
       withWorkers: true,
@@ -181,5 +162,27 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     fixture.detectChanges();
 
     expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.workplace.uid, 'staff-records']);
+  });
+
+  it('should show a "Update records with training course details" button if the workplace has training course', async () => {
+    const { queryByText } = await setup({
+      withWorkers: true,
+      totalRecords: 0,
+      trainingCourses: [trainingCourseBuilder()],
+      permissions: ['canEditWorker', 'canViewWorker'],
+    });
+
+    expect(queryByText('Update records with training course details')).toBeTruthy();
+  });
+
+  it('should not show a "Update records with training course details" button if the workplace has no training courses', async () => {
+    const { queryByText } = await setup({
+      withWorkers: true,
+      totalRecords: 0,
+      trainingCourses: [],
+      permissions: ['canEditWorker', 'canViewWorker'],
+    });
+
+    expect(queryByText('Update records with training course details')).toBeFalsy();
   });
 });

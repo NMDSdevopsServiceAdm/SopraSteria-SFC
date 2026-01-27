@@ -1,0 +1,175 @@
+@if (submitted && form.invalid) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+}
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <fieldset class="govuk-fieldset">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds-from-desktop">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+              <span class="govuk-caption-l" data-testid="workerName">{{ worker.nameOrId }}</span>
+              <h1 class="govuk-fieldset__heading">{{ headingText }}</h1>
+            </legend>
+            <dl
+              class="govuk-summary-list govuk-summary-list--top-border govuk-summary-list--wide-key govuk-summary-list--wide"
+              style="width: 150%"
+              data-testid="trainingRecordDetails"
+            >
+              @for (row of this.summaryRowItems; track row.key) {
+                <div class="govuk-summary-list__row">
+                  <dt class="govuk-summary-list__key">{{ row.key }}</dt>
+                  <dd class="govuk-summary-list__value">
+                    {{ row.value }}
+                    @if (row.key === 'Training course name' && trainingCourses?.length > 1) {
+                      <a
+                        *ngIf="trainingCourses?.length > 1"
+                        class="govuk-button govuk-!-padding-left-0 govuk-!-padding-bottom-0 govuk-button--link govuk__flex govuk-link--no-visited-state"
+                        draggable="false"
+                        href="#"
+                        (click)="returnToSelectTrainingCoursePage($event)"
+                      >
+                        <img src="/assets/images/Addtraining.svg" alt="" />
+                        <span class="govuk__nowrap" data-testid="includeTraining"
+                          >Select a different training course
+                        </span>
+                      </a>
+                    }
+                  </dd>
+                </div>
+              }
+            </dl>
+
+            <div class="govuk-form-group govuk-!-margin-bottom-4">
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-half">
+                  <div
+                    data-testid="completedDate"
+                    class="govuk-form-group"
+                    [class.govuk-form-group--error]="submitted && form.get('completed').invalid"
+                  >
+                    <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
+                      <legend
+                        class="govuk-fieldset__legend"
+                        [class.govuk-fieldset__legend--s]="journeyType !== 'AddNewTrainingRecordWithCourse'"
+                      >
+                        Training completion date
+                      </legend>
+                      <legend id="completed-hint" class="govuk-hint">For example, 31 3 2024</legend>
+
+                      @if (submitted && form.get('completed').invalid) {
+                        <span id="completed-error" class="govuk-error-message">
+                          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('completed') }}
+                        </span>
+                      }
+
+                      <app-date-picker
+                        [formGroup]="form"
+                        [formGroupName]="'completed'"
+                        [submitted]="submitted"
+                      ></app-date-picker>
+                    </fieldset>
+                  </div>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                  @if (journeyType !== 'AddNewTrainingRecordWithCourse') {
+                    <div
+                      data-testid="expiresDate"
+                      class="govuk-form-group"
+                      [class.govuk-summary-list__warning]="expiryMismatchWarning"
+                      [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
+                    >
+                      <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Training expiry date</legend>
+                        <legend id="expires-hint" class="govuk-hint">For example, 31 3 2025</legend>
+                        <div *ngIf="expiryMismatchWarning">
+                          <span
+                            class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
+                          >
+                            This training is usually valid for
+                            {{ trainingToDisplay?.validityPeriodInMonth }} months
+                          </span>
+                        </div>
+                        <span
+                          *ngIf="submitted && form.get('expires').invalid"
+                          id="expires-error"
+                          class="govuk-error-message"
+                        >
+                          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
+                        </span>
+                        <app-date-picker
+                          [formGroup]="form"
+                          [formGroupName]="'expires'"
+                          [submitted]="submitted"
+                        ></app-date-picker>
+                      </fieldset>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-6" style="width: 150%" />
+          </div>
+          <div class="govuk-grid-column-one-third govuk-!-margin-top-6">
+            @if (journeyType !== 'AddNewTrainingRecordWithCourse') {
+              <a
+                class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk__flex govuk__align-items-center"
+                data-testid="deleteButton"
+                *ngIf="trainingRecordId"
+                (click)="navigateToDeleteTrainingRecord()"
+              >
+                <img src="/assets/images/bin.svg" alt="" />
+                <span class="govuk-!-margin-left-1"> Delete this training record </span></a
+              >
+            }
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <app-select-upload-certificate
+              [filesToUpload]="filesToUpload"
+              (selectFiles)="onSelectFiles($event)"
+              [certificateErrors]="certificateErrors"
+            />
+            <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-4" />
+            @if (trainingCertificates?.length > 0 || filesToUpload?.length > 0) {
+              <app-certifications-table
+                data-testid="trainingCertificatesTable"
+                [certificates]="trainingCertificates"
+                [filesToUpload]="filesToUpload"
+                (removeFileToUpload)="removeFileToUpload($event)"
+                (removeSavedFile)="removeSavedFile($event)"
+                (downloadCertificate)="downloadCertificates($event)"
+              ></app-certifications-table>
+            }
+          </div>
+        </div>
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-two-thirds-from-desktop">
+            <div class="govuk-character-count govuk-!-margin-bottom-4">
+              <app-add-a-note-accordion
+                [errorMessage]="form.get('notes').invalid ? getFirstErrorMessage('notes') : null"
+                [notes]="form.get('notes')"
+                [submitted]="submitted"
+              >
+              </app-add-a-note-accordion>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <div class="govuk-button-group">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">
+          {{ journeyType === 'AddNewTrainingRecordWithCourse' ? 'Save training record' : 'Save and return' }}
+        </button>
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          (click)="onCancel($event)"
+        >
+          Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</form>

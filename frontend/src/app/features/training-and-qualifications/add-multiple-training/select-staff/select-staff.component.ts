@@ -2,6 +2,7 @@ import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angula
 import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { TrainingCourse } from '@core/model/training-course.model';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -10,11 +11,12 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
 import { take } from 'rxjs/operators';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
-    selector: 'app-select-staff',
-    templateUrl: './select-staff.component.html',
-    standalone: false
+  selector: 'app-select-staff',
+  templateUrl: './select-staff.component.html',
+  standalone: false,
 })
 export class SelectStaffComponent implements OnInit, AfterViewInit {
   @ViewChild('table') table: ElementRef;
@@ -41,6 +43,8 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   public accessedFromSummary = false;
   public selectedWorkers: string[] = [];
   public isChangeStaffSelected: boolean;
+  public trainingCourses: TrainingCourse[];
+  private previousUrl: string;
 
   constructor(
     public backLinkService: BackLinkService,
@@ -50,6 +54,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     private errorSummaryService: ErrorSummaryService,
     private route: ActivatedRoute,
     private workerService: WorkerService,
+    private previousRouteService: PreviousRouteService,
   ) {}
 
   ngOnInit(): void {
@@ -64,6 +69,8 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
     this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
     this.isChangeStaffSelected = this.trainingService.getUpdatingSelectedStaffForMultipleTraining();
+    this.trainingCourses = this.route.snapshot.data.trainingCourses;
+    this.previousUrl = this.previousRouteService.getPreviousPage();
   }
 
   ngAfterViewInit(): void {
@@ -73,12 +80,12 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   private prefill(): void {
     this.selectedWorkers = this.trainingService.selectedStaff.map((worker) => worker.uid);
     this.updateSelectAllLinks();
-    this.clearSelectedTrainingCategoryOnPageEntry();
+    this.clearSelectedTrainingCoursesAndCategoryOnPageEntry();
   }
 
-  private clearSelectedTrainingCategoryOnPageEntry() {
+  private clearSelectedTrainingCoursesAndCategoryOnPageEntry() {
     if (this.selectedWorkers.length === 0) {
-      this.trainingService.clearSelectedTrainingCategory();
+      this.trainingService.resetState();
     }
   }
 
@@ -178,9 +185,14 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     if (this.selectedWorkers.length > 0) {
       this.updateSelectedStaff();
       this.trainingService.addMultipleTrainingInProgress$.next(true);
-      if (this.isChangeStaffSelected) {
+
+      if (this.previousUrl === 'confirm-training' || this.previousUrl === 'confirm-training-record-details') {
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', this.previousUrl]);
+      } else if (this.isChangeStaffSelected) {
         this.trainingService.clearUpdatingSelectedStaffForMultipleTraining();
         this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
+      } else if (this.trainingCourses.length > 0) {
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'select-training-course']);
       } else {
         const nextRoute = this.getNextRoute();
         this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', nextRoute]);

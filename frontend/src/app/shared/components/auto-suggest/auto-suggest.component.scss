@@ -12,3 +12,13 @@ button > img {
 .input--search .govuk-input:focus {
   z-index: 1;
 }
+
+.overflow-ellipsis {
+  text-overflow: ellipsis;
+}
+
+.tray-list-item {
+  line-height: 25px !important;
+  margin-bottom: 0px;
+  padding: 6px 8px;
+}

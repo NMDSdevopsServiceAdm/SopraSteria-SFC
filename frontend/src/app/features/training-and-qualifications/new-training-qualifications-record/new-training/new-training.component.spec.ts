@@ -1,5 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import lodash from 'lodash';
 import { By } from '@angular/platform-browser';
 import { TrainingCertificateDownloadEvent, TrainingCertificateUploadEvent } from '@core/model/training.model';
 import { SharedModule } from '@shared/shared.module';
@@ -97,12 +98,13 @@ describe('NewTrainingComponent', async () => {
   ];
 
   async function setup(override: any = {}) {
-    const { fixture, getByTestId, getByLabelText } = await render(NewTrainingComponent, {
+    const mockTrainingCategories = override?.trainingCategories ?? trainingCategories;
+    const { fixture, getByTestId, getByLabelText, queryAllByText } = await render(NewTrainingComponent, {
       imports: [SharedModule, RouterModule],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         canEditWorker: true,
-        trainingCategories: trainingCategories,
+        trainingCategories: mockTrainingCategories,
         isMandatoryTraining: false,
         certificateErrors: null,
         ...override,
@@ -114,6 +116,7 @@ describe('NewTrainingComponent', async () => {
       component,
       getByTestId,
       getByLabelText,
+      queryAllByText,
       fixture,
     };
   }
@@ -121,6 +124,54 @@ describe('NewTrainingComponent', async () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('training record table headings', () => {
+    describe('when there are 3 training categories on the record', () => {
+      it('should render the 5 headings for the 3 categories', async () => {
+        const { queryAllByText } = await setup();
+
+        expect(queryAllByText('Training or course name').length).toEqual(3);
+        expect(queryAllByText('Accredited').length).toEqual(3);
+        expect(queryAllByText('Completion date').length).toEqual(3);
+        expect(queryAllByText('Expiry date').length).toEqual(3);
+        expect(queryAllByText('Certificate').length).toEqual(3);
+      });
+    });
+
+    describe('when there is 1 training category on the record', () => {
+      it('should render the 5 headings for the 1 training category', async () => {
+        const trainingCategory = [
+          {
+            category: 'Communication',
+            id: 3,
+            trainingRecords: [
+              {
+                accredited: true,
+                completed: new Date('09/20/2020'),
+                expires: new Date('09/20/2021'),
+                title: 'Communication training',
+                trainingCategory: { id: 3, category: 'Communication' },
+                trainingCertificates: [],
+                uid: 'someCommunicationUid',
+                trainingStatus: 3,
+                created: new Date('09/20/2020'),
+                updatedBy: 'admin',
+                updated: new Date('09/20/2020'),
+              },
+            ],
+          },
+        ];
+
+        const { queryAllByText } = await setup({ trainingCategories: trainingCategory });
+
+        expect(queryAllByText('Training or course name').length).toEqual(1);
+        expect(queryAllByText('Accredited').length).toEqual(1);
+        expect(queryAllByText('Completion date').length).toEqual(1);
+        expect(queryAllByText('Expiry date').length).toEqual(1);
+        expect(queryAllByText('Certificate').length).toEqual(1);
+      });
+    });
   });
 
   describe('training record table contents', async () => {
@@ -219,7 +270,7 @@ describe('NewTrainingComponent', async () => {
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
 
       expect(noTrainingLink).toBeTruthy();
-      expect(noTrainingLink.getAttribute('href')).toBe('/add-training');
+      expect(noTrainingLink.getAttribute('href')).toBe('/add-a-training-record');
     });
 
     it('should not display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is false', async () => {
@@ -381,6 +432,37 @@ describe('NewTrainingComponent', async () => {
 
       expect(expiredAutismTrainingExpired).toBeFalsy();
       expect(expiredAutismTrainingExpiring).toBeTruthy();
+    });
+  });
+
+  describe('expiry date column', () => {
+    it('should show the expiry date in format of dd-MMM-YYYY', async () => {
+      const mockTrainingCategories = lodash.cloneDeep(trainingCategories);
+      // @ts-ignore
+      mockTrainingCategories[0].trainingRecords[0].expires = '2023-05-01';
+      const { getByTestId } = await setup({ trainingCategories: mockTrainingCategories });
+
+      expect(getByTestId('expiry-date-someAutismUid').textContent).toContain('01 May 2023');
+    });
+
+    it('should show "Does not expire" if the training record has doesNotExpire = true', async () => {
+      const mockTrainingCategories = lodash.cloneDeep(trainingCategories);
+      // @ts-ignore
+      mockTrainingCategories[0].trainingRecords[0].doesNotExpire = true;
+      mockTrainingCategories[0].trainingRecords[0].expires = null;
+      const { getByTestId } = await setup({ trainingCategories: mockTrainingCategories });
+
+      expect(getByTestId('expiry-date-someAutismUid').textContent?.trim()).toEqual('Does not expire');
+    });
+
+    it('should show a dash "-" if the training record does not have an expiry date and also doesNotExpire is not set', async () => {
+      const mockTrainingCategories = lodash.cloneDeep(trainingCategories);
+      // @ts-ignore
+      mockTrainingCategories[0].trainingRecords[0].doesNotExpire = undefined;
+      mockTrainingCategories[0].trainingRecords[0].expires = null;
+      const { getByTestId } = await setup({ trainingCategories: mockTrainingCategories });
+
+      expect(getByTestId('expiry-date-someAutismUid').textContent?.trim()).toEqual('-');
     });
   });
 

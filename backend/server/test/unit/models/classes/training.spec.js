@@ -118,6 +118,11 @@ describe('/server/models/class/training.js', () => {
               as: 'trainingCertificates',
               attributes: ['uid', 'filename', 'uploadDate'],
             },
+            {
+              model: models.trainingProvider,
+              as: 'trainingProvider',
+              attributes: ['id', 'name', 'isOther'],
+            },
           ],
           order: [['updated', 'DESC']],
         });
@@ -147,6 +152,11 @@ describe('/server/models/class/training.js', () => {
               model: models.trainingCertificates,
               as: 'trainingCertificates',
               attributes: ['uid', 'filename', 'uploadDate'],
+            },
+            {
+              model: models.trainingProvider,
+              as: 'trainingProvider',
+              attributes: ['id', 'name', 'isOther'],
             },
           ],
           order: [['updated', 'DESC']],
@@ -181,6 +191,8 @@ describe('/server/models/class/training.js', () => {
         created: '2023-12-03T00:00:00.000Z',
         updated: '2023-12-04T00:00:00.000Z',
         updatedBy: 'user1',
+        doesNotExpire: false,
+        isMatchedToTrainingCourse: true,
       };
 
       sinon.stub(models.workerTraining, 'findAll').resolves([trainingRecordFromDatabase]);
@@ -288,9 +300,11 @@ const mockTrainingRecordFromDatabase = () => {
     accredited: false,
     completed: new Date('2023-12-03'),
     expires: new Date('2024-12-03'),
+    doesNotExpire: false,
     notes: null,
     created: new Date('2023-12-03'),
     updated: new Date('2023-12-04'),
     updatedBy: 'user1',
+    trainingCourseFK: 1,
   };
 };

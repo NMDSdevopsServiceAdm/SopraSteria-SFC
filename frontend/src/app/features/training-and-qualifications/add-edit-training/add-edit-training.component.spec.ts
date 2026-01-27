@@ -12,60 +12,108 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockTrainingCertificateService } from '@core/test-utils/MockCertificateService';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
-import { trainingRecord } from '@core/test-utils/MockWorkerService';
-import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
+import { MockTrainingServiceWithOverrides } from '@core/test-utils/MockTrainingService';
+import { MockWorkerServiceWithOverrides, trainingRecord } from '@core/test-utils/MockWorkerService';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of, throwError } from 'rxjs';
-import sinon from 'sinon';
+import { DeliveredBy, HowWasItDelivered } from '@core/model/training.model';
 
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
 import { AddEditTrainingComponent } from './add-edit-training.component';
+import { YesNoDontKnow } from '@core/model/YesNoDontKnow.enum';
+import { TrainingCourse } from '@core/model/training-course.model';
+
+const fillInDate = (containerDiv: HTMLElement, year: string, month: string, day: string) => {
+  ['Day', 'Month', 'Year'].forEach((label) => {
+    userEvent.clear(within(containerDiv).getByLabelText(label));
+  });
+
+  userEvent.type(within(containerDiv).getByLabelText('Day'), day);
+  userEvent.type(within(containerDiv).getByLabelText('Month'), month);
+  userEvent.type(within(containerDiv).getByLabelText('Year'), year);
+};
 
 describe('AddEditTrainingComponent', () => {
-  async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
-      AddEditTrainingComponent,
-      {
-        imports: [SharedModule, RouterModule, ReactiveFormsModule],
-        declarations: [CertificationsTableComponent, SelectUploadFileComponent],
-        providers: [
-          WindowRef,
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                params: { trainingRecordId, establishmentuid: '24', id: 2 },
+  const mockTrainingProviders = [
+    { id: 1, name: 'Preset provider name #1', isOther: false },
+    { id: 63, name: 'other', isOther: true },
+  ];
+  const defaultMockTrainingRecord = { ...trainingRecord };
+  const emptyTrainingRecord = {
+    id: trainingRecord.id,
+    uid: trainingRecord.uid,
+    trainingCategory: trainingRecord.trainingCategory,
+    isMatchedToTrainingCourse: trainingRecord.isMatchedToTrainingCourse,
+  };
+
+  async function setup(overrides: any = {}) {
+    const selectedTraining = overrides?.selectedTraining ?? null;
+    const trainingRecordId = overrides?.trainingRecordId !== undefined ? overrides.trainingRecordId : '1';
+    const mockTrainingRecord =
+      overrides?.trainingRecord !== undefined ? overrides.trainingRecord : defaultMockTrainingRecord;
+    const mockWorker = {
+      uid: '2',
+      mainJob: {
+        jobId: '1',
+        title: 'Admin',
+      },
+      nameOrId: 'Someone',
+    };
+
+    const setupTools = await render(AddEditTrainingComponent, {
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
+      declarations: [CertificationsTableComponent, SelectUploadFileComponent],
+      providers: [
+        WindowRef,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: { trainingRecordId, establishmentuid: '24', id: 2 },
+              data: {
+                trainingCourses: overrides?.trainingCourses ?? [],
+                trainingRecord: mockTrainingRecord,
+                trainingProviders: mockTrainingProviders,
               },
-              parent: {
-                snapshot: {
-                  data: {
-                    establishment: {
-                      uid: '1',
-                    },
-                    trainingCategories: trainingCategories,
+            },
+            parent: {
+              snapshot: {
+                data: {
+                  establishment: {
+                    uid: '1',
                   },
+                  trainingCategories: trainingCategories,
+                  trainingCourses: overrides?.trainingCourses ?? [],
+                  trainingRecord: trainingRecord,
                 },
               },
             },
           },
-          UntypedFormBuilder,
-          ErrorSummaryService,
-          { provide: TrainingService, useClass: MockTrainingService },
-          { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-          { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
-          {
-            provide: TrainingCertificateService,
-            useClass: MockTrainingCertificateService,
-          },
-          provideHttpClient(),
-          provideHttpClientTesting(),
-        ],
-      },
-    );
+        },
+        UntypedFormBuilder,
+        ErrorSummaryService,
+        {
+          provide: TrainingService,
+          useFactory: MockTrainingServiceWithOverrides.factory({ selectedTraining }),
+        },
+        {
+          provide: WorkerService,
+          useFactory: MockWorkerServiceWithOverrides.factory({
+            worker: mockWorker,
+          }),
+        },
+        { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
+        {
+          provide: TrainingCertificateService,
+          useClass: MockTrainingCertificateService,
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -75,29 +123,25 @@ describe('AddEditTrainingComponent', () => {
     const updateSpy = spyOn(workerService, 'updateTrainingRecord').and.returnValue(of(null));
     const createSpy = spyOn(workerService, 'createTrainingRecord').and.callThrough();
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const certificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
+    const getInputByRole = (role: any, options: any) => setupTools.getByRole(role, options) as HTMLInputElement;
 
     return {
+      ...setupTools,
       component,
-      fixture,
       routerSpy,
-      getByText,
-      getByTestId,
-      getAllByText,
-      queryByText,
-      queryByTestId,
-      getByLabelText,
       updateSpy,
       createSpy,
       workerService,
       alertServiceSpy,
       trainingService,
       certificateService,
+      getInputByRole,
     };
   }
 
@@ -113,25 +157,23 @@ describe('AddEditTrainingComponent', () => {
 
   describe('Training category display', async () => {
     it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
-      const qsParamGetMock = sinon.stub();
-      const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
-        null,
-        qsParamGetMock,
-      );
+      const selectedTraining = { trainingCategory: { category: 'Autism', id: 2 } };
 
-      component.trainingCategory = {
-        category: 'Autism',
-        id: 2,
-      };
-
-      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
-      component.ngOnInit();
-      fixture.detectChanges();
+      const { component, getByText, getByTestId } = await setup({
+        selectedTraining,
+        trainingRecordId: null,
+      });
 
       const { form } = component;
+
       const expectedFormValue = {
         title: null,
         accredited: null,
+        deliveredBy: null,
+        externalProviderName: null,
+        howWasItDelivered: null,
+        validityPeriodInMonth: null,
+        doesNotExpire: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
@@ -143,25 +185,34 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should show the training category displayed as text with a change link when there is a training category present and update the form value', async () => {
-      const { component, fixture, getByText, getByTestId, queryByTestId, trainingService } = await setup(null);
+      const selectedTraining = {
+        trainingCategory: {
+          id: 1,
+          seq: 20,
+          category: 'Autism',
+          trainingCategoryGroup: 'Specific conditions and disabilities',
+        },
+      };
 
-      trainingService.setSelectedTrainingCategory({
-        id: 1,
-        seq: 20,
-        category: 'Autism',
-        trainingCategoryGroup: 'Specific conditions and disabilities',
+      const { component, fixture, getByText, getByTestId } = await setup({
+        trainingRecordId: null,
+        selectedTraining,
       });
 
-      component.ngOnInit();
       fixture.detectChanges();
 
       const { form } = component;
       const expectedFormValue = {
         title: null,
         accredited: null,
+        deliveredBy: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
+        externalProviderName: null,
+        howWasItDelivered: null,
+        validityPeriodInMonth: null,
+        doesNotExpire: null,
       };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
@@ -180,8 +231,7 @@ describe('AddEditTrainingComponent', () => {
 
   describe('title', () => {
     it('should render the Add training record details title', async () => {
-      const trainingRecordId = null;
-      const { getByText } = await setup(trainingRecordId);
+      const { getByText } = await setup({ trainingRecordId: null });
 
       expect(getByText('Add training record details')).toBeTruthy();
     });
@@ -190,6 +240,302 @@ describe('AddEditTrainingComponent', () => {
       const { getByText } = await setup();
 
       expect(getByText('Training record details')).toBeTruthy();
+    });
+  });
+
+  describe('input form', () => {
+    describe('auto suggest', () => {
+      it('should show a text input for provider name if user select "External provider" for delivered by external provider', async () => {
+        const { getByTestId, getByRole, fixture } = await setup({ trainingRecordId: null });
+
+        const providerName = getByTestId('conditional-external-provider-name');
+
+        expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+        expect(within(providerName).getByRole('textbox', { name: 'Provider name' })).toBeTruthy();
+
+        userEvent.click(getByRole('radio', { name: DeliveredBy.ExternalProvider }));
+        fixture.detectChanges();
+        expect(providerName).not.toHaveClass('govuk-radios__conditional--hidden');
+
+        userEvent.click(getByRole('radio', { name: DeliveredBy.InHouseStaff }));
+        fixture.detectChanges();
+        expect(providerName).toHaveClass('govuk-radios__conditional--hidden');
+      });
+
+      it('should remove the suggested tray on click of the matching provider name', async () => {
+        const { queryByTestId, getByTestId, fixture } = await setup({ trainingRecordId: null });
+
+        const providerName = getByTestId('conditional-external-provider-name');
+
+        userEvent.type(within(providerName).getByRole('textbox', { name: 'Provider name' }), 'provider');
+        fixture.detectChanges();
+
+        const getTrayList = getByTestId('tray-list');
+        expect(getTrayList).toBeTruthy();
+
+        userEvent.click(within(getTrayList).getByText(mockTrainingProviders[0].name));
+        fixture.detectChanges();
+
+        const queryTrayList = queryByTestId('tray-list');
+        expect(queryTrayList).toBeFalsy();
+      });
+    });
+
+    it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by button', async () => {
+      const { getInputByRole, getByTestId, fixture } = await setup();
+
+      const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
+      fireEvent.click(doesNotExpireCheckbox);
+      expect(doesNotExpireCheckbox.checked).toBeTrue();
+
+      fireEvent.click(getByTestId('plus-button-validity-period'));
+      fixture.detectChanges();
+
+      expect(doesNotExpireCheckbox.checked).toBeFalse();
+    });
+
+    it('should clear the doesNotExpire checkbox when user change validityPeriodInMonth by typing value', async () => {
+      const { getInputByRole, fixture } = await setup();
+
+      const validityPeriodInMonth = getInputByRole('textbox', {
+        name: 'How many months is the training valid for before it expires?',
+      });
+      const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
+
+      userEvent.type(validityPeriodInMonth, '12');
+      fixture.detectChanges();
+
+      expect(doesNotExpireCheckbox.checked).toBeFalse();
+    });
+
+    it('should clear any value in validityPeriodInMonth when doesNotExpire checkbox is ticked', async () => {
+      const { getInputByRole, getByTestId, fixture } = await setup({ trainingRecord: null });
+
+      const validityPeriodInMonth = getInputByRole('textbox', {
+        name: 'How many months is the training valid for before it expires?',
+      });
+      const doesNotExpireCheckbox = getInputByRole('checkbox', { name: 'This training does not expire' });
+
+      fireEvent.click(getByTestId('plus-button-validity-period'));
+      fixture.detectChanges();
+      expect(validityPeriodInMonth.value).toEqual('1');
+
+      fireEvent.click(doesNotExpireCheckbox);
+      fixture.detectChanges();
+
+      expect(validityPeriodInMonth.value).toEqual('');
+    });
+
+    describe('expiry date input box', () => {
+      const trainingRecordThatDoesNotExpire = {
+        ...defaultMockTrainingRecord,
+        doesNotExpire: true,
+        validityPeriodInMonth: undefined,
+        expires: undefined,
+      };
+
+      it('should not render the expires date inputs when adding a new training record', async () => {
+        const { queryByTestId } = await setup({ trainingRecordId: null });
+        expect(queryByTestId('expiresDate')).toBeFalsy();
+      });
+
+      describe('when editing a record', () => {
+        it('should render the expires date inputs when doesNotExpire is false', async () => {
+          const { queryByTestId } = await setup({
+            trainingRecord: { ...defaultMockTrainingRecord, doesNotExpire: false },
+          });
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+        });
+
+        it('should render the expires date inputs when doesNotExpire is empty', async () => {
+          const { queryByTestId } = await setup({
+            trainingRecord: {
+              ...defaultMockTrainingRecord,
+              doesNotExpire: undefined,
+              expires: undefined,
+            },
+          });
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+        });
+
+        it('should not render the expires date inputs when doesNotExpire is true and expires date is empty', async () => {
+          const { queryByTestId } = await setup({
+            trainingRecord: trainingRecordThatDoesNotExpire,
+          });
+          expect(queryByTestId('expiresDate')).toBeFalsy();
+        });
+
+        it('should render the expires date and untick doesNotExpire, if expires date is not empty but doesNotExpire is also true', async () => {
+          const { queryByTestId, getByLabelText } = await setup({
+            trainingRecord: { ...defaultMockTrainingRecord, doesNotExpire: true, expires: '2025-12-03' },
+          });
+
+          const expiryDate = queryByTestId('expiresDate');
+          expect(expiryDate).toBeTruthy();
+
+          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('3');
+          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('12');
+          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2025');
+
+          const doesNotExpire = getByLabelText('This training does not expire') as HTMLInputElement;
+          expect(doesNotExpire.checked).toBeFalse();
+        });
+
+        it('should show and hide the expiry date input boxes when user changed doesNotExpire', async () => {
+          const { queryByTestId, getByLabelText, fixture } = await setup({
+            trainingRecord: trainingRecordThatDoesNotExpire,
+          });
+
+          const doesNotExpire = getByLabelText('This training does not expire') as HTMLInputElement;
+
+          expect(doesNotExpire.checked).toBeTrue();
+          expect(queryByTestId('expiresDate')).toBeFalsy();
+
+          userEvent.click(doesNotExpire);
+          fixture.detectChanges();
+
+          expect(doesNotExpire.checked).toBeFalse();
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+
+          userEvent.click(doesNotExpire);
+          fixture.detectChanges();
+
+          expect(doesNotExpire.checked).toBeTrue();
+          expect(queryByTestId('expiresDate')).toBeFalsy();
+        });
+
+        it('should show the expiry date input boxes when user fill in the validityMonthInPeriod', async () => {
+          const { queryByTestId, getInputByRole } = await setup({
+            trainingRecord: trainingRecordThatDoesNotExpire,
+          });
+          expect(queryByTestId('expiresDate')).toBeFalsy();
+
+          const validityPeriodInMonth = getInputByRole('textbox', {
+            name: /How many months/,
+          });
+
+          userEvent.type(validityPeriodInMonth, '24');
+          expect(queryByTestId('expiresDate')).toBeTruthy();
+        });
+
+        it('should clear the expiry date value when user ticked doesNotExpire', async () => {
+          const mockTrainingRecord = { ...defaultMockTrainingRecord, doesNotExpire: false, expires: '2025-12-03' };
+          const { getByLabelText, getByTestId } = await setup({
+            trainingRecord: mockTrainingRecord,
+          });
+
+          let expiryDate = getByTestId('expiresDate');
+
+          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('3');
+          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('12');
+          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2025');
+
+          const checkbox = getByLabelText('This training does not expire') as HTMLInputElement;
+          userEvent.click(checkbox);
+          userEvent.click(checkbox);
+
+          expiryDate = getByTestId('expiresDate');
+          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('');
+          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('');
+          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('');
+        });
+      });
+
+      describe('auto fill expiry date', () => {
+        it('after user input a completed date, it should auto fill in the expiry date if it is blank', async () => {
+          const { fixture, getInputByRole, getByTestId } = await setup({
+            trainingRecord: emptyTrainingRecord,
+          });
+
+          const validityPeriodInMonth = getInputByRole('textbox', {
+            name: /How many months/,
+          });
+
+          userEvent.clear(validityPeriodInMonth);
+          userEvent.type(validityPeriodInMonth, '24');
+
+          const completedDate = getByTestId('completedDate');
+          fillInDate(completedDate, '2025', '01', '08');
+
+          fixture.detectChanges();
+
+          const expiryDate = getByTestId('expiresDate');
+          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('7');
+          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('1');
+          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2027');
+        });
+
+        it('should not change the expiry date if it is already filled', async () => {
+          const mockTrainingRecord = { ...defaultMockTrainingRecord, doesNotExpire: false, expires: '2025-12-03' };
+          const { fixture, getInputByRole, getByTestId } = await setup({
+            trainingRecord: mockTrainingRecord,
+          });
+
+          const validityPeriodInMonth = getInputByRole('textbox', {
+            name: /How many months/,
+          });
+          userEvent.type(validityPeriodInMonth, '24');
+
+          const completedDate = getByTestId('completedDate');
+          fillInDate(completedDate, '2025', '01', '08');
+
+          fixture.detectChanges();
+
+          const expiryDate = getByTestId('expiresDate');
+          expect((within(expiryDate).getByLabelText('Day') as HTMLInputElement).value).toEqual('3');
+          expect((within(expiryDate).getByLabelText('Month') as HTMLInputElement).value).toEqual('12');
+          expect((within(expiryDate).getByLabelText('Year') as HTMLInputElement).value).toEqual('2025');
+        });
+      });
+
+      describe('soft warning for expiry date not matching', () => {
+        it('should update expiry date soft warning message when filling the form', async () => {
+          const { getInputByRole, getByTestId, fixture, getByText } = await setup();
+
+          const validityPeriodInMonth = getInputByRole('textbox', {
+            name: 'How many months is the training valid for before it expires?',
+          });
+
+          userEvent.clear(validityPeriodInMonth);
+          userEvent.type(validityPeriodInMonth, '24');
+
+          const completedDate = getByTestId('completedDate');
+          fillInDate(completedDate, '2020', '4', '10');
+
+          const expiryDate = getByTestId('expiresDate');
+          fillInDate(expiryDate, '2023', '4', '10');
+
+          fixture.detectChanges();
+
+          expect(getByText('This training is usually valid for 24 months')).toBeTruthy();
+        });
+
+        it('should clear the  soft warning if expire date matches validity period', async () => {
+          const { getInputByRole, getByTestId, fixture, queryByText } = await setup();
+
+          const validityPeriodInMonth = getInputByRole('textbox', {
+            name: 'How many months is the training valid for before it expires?',
+          });
+
+          userEvent.clear(validityPeriodInMonth);
+          userEvent.type(validityPeriodInMonth, '24');
+
+          const completedDate = getByTestId('completedDate');
+          fillInDate(completedDate, '2020', '4', '10');
+
+          const expiryDate = getByTestId('expiresDate');
+          fillInDate(expiryDate, '2023', '4', '09');
+
+          fixture.detectChanges();
+
+          expect(queryByText('This training is usually valid for 24 months')).toBeTruthy();
+
+          userEvent.type(within(expiryDate).getByLabelText('Year'), '2021');
+          fixture.detectChanges();
+
+          expect(queryByText('This training is usually valid for 24 months')).toBeFalsy();
+        });
+      });
     });
   });
 
@@ -206,7 +552,7 @@ describe('AddEditTrainingComponent', () => {
     it('should display the notes section after clicking Open notes', async () => {
       const { fixture, getByText, getByTestId } = await setup();
       const openNotesButton = getByText('Open notes');
-      openNotesButton.click();
+      fireEvent.click(openNotesButton);
 
       fixture.detectChanges();
 
@@ -219,21 +565,23 @@ describe('AddEditTrainingComponent', () => {
 
   describe('fillForm', () => {
     it('should prefill the form if there is a training record id and there is a training record', async () => {
-      const { component, workerService } = await setup();
-      const workerServiceSpy = spyOn(workerService, 'getTrainingRecord').and.callThrough();
-      component.ngOnInit();
+      const { component } = await setup();
 
-      const { form, workplace, worker, trainingRecordId } = component;
+      const { form } = component;
       const expectedFormValue = {
         title: 'Communication Training 1',
         accredited: 'Yes',
-        completed: { day: 2, month: '1', year: 2020 },
-        expires: { day: 2, month: '1', year: 2021 },
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skills academy',
+        howWasItDelivered: 'E-learning',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+        completed: { day: 2, month: 1, year: 2020 },
+        expires: { day: 2, month: 1, year: 2021 },
         notes: undefined,
       };
 
       expect(form.value).toEqual(expectedFormValue);
-      expect(workerServiceSpy).toHaveBeenCalledWith(workplace.uid, worker.uid, trainingRecordId);
     });
 
     it('should open the notes section if there are some notes in record', async () => {
@@ -241,11 +589,7 @@ describe('AddEditTrainingComponent', () => {
         trainingCategory: { id: 1, category: 'Communication' },
         notes: 'some notes about this training',
       };
-      const { component, fixture, workerService, getByTestId, getByText } = await setup();
-
-      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(mockTrainingWithNotes));
-      component.ngOnInit();
-      fixture.detectChanges();
+      const { getByTestId, getByText } = await setup({ trainingRecord: mockTrainingWithNotes });
 
       const notesSection = getByTestId('notesSection');
 
@@ -260,25 +604,25 @@ describe('AddEditTrainingComponent', () => {
         trainingCategory: { id: 1, category: 'Communication' },
         notes: 'some notes about this training',
       };
-      const { component, fixture, workerService, getByText } = await setup();
-
-      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(mockTrainingWithNotes));
-      component.ngOnInit();
-      fixture.detectChanges();
+      const { component, getByText } = await setup({ trainingRecord: mockTrainingWithNotes });
 
       const expectedRemainingCharCounts = component.notesMaxLength - 'some notes about this training'.length;
       expect(getByText(`You have ${expectedRemainingCharCounts} characters remaining`)).toBeTruthy;
     });
 
     it('should not prefill the form if there is a training record id but there is no training record', async () => {
-      const { component, workerService } = await setup();
-      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
-      component.ngOnInit();
+      const { component } = await setup({ trainingRecord: null });
+
       const { form } = component;
 
       const expectedFormValue = {
         title: null,
         accredited: null,
+        deliveredBy: null,
+        externalProviderName: null,
+        howWasItDelivered: null,
+        doesNotExpire: null,
+        validityPeriodInMonth: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
@@ -286,31 +630,48 @@ describe('AddEditTrainingComponent', () => {
       expect(form.value).toEqual(expectedFormValue);
     });
 
-    it('should not call getTrainingRecord if there is no trainingRecordId', async () => {
-      const { component, workerService } = await setup(null);
+    it('should show a soft warning message when expiry date is not matching with validity period', async () => {
+      const mockTrainingRecord = {
+        ...trainingRecord,
+        completed: '2021-01-01',
+        expires: '2022-05-01',
+        validityPeriodInMonth: 12,
+        doesNotExpire: false,
+      };
 
-      const workerServiceSpy = spyOn(workerService, 'getTrainingRecord').and.callThrough();
-      component.ngOnInit();
+      const { getByText, fixture } = await setup({ trainingRecord: mockTrainingRecord });
 
-      expect(workerServiceSpy).not.toHaveBeenCalled();
+      await fixture.whenStable();
+
+      expect(getByText('This training is usually valid for 12 months')).toBeTruthy();
     });
   });
 
   describe('buttons', () => {
-    it('should render the Delete, Save and return and Cancel button when editing training', async () => {
-      const { getByTestId, getByText } = await setup();
+    it('should render the Delete button when editing training', async () => {
+      const { getByTestId } = await setup();
 
       expect(getByTestId('deleteButton')).toBeTruthy();
+    });
+
+    it('should render the Save and return and Cancel buttons when editing training', async () => {
+      const { getByText } = await setup();
+
       expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it('should render the Save record and Cancel button but not the delete button when there is no training id', async () => {
-      const { getByText, queryByTestId } = await setup(null);
+    describe('when there is no training id', async () => {
+      it('should render the Save record and Cancel buttons', async () => {
+        const { getByText } = await setup({ trainingRecordId: null });
+        expect(getByText('Save record')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
+      });
 
-      expect(getByText('Save record')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-      expect(queryByTestId('deleteButton')).toBeFalsy();
+      it('should not render the Delete button', async () => {
+        const { queryByTestId } = await setup({ trainingRecordId: null });
+        expect(queryByTestId('deleteButton')).toBeFalsy();
+      });
     });
   });
 
@@ -351,6 +712,106 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
+  describe('add training course details box', () => {
+    const trainingCourses = [
+      {
+        id: 2,
+        uid: 'uid-1',
+        trainingCategoryId: 10,
+        category: { category: 'Communication', id: 10 },
+        name: 'Communication',
+        trainingCategoryName: 'Communication',
+        accredited: YesNoDontKnow.No,
+        deliveredBy: DeliveredBy.ExternalProvider,
+        externalProviderName: 'Care skills academy',
+        howWasItDelivered: HowWasItDelivered.ELearning,
+        doesNotExpire: false,
+        validityPeriodInMonth: 12,
+      },
+    ] as TrainingCourse[];
+
+    const overrides = {
+      trainingRecordId: 2,
+      trainingRecord: {
+        ...trainingRecord,
+        trainingCategory: { id: 10, category: 'Communication' },
+        isMatchedToTrainingCourse: false,
+      },
+      trainingCourses: trainingCourses,
+    };
+
+    it('should render when editing training', async () => {
+      const { getByTestId } = await setup(overrides);
+
+      const includeTrainingCourseTextContents = [
+        'Why is it a good idea to update records with training course details?',
+        "It's a good idea because your training records will then be consistent with each other, sharing the same details, like course name and validity. We match records to courses by category and when you update them they'll:",
+        'take the name of the training course',
+        'say whether the training is accredited',
+        'say how the training was delivered and who delivered it',
+        'show how long the training is valid for',
+        'still generate alerts when the training is due to expire',
+        'keep any certificates and notes that were added',
+      ];
+
+      const includeTrainingCourseTestId = getByTestId('includeTrainingCourse');
+
+      includeTrainingCourseTextContents.forEach((text) => {
+        expect(includeTrainingCourseTestId.textContent).toContain(text);
+      });
+    });
+
+    it('should navigate to the include training details path', async () => {
+      const { component, fixture, getByTestId, routerSpy } = await setup(overrides);
+
+      const includeTrainingCourseTestId = getByTestId('includeTrainingCourse');
+      const button = within(includeTrainingCourseTestId).getByRole('button', { name: 'Select a training course' });
+
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'training-and-qualifications-record',
+        component.worker.uid,
+        'training',
+        component.trainingRecordId,
+        'include-training-course-details',
+      ]);
+    });
+
+    it('should not show if there is no training record id', async () => {
+      const updatedOverrides = {
+        ...overrides,
+        trainingRecordId: null,
+      };
+      const { queryByTestId } = await setup(updatedOverrides);
+
+      expect(queryByTestId('includeTrainingCourse')).toBeFalsy();
+    });
+
+    it('should not show if there are no training courses that have the same category id', async () => {
+      const updatedOverrides = { trainingRecord: { ...trainingRecord, category: { id: 11 } } };
+      const { queryByTestId } = await setup(updatedOverrides);
+
+      expect(queryByTestId('includeTrainingCourse')).toBeFalsy();
+    });
+
+    it('should not show if the training record is already matched to a training course', async () => {
+      const updatedOverrides = {
+        ...overrides,
+        trainingRecord: {
+          ...trainingRecord,
+          isMatchedToTrainingCourse: true,
+        },
+      };
+      const { queryByTestId } = await setup(updatedOverrides);
+
+      expect(queryByTestId('includeTrainingCourse')).toBeFalsy();
+    });
+  });
+
   describe('Cancel button', () => {
     it('should call navigate when pressing cancel', async () => {
       const { component, fixture, getByText, routerSpy } = await setup();
@@ -364,7 +825,7 @@ describe('AddEditTrainingComponent', () => {
 
   describe('Upload file button', () => {
     it('should render a file input element', async () => {
-      const { getByTestId } = await setup(null);
+      const { getByTestId } = await setup({ trainingRecordId: null });
 
       const uploadSection = getByTestId('uploadCertificate');
       expect(uploadSection).toBeTruthy();
@@ -374,7 +835,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should render "No file chosen" beside the file input', async () => {
-      const { getByTestId } = await setup(null);
+      const { getByTestId } = await setup({ trainingRecordId: null });
 
       const uploadSection = getByTestId('uploadCertificate');
 
@@ -383,21 +844,17 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should not render "No file chosen" when a file is chosen', async () => {
-      const { fixture, getByTestId } = await setup(null);
-
+      const { fixture, getByTestId } = await setup({ trainingRecordId: null });
       const uploadSection = getByTestId('uploadCertificate');
       const fileInput = getByTestId('fileInput');
-
       userEvent.upload(fileInput, new File(['some file content'], 'cert.pdf'));
-
       fixture.detectChanges();
-
       const text = within(uploadSection).queryByText('No file chosen');
       expect(text).toBeFalsy();
     });
 
     it('should provide aria description to screen reader users', async () => {
-      const { fixture, getByTestId } = await setup(null);
+      const { fixture, getByTestId } = await setup({ trainingRecordId: null });
       fixture.autoDetectChanges();
 
       const uploadSection = getByTestId('uploadCertificate');
@@ -423,7 +880,7 @@ describe('AddEditTrainingComponent', () => {
 
       component.previousUrl = ['/goToPreviousUrl'];
       const openNotesButton = getByText('Open notes');
-      openNotesButton.click();
+      fireEvent.click(openNotesButton);
       fixture.detectChanges();
 
       userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
@@ -433,8 +890,13 @@ describe('AddEditTrainingComponent', () => {
       const expectedFormValue = {
         title: 'Communication Training 1',
         accredited: 'Yes',
-        completed: { day: 2, month: '1', year: 2020 },
-        expires: { day: 2, month: '1', year: 2021 },
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skills academy',
+        howWasItDelivered: 'E-learning',
+        doesNotExpire: false,
+        validityPeriodInMonth: 24,
+        completed: { day: 2, month: 1, year: 2020 },
+        expires: { day: 2, month: 1, year: 2021 },
         notes: 'Some notes added to this training',
       };
 
@@ -448,9 +910,16 @@ describe('AddEditTrainingComponent', () => {
           trainingCategory: { id: 1 },
           title: 'Communication Training 1',
           accredited: 'Yes',
+          deliveredBy: 'External provider',
+          howWasItDelivered: 'E-learning',
+          doesNotExpire: false,
+          validityPeriodInMonth: 24,
           completed: '2020-01-02',
           expires: '2021-01-02',
           notes: 'Some notes added to this training',
+          trainingProviderId: 63,
+          otherTrainingProviderName: 'Care skills academy',
+          externalProviderName: null,
         },
       );
 
@@ -465,11 +934,11 @@ describe('AddEditTrainingComponent', () => {
 
     it('should call the createTrainingRecord function if adding a new training record, and navigate away from page', async () => {
       const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy, alertServiceSpy } =
-        await setup(null);
+        await setup({ trainingRecordId: null });
 
       component.previousUrl = ['/goToPreviousUrl'];
       const openNotesButton = getByText('Open notes');
-      openNotesButton.click();
+      fireEvent.click(openNotesButton);
       fixture.detectChanges();
 
       component.trainingCategory = {
@@ -477,16 +946,17 @@ describe('AddEditTrainingComponent', () => {
         category: component.categories[0].category,
       };
 
-      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.type(getByLabelText('Training record name'), 'Some training');
       userEvent.click(getByLabelText('Yes'));
+      userEvent.click(getByLabelText('External provider'));
+      userEvent.type(getByLabelText('Provider name'), 'Care skills academy');
+      userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '');
+      userEvent.type(getByLabelText('This training does not expire'), 'true');
+      userEvent.click(getByLabelText('E-learning'));
+
       const completedDate = getByTestId('completedDate');
-      userEvent.type(within(completedDate).getByLabelText('Day'), '10');
-      userEvent.type(within(completedDate).getByLabelText('Month'), '4');
-      userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
-      const expiresDate = getByTestId('expiresDate');
-      userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
-      userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
-      userEvent.type(within(expiresDate).getByLabelText('Year'), '2022');
+      fillInDate(completedDate, '2020', '4', '10');
+
       userEvent.type(getByLabelText('Add a note'), 'Some notes for this training');
 
       fireEvent.click(getByText('Save record'));
@@ -495,8 +965,13 @@ describe('AddEditTrainingComponent', () => {
       const expectedFormValue = {
         title: 'Some training',
         accredited: 'Yes',
+        deliveredBy: 'External provider',
+        externalProviderName: 'Care skills academy',
+        howWasItDelivered: 'E-learning',
+        validityPeriodInMonth: null,
+        doesNotExpire: true,
         completed: { day: 10, month: 4, year: 2020 },
-        expires: { day: 10, month: 4, year: 2022 },
+        expires: { day: null, month: null, year: null },
         notes: 'Some notes for this training',
       };
 
@@ -506,9 +981,16 @@ describe('AddEditTrainingComponent', () => {
         trainingCategory: { id: 1 },
         title: 'Some training',
         accredited: 'Yes',
+        deliveredBy: 'External provider',
+        howWasItDelivered: 'E-learning',
+        validityPeriodInMonth: null,
+        doesNotExpire: true,
         completed: '2020-04-10',
-        expires: '2022-04-10',
+        expires: null,
         notes: 'Some notes for this training',
+        trainingProviderId: 63,
+        otherTrainingProviderName: 'Care skills academy',
+        externalProviderName: null,
       });
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
@@ -520,45 +1002,108 @@ describe('AddEditTrainingComponent', () => {
       });
     });
 
-    it('should reset the training category selected for training record in the service on submit', async () => {
-      const { component, fixture, getByText, getByLabelText, trainingService, routerSpy } = await setup(null);
-
-      trainingService.setSelectedTrainingCategory({
-        id: 2,
-        seq: 20,
-        category: 'Autism',
-        trainingCategoryGroup: 'Specific conditions and disabilities',
+    it('should auto fill in the expiry date if validity period and completed date are given', async () => {
+      const selectedTraining = { trainingCategory: { category: 'Autism', id: 2 } };
+      const { component, getByText, getByTestId, getByLabelText, createSpy } = await setup({
+        trainingRecordId: null,
+        selectedTraining,
       });
 
-      component.ngOnInit();
+      userEvent.type(getByLabelText('How many months is the training valid for before it expires?'), '12');
+
+      const completedDate = getByTestId('completedDate');
+      fillInDate(completedDate, '2020', '4', '10');
+
+      userEvent.click(getByText('Save record'));
+
+      expect(createSpy).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+        jasmine.objectContaining({
+          trainingCategory: { id: 2 },
+          validityPeriodInMonth: 12,
+          doesNotExpire: null,
+          completed: '2020-04-10',
+          expires: '2021-04-09',
+        }),
+      );
+    });
+
+    it('should not change the expiry date if user has already input one', async () => {
+      const { component, getByText, updateSpy, getByLabelText, getByTestId } = await setup();
+
+      userEvent.clear(getByLabelText(/How many months/));
+      userEvent.type(getByLabelText(/How many months/), '12');
+
+      const completedDate = getByTestId('completedDate');
+      fillInDate(completedDate, '2020', '4', '10');
+
+      const expiryDate = getByTestId('expiresDate');
+      fillInDate(expiryDate, '2023', '12', '31');
+
+      userEvent.click(getByText('Save and return'));
+
+      expect(updateSpy).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+        component.trainingRecordId,
+        jasmine.objectContaining({
+          validityPeriodInMonth: 12,
+          doesNotExpire: null,
+          completed: '2020-04-10',
+          expires: '2023-12-31',
+        }),
+      );
+    });
+
+    it('should reset the training category selected for training record in the service on submit', async () => {
+      const { component, fixture, getByText, getByLabelText, trainingService, routerSpy } = await setup({
+        trainingRecordId: null,
+        selectedTraining: {
+          trainingCategory: {
+            id: 2,
+            seq: 20,
+            category: 'Autism',
+            trainingCategoryGroup: 'Specific conditions and disabilities',
+          },
+        },
+      });
+
       fixture.detectChanges();
 
       component.previousUrl = ['/goToPreviousUrl'];
 
-      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.type(getByLabelText('Training record name'), 'Some training');
       userEvent.click(getByLabelText('No'));
 
       const trainingServiceSpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
+      const trainingServiceIsTrainingCourseSelectedSpy = spyOn(
+        trainingService,
+        'clearIsTrainingCourseSelected',
+      ).and.callThrough();
       fireEvent.click(getByText('Save record'));
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       expect(trainingServiceSpy).toHaveBeenCalled();
+      expect(trainingServiceIsTrainingCourseSelectedSpy).toHaveBeenCalled();
 
       expect(trainingService.selectedTraining.trainingCategory).toBeNull();
     });
 
     it('should disable the submit button to prevent it being triggered more than once', async () => {
-      const { component, fixture, getByText, getByLabelText, trainingService, createSpy } = await setup(null);
-
-      trainingService.setSelectedTrainingCategory({
-        id: 2,
-        seq: 20,
-        category: 'Autism',
-        trainingCategoryGroup: 'Specific conditions and disabilities',
+      const { fixture, getByText, getByLabelText } = await setup({
+        trainingRecordId: null,
+        selectedTraining: {
+          trainingCategory: {
+            id: 2,
+            seq: 20,
+            category: 'Autism',
+            trainingCategoryGroup: 'Specific conditions and disabilities',
+          },
+        },
       });
-      component.ngOnInit();
 
-      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.type(getByLabelText('Training record name'), 'Some training');
       userEvent.click(getByLabelText('No'));
 
       const submitButton = getByText('Save record') as HTMLButtonElement;
@@ -577,7 +1122,7 @@ describe('AddEditTrainingComponent', () => {
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         const addCertificatesSpy = spyOn(certificateService, 'addCertificates').and.returnValue(of(null));
@@ -595,9 +1140,16 @@ describe('AddEditTrainingComponent', () => {
             trainingCategory: { id: 1 },
             title: 'Communication Training 1',
             accredited: 'Yes',
+            deliveredBy: 'External provider',
+            howWasItDelivered: 'E-learning',
+            validityPeriodInMonth: 24,
+            doesNotExpire: false,
             completed: '2020-01-02',
             expires: '2021-01-02',
             notes: 'Some notes added to this training',
+            trainingProviderId: 63,
+            otherTrainingProviderName: 'Care skills academy',
+            externalProviderName: null,
           },
         );
 
@@ -616,7 +1168,7 @@ describe('AddEditTrainingComponent', () => {
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         const addCertificatesSpy = spyOn(certificateService, 'addCertificates');
@@ -633,7 +1185,7 @@ describe('AddEditTrainingComponent', () => {
 
       it('should call both `addCertificates` and `createTrainingRecord` if an upload file is selected', async () => {
         const { component, fixture, getByText, getByLabelText, getByTestId, createSpy, routerSpy, certificateService } =
-          await setup(null);
+          await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         component.trainingCategory = {
@@ -645,7 +1197,7 @@ describe('AddEditTrainingComponent', () => {
 
         const addCertificatesSpy = spyOn(certificateService, 'addCertificates').and.returnValue(of(null));
 
-        userEvent.type(getByLabelText('Training name'), 'Understanding Autism');
+        userEvent.type(getByLabelText('Training record name'), 'Understanding Autism');
         userEvent.click(getByLabelText('Yes'));
 
         userEvent.upload(getByTestId('fileInput'), mockUploadFile);
@@ -656,9 +1208,16 @@ describe('AddEditTrainingComponent', () => {
           trainingCategory: { id: 2 },
           title: 'Understanding Autism',
           accredited: 'Yes',
+          deliveredBy: null,
+          externalProviderName: null,
+          howWasItDelivered: null,
+          validityPeriodInMonth: null,
+          doesNotExpire: null,
           completed: null,
           expires: null,
           notes: null,
+          trainingProviderId: null,
+          otherTrainingProviderName: null,
         });
 
         expect(addCertificatesSpy).toHaveBeenCalledWith(
@@ -673,7 +1232,7 @@ describe('AddEditTrainingComponent', () => {
 
       it('should not call `addCertificates` when no upload file was selected', async () => {
         const { component, fixture, getByText, getByLabelText, createSpy, routerSpy, certificateService } = await setup(
-          null,
+          { trainingRecordId: null },
         );
 
         component.previousUrl = ['/goToPreviousUrl'];
@@ -682,7 +1241,7 @@ describe('AddEditTrainingComponent', () => {
           id: 2,
         };
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         const addCertificatesSpy = spyOn(certificateService, 'addCertificates');
@@ -702,48 +1261,48 @@ describe('AddEditTrainingComponent', () => {
   describe('errors', () => {
     describe('title errors', () => {
       it('should show an error message if the title is less than 3 characters long', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup({
+          trainingRecordId: null,
+        });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
-        userEvent.type(getByLabelText('Training name'), 'aa');
+        userEvent.type(getByLabelText('Training record name'), 'aa');
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
-        expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
+        expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
       });
 
       it('should show an error message if the title is more than 120 characters long', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
         userEvent.type(
-          getByLabelText('Training name'),
+          getByLabelText('Training record name'),
           'long title long title long title long title long title long title long title long title long title long title long titles',
         );
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
-        expect(getAllByText('Training name must be between 3 and 120 characters').length).toEqual(2);
+        expect(getAllByText('Training record name must be between 3 and 120 characters').length).toEqual(2);
       });
     });
 
     describe('completed date errors', () => {
       it('should show an error message if the completed date is invalid', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
         const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), '44');
-        userEvent.type(within(completedDate).getByLabelText('Month'), '33');
-        userEvent.type(within(completedDate).getByLabelText('Year'), '2');
+        fillInDate(completedDate, '2', '33', '44');
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
@@ -752,18 +1311,21 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the completed date is in the future', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + 1);
+        const [year, month, day] = [
+          `${futureDate.getFullYear()}`,
+          `${futureDate.getMonth() + 1}`,
+          `${futureDate.getDate()}`,
+        ];
 
         const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), `${futureDate.getDate()}`);
-        userEvent.type(within(completedDate).getByLabelText('Month'), `${futureDate.getMonth() + 1}`);
-        userEvent.type(within(completedDate).getByLabelText('Year'), `${futureDate.getFullYear()}`);
+        fillInDate(completedDate, year, month, day);
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
@@ -772,18 +1334,17 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the completed date is more than 100 years ago', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
         const pastDate = new Date();
         pastDate.setFullYear(pastDate.getFullYear() - 101);
+        const [year, month, day] = [`${pastDate.getFullYear()}`, `${pastDate.getMonth() + 1}`, `${pastDate.getDate()}`];
 
         const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), `${pastDate.getDate()}`);
-        userEvent.type(within(completedDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
-        userEvent.type(within(completedDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
+        fillInDate(completedDate, year, month, day);
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
@@ -792,46 +1353,46 @@ describe('AddEditTrainingComponent', () => {
       });
     });
 
-    describe('expires date errors', () => {
+    describe('expires date errors when there is a trainingRecordId', () => {
       it('should show an error message if the expiry date is invalid', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
         const expiresDate = getByTestId('expiresDate');
-        userEvent.type(within(expiresDate).getByLabelText('Day'), '44');
-        userEvent.type(within(expiresDate).getByLabelText('Month'), '33');
-        userEvent.type(within(expiresDate).getByLabelText('Year'), '2');
+        fillInDate(expiresDate, '2', '33', '44');
 
-        fireEvent.click(getByText('Save record'));
+        fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         expect(getAllByText('Expiry date must be a valid date').length).toEqual(2);
       });
 
       it('should show an error message if the expiry date is more than 100 years ago', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup({
+          trainingRecordId: '1',
+        });
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
 
         const pastDate = new Date();
         pastDate.setFullYear(pastDate.getFullYear() - 101);
+        const [year, month, day] = [`${pastDate.getFullYear()}`, `${pastDate.getMonth() + 1}`, `${pastDate.getDate()}`];
 
         const expiresDate = getByTestId('expiresDate');
-        userEvent.type(within(expiresDate).getByLabelText('Day'), `${pastDate.getDate()}`);
-        userEvent.type(within(expiresDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
-        userEvent.type(within(expiresDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
 
-        fireEvent.click(getByText('Save record'));
+        fillInDate(expiresDate, year, month, day);
+
+        fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
       });
 
       it('should show the min date error message if expiry date is over a hundred years ago and the expiry date is before the completed date', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId, queryByText } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -839,19 +1400,20 @@ describe('AddEditTrainingComponent', () => {
         const dateCompleted = new Date();
 
         const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), `${dateCompleted.getDate()}`);
-        userEvent.type(within(completedDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
-        userEvent.type(within(completedDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
+        const expiresDate = getByTestId('expiresDate');
+
+        fillInDate(
+          completedDate,
+          `${dateCompleted.getFullYear()}`,
+          `${dateCompleted.getMonth() + 1}`,
+          `${dateCompleted.getDate()}`,
+        );
 
         const pastDate = new Date();
         pastDate.setFullYear(pastDate.getFullYear() - 101);
+        fillInDate(expiresDate, `${pastDate.getFullYear()}`, `${pastDate.getMonth() + 1}`, `${pastDate.getDate()}`);
 
-        const expiresDate = getByTestId('expiresDate');
-        userEvent.type(within(expiresDate).getByLabelText('Day'), `${pastDate.getDate()}`);
-        userEvent.type(within(expiresDate).getByLabelText('Month'), `${pastDate.getMonth() + 1}`);
-        userEvent.type(within(expiresDate).getByLabelText('Year'), `${pastDate.getFullYear()}`);
-
-        fireEvent.click(getByText('Save record'));
+        fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         expect(getAllByText('Expiry date cannot be more than 100 years ago').length).toEqual(2);
@@ -859,7 +1421,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should an error message when the expiry date is before the completed date', async () => {
-        const { component, fixture, getByText, getAllByText, getByTestId } = await setup(null);
+        const { component, fixture, getByText, getAllByText, getByTestId } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
         fixture.detectChanges();
@@ -867,15 +1429,12 @@ describe('AddEditTrainingComponent', () => {
         const dateCompleted = new Date();
 
         const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
-        userEvent.type(within(completedDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
-        userEvent.type(within(completedDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
         const expiresDate = getByTestId('expiresDate');
-        userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
-        userEvent.type(within(expiresDate).getByLabelText('Month'), `${dateCompleted.getMonth() + 1}`);
-        userEvent.type(within(expiresDate).getByLabelText('Year'), `${dateCompleted.getFullYear()}`);
 
-        fireEvent.click(getByText('Save record'));
+        fillInDate(completedDate, `${dateCompleted.getFullYear()}`, `${dateCompleted.getMonth() + 1}`, `7`);
+        fillInDate(expiresDate, `${dateCompleted.getFullYear()}`, `${dateCompleted.getMonth() + 1}`, `6`);
+
+        fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
@@ -887,11 +1446,11 @@ describe('AddEditTrainingComponent', () => {
         'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
 
       it('should show an error message if the notes is over 1000 characters', async () => {
-        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup({ trainingRecordId: null });
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         userEvent.type(getByLabelText('Add a note'), veryLongString);
@@ -903,16 +1462,16 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should open the notes section if the notes input is over 1000 characters and section is closed on submit', async () => {
-        const { fixture, getByText, getByLabelText, getByTestId } = await setup(null);
+        const { fixture, getByText, getByLabelText, getByTestId } = await setup({ trainingRecordId: null });
 
         const openNotesButton = getByText('Open notes');
-        openNotesButton.click();
+        fireEvent.click(openNotesButton);
         fixture.detectChanges();
 
         userEvent.type(getByLabelText('Add a note'), veryLongString);
 
         const closeNotesButton = getByText('Close notes');
-        closeNotesButton.click();
+        fireEvent.click(closeNotesButton);
         fixture.detectChanges();
 
         fireEvent.click(getByText('Save record'));
@@ -927,7 +1486,7 @@ describe('AddEditTrainingComponent', () => {
 
     describe('uploadCertificate errors', () => {
       it('should show an error message if the selected file is over 5MB', async () => {
-        const { fixture, getByTestId, getByText } = await setup(null);
+        const { fixture, getByTestId, getByText } = await setup({ trainingRecordId: null });
 
         const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
 
@@ -945,7 +1504,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should show an error message if the selected file is not a pdf file', async () => {
-        const { fixture, getByTestId, getByText } = await setup(null);
+        const { fixture, getByTestId, getByText } = await setup({ trainingRecordId: null });
 
         const mockUploadFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
 
@@ -959,7 +1518,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should clear the error message when user select a valid file instead', async () => {
-        const { fixture, getByTestId, getByText, queryByText } = await setup(null);
+        const { fixture, getByTestId, getByText, queryByText } = await setup({ trainingRecordId: null });
         fixture.autoDetectChanges();
 
         const invalidFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
@@ -974,7 +1533,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should provide aria description to screen reader users when error happen', async () => {
-        const { fixture, getByTestId } = await setup(null);
+        const { fixture, getByTestId } = await setup({ trainingRecordId: null });
         fixture.autoDetectChanges();
 
         const uploadSection = getByTestId('uploadCertificate');
@@ -989,7 +1548,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should clear any error message when remove button of an upload file is clicked', async () => {
-        const { fixture, getByTestId, getByText, queryByText } = await setup(null);
+        const { fixture, getByTestId, getByText, queryByText } = await setup({ trainingRecordId: null });
         fixture.autoDetectChanges();
 
         const mockUploadFileValid = new File(['some file content'], 'cerfificate.pdf', { type: 'application/pdf' });
@@ -1005,17 +1564,35 @@ describe('AddEditTrainingComponent', () => {
         expect(queryByText('The certificate must be a PDF file')).toBeFalsy();
       });
     });
+
+    describe('validityPeriodInMonth', () => {
+      const invalidValuesForTesting = ['-10', '0', '99999', 'apple', '   '];
+
+      invalidValuesForTesting.forEach((invalidValue) => {
+        it(`should show an error message if validityPeriodInMonth got an invalid value - ${invalidValue}`, async () => {
+          const { getByRole, fixture, getByText, getByLabelText, getAllByText } = await setup();
+          const expectedErrorMsg = 'Number of months must be between 1 and 999';
+
+          const inputBox = getByLabelText(/^How many months/);
+          userEvent.clear(inputBox);
+          userEvent.type(inputBox, invalidValue);
+          userEvent.click(getByRole('button', { name: 'Save and return' }));
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+          expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        });
+      });
+    });
   });
 
-  it('should redirect to the add training select category on page refresh', async () => {
-    const { component, fixture, getByText, getByTestId, getByLabelText, trainingService, routerSpy } = await setup(
-      null,
-    );
+  it('should redirect to the add training select category page on page refresh', async () => {
+    const { component, routerSpy } = await setup({ trainingRecordId: null, selectedTraining: null });
 
     component.ngOnInit();
 
     expect(routerSpy).toHaveBeenCalledWith([
-      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training`,
+      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training-without-course`,
     ]);
   });
 
@@ -1083,7 +1660,7 @@ describe('AddEditTrainingComponent', () => {
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
         const firstCertDownloadButton = within(certificatesTable).getAllByText('Download')[0];
-        firstCertDownloadButton.click();
+        fireEvent.click(firstCertDownloadButton);
 
         expect(downloadCertificatesSpy).toHaveBeenCalledWith(
           component.workplace.uid,
@@ -1104,7 +1681,7 @@ describe('AddEditTrainingComponent', () => {
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
         const downloadButton = within(certificatesTable).getByText('Download all');
-        downloadButton.click();
+        fireEvent.click(downloadButton);
 
         expect(downloadCertificatesSpy).toHaveBeenCalledWith(
           component.workplace.uid,
@@ -1127,7 +1704,7 @@ describe('AddEditTrainingComponent', () => {
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
         const downloadButton = within(certificatesTable).getAllByText('Download')[1];
-        downloadButton.click();
+        fireEvent.click(downloadButton);
         fixture.detectChanges();
 
         const expectedErrorMessage = getByText(
@@ -1146,7 +1723,7 @@ describe('AddEditTrainingComponent', () => {
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
         const downloadAllButton = within(certificatesTable).getByText('Download all');
-        downloadAllButton.click();
+        fireEvent.click(downloadAllButton);
         fixture.detectChanges();
 
         const expectedErrorMessage = getByText(

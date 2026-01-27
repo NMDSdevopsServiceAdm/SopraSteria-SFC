@@ -6,11 +6,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SelectTrainingCategoryDirective } from '@shared/directives/select-training-category/select-training-category.directive';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
-    selector: 'app-select-training-category',
-    templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
-    standalone: false
+  selector: 'app-select-training-category',
+  templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
+  standalone: false,
 })
 export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirective implements OnInit {
   constructor(
@@ -21,6 +22,7 @@ export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirec
     protected workerService: WorkerService,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
+    protected previousRouteService: PreviousRouteService,
   ) {
     super(formBuilder, trainingService, router, backLinkService, workerService, route, errorSummaryService);
   }
@@ -33,12 +35,18 @@ export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirec
         this.workerId = params.id;
       }
     });
+
+    const previousPage = this.previousRouteService.getPreviousPage();
+
+    if (previousPage === 'training' || previousPage === 'all-records') {
+      this.trainingService.resetState();
+    }
   }
 
   protected submit(selectedCategory): void {
     this.trainingService.setSelectedTrainingCategory(selectedCategory);
     this.router.navigate([
-      `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training/details`,
+      `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training-without-course/details`,
     ]);
   }
 

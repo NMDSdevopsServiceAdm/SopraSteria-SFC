@@ -36,7 +36,6 @@ import { OtherQualificationsLevelComponent } from '@features/workers/other-quali
 import { OtherQualificationsComponent } from '@features/workers/other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from '@features/workers/recruited-from/recruited-from.component';
 import { SalaryComponent } from '@features/workers/salary/salary.component';
-import { SelectRecordTypeComponent } from '@features/workers/select-record-type/select-record-type.component';
 import { SocialCareQualificationLevelComponent } from '@features/workers/social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from '@features/workers/social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from '@features/workers/staff-details/staff-details.component';
@@ -113,15 +112,6 @@ const routes: Routes = [
                 path: 'main-job-start-date',
                 component: MainJobStartDateComponent,
                 data: { title: 'Main Job Role Start Date' },
-              },
-              {
-                path: 'select-record-type',
-                canActivate: [CheckPermissionsGuard],
-                component: SelectRecordTypeComponent,
-                data: {
-                  permissions: ['canAddWorker'],
-                  title: 'Select Record Type',
-                },
               },
               {
                 path: 'nursing-category',
@@ -327,15 +317,6 @@ const routes: Routes = [
         path: 'main-job-start-date',
         component: MainJobStartDateComponent,
         data: { title: 'Main Job Role Start Date' },
-      },
-      {
-        path: 'select-record-type',
-        canActivate: [CheckPermissionsGuard],
-        component: SelectRecordTypeComponent,
-        data: {
-          permissions: ['canAddWorker'],
-          title: 'Select Record Type',
-        },
       },
       {
         path: 'nursing-category',

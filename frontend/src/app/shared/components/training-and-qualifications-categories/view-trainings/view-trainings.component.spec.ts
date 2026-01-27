@@ -68,7 +68,9 @@ describe('ViewTrainingComponent', () => {
           provide: PermissionsService,
           useClass: MockPermissionsService,
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -218,7 +220,7 @@ describe('ViewTrainingComponent', () => {
         .getByText('Add')
         .getAttribute('href')
         .slice(0, within(tableRow).getByText('Add').getAttribute('href').indexOf('?')),
-    ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/add-training`);
+    ).toEqual(`/workplace/${workplace.uid}/training-and-qualifications-record/${workerUID}/add-a-training-record`);
   });
 
   it(`should render the OK status when the training is not expired and does not expire soon`, async () => {
