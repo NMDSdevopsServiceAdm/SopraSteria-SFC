@@ -14,7 +14,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers.component';
 import { FormatUtil } from '@core/utils/format-util';
 
-fdescribe('DoYouHaveLeaversComponent', () => {
+describe('DoYouHaveLeaversComponent', () => {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 1);
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);

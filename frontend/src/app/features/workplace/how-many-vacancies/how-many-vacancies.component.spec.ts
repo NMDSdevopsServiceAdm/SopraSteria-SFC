@@ -15,7 +15,7 @@ import userEvent from '@testing-library/user-event';
 import { HowManyVacanciesComponent } from './how-many-vacancies.component';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 
-fdescribe('HowManyVacanciesComponent', () => {
+describe('HowManyVacanciesComponent', () => {
   const mockSelectedJobRoles: Vacancy[] = [
     {
       jobId: 10,

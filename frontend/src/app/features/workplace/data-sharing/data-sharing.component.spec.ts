@@ -14,7 +14,7 @@ import { of } from 'rxjs';
 
 import { DataSharingComponent } from './data-sharing.component';
 
-fdescribe('DataSharingComponent', () => {
+describe('DataSharingComponent', () => {
   async function setup(overrides: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       DataSharingComponent,

@@ -153,7 +153,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
   });
 
   describe('submit buttons', () => {
-    fdescribe('inside the flow', () => {
+    describe('inside the flow', () => {
       it("should show 'Save and continue' button and 'Skip this question' link", async () => {
         const { getByText } = await setup({ returnToUrl: false });
 

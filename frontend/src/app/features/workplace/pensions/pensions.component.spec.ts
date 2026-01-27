@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { PensionsComponent } from './pensions.component';
 
-fdescribe('PensionsComponent', () => {
+describe('PensionsComponent', () => {
   async function setup(returnUrl = true, pension = undefined) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       PensionsComponent,

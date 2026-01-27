@@ -14,7 +14,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { DoYouHaveStartersComponent } from './do-you-have-starters.component';
 import { FormatUtil } from '@core/utils/format-util';
 
-fdescribe('DoYouHaveStartersComponent', () => {
+describe('DoYouHaveStartersComponent', () => {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 1);
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);

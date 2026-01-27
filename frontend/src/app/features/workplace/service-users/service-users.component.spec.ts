@@ -64,7 +64,7 @@ const mockServiceUser = [
   },
 ];
 
-fdescribe('ServiceUsersComponent', () => {
+describe('ServiceUsersComponent', () => {
   const setup = async (overrides: any = {}) => {
     const getServiceUsersSpy = jasmine.createSpy('getServiceUsers').and.returnValue(of(mockServiceUser));
 

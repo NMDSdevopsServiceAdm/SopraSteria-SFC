@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate.component';
 
-fdescribe('AcceptPreviousCareCertificateComponent', () => {
+describe('AcceptPreviousCareCertificateComponent', () => {
   async function setup(returnUrl = true, acceptCareCertificate = undefined) {
     const { fixture, getByText, getByLabelText, getByTestId, queryByTestId } = await render(
       AcceptPreviousCareCertificateComponent,
