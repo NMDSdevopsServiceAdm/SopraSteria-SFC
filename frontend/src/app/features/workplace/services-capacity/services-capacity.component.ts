@@ -48,7 +48,6 @@ export class ServicesCapacityComponent extends Question {
         this.capacities = capacities.allServiceCapacities;
         if (this.capacities.length === 0) {
           this.navigateToQuestionPage('other-services', { replaceUrl: true });
-          // this.router.navigate(['/workplace', this.establishment.uid, 'other-services'], { replaceUrl: true });
         }
 
         this.sortServices();
