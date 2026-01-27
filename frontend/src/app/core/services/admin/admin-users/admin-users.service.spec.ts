@@ -5,7 +5,6 @@ import { Roles } from '@core/model/roles.enum';
 import { AdminUsersService } from './admin-users.service';
 import { environment } from 'src/environments/environment';
 import { provideHttpClient } from '@angular/common/http';
-
 describe('AdminUsersService', () => {
   let service: AdminUsersService;
   let http: HttpTestingController;

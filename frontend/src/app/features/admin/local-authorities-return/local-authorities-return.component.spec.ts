@@ -57,11 +57,19 @@ describe('LocalAuthoritiesReturnComponent', () => {
     expect(link.getAttribute('href')).toBe('/sfcadmin/local-authorities-return/monitor');
   });
 
-  it('should have a link to the monitor page', async () => {
+  it('should have a link to the Set start and end dates page', async () => {
     const { component } = await setup();
 
     const link = component.getByText('Set start and end dates', { exact: false });
 
     expect(link.getAttribute('href')).toBe('/sfcadmin/local-authorities-return/set-dates');
+  });
+
+  it('should have a link to the Status summary page', async () => {
+    const { component } = await setup();
+
+    const link = component.getByText('Status summary', { exact: false });
+
+    expect(link.getAttribute('href')).toBe('/sfcadmin/local-authorities-return/status-summary');
   });
 });

@@ -25,24 +25,44 @@ describe('MonitorComponent', () => {
             snapshot: {
               data: {
                 localAuthorities: {
-                  B: [{ name: 'B LA1', notes: true, status: 'Not updated', workers: 0 }],
-                  C: [{ name: 'C LA1', notes: false, status: 'Update, complete', workers: 10 }],
-                  D: [{ name: 'D LA1', notes: true, status: 'Not updated', workers: 10 }],
-                  E: [{ name: 'E LA1', notes: false, status: 'Update, not complete', workers: 0 }],
-                  F: [
-                    { name: 'F LA1', notes: true, status: 'Confirmed, complete', workers: 10 },
-                    { name: 'F LA2', notes: false, status: 'Not updated', workers: 0 },
+                  B: [{ name: 'B LA1', workplaceId: 'B1005115', notes: true, status: 'Not updated', workers: 0 }],
+                  C: [
+                    { name: 'C LA1', workplaceId: 'B1005116', notes: false, status: 'Update, complete', workers: 10 },
                   ],
-                  G: [{ name: 'G LA1', notes: true, status: 'Not updated', workers: 10 }],
-                  H: [{ name: 'H LA1', notes: false, status: 'Confirmed, not complete', workers: 0 }],
-                  I: [{ name: 'I LA1', notes: true, status: 'Not updated', workers: 10 }],
-                  J: [{ name: 'J LA1', notes: false, status: 'Not updated', workers: 0 }],
+                  D: [{ name: 'D LA1', workplaceId: 'B1005117', notes: true, status: 'Not updated', workers: 10 }],
+                  E: [
+                    {
+                      name: 'E LA1',
+                      workplaceId: 'B1005118',
+                      notes: false,
+                      status: 'Update, not complete',
+                      workers: 0,
+                    },
+                  ],
+                  F: [
+                    { name: 'F LA1', workplaceId: 'B1005119', notes: true, status: 'Confirmed, complete', workers: 10 },
+                    { name: 'F LA2', workplaceId: 'B100511', notes: false, status: 'Not updated', workers: 0 },
+                  ],
+                  G: [{ name: 'G LA1', workplaceId: 'B1005112', notes: true, status: 'Not updated', workers: 10 }],
+                  H: [
+                    {
+                      name: 'H LA1',
+                      workplaceId: 'B1005113',
+                      notes: false,
+                      status: 'Confirmed, not complete',
+                      workers: 0,
+                    },
+                  ],
+                  I: [{ name: 'I LA1', workplaceId: 'B1005116', notes: true, status: 'Not updated', workers: 10 }],
+                  J: [{ name: 'J LA1', workplaceId: 'B1005117', notes: false, status: 'Not updated', workers: 0 }],
                 },
               },
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();
@@ -128,6 +148,7 @@ describe('MonitorComponent', () => {
           'govuk-accordion__section--expanded',
         );
         expect(droppedDiv.innerText).toContain('Local authority');
+        expect(droppedDiv.innerText).toContain('Workplace Id');
         expect(droppedDiv.innerText).toContain('Workers');
         expect(droppedDiv.innerText).toContain('Status');
         expect(droppedDiv.innerText).toContain('Notes');
@@ -149,6 +170,7 @@ describe('MonitorComponent', () => {
           'govuk-accordion__section--expanded',
         );
         expect(droppedDiv.innerText).toContain('Local authority');
+        expect(droppedDiv.innerText).toContain('Workplace Id');
         expect(droppedDiv.innerText).toContain('Workers');
         expect(droppedDiv.innerText).toContain('Status');
         expect(droppedDiv.innerText).toContain('Notes');
@@ -176,6 +198,7 @@ describe('MonitorComponent', () => {
         'govuk-accordion__section--expanded',
       );
       expect(droppedDiv.innerText).toContain('Local authority');
+      expect(droppedDiv.innerText).toContain('Workplace Id');
       expect(droppedDiv.innerText).toContain('Workers');
       expect(droppedDiv.innerText).toContain('Status');
       expect(droppedDiv.innerText).toContain('Notes');
@@ -298,18 +321,104 @@ describe('MonitorComponent', () => {
 
       const spy = spyOn(localAuthoritiesService, 'resetLAs').and.returnValue(
         of({
-          B: [{ name: 'B LA1', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' }],
-          C: [{ name: 'C LA1', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' }],
-          D: [{ name: 'D LA1', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' }],
-          E: [{ name: 'E LA1', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' }],
-          F: [
-            { name: 'F LA1', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' },
-            { name: 'F LA2', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' },
+          B: [
+            {
+              name: 'B LA1',
+              workplaceId: 'B1005115',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
           ],
-          G: [{ name: 'G LA1', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' }],
-          H: [{ name: 'H LA1', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' }],
-          I: [{ name: 'I LA1', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' }],
-          J: [{ name: 'J LA1', notes: false, status: 'Not updated', workers: 0, localAuthorityUID: '123' }],
+          C: [
+            {
+              name: 'C LA1',
+              workplaceId: 'B1005116',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
+          ],
+          D: [
+            {
+              name: 'D LA1',
+              workplaceId: 'B1005117',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
+          ],
+          E: [
+            {
+              name: 'E LA1',
+              workplaceId: 'B1005118',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
+          ],
+          F: [
+            {
+              name: 'F LA1',
+              workplaceId: 'B1005119',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
+            {
+              name: 'F LA2',
+              workplaceId: 'B1005111',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
+          ],
+          G: [
+            {
+              name: 'G LA1',
+              workplaceId: 'B1005112',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
+          ],
+          H: [
+            {
+              name: 'H LA1',
+              workplaceId: 'B1005113',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
+          ],
+          I: [
+            {
+              name: 'I LA1',
+              workplaceId: 'B1005114',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
+          ],
+          J: [
+            {
+              name: 'J LA1',
+              workplaceId: 'B1005119',
+              notes: false,
+              status: 'Not updated',
+              workers: 0,
+              localAuthorityUID: '123',
+            },
+          ],
         }),
       );
 
