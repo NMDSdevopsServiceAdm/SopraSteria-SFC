@@ -34,7 +34,7 @@ import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-rec
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
 import { StartComponent } from './start/start.component';
 
-const workplaceFlowQuestions: Routes = [
+const workplaceFlowOnlyPages: Routes = [
   {
     path: 'start',
     component: StartComponent,
@@ -42,56 +42,6 @@ const workplaceFlowQuestions: Routes = [
     data: {
       permissions: ['canEditEstablishment'],
       title: 'Start',
-    },
-  },
-  {
-    path: 'other-services',
-    component: OtherServicesComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'Other Services',
-    },
-  },
-  {
-    path: 'service-users',
-    component: ServiceUsersComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'Service Users',
-    },
-  },
-  {
-    path: 'capacity-of-services',
-    component: ServicesCapacityComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'Capacity of Services',
-    },
-  },
-  {
-    path: 'staff-do-delegated-healthcare-activities',
-    component: StaffDoDelegatedHealthcareActivitiesComponent,
-    canActivate: [CheckPermissionsGuard],
-    resolve: {
-      delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver,
-      workerHasDHAAnswered: CheckIfAnyWorkerHasDHAAnsweredResolver,
-    },
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'Staff do delegated healthcare activities',
-    },
-  },
-  {
-    path: 'what-kind-of-delegated-healthcare-activities',
-    component: StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
-    canActivate: [CheckPermissionsGuard, WorkplaceStaffDoDHAGuard],
-    resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'What kind of delegated healthcare activities',
     },
   },
   {
@@ -182,6 +132,69 @@ const workplaceFlowQuestions: Routes = [
     },
   },
   {
+    path: 'check-answers',
+    component: CheckAnswersComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Check Answers',
+    },
+  },
+];
+
+export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
+  {
+    path: 'other-services',
+    component: OtherServicesComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Other Services',
+    },
+  },
+  {
+    path: 'service-users',
+    component: ServiceUsersComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Service Users',
+    },
+  },
+  {
+    path: 'capacity-of-services',
+    component: ServicesCapacityComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Capacity of Services',
+    },
+  },
+  {
+    path: 'staff-do-delegated-healthcare-activities',
+    component: StaffDoDelegatedHealthcareActivitiesComponent,
+    canActivate: [CheckPermissionsGuard],
+    resolve: {
+      delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver,
+      workerHasDHAAnswered: CheckIfAnyWorkerHasDHAAnsweredResolver,
+    },
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Staff do delegated healthcare activities',
+    },
+  },
+  {
+    path: 'what-kind-of-delegated-healthcare-activities',
+    component: StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
+    canActivate: [CheckPermissionsGuard, WorkplaceStaffDoDHAGuard],
+    resolve: { delegatedHealthcareActivities: GetDelegatedHealthcareActivitiesResolver },
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'What kind of delegated healthcare activities',
+    },
+  },
+
+  {
     path: 'staff-recruitment-capture-training-requirement',
     component: StaffRecruitmentCaptureTrainingRequirementComponent,
     canActivate: [CheckPermissionsGuard],
@@ -265,26 +278,19 @@ const workplaceFlowQuestions: Routes = [
       title: 'Share Data',
     },
   },
-  {
-    path: 'check-answers',
-    component: CheckAnswersComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'Check Answers',
-    },
-  },
 ];
+
+// TODO: populate this array so that /workplace-data/workplace-summary/question-page-name work
+const workplaceSummaryOnlyPages: Routes = [];
 
 export const addWorkplaceDetails: Route = {
   path: 'add-workplace-details',
-  children: [...workplaceFlowQuestions],
+  children: [...workplaceFlowOnlyPages, ...workplaceQuestionsSharedByFlowAndSummary],
 };
 
 export const workplaceSummary: Route = {
   path: 'workplace-summary',
-  // TODO: add children to here. some are be sharable with workplaceFlowQuestions
-  children: [],
+  children: [...workplaceSummaryOnlyPages, ...workplaceQuestionsSharedByFlowAndSummary],
 };
 
 export const WorkplaceDataRoutes: Route = { path: 'workplace-data', children: [addWorkplaceDetails, workplaceSummary] };
