@@ -88,7 +88,7 @@ const routes: Routes = [
     children: [
       WorkplaceDataRoutes,
 
-      //TODO: remove the line below when workplace questions from summary are moved to /workplace-data/workplace-summary
+      // TODO: remove the line below when workplace questions from summary are moved to /workplace-data/workplace-summary
       ...workplaceQuestionsSharedByFlowAndSummary,
 
       {
