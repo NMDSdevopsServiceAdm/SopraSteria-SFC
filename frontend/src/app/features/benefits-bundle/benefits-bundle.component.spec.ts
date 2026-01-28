@@ -86,7 +86,7 @@ describe('BenefitsBundleComponent', () => {
 
       fixture.detectChanges();
 
-      expect(getByText(`Discounts from Skills for Care’s endorsed training providers`)).toBeTruthy();
+      expect(getByText(`Discounts from Skills for Care’s training providers`)).toBeTruthy();
       expect(getByText(`10% off Skills for Care’s eLearning modules`)).toBeTruthy();
       expect(getByText('10% off tailored seminars from Skills for Care')).toBeTruthy();
       expect(getByText('5 FREE resources')).toBeTruthy();
@@ -168,7 +168,7 @@ describe('BenefitsBundleComponent', () => {
         const { getByText, fixture } = await setup();
 
         fixture.detectChanges();
-        fireEvent.click(getByText(`Discounts from Skills for Care’s endorsed training providers`));
+        fireEvent.click(getByText(`Discounts from Skills for Care’s training providers`));
         fireEvent.click(getByText(`10% off Skills for Care’s eLearning modules`));
         fireEvent.click(getByText('10% off tailored seminars from Skills for Care'));
         fireEvent.click(getByText('5 FREE resources'));

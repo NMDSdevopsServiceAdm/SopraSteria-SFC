@@ -23,7 +23,7 @@ export class BenefitsBundleComponent implements OnInit {
       open: false,
     },
     {
-      title: 'Discounts from Skills for Care’s endorsed training providers',
+      title: 'Discounts from Skills for Care’s training providers',
       open: false,
     },
     {
