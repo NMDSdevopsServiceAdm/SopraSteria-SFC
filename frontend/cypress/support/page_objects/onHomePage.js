@@ -18,6 +18,17 @@ export class HomePage {
   clickTab(tab) {
     cy.get('[data-cy="tab-list"]').contains(tab).click();
   }
+
+  cards() {
+    cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
+    cy.get('[data-cy="cards-and-links"]').should('contain', 'See how you compare against other workplaces');
+  }
+
+  otherLinksDefault() {
+    cy.get('[data-cy="home-other-links"]').should('contain', 'View the ASC-WDS Benefits Bundle');
+    cy.get('[data-cy="home-other-links"]').should('contain', 'Get your ASC-WDS certificate');
+    cy.get('[data-cy="home-other-links"]').should('contain', 'About ASC-WDS');
+  }
 }
 
 export const onHomePage = new HomePage();

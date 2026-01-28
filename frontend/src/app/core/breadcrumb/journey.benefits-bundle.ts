@@ -14,7 +14,7 @@ export const benefitsBundleJourney: JourneyRoute = {
       path: Path.BENEFITS_BUNDLE,
       children: [
         {
-          title: 'Endorsed training providers',
+          title: 'Training providers',
           path: Path.BENEFITS_TRAINING_DISCOUNTS,
         },
         {

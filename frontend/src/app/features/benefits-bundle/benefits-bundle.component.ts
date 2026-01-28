@@ -4,9 +4,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-    selector: 'app-benefits-bundle',
-    templateUrl: './benefits-bundle.component.html',
-    standalone: false
+  selector: 'app-benefits-bundle',
+  templateUrl: './benefits-bundle.component.html',
+  standalone: false,
 })
 export class BenefitsBundleComponent implements OnInit {
   public workplaceName: string;
@@ -23,11 +23,7 @@ export class BenefitsBundleComponent implements OnInit {
       open: false,
     },
     {
-      title: 'Discounts from Skills for Care’s endorsed training providers',
-      open: false,
-    },
-    {
-      title: '10% off all publications in the Skills for Care bookshop',
+      title: 'Discounts from Skills for Care’s training providers',
       open: false,
     },
     {

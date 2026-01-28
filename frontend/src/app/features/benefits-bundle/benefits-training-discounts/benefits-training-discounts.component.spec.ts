@@ -54,7 +54,7 @@ describe('BenefitsTrainingDiscountsComponent', () => {
 
   it('should display the title', async () => {
     const { getByText } = await setup();
-    const title = getByText(`Discounts from Skills for Care's endorsed training providers`);
+    const title = getByText(`Discounts from Skills for Care's training providers`);
 
     expect(title).toBeTruthy();
   });
