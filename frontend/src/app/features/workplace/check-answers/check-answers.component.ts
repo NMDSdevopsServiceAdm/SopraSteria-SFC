@@ -8,9 +8,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-check-answers',
-    templateUrl: './check-answers.component.html',
-    standalone: false
+  selector: 'app-check-answers',
+  templateUrl: './check-answers.component.html',
+  standalone: false,
 })
 export class CheckAnswersComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
@@ -32,23 +32,27 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe((establishment) => {
         this.establishment = establishment;
-        this.summaryReturnUrl = { url: ['/workplace', establishment.uid, 'check-answers'] };
+        this.summaryReturnUrl = {
+          url: this.establishmentService.buildPathForAddWorkplaceDetails(establishment.uid, 'check-answers'),
+        };
         this.setBackLink();
       }),
     );
   }
 
   public setBackLink(): void {
-    this.backService.setBackLink({ url: ['/workplace', this.establishment.uid, 'sharing-data'] });
+    this.backService.setBackLink({
+      url: this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, 'sharing-data'),
+    });
   }
 
   public showConfirmWorkplaceDetailsAlert(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'workplace' })
-    .then(()=>{
+    this.router.navigate(['/dashboard'], { fragment: 'workplace' }).then(() => {
       this.alertService.addAlert({
         type: 'success',
         message: `You've confirmed the workplace details that you added`,
-      });})
+      });
+    });
   }
 
   ngOnDestroy(): void {

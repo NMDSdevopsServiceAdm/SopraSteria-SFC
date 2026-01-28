@@ -1,6 +1,6 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -20,10 +20,12 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
 
   public return: URLStructure;
-  public previousRoute: string[];
-  public nextRoute: string[];
+
+  private _previousRouteSegment: string;
+  private _nextRouteSegment: string;
+  private _skipRouteSegment: string;
+
   public back: URLStructure;
-  public skipRoute: string[];
   public hideBackLink: boolean;
 
   public formErrorsMap: Array<ErrorDetails> = [];
@@ -84,6 +86,76 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  protected setPreviousRouteSegment(pathSegment: string) {
+    this._previousRouteSegment = pathSegment;
+  }
+
+  protected setNextRouteSegment(pathSegment: string) {
+    this._nextRouteSegment = pathSegment;
+  }
+
+  protected setSkipRouteSegment(pathSegment: string) {
+    this._skipRouteSegment = pathSegment;
+  }
+
+  public get isInAddDetailsFlow(): boolean {
+    return !this.return || (this.router.url && this.router.url.includes('add-workplace-details'));
+  }
+
+  public get previousRoute(): string[] {
+    if (this.isInAddDetailsFlow) {
+      return this.establishmentService.buildPathForAddWorkplaceDetails(
+        this.establishment.uid,
+        this._previousRouteSegment,
+      );
+    } else {
+      return ['/workplace', `${this.establishment.uid}`, this._previousRouteSegment];
+    }
+  }
+
+  public get nextRoute(): string[] {
+    if (this.isInAddDetailsFlow) {
+      return this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, this._nextRouteSegment);
+    } else {
+      return ['/workplace', `${this.establishment.uid}`, this._nextRouteSegment];
+    }
+  }
+
+  public get skipRoute(): string[] {
+    if (this.isInAddDetailsFlow) {
+      return this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, this._skipRouteSegment);
+    } else {
+      return ['/workplace', `${this.establishment.uid}`, this._skipRouteSegment];
+    }
+  }
+
+  protected set previousRoute(route: string | string[]) {
+    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setPreviousRouteSegment(lastPathSegment);
+  }
+
+  protected set nextRoute(route: string | string[]) {
+    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setNextRouteSegment(lastPathSegment);
+  }
+
+  protected set skipRoute(route: string | string[]) {
+    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setSkipRouteSegment(lastPathSegment);
+  }
+
+  protected navigateToQuestionPage(pathSegment: string, ...extras: [NavigationExtras?]): Promise<boolean> {
+    if (this.isInAddDetailsFlow) {
+      const destinationUrl = this.establishmentService.buildPathForAddWorkplaceDetails(
+        this.establishment.uid,
+        pathSegment,
+      );
+      return this.router.navigate(destinationUrl, ...extras);
+    } else {
+      return this.router.navigate(['/workplace', `${this.establishment.uid}`, pathSegment], ...extras);
+    }
   }
 
   protected navigate(): Promise<boolean> {

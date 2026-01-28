@@ -19,3 +19,6 @@ export const EMAIL_PATTERN = /^[A-Za-z0-9._'%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}
 export const PHONE_PATTERN = /^[0-9 x(?=ext 0-9+)]{8,50}$/;
 export const DATE_DAY_VALID = /^(0?[1-9]|[12][0-9]|3[01])$/;
 export const DATE_MONTH_VALID = /^(0?[1-9]|[1][0-2])$/;
+
+export const ADD_WORKPLACE_DETAILS_ROUTE = ['workplace-data', 'add-workplace-details'];
+export const WORKPLACE_SUMMARY_ROUTE = ['workplace-data', 'workplace-summary'];

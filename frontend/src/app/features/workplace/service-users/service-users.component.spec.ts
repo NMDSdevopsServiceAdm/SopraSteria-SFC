@@ -85,7 +85,9 @@ describe('ServiceUsersComponent', () => {
         ErrorSummaryService,
         SubmitButtonComponent,
         QuestionComponent,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
@@ -165,7 +167,13 @@ describe('ServiceUsersComponent', () => {
         const link = getByText('Skip this question');
         fireEvent.click(link);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
       });
 
       it('should navigate to do-you-have-vacancies page when user submits and establishment has main service which cannot do delegated healthcare activities', async () => {
@@ -174,7 +182,13 @@ describe('ServiceUsersComponent', () => {
         const link = getByText('Save and continue');
         fireEvent.click(link);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
       });
 
       it('should navigate to staff-do-delegated-healthcare-activities page when user skips and establishment has main service which can do delegated healthcare activities', async () => {
@@ -186,6 +200,8 @@ describe('ServiceUsersComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
           'staff-do-delegated-healthcare-activities',
         ]);
       });
@@ -199,6 +215,8 @@ describe('ServiceUsersComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
           'staff-do-delegated-healthcare-activities',
         ]);
       });

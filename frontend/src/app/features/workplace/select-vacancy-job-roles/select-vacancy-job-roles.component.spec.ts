@@ -51,7 +51,9 @@ describe('SelectVacancyJobRolesComponent', () => {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedVacancies: selectedVacancies }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = renderResults.fixture.componentInstance;
@@ -310,7 +312,13 @@ describe('SelectVacancyJobRolesComponent', () => {
         userEvent.click(getByText('Registered nurse'));
         userEvent.click(getByText('Save and continue'));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'how-many-vacancies']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'how-many-vacancies',
+        ]);
       });
     });
 
@@ -390,7 +398,13 @@ describe('SelectVacancyJobRolesComponent', () => {
     it('should set the backlink to "do you have vacancy" page', async () => {
       const { component } = await setup();
       expect(component.back).toEqual({
-        url: ['/workplace', component.establishment.uid, 'do-you-have-vacancies'],
+        url: [
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ],
       });
     });
 

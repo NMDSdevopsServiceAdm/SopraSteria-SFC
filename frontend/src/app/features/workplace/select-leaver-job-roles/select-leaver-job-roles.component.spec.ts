@@ -51,7 +51,9 @@ describe('SelectLeaverJobRolesComponent', () => {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedLeavers }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = renderResults.fixture.componentInstance;
@@ -307,7 +309,13 @@ describe('SelectLeaverJobRolesComponent', () => {
         userEvent.click(getByText('Registered nurse'));
         userEvent.click(getByText('Save and continue'));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'how-many-leavers']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'how-many-leavers',
+        ]);
       });
     });
 
@@ -387,7 +395,13 @@ describe('SelectLeaverJobRolesComponent', () => {
     it('should set the backlink to "do you have leavers" page', async () => {
       const { component } = await setup();
       expect(component.back).toEqual({
-        url: ['/workplace', component.establishment.uid, 'do-you-have-leavers'],
+        url: [
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-leavers',
+        ],
       });
     });
   });

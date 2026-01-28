@@ -70,7 +70,9 @@ describe('CareWorkforcePathwayUseComponent', () => {
         },
         AlertService,
         WindowRef,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();
@@ -359,7 +361,13 @@ describe('CareWorkforcePathwayUseComponent', () => {
     it('should set the previous page to CWP awareness question page', async () => {
       const { component } = await setup(overrides);
 
-      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness']);
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'care-workforce-pathway-awareness',
+      ]);
     });
 
     it('should navigate to cash-loyalty page when skipped the question', async () => {
@@ -367,7 +375,13 @@ describe('CareWorkforcePathwayUseComponent', () => {
 
       userEvent.click(getByText('Skip this question'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'cash-loyalty',
+      ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
@@ -376,7 +390,13 @@ describe('CareWorkforcePathwayUseComponent', () => {
 
       userEvent.click(getByText('Save and continue'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'cash-loyalty',
+      ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
@@ -384,7 +404,13 @@ describe('CareWorkforcePathwayUseComponent', () => {
       const { backServiceSpy } = await setup(overrides);
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness'],
+        url: [
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'care-workforce-pathway-awareness',
+        ],
       });
     });
   });

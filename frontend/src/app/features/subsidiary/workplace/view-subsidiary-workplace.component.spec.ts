@@ -118,7 +118,9 @@ describe('ViewSubsidiaryWorkplaceComponent', () => {
       const banner = getByText('Start to add more details about your workplace');
 
       expect(banner).toBeTruthy();
-      expect(banner.getAttribute('href')).toEqual(`/workplace/${establishment.uid}/start`);
+      expect(banner.getAttribute('href')).toEqual(
+        `/workplace/${establishment.uid}/workplace-data/add-workplace-details/start`,
+      );
     });
 
     it('should not show the add more details banner when the showAddWorkplaceDetailsBanner is false', async () => {
