@@ -1,9 +1,11 @@
 services:
   sfc-e2e-db:
-    image: public.ecr.aws/docker/library/postgres:13
+#    image: public.ecr.aws/docker/library/postgres:13
     container_name: sfc-e2e-db
     build:
       context: ./docker
+      cache_from:
+        - 636146736465.dkr.ecr.eu-west-1.amazonaws.com/sfc-e2e-test-db-image:latest
     env_file:
       - .env
     environment:
