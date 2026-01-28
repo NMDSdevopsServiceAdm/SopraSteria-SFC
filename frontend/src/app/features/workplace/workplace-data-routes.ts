@@ -280,7 +280,7 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
   },
 ];
 
-// TODO: populate this array so that /workplace-data/workplace-summary/question-page-name work
+// TODO in ticket #1874: populate this array so that /workplace-data/workplace-summary/question-page-name work
 const workplaceSummaryOnlyPages: Routes = [];
 
 export const addWorkplaceDetails: Route = {

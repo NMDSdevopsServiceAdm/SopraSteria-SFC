@@ -104,7 +104,6 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     return !this.return || (this.router.url && this.router.url.includes('add-workplace-details'));
   }
 
-  // TODO: refactor the get/set xxxxRoute methods
   public get previousRoute(): string[] {
     if (this.isInAddDetailsFlow) {
       return this.establishmentService.buildPathForAddWorkplaceDetails(
