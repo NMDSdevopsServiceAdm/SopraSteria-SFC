@@ -32,7 +32,9 @@ describe('DataSharingComponent', () => {
             ),
             deps: [HttpClient],
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 
@@ -301,7 +303,13 @@ describe('DataSharingComponent', () => {
     const continueButton = getByText('Save and continue');
     fireEvent.click(continueButton);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceUid, 'check-answers']);
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'workplace-data',
+      'add-workplace-details',
+      'check-answers',
+    ]);
   });
 
   describe('removing sharing permission banner function', () => {
@@ -349,7 +357,13 @@ describe('DataSharingComponent', () => {
       const link = getByText('Skip this question');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'check-answers']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'check-answers',
+      ]);
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {

@@ -158,3 +158,23 @@ export class MockWorkplaceServiceWithMainService extends MockWorkplaceService {
     };
   }
 }
+
+@Injectable()
+export class MockWorkplaceServiceWithOverrides extends MockWorkplaceService {
+  public static factory(overrides: any = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockWorkplaceService(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        switch (overrideName) {
+          default: {
+            service[overrideName] = overrides[overrideName];
+            break;
+          }
+        }
+      });
+
+      return service;
+    };
+  }
+}

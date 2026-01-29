@@ -26,7 +26,9 @@ describe('AcceptPreviousCareCertificateComponent', () => {
             }),
             deps: [HttpClient],
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 
@@ -130,7 +132,13 @@ describe('AcceptPreviousCareCertificateComponent', () => {
       const link = getByText('Skip this question');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'care-workforce-pathway-awareness',
+      ]);
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {

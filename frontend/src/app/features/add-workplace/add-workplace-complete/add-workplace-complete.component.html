@@ -43,7 +43,7 @@
 
       <ul class="govuk-list govuk-list--bullet">
         <li>
-          <a [routerLink]="['/workplace', newWorkplaceUid, 'start']">add workplace information</a>
+          <a [routerLink]="'start' | addWorkplaceDetailsPath: newWorkplaceUid">add workplace information</a>
         </li>
         <li>
           <a [routerLink]="['/workplace', newWorkplaceUid, 'staff-record', 'start-screen']">add staff records</a>
