@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { SubEstablishment } from '../../../support/mockEstablishmentData';
-import { onHomePage } from '../../../support/page_objects/onHomePage';
+import { SubEstablishment } from '../../support/mockEstablishmentData';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 
 describe('Sub home page as read only user', { tags: '@home' }, () => {
   beforeEach(() => {
@@ -17,19 +17,12 @@ describe('Sub home page as read only user', { tags: '@home' }, () => {
     onHomePage.allTabs('read');
   });
 
-  it('should show funding data link', () => {
-    cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
-  });
+  it('should only show links it has permissions for', () => {
+    onHomePage.cards();
+    onHomePage.otherLinksDefault();
 
-  it('should not show bulk upload link', () => {
     cy.get('[data-cy="home-other-links"]').should('not.contain', 'Bulk upload your data');
-  });
-
-  it('should not show remove link to parent organisation', () => {
-    cy.get('[data-cy="home-other-links"]').should('not.contain', 'Remove the link to your parent workplace');
-  });
-
-  it('should not show change data permissions', () => {
     cy.get('[data-cy="home-other-links"]').should('not.contain', 'Change data permissions');
+    cy.get('[data-cy="home-other-links"]').should('not.contain', 'Remove the link to your parent workplace');
   });
 });

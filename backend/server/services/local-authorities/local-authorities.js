@@ -6,6 +6,7 @@ const formatLaResponse = (localAuthorities) => {
 
     const formattedData = {
       name: la.LocalAuthorityName,
+      workplaceId: la.establishment.nmdsId,
       workers: la.ThisYear,
       status: la.Status,
       notes: la.Notes ? true : false,
