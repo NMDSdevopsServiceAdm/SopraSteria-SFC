@@ -21,9 +21,9 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
 
   public return: URLStructure;
 
-  private _previousRouteSegment: string;
-  private _nextRouteSegment: string;
-  private _skipRouteSegment: string;
+  private _previousQuestionPage: string;
+  private _nextQuestionPage: string;
+  private _skipToQuestionPage: string;
 
   public back: URLStructure;
   public hideBackLink: boolean;
@@ -88,16 +88,16 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected setPreviousRouteSegment(pathSegment: string) {
-    this._previousRouteSegment = pathSegment;
+  protected setPreviousQuestionPage(pathSegment: string) {
+    this._previousQuestionPage = pathSegment;
   }
 
-  protected setNextRouteSegment(pathSegment: string) {
-    this._nextRouteSegment = pathSegment;
+  protected setNextQuestionPage(pathSegment: string) {
+    this._nextQuestionPage = pathSegment;
   }
 
-  protected setSkipRouteSegment(pathSegment: string) {
-    this._skipRouteSegment = pathSegment;
+  protected setSkipToQuestionPage(pathSegment: string) {
+    this._skipToQuestionPage = pathSegment;
   }
 
   public get isInAddDetailsFlow(): boolean {
@@ -108,42 +108,45 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
     if (this.isInAddDetailsFlow) {
       return this.establishmentService.buildPathForAddWorkplaceDetails(
         this.establishment.uid,
-        this._previousRouteSegment,
+        this._previousQuestionPage,
       );
     } else {
-      return ['/workplace', `${this.establishment.uid}`, this._previousRouteSegment];
+      return ['/workplace', `${this.establishment.uid}`, this._previousQuestionPage];
     }
   }
 
   public get nextRoute(): string[] {
     if (this.isInAddDetailsFlow) {
-      return this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, this._nextRouteSegment);
+      return this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, this._nextQuestionPage);
     } else {
-      return ['/workplace', `${this.establishment.uid}`, this._nextRouteSegment];
+      return ['/workplace', `${this.establishment.uid}`, this._nextQuestionPage];
     }
   }
 
   public get skipRoute(): string[] {
     if (this.isInAddDetailsFlow) {
-      return this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, this._skipRouteSegment);
+      return this.establishmentService.buildPathForAddWorkplaceDetails(
+        this.establishment.uid,
+        this._skipToQuestionPage,
+      );
     } else {
-      return ['/workplace', `${this.establishment.uid}`, this._skipRouteSegment];
+      return ['/workplace', `${this.establishment.uid}`, this._skipToQuestionPage];
     }
   }
 
   protected set previousRoute(route: string | string[]) {
     const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
-    this.setPreviousRouteSegment(lastPathSegment);
+    this.setPreviousQuestionPage(lastPathSegment);
   }
 
   protected set nextRoute(route: string | string[]) {
     const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
-    this.setNextRouteSegment(lastPathSegment);
+    this.setNextQuestionPage(lastPathSegment);
   }
 
   protected set skipRoute(route: string | string[]) {
     const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
-    this.setSkipRouteSegment(lastPathSegment);
+    this.setSkipToQuestionPage(lastPathSegment);
   }
 
   protected navigateToQuestionPage(pathSegment: string, ...extras: [NavigationExtras?]): Promise<boolean> {
