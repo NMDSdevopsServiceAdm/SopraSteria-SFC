@@ -19,3 +19,9 @@ phases:
   build:
     commands:
       - make test-e2e-inside-docker
+
+cache:
+#  key: npm-$(codebuild-hash-files package-lock.json)
+  paths:
+    - 'frontend/node_modules/**/*'
+    - 'backend/node_modules/**/*'
