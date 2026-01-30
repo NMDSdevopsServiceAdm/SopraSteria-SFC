@@ -9,13 +9,17 @@ env:
     POSTGRES_PASSWORD: /bnd/e2e-test-db-password
     POSTGRES_DB: /bnd/e2e-test-db-name
 
-
 phases:
   pre_build:
     commands:
       - aws s3 cp ${DB_FILE_URL} docker/sfc-e2e-test-db.sql
       - echo POSTGRES_USER=${POSTGRES_USER}\\nPOSTGRES_PASSWORD=${POSTGRES_PASSWORD}\\nPOSTGRES_DB=${POSTGRES_DB} > .env
-      - make install-for-e2e
+      - export NODE_ENV=e2etest
+      - npm install --prefix frontend &
+      - npm install --prefix backend &
+      - wait
+      - npm install -g sequelize-cli
+
   build:
     commands:
       - make test-e2e-inside-docker
