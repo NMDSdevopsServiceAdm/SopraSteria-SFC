@@ -46,7 +46,7 @@ import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { ChangeDataPermissionsComponent } from './change-data-permissions/change-data-permissions.component';
-import { WorkplaceDataRoutes, workplaceQuestionsSharedByFlowAndSummary } from './workplace-data-routes';
+import { WorkplaceDataRoutes, workplaceQuestionsSharedByFlowAndSummary } from './workplace-data-routing';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
