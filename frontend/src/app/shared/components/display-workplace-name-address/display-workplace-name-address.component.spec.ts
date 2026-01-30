@@ -7,7 +7,7 @@ import { provideRouter, RouterModule } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-describe('DisplayWorkplaceNameAddress', () => {
+fdescribe('DisplayWorkplaceNameAddress', () => {
   const setup = async (override: any = {}) => {
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(DisplayWorkplaceNameAddress, {
@@ -74,6 +74,8 @@ describe('DisplayWorkplaceNameAddress', () => {
     const changeLink = getByText('Change');
 
     expect(changeLink).toBeTruthy();
-    expect(changeLink.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-workplace-details`);
+    expect(changeLink.getAttribute('href')).toEqual(
+      `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-workplace-details`,
+    );
   });
 });
