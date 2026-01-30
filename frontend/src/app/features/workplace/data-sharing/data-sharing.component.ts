@@ -7,14 +7,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
-    selector: 'app-data-sharing',
-    templateUrl: './data-sharing.component.html',
-    standalone: false
+  selector: 'app-data-sharing',
+  templateUrl: './data-sharing.component.html',
+  standalone: false,
 })
-export class DataSharingComponent extends Question {
+export class DataSharingComponent extends WorkplaceQuestion {
   public section = WorkplaceFlowSections.PERMISSIONS;
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -75,7 +75,7 @@ export class DataSharingComponent extends Question {
           (error) => this.onError(error),
         ),
       );
-    };;
+    };
 
     this.establishment.showSharingPermissionsBanner
       ? this.removeSharingPermissionsBanner(completeUpdateEstablishment)

@@ -7,14 +7,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffFormService } from '@core/services/total-staff-form.service';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-total-staff-question',
   templateUrl: './total-staff-question.component.html',
   standalone: false,
 })
-export class TotalStaffQuestionComponent extends Question {
+export class TotalStaffQuestionComponent extends WorkplaceQuestion {
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
 

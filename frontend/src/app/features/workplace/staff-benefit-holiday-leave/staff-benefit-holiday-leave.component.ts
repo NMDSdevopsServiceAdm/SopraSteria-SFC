@@ -6,15 +6,15 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-benefit-holiday-leave',
   templateUrl: './staff-benefit-holiday-leave.component.html',
   standalone: false,
 })
-export class StaffBenefitHolidayLeaveComponent extends Question implements OnInit, OnDestroy {
-  public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
+export class StaffBenefitHolidayLeaveComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
+  public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
   private numberCheckRegex = /^-?\d*(\.\d*)?$/;
   private wholeNumberCheckRegex = /^-?[A-Za-z0-9]*$/;
   private positiveNumberCheckRegex = /^[A-Za-z\d*(.\d*)]*$/;

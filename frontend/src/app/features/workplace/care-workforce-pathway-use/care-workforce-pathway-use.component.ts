@@ -12,14 +12,14 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { PreviousRouteService } from '../../../core/services/previous-route.service';
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-care-workforce-pathway-use',
   templateUrl: './care-workforce-pathway-use.component.html',
   standalone: false,
 })
-export class CareWorkforcePathwayUseComponent extends Question implements OnInit, OnDestroy {
+export class CareWorkforcePathwayUseComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
   public cwpUseOptions = [
     { value: 'Yes', label: 'Yes, we use the pathway for one or more reasons' },

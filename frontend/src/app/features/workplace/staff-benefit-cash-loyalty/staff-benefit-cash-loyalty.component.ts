@@ -8,14 +8,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-benefit-cash-loyalty',
   templateUrl: './staff-benefit-cash-loyalty.component.html',
   standalone: false,
 })
-export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit, OnDestroy {
+export class StaffBenefitCashLoyaltyComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public cashLoyaltyRequiredOptions = [
     {
       label: 'Yes',

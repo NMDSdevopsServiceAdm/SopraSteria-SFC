@@ -12,7 +12,7 @@ import isNull from 'lodash/isNull';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class Question implements OnInit, OnDestroy, AfterViewInit {
+export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public establishment: Establishment;

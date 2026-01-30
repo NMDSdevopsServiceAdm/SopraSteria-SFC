@@ -7,14 +7,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-benefits-statutory-sick-pay',
   templateUrl: './benefits-statutory-sick-pay.component.html',
   standalone: false,
 })
-export class BenefitsStatutorySickPayComponent extends Question implements OnInit, OnDestroy {
+export class BenefitsStatutorySickPayComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public statuorySickPayOptions = [
     {
       label: 'Yes',
