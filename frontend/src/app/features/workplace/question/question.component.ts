@@ -104,34 +104,24 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
     return !this.return || (this.router.url && this.router.url.includes('add-workplace-details'));
   }
 
-  public get previousRoute(): string[] {
+  private get baseRoute(): string[] {
     if (this.isInAddDetailsFlow) {
-      return this.establishmentService.buildPathForAddWorkplaceDetails(
-        this.establishment.uid,
-        this._previousQuestionPage,
-      );
+      return this.establishmentService.baseRouteForAddWorkplaceDetails(this.establishment.uid);
     } else {
-      return ['/workplace', `${this.establishment.uid}`, this._previousQuestionPage];
+      return this.establishmentService.baseRouteForWorkplaceSummary(this.establishment.uid);
     }
+  }
+
+  public get previousRoute(): string[] {
+    return [...this.baseRoute, this._previousQuestionPage];
   }
 
   public get nextRoute(): string[] {
-    if (this.isInAddDetailsFlow) {
-      return this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, this._nextQuestionPage);
-    } else {
-      return ['/workplace', `${this.establishment.uid}`, this._nextQuestionPage];
-    }
+    return [...this.baseRoute, this._nextQuestionPage];
   }
 
   public get skipRoute(): string[] {
-    if (this.isInAddDetailsFlow) {
-      return this.establishmentService.buildPathForAddWorkplaceDetails(
-        this.establishment.uid,
-        this._skipToQuestionPage,
-      );
-    } else {
-      return ['/workplace', `${this.establishment.uid}`, this._skipToQuestionPage];
-    }
+    return [...this.baseRoute, this._skipToQuestionPage];
   }
 
   protected set previousRoute(route: string | string[]) {
@@ -150,15 +140,8 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   }
 
   protected navigateToQuestionPage(pathSegment: string, ...extras: [NavigationExtras?]): Promise<boolean> {
-    if (this.isInAddDetailsFlow) {
-      const destinationUrl = this.establishmentService.buildPathForAddWorkplaceDetails(
-        this.establishment.uid,
-        pathSegment,
-      );
-      return this.router.navigate(destinationUrl, ...extras);
-    } else {
-      return this.router.navigate(['/workplace', `${this.establishment.uid}`, pathSegment], ...extras);
-    }
+    const destinationUrl = [...this.baseRoute, pathSegment];
+    return this.router.navigate(destinationUrl, ...extras);
   }
 
   protected navigate(): Promise<boolean> {
