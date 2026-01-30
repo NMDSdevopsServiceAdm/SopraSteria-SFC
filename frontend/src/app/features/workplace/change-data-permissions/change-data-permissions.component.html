@@ -18,33 +18,32 @@
   <div class="govuk-grid-column-two-thirds">
     <p data-testid="current-permission">
       <strong>{{ workplaceNameToChangeDataPermissionsFor }}</strong>
-      <span *ngIf="currentDataPermission === dataPermissions[0]">
-          can currently view {{ posssesivePronounText }} workplace details, but cannot edit them (they have
-          <strong>view only</strong> access).</span
-        >
-        <span *ngIf="currentDataPermission === dataPermissions[1]">
-          can currently view {{ posssesivePronounText }} workplace details and {{ posssesivePronounText }} staff records, but cannot edit them (they have
-          <strong>view only</strong> access).</span
-        >
-        <span *ngIf="currentDataPermission === dataPermissions[2]">
-          cannot currently view any of {{ posssesivePronounText }} data (they are linked by name only).</span
-        >
+      <span *ngIf="currentDataPermission === DataPermissions.Workplace">
+        can currently view {{ posssesivePronounText }} workplace details, but cannot edit them (they have
+        <strong>view only</strong> access).</span
+      >
+      <span *ngIf="currentDataPermission === DataPermissions.WorkplaceAndStaff">
+        can currently view {{ posssesivePronounText }} workplace details and {{ posssesivePronounText }} staff records,
+        but cannot edit them (they have <strong>view only</strong> access).</span
+      >
+      <span *ngIf="currentDataPermission === DataPermissions.None">
+        cannot currently view any of {{ posssesivePronounText }} data (they are linked by name only).</span
+      >
     </p>
     <p class="govuk-body">You can change their data permissions so that they:</p>
     <ul class="govuk-list govuk-list--bullet">
-
-        <ng-container *ngIf="currentDataPermission === dataPermissions[0]">
-          <li>can view {{ posssesivePronounText }} workplace details and {{ posssesivePronounText }} staff records</li>
-          <li>are linked by name only and are unable to view any of {{ posssesivePronounText }} data</li>
-        </ng-container>
-        <ng-container *ngIf="currentDataPermission === dataPermissions[1]">
-          <li>can only view {{ posssesivePronounText }} workplace details</li>
-          <li>are linked by name only and are unable to view any of {{ posssesivePronounText }} data</li>
-        </ng-container>
-        <ng-container *ngIf="currentDataPermission === dataPermissions[2]">
-          <li>can only view {{ posssesivePronounText }} workplace details</li>
-          <li>can view {{ posssesivePronounText }} workplace details and {{ posssesivePronounText }} staff records</li>
-        </ng-container>
+      <ng-container *ngIf="currentDataPermission === DataPermissions.Workplace">
+        <li>can view {{ posssesivePronounText }} workplace details and {{ posssesivePronounText }} staff records</li>
+        <li>are linked by name only and are unable to view any of {{ posssesivePronounText }} data</li>
+      </ng-container>
+      <ng-container *ngIf="currentDataPermission === DataPermissions.WorkplaceAndStaff">
+        <li>can only view {{ posssesivePronounText }} workplace details</li>
+        <li>are linked by name only and are unable to view any of {{ posssesivePronounText }} data</li>
+      </ng-container>
+      <ng-container *ngIf="currentDataPermission === DataPermissions.None">
+        <li>can only view {{ posssesivePronounText }} workplace details</li>
+        <li>can view {{ posssesivePronounText }} workplace details and {{ posssesivePronounText }} staff records</li>
+      </ng-container>
     </ul>
     <p class="govuk-!-margin-top-6">
       What data do you want <strong>{{ workplaceNameToChangeDataPermissionsFor }}</strong> to have
@@ -73,11 +72,11 @@
                   name="dataPermission"
                   [formControlName]="'dataPermission'"
                   type="radio"
-                  [value]="dataPermissions[0]"
+                  [value]="DataPermissions.Workplace"
                 />
 
                 <label class="govuk-label govuk-radios__label" for="dataPermission-0">
-                  {{ dataPermissions[0] | newDataViewPermissions: isParent }}
+                  {{ DataPermissions.Workplace | newDataViewPermissions: isParent }}
                 </label>
               </div>
               <div class="govuk-radios__item">
@@ -88,11 +87,11 @@
                   name="dataPermission"
                   [formControlName]="'dataPermission'"
                   type="radio"
-                  [value]="dataPermissions[1]"
+                  [value]="DataPermissions.WorkplaceAndStaff"
                 />
 
                 <label class="govuk-label govuk-radios__label" for="dataPermission-1">
-                  {{ dataPermissions[1] | newDataViewPermissions: isParent }}
+                  {{ DataPermissions.WorkplaceAndStaff | newDataViewPermissions: isParent }}
                 </label>
               </div>
               <div class="govuk-radios__divider govuk-!-text-align-left govuk-!-padding-top-2 govuk-!-padding-bottom-2">
@@ -106,11 +105,11 @@
                   name="dataPermission"
                   [formControlName]="'dataPermission'"
                   type="radio"
-                  [value]="dataPermissions[2]"
+                  [value]="DataPermissions.None"
                 />
 
                 <label class="govuk-label govuk-radios__label" for="dataPermission-2">
-                  {{ dataPermissions[2] | newDataViewPermissions: isParent }}
+                  {{ DataPermissions.None | newDataViewPermissions: isParent }}
                 </label>
               </div>
             </div>
