@@ -128,15 +128,15 @@ const routes: Routes = [
       //     title: 'Workplace Not Found',
       //   },
       // },
-      {
-        path: 'update-workplace-details',
-        component: WorkplaceNameAddressComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Update Workplace Details',
-        },
-      },
+      // {
+      //   path: 'update-workplace-details',
+      //   component: WorkplaceNameAddressComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Update Workplace Details',
+      //   },
+      // },
 
       // {
       //   path: 'type-of-employer',

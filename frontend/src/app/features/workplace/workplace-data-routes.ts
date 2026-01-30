@@ -47,6 +47,7 @@ import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-w
 import { StartComponent } from './start/start.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const workplaceFlowOnlyPages: Routes = [
@@ -428,6 +429,15 @@ const workplaceSummaryOnlyPages: Routes = [
       permissions: ['canEditEstablishment'],
       jobRoleType: JobRoleType.Leavers,
       title: 'Select job roles to add',
+    },
+  },
+  {
+    path: 'update-workplace-details',
+    component: WorkplaceNameAddressComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Update Workplace Details',
     },
   },
 ];
