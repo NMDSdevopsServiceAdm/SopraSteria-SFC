@@ -64,7 +64,7 @@ import { TrainingCourseResolver } from '@core/resolvers/training/training-course
 import {
   WorkplaceDataRoutes,
   workplaceQuestionsSharedByFlowAndSummary,
-} from '@features/workplace/workplace-data-routes';
+} from '@features/workplace/workplace-data-routing';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
