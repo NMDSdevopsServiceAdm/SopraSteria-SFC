@@ -146,6 +146,7 @@ import { AddANoteAccordionComponent } from '@shared/components/accordions/add-a-
 import { ExternalTrainingProviderInputComponent } from './components/external-training-provider-input/external-training-provider-input.component';
 import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
 import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.pipe';
+import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
 
 @NgModule({
   imports: [
@@ -156,6 +157,7 @@ import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.
     OverlayModule,
     A11yModule,
     AddWorkplaceDetailsPathPipe,
+    WorkplaceSummaryPathPipe,
   ],
   declarations: [
     AbsoluteNumberPipe,
@@ -433,6 +435,7 @@ import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
     AddWorkplaceDetailsPathPipe,
+    WorkplaceSummaryPathPipe,
   ],
   providers: [
     DialogService,
