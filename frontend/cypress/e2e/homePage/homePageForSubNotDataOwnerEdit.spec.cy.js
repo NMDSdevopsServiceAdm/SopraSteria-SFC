@@ -3,7 +3,7 @@
 import { SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
-describe('Sub home page as edit user where parent owns the data', () => {
+describe('Sub home page as edit user where parent owns the data', { tags: '@home' }, () => {
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editSubUserNonDataOwner'), Cypress.env('userPassword'));
   });

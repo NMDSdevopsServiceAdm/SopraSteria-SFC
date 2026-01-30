@@ -1,10 +1,10 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../../support/mockEstablishmentData';
-import { onHomePage } from '../../../support/page_objects/onHomePage';
-import { onStaffRecordsPage, onStaffRecordSummaryPage } from '../../../support/page_objects/onStaffRecordsPage';
+import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
+import { onHomePage } from '../../support/page_objects/onHomePage';
+import { onStaffRecordsPage, onStaffRecordSummaryPage } from '../../support/page_objects/onStaffRecordsPage';
 
-describe('Parent staff records page as edit user', () => {
+describe('Parent staff records page as edit user', { tags: '@staffRecords' }, () => {
   const workerName = 'test worker for staff record page';
   const establishmentID = ParentEstablishment.id;
 

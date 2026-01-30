@@ -3,7 +3,7 @@ import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../../supp
 import { runTestsForTrainingCourseJourney } from './runTestsForTrainingCourse';
 import { runTestsForUpdateTrainingRecordsWithCourseDetails } from './runTestsForUpdateRecordsWithTrainingCourseDetails';
 
-describe('Training course for parent workplace edit user', () => {
+describe('Training course for parent workplace edit user', { tags: '@trainingCourses' }, () => {
   const subsidaryToView = SubEstablishmentNotDataOwner;
 
   beforeEach(() => {

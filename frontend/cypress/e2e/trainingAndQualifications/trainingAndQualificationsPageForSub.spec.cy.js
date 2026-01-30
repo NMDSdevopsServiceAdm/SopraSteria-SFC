@@ -4,7 +4,7 @@
 const { SubEstablishment } = require('../../support/mockEstablishmentData');
 const { onHomePage } = require('../../support/page_objects/onHomePage');
 
-describe('Sub training and quals page as edit user', () => {
+describe('Sub training and quals page as edit user', { tags: '@trainingAndQualifications' }, () => {
   const workerName = 'test worker for training & quals';
   const establishmentID = SubEstablishment.id;
 

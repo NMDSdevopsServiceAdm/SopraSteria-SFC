@@ -1,9 +1,9 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { SubEstablishment } from '../../../support/mockEstablishmentData';
-import { onHomePage } from '../../../support/page_objects/onHomePage';
+import { SubEstablishment } from '../../support/mockEstablishmentData';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 
-describe('Sub staff records page as edit user', () => {
+describe('Sub staff records page as edit user', { tags: '@staffRecords' }, () => {
   const workerName = 'test worker for staff record page';
   const establishmentID = SubEstablishment.id;
 

@@ -4,7 +4,7 @@ import { SubEstablishment } from '../../../support/mockEstablishmentData';
 import { runTestsForTrainingCourseJourney } from './runTestsForTrainingCourse';
 import { runTestsForUpdateTrainingRecordsWithCourseDetails } from './runTestsForUpdateRecordsWithTrainingCourseDetails';
 
-describe('Training course for subsidiary workplace edit user', () => {
+describe('Training course for subsidiary workplace edit user', { tags: '@trainingCourses' }, () => {
   const testEstablishment = SubEstablishment;
 
   beforeEach(() => {

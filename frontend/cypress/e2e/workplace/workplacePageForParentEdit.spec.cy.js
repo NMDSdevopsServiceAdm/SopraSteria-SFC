@@ -3,13 +3,13 @@
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 import { ParentEstablishment } from '../../support/mockEstablishmentData';
 
-describe('Standalone home page as edit user', () => {
+describe('Parent workplace page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = ParentEstablishment.id;
 
   beforeEach(() => {
+    cy.reload();
     cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-    cy.reload();
   });
 
   it('should see the parent establishment workplace page', () => {
@@ -34,6 +34,7 @@ describe('Standalone home page as edit user', () => {
   describe('data sharing', () => {
     it('updates for just local authorities', () => {
       cy.resetWorkplaceShareDataWith(establishmentId);
+      cy.reload();
       const heading = 'Share your data';
 
       cy.get('[data-testid="data-sharing"]').as('testId');
