@@ -1,6 +1,6 @@
 import { WorkplaceSummaryPathPipe } from './workplace-summary-path.pipe';
 
-fdescribe('WorkplaceSummaryPathPipe', () => {
+describe('WorkplaceSummaryPathPipe', () => {
   it('create an instance', () => {
     const pipe = new WorkplaceSummaryPathPipe();
     expect(pipe).toBeTruthy();
