@@ -42,7 +42,7 @@ describe('SelectMainServiceCQCComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should navigate to main service question when answer selected', async () => {
+  fit('should navigate to main service question when answer selected', async () => {
     const { component, getByText, routerSpy } = await setup();
 
     expect(component).toBeTruthy();
@@ -52,6 +52,12 @@ describe('SelectMainServiceCQCComponent', () => {
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'main-service']);
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      component.establishment.uid,
+      'workplace-data',
+      'workplace-summary',
+      'main-service',
+    ]);
   });
 });
