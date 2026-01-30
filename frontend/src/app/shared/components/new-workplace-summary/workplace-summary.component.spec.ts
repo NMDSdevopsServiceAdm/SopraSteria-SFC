@@ -27,7 +27,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
-fdescribe('NewWorkplaceSummaryComponent', () => {
+describe('NewWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const shareWith = overrides?.shareWith ?? null;
     const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
