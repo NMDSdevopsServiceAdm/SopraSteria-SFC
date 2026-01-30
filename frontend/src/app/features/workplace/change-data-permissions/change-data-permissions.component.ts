@@ -23,9 +23,9 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
   public formErrorsMap: Array<ErrorDetails>;
   public serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
-  public workplace: Establishment;
+  public workplace?: Establishment;
   public uidToChangeDataPermissionsFor: string;
-  public dataPermissions: DataPermissions[];
+  public DataPermissions = DataPermissions;
   public serverError: string;
   public isParent: boolean;
   public previousRoute: string[];
@@ -57,6 +57,7 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
     this.uidToChangeDataPermissionsFor = this.route.snapshot?.queryParams?.changeDataPermissionsFor;
     this.childWorkplaces = this.route.snapshot.data?.childWorkplaces?.childWorkplaces;
     this.workplace = this.route.snapshot.data.establishment;
+
     this.isParent = this.workplace?.isParent;
     this.posssesivePronounText = this.isParent ? 'their' : 'your';
     this.setPreviousRoute();
@@ -64,7 +65,6 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
     this.getWorkplaceToChangeDataPermissionsFor();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.setDataPermissions();
     this.setBackLink();
   }
 
@@ -93,23 +93,19 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
   }
 
   public setupVariables(workplace): void {
-    this.currentDataPermission = workplace.dataPermissions;
-    this.currentDataOwner = workplace.dataOwner;
-    this.parentName = workplace.parentName;
-    this.parentUid = workplace.parentUid;
+    this.currentDataPermission = workplace?.dataPermissions;
+    this.currentDataOwner = workplace?.dataOwner;
+    this.parentName = workplace?.parentName;
+    this.parentUid = workplace?.parentUid;
 
     this.prefill(this.currentDataPermission);
 
     if (this.uidToChangeDataPermissionsFor) {
-      this.workplaceNameToChangeDataPermissionsFor = workplace.name;
+      this.workplaceNameToChangeDataPermissionsFor = workplace?.name;
     } else {
-      this.workplaceNameToChangeDataPermissionsFor = workplace.parentName;
-      this.uidToChangeDataPermissionsFor = workplace.uid;
+      this.workplaceNameToChangeDataPermissionsFor = workplace?.parentName;
+      this.uidToChangeDataPermissionsFor = workplace?.uid;
     }
-  }
-
-  private setDataPermissions(): void {
-    this.dataPermissions = [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff, DataPermissions.None];
   }
 
   public onSubmit(): void {
@@ -131,6 +127,7 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
       const childWorkplace = this.childWorkplaces.find(
         (workplace) => workplace?.uid === this.uidToChangeDataPermissionsFor,
       );
+
       this.setupVariables(childWorkplace);
     } else {
       this.setupVariables(this.workplace);
