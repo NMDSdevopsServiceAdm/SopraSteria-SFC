@@ -7,7 +7,7 @@ import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../support/
 
 const workplaceSummaryPath = 'dashboard#workplace';
 
-describe('Standalone home page as edit user', { tags: '@workplace' }, () => {
+describe('Standalone workplace page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = StandAloneEstablishment.id;
   const jobRoles = [
     {

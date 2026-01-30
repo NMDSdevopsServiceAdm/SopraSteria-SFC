@@ -2,7 +2,7 @@
 /// <reference types="cypress" />
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 
-describe('Standalone home page as edit user', { tags: '@workplace' }, () => {
+describe('Standalone workplace page as read only user', { tags: '@workplace' }, () => {
   beforeEach(() => {
     cy.reload();
     cy.loginAsUser(Cypress.env('readOnlyStandAloneUser'), Cypress.env('userPassword'));
