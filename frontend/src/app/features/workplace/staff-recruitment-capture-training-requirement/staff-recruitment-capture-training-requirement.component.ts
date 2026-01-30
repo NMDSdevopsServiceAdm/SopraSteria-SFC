@@ -7,14 +7,17 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-recruitment-capture-training-requirement',
   templateUrl: './staff-recruitment-capture-training-requirement.component.html',
   standalone: false,
 })
-export class StaffRecruitmentCaptureTrainingRequirementComponent extends Question implements OnInit, OnDestroy {
+export class StaffRecruitmentCaptureTrainingRequirementComponent
+  extends WorkplaceQuestion
+  implements OnInit, OnDestroy
+{
   public trainingRequiredOptions = [
     {
       label: 'Yes, always',

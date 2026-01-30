@@ -9,14 +9,14 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import groupBy from 'lodash/groupBy';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-services-capacity',
   templateUrl: './services-capacity.component.html',
   standalone: false,
 })
-export class ServicesCapacityComponent extends Question {
+export class ServicesCapacityComponent extends WorkplaceQuestion {
   public capacities = [];
   public intPattern = INT_PATTERN.toString();
   public section = WorkplaceFlowSections.SERVICES;

@@ -7,12 +7,12 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { DateUtil } from '@core/utils/date-util';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { Question } from '@features/workplace/question/question.component';
+import { WorkplaceQuestion } from '@features/workplace/question/question.component';
 
 @Directive({
-    standalone: false
+  standalone: false,
 })
-export class DoYouHaveStartersLeaversVacanciesDirective extends Question implements OnDestroy {
+export class DoYouHaveStartersLeaversVacanciesDirective extends WorkplaceQuestion implements OnDestroy {
   public section = WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
   public heading: string;
   public hintText: string;

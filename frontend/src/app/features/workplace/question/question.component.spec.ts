@@ -1,5 +1,5 @@
 import { render } from '@testing-library/angular';
-import { Question } from './question.component';
+import { WorkplaceQuestion } from './question.component';
 import { Component } from '@angular/core';
 import { SharedModule } from '@shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
@@ -15,7 +15,7 @@ describe('WorkplaceQuestion parent class', () => {
   const mockWorkplaceUid = 'mock-workplace-uid';
 
   @Component({})
-  class MockChildComponent extends Question {
+  class MockChildComponent extends WorkplaceQuestion {
     _init() {
       this.previousRoute = ['/workpace', mockWorkplaceUid, 'previous-page'];
       this.nextRoute = ['/workpace', mockWorkplaceUid, 'next-page'];

@@ -12,14 +12,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-do-delegated-healthcare-activities',
   templateUrl: './staff-do-delegated-healthcare-activities.component.html',
   standalone: false,
 })
-export class StaffDoDelegatedHealthcareActivitiesComponent extends Question implements OnInit, OnDestroy {
+export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.SERVICES;
   public options = [
     { value: 'Yes', label: 'Yes' },

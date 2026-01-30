@@ -5,14 +5,14 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-type-of-employer',
   templateUrl: './type-of-employer.component.html',
   standalone: false,
 })
-export class TypeOfEmployerComponent extends Question {
+export class TypeOfEmployerComponent extends WorkplaceQuestion {
   public options = [
     { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
     { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },

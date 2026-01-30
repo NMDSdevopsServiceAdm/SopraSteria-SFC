@@ -9,14 +9,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
-    selector: 'app-care-workforce-pathway-awareness',
-    templateUrl: './care-workforce-pathway-awareness.component.html',
-    standalone: false
+  selector: 'app-care-workforce-pathway-awareness',
+  templateUrl: './care-workforce-pathway-awareness.component.html',
+  standalone: false,
 })
-export class CareWorkforcePathwayAwarenessComponent extends Question implements OnInit, OnDestroy {
+export class CareWorkforcePathwayAwarenessComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
   public careWorkforcePathwayAwarenessAnswers: CareWorkforcePathwayWorkplaceAwarenessAnswer[];
   private hasGivenNotAwareAnswer: boolean;

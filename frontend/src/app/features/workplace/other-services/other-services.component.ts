@@ -9,14 +9,14 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import filter from 'lodash/filter';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
-    selector: 'app-other-services',
-    templateUrl: './other-services.component.html',
-    standalone: false
+  selector: 'app-other-services',
+  templateUrl: './other-services.component.html',
+  standalone: false,
 })
-export class OtherServicesComponent extends Question {
+export class OtherServicesComponent extends WorkplaceQuestion {
   private additionalOtherServiceMaxLength = 120;
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];

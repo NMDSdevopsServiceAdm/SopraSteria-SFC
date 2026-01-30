@@ -7,14 +7,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
-    selector: 'app-pensions',
-    templateUrl: './pensions.component.html',
-    standalone: false
+  selector: 'app-pensions',
+  templateUrl: './pensions.component.html',
+  standalone: false,
 })
-export class PensionsComponent extends Question implements OnInit, OnDestroy {
+export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public pensionsOptions = [
     {
       label: 'Yes',

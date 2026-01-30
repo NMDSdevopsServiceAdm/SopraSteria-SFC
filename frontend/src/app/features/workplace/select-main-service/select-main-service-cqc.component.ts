@@ -5,14 +5,14 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
-    selector: 'app-select-main-service-cqc',
-    templateUrl: './select-main-service-cqc.component.html',
-    standalone: false
+  selector: 'app-select-main-service-cqc',
+  templateUrl: './select-main-service-cqc.component.html',
+  standalone: false,
 })
-export class SelectMainServiceCqcComponent extends Question {
+export class SelectMainServiceCqcComponent extends WorkplaceQuestion {
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
