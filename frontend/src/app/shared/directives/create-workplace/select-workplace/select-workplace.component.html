@@ -46,7 +46,7 @@
       <ng-container *ngIf="isCQCLocationUpdate; else CQCLocationAdd">
         <p>
           Workplace not displayed?
-          <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']">go back and try again</a>.
+          <a [routerLink]="['..', 'regulated-by-cqc']">go back and try again</a>.
         </p>
 
         <app-workplace-submit-button

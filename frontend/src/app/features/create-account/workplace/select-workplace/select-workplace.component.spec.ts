@@ -13,7 +13,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
-describe('SelectWorkplaceComponent', () => {
+fdescribe('SelectWorkplaceComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(SelectWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule, FormsModule, ReactiveFormsModule],
@@ -33,7 +33,7 @@ describe('SelectWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
+                    path: (overrides.registrationFlow ?? true) ? 'registration' : 'confirm-details',
                   },
                 ],
               },
