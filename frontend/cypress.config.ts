@@ -1,6 +1,7 @@
 import { defineConfig } from 'cypress';
 import * as dotenv from 'dotenv';
 import { Client } from 'pg';
+import { plugin as cypressGrepPlugin } from '@cypress/grep/plugin';
 
 dotenv.config({ path: '../.env' });
 
@@ -36,7 +37,7 @@ export default defineConfig({
     editParentMainServiceEight: 'editparent',
     apiUrl: 'http://localhost:8080/',
   },
-
+  screenshotOnRunFailure: false,
   video: false,
   viewportWidth: 1000,
   viewportHeight: 1000,
@@ -64,6 +65,8 @@ export default defineConfig({
           return null;
         },
       });
+      cypressGrepPlugin(config);
+      return config;
       // implement node event listeners here
     },
   },
