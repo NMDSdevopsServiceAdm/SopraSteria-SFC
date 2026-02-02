@@ -1,7 +1,7 @@
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { runTestsForDHAHomeTabFlag } from './runTestsForDHAHomeTabFlag';
 
-describe('Delegated healthcare activities journey from home tab flag', () => {
+describe('Delegated healthcare activities journey from home tab flag', { tags: '@dha' }, () => {
   beforeEach(() => {
     cy.loginAsUser(StandAloneEstablishment.editUserLoginName, Cypress.env('userPassword'));
 

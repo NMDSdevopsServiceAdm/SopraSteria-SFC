@@ -10,7 +10,7 @@ import {
   expectPageToHaveDetails,
 } from './trainingCourse/helpers';
 
-describe('training record', () => {
+describe('training record', { tags: '@trainingAndQualifications' }, () => {
   const workerName1 = 'Test worker';
   const workerName2 = 'Test worker 2';
   const trainingCategory = 'Health and safety awareness';

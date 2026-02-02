@@ -3,7 +3,7 @@
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
-describe('Sub home page as edit user', () => {
+describe('Sub home page as edit user', { tags: '@home' }, () => {
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
   });

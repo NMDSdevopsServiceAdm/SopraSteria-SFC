@@ -7,7 +7,7 @@ import { answerCWPAwarenessQuestion, answerCWPUseQuestion } from '../../support/
 
 const workplaceSummaryPath = 'dashboard#workplace';
 
-describe('Standalone home page as edit user', () => {
+describe('Standalone workplace page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = StandAloneEstablishment.id;
   const jobRoles = [
     {
@@ -37,9 +37,9 @@ describe('Standalone home page as edit user', () => {
   });
 
   beforeEach(() => {
+    cy.reload();
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-    cy.reload();
   });
 
   afterEach(() => {
