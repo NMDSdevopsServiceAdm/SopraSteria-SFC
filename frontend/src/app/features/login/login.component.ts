@@ -9,6 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { WORKPLACE_SUMMARY_ROUTE } from '@core/constants/constants';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
@@ -20,10 +21,10 @@ import { isAdminRole } from '@core/utils/check-role-util';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.scss'],
-    standalone: false
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  standalone: false,
 })
 export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -187,7 +188,12 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
           if (response.body.establishment.employerTypeSet === false) {
             this.establishmentService.setEmployerTypeHasValue(false);
-            return this.router.navigate(['workplace', response.body.establishment.uid, 'type-of-employer']);
+
+            const typeOfEmployerPage = this.establishmentService.buildPathForWorkplaceSummary(
+              response.body.establishment.uid,
+              'type-of-employer',
+            );
+            return this.router.navigate(typeOfEmployerPage);
           }
 
           if (

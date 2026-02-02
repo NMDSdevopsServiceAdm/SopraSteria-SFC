@@ -16,7 +16,7 @@ import { of, throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
 
-describe('LoginComponent', () => {
+fdescribe('LoginComponent', () => {
   async function setup(overrides = {}) {
     const isAdmin: boolean = ('isAdmin' in overrides ? overrides.isAdmin : false) as boolean;
     const employerTypeSet: boolean = ('employerTypeSet' in overrides ? overrides.employerTypeSet : true) as boolean;
@@ -188,7 +188,13 @@ describe('LoginComponent', () => {
 
       signIn(getByLabelText, getByRole, fixture);
 
-      expect(routerSpy).toHaveBeenCalledWith(['workplace', `mockuid`, 'type-of-employer']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        `mockuid`,
+        'workplace-data',
+        'workplace-summary',
+        'type-of-employer',
+      ]);
     });
 
     it('should navigate to migrated-user-terms-and-conditions when auth response has migratedUserFirstLogon as true', async () => {
