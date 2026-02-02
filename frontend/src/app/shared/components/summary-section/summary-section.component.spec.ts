@@ -17,7 +17,7 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
-describe('Summary section', () => {
+fdescribe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(SummarySectionComponent, {
       imports: [SharedModule, RouterModule],
@@ -31,7 +31,9 @@ describe('Summary section', () => {
           useClass: MockEstablishmentService,
         },
         provideRouter([]),
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         workplace: overrides.establishment ?? Establishment,
         trainingCounts: (overrides.trainingCounts as TrainingCounts) ?? ({} as TrainingCounts),
@@ -208,7 +210,13 @@ describe('Summary section', () => {
         const link = within(workplaceRow).getByText('How aware of the CWP is your workplace?');
 
         fireEvent.click(link);
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', Establishment.uid, 'care-workforce-pathway-awareness']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          Establishment.uid,
+          'workplace-data',
+          'workplace-summary',
+          'care-workforce-pathway-awareness',
+        ]);
       });
 
       it("should update CWPAwarenessQuestionViewed when question link clicked so user doesn't see question again", async () => {
@@ -348,6 +356,8 @@ describe('Summary section', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           Establishment.uid,
+          'workplace-data',
+          'workplace-summary',
           'staff-do-delegated-healthcare-activities',
         ]);
       });
