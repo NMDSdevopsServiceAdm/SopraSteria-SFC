@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { provideRouter, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, provideRouter, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
@@ -50,6 +50,8 @@ fdescribe('SelectMainServiceComponent', () => {
 
   async function setup(overrides: any = {}) {
     const mainServiceCQC = overrides?.mainServiceCQC ?? false;
+    const returnTo = 'returnTo' in overrides ? overrides.returnTo : { url: ['/dashboard'], fragment: 'workplace' };
+
     const setupTools = await render(SelectMainServiceComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
@@ -72,17 +74,23 @@ fdescribe('SelectMainServiceComponent', () => {
     const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
+
     const establishmentService = injector.inject(EstablishmentService);
     spyOn(establishmentService, 'updateMainService').and.returnValue(of({} as any));
+    spyOnProperty(establishmentService, 'returnTo', 'get').and.returnValue(returnTo);
     establishmentService.mainServiceCQC = mainServiceCQC;
 
     const router = injector.inject(Router);
     const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
+    const route = injector.inject(ActivatedRoute);
+
     return {
       ...setupTools,
       component,
       routerSpy,
+      route,
+      establishmentService,
     };
   }
 
@@ -105,19 +113,41 @@ fdescribe('SelectMainServiceComponent', () => {
   });
 
   it('should navigate to main-service-cqc-confirm page when the workplace changed main service to a cqc-regulated one', async () => {
-    const { fixture, getByLabelText, getByRole, routerSpy } = await setup({ mainServiceCQC: true });
+    const { fixture, getByLabelText, getByRole, routerSpy, route } = await setup({ mainServiceCQC: true });
 
     userEvent.click(getByLabelText('Domiciliary care services'));
     userEvent.click(getByRole('button', { name: 'Save and return' }));
 
     await fixture.whenStable();
 
-    expect(routerSpy).toHaveBeenCalledWith([
-      '/workplace',
-      'mocked-uid',
-      'workplace-data',
-      'workplace-summary',
-      'main-service-cqc-confirm',
-    ]);
+    expect(routerSpy).toHaveBeenCalledWith(['..', 'main-service-cqc-confirm'], { relativeTo: route });
+  });
+
+  it('should navigate to the returnTo url in other case', async () => {
+    const { fixture, getByLabelText, getByRole, routerSpy } = await setup({
+      mainServiceCQC: false,
+      returnTo: { url: ['/funding', 'data'], fragment: 'workplace' },
+    });
+
+    userEvent.click(getByLabelText('Domiciliary care services'));
+    userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+    await fixture.whenStable();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/funding', 'data'], { fragment: 'workplace' });
+  });
+
+  it('should navigate to /dashboard#workplace if returnTo is missing', async () => {
+    const { fixture, getByLabelText, getByRole, routerSpy } = await setup({
+      mainServiceCQC: false,
+      returnTo: undefined,
+    });
+
+    userEvent.click(getByLabelText('Domiciliary care services'));
+    userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+    await fixture.whenStable();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
   });
 });

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -24,6 +24,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected workplaceService: WorkplaceService,
+    protected route: ActivatedRoute,
   ) {
     super(backService, backLinkService, errorSummaryService, formBuilder, router, workplaceService);
   }
@@ -55,19 +56,24 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
       this.establishmentService.updateMainService(this.workplace.uid, request).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
         if (this.establishmentService.mainServiceCQC && !this.workplace.isRegulated) {
-          const confirmationPage = this.establishmentService.buildPathForWorkplaceSummary(
-            this.workplace.uid,
-            'main-service-cqc-confirm',
-          );
-          this.router.navigate(confirmationPage);
+          this.navigateToCQCChangeConfirmationPage();
         } else {
-          this.router.navigate(this.establishmentService.returnTo.url, {
-            fragment: this.establishmentService.returnTo.fragment,
-          });
-          this.establishmentService.setReturnTo(null);
+          this.returnToPreviousPage();
         }
       }),
     );
+  }
+
+  private navigateToCQCChangeConfirmationPage(): void {
+    this.router.navigate(['..', 'main-service-cqc-confirm'], { relativeTo: this.route });
+  }
+
+  private returnToPreviousPage(): void {
+    const returnTo = this.establishmentService.returnTo ?? { url: ['/dashboard'], fragment: 'workplace' };
+    this.router.navigate(returnTo.url, {
+      fragment: returnTo.fragment,
+    });
+    this.establishmentService.setReturnTo(null);
   }
 
   public setSubmitAction(payload: { action: string; save: boolean }): void {
