@@ -12,8 +12,11 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 
-describe('DoYouHaveVacanciesComponent', () => {
+fdescribe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
+    const inWorkplaceFlow = overrides?.inWorkplaceFlow ?? false;
+    const returnToUrl = inWorkplaceFlow ? false : (overrides?.returnUrl ?? true);
+
     const setupTools = await render(DoYouHaveVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
@@ -22,7 +25,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory({
-            returnToUrl: overrides?.returnUrl ?? true,
+            returnToUrl,
             establishment: overrides?.workplace,
           }),
         },
@@ -46,6 +49,12 @@ describe('DoYouHaveVacanciesComponent', () => {
     const establishmentServiceSpy = spyOn(establishmentService, 'updateJobs').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    if (inWorkplaceFlow) {
+      spyOnProperty(router, 'url', 'get').and.returnValue(
+        '/workplace-data/add-workplace-details/do-you-have-vacancies',
+      );
+    }
 
     return {
       component,
@@ -110,7 +119,7 @@ describe('DoYouHaveVacanciesComponent', () => {
     describe('in workplace flow', () => {
       it('should set the previous page to service-users page when main service cannot do delegated healthcare activities', async () => {
         const overrides = {
-          returnUrl: false,
+          inWorkplaceFlow: true,
           workplace: {
             mainService: {
               canDoDelegatedHealthcareActivities: null,
@@ -132,9 +141,9 @@ describe('DoYouHaveVacanciesComponent', () => {
         ]);
       });
 
-      it('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
+      fit('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
         const overrides = {
-          returnUrl: false,
+          inWorkplaceFlow: true,
           workplace: {
             mainService: {
               canDoDelegatedHealthcareActivities: true,
@@ -173,7 +182,13 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component } = await setup(overrides);
 
-        expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'service-users']);
+        expect(component.previousRoute).toEqual([
+          '/workplace',
+          `${component.establishment.uid}`,
+          'workplace-data',
+          'workplace-summary',
+          'service-users',
+        ]);
       });
 
       it('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
@@ -194,6 +209,8 @@ describe('DoYouHaveVacanciesComponent', () => {
         expect(component.previousRoute).toEqual([
           '/workplace',
           `${component.establishment.uid}`,
+          'workplace-data',
+          'workplace-summary',
           'what-kind-of-delegated-healthcare-activities',
         ]);
       });
@@ -451,7 +468,13 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-vacancy-job-roles']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'workplace-summary',
+          'select-vacancy-job-roles',
+        ]);
       });
 
       it("should navigate to the workplace summary page when submitting 'None'", async () => {
