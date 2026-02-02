@@ -10,9 +10,9 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
-    selector: 'app-select-main-service',
-    templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
-    standalone: false
+  selector: 'app-select-main-service',
+  templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
+  standalone: false,
 })
 export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public workplace: Establishment;
@@ -50,11 +50,16 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
         ...(selectedMainService.otherName && { other: selectedMainService.otherName }),
       },
     };
+
     this.subscriptions.add(
       this.establishmentService.updateMainService(this.workplace.uid, request).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
         if (this.establishmentService.mainServiceCQC && !this.workplace.isRegulated) {
-          this.router.navigate(['/workplace', this.workplace.uid, 'main-service-cqc-confirm']);
+          const confirmationPage = this.establishmentService.buildPathForWorkplaceSummary(
+            this.workplace.uid,
+            'main-service-cqc-confirm',
+          );
+          this.router.navigate(confirmationPage);
         } else {
           this.router.navigate(this.establishmentService.returnTo.url, {
             fragment: this.establishmentService.returnTo.fragment,
