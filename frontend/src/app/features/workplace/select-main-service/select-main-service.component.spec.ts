@@ -13,7 +13,7 @@ import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
-fdescribe('SelectMainServiceComponent', () => {
+describe('SelectMainServiceComponent', () => {
   const mockMainServicesByCategory = [
     {
       category: 'Adult community care',

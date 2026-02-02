@@ -42,7 +42,7 @@ describe('SelectMainServiceCQCComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  fit('should navigate to main service question when answer selected', async () => {
+  it('should navigate to main service question when answer selected', async () => {
     const { component, getByText, routerSpy } = await setup();
 
     expect(component).toBeTruthy();
