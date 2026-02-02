@@ -6,7 +6,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { provideHttpClient } from '@angular/common/http';
 
-describe('WorkplaceStaffDoDHAGuard', () => {
+fdescribe('WorkplaceStaffDoDHAGuard', () => {
   const setup = async (overrides: any = {}) => {
     TestBed.configureTestingModule({
       imports: [RouterModule],
@@ -33,7 +33,7 @@ describe('WorkplaceStaffDoDHAGuard', () => {
   };
 
   const mockRouterStateSnapshot = {
-    url: '/workplace/mock-workplace-uid/what-kind-of-delegated-healthcare-activities',
+    url: '/workplace/mock-workplace-uid/workplace-data/workplace-summary/what-kind-of-delegated-healthcare-activities',
   } as RouterStateSnapshot;
 
   it('should be created', async () => {
@@ -60,7 +60,9 @@ describe('WorkplaceStaffDoDHAGuard', () => {
       const result = await guard.canActivate(route, mockRouterStateSnapshot);
 
       expect(result).toBeInstanceOf(UrlTree);
-      expect(result.toString()).toEqual('/workplace/mock-workplace-uid/staff-do-delegated-healthcare-activities');
+      expect(result.toString()).toEqual(
+        '/workplace/mock-workplace-uid/workplace-data/workplace-summary/staff-do-delegated-healthcare-activities',
+      );
     });
   });
 });
