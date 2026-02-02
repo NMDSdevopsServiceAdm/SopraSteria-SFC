@@ -7,9 +7,9 @@ describe('Parent workplace page as edit user', { tags: '@workplace' }, () => {
   const establishmentId = ParentEstablishment.id;
 
   beforeEach(() => {
+    cy.reload();
     cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-    cy.reload();
   });
 
   it('should see the parent establishment workplace page', () => {
