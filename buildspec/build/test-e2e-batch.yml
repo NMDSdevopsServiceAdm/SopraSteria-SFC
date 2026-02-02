@@ -32,7 +32,11 @@ phases:
     commands:
       - aws s3 cp ${DB_FILE_URL} docker/sfc-e2e-test-db.sql
       - echo POSTGRES_USER=${POSTGRES_USER}\\nPOSTGRES_PASSWORD=${POSTGRES_PASSWORD}\\nPOSTGRES_DB=${POSTGRES_DB} > .env
-      - make install-for-e2e
+      - export NODE_ENV=e2etest
+      - npm install --prefix frontend &
+      - npm install --prefix backend &
+      - wait
+      - npm install -g sequelize-cli
   build:
     commands:
       - TAGS=${CY_GROUP_TAGS} docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
