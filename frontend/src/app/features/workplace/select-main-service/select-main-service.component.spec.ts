@@ -1,21 +1,67 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { provideRouter, RouterModule } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { WorkplaceService } from '@core/services/workplace.service';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { MockWorkplaceServiceWithOverrides } from '@core/test-utils/MockWorkplaceService';
 import { SelectMainServiceComponent } from '@features/workplace/select-main-service/select-main-service.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
 
-describe('SelectMainServiceComponent', () => {
-  async function setup() {
-    const { fixture, getByText } = await render(SelectMainServiceComponent, {
+fdescribe('SelectMainServiceComponent', () => {
+  const mockMainServicesByCategory = [
+    {
+      category: 'Adult community care',
+      services: [
+        {
+          id: 19,
+          reportingID: 17,
+          name: 'Shared lives',
+          canDoDelegatedHealthcareActivities: true,
+          isCQC: true,
+        },
+      ],
+    },
+    {
+      category: 'Adult domiciliary',
+      services: [
+        {
+          id: 20,
+          reportingID: 8,
+          name: 'Domiciliary care services',
+          canDoDelegatedHealthcareActivities: true,
+          isCQC: true,
+        },
+        {
+          id: 21,
+          reportingID: 54,
+          name: 'Extra care housing services',
+          canDoDelegatedHealthcareActivities: true,
+          isCQC: true,
+        },
+      ],
+    },
+  ];
+
+  async function setup(overrides: any = {}) {
+    const mainServiceCQC = overrides?.mainServiceCQC ?? false;
+    const setupTools = await render(SelectMainServiceComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useClass: MockEstablishmentServiceWithOverrides,
+        },
+        {
+          provide: WorkplaceService,
+          useFactory: MockWorkplaceServiceWithOverrides.factory({
+            getServicesByCategory: () => of(mockMainServicesByCategory),
+          }),
         },
         provideRouter([]),
         provideHttpClient(),
@@ -23,11 +69,20 @@ describe('SelectMainServiceComponent', () => {
       ],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
+
+    const injector = getTestBed();
+    const establishmentService = injector.inject(EstablishmentService);
+    spyOn(establishmentService, 'updateMainService').and.returnValue(of({} as any));
+    establishmentService.mainServiceCQC = mainServiceCQC;
+
+    const router = injector.inject(Router);
+    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
 
     return {
+      ...setupTools,
       component,
-      getByText,
+      routerSpy,
     };
   }
 
@@ -47,5 +102,22 @@ describe('SelectMainServiceComponent', () => {
 
     const cancelLink = getByText('Cancel');
     expect(cancelLink.getAttribute('href')).toEqual('/dashboard');
+  });
+
+  it('should navigate to main-service-cqc-confirm page when the workplace changed main service to a cqc-regulated one', async () => {
+    const { fixture, getByLabelText, getByRole, routerSpy } = await setup({ mainServiceCQC: true });
+
+    userEvent.click(getByLabelText('Domiciliary care services'));
+    userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+    await fixture.whenStable();
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      'mocked-uid',
+      'workplace-data',
+      'workplace-summary',
+      'main-service-cqc-confirm',
+    ]);
   });
 });
