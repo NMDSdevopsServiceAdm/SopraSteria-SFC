@@ -361,6 +361,8 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'workplace-summary',
         'what-kind-of-delegated-healthcare-activities',
       ]);
       expect(establishmentServiceSpy).toHaveBeenCalled();
