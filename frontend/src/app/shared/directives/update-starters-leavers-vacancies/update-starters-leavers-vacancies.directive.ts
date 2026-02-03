@@ -49,6 +49,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public jobRoleErrorMessages: Record<number, string> = {};
 
   protected slvField: string;
+  protected updateJobRolePage: string;
   protected selectedField: string;
   protected updatePage: WorkplaceUpdatePage;
   protected returnInEstablishmentService: URLStructure;
@@ -254,7 +255,7 @@ export class UpdateStartersLeaversVacanciesDirective implements OnInit, AfterVie
   public handleAddJobRole = (): void => {
     this.vacanciesAndTurnoverService[this.selectedField] = this.jobRoleNumbersTable.currentValues;
 
-    this.router.navigate([`../update-${this.slvField}-job-roles`], { relativeTo: this.route });
+    this.router.navigate([`../${this.updateJobRolePage}`], { relativeTo: this.route });
   };
 
   public handleClickedNoOrDoNotKnow = (value: jobOptionsEnum): void => {
