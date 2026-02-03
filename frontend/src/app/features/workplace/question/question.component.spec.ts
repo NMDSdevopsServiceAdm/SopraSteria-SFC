@@ -13,6 +13,8 @@ import { getTestBed } from '@angular/core/testing';
 
 describe('WorkplaceQuestion', () => {
   const mockWorkplaceUid = 'mock-workplace-uid';
+  const returnToWorkplaceSummary = { url: '/dashboard', fragment: 'workplace' };
+  const returnToFundingPage = { url: '/funding/data', fragment: 'workplace' };
 
   @Component({})
   class MockChildComponent extends WorkplaceQuestion {
@@ -25,12 +27,17 @@ describe('WorkplaceQuestion', () => {
 
   const setup = async (overrides: any = {}) => {
     const currentUrl = overrides?.currentUrl ?? '/dashboard';
+    const returnTo = overrides?.returnTo ?? null;
+
     const setupTools = await render(MockChildComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceWithOverrides.factory({ establishment: { uid: mockWorkplaceUid } }),
+          useFactory: MockEstablishmentServiceWithOverrides.factory({
+            establishment: { uid: mockWorkplaceUid },
+            returnTo,
+          }),
         },
         {
           provide: BackService,
@@ -52,7 +59,7 @@ describe('WorkplaceQuestion', () => {
   describe('conditional routing for previousRoute / nextRoute / skipRoute', () => {
     it('should return the page URL under /workplace-data/add-workplace-details if in add workplace details flow', async () => {
       const { component } = await setup({
-        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/a-question-page`,
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/question-page-name`,
       });
 
       expect(component.previousRoute).toEqual([
@@ -80,8 +87,11 @@ describe('WorkplaceQuestion', () => {
       ]);
     });
 
-    it('should return the page URL under /workplace/:uid/workplace-data/workplace-summary/ if not in flow', async () => {
-      const { component } = await setup({ currentUrl: '/dashboard#workplace' });
+    it('should return the page URL under /workplace/:uid/workplace-data/workplace-summary/ if visited from summary', async () => {
+      const { component } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/workplace-summary/question-page-name`,
+        returnTo: returnToWorkplaceSummary,
+      });
 
       expect(component.previousRoute).toEqual([
         '/workplace',
@@ -107,12 +117,25 @@ describe('WorkplaceQuestion', () => {
         'next-page-after-skip',
       ]);
     });
+
+    it('should return the page URL under /workplace/:uid/ in other case (e.g. visited from funding page)', async () => {
+      const { component } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/question-page-name`,
+        returnTo: returnToFundingPage,
+      });
+
+      expect(component.previousRoute).toEqual(['/workplace', mockWorkplaceUid, 'previous-page']);
+
+      expect(component.nextRoute).toEqual(['/workplace', mockWorkplaceUid, 'next-page']);
+
+      expect(component.skipRoute).toEqual(['/workplace', mockWorkplaceUid, 'next-page-after-skip']);
+    });
   });
 
   describe('navigateToQuestionPage', () => {
     it('should navigate to question page under /workplace-data/add-workplace-details/ if in add workplace details flow', async () => {
       const { component, router } = await setup({
-        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/a-question-page`,
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/question-page-name`,
       });
 
       // @ts-ignore
@@ -124,9 +147,10 @@ describe('WorkplaceQuestion', () => {
       );
     });
 
-    it('should navigate to question page under /workplace-data/summary-details/ if in add workplace details flow', async () => {
+    it('should navigate to question page under /workplace-data/workplace-summary/ if in add workplace details flow', async () => {
       const { component, router } = await setup({
-        currentUrl: '/dashboard#workplace',
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/workplace-summary/question-page-name`,
+        returnTo: returnToWorkplaceSummary,
       });
 
       // @ts-ignore
@@ -136,6 +160,20 @@ describe('WorkplaceQuestion', () => {
         ['/workplace', mockWorkplaceUid, 'workplace-data', 'workplace-summary', 'another-question-page'],
         { replaceUrl: true },
       );
+    });
+
+    it('should navigate to question page under /workplace/:uid/ in other case (e.g. visited from funding page)', async () => {
+      const { component, router } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/question-page-name`,
+        returnTo: returnToFundingPage,
+      });
+
+      // @ts-ignore
+      component.navigateToQuestionPage('another-question-page', { replaceUrl: true });
+
+      expect(router.navigate).toHaveBeenCalledWith(['/workplace', mockWorkplaceUid, 'another-question-page'], {
+        replaceUrl: true,
+      });
     });
   });
 });

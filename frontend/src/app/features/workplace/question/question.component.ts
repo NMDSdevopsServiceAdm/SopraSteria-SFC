@@ -8,7 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
-import isNull from 'lodash/isNull';
+import { isNull, isEqual } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive()
@@ -101,14 +101,22 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public get isInAddDetailsFlow(): boolean {
-    return !this.return || (this.router.url && this.router.url.includes('add-workplace-details'));
+    return this.router.url.includes('add-workplace-details') || !this.return;
+  }
+
+  public get visitedFromWorkplaceSummary(): boolean {
+    const returnToIsWorkplaceSummary =
+      this.return && isEqual(this.return, { url: ['/dashboard'], fragment: 'workplace' });
+    return returnToIsWorkplaceSummary || this.router.url.includes('workplace-summary');
   }
 
   private get baseRoute(): string[] {
-    if (this.isInAddDetailsFlow) {
+    if (this.visitedFromWorkplaceSummary) {
+      return this.establishmentService.baseRouteForWorkplaceSummary(this.establishment.uid);
+    } else if (this.isInAddDetailsFlow) {
       return this.establishmentService.baseRouteForAddWorkplaceDetails(this.establishment.uid);
     } else {
-      return this.establishmentService.baseRouteForWorkplaceSummary(this.establishment.uid);
+      return ['/workplace', this.establishment.uid];
     }
   }
 
