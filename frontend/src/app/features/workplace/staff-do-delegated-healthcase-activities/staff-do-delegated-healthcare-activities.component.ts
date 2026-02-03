@@ -48,8 +48,8 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
   init() {
     this.setupForm();
     this.setPreviousRoute();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'do-you-have-vacancies'];
-    this.nextRoute = this.skipRoute;
+    this.skipToQuestionPage = 'do-you-have-vacancies';
+    this.nextQuestionPage = 'do-you-have-vacancies';
     this.prefill();
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
     this.checkWhetherShouldDisplayWarning();
@@ -77,7 +77,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
+    this.previousQuestionPage = 'service-users';
   }
 
   protected generateUpdateProps(): any {
@@ -128,10 +128,10 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
     const { staffDoDelegatedHealthcareActivities } = this.form.value;
 
     if (staffDoDelegatedHealthcareActivities === 'Yes') {
-      this.nextRoute = ['/workplace', this.establishment.uid, 'what-kind-of-delegated-healthcare-activities'];
+      this.nextQuestionPage = 'what-kind-of-delegated-healthcare-activities';
       this.submitAction = { action: 'continue', save: true };
     } else {
-      this.nextRoute = this.skipRoute;
+      this.nextQuestionPage = this.skipToQuestionPage;
     }
   }
 

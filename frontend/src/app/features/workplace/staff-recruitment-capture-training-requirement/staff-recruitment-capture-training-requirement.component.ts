@@ -53,11 +53,11 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent
     this.setupForm();
     this.setPreviousRoute();
     this.prefill();
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
+    this.skipToQuestionPage = 'accept-previous-care-certificate';
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.previousQuestionPage = 'cash-loyalty';
   }
 
   private setupForm(): void {
@@ -101,7 +101,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
+    this.nextQuestionPage = 'accept-previous-care-certificate';
   }
 
   ngOnDestroy(): void {

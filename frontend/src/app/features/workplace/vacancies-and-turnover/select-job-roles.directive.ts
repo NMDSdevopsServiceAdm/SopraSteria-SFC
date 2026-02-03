@@ -55,8 +55,8 @@ export class SelectJobRolesDirective extends WorkplaceQuestion {
   }
 
   protected setupRoutes(): void {
-    this.nextRoute = ['/workplace', this.establishment.uid, `how-many-${this.field}`];
-    this.previousRoute = ['/workplace', this.establishment.uid, `do-you-have-${this.field}`];
+    this.nextQuestionPage = `how-many-${this.field}`;
+    this.previousQuestionPage = `do-you-have-${this.field}`;
   }
 
   public setBackLink() {

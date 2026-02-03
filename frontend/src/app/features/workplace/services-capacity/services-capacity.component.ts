@@ -76,9 +76,9 @@ export class ServicesCapacityComponent extends WorkplaceQuestion {
       }),
     );
 
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+    this.nextQuestionPage = 'service-users';
+    this.previousQuestionPage = 'other-services';
+    this.skipToQuestionPage = 'service-users';
   }
 
   private setupErrorSummaryErrorsMap(errorObj, service): void {

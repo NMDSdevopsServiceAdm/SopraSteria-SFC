@@ -19,9 +19,9 @@ describe('WorkplaceQuestion', () => {
   @Component({})
   class MockChildComponent extends WorkplaceQuestion {
     _init() {
-      this.previousRoute = ['/workpace', mockWorkplaceUid, 'previous-page'];
-      this.nextRoute = ['/workpace', mockWorkplaceUid, 'next-page'];
-      this.skipRoute = ['/workpace', mockWorkplaceUid, 'next-page-after-skip'];
+      this.previousQuestionPage = 'previous-page';
+      this.nextQuestionPage = 'next-page';
+      this.skipToQuestionPage = 'next-page-after-skip';
     }
   }
 

@@ -63,16 +63,16 @@ export class OtherServicesComponent extends WorkplaceQuestion {
   }
 
   private setRoutes(inSubmit = false): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
+    this.previousQuestionPage = 'start';
 
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         (response) => {
-          this.nextRoute =
+          this.nextQuestionPage =
             response.allServiceCapacities && response.allServiceCapacities.length
-              ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
-              : ['/workplace', `${this.establishment.uid}`, 'service-users'];
-          this.skipRoute = this.nextRoute;
+              ? 'capacity-of-services'
+              : 'service-users';
+          this.skipToQuestionPage = this.nextQuestionPage;
 
           if (inSubmit) {
             this.navigate();
@@ -81,6 +81,8 @@ export class OtherServicesComponent extends WorkplaceQuestion {
         (error) => this.onError(error),
       ),
     );
+
+    this.skipToQuestionPage = 'service-users';
   }
 
   private oneCheckboxRequiredIfYes(form: UntypedFormGroup) {

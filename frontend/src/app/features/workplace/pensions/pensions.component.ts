@@ -49,8 +49,8 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
   }
 
   private setRoutes(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
+    this.previousQuestionPage = 'benefits-statutory-sick-pay';
+    this.skipToQuestionPage = 'staff-benefit-holiday-leave';
   }
 
   private setupForm(): void {
@@ -93,6 +93,6 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
+    this.nextQuestionPage = 'staff-benefit-holiday-leave';
   }
 }

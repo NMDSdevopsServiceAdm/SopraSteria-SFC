@@ -50,13 +50,13 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Workp
     this.allDelegatedHealthcareActivitiesOptions = [...this.delegatedHealthcareActivities, this.doNotKnowOption];
     this.setupForm();
     this.prefill();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'do-you-have-vacancies'];
+    this.skipToQuestionPage = 'do-you-have-vacancies';
     this.setPreviousRoute();
-    this.nextRoute = this.skipRoute;
+    this.nextQuestionPage = this.skipToQuestionPage;
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-do-delegated-healthcare-activities'];
+    this.previousQuestionPage = 'staff-do-delegated-healthcare-activities';
   }
 
   setupForm() {

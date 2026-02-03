@@ -42,8 +42,8 @@ export class DataSharingComponent extends WorkplaceQuestion {
       });
     }
 
-    this.previousRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness'];
-    this.skipRoute = ['/workplace', this.establishment.uid, 'check-answers'];
+    this.previousQuestionPage = 'care-workforce-pathway-awareness';
+    this.skipToQuestionPage = 'check-answers';
   }
 
   protected setupServerErrorsMap(): void {
@@ -83,7 +83,7 @@ export class DataSharingComponent extends WorkplaceQuestion {
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', this.establishment.uid, 'check-answers'];
+    this.nextQuestionPage = 'check-answers';
   }
 
   protected removeSharingPermissionsBanner(completeFunction): void {

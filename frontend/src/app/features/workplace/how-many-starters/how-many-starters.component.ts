@@ -45,7 +45,7 @@ export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDir
   }
 
   protected setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'select-starter-job-roles'];
+    this.previousQuestionPage = 'select-starter-job-roles';
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -61,6 +61,6 @@ export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDir
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', this.establishment.uid, 'do-you-have-leavers'];
+    this.nextQuestionPage = 'do-you-have-leavers';
   }
 }

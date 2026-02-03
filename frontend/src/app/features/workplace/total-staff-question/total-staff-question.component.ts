@@ -40,14 +40,14 @@ export class TotalStaffQuestionComponent extends WorkplaceQuestion {
   }
 
   protected init(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
+    this.nextQuestionPage = 'vacancies';
     this.setPreviousRoute();
 
     this.setupFormErrorsMap();
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+    this.previousQuestionPage = 'sharing-data';
   }
 
   protected generateUpdateProps() {

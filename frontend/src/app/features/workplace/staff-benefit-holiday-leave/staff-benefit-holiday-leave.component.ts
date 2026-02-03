@@ -33,7 +33,7 @@ export class StaffBenefitHolidayLeaveComponent extends WorkplaceQuestion impleme
     this.prefill();
     this.setPreviousRoute();
 
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
+    this.skipToQuestionPage = 'cash-loyalty';
   }
 
   private setupForm(): void {
@@ -83,7 +83,7 @@ export class StaffBenefitHolidayLeaveComponent extends WorkplaceQuestion impleme
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
+    this.nextQuestionPage = 'cash-loyalty';
   }
 
   private customValidator(regexp: RegExp, error: string): ValidatorFn {
@@ -121,7 +121,7 @@ export class StaffBenefitHolidayLeaveComponent extends WorkplaceQuestion impleme
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
+    this.previousQuestionPage = 'pensions';
   }
 
   ngOnDestroy(): void {

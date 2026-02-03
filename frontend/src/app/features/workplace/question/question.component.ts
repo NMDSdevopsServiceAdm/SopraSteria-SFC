@@ -88,16 +88,28 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected setPreviousQuestionPage(pathSegment: string) {
-    this._previousQuestionPage = pathSegment;
+  protected set previousQuestionPage(pageName: string) {
+    this._previousQuestionPage = pageName;
   }
 
-  protected setNextQuestionPage(pathSegment: string) {
-    this._nextQuestionPage = pathSegment;
+  protected set nextQuestionPage(pageName: string) {
+    this._nextQuestionPage = pageName;
   }
 
-  protected setSkipToQuestionPage(pathSegment: string) {
-    this._skipToQuestionPage = pathSegment;
+  protected set skipToQuestionPage(pageName: string) {
+    this._skipToQuestionPage = pageName;
+  }
+
+  protected get previousQuestionPage(): string {
+    return this._previousQuestionPage;
+  }
+
+  protected get nextQuestionPage(): string {
+    return this._nextQuestionPage;
+  }
+
+  protected get skipToQuestionPage(): string {
+    return this._skipToQuestionPage;
   }
 
   public get isInAddDetailsFlow(): boolean {
@@ -105,9 +117,9 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public get visitedFromWorkplaceSummary(): boolean {
-    const returnToIsWorkplaceSummary =
+    const returnUrlMatchWorkplaceSummary =
       this.return && isEqual(this.return, { url: ['/dashboard'], fragment: 'workplace' });
-    return returnToIsWorkplaceSummary || this.router.url.includes('workplace-summary');
+    return this.router.url.includes('workplace-summary') || returnUrlMatchWorkplaceSummary;
   }
 
   private get baseRoute(): string[] {
@@ -130,21 +142,6 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
 
   public get skipRoute(): string[] {
     return [...this.baseRoute, this._skipToQuestionPage];
-  }
-
-  protected set previousRoute(route: string | string[]) {
-    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
-    this.setPreviousQuestionPage(lastPathSegment);
-  }
-
-  protected set nextRoute(route: string | string[]) {
-    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
-    this.setNextQuestionPage(lastPathSegment);
-  }
-
-  protected set skipRoute(route: string | string[]) {
-    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
-    this.setSkipToQuestionPage(lastPathSegment);
   }
 
   protected navigateToQuestionPage(pathSegment: string, ...extras: [NavigationExtras?]): Promise<boolean> {
