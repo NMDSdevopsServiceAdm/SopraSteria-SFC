@@ -99,7 +99,9 @@ describe('UpdateLeaversComponent', () => {
             ...override.establishmentService,
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -235,7 +237,7 @@ describe('UpdateLeaversComponent', () => {
       expect(addButton).toBeTruthy();
     });
 
-    it('should navigate to update-leavers-job-roles when "Add job roles" is clicked', async () => {
+    it('should navigate to update-leaver-job-roles when "Add job roles" is clicked', async () => {
       const { getByRole, routerSpy, component } = await setup({
         leaversFromSelectJobRolePages: null,
         workplace: mockWorkplace,
@@ -245,7 +247,7 @@ describe('UpdateLeaversComponent', () => {
       fireEvent.click(addButton);
 
       // @ts-expect-error: TS2341: Property 'route' is private
-      expect(routerSpy).toHaveBeenCalledWith([`../update-leavers-job-roles`], { relativeTo: component.route });
+      expect(routerSpy).toHaveBeenCalledWith([`../update-leaver-job-roles`], { relativeTo: component.route });
     });
   });
 

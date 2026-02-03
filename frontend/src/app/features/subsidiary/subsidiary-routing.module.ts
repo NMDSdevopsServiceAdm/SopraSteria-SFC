@@ -330,7 +330,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'update-vacancies-job-roles',
+        path: 'update-vacancy-job-roles',
         component: SelectJobRolesToAddComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
@@ -350,7 +350,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'update-starters-job-roles',
+        path: 'update-starter-job-roles',
         component: SelectJobRolesToAddComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
@@ -370,7 +370,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'update-leavers-job-roles',
+        path: 'update-leaver-job-roles',
         component: SelectJobRolesToAddComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
