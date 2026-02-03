@@ -413,7 +413,13 @@ describe('DoYouHaveStartersComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-starter-job-roles']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'workplace-summary',
+          'select-starter-job-roles',
+        ]);
       });
 
       it("should navigate to the workplace summary page when submitting 'None'", async () => {

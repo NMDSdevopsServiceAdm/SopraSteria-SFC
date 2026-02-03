@@ -7,7 +7,7 @@ import { EstablishmentService } from './establishment.service';
 import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
 import { provideHttpClient } from '@angular/common/http';
 
-fdescribe('EstablishmentService', () => {
+describe('EstablishmentService', () => {
   let service: EstablishmentService;
   let http: HttpTestingController;
   const mockWorkplaceUid = 'mockWorkplaceUid';
