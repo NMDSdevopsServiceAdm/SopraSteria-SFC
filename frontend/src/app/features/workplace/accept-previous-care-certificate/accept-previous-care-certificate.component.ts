@@ -49,11 +49,11 @@ export class AcceptPreviousCareCertificateComponent extends WorkplaceQuestion im
     this.setupForm();
     this.setPreviousRoute();
     this.prefill();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness'];
+    this.skipToQuestionPage = 'care-workforce-pathway-awareness';
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
+    this.previousQuestionPage = 'staff-recruitment-capture-training-requirement';
   }
 
   private setupForm(): void {
@@ -96,7 +96,7 @@ export class AcceptPreviousCareCertificateComponent extends WorkplaceQuestion im
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-awareness'];
+    this.nextQuestionPage = 'care-workforce-pathway-awareness';
   }
 
   ngOnDestroy(): void {

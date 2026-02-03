@@ -124,21 +124,21 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends WorkplaceQuestio
     );
   }
 
-  protected getPreviousRoute(field: string): Array<string> {
+  protected getPreviousPage(field: string): string {
     if (Array.isArray(this.establishment[field]) && this.establishment[field].length > 0) {
-      return ['/workplace', this.establishment?.uid, `how-many-${field}`];
+      return `how-many-${field}`;
     } else {
-      return ['/workplace', this.establishment?.uid, `do-you-have-${field}`];
+      return `do-you-have-${field}`;
     }
   }
 
   protected onSuccess(): void {
     if (this.hasSelectedYesWithoutSavingJobRoles) {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, this.startersLeaversOrVacanciesPageTwo];
+      this.nextQuestionPage = this.startersLeaversOrVacanciesPageTwo;
     } else if (!this.hasSelectedYesWithoutSavingJobRoles && this.return) {
       this.submitAction = { action: 'return', save: true };
     } else {
-      this.nextRoute = this.skipRoute;
+      this.nextQuestionPage = this.skipToQuestionPage;
     }
   }
 

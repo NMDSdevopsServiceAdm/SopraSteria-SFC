@@ -42,8 +42,8 @@ export class DataSharingComponent extends WorkplaceQuestion {
       });
     }
 
-    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-benefit-holiday-leave'];
-    this.skipRoute = ['/workplace', this.establishment.uid, 'check-answers'];
+    this.previousQuestionPage = 'staff-benefit-holiday-leave';
+    this.skipToQuestionPage = 'check-answers';
   }
 
   protected setupServerErrorsMap(): void {
@@ -83,7 +83,7 @@ export class DataSharingComponent extends WorkplaceQuestion {
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', this.establishment.uid, 'check-answers'];
+    this.nextQuestionPage = 'check-answers';
   }
 
   protected removeSharingPermissionsBanner(completeFunction): void {

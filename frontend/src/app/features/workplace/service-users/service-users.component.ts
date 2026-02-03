@@ -52,10 +52,10 @@ export class ServiceUsersComponent extends WorkplaceQuestion {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         (response) => {
-          this.previousRoute =
+          this.previousQuestionPage =
             response.allServiceCapacities && response.allServiceCapacities.length
-              ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
-              : ['/workplace', `${this.establishment.uid}`, 'other-services'];
+              ? 'capacity-of-services'
+              : 'other-services';
           this.setBackLink();
         },
         (error) => this.onError(error),
@@ -124,8 +124,8 @@ export class ServiceUsersComponent extends WorkplaceQuestion {
     const nextPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
       ? 'staff-do-delegated-healthcare-activities'
       : 'do-you-have-vacancies';
-    this.nextRoute = ['/workplace', this.establishment.uid, nextPage];
-    this.skipRoute = this.nextRoute;
+    this.nextQuestionPage = nextPage;
+    this.skipToQuestionPage = nextPage;
   }
 
   protected generateUpdateProps() {

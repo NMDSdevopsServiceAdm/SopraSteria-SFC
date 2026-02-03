@@ -64,8 +64,8 @@ export class TypeOfEmployerComponent extends WorkplaceQuestion {
   }
 
   protected init(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
+    this.nextQuestionPage = 'other-services';
+    this.previousQuestionPage = 'start';
 
     if (this.establishmentService.employerTypeHasValue === false) {
       this.callToAction = 'Continue to homepage';

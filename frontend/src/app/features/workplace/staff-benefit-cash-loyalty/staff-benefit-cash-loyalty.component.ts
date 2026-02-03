@@ -52,11 +52,11 @@ export class StaffBenefitCashLoyaltyComponent extends WorkplaceQuestion implemen
   protected init(): void {
     this.prefill();
     this.setPreviousRoute();
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
+    this.skipToQuestionPage = 'benefits-statutory-sick-pay';
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-use'];
+    this.previousQuestionPage = 'care-workforce-pathway-use';
   }
 
   public onChange(answer: string) {
@@ -138,7 +138,7 @@ export class StaffBenefitCashLoyaltyComponent extends WorkplaceQuestion implemen
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
+    this.nextQuestionPage = 'benefits-statutory-sick-pay';
   }
 
   protected setupFormErrorsMap(): void {

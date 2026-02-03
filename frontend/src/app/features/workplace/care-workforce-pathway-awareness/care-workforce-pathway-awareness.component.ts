@@ -41,12 +41,12 @@ export class CareWorkforcePathwayAwarenessComponent extends WorkplaceQuestion im
     this.setPreviousRoute();
     this.prefill();
 
-    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.skipToQuestionPage = 'cash-loyalty';
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'accept-previous-care-certificate'];
+    this.previousQuestionPage = 'accept-previous-care-certificate';
   }
 
   private setupForm(): void {
@@ -105,10 +105,10 @@ export class CareWorkforcePathwayAwarenessComponent extends WorkplaceQuestion im
     const { careWorkforcePathwayAwareness } = this.form.value;
 
     if (awareAnswersIds.includes(careWorkforcePathwayAwareness)) {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-use'];
+      this.nextQuestionPage = 'care-workforce-pathway-use';
       this.submitAction = { action: 'continue', save: true };
     } else {
-      this.nextRoute = this.skipRoute;
+      this.nextQuestionPage = this.skipToQuestionPage;
       this.hasGivenNotAwareAnswer = true;
     }
   }

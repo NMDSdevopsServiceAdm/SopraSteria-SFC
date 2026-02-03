@@ -47,11 +47,11 @@ export class BenefitsStatutorySickPayComponent extends WorkplaceQuestion impleme
     this.prefill();
     this.setPreviousRoute();
 
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
+    this.skipToQuestionPage = 'pensions';
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
+    this.previousQuestionPage = 'cash-loyalty';
   }
 
   private setupForm(): void {
@@ -94,7 +94,7 @@ export class BenefitsStatutorySickPayComponent extends WorkplaceQuestion impleme
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
+    this.nextQuestionPage = 'pensions';
   }
 
   ngOnDestroy(): void {

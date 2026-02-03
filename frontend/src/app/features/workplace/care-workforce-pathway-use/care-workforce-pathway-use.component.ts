@@ -48,7 +48,7 @@ export class CareWorkforcePathwayUseComponent extends WorkplaceQuestion implemen
     this.setupForm();
     this.prefill();
     this.setPreviousRoute();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.skipToQuestionPage = 'cash-loyalty';
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 
@@ -57,7 +57,7 @@ export class CareWorkforcePathwayUseComponent extends WorkplaceQuestion implemen
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness'];
+    this.previousQuestionPage = 'care-workforce-pathway-awareness';
   }
 
   protected setBackLink(): void {
@@ -233,6 +233,6 @@ export class CareWorkforcePathwayUseComponent extends WorkplaceQuestion implemen
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
+    this.nextQuestionPage = 'cash-loyalty';
   }
 }
