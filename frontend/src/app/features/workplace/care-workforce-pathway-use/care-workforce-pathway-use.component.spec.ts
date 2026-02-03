@@ -41,6 +41,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
   const setup = async (overrides: any = {}) => {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+    const currentUrl = overrides?.currentUrl ?? '/';
 
     const setupTools = await render(CareWorkforcePathwayUseComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -58,6 +59,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
           provide: Router,
           useFactory: MockRouter.factory({
             navigate: routerSpy,
+            url: currentUrl,
           }),
         },
         {
@@ -417,12 +419,15 @@ describe('CareWorkforcePathwayUseComponent', () => {
 
   describe('When coming from summary panel', () => {
     const workplaceName = 'Test workplace name';
+    const currentUrl = '/workplace/mocked-uid/workplace-data/workplace-summary/care-workforce-pathway-use';
+
     const comingFromSummaryPanelOverrides = {
       establishmentService: {
         returnTo: { url: ['/dashboard'], fragment: 'home' },
         establishment: { name: workplaceName },
       },
       previousPage: 'care-workforce-pathway-awareness',
+      currentUrl,
     };
 
     it('should display banner when user submits and return is to home page', async () => {
@@ -456,7 +461,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
       const { backServiceSpy } = await setup(comingFromSummaryPanelOverrides);
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness'],
+        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'care-workforce-pathway-awareness'],
       });
     });
   });
@@ -466,6 +471,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
       url: ['/dashboard'],
       fragment: 'workplace',
     };
+    const currentUrl = '/workplace/mocked-uid/workplace-data/workplace-summary/care-workforce-pathway-use';
 
     it('should set backlink to returnTo when directly visited from workplace summary', async () => {
       const { backServiceSpy } = await setup({
@@ -473,6 +479,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
         establishmentService: {
           returnTo,
         },
+        currentUrl,
       });
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith(returnTo);
@@ -484,10 +491,11 @@ describe('CareWorkforcePathwayUseComponent', () => {
         establishmentService: {
           returnTo,
         },
+        currentUrl,
       });
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness'],
+        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'care-workforce-pathway-awareness'],
       });
     });
   });
