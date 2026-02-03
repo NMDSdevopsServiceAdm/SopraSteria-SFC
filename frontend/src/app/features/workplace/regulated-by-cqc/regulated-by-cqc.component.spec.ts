@@ -12,7 +12,7 @@ import userEvent from '@testing-library/user-event';
 import { getTestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 
-fdescribe('RegulatedByCqcComponent', () => {
+describe('RegulatedByCqcComponent', () => {
   const workplaceUid = 'abc131355543435';
 
   async function setup() {

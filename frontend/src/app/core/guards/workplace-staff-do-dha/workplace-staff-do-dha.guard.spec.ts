@@ -6,7 +6,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { provideHttpClient } from '@angular/common/http';
 
-fdescribe('WorkplaceStaffDoDHAGuard', () => {
+describe('WorkplaceStaffDoDHAGuard', () => {
   const setup = async (overrides: any = {}) => {
     TestBed.configureTestingModule({
       imports: [RouterModule],

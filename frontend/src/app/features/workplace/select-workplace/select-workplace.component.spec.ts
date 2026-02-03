@@ -15,7 +15,7 @@ import { BehaviorSubject, of } from 'rxjs';
 
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
-fdescribe('SelectWorkplaceComponent', () => {
+describe('SelectWorkplaceComponent', () => {
   async function setup(manyLocationAddresses = false) {
     const setupTools = await render(SelectWorkplaceComponent, {
       imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
