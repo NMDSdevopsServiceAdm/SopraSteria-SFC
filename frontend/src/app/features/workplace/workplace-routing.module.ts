@@ -46,7 +46,7 @@ import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { ChangeDataPermissionsComponent } from './change-data-permissions/change-data-permissions.component';
-import { WorkplaceDataRoutes, workplaceQuestionsSharedByFlowAndSummary } from './workplace-data-routing';
+import { WorkplaceDataRoutes, workplaceQuestionsForFundingPage } from './workplace-data-routing';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -87,9 +87,7 @@ const routes: Routes = [
     data: { title: 'Workplace' },
     children: [
       WorkplaceDataRoutes,
-
-      // TODO: remove the line below when workplace questions from summary are moved to /workplace-data/workplace-summary
-      ...workplaceQuestionsSharedByFlowAndSummary,
+      ...workplaceQuestionsForFundingPage,
 
       {
         path: 'users',
@@ -193,7 +191,7 @@ const routes: Routes = [
       //   },
       // },
       // {
-      //   path: 'update-vacancies-job-roles',
+      //   path: 'update-vacancy-job-roles',
       //   component: SelectJobRolesToAddComponent,
       //   canActivate: [CheckPermissionsGuard],
       //   resolve: { jobs: JobsResolver },
@@ -213,7 +211,7 @@ const routes: Routes = [
       //   },
       // },
       // {
-      //   path: 'update-starters-job-roles',
+      //   path: 'update-starter-job-roles',
       //   component: SelectJobRolesToAddComponent,
       //   canActivate: [CheckPermissionsGuard],
       //   resolve: { jobs: JobsResolver },
@@ -233,7 +231,7 @@ const routes: Routes = [
       //   },
       // },
       // {
-      //   path: 'update-leavers-job-roles',
+      //   path: 'update-leaver-job-roles',
       //   component: SelectJobRolesToAddComponent,
       //   canActivate: [CheckPermissionsGuard],
       //   resolve: { jobs: JobsResolver },

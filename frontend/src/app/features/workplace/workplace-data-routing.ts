@@ -442,14 +442,16 @@ const workplaceSummaryOnlyPages: Routes = [
   },
 ];
 
-export const addWorkplaceDetails: Route = {
+const addWorkplaceDetails: Route = {
   path: 'add-workplace-details',
   children: [...workplaceFlowOnlyPages, ...workplaceQuestionsSharedByFlowAndSummary],
 };
 
-export const workplaceSummary: Route = {
+const workplaceSummary: Route = {
   path: 'workplace-summary',
   children: [...workplaceSummaryOnlyPages, ...workplaceQuestionsSharedByFlowAndSummary],
 };
+
+export const workplaceQuestionsForFundingPage: Routes = [...workplaceSummary.children];
 
 export const WorkplaceDataRoutes: Route = { path: 'workplace-data', children: [addWorkplaceDetails, workplaceSummary] };

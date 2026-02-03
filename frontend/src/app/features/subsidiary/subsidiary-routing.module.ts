@@ -63,6 +63,7 @@ import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } f
 import { TrainingCourseResolver } from '@core/resolvers/training/training-course.resolver';
 import {
   WorkplaceDataRoutes,
+  workplaceQuestionsForFundingPage,
   workplaceQuestionsSharedByFlowAndSummary,
 } from '@features/workplace/workplace-data-routing';
 
@@ -218,8 +219,7 @@ const routes: Routes = [
       },
 
       WorkplaceDataRoutes,
-      // TODO: remove the line below when workplace questions from summary are moved to /workplace-data/workplace-summary
-      ...workplaceQuestionsSharedByFlowAndSummary,
+      ...workplaceQuestionsForFundingPage,
 
       {
         path: 'health-and-care-visa-existing-workers',
@@ -239,147 +239,147 @@ const routes: Routes = [
           title: 'Employed from Outside the UK',
         },
       },
-      {
-        path: 'regulated-by-cqc',
-        component: RegulatedByCqcComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Regulated by CQC',
-        },
-      },
-      {
-        path: 'select-workplace',
-        component: SelectWorkplaceComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Select Workplace',
-        },
-      },
-      {
-        path: 'workplace-not-found',
-        component: WorkplaceNotFoundComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Workplace Not Found',
-        },
-      },
-      {
-        path: 'update-workplace-details',
-        component: WorkplaceNameAddressComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Update Workplace Details',
-        },
-      },
-      {
-        path: 'type-of-employer',
-        component: TypeOfEmployerComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Type of Employer',
-        },
-      },
-      {
-        path: 'main-service',
-        component: SelectMainServiceComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Main Service',
-        },
-      },
-      {
-        path: 'main-service-cqc',
-        component: SelectMainServiceCqcComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Main Service',
-        },
-      },
-      {
-        path: 'main-service-cqc-confirm',
-        component: SelectMainServiceCqcConfirmComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Main Service',
-        },
-      },
-      {
-        path: 'total-staff',
-        component: TotalStaffQuestionComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Total Staff',
-        },
-      },
-      {
-        path: 'update-vacancies',
-        component: UpdateVacanciesComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Update Vacancies',
-        },
-      },
-      {
-        path: 'update-vacancy-job-roles',
-        component: SelectJobRolesToAddComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          jobRoleType: JobRoleType.Vacancies,
-          title: 'Select job roles to add',
-        },
-      },
-      {
-        path: 'update-starters',
-        component: UpdateStartersComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Update Starters',
-        },
-      },
-      {
-        path: 'update-starter-job-roles',
-        component: SelectJobRolesToAddComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          jobRoleType: JobRoleType.Starters,
-          title: 'Select job roles to add',
-        },
-      },
-      {
-        path: 'update-leavers',
-        component: UpdateLeaversComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Update Leavers',
-        },
-      },
-      {
-        path: 'update-leaver-job-roles',
-        component: SelectJobRolesToAddComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          jobRoleType: JobRoleType.Leavers,
-          title: 'Select job roles to add',
-        },
-      },
+      // {
+      //   path: 'regulated-by-cqc',
+      //   component: RegulatedByCqcComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Regulated by CQC',
+      //   },
+      // },
+      // {
+      //   path: 'select-workplace',
+      //   component: SelectWorkplaceComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Select Workplace',
+      //   },
+      // },
+      // {
+      //   path: 'workplace-not-found',
+      //   component: WorkplaceNotFoundComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Workplace Not Found',
+      //   },
+      // },
+      // {
+      //   path: 'update-workplace-details',
+      //   component: WorkplaceNameAddressComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Update Workplace Details',
+      //   },
+      // },
+      // {
+      //   path: 'type-of-employer',
+      //   component: TypeOfEmployerComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Type of Employer',
+      //   },
+      // },
+      // {
+      //   path: 'main-service',
+      //   component: SelectMainServiceComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Main Service',
+      //   },
+      // },
+      // {
+      //   path: 'main-service-cqc',
+      //   component: SelectMainServiceCqcComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Main Service',
+      //   },
+      // },
+      // {
+      //   path: 'main-service-cqc-confirm',
+      //   component: SelectMainServiceCqcConfirmComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Main Service',
+      //   },
+      // },
+      // {
+      //   path: 'total-staff',
+      //   component: TotalStaffQuestionComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Total Staff',
+      //   },
+      // },
+      // {
+      //   path: 'update-vacancies',
+      //   component: UpdateVacanciesComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Update Vacancies',
+      //   },
+      // },
+      // {
+      //   path: 'update-vacancy-job-roles',
+      //   component: SelectJobRolesToAddComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   resolve: { jobs: JobsResolver },
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     jobRoleType: JobRoleType.Vacancies,
+      //     title: 'Select job roles to add',
+      //   },
+      // },
+      // {
+      //   path: 'update-starters',
+      //   component: UpdateStartersComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Update Starters',
+      //   },
+      // },
+      // {
+      //   path: 'update-starter-job-roles',
+      //   component: SelectJobRolesToAddComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   resolve: { jobs: JobsResolver },
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     jobRoleType: JobRoleType.Starters,
+      //     title: 'Select job roles to add',
+      //   },
+      // },
+      // {
+      //   path: 'update-leavers',
+      //   component: UpdateLeaversComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Update Leavers',
+      //   },
+      // },
+      // {
+      //   path: 'update-leaver-job-roles',
+      //   component: SelectJobRolesToAddComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   resolve: { jobs: JobsResolver },
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     jobRoleType: JobRoleType.Leavers,
+      //     title: 'Select job roles to add',
+      //   },
+      // },
       {
         path: 'user/create',
         canActivate: [CheckPermissionsGuard],
