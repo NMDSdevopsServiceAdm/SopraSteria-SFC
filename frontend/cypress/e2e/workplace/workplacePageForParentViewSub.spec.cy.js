@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 import { runTestsForWorkplaceQuestions } from './runTestsForWorkplaceQuestions';
 
-describe('Standalone workplace page as edit user', { tags: '@workplace' }, () => {
-  const establishmentId = StandAloneEstablishment.id;
+describe('Workplace page for Parent viewing subsidiary', () => {
+  const subsidaryToView = SubEstablishmentNotDataOwner;
+  const establishmentId = subsidaryToView.id;
 
   const workerName = 'Test worker update staff records';
 
@@ -18,9 +19,16 @@ describe('Standalone workplace page as edit user', { tags: '@workplace' }, () =>
   });
 
   beforeEach(() => {
-    cy.reload();
-    cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(ParentEstablishment.editUserLoginName, Cypress.env('userPassword'));
+
+    cy.get('app-navigate-to-workplace-dropdown select').select(subsidaryToView.name);
+
+    cy.url().should('contain', 'dashboard');
+    cy.get('h1').should('contain', subsidaryToView.name);
+
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
+
+    cy.reload();
   });
 
   afterEach(() => {
@@ -34,18 +42,5 @@ describe('Standalone workplace page as edit user', { tags: '@workplace' }, () =>
     cy.deleteTestWorkerFromDb(workerName);
   });
 
-  it('should see the standalone establishment workplace page', () => {
-    cy.url().should('include', '#workplace');
-    cy.contains('Workplace');
-  });
-
-  it('should show all sections', () => {
-    onWorkplacePage.allSectionsAreVisible();
-  });
-
-  it('All sections have a change link', () => {
-    onWorkplacePage.allSectionsAreChangeable();
-  });
-
-  runTestsForWorkplaceQuestions(StandAloneEstablishment);
+  runTestsForWorkplaceQuestions(subsidaryToView);
 });
