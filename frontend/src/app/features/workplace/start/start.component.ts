@@ -14,12 +14,10 @@ import { take } from 'rxjs/operators';
 })
 export class StartComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
-  public returnLink: Array<string>;
   public returnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
   private fragment: string;
   public isViewingSubAsParent: boolean;
-  public continueUrl: Array<string>;
 
   constructor(
     public backService: BackService,

@@ -15,7 +15,7 @@ describe('StartComponent (workplace)', () => {
   async function setup(navigatedFromFragment = '') {
     navigatedFromFragment ? history.pushState({ navigatedFromFragment }, '') : history.replaceState({}, '');
 
-    const { fixture, getByText } = await render(StartComponent, {
+    const { fixture, getByText, getByTestId } = await render(StartComponent, {
       imports: [RouterModule, WorkplaceModule],
       providers: [
         BackService,
@@ -35,7 +35,7 @@ describe('StartComponent (workplace)', () => {
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByText, routerSpy, establishmentService };
+    return { component, fixture, getByTestId, getByText, routerSpy, establishmentService };
   }
 
   it('should render a StartComponent', async () => {
@@ -43,6 +43,110 @@ describe('StartComponent (workplace)', () => {
 
     expect(component).toBeTruthy();
   });
+
+  it('should display the main heading', async () => {
+    const { getByTestId } = await setup();
+    const heading = getByTestId('heading')
+
+    expect(heading.textContent).toEqual('Add more details about your workplace');
+  })
+
+  it('should display the details text', async () => {
+    const { getByTestId } = await setup();
+    const detailsText = getByTestId('details-text')
+
+    const text =
+      `We'll ask you a maximum of 25 questions. If necessary, you can skip questions and answer them later in the Workplace section of ASC-WDS.`
+
+    expect(detailsText.textContent.trim()).toEqual(text);
+  })
+
+  describe('Services section', ()=> {
+    it('should display the heading', async () => {
+      const { getByTestId } = await setup();
+      const heading = getByTestId('services-heading')
+
+      expect(heading.textContent).toEqual('Services');
+    })
+
+    it('should display the text', async () => {
+      const { getByTestId } = await setup();
+      const text = getByTestId('services-text')
+      const textContent =
+        'Questions about your services and who uses them, and whether your non-nursing staff carry out delegated healthcare activities?'
+
+      expect(text.textContent.trim()).toEqual(textContent);
+    })
+  })
+
+  describe('Vacancies and turnover section', ()=> {
+    it('should display the heading', async () => {
+      const { getByTestId } = await setup();
+      const heading = getByTestId('vacancies-heading')
+
+      expect(heading.textContent).toEqual('Vacancies and turnover');
+    })
+
+    it('should display the text', async () => {
+      const { getByTestId } = await setup();
+      const text = getByTestId('vacancies-text')
+      const textContent =
+        'Questions like whether you have any staff vacancies, and whether you’ve had any starters or leavers in the last 12 months?'
+
+      expect(text.textContent.trim()).toEqual(textContent);
+    })
+  })
+
+  describe('Pay and benefits section', ()=> {
+    it('should display the heading', async () => {
+      const { getByTestId } = await setup();
+      const heading = getByTestId('pay-heading')
+
+      expect(heading.textContent).toEqual('Pay and benefits');
+    })
+
+    it('should display the text', async () => {
+      const { getByTestId } = await setup();
+      const text = getByTestId('pay-text')
+      const textContent = 'Questions about things like annual leave, workplace pensions and rates of pay.'
+
+      expect(text.textContent.trim()).toEqual(textContent);
+    })
+  })
+
+  describe('Staff development section', ()=> {
+    it('should display the heading', async () => {
+      const { getByTestId } = await setup();
+      const heading = getByTestId('staff-heading')
+
+      expect(heading.textContent).toEqual('Staff development');
+    })
+
+    it('should display the text', async () => {
+      const { getByTestId } = await setup();
+      const text = getByTestId('staff-text')
+      const textContent = 'Questions about the care workforce pathway, training and Care Certificates.'
+
+      expect(text.textContent.trim()).toEqual(textContent);
+    })
+  })
+
+  describe('Permissions section', ()=> {
+    it('should display the heading', async () => {
+      const { getByTestId } = await setup();
+      const heading = getByTestId('permissions-heading')
+
+      expect(heading.textContent).toEqual('Permissions');
+    })
+
+    it('should display the text', async () => {
+      const { getByTestId } = await setup();
+      const text = getByTestId('permissions-text')
+      const textContent = 'Whether we can share your data with the CQC and local authorities or not?'
+
+      expect(text.textContent.trim()).toEqual(textContent);
+    })
+  })
 
   it('should navigate to type of employer page after clicking continue button', async () => {
     const { component, getByText, routerSpy } = await setup();
