@@ -18,6 +18,7 @@ describe('DoYouHaveLeaversComponent', () => {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 1);
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
+
   async function setup(overrides: any = {}) {
     const setupTools = await render(DoYouHaveLeaversComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -333,7 +334,13 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-leaver-job-roles']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'workplace-summary',
+        'select-leaver-job-roles',
+      ]);
     });
 
     it("should navigate to the workplace summary page when submitting 'None'", async () => {

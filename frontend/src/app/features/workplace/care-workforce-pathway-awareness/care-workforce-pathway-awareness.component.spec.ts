@@ -140,11 +140,17 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     });
   });
 
-  describe('outside the flow', () => {
+  describe('outside the flow (when coming from workplace summary)', () => {
     it('should set the previous page to accept-previous-care-certificate page', async () => {
       const { component } = await setup({ returnToUrl: true });
 
-      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'accept-previous-care-certificate']);
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'workplace-summary',
+        'accept-previous-care-certificate',
+      ]);
     });
   });
 
@@ -247,7 +253,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
       });
     });
 
-    describe('outside the flow', () => {
+    describe('outside the flow (come from workplace summary)', () => {
       it("should show 'Save' button and 'Cancel' link", async () => {
         const { getByText } = await setup({ returnToUrl: true });
 
@@ -284,7 +290,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
             careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'care-workforce-pathway-use']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            workplaceId,
+            'workplace-data',
+            'workplace-summary',
+            'care-workforce-pathway-use',
+          ]);
         });
       });
 
