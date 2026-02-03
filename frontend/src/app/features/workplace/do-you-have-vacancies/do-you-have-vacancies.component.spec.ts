@@ -14,9 +14,6 @@ import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 
 fdescribe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
-    const inWorkplaceFlow = overrides?.inWorkplaceFlow ?? false;
-    const returnToUrl = inWorkplaceFlow ? false : (overrides?.returnUrl ?? true);
-
     const setupTools = await render(DoYouHaveVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
@@ -25,7 +22,7 @@ fdescribe('DoYouHaveVacanciesComponent', () => {
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory({
-            returnToUrl,
+            returnToUrl: overrides?.returnUrl ?? true,
             establishment: overrides?.workplace,
           }),
         },
@@ -49,12 +46,6 @@ fdescribe('DoYouHaveVacanciesComponent', () => {
     const establishmentServiceSpy = spyOn(establishmentService, 'updateJobs').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
-    if (inWorkplaceFlow) {
-      spyOnProperty(router, 'url', 'get').and.returnValue(
-        '/workplace-data/add-workplace-details/do-you-have-vacancies',
-      );
-    }
 
     return {
       component,
@@ -119,7 +110,7 @@ fdescribe('DoYouHaveVacanciesComponent', () => {
     describe('in workplace flow', () => {
       it('should set the previous page to service-users page when main service cannot do delegated healthcare activities', async () => {
         const overrides = {
-          inWorkplaceFlow: true,
+          returnUrl: false,
           workplace: {
             mainService: {
               canDoDelegatedHealthcareActivities: null,
@@ -141,9 +132,9 @@ fdescribe('DoYouHaveVacanciesComponent', () => {
         ]);
       });
 
-      fit('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
+      it('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
         const overrides = {
-          inWorkplaceFlow: true,
+          returnUrl: false,
           workplace: {
             mainService: {
               canDoDelegatedHealthcareActivities: true,
