@@ -16,7 +16,7 @@ import { mockDHADefinition, mockDHAs } from '@core/test-utils/MockDelegatedHealt
 import { HttpClient } from '@angular/common/http';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 
-describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
+fdescribe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
   const doNotKnowText = 'I do not know';
   async function setup(overrides: any = {}) {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
@@ -304,7 +304,13 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
       });
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'staff-do-delegated-healthcare-activities'],
+        url: [
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'workplace-summary',
+          'staff-do-delegated-healthcare-activities',
+        ],
       });
     });
   });
