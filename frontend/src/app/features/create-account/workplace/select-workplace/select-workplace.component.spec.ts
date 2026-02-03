@@ -13,7 +13,7 @@ import { BehaviorSubject, of, throwError } from 'rxjs';
 import { RegistrationModule } from '../../../registration/registration.module';
 import { SelectWorkplaceComponent } from './select-workplace.component';
 
-fdescribe('SelectWorkplaceComponent', () => {
+describe('SelectWorkplaceComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(SelectWorkplaceComponent, {
       imports: [SharedModule, RouterModule, RegistrationModule, FormsModule, ReactiveFormsModule],

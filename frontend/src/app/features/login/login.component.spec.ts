@@ -16,7 +16,7 @@ import { of, throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
 
-fdescribe('LoginComponent', () => {
+describe('LoginComponent', () => {
   async function setup(overrides = {}) {
     const isAdmin: boolean = ('isAdmin' in overrides ? overrides.isAdmin : false) as boolean;
     const employerTypeSet: boolean = ('employerTypeSet' in overrides ? overrides.employerTypeSet : true) as boolean;

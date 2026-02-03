@@ -12,7 +12,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 
-fdescribe('DoYouHaveVacanciesComponent', () => {
+describe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(DoYouHaveVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],

@@ -8,11 +8,10 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WorkplaceNotFoundComponent } from './workplace-not-found.component';
-import { getTestBed } from '@angular/core/testing';
 import { BackService } from '@core/services/back.service';
 import { RouterTestingHarness } from '@angular/router/testing';
 
-fdescribe('WorkplaceNotFoundComponent', () => {
+describe('WorkplaceNotFoundComponent', () => {
   const workplaceUid = 'abc131355543435';
 
   async function setup() {

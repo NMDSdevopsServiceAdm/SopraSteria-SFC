@@ -29,7 +29,7 @@ import { AlertService } from '@core/services/alert.service';
 import { of } from 'rxjs';
 import { CancelOwnerShip, Establishment } from '@core/model/establishment.model';
 
-fdescribe('workplace-info-panel', () => {
+describe('workplace-info-panel', () => {
   const establishment = workplaceBuilder() as Workplace;
   const setup = async (overrides: any = {}) => {
     const isAdmin = overrides?.isAdmin ? true : false;
