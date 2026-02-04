@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, computed, Directive, ElementRef, OnDestroy, OnInit, Signal, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { NavigationExtras, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -35,6 +35,16 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   protected initiated = false;
   public submitAction: { action: string; save: boolean } = null;
   public workplaceFlowSections: string[] = ProgressBarUtil.workplaceFlowProgressBarSections();
+
+  private _isInAddDetailsFlow: Signal<boolean> = computed(() => {
+    return this.router.url.includes('add-workplace-details');
+  });
+
+  private _visitedFromWorkplaceSummary: Signal<boolean> = computed(() => {
+    const returnUrlMatchWorkplaceSummary =
+      this.return && isEqual(this.return, { url: ['/dashboard'], fragment: 'workplace' });
+    return this.router.url.includes('workplace-summary') || returnUrlMatchWorkplaceSummary;
+  });
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -113,13 +123,11 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public get isInAddDetailsFlow(): boolean {
-    return this.router.url.includes('add-workplace-details') || !this.return;
+    return this._isInAddDetailsFlow();
   }
 
   public get visitedFromWorkplaceSummary(): boolean {
-    const returnUrlMatchWorkplaceSummary =
-      this.return && isEqual(this.return, { url: ['/dashboard'], fragment: 'workplace' });
-    return this.router.url.includes('workplace-summary') || returnUrlMatchWorkplaceSummary;
+    return this._visitedFromWorkplaceSummary();
   }
 
   private get baseRoute(): string[] {
