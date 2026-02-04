@@ -449,7 +449,20 @@ const addWorkplaceDetails: Route = {
 
 const workplaceSummary: Route = {
   path: 'workplace-summary',
-  children: [...workplaceSummaryOnlyPages, ...workplaceQuestionsSharedByFlowAndSummary],
+  children: [
+    ...workplaceSummaryOnlyPages,
+    ...workplaceQuestionsSharedByFlowAndSummary,
+
+    // redirection to address possible broken link on page refresh
+    {
+      path: 'do-you-have-vacancies',
+      redirectTo: 'update-vacancies',
+    },
+    {
+      path: 'how-many-leavers',
+      redirectTo: 'update-leavers',
+    },
+  ],
 };
 
 export const workplaceQuestionsForFundingPage: Routes = [...workplaceSummary.children];
