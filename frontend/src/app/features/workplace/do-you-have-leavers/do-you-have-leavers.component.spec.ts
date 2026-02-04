@@ -13,6 +13,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers.component';
 import { FormatUtil } from '@core/utils/format-util';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('DoYouHaveLeaversComponent', () => {
   const today = new Date();
@@ -20,9 +21,12 @@ describe('DoYouHaveLeaversComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
 
   async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnUrl;
+
     const setupTools = await render(DoYouHaveLeaversComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         WindowRef,
         UntypedFormBuilder,
         {

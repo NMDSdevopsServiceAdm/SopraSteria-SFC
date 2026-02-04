@@ -15,12 +15,15 @@ import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles.compo
 import { MockJobRoles } from '@core/test-utils/MockJobService';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('SelectVacancyJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
 
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
+    const isInAddDetailsFlow = !returnToUrl;
+
     const vacanciesFromDatabase = override.vacanciesFromDatabase ?? null;
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
     const selectedVacancies = override.selectedVacancies ?? null;
@@ -28,6 +31,7 @@ describe('SelectVacancyJobRolesComponent', () => {
     const renderResults = await render(SelectVacancyJobRolesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,

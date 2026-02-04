@@ -21,6 +21,7 @@ import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcare-activities.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   const labels = ['Yes', 'No', 'I do not know'];
@@ -33,9 +34,12 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
     const workerHasDHAAnswered = overrides.someWorkersHasDHAAnswered ?? true;
 
+    const isInAddDetailsFlow = !overrides?.establishmentService?.returnTo;
+
     const setupTools = await render(StaffDoDelegatedHealthcareActivitiesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
