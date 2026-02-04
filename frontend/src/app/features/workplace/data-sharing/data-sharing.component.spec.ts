@@ -13,14 +13,18 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { DataSharingComponent } from './data-sharing.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('DataSharingComponent', () => {
   async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnUrl;
+
     const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
       DataSharingComponent,
       {
         imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
         providers: [
+          patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
           ErrorSummaryService,
           BackService,
           UntypedFormBuilder,

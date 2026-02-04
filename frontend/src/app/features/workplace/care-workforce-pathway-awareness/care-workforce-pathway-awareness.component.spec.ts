@@ -18,15 +18,19 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
 
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('CareWorkforcePathwayAwarenessComponent', () => {
   const awareAnswers = careWorkforcePathwayAwarenessAnswers.slice(0, 3);
   const notAwareAnswers = careWorkforcePathwayAwarenessAnswers.slice(3, 5);
 
   async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnToUrl;
+
     const setupTools = await render(CareWorkforcePathwayAwarenessComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,

@@ -19,6 +19,7 @@ import { repeat } from 'lodash';
 import { of, throwError } from 'rxjs';
 
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
@@ -41,11 +42,13 @@ describe('CareWorkforcePathwayUseComponent', () => {
   const setup = async (overrides: any = {}) => {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
-    const currentUrl = overrides?.currentUrl ?? '/';
+
+    const isInAddDetailsFlow = !overrides?.establishmentService?.returnTo;
 
     const setupTools = await render(CareWorkforcePathwayUseComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
@@ -59,7 +62,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
           provide: Router,
           useFactory: MockRouter.factory({
             navigate: routerSpy,
-            url: currentUrl,
           }),
         },
         {
@@ -345,7 +347,9 @@ describe('CareWorkforcePathwayUseComponent', () => {
   });
 
   describe('when in new workplace workflow', async () => {
-    const overrides = { establishmentService: { returnTo: null } };
+    const overrides = {
+      establishmentService: { returnTo: null },
+    };
 
     it('should show a progress bar', async () => {
       const { getByTestId } = await setup(overrides);
@@ -419,7 +423,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
 
   describe('When coming from summary panel', () => {
     const workplaceName = 'Test workplace name';
-    const currentUrl = '/workplace/mocked-uid/workplace-data/workplace-summary/care-workforce-pathway-use';
 
     const comingFromSummaryPanelOverrides = {
       establishmentService: {
@@ -427,7 +430,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
         establishment: { name: workplaceName },
       },
       previousPage: 'care-workforce-pathway-awareness',
-      currentUrl,
     };
 
     it('should display banner when user submits and return is to home page', async () => {
@@ -471,7 +473,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
       url: ['/dashboard'],
       fragment: 'workplace',
     };
-    const currentUrl = '/workplace/mocked-uid/workplace-data/workplace-summary/care-workforce-pathway-use';
 
     it('should set backlink to returnTo when directly visited from workplace summary', async () => {
       const { backServiceSpy } = await setup({
@@ -479,7 +480,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
         establishmentService: {
           returnTo,
         },
-        currentUrl,
       });
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith(returnTo);
@@ -491,7 +491,6 @@ describe('CareWorkforcePathwayUseComponent', () => {
         establishmentService: {
           returnTo,
         },
-        currentUrl,
       });
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({

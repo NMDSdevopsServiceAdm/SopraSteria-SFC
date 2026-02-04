@@ -13,6 +13,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveStartersComponent } from './do-you-have-starters.component';
 import { FormatUtil } from '@core/utils/format-util';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('DoYouHaveStartersComponent', () => {
   const today = new Date();
@@ -20,9 +21,12 @@ describe('DoYouHaveStartersComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
 
   async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnUrl;
+
     const setupTools = await render(DoYouHaveStartersComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         WindowRef,
         UntypedFormBuilder,
         {

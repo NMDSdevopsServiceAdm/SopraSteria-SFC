@@ -11,12 +11,16 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnUrl;
+
     const setupTools = await render(DoYouHaveVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         WindowRef,
         UntypedFormBuilder,
         {

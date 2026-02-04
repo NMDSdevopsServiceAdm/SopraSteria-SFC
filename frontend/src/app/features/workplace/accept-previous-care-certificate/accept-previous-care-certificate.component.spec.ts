@@ -10,14 +10,18 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('AcceptPreviousCareCertificateComponent', () => {
   async function setup(returnUrl = true, acceptCareCertificate = undefined) {
+    const isInAddDetailsFlow = !returnUrl;
+
     const { fixture, getByText, getByLabelText, getByTestId, queryByTestId } = await render(
       AcceptPreviousCareCertificateComponent,
       {
         imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
+          patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
           UntypedFormBuilder,
           {
             provide: EstablishmentService,
@@ -124,9 +128,8 @@ describe('AcceptPreviousCareCertificateComponent', () => {
     });
 
     it('should navigate to the sharing-data page when skip the question', async () => {
-      const { fixture, getByText, routerSpy, component } = await setup();
+      const { fixture, getByText, routerSpy, component } = await setup(false);
 
-      component.return = null;
       fixture.detectChanges();
 
       const link = getByText('Skip this question');
