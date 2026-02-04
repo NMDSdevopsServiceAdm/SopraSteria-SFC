@@ -1,6 +1,7 @@
 services:
   sfc-e2e-db:
     image: public.ecr.aws/docker/library/postgres:13
+    attach: false
     container_name: sfc-e2e-db
     build:
       context: ./docker
@@ -20,6 +21,7 @@ services:
 
   frontend_backend:
     image: public.ecr.aws/docker/library/node:22-alpine
+    attach: false
     container_name: frontend_backend
     working_dir: /app
     depends_on:
@@ -47,6 +49,7 @@ services:
 
   sfc-redis:
     image: public.ecr.aws/docker/library/redis
+    attach: false
     ports:
       - '6379:6379'
 
@@ -58,7 +61,7 @@ services:
         condition: service_healthy
     volumes:
       - ./frontend:/frontend
-    entrypoint: ["cypress", "run", "--spec", "${CYPRESS_PATH}"]
+    entrypoint: ["cypress", "run", "--env", "grepTags=${TAGS},grepFilterSpecs=true"]
     env_file:
       - .env
     environment:

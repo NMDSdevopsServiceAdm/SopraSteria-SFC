@@ -2,7 +2,7 @@
 /// <reference types="cypress" />
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 
-describe('Standalone home page as edit user', () => {
+describe('Parent workplace page as read only user', { tags: '@workplace' }, () => {
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('readOnlyParentUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();

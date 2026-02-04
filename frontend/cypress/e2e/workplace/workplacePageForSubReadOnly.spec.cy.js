@@ -3,7 +3,7 @@
 import { SubEstablishment } from '../../support/mockEstablishmentData';
 import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 
-describe('Standalone home page as edit user', () => {
+describe('Sub workplace page as read only user', { tags: '@workplace' }, () => {
   const establishmentId = SubEstablishment.id;
 
   before(() => {
@@ -13,9 +13,9 @@ describe('Standalone home page as edit user', () => {
   });
 
   beforeEach(() => {
+    cy.reload();
     cy.loginAsUser(Cypress.env('readOnlySubUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Workplace').click();
-    cy.reload();
   });
 
   after(() => {

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
-describe('Admin home page', () => {
+describe('Admin home page', { tags: '@admin' }, () => {
   beforeEach(() => {
     cy.loginAsAdmin();
   });

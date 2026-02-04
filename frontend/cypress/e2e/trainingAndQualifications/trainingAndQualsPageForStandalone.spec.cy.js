@@ -4,7 +4,7 @@ import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 import { onTrainingAndQualsPage } from '../../support/page_objects/onTrainingAndQualsPage';
 
-describe('Standalone training and qualifications page as edit user', () => {
+describe('Standalone training and qualifications page as edit user', { tags: '@trainingAndQualifications' }, () => {
   const workerName = 'Cypress test worker';
   const establishmentID = StandAloneEstablishment.id;
 

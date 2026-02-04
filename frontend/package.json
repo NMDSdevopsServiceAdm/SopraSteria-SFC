@@ -74,6 +74,7 @@
     "@angular-eslint/template-parser": "^20.3.0",
     "@angular/cdk": "^20.2.5",
     "@angular/language-service": "^20.3.2",
+    "@cypress/grep": "^5.1.0",
     "@jackfranklin/test-data-bot": "^1.3.0",
     "@lhci/cli": "^0.14.0",
     "@ngx-builders/analyze": "^3.0.1",

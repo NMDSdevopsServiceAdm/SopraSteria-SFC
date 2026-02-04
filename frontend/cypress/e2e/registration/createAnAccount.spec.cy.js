@@ -10,7 +10,7 @@ import { fillUserRegistrationForm } from '../../support/page_objects/userRegistr
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
-describe('Create account', () => {
+describe('Create account', { tags: '@registration' }, () => {
   const userFullName = 'Test new workplace primary user for cypress';
   const loginId = 'cypress-test-user-0001';
   const mockPassword = 'Some-very-super-strong-p@ssw0rd';
