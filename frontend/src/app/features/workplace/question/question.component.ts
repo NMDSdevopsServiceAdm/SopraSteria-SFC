@@ -81,7 +81,13 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   }
 
   protected setBackLink(): void {
-    this.back = this.return ? this.return : { url: this.previousRoute };
+    if (this.return) {
+      this.back = this.return;
+    } else {
+      this.back = this.isInAddDetailsFlow
+        ? { url: this.previousRoute }
+        : { url: ['/dashboard'], fragment: 'workplace' };
+    }
     this.backService.setBackLink(this.back);
   }
 
