@@ -29,6 +29,7 @@ import { WorkplaceNotFoundComponent } from '../create-account/workplace/workplac
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
 import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
+import { UserResearchInviteComponent } from '@features/create-account/user/user-research-invite/user-research-invite.component';
 
 const routes: Routes = [
   {
@@ -111,6 +112,12 @@ const routes: Routes = [
     component: SecurityQuestionComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Create your security question' },
+  },
+  {
+    path: 'user-research-invite',
+    component: UserResearchInviteComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Select if you would like to take part in user research' },
   },
   {
     path: 'confirm-account-details',

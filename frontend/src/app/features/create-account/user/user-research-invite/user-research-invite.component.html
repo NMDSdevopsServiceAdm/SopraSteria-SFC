@@ -1,0 +1,59 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <span data-testid="caption" class="govuk-caption-l">User accounts</span>
+      <h1 data-testid="heading" class="govuk-heading-l">Would you like to take part in our user research sessions?</h1>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <div data-testid="text">
+        <p class="govuk-body govuk-!-margin-bottom-2">We’d like your help and it doesn’t matter if you’re new to ASC-WDS.</p>
+        <p class="govuk-body govuk-!-margin-bottom-7">If you want to take part, select Yes so that a user researcher from our digital partner can contact you.</p>
+      </div>
+    </div>
+    <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-2">
+      <app-details [title]="detailsTitle">
+        <p data-testid="details-text-one" class="govuk-body asc__negative-margin-right-4">
+          {{ detailsTextOne }}
+        </p>
+        <p data-testid="details-text-two" class="govuk-body">
+          {{ detailsTextTwo }}
+        </p>
+      </app-details>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group">
+        <div class="govuk-radios" data-module="govuk-radios">
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="inviteResponse"
+              name="inviteResponse"
+              type="radio"
+              value="yes"
+              [formControlName]="'inviteResponse'"
+            />
+            <label class="govuk-label govuk-radios__label" for="inviteResponse">Yes</label>
+          </div>
+          <div class="govuk-radios__item">
+            <input
+              class="govuk-radios__input"
+              id="inviteResponse-2"
+              name="inviteResponse"
+              type="radio"
+              value="no"
+              [formControlName]="'inviteResponse'"
+            />
+            <label class="govuk-label govuk-radios__label" for="inviteResponse-2"> No </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-button-group">
+        <button type="submit" class="govuk-button continue-button" data-module="govuk-button">
+          Continue
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
