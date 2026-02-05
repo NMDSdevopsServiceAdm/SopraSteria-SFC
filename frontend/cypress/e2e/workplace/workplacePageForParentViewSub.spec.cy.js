@@ -1,10 +1,9 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 import { ParentEstablishment, SubEstablishmentNotDataOwner } from '../../support/mockEstablishmentData';
-import { onWorkplacePage } from '../../support/page_objects/onWorkplacePage';
 import { runTestsForWorkplaceQuestions } from './runTestsForWorkplaceQuestions';
 
-describe('Workplace page for Parent viewing subsidiary', () => {
+describe('Workplace page for Parent viewing subsidiary', { tags: '@workplace' }, () => {
   const subsidaryToView = SubEstablishmentNotDataOwner;
   const establishmentId = subsidaryToView.id;
 
