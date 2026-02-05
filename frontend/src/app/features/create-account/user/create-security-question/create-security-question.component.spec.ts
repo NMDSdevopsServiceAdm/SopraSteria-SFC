@@ -80,7 +80,7 @@ describe('SecurityQuestionComponent', () => {
     expect(component.getByText('Continue')).toBeTruthy();
   });
 
-  it('should show the Save and return button and a cancel link when inside the flow', async () => {
+  it('should show the Save and return button and a cancel link when outside the flow', async () => {
     const { component } = await setup();
 
     component.fixture.componentInstance.insideFlow = false;
@@ -159,7 +159,7 @@ describe('SecurityQuestionComponent', () => {
     expect(component.getAllByText('Answer must be 255 characters or fewer', { exact: false }).length).toBe(2);
   });
 
-  it('should navigate to confirm-details if form is valid', async () => {
+  it('should navigate to user-research-invite if form is valid', async () => {
     const { component, spy } = await setup();
     const form = component.fixture.componentInstance.form;
 
@@ -175,7 +175,7 @@ describe('SecurityQuestionComponent', () => {
     fireEvent.click(continueButton);
 
     expect(form.valid).toBeTruthy();
-    expect(spy).toHaveBeenCalledWith(['/registration/confirm-details']);
+    expect(spy).toHaveBeenCalledWith(['/registration/user-research-invite']);
   });
 
   it('should navigate to confirm-details when submitting form and not in the flow', async () => {

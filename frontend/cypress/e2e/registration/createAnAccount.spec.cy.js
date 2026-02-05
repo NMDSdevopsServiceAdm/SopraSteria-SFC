@@ -92,8 +92,14 @@ describe('Create account', { tags: '@registration' }, () => {
 
     fillUserRegistrationForm({ username: loginId, password: mockPassword });
 
-    cy.get('input#termsAndConditions').check();
+    // User research invite
+    cy.get('h1').contains('Would you like to take part in our user research sessions?').should('be.visible');
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Continue').click();
 
+    // Summary page
+    cy.get('h1').contains('Test workplace for cypress').should('be.visible');
+    cy.get('input#termsAndConditions').check();
     cy.get('button').contains('Submit details').click();
 
     cy.get('span').contains('Your account is now being checked by Skills for Care').should('be.visible');
