@@ -12,7 +12,7 @@ describe('server/routes/admin/search/groups', () => {
 
     sinon.stub(models.establishment, 'findAll').returns([
       {
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+        uid: 'ad3bb1234455666',
         NameValue: '123444',
         nmdsId: 'J1002343',
         locationId: '1-23456789',
@@ -28,13 +28,13 @@ describe('server/routes/admin/search/groups', () => {
         EmployerTypeOther: null,
         Parent: {
           id: 1,
-          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
+          uid: 'ad3b12345678',
           nmdsId: 'W-1234567',
         },
         Subsidiaries: [{ NameValue: 'Sub Care Home' }],
         users: [
           {
-            uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+            uid: 'ad3bb1234455666',
             FullNameValue: 'Test Name',
             SecurityQuestionValue: 'Test Security Question',
             SecurityQuestionAnswerValue: 'Test Security Question Answer',
@@ -84,7 +84,7 @@ describe('server/routes/admin/search/groups', () => {
     expect(searchEstablishments.called).to.deep.equal(true);
     expect(response).to.deep.equal([
       {
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+        uid: 'ad3bb1234455666',
         name: '123444',
         nmdsId: 'J1002343',
         locationId: '1-23456789',
@@ -101,12 +101,12 @@ describe('server/routes/admin/search/groups', () => {
         isRegulated: false,
         dataOwner: 'Workplace',
         parent: {
-          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
+          uid: 'ad3b12345678',
           nmdsId: 'W-1234567',
         },
         users: [
           {
-            uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+            uid: 'ad3bb1234455666',
             username: 'thisperson9',
             name: 'Test Name',
             securityQuestion: 'Test Security Question',
@@ -153,7 +153,7 @@ describe('server/routes/admin/search/groups', () => {
     expect(searchEstablishments.args[0][0].isParent).to.deep.equal(true);
     expect(response).to.deep.equal([
       {
-        uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+        uid: 'ad3bb1234455666',
         name: '123444',
         nmdsId: 'J1002343',
         locationId: '1-23456789',
@@ -170,12 +170,12 @@ describe('server/routes/admin/search/groups', () => {
         isRegulated: false,
         dataOwner: 'Workplace',
         parent: {
-          uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c49f',
+          uid: 'ad3b12345678',
           nmdsId: 'W-1234567',
         },
         users: [
           {
-            uid: 'ad3bbca7-2913-4ba7-bb2d-01014be5c48f',
+            uid: 'ad3bb1234455666',
             username: 'thisperson9',
             name: 'Test Name',
             securityQuestion: 'Test Security Question',
