@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { ParentEstablishment } from '../../../support/mockEstablishmentData';
-import { onHomePage } from '../../../support/page_objects/onHomePage';
+import { ParentEstablishment } from '../../support/mockEstablishmentData';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 
-describe('Parent home page as edit user', () => {
+describe('Parent home page as read only user', { tags: '@home' }, () => {
   beforeEach(() => {
-    cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
+    cy.loginAsUser(Cypress.env('readOnlyParentUser'), Cypress.env('userPassword'));
   });
 
   it('should see the parent establishment home page', () => {
@@ -17,8 +17,8 @@ describe('Parent home page as edit user', () => {
     cy.get('[data-cy="summary-section"]').should('contain', 'Your other workplaces');
   });
 
-  it('should show all tabs', () => {
-    onHomePage.allTabs();
+  it('should show tabs', () => {
+    onHomePage.allTabs('read');
   });
 
   it('should show funding link', () => {
@@ -29,7 +29,7 @@ describe('Parent home page as edit user', () => {
     cy.get('[data-cy="cards-and-links"]').should('contain', 'Bulk upload your data');
   });
 
-  it('should show download reports', () => {
-    cy.get('[data-cy="download-report"]').should('exist');
+  it('should not show download reports', () => {
+    cy.get('[data-cy="download-report"]').should('not.exist');
   });
 });

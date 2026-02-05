@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
-describe('Help pages', () => {
+describe('Help pages', { tags: '@others' }, () => {
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
   });

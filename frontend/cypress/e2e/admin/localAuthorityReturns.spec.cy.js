@@ -1,4 +1,4 @@
-describe('Local authority returns page', () => {
+describe('Local authority returns page', { tags: '@admin' }, () => {
   beforeEach(() => {
     cy.loginAsAdmin();
     cy.get('a[href="/sfcadmin/local-authorities-return"]').click();

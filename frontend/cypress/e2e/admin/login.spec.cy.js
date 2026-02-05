@@ -2,7 +2,7 @@
 import { onLoginPage } from '../../support/page_objects/onLoginPage';
 
 /* eslint-disable no-undef */
-describe('As an admin I want to login', () => {
+describe('As an admin I want to login', { tags: '@admin' }, () => {
   beforeEach(() => {
     cy.openLoginPage();
   });

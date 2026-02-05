@@ -1,12 +1,12 @@
-import { MockNewEstablishment } from '../../../support/mockEstablishmentData';
+import { MockNewEstablishment } from '../../support/mockEstablishmentData';
 import {
   approveRegistrationRequestAsAdmin,
   fillInAddress,
   inputLocationOrPostcode,
-} from '../../../support/page_objects/createNewWorkplaceForms';
-import { onHomePage } from '../../../support/page_objects/onHomePage';
+} from '../../support/page_objects/createNewWorkplaceForms';
+import { onHomePage } from '../../support/page_objects/onHomePage';
 
-describe('Parent "Your other workplaces" page as edit user', () => {
+describe('Parent "Your other workplaces" page as edit user', { tags: '@others' }, () => {
   const workplaceName = 'Cypress test - adding new sub workplace';
 
   before(() => {
@@ -14,6 +14,7 @@ describe('Parent "Your other workplaces" page as edit user', () => {
   });
 
   beforeEach(() => {
+    cy.reload();
     cy.loginAsUser(Cypress.env('editParentUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Home').click();
     cy.get('a').contains('Your other workplaces').click();
@@ -61,8 +62,12 @@ describe('Parent "Your other workplaces" page as edit user', () => {
     cy.get('a').contains('Your other workplaces').click();
     cy.get('a').contains(workplaceName).should('be.visible');
 
+    cy.intercept('GET', '/api/establishment/*').as('establishment');
+
     cy.get('a').contains(workplaceName).click();
     onHomePage.clickTab('Workplace');
+
+    cy.wait('@establishment');
 
     cy.contains('Start to add more details about your workplace').should('be.visible');
   });

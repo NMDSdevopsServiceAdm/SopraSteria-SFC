@@ -33,7 +33,7 @@ const fetchAllTrainingCourses = async (req, res) => {
       ],
 
       attributes: { exclude: ['establishmentFk'] },
-      order: [['updated', 'DESC']],
+      order: [[sequelize.fn('LOWER', sequelize.col('trainingCourse.Name')), 'ASC']],
     });
 
     const trainingCourses = recordsFound.map((record) => record.toJSON()).map(renameKeys);
@@ -81,7 +81,10 @@ const getTrainingCoursesWithLinkableRecords = async (req, res) => {
 
     const showCoursesWithLinkableRecordFirst = (course) => (course.linkableTrainingRecords?.length > 0 ? 1 : 2);
 
-    const sorted = lodash.sortBy(trainingCoursesWithLinkableRecords, [showCoursesWithLinkableRecordFirst, 'name']);
+    const sorted = lodash.sortBy(trainingCoursesWithLinkableRecords, [
+      showCoursesWithLinkableRecordFirst,
+      (record) => record.name && record.name.toLowerCase(),
+    ]);
 
     const responseBody = { trainingCourses: sorted };
 

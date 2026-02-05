@@ -9,6 +9,24 @@ env:
     POSTGRES_PASSWORD: /bnd/e2e-test-db-password
     POSTGRES_DB: /bnd/e2e-test-db-name
 
+batch:
+  fast-fail: false
+  build-matrix:
+    static:
+      ignore-failure: false
+    dynamic:
+      env:
+        variables:
+          CY_GROUP_TAGS:
+            - '@funding @changeDataPermissions'
+            - '@trainingAndQualifications @home'
+            - '@workplace'
+            - '@admin @benchmarks @others @registration'
+            - '@staffRecords'
+            - '@dha @trainingCourses'
+          WORKERS:
+            - 1
+
 phases:
   pre_build:
     commands:
@@ -19,7 +37,6 @@ phases:
       - npm install --prefix backend &
       - wait
       - npm install -g sequelize-cli
-
   build:
     commands:
-      - make test-e2e-inside-docker
+      - TAGS=${CY_GROUP_TAGS} docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
