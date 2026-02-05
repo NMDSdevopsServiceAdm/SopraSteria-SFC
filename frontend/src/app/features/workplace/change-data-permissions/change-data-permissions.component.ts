@@ -36,7 +36,6 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
   public parentName: string;
   public parentUid: string;
   public posssesivePronounText: string;
-  public childWorkplaces: Workplace[];
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
@@ -55,7 +54,6 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
 
   ngOnInit() {
     this.uidToChangeDataPermissionsFor = this.route.snapshot?.queryParams?.changeDataPermissionsFor;
-    this.childWorkplaces = this.route.snapshot.data?.childWorkplaces?.childWorkplaces;
     this.workplace = this.route.snapshot.data.establishment;
 
     this.isParent = this.workplace?.isParent;
@@ -123,12 +121,10 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
   }
 
   public getWorkplaceToChangeDataPermissionsFor(): void {
-    if (this.uidToChangeDataPermissionsFor && this.childWorkplaces.length > 0) {
-      const childWorkplace = this.childWorkplaces.find(
-        (workplace) => workplace?.uid === this.uidToChangeDataPermissionsFor,
-      );
-
-      this.setupVariables(childWorkplace);
+    if (this.uidToChangeDataPermissionsFor) {
+      this.establishmentService.getEstablishment(this.uidToChangeDataPermissionsFor).subscribe((workplace) => {
+        this.setupVariables(workplace);
+      });
     } else {
       this.setupVariables(this.workplace);
     }
