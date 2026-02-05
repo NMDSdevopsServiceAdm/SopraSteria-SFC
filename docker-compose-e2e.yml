@@ -54,7 +54,7 @@ services:
       - '6379:6379'
 
   cypress:
-    image: public.ecr.aws/cypress-io/cypress/included
+    image: public.ecr.aws/cypress-io/cypress/included:13.17.0
     working_dir: /frontend
     depends_on:
       frontend_backend:
