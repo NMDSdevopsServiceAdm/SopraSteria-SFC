@@ -52,7 +52,13 @@ describe('StartComponent (workplace)', () => {
 
     fireEvent.click(continueButton);
 
-    expect(routerSpy).toHaveBeenCalledWith(['workplace', workplaceUid, 'other-services']);
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'workplace-data',
+      'add-workplace-details',
+      'other-services',
+    ]);
   });
 
   it('should call the updateSingleEstablishmentField when clicking the Continue button', async () => {

@@ -38,7 +38,7 @@ describe('HowManyStartersComponent', () => {
     const availableJobs = override.availableJobs;
     const workplace = override.workplace ?? {};
 
-    const selectedJobRoles = override.noLocalStorageData ? null : override.selectedJobRoles ?? mockSelectedJobRoles;
+    const selectedJobRoles = override.noLocalStorageData ? null : (override.selectedJobRoles ?? mockSelectedJobRoles);
 
     const renderResults = await render(HowManyStartersComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -64,7 +64,9 @@ describe('HowManyStartersComponent', () => {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedStarters: selectedJobRoles }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = renderResults.fixture.componentInstance;
@@ -251,7 +253,13 @@ describe('HowManyStartersComponent', () => {
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-leavers']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-leavers',
+        ]);
       });
 
       it('should clear the selected job roles stored in service after submit', async () => {
@@ -329,14 +337,26 @@ describe('HowManyStartersComponent', () => {
     it('should navigate to "Do you have starters" page if failed to load selected job roles data', async () => {
       const { component, routerSpy } = await setup({ selectedJobRoles: [] });
       component.loadSelectedJobRoles();
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-starters']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.establishment.uid,
+        'workplace-data',
+        'add-workplace-details',
+        'do-you-have-starters',
+      ]);
     });
 
     describe('backlink', () => {
       it('should set the backlink to job role selection page', async () => {
         const { component } = await setup();
         expect(component.back).toEqual({
-          url: ['/workplace', component.establishment.uid, 'select-starter-job-roles'],
+          url: [
+            '/workplace',
+            component.establishment.uid,
+            'workplace-data',
+            'add-workplace-details',
+            'select-starter-job-roles',
+          ],
         });
       });
     });
@@ -353,7 +373,13 @@ describe('HowManyStartersComponent', () => {
         userEvent.click(getByRole('button', { name: 'Add job roles' }));
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'select-starter-job-roles']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'select-starter-job-roles',
+        ]);
       });
 
       it('should save any change in job role number to vacanciesAndTurnoverService before navigation', async () => {

@@ -42,7 +42,9 @@ describe('DoYouHaveLeaversComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
 
@@ -182,7 +184,13 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-leaver-job-roles']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'select-leaver-job-roles',
+      ]);
     });
 
     it("should navigate to the staff-recruitment-capture-training-requirement page when submitting 'None'", async () => {
@@ -198,6 +206,8 @@ describe('DoYouHaveLeaversComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
         'staff-recruitment-capture-training-requirement',
       ]);
     });
@@ -215,6 +225,8 @@ describe('DoYouHaveLeaversComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
         'staff-recruitment-capture-training-requirement',
       ]);
     });
@@ -229,6 +241,8 @@ describe('DoYouHaveLeaversComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
         'staff-recruitment-capture-training-requirement',
       ]);
     });
@@ -259,7 +273,13 @@ describe('DoYouHaveLeaversComponent', () => {
 
         const { component } = await setup(overrides);
 
-        expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'how-many-starters']);
+        expect(component.previousRoute).toEqual([
+          '/workplace',
+          `${component.establishment.uid}`,
+          'workplace-data',
+          'add-workplace-details',
+          'how-many-starters',
+        ]);
       });
 
       it('should set back link to go to do you have starters page when workplace does not have starters', async () => {
@@ -270,6 +290,8 @@ describe('DoYouHaveLeaversComponent', () => {
         expect(component.previousRoute).toEqual([
           '/workplace',
           `${component.establishment.uid}`,
+          'workplace-data',
+          'add-workplace-details',
           'do-you-have-starters',
         ]);
       });
@@ -282,6 +304,8 @@ describe('DoYouHaveLeaversComponent', () => {
         expect(component.previousRoute).toEqual([
           '/workplace',
           `${component.establishment.uid}`,
+          'workplace-data',
+          'add-workplace-details',
           'do-you-have-starters',
         ]);
       });

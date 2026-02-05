@@ -13,10 +13,7 @@
     <app-inset-text [color]="'todo'">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-          <a *ngIf="!isParentViewingSubsidiary" [routerLink]="['/workplace', workplace?.uid, 'start']">
-            Start to add more details about your workplace</a
-          >
-          <a *ngIf="isParentViewingSubsidiary" [routerLink]="['/subsidiary/workplace', workplace?.uid, 'start']">
+          <a [routerLink]="'start' | addWorkplaceDetailsPath: workplace?.uid">
             Start to add more details about your workplace</a
           >
         </div>

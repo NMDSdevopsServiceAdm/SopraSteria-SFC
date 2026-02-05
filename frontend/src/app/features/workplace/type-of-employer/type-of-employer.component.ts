@@ -8,9 +8,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Question } from '../question/question.component';
 
 @Component({
-    selector: 'app-type-of-employer',
-    templateUrl: './type-of-employer.component.html',
-    standalone: false
+  selector: 'app-type-of-employer',
+  templateUrl: './type-of-employer.component.html',
+  standalone: false,
 })
 export class TypeOfEmployerComponent extends Question {
   public options = [
@@ -25,6 +25,9 @@ export class TypeOfEmployerComponent extends Question {
   public callToAction = 'Save and continue';
   public dataOwner: any;
   public showOtherInputField = false;
+
+  private _nextRoute: Array<string>;
+  private _previousRoute: Array<string>;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -42,6 +45,22 @@ export class TypeOfEmployerComponent extends Question {
       },
       { updateOn: 'submit' },
     );
+  }
+
+  public set previousRoute(route: Array<string>) {
+    this._previousRoute = route;
+  }
+
+  public set nextRoute(route: Array<string>) {
+    this._nextRoute = route;
+  }
+
+  public get previousRoute(): Array<string> {
+    return this._previousRoute;
+  }
+
+  public get nextRoute(): Array<string> {
+    return this._nextRoute;
   }
 
   protected init(): void {

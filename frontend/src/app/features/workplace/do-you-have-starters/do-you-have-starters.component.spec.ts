@@ -43,7 +43,9 @@ describe('DoYouHaveStartersComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
 
@@ -250,7 +252,7 @@ describe('DoYouHaveStartersComponent', () => {
     });
 
     describe('workplace flow', () => {
-      it("should navigate to the select vacancy job roles page when submitting 'Yes'", async () => {
+      it("should navigate to the select starters job roles page when submitting 'Yes'", async () => {
         const overrides = { returnUrl: false };
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
@@ -261,7 +263,13 @@ describe('DoYouHaveStartersComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-starter-job-roles']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'select-starter-job-roles',
+        ]);
       });
 
       it("should navigate to the do-you-have-leavers page when submitting 'None'", async () => {
@@ -274,7 +282,13 @@ describe('DoYouHaveStartersComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-leavers']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-leavers',
+        ]);
       });
 
       it("should navigate to the do-you-have-leavers page when submitting 'I do not know' ", async () => {
@@ -287,7 +301,13 @@ describe('DoYouHaveStartersComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-leavers']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-leavers',
+        ]);
       });
 
       it('should navigate to the do-you-have-leavers page when clicking Skip this question link', async () => {
@@ -298,7 +318,13 @@ describe('DoYouHaveStartersComponent', () => {
         fireEvent.click(link);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-leavers']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-leavers',
+        ]);
       });
 
       it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
@@ -330,6 +356,8 @@ describe('DoYouHaveStartersComponent', () => {
           expect(component.previousRoute).toEqual([
             '/workplace',
             `${component.establishment.uid}`,
+            'workplace-data',
+            'add-workplace-details',
             'how-many-vacancies',
           ]);
         });
@@ -342,6 +370,8 @@ describe('DoYouHaveStartersComponent', () => {
           expect(component.previousRoute).toEqual([
             '/workplace',
             `${component.establishment.uid}`,
+            'workplace-data',
+            'add-workplace-details',
             'do-you-have-vacancies',
           ]);
         });
@@ -354,6 +384,8 @@ describe('DoYouHaveStartersComponent', () => {
           expect(component.previousRoute).toEqual([
             '/workplace',
             `${component.establishment.uid}`,
+            'workplace-data',
+            'add-workplace-details',
             'do-you-have-vacancies',
           ]);
         });
@@ -370,7 +402,7 @@ describe('DoYouHaveStartersComponent', () => {
         expect(getByText('Cancel')).toBeTruthy();
       });
 
-      it("should navigate to the select vacancy job roles page when submitting 'Yes'", async () => {
+      it("should navigate to the select starter job roles page when submitting 'Yes'", async () => {
         const overrides = { returnUrl: true };
 
         const { component, fixture, getByText, routerSpy } = await setup(overrides);

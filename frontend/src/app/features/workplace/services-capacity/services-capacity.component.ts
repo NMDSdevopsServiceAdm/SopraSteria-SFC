@@ -12,9 +12,9 @@ import groupBy from 'lodash/groupBy';
 import { Question } from '../question/question.component';
 
 @Component({
-    selector: 'app-services-capacity',
-    templateUrl: './services-capacity.component.html',
-    standalone: false
+  selector: 'app-services-capacity',
+  templateUrl: './services-capacity.component.html',
+  standalone: false,
 })
 export class ServicesCapacityComponent extends Question {
   public capacities = [];
@@ -47,7 +47,7 @@ export class ServicesCapacityComponent extends Question {
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe((capacities) => {
         this.capacities = capacities.allServiceCapacities;
         if (this.capacities.length === 0) {
-          this.router.navigate(['/workplace', this.establishment.uid, 'other-services'], { replaceUrl: true });
+          this.navigateToQuestionPage('other-services', { replaceUrl: true });
         }
 
         this.sortServices();

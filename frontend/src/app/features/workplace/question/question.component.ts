@@ -1,6 +1,6 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -20,10 +20,12 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
 
   public return: URLStructure;
-  public previousRoute: string[];
-  public nextRoute: string[];
+
+  private _previousQuestionPage: string;
+  private _nextQuestionPage: string;
+  private _skipToQuestionPage: string;
+
   public back: URLStructure;
-  public skipRoute: string[];
   public hideBackLink: boolean;
 
   public formErrorsMap: Array<ErrorDetails> = [];
@@ -84,6 +86,79 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  protected setPreviousQuestionPage(pathSegment: string) {
+    this._previousQuestionPage = pathSegment;
+  }
+
+  protected setNextQuestionPage(pathSegment: string) {
+    this._nextQuestionPage = pathSegment;
+  }
+
+  protected setSkipToQuestionPage(pathSegment: string) {
+    this._skipToQuestionPage = pathSegment;
+  }
+
+  public get isInAddDetailsFlow(): boolean {
+    return !this.return || (this.router.url && this.router.url.includes('add-workplace-details'));
+  }
+
+  public get previousRoute(): string[] {
+    if (this.isInAddDetailsFlow) {
+      return this.establishmentService.buildPathForAddWorkplaceDetails(
+        this.establishment.uid,
+        this._previousQuestionPage,
+      );
+    } else {
+      return ['/workplace', `${this.establishment.uid}`, this._previousQuestionPage];
+    }
+  }
+
+  public get nextRoute(): string[] {
+    if (this.isInAddDetailsFlow) {
+      return this.establishmentService.buildPathForAddWorkplaceDetails(this.establishment.uid, this._nextQuestionPage);
+    } else {
+      return ['/workplace', `${this.establishment.uid}`, this._nextQuestionPage];
+    }
+  }
+
+  public get skipRoute(): string[] {
+    if (this.isInAddDetailsFlow) {
+      return this.establishmentService.buildPathForAddWorkplaceDetails(
+        this.establishment.uid,
+        this._skipToQuestionPage,
+      );
+    } else {
+      return ['/workplace', `${this.establishment.uid}`, this._skipToQuestionPage];
+    }
+  }
+
+  protected set previousRoute(route: string | string[]) {
+    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setPreviousQuestionPage(lastPathSegment);
+  }
+
+  protected set nextRoute(route: string | string[]) {
+    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setNextQuestionPage(lastPathSegment);
+  }
+
+  protected set skipRoute(route: string | string[]) {
+    const lastPathSegment = Array.isArray(route) ? route.at(-1) : route;
+    this.setSkipToQuestionPage(lastPathSegment);
+  }
+
+  protected navigateToQuestionPage(pathSegment: string, ...extras: [NavigationExtras?]): Promise<boolean> {
+    if (this.isInAddDetailsFlow) {
+      const destinationUrl = this.establishmentService.buildPathForAddWorkplaceDetails(
+        this.establishment.uid,
+        pathSegment,
+      );
+      return this.router.navigate(destinationUrl, ...extras);
+    } else {
+      return this.router.navigate(['/workplace', `${this.establishment.uid}`, pathSegment], ...extras);
+    }
   }
 
   protected navigate(): Promise<boolean> {

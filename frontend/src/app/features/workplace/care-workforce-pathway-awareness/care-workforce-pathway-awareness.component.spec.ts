@@ -49,7 +49,9 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         },
         AlertService,
         WindowRef,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
@@ -124,10 +126,26 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     expect(form.valid).toBeTruthy();
   });
 
-  it('should set the previous page to accept-previous-care-certificate page', async () => {
-    const { component } = await setup();
+  describe('inside the flow', () => {
+    it('should set the previous page to accept-previous-care-certificate page', async () => {
+      const { component } = await setup({ returnToUrl: null });
 
-    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'accept-previous-care-certificate']);
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'accept-previous-care-certificate',
+      ]);
+    });
+  });
+
+  describe('outside the flow', () => {
+    it('should set the previous page to accept-previous-care-certificate page', async () => {
+      const { component } = await setup({ returnToUrl: true });
+
+      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'accept-previous-care-certificate']);
+    });
   });
 
   describe('progress bar', () => {
@@ -161,7 +179,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         fireEvent.click(skipLink);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'cash-loyalty']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          workplaceId,
+          'workplace-data',
+          'add-workplace-details',
+          'cash-loyalty',
+        ]);
       });
 
       awareAnswers.forEach((awareAnswer) => {
@@ -183,7 +207,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
             careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'care-workforce-pathway-use']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            workplaceId,
+            'workplace-data',
+            'add-workplace-details',
+            'care-workforce-pathway-use',
+          ]);
         });
       });
 
@@ -206,7 +236,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
             careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'cash-loyalty']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            workplaceId,
+            'workplace-data',
+            'add-workplace-details',
+            'cash-loyalty',
+          ]);
         });
       });
     });
