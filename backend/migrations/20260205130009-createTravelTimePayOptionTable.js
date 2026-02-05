@@ -1,6 +1,6 @@
 'use strict';
 
-const newTable = { tableName: 'TravelTimePayOptions', schema: 'cqc' };
+const newTable = { tableName: 'TravelTimePayOption', schema: 'cqc' };
 
 // AnalysisFileCode are yet to be confirmed at the timing of this file.
 const data = [
@@ -74,7 +74,7 @@ module.exports = {
         newTable,
         {
           ID: {
-            type: Sequelize.INTEGER,
+            type: Sequelize.DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
           },
@@ -83,11 +83,11 @@ module.exports = {
             unique: true,
           },
           Label: {
-            type: Sequelize.TEXT,
+            type: Sequelize.DataTypes.TEXT,
             allowNull: false,
           },
           IncludeRate: {
-            type: Sequelize.BOOLEAN,
+            type: Sequelize.DataTypes.BOOLEAN,
             defaultValue: false,
             allowNull: false,
           },

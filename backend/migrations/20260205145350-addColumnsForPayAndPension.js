@@ -1,7 +1,7 @@
 'use strict';
 
 const establishmentTable = { tableName: 'Establishment', schema: 'cqc' };
-const travelTimePayOptionTable = { tableName: 'TravelTimePayOptions', schema: 'cqc' };
+const travelTimePayOptionTable = { tableName: 'TravelTimePayOption', schema: 'cqc' };
 
 const Sequelize = require('sequelize');
 
