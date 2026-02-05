@@ -1,78 +1,42 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters">
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-8 govuk__nowrap">Add more details about your workplace</h1>
+    <h1 data-testid="heading" class="govuk-heading-l govuk-!-margin-bottom-7 govuk__nowrap">Add more details about your workplace</h1>
 
-    <p class="govuk-details__text">
-      We'll ask you a maximum of 20 questions. If necessary, you can skip questions and answer them later in the
-      Workplace section of ASC-WDS.
-    </p>
+    <div data-testid="details-text" class="govuk-details__text govuk-!-margin-bottom-6 govuk-!-padding-top-2 govuk-!-padding-bottom-2">
+      <p class="govuk-!-margin-bottom-0">We'll ask you a maximum of 25 questions. If necessary, you can skip </p>
+      <p>questions and answer them later in the Workplace section of ASC-WDS.</p>
+    </div>
 
-    <p>We would like to know:</p>
-    <ul class="govuk-list govuk-list--bullet">
-      <li><p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">whether you provide any other services?</p></li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
-          the capacity of the services that you provide (if applicable)?
-        </p>
-      </li>
-      <li><p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">who uses your services?</p></li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0 govuk__nowrap">
-          whether your non-nursing staff carry out delegated healthcare activities and what kind if they do?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
-          whether you have any current staff vacancies and how many?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0 govuk__nowrap">
-          whether you've had new starters or leavers in the last 12 months and how many?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0 govuk__nowrap">
-          whether new care workers have to repeat training done with previous employers?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0 govuk__nowrap">
-          whether Care Certificates are transferable from workplace to workplace?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0 govuk__nowrap">
-          how aware your workplace is of the care workforce pathway?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
-          whether your workplace is using the care workforce pathway?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
-          whether a cash loyalty bonus is paid within the first 2 years of employment?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
-          whether care workers are paid more than Statutory Sick Pay?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
-          whether more than 3% is contributed towards care worker pensions?
-        </p>
-      </li>
-      <li>
-        <p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">
-          how many days holiday leave full-time care workers get?
-        </p>
-      </li>
-      <li><p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">whether we can share your data?</p></li>
-    </ul>
+    <h2 data-testid="services-heading" class="govuk-heading-m govuk-!-margin-bottom-1">Services</h2>
+    <div data-testid="services-text">
+      <p class="govuk-body govuk-!-margin-bottom-0">Questions about your services and who uses them, and whether </p>
+      <p class="govuk-body">your non-nursing staff carry out delegated healthcare activities?</p>
+    </div>
+
+    <h2 data-testid="vacancies-heading" class="govuk-heading-m govuk-!-margin-bottom-1">Vacancies and turnover</h2>
+    <div data-testid="vacancies-text">
+      <p class="govuk-body govuk-!-margin-bottom-0">Questions like whether you have any staff vacancies, and whether </p>
+      <p class="govuk-body">you’ve had any starters or leavers in the last 12 months?</p>
+    </div>
+
+    <h2 data-testid="pay-heading" class="govuk-heading-m govuk-!-margin-bottom-1">Pay and benefits</h2>
+    <div data-testid= "pay-text">
+      <p class="govuk-body govuk-!-margin-bottom-0">Questions about things like annual leave, workplace pensions and </p>
+      <p class="govuk-body">rates of pay.</p>
+    </div>
+
+    <h2 data-testid="staff-heading" class="govuk-heading-m govuk-!-margin-bottom-1">Staff development</h2>
+    <div data-testid="staff-text">
+      <p class="govuk-body govuk-!-margin-bottom-0">Questions about the care workforce pathway, training and </p>
+      <p class="govuk-body">Care Certificates.</p>
+    </div>
+
+    <h2 data-testid="permissions-heading" class="govuk-heading-m govuk-!-margin-bottom-1">Permissions</h2>
+    <div data-testid="permissions-text" >
+      <p class="govuk-body govuk-!-margin-bottom-0">Whether we can share your data with the CQC and local </p>
+      <p class="govuk-body govuk-!-margin-bottom-5">authorities or not?</p>
+    </div>
+
     <button
       (click)="removeAddDetailsBanner($event)"
       role="button"

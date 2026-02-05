@@ -116,7 +116,10 @@ describe('Create account', { tags: '@registration' }, () => {
 
     cy.contains('Add more details to your workplace').click(); // on home page
     cy.contains('Start to add more details about your workplace').click(); // on workplace tab
-    cy.get('button').contains('Continue').click(); // on add more details page
+
+    // Add more details
+    cy.get('h1').should('contain', 'Add more details about your workplace');
+    cy.get('button').contains('Continue').click();
 
     // Other services
     cy.contains('Do you provide any other services?');
