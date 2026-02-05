@@ -55,7 +55,6 @@ export class ChangeDataPermissionsComponent implements OnInit, AfterViewInit, On
   ngOnInit() {
     this.uidToChangeDataPermissionsFor = this.route.snapshot?.queryParams?.changeDataPermissionsFor;
     this.workplace = this.route.snapshot.data.establishment;
-
     this.isParent = this.workplace?.isParent;
     this.posssesivePronounText = this.isParent ? 'their' : 'your';
     this.setPreviousRoute();
