@@ -75,28 +75,6 @@ export class TypeOfEmployerDirective implements OnInit, AfterViewInit {
     this.backLinkService.showBackLink();
   }
 
-  protected getCQCRegulatedBackLink(): string {
-    if (this.workplaceInterfaceService.manuallyEnteredWorkplace$.value) {
-      return 'workplace-name-address';
-    }
-    if (this.workplaceInterfaceService.locationAddresses$.value.length == 1) {
-      return 'your-workplace';
-    }
-    if (this.workplaceInterfaceService.locationAddresses$.value.length > 1) {
-      return 'select-workplace';
-    }
-  }
-
-  protected getNonCQCRegulatedBackLink(): string {
-    if (this.workplaceInterfaceService.manuallyEnteredWorkplace$.value) {
-      return 'workplace-name-address';
-    }
-    if (this.workplaceInterfaceService.manuallyEnteredWorkplaceName$.value) {
-      return 'workplace-name';
-    }
-    return 'select-workplace-address';
-  }
-
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {

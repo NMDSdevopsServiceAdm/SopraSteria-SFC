@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
-import {
-  UpdateStartersLeaversVacanciesDirective,
-} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
-    selector: 'app-update-vacancies',
-    templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
-    standalone: false
+  selector: 'app-update-vacancies',
+  templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+  standalone: false,
 })
 export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDirective {
   public revealText =
@@ -40,6 +38,7 @@ export class UpdateVacanciesComponent extends UpdateStartersLeaversVacanciesDire
   };
 
   protected slvField = 'vacancies';
+  protected updateJobRolePage = 'update-vacancy-job-roles';
   protected selectedField = 'selectedVacancies';
   protected updatePage = WorkplaceUpdatePage.UPDATE_VACANCIES;
 

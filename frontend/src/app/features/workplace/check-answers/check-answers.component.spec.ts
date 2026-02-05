@@ -17,6 +17,8 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceModule } from '../workplace.module';
 import { CheckAnswersComponent } from './check-answers.component';
+import { By } from '@angular/platform-browser';
+import { CheckAnswersWorkplaceSummaryComponent } from '@shared/components/workplace-summary/workplace-summary.component';
 
 describe('CheckAnswersComponent', () => {
   async function setup() {
@@ -95,13 +97,30 @@ describe('CheckAnswersComponent', () => {
     } as Alert);
   });
 
+  it('should set the @Input return property of app-workplace-summary child component to the url of this page', async () => {
+    const { fixture, component } = await setup();
+
+    const expectedUrl = [
+      '/workplace',
+      component.establishment.uid,
+      'workplace-data',
+      'add-workplace-details',
+      'check-answers',
+    ];
+
+    const workplaceSummaryComponent = fixture.debugElement.query(By.directive(CheckAnswersWorkplaceSummaryComponent));
+    expect(workplaceSummaryComponent.componentInstance.return).toEqual({ url: expectedUrl });
+  });
+
   describe('setBackLink', () => {
     it('should set the back link to the url for data-sharing question', async () => {
       const { component } = await setup();
       const backLinkSpy = spyOn(component.backService, 'setBackLink');
 
       component.setBackLink();
-      expect(backLinkSpy).toHaveBeenCalledWith({ url: ['/workplace', component.establishment.uid, 'sharing-data'] });
+      expect(backLinkSpy).toHaveBeenCalledWith({
+        url: ['/workplace', component.establishment.uid, 'workplace-data', 'add-workplace-details', 'sharing-data'],
+      });
     });
   });
 });

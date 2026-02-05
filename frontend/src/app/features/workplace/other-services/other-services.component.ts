@@ -9,14 +9,14 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import filter from 'lodash/filter';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
-    selector: 'app-other-services',
-    templateUrl: './other-services.component.html',
-    standalone: false
+  selector: 'app-other-services',
+  templateUrl: './other-services.component.html',
+  standalone: false,
 })
-export class OtherServicesComponent extends Question {
+export class OtherServicesComponent extends WorkplaceQuestion {
   private additionalOtherServiceMaxLength = 120;
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];
@@ -59,8 +59,8 @@ export class OtherServicesComponent extends Question {
       ),
     );
 
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+    this.previousQuestionPage = 'start';
+    this.skipToQuestionPage = 'service-users';
   }
 
   private oneCheckboxRequiredIfYes(form: UntypedFormGroup) {
@@ -190,10 +190,10 @@ export class OtherServicesComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         (response) => {
-          this.nextRoute =
+          this.nextQuestionPage =
             response.allServiceCapacities && response.allServiceCapacities.length
-              ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
-              : ['/workplace', `${this.establishment.uid}`, 'service-users'];
+              ? 'capacity-of-services'
+              : 'service-users';
           this.navigate();
         },
         (error) => this.onError(error),

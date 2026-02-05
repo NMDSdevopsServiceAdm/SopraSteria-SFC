@@ -9,10 +9,10 @@ import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-summary-section',
-    templateUrl: './summary-section.component.html',
-    styleUrls: ['./summary-section.component.scss'],
-    standalone: false
+  selector: 'app-summary-section',
+  templateUrl: './summary-section.component.html',
+  styleUrls: ['./summary-section.component.scss'],
+  standalone: false,
 })
 export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -124,7 +124,10 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[0].message = 'Add more details to your workplace';
     } else if (!this.workplace.CWPAwarenessQuestionViewed && !this.workplace.careWorkforcePathwayWorkplaceAwareness) {
       this.sections[0].message = 'How aware of the CWP is your workplace?';
-      this.sections[0].route = ['/workplace', this.workplace.uid, 'care-workforce-pathway-awareness'];
+      this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(
+        this.workplace.uid,
+        'care-workforce-pathway-awareness',
+      );
       this.careWorkforcePathwayLinkDisplaying = true;
       this.setReturn = true;
       this.sections[0].showMessageAsText = !this.canEditEstablishment;
@@ -133,7 +136,10 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.workplace.mainService.canDoDelegatedHealthcareActivities
     ) {
       this.sections[0].message = 'Do your staff carry out delegated healthcare activities?';
-      this.sections[0].route = ['/workplace', this.workplace.uid, 'staff-do-delegated-healthcare-activities'];
+      this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(
+        this.workplace.uid,
+        'staff-do-delegated-healthcare-activities',
+      );
       this.setReturn = true;
       this.sections[0].showMessageAsText = !this.canEditEstablishment;
     } else if (this.showCheckCqcDetails) {

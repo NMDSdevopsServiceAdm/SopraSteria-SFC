@@ -21,6 +21,7 @@ import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcare-activities.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   const labels = ['Yes', 'No', 'I do not know'];
@@ -33,9 +34,12 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
     const workerHasDHAAnswered = overrides.someWorkersHasDHAAnswered ?? true;
 
+    const isInAddDetailsFlow = !overrides?.establishmentService?.returnTo;
+
     const setupTools = await render(StaffDoDelegatedHealthcareActivitiesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
@@ -255,14 +259,20 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     it('should set the previous page to service users question page', async () => {
       const { component } = await setup(overrides);
 
-      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'service-users']);
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'service-users',
+      ]);
     });
 
     it('should set the back link to the service users question', async () => {
       const { backServiceSpy } = await setup(overrides);
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'service-users'],
+        url: ['/workplace', 'mocked-uid', 'workplace-data', 'add-workplace-details', 'service-users'],
       });
     });
 
@@ -271,7 +281,13 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
       userEvent.click(getByText('Skip this question'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'do-you-have-vacancies',
+      ]);
     });
 
     it('should navigate to do-you-have-vacancies page after submit if user did not answer', async () => {
@@ -279,7 +295,13 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
       userEvent.click(getByText('Save and continue'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'do-you-have-vacancies',
+      ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
@@ -292,6 +314,8 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
         'what-kind-of-delegated-healthcare-activities',
       ]);
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'StaffDoDelegatedHealthcareActivities', {
@@ -308,7 +332,13 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
         userEvent.click(getByLabelText(answer));
         userEvent.click(getByText('Save and continue'));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
         expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'StaffDoDelegatedHealthcareActivities', {
           staffDoDelegatedHealthcareActivities: expectedValue,
         });
@@ -335,6 +365,8 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'workplace-summary',
         'what-kind-of-delegated-healthcare-activities',
       ]);
       expect(establishmentServiceSpy).toHaveBeenCalled();

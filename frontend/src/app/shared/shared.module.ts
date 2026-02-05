@@ -110,7 +110,7 @@ import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-pane
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { DisplayWorkplaceNameAddress } from './components/display-workplace-name-address/display-workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
-import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
+import { CheckAnswersWorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
@@ -145,9 +145,20 @@ import { SeperatorLineComponent } from './components/seperator-line/seperator-li
 import { AddANoteAccordionComponent } from '@shared/components/accordions/add-a-note-accordion/add-a-note-accordion.component';
 import { ExternalTrainingProviderInputComponent } from './components/external-training-provider-input/external-training-provider-input.component';
 import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
+import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.pipe';
+import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule, A11yModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    OverlayModule,
+    A11yModule,
+    AddWorkplaceDetailsPathPipe,
+    WorkplaceSummaryPathPipe,
+  ],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,
@@ -234,7 +245,7 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    WorkplaceSummaryComponent,
+    CheckAnswersWorkplaceSummaryComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
@@ -373,7 +384,7 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    WorkplaceSummaryComponent,
+    CheckAnswersWorkplaceSummaryComponent,
     SummaryRecordChangeComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
@@ -423,6 +434,8 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
+    AddWorkplaceDetailsPathPipe,
+    WorkplaceSummaryPathPipe,
   ],
   providers: [
     DialogService,

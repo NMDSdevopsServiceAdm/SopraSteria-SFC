@@ -74,6 +74,8 @@ describe('DisplayWorkplaceNameAddress', () => {
     const changeLink = getByText('Change');
 
     expect(changeLink).toBeTruthy();
-    expect(changeLink.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-workplace-details`);
+    expect(changeLink.getAttribute('href')).toEqual(
+      `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-workplace-details`,
+    );
   });
 });

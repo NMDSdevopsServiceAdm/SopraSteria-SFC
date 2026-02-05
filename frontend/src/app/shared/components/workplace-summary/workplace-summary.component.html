@@ -3,7 +3,7 @@
   class="govuk-summary-list govuk-summary-list--medium"
   [ngClass]="{
     'govuk-summary-list--contains-warnings': !wdfView && (showTotalStaffWarning || staffMismatchWarning()),
-    'asc-summary-list--wide-value': wdfView && showTotalStaffWarning
+    'asc-summary-list--wide-value': wdfView && showTotalStaffWarning,
   }"
 >
   <ng-container *ngIf="!checkAnswersPage">
@@ -28,7 +28,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="''"
-          [link]="['/workplace', workplace.uid, 'update-workplace-details']"
+          [link]="'update-workplace-details' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.name"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -40,7 +40,7 @@
         {{ workplace.locationId }}
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()"> Change </a>
+        <a [routerLink]="'regulated-by-cqc' | addWorkplaceDetailsPath: workplace.uid" (click)="setReturn()"> Change </a>
       </dd>
     </div>
     <div class="govuk-summary-list__row" data-testid="numberOfStaff">
@@ -107,7 +107,7 @@
             )
           "
           [explanationText]="' total number of staff'"
-          [link]="['/workplace', workplace.uid, 'total-staff']"
+          [link]="'total-staff' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="isNumber(workplace.numberOfStaff)"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -157,7 +157,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="'employer type'"
-          [link]="['/workplace', workplace.uid, 'type-of-employer']"
+          [link]="'type-of-employer' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.employerType?.other || typeOfEmployer"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -230,7 +230,7 @@
         >
           <a
             *ngIf="!cqcStatusRequested; else cqcPending"
-            [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']"
+            [routerLink]="'main-service-cqc' | addWorkplaceDetailsPath: workplace.uid"
             (click)="setReturn()"
           >
             <ng-container *ngIf="!workplace.mainService">
@@ -267,7 +267,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' other services'"
-          [link]="['/workplace', workplace.uid, 'other-services']"
+          [link]="'other-services' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.otherServices.value !== null"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -312,7 +312,7 @@
             )
           "
           [explanationText]="' service capacities'"
-          [link]="['/workplace', workplace.uid, 'capacity-of-services']"
+          [link]="'capacity-of-services' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.capacities?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -359,7 +359,7 @@
             )
           "
           [explanationText]="' service users'"
-          [link]="['/workplace', workplace.uid, 'service-users']"
+          [link]="'service-users' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.serviceUsers?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -381,7 +381,7 @@
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' delegated healthcare activities'"
-        [link]="['/workplace', workplace.uid, 'staff-do-delegated-healthcare-activities']"
+        [link]="'staff-do-delegated-healthcare-activities' | addWorkplaceDetailsPath: workplace.uid"
         [hasData]="workplace.staffDoDelegatedHealthcareActivities"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -414,7 +414,7 @@
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="' delegated healthcare activities carried out'"
-        [link]="['/workplace', workplace.uid, 'what-kind-of-delegated-healthcare-activities']"
+        [link]="'what-kind-of-delegated-healthcare-activities' | addWorkplaceDetailsPath: workplace.uid"
         [hasData]="workplace.staffWhatKindDelegatedHealthcareActivities"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
@@ -472,7 +472,7 @@
             )
           "
           [explanationText]="' staff vacancies'"
-          [link]="['/workplace', workplace.uid, 'do-you-have-vacancies']"
+          [link]="'do-you-have-vacancies' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.vacancies?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -522,7 +522,7 @@
             )
           "
           [explanationText]="' new starters'"
-          [link]="['/workplace', workplace.uid, 'do-you-have-starters']"
+          [link]="'do-you-have-starters' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.starters?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -572,7 +572,7 @@
             )
           "
           [explanationText]="' leavers'"
-          [link]="['/workplace', workplace.uid, 'do-you-have-leavers']"
+          [link]="'do-you-have-leavers' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.leavers?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -615,7 +615,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' repeat training'"
-          [link]="['/workplace', workplace.uid, 'staff-recruitment-capture-training-requirement']"
+          [link]="'staff-recruitment-capture-training-requirement' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -646,7 +646,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' accept care certificate'"
-          [link]="['/workplace', workplace.uid, 'accept-previous-care-certificate']"
+          [link]="'accept-previous-care-certificate' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -661,7 +661,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' care workforce pathway aware'"
-          [link]="['/workplace', workplace.uid, 'care-workforce-pathway-awareness']"
+          [link]="'care-workforce-pathway-awareness' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.careWorkforcePathwayWorkplaceAwareness"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -683,7 +683,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' care workforce pathway use'"
-          [link]="['/workplace', workplace.uid, 'care-workforce-pathway-use']"
+          [link]="'care-workforce-pathway-use' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.careWorkforcePathwayUse"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -726,7 +726,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' loyalty bonus'"
-          [link]="['/workplace', workplace.uid, 'cash-loyalty']"
+          [link]="'cash-loyalty' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.careWorkersCashLoyaltyForFirstTwoYears"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -750,7 +750,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' statutory sick pay'"
-          [link]="['/workplace', workplace.uid, 'benefits-statutory-sick-pay']"
+          [link]="'benefits-statutory-sick-pay' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.sickPay"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -774,7 +774,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' pension'"
-          [link]="['/workplace', workplace.uid, 'pensions']"
+          [link]="'pensions' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.pensionContribution"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -800,7 +800,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' holiday leave'"
-          [link]="['/workplace', workplace.uid, 'staff-benefit-holiday-leave']"
+          [link]="'staff-benefit-holiday-leave' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.careWorkersLeaveDaysPerYear"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
@@ -838,7 +838,7 @@
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="' data sharing'"
-          [link]="['/workplace', workplace.uid, 'sharing-data']"
+          [link]="'sharing-data' | addWorkplaceDetailsPath: workplace.uid"
           [hasData]="workplace.shareWith?.cqc !== null || workplace.shareWith?.localAuthorities !== null"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>

@@ -97,6 +97,7 @@ describe('workplace-info-panel', () => {
       changeOwnershipDetailsSpy,
       cancelOwnershipSpy,
       alertServiceSpy,
+      establishmentService,
     };
   };
 
@@ -105,7 +106,51 @@ describe('workplace-info-panel', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('attention needed flag', async () => {
+  describe('workplace name link', () => {
+    it('should show a link of the workplace name, which links to the subsidiary workplace', async () => {
+      const { fixture, routerSpy, getByRole, establishmentService } = await setup();
+
+      spyOn(establishmentService, 'getEstablishment').and.returnValue(
+        of({
+          employerType: {
+            value: 'Local Authority (generic/other)',
+          },
+        }),
+      );
+
+      const workplaceLink = getByRole('link', { name: establishment.name });
+      userEvent.click(workplaceLink);
+
+      await fixture.whenStable();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', establishment.uid, 'home']);
+    });
+
+    it('should links to the type-of-employer question instead, if the employerType was not answered', async () => {
+      const { fixture, routerSpy, getByRole, establishmentService } = await setup();
+
+      spyOn(establishmentService, 'getEstablishment').and.returnValue(
+        of({
+          employerType: undefined,
+        }),
+      );
+
+      const workplaceLink = getByRole('link', { name: establishment.name });
+      userEvent.click(workplaceLink);
+
+      await fixture.whenStable();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        establishment.uid,
+        'workplace-data',
+        'workplace-summary',
+        'type-of-employer',
+      ]);
+    });
+  });
+
+  describe('attention needed flag', () => {
     it('should not show flag if showFlag property is false', async () => {
       const { queryByTestId } = await setup({
         workplace: {
@@ -127,7 +172,7 @@ describe('workplace-info-panel', () => {
       expect(getByText('Check this workplace'));
     });
 
-    describe('Check this workplace', async () => {
+    describe('Check this workplace', () => {
       it('should have a clickable link when data owner is "Parent" and permissions are not "linked only"', async () => {
         const { getByText } = await setup({
           workplace: {
@@ -182,6 +227,60 @@ describe('workplace-info-panel', () => {
         const checkWorkplaceLink = getByText('Check this workplace');
 
         expect(checkWorkplaceLink.nodeName).toBe('A');
+      });
+
+      it('should link to the subsidiary workplace', async () => {
+        const { fixture, routerSpy, getByText, establishmentService } = await setup({
+          workplace: {
+            showFlag: true,
+            dataPermissions: 'Workplace and Staff',
+            dataOwner: 'Workplace',
+          },
+        });
+
+        spyOn(establishmentService, 'getEstablishment').and.returnValue(
+          of({
+            employerType: {
+              value: 'Local Authority (generic/other)',
+            },
+          }),
+        );
+
+        const checkWorkplaceLink = getByText('Check this workplace');
+        userEvent.click(checkWorkplaceLink);
+
+        await fixture.whenStable();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', establishment.uid, 'home']);
+      });
+
+      it('should link to the type-of-employer question instead, if the employerType was not answered', async () => {
+        const { fixture, routerSpy, getByText, establishmentService } = await setup({
+          workplace: {
+            showFlag: true,
+            dataPermissions: 'Workplace and Staff',
+            dataOwner: 'Workplace',
+          },
+        });
+
+        spyOn(establishmentService, 'getEstablishment').and.returnValue(
+          of({
+            employerType: undefined,
+          }),
+        );
+
+        const checkWorkplaceLink = getByText('Check this workplace');
+        userEvent.click(checkWorkplaceLink);
+
+        await fixture.whenStable();
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          establishment.uid,
+          'workplace-data',
+          'workplace-summary',
+          'type-of-employer',
+        ]);
       });
     });
   });

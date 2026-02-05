@@ -1,6 +1,6 @@
-import { AfterViewInit, Directive, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, computed, Directive, ElementRef, OnDestroy, OnInit, Signal, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationExtras, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -8,11 +8,11 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
-import isNull from 'lodash/isNull';
+import { isNull, isEqual } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive()
-export class Question implements OnInit, OnDestroy, AfterViewInit {
+export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public establishment: Establishment;
@@ -20,10 +20,12 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
 
   public return: URLStructure;
-  public previousRoute: string[];
-  public nextRoute: string[];
+
+  private _previousQuestionPage: string;
+  private _nextQuestionPage: string;
+  private _skipToQuestionPage: string;
+
   public back: URLStructure;
-  public skipRoute: string[];
   public hideBackLink: boolean;
 
   public formErrorsMap: Array<ErrorDetails> = [];
@@ -33,6 +35,16 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   protected initiated = false;
   public submitAction: { action: string; save: boolean } = null;
   public workplaceFlowSections: string[] = ProgressBarUtil.workplaceFlowProgressBarSections();
+
+  private _isInAddDetailsFlow: Signal<boolean> = computed(() => {
+    return this.router.url.includes('add-workplace-details');
+  });
+
+  private _visitedFromWorkplaceSummary: Signal<boolean> = computed(() => {
+    const returnUrlMatchWorkplaceSummary =
+      this.return && isEqual(this.return, { url: ['/dashboard'], fragment: 'workplace' });
+    return this.router.url.includes('workplace-summary') || returnUrlMatchWorkplaceSummary;
+  });
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -69,7 +81,13 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   }
 
   protected setBackLink(): void {
-    this.back = this.return ? this.return : { url: this.previousRoute };
+    if (this.return) {
+      this.back = this.return;
+    } else {
+      this.back = this.isInAddDetailsFlow
+        ? { url: this.previousRoute }
+        : { url: ['/dashboard'], fragment: 'workplace' };
+    }
     this.backService.setBackLink(this.back);
   }
 
@@ -84,6 +102,65 @@ export class Question implements OnInit, OnDestroy, AfterViewInit {
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  protected set previousQuestionPage(pageName: string) {
+    this._previousQuestionPage = pageName;
+  }
+
+  protected set nextQuestionPage(pageName: string) {
+    this._nextQuestionPage = pageName;
+  }
+
+  protected set skipToQuestionPage(pageName: string) {
+    this._skipToQuestionPage = pageName;
+  }
+
+  protected get previousQuestionPage(): string {
+    return this._previousQuestionPage;
+  }
+
+  protected get nextQuestionPage(): string {
+    return this._nextQuestionPage;
+  }
+
+  protected get skipToQuestionPage(): string {
+    return this._skipToQuestionPage;
+  }
+
+  public get isInAddDetailsFlow(): boolean {
+    return this._isInAddDetailsFlow();
+  }
+
+  public get visitedFromWorkplaceSummary(): boolean {
+    return this._visitedFromWorkplaceSummary();
+  }
+
+  private get baseRoute(): string[] {
+    if (this.visitedFromWorkplaceSummary) {
+      return this.establishmentService.baseRouteForWorkplaceSummary(this.establishment.uid);
+    } else if (this.isInAddDetailsFlow) {
+      return this.establishmentService.baseRouteForAddWorkplaceDetails(this.establishment.uid);
+    } else {
+      return ['/workplace', this.establishment.uid];
+    }
+  }
+
+  public get previousRoute(): string[] {
+    return [...this.baseRoute, this._previousQuestionPage];
+  }
+
+  public get nextRoute(): string[] {
+    return [...this.baseRoute, this._nextQuestionPage];
+  }
+
+  public get skipRoute(): string[] {
+    return [...this.baseRoute, this._skipToQuestionPage];
+  }
+
+  protected navigateToQuestionPage(pathSegment: string, ...extras: [NavigationExtras?]): Promise<boolean> {
+    const destinationUrl = [...this.baseRoute, pathSegment];
+    return this.router.navigate(destinationUrl, ...extras);
   }
 
   protected navigate(): Promise<boolean> {

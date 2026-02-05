@@ -17,6 +17,7 @@ import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { HowManyLeaversComponent } from './how-many-leavers.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('HowManyLeaversComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(dayjs().subtract(1, 'years').toDate());
@@ -37,11 +38,14 @@ describe('HowManyLeaversComponent', () => {
     const availableJobs = override.availableJobs;
     const workplace = override.workplace ?? {};
 
-    const selectedJobRoles = override.noLocalStorageData ? null : override.selectedJobRoles ?? mockSelectedJobRoles;
+    const selectedJobRoles = override.noLocalStorageData ? null : (override.selectedJobRoles ?? mockSelectedJobRoles);
+
+    const isInAddDetailsFlow = true;
 
     const renderResults = await render(HowManyLeaversComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
@@ -63,7 +67,9 @@ describe('HowManyLeaversComponent', () => {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedLeavers: selectedJobRoles }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = renderResults.fixture.componentInstance;
@@ -235,6 +241,8 @@ describe('HowManyLeaversComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
           'staff-recruitment-capture-training-requirement',
         ]);
       });
@@ -313,14 +321,26 @@ describe('HowManyLeaversComponent', () => {
     it('should navigate to "Do you have leavers" page if failed to load selected job roles data', async () => {
       const { component, routerSpy } = await setup({ selectedJobRoles: [] });
       component.loadSelectedJobRoles();
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-leavers']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.establishment.uid,
+        'workplace-data',
+        'add-workplace-details',
+        'do-you-have-leavers',
+      ]);
     });
 
     describe('backlink', () => {
       it('should set the backlink to job role selection page', async () => {
         const { component } = await setup();
         expect(component.back).toEqual({
-          url: ['/workplace', component.establishment.uid, 'select-leaver-job-roles'],
+          url: [
+            '/workplace',
+            component.establishment.uid,
+            'workplace-data',
+            'add-workplace-details',
+            'select-leaver-job-roles',
+          ],
         });
       });
     });
@@ -337,7 +357,13 @@ describe('HowManyLeaversComponent', () => {
         userEvent.click(getByRole('button', { name: 'Add job roles' }));
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'select-leaver-job-roles']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'select-leaver-job-roles',
+        ]);
       });
 
       it('should save any change in job role number to vacanciesAndTurnoverService before navigation', async () => {

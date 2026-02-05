@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { ADD_WORKPLACE_DETAILS_ROUTE } from '@core/constants/constants';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
@@ -10,9 +11,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 
 @Component({
-    selector: 'app-new-workplace-tab',
-    templateUrl: './workplace-tab.component.html',
-    standalone: false
+  selector: 'app-new-workplace-tab',
+  templateUrl: './workplace-tab.component.html',
+  standalone: false,
 })
 export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -22,6 +23,7 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
   public canEditEstablishment: boolean;
   public addWorkplaceDetailsBanner: boolean;
   public showCqcDetailsBanner: boolean;
+  public addWorkplaceDetailsStartLink: Array<string>;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -37,6 +39,11 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.showCqcDetailsBanner = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
+
+    this.addWorkplaceDetailsStartLink = this.establishmentService.buildPathForAddWorkplaceDetails(
+      this.workplace.uid,
+      'start',
+    );
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {

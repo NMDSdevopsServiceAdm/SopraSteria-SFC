@@ -7,12 +7,12 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { DateUtil } from '@core/utils/date-util';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { Question } from '@features/workplace/question/question.component';
+import { WorkplaceQuestion } from '@features/workplace/question/question.component';
 
 @Directive({
-    standalone: false
+  standalone: false,
 })
-export class DoYouHaveStartersLeaversVacanciesDirective extends Question implements OnDestroy {
+export class DoYouHaveStartersLeaversVacanciesDirective extends WorkplaceQuestion implements OnDestroy {
   public section = WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
   public heading: string;
   public hintText: string;
@@ -124,21 +124,21 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
     );
   }
 
-  protected getPreviousRoute(field: string): Array<string> {
+  protected getPreviousPage(field: string): string {
     if (Array.isArray(this.establishment[field]) && this.establishment[field].length > 0) {
-      return ['/workplace', this.establishment?.uid, `how-many-${field}`];
+      return `how-many-${field}`;
     } else {
-      return ['/workplace', this.establishment?.uid, `do-you-have-${field}`];
+      return `do-you-have-${field}`;
     }
   }
 
   protected onSuccess(): void {
     if (this.hasSelectedYesWithoutSavingJobRoles) {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, this.startersLeaversOrVacanciesPageTwo];
+      this.nextQuestionPage = this.startersLeaversOrVacanciesPageTwo;
     } else if (!this.hasSelectedYesWithoutSavingJobRoles && this.return) {
       this.submitAction = { action: 'return', save: true };
     } else {
-      this.nextRoute = this.skipRoute;
+      this.nextQuestionPage = this.skipToQuestionPage;
     }
   }
 

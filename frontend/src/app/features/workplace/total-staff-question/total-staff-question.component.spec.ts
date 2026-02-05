@@ -97,7 +97,9 @@ describe('TotalStaffQuestionComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -247,11 +249,23 @@ describe('TotalStaffQuestionComponent', () => {
   it('should return to data sharing page when you click on the back link', async () => {
     const shareWith: any = { cqc: false, localAuthorities: false };
     const { component } = await setup(shareWith);
-    expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'sharing-data']);
+    expect(component.previousRoute).toEqual([
+      '/workplace',
+      `${component.establishment.uid}`,
+      'workplace-data',
+      'workplace-summary',
+      'sharing-data',
+    ]);
   });
 
   it('should go on to vacancies page if you click submit', async () => {
     const { component } = await setup();
-    expect(component.nextRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'vacancies']);
+    expect(component.nextRoute).toEqual([
+      '/workplace',
+      `${component.establishment.uid}`,
+      'workplace-data',
+      'workplace-summary',
+      'vacancies',
+    ]);
   });
 });

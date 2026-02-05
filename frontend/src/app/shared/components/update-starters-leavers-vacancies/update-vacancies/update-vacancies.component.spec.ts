@@ -79,7 +79,9 @@ describe('UpdateVacanciesComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -322,7 +324,7 @@ describe('UpdateVacanciesComponent', () => {
         fixture.detectChanges();
 
         // @ts-expect-error: TS2341: Property 'route' is private
-        expect(routerSpy).toHaveBeenCalledWith(['../update-vacancies-job-roles'], { relativeTo: component.route });
+        expect(routerSpy).toHaveBeenCalledWith(['../update-vacancy-job-roles'], { relativeTo: component.route });
       });
 
       it('should store the current job role selections in service', async () => {

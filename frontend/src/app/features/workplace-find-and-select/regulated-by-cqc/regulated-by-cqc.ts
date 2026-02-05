@@ -15,7 +15,6 @@ import { skip } from 'rxjs/operators';
 @Directive()
 export class RegulatedByCQCDirective implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
-  protected flow: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected isCQCLocationUpdate: boolean;
@@ -256,16 +255,12 @@ export class RegulatedByCQCDirective implements OnInit, OnDestroy, AfterViewInit
 
   protected onLocationFailure(): void {}
 
-  protected navigateToNextRoute(data: LocationSearchResponse): void {
-    if (data.locationdata) {
-      this.router.navigate([`${this.flow}/select-workplace`]);
-    } else {
-      this.router.navigate([`${this.flow}/select-workplace-address`]);
-    }
+  protected navigateToNextRoute(): void {
+    this.router.navigate(['../select-workplace'], { relativeTo: this.route });
   }
 
   protected navigateToWorkplaceNotFoundRoute() {
-    this.router.navigate([this.flow, 'workplace-not-found']);
+    this.router.navigate(['../workplace-not-found'], { relativeTo: this.route });
   }
 
   private onError(error: HttpErrorResponse): void {

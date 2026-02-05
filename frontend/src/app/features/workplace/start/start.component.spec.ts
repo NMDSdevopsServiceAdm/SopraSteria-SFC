@@ -44,7 +44,7 @@ describe('StartComponent (workplace)', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should navigate to type of employer page after clicking continue button', async () => {
+  it('should navigate to other-services page after clicking continue button', async () => {
     const { component, getByText, routerSpy } = await setup();
 
     const workplaceUid = component.establishment.uid;
@@ -52,7 +52,13 @@ describe('StartComponent (workplace)', () => {
 
     fireEvent.click(continueButton);
 
-    expect(routerSpy).toHaveBeenCalledWith(['workplace', workplaceUid, 'other-services']);
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'workplace-data',
+      'add-workplace-details',
+      'other-services',
+    ]);
   });
 
   it('should call the updateSingleEstablishmentField when clicking the Continue button', async () => {

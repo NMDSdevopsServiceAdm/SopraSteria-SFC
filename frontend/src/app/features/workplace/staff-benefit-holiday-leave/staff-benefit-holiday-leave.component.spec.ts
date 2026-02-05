@@ -10,14 +10,18 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffBenefitHolidayLeaveComponent', () => {
   async function setup(returnUrl = true, holidayLeave = undefined) {
+    const isInAddDetailsFlow = !returnUrl;
+
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       StaffBenefitHolidayLeaveComponent,
       {
         imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
+          patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
           UntypedFormBuilder,
           {
             provide: EstablishmentService,
@@ -141,7 +145,13 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'sharing-data']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'sharing-data',
+      ]);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {

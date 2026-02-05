@@ -10,14 +10,18 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffBenefitCashLoyaltyComponent', () => {
   async function setup(returnUrl = true, cashLoyalty = undefined) {
+    const isInAddDetailsFlow = !returnUrl;
+
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       StaffBenefitCashLoyaltyComponent,
       {
         imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
+          patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
           UntypedFormBuilder,
           {
             provide: EstablishmentService,
@@ -133,7 +137,13 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
 
   it('should set the previous route as care workforce pathway use question page', async () => {
     const { component } = await setup(false);
-    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'care-workforce-pathway-use']);
+    expect(component.previousRoute).toEqual([
+      '/workplace',
+      'mocked-uid',
+      'workplace-data',
+      'add-workplace-details',
+      'care-workforce-pathway-use',
+    ]);
   });
 
   describe('submit buttons and submitting form', () => {
@@ -185,7 +195,13 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'benefits-statutory-sick-pay',
+      ]);
     });
 
     it('should navigate to the next page when user clicks skip button in the flow', async () => {
@@ -195,7 +211,13 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'benefits-statutory-sick-pay',
+      ]);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {

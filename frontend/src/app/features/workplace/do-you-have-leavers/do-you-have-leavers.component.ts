@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.directive';
 
 @Component({
-    selector: 'app-do-you-have-leavers',
-    templateUrl: '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
-    standalone: false
+  selector: 'app-do-you-have-leavers',
+  templateUrl:
+    '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
+  standalone: false,
 })
 export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacanciesDirective {
   public todayOneYearAgo = this.getDateForOneYearAgo();
@@ -18,8 +19,8 @@ export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacancies
   public requiredWarningMessage = `Select yes if you've had leavers since ${this.todayOneYearAgo}`;
 
   protected setupRoutes(): void {
-    this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'staff-recruitment-capture-training-requirement'];
+    this.skipToQuestionPage = 'staff-recruitment-capture-training-requirement';
     this.startersLeaversOrVacanciesPageTwo = 'select-leaver-job-roles';
-    this.previousRoute = this.getPreviousRoute('starters');
+    this.previousQuestionPage = this.getPreviousPage('starters');
   }
 }
