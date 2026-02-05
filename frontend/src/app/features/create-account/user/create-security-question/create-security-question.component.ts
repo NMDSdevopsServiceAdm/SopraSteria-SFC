@@ -35,7 +35,6 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
     this.userAccountSections = ProgressBarUtil.userProgressBarSections();
     this.return = this.registrationService.returnTo$.value;
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
-    this.flow = this.insideFlow ? 'registration' : 'registration/confirm-details';
     this.setBackLink();
   }
 
@@ -54,7 +53,9 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
   }
 
   protected save(): void {
-    this.router.navigate(['/registration/confirm-details']).then(() => {
+    const path = this.insideFlow ? 'user-research-invite' : 'confirm-details';
+
+    this.router.navigate(['/registration/' + path]).then(() => {
       this.registrationService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,
         securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
