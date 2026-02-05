@@ -7,6 +7,13 @@ import { CareWorkforcePathwayWorkplaceAwarenessAnswersResolver } from '@core/res
 import { CheckIfAnyWorkerHasDHAAnsweredResolver } from '@core/resolvers/delegated-healthcare-activities/check-if-any-worker-has-dha-answered.resolver';
 import { GetDelegatedHealthcareActivitiesResolver } from '@core/resolvers/delegated-healthcare-activities/get-delegated-healthcare-activities.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import {
+  JobRoleType,
+  SelectJobRolesToAddComponent,
+} from '@shared/components/update-starters-leavers-vacancies/select-job-roles-to-add/select-job-roles-to-add.component';
+import { UpdateLeaversComponent } from '@shared/components/update-starters-leavers-vacancies/update-leavers/update-leavers.component';
+import { UpdateStartersComponent } from '@shared/components/update-starters-leavers-vacancies/update-starters/update-starters.component';
+import { UpdateVacanciesComponent } from '@shared/components/update-starters-leavers-vacancies/update-vacancies/update-vacancies.component';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
@@ -22,9 +29,14 @@ import { HowManyStartersComponent } from './how-many-starters/how-many-starters.
 import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { PensionsComponent } from './pensions/pensions.component';
+import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles/select-leaver-job-roles.component';
+import { SelectMainServiceCqcConfirmComponent } from './select-main-service/select-main-service-cqc-confirm.component';
+import { SelectMainServiceCqcComponent } from './select-main-service/select-main-service-cqc.component';
+import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectStarterJobRolesComponent } from './select-starter-job-roles/select-starter-job-roles.component';
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
@@ -33,6 +45,10 @@ import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delega
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
 import { StartComponent } from './start/start.component';
+import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
+import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
+import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -280,17 +296,175 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
   },
 ];
 
-// TODO in ticket #1874: populate this array so that /workplace-data/workplace-summary/question-page-name work
-const workplaceSummaryOnlyPages: Routes = [];
+const workplaceSummaryOnlyPages: Routes = [
+  {
+    path: 'main-service',
+    component: SelectMainServiceComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Main Service',
+    },
+  },
+  {
+    path: 'main-service-cqc',
+    component: SelectMainServiceCqcComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Main Service',
+    },
+  },
+  {
+    path: 'main-service-cqc-confirm',
+    component: SelectMainServiceCqcConfirmComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Main Service',
+    },
+  },
+  {
+    path: 'regulated-by-cqc',
+    component: RegulatedByCqcComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Regulated by CQC',
+    },
+  },
+  {
+    path: 'select-workplace',
+    component: SelectWorkplaceComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Select Workplace',
+    },
+  },
+  {
+    path: 'workplace-not-found',
+    component: WorkplaceNotFoundComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Workplace Not Found',
+    },
+  },
 
-export const addWorkplaceDetails: Route = {
+  {
+    path: 'type-of-employer',
+    component: TypeOfEmployerComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Type of Employer',
+    },
+  },
+
+  {
+    path: 'total-staff',
+    component: TotalStaffQuestionComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Total Staff',
+    },
+  },
+  {
+    path: 'update-vacancies',
+    component: UpdateVacanciesComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Update Vacancies',
+    },
+  },
+  {
+    path: 'update-vacancy-job-roles',
+    component: SelectJobRolesToAddComponent,
+    canActivate: [CheckPermissionsGuard],
+    resolve: { jobs: JobsResolver },
+    data: {
+      permissions: ['canEditEstablishment'],
+      jobRoleType: JobRoleType.Vacancies,
+      title: 'Select job roles to add',
+    },
+  },
+  {
+    path: 'update-starters',
+    component: UpdateStartersComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Update Starters',
+    },
+  },
+  {
+    path: 'update-starter-job-roles',
+    component: SelectJobRolesToAddComponent,
+    canActivate: [CheckPermissionsGuard],
+    resolve: { jobs: JobsResolver },
+    data: {
+      permissions: ['canEditEstablishment'],
+      jobRoleType: JobRoleType.Starters,
+      title: 'Select job roles to add',
+    },
+  },
+  {
+    path: 'update-leavers',
+    component: UpdateLeaversComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Update Leavers',
+    },
+  },
+  {
+    path: 'update-leaver-job-roles',
+    component: SelectJobRolesToAddComponent,
+    canActivate: [CheckPermissionsGuard],
+    resolve: { jobs: JobsResolver },
+    data: {
+      permissions: ['canEditEstablishment'],
+      jobRoleType: JobRoleType.Leavers,
+      title: 'Select job roles to add',
+    },
+  },
+  {
+    path: 'update-workplace-details',
+    component: WorkplaceNameAddressComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Update Workplace Details',
+    },
+  },
+];
+
+const addWorkplaceDetails: Route = {
   path: 'add-workplace-details',
   children: [...workplaceFlowOnlyPages, ...workplaceQuestionsSharedByFlowAndSummary],
 };
 
-export const workplaceSummary: Route = {
+const workplaceSummary: Route = {
   path: 'workplace-summary',
-  children: [...workplaceSummaryOnlyPages, ...workplaceQuestionsSharedByFlowAndSummary],
+  children: [
+    ...workplaceSummaryOnlyPages,
+    ...workplaceQuestionsSharedByFlowAndSummary,
+
+    // redirection to address possible broken link on page refresh
+    {
+      path: 'do-you-have-vacancies',
+      redirectTo: 'update-vacancies',
+    },
+    {
+      path: 'how-many-leavers',
+      redirectTo: 'update-leavers',
+    },
+  ],
 };
+
+export const workplaceQuestionsForFundingPage: Routes = [...workplaceSummary.children];
 
 export const WorkplaceDataRoutes: Route = { path: 'workplace-data', children: [addWorkplaceDetails, workplaceSummary] };

@@ -228,4 +228,26 @@ describe('EstablishmentService', () => {
       expect(actual).toEqual(expected);
     });
   });
+
+  describe('baseRouteForWorkplaceSummary', () => {
+    it('should return a base route URL for the workplace summary route', () => {
+      const mockWorkplaceUid = 'mock-workplace-uid';
+      const expected = ['/workplace', mockWorkplaceUid, 'workplace-data', 'workplace-summary'];
+
+      const actual = service.baseRouteForWorkplaceSummary(mockWorkplaceUid);
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe('buildPathForWorkplaceSummary', () => {
+    it('should build the URL for a page under /workplace-data/workplace-summary route', () => {
+      const mockWorkplaceUid = 'mock-workplace-uid';
+      const pageSegment = 'update-vacancies';
+
+      const expected = ['/workplace', mockWorkplaceUid, 'workplace-data', 'workplace-summary', 'update-vacancies'];
+
+      const actual = service.buildPathForWorkplaceSummary(mockWorkplaceUid, pageSegment);
+      expect(actual).toEqual(expected);
+    });
+  });
 });

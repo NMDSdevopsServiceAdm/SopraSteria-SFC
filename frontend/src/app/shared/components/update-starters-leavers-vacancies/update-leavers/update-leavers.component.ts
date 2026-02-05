@@ -1,18 +1,18 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
-import {
-  UpdateStartersLeaversVacanciesDirective,
-} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
-    selector: 'app-update-leavers',
-    templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
-    standalone: false
+  selector: 'app-update-leavers',
+  templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+  standalone: false,
 })
 export class UpdateLeaversComponent extends UpdateStartersLeaversVacanciesDirective {
   protected slvField = 'leavers';
   protected selectedField = 'selectedLeavers';
+  protected updateJobRolePage = 'update-leaver-job-roles';
+
   public revealText =
     'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
   public tableTitle = 'Leavers in the last 12 months';

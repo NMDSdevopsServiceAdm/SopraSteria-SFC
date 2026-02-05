@@ -18,15 +18,19 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
 
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('CareWorkforcePathwayAwarenessComponent', () => {
   const awareAnswers = careWorkforcePathwayAwarenessAnswers.slice(0, 3);
   const notAwareAnswers = careWorkforcePathwayAwarenessAnswers.slice(3, 5);
 
   async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnToUrl;
+
     const setupTools = await render(CareWorkforcePathwayAwarenessComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
@@ -140,11 +144,17 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
     });
   });
 
-  describe('outside the flow', () => {
+  describe('outside the flow (when coming from workplace summary)', () => {
     it('should set the previous page to accept-previous-care-certificate page', async () => {
       const { component } = await setup({ returnToUrl: true });
 
-      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'accept-previous-care-certificate']);
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'workplace-summary',
+        'accept-previous-care-certificate',
+      ]);
     });
   });
 
@@ -247,7 +257,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
       });
     });
 
-    describe('outside the flow', () => {
+    describe('outside the flow (come from workplace summary)', () => {
       it("should show 'Save' button and 'Cancel' link", async () => {
         const { getByText } = await setup({ returnToUrl: true });
 
@@ -284,7 +294,13 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
             careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'care-workforce-pathway-use']);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            workplaceId,
+            'workplace-data',
+            'workplace-summary',
+            'care-workforce-pathway-use',
+          ]);
         });
       });
 

@@ -19,6 +19,7 @@ import { repeat } from 'lodash';
 import { of, throwError } from 'rxjs';
 
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('CareWorkforcePathwayUseComponent', () => {
   const RadioButtonLabels = {
@@ -42,9 +43,12 @@ describe('CareWorkforcePathwayUseComponent', () => {
     const routerSpy = jasmine.createSpy().and.resolveTo(true);
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
 
+    const isInAddDetailsFlow = !overrides?.establishmentService?.returnTo;
+
     const setupTools = await render(CareWorkforcePathwayUseComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
@@ -343,7 +347,9 @@ describe('CareWorkforcePathwayUseComponent', () => {
   });
 
   describe('when in new workplace workflow', async () => {
-    const overrides = { establishmentService: { returnTo: null } };
+    const overrides = {
+      establishmentService: { returnTo: null },
+    };
 
     it('should show a progress bar', async () => {
       const { getByTestId } = await setup(overrides);
@@ -417,6 +423,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
 
   describe('When coming from summary panel', () => {
     const workplaceName = 'Test workplace name';
+
     const comingFromSummaryPanelOverrides = {
       establishmentService: {
         returnTo: { url: ['/dashboard'], fragment: 'home' },
@@ -456,7 +463,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
       const { backServiceSpy } = await setup(comingFromSummaryPanelOverrides);
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness'],
+        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'care-workforce-pathway-awareness'],
       });
     });
   });
@@ -487,7 +494,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
       });
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness'],
+        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'care-workforce-pathway-awareness'],
       });
     });
   });

@@ -12,14 +12,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-do-delegated-healthcare-activities',
   templateUrl: './staff-do-delegated-healthcare-activities.component.html',
   standalone: false,
 })
-export class StaffDoDelegatedHealthcareActivitiesComponent extends Question implements OnInit, OnDestroy {
+export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.SERVICES;
   public options = [
     { value: 'Yes', label: 'Yes' },
@@ -48,8 +48,8 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
   init() {
     this.setupForm();
     this.setPreviousRoute();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'do-you-have-vacancies'];
-    this.nextRoute = this.skipRoute;
+    this.skipToQuestionPage = 'do-you-have-vacancies';
+    this.nextQuestionPage = 'do-you-have-vacancies';
     this.prefill();
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
     this.checkWhetherShouldDisplayWarning();
@@ -77,7 +77,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
+    this.previousQuestionPage = 'service-users';
   }
 
   protected generateUpdateProps(): any {
@@ -128,10 +128,10 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends Question impl
     const { staffDoDelegatedHealthcareActivities } = this.form.value;
 
     if (staffDoDelegatedHealthcareActivities === 'Yes') {
-      this.nextRoute = ['/workplace', this.establishment.uid, 'what-kind-of-delegated-healthcare-activities'];
+      this.nextQuestionPage = 'what-kind-of-delegated-healthcare-activities';
       this.submitAction = { action: 'continue', save: true };
     } else {
-      this.nextRoute = this.skipRoute;
+      this.nextQuestionPage = this.skipToQuestionPage;
     }
   }
 

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { WORKPLACE_SUMMARY_ROUTE } from '@core/constants/constants';
 import { Establishment } from '@core/model/establishment.model';
 import { Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
@@ -8,12 +9,8 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import {
-  ChangeDataOwnerDialogComponent,
-} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { MoveWorkplaceDialogComponent } from '@shared/components/move-workplace/move-workplace-dialog.component';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
@@ -162,14 +159,17 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     });
   }
 
-  // refactor and rename
-  public setEmployerType(event: Event): void {
+  public visitSubWorkplaceOrsetEmployerType(event: Event): void {
     event.preventDefault();
 
     this.establishmentService.getEstablishment(this.workplace.uid).subscribe((data) => {
       if (data.employerType == null) {
         this.establishmentService.setEmployerTypeHasValue(false);
-        this.router.navigate(['/workplace', this.workplace.uid, 'type-of-employer']);
+        const typeOfEmployerPage = this.establishmentService.buildPathForWorkplaceSummary(
+          this.workplace.uid,
+          'type-of-employer',
+        );
+        return this.router.navigate(typeOfEmployerPage);
       } else {
         this.parentSubsidiaryViewService.setViewingSubAsParent(this.workplace.uid);
         this.router.navigate(['/subsidiary', this.workplace.uid, 'home']);

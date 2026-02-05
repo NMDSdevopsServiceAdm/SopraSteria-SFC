@@ -1,5 +1,5 @@
 import { render } from '@testing-library/angular';
-import { Question } from './question.component';
+import { WorkplaceQuestion } from './question.component';
 import { Component } from '@angular/core';
 import { SharedModule } from '@shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
@@ -11,32 +11,40 @@ import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEsta
 import { BackService } from '@core/services/back.service';
 import { getTestBed } from '@angular/core/testing';
 
-describe('WorkplaceQuestion parent class', () => {
+describe('WorkplaceQuestion', () => {
   const mockWorkplaceUid = 'mock-workplace-uid';
+  const returnToWorkplaceSummary = { url: ['/dashboard'], fragment: 'workplace' };
+  const returnToFundingPage = { url: ['/funding/data'], fragment: 'workplace' };
 
   @Component({})
-  class MockChildComponent extends Question {
+  class MockChildComponent extends WorkplaceQuestion {
     _init() {
-      this.previousRoute = ['/workpace', mockWorkplaceUid, 'previous-page'];
-      this.nextRoute = ['/workpace', mockWorkplaceUid, 'next-page'];
-      this.skipRoute = ['/workpace', mockWorkplaceUid, 'next-page-after-skip'];
+      this.previousQuestionPage = 'previous-page';
+      this.nextQuestionPage = 'next-page';
+      this.skipToQuestionPage = 'next-page-after-skip';
     }
   }
 
   const setup = async (overrides: any = {}) => {
     const currentUrl = overrides?.currentUrl ?? '/dashboard';
+    const returnTo = overrides?.returnTo ?? null;
+    const backServiceSpy = jasmine.createSpy();
+
     const setupTools = await render(MockChildComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceWithOverrides.factory({ establishment: { uid: mockWorkplaceUid } }),
+          useFactory: MockEstablishmentServiceWithOverrides.factory({
+            establishment: { uid: mockWorkplaceUid },
+            returnTo,
+          }),
         },
         {
           provide: BackService,
-          useValue: {},
+          useValue: { setBackLink: backServiceSpy },
         },
-        { provide: Router, useValue: { url: currentUrl } },
+        { provide: Router, useValue: { url: currentUrl, navigate: jasmine.createSpy() } },
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
@@ -44,13 +52,15 @@ describe('WorkplaceQuestion parent class', () => {
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService);
-    return { ...setupTools, component, establishmentService };
+    const router = injector.inject(Router);
+
+    return { ...setupTools, component, establishmentService, router, backServiceSpy };
   };
 
   describe('conditional routing for previousRoute / nextRoute / skipRoute', () => {
     it('should return the page URL under /workplace-data/add-workplace-details if in add workplace details flow', async () => {
       const { component } = await setup({
-        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/a-question-page`,
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/question-page-name`,
       });
 
       expect(component.previousRoute).toEqual([
@@ -78,14 +88,130 @@ describe('WorkplaceQuestion parent class', () => {
       ]);
     });
 
-    it('should return the page URL under /workplace/:uid if not in flow', async () => {
-      const { component } = await setup();
+    it('should return the page URL under /workplace/:uid/workplace-data/workplace-summary/ if visited from summary', async () => {
+      const { component } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/workplace-summary/question-page-name`,
+        returnTo: returnToWorkplaceSummary,
+      });
+
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        mockWorkplaceUid,
+        'workplace-data',
+        'workplace-summary',
+        'previous-page',
+      ]);
+
+      expect(component.nextRoute).toEqual([
+        '/workplace',
+        mockWorkplaceUid,
+        'workplace-data',
+        'workplace-summary',
+        'next-page',
+      ]);
+
+      expect(component.skipRoute).toEqual([
+        '/workplace',
+        mockWorkplaceUid,
+        'workplace-data',
+        'workplace-summary',
+        'next-page-after-skip',
+      ]);
+    });
+
+    it('should return the page URL under /workplace/:uid/ in other case (e.g. visited from funding page)', async () => {
+      const { component } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/question-page-name`,
+        returnTo: returnToFundingPage,
+      });
 
       expect(component.previousRoute).toEqual(['/workplace', mockWorkplaceUid, 'previous-page']);
 
       expect(component.nextRoute).toEqual(['/workplace', mockWorkplaceUid, 'next-page']);
 
       expect(component.skipRoute).toEqual(['/workplace', mockWorkplaceUid, 'next-page-after-skip']);
+    });
+  });
+
+  describe('setBackLink', () => {
+    it('should set the backlink to establishmentService.returnTo if it is given', async () => {
+      const { backServiceSpy } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/question-page-name`,
+        returnTo: returnToFundingPage,
+      });
+
+      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/funding/data'], fragment: 'workplace' });
+    });
+
+    it('should set the backlink to the previous question page if returnTo is missing and in add workplace details flow', async () => {
+      const { backServiceSpy } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/question-page-name`,
+      });
+
+      expect(backServiceSpy).toHaveBeenCalledWith({
+        url: ['/workplace', mockWorkplaceUid, 'workplace-data', 'add-workplace-details', 'previous-page'],
+      });
+    });
+
+    it('should set the backlink to /dashboard#workplace if returnTo is missing and visited from workplace summary', async () => {
+      const { backServiceSpy } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/workplace-summary/question-page-name`,
+      });
+
+      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+    });
+
+    it('should set the backlink to /dashboard#workplace (as a failsafe) if returnTo is missing and current url is a special route', async () => {
+      const { backServiceSpy } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/some/unexpected/url`,
+      });
+
+      expect(backServiceSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
+    });
+  });
+
+  describe('navigateToQuestionPage', () => {
+    it('should navigate to question page under /workplace-data/add-workplace-details/ if in add workplace details flow', async () => {
+      const { component, router } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/add-workplace-details/question-page-name`,
+      });
+
+      // @ts-ignore
+      component.navigateToQuestionPage('another-question-page', { replaceUrl: true });
+
+      expect(router.navigate).toHaveBeenCalledWith(
+        ['/workplace', mockWorkplaceUid, 'workplace-data', 'add-workplace-details', 'another-question-page'],
+        { replaceUrl: true },
+      );
+    });
+
+    it('should navigate to question page under /workplace-data/workplace-summary/ if in add workplace details flow', async () => {
+      const { component, router } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/workplace-data/workplace-summary/question-page-name`,
+        returnTo: returnToWorkplaceSummary,
+      });
+
+      // @ts-ignore
+      component.navigateToQuestionPage('another-question-page', { replaceUrl: true });
+
+      expect(router.navigate).toHaveBeenCalledWith(
+        ['/workplace', mockWorkplaceUid, 'workplace-data', 'workplace-summary', 'another-question-page'],
+        { replaceUrl: true },
+      );
+    });
+
+    it('should navigate to question page under /workplace/:uid/ in other case (e.g. visited from funding page)', async () => {
+      const { component, router } = await setup({
+        currentUrl: `/workplace/${mockWorkplaceUid}/question-page-name`,
+        returnTo: returnToFundingPage,
+      });
+
+      // @ts-ignore
+      component.navigateToQuestionPage('another-question-page', { replaceUrl: true });
+
+      expect(router.navigate).toHaveBeenCalledWith(['/workplace', mockWorkplaceUid, 'another-question-page'], {
+        replaceUrl: true,
+      });
     });
   });
 });

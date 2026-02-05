@@ -45,7 +45,7 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
   }
 
   protected setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'select-leaver-job-roles'];
+    this.previousQuestionPage = 'select-leaver-job-roles';
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -61,6 +61,6 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
+    this.nextQuestionPage = 'staff-recruitment-capture-training-requirement';
   }
 }

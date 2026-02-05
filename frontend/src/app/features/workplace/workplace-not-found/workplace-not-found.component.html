@@ -1,12 +1,10 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1>
-      CQC ID. Workplace not found.
-    </h1>
+    <h1>CQC ID. Workplace not found.</h1>
 
     <p>To continue, you can:</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li><a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']">go back and try again</a></li>
+      <li><a [routerLink]="['../', 'regulated-by-cqc']">go back and try again</a></li>
 
       <li><a [routerLink]="['/dashboard']" [fragment]="'workplace'">go to home</a></li>
       <li>

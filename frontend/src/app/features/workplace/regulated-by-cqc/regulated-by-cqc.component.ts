@@ -10,13 +10,11 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { RegulatedByCQCDirective } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
 
 @Component({
-    selector: 'app-regulated-by-cqc',
-    templateUrl: './regulated-by-cqc.component.html',
-    standalone: false
+  selector: 'app-regulated-by-cqc',
+  templateUrl: './regulated-by-cqc.component.html',
+  standalone: false,
 })
 export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
-  public nextRoute: string[];
-
   constructor(
     private workplaceService: WorkplaceService,
     protected backService: BackService,
@@ -31,7 +29,6 @@ export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
   }
 
   protected init() {
-    this.flow = `workplace/${this.establishmentService.establishment.uid}`;
     this.isCQCLocationUpdate = true;
     this.setBackLink();
     this.validateLocationChange();
@@ -56,10 +53,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
       return;
     }
 
-    if (action === 'continue') {
-      this.router.navigate(this.nextRoute);
-      return;
-    } else if (action === 'return') {
+    if (action === 'return') {
       this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
       return;
     }
@@ -69,7 +63,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
     this.workplaceService.isRegulated$.next(this.regulatedByCQC.value === 'yes');
     if (data.success === 1) {
       this.workplaceService.locationAddresses$.next(data.locationdata || data.postcodedata);
-      this.navigateToNextRoute(data);
+      this.navigateToNextRoute();
     }
   }
 

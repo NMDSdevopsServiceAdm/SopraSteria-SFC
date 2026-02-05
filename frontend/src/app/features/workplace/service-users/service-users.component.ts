@@ -8,16 +8,16 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ServiceUsersService } from '@core/services/service-users.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { Question } from '@features/workplace/question/question.component';
+import { WorkplaceQuestion } from '@features/workplace/question/question.component';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
 
 @Component({
-    selector: 'app-service-users',
-    templateUrl: './service-users.component.html',
-    standalone: false
+  selector: 'app-service-users',
+  templateUrl: './service-users.component.html',
+  standalone: false,
 })
-export class ServiceUsersComponent extends Question {
+export class ServiceUsersComponent extends WorkplaceQuestion {
   public serviceUserGroups: ServiceUserGroup[];
   public allUserServices: ServiceForUser[] = [];
   public renderForm = false;
@@ -52,10 +52,10 @@ export class ServiceUsersComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         (response) => {
-          this.previousRoute =
+          this.previousQuestionPage =
             response.allServiceCapacities && response.allServiceCapacities.length
-              ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
-              : ['/workplace', `${this.establishment.uid}`, 'other-services'];
+              ? 'capacity-of-services'
+              : 'other-services';
           this.setBackLink();
         },
         (error) => this.onError(error),
@@ -124,8 +124,8 @@ export class ServiceUsersComponent extends Question {
     const nextPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
       ? 'staff-do-delegated-healthcare-activities'
       : 'do-you-have-vacancies';
-    this.nextRoute = ['/workplace', this.establishment.uid, nextPage];
-    this.skipRoute = this.nextRoute;
+    this.nextQuestionPage = nextPage;
+    this.skipToQuestionPage = nextPage;
   }
 
   protected generateUpdateProps() {

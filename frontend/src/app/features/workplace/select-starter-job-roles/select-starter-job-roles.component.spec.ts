@@ -15,12 +15,15 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectStarterJobRolesComponent } from './select-starter-job-roles.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('SelectStarterJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
 
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
+    const isInAddDetailsFlow = !returnToUrl;
+
     const startersFromDatabase = override.startersFromDatabase ?? null;
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
     const selectedStarters = override.selectedStarters ?? null;
@@ -28,6 +31,7 @@ describe('SelectStarterJobRolesComponent', () => {
     const renderResults = await render(SelectStarterJobRolesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,

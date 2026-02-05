@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { WorkplaceUpdatePage } from '@core/services/vacancies-and-turnover.service';
-import {
-  UpdateStartersLeaversVacanciesDirective,
-} from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
+import { UpdateStartersLeaversVacanciesDirective } from '@shared/directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.directive';
 
 @Component({
-    selector: 'app-update-starters',
-    templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
-    standalone: false
+  selector: 'app-update-starters',
+  templateUrl: '../../../directives/update-starters-leavers-vacancies/update-starters-leavers-vacancies.component.html',
+  standalone: false,
 })
 export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirective {
   public totalNumberDescription = 'Total number of starters';
@@ -23,6 +21,7 @@ export class UpdateStartersComponent extends UpdateStartersLeaversVacanciesDirec
   public addExplanationMessage = 'Only add the number of starters in permanent and temporary job roles.';
 
   protected slvField = 'starters';
+  protected updateJobRolePage = 'update-starter-job-roles';
   protected selectedField = 'selectedStarters';
   protected updatePage = WorkplaceUpdatePage.UPDATE_STARTERS;
 

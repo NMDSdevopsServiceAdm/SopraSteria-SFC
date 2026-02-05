@@ -18,6 +18,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { ServiceUsersComponent } from './service-users.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 const mockServiceUser = [
   {
@@ -66,11 +67,13 @@ const mockServiceUser = [
 
 describe('ServiceUsersComponent', () => {
   const setup = async (overrides: any = {}) => {
+    const isInAddDetailsFlow = !overrides?.returnToUrl;
     const getServiceUsersSpy = jasmine.createSpy('getServiceUsers').and.returnValue(of(mockServiceUser));
 
     const setupTools = await render(ServiceUsersComponent, {
       imports: [BrowserModule, SharedModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
           provide: EstablishmentService,

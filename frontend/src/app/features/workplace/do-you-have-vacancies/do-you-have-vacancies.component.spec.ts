@@ -11,12 +11,16 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnUrl;
+
     const setupTools = await render(DoYouHaveVacanciesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         WindowRef,
         UntypedFormBuilder,
         {
@@ -173,7 +177,13 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component } = await setup(overrides);
 
-        expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'service-users']);
+        expect(component.previousRoute).toEqual([
+          '/workplace',
+          `${component.establishment.uid}`,
+          'workplace-data',
+          'workplace-summary',
+          'service-users',
+        ]);
       });
 
       it('should set the previous page to what-kind-of-delegated-healthcare-activities page when main service can do delegated healthcare activities', async () => {
@@ -194,6 +204,8 @@ describe('DoYouHaveVacanciesComponent', () => {
         expect(component.previousRoute).toEqual([
           '/workplace',
           `${component.establishment.uid}`,
+          'workplace-data',
+          'workplace-summary',
           'what-kind-of-delegated-healthcare-activities',
         ]);
       });
@@ -451,7 +463,13 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-vacancy-job-roles']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'workplace-summary',
+          'select-vacancy-job-roles',
+        ]);
       });
 
       it("should navigate to the workplace summary page when submitting 'None'", async () => {

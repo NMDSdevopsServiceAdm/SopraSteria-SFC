@@ -7,14 +7,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
-    selector: 'app-pensions',
-    templateUrl: './pensions.component.html',
-    standalone: false
+  selector: 'app-pensions',
+  templateUrl: './pensions.component.html',
+  standalone: false,
 })
-export class PensionsComponent extends Question implements OnInit, OnDestroy {
+export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public pensionsOptions = [
     {
       label: 'Yes',
@@ -49,8 +49,8 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
   }
 
   private setRoutes(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
+    this.previousQuestionPage = 'benefits-statutory-sick-pay';
+    this.skipToQuestionPage = 'staff-benefit-holiday-leave';
   }
 
   private setupForm(): void {
@@ -93,6 +93,6 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
+    this.nextQuestionPage = 'staff-benefit-holiday-leave';
   }
 }
