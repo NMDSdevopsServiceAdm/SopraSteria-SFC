@@ -148,7 +148,7 @@ describe('StartComponent (workplace)', () => {
     })
   })
 
-  it('should navigate to type of employer page after clicking continue button', async () => {
+  it('should navigate to other-services page after clicking continue button', async () => {
     const { component, getByText, routerSpy } = await setup();
 
     const workplaceUid = component.establishment.uid;
