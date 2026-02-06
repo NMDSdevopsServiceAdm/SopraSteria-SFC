@@ -93,6 +93,7 @@ export interface TrainingRecord {
   trainingStatus?: number;
   missing?: boolean;
   isMatchedToTrainingCourse?: boolean;
+  trainingCourseFK?: number;
 }
 
 export interface TrainingRecordCategory {

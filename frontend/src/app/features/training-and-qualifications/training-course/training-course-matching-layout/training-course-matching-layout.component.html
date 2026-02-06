@@ -64,6 +64,7 @@
                       }
 
                       <app-date-picker
+                        #completed
                         [formGroup]="form"
                         [formGroupName]="'completed'"
                         [submitted]="submitted"
@@ -72,7 +73,7 @@
                   </div>
                 </div>
                 <div class="govuk-grid-column-one-half">
-                  @if (journeyType !== 'AddNewTrainingRecordWithCourse') {
+                  @if (showExpiryDateInput) {
                     <div
                       data-testid="expiresDate"
                       class="govuk-form-group"
@@ -82,14 +83,25 @@
                       <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Training expiry date</legend>
                         <legend id="expires-hint" class="govuk-hint">For example, 31 3 2025</legend>
-                        <div *ngIf="expiryMismatchWarning">
-                          <span
-                            class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
-                          >
-                            This training is usually valid for
-                            {{ trainingToDisplay?.validityPeriodInMonth }} months
-                          </span>
-                        </div>
+                        @if (expiryMismatchWarning) {
+                          <div>
+                            <span
+                              class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
+                            >
+                              This training is usually valid for
+                              {{ trainingToDisplay?.validityPeriodInMonth }} months
+                            </span>
+                          </div>
+                        } @else if (doesNotExpireMismatchWarning) {
+                          <div>
+                            <span
+                              class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
+                            >
+                              This training usually does not expire
+                            </span>
+                          </div>
+                        }
+
                         <span
                           *ngIf="submitted && form.get('expires').invalid"
                           id="expires-error"
@@ -98,6 +110,7 @@
                           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('expires') }}
                         </span>
                         <app-date-picker
+                          #expires
                           [formGroup]="form"
                           [formGroupName]="'expires'"
                           [submitted]="submitted"
