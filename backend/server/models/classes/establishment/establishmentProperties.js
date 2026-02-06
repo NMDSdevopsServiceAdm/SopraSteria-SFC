@@ -30,6 +30,7 @@ const staffDoDelegatedHealthcareActivitiesProperty =
   require('./properties/staffDoDelegatedHealthcareActivitiesProperty').StaffDoDelegatedHealthcareActivitiesProperty;
 const staffWhatKindDelegatedHealthcareActivitiesProperty =
   require('./properties/staffWhatKindDelegatedHealthcareActivitiesProperty').StaffWhatKindDelegatedHealthcareActivitiesProperty;
+const travelTimePayProperty = require('./properties/travelTimePayProperty').TravelTimePayProperty;
 
 class EstablishmentPropertyManager {
   constructor() {
@@ -59,6 +60,7 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(careWorkforcePathwayUseProperty);
     this._thisManager.registerProperty(staffDoDelegatedHealthcareActivitiesProperty);
     this._thisManager.registerProperty(staffWhatKindDelegatedHealthcareActivitiesProperty);
+    this._thisManager.registerProperty(travelTimePayProperty);
   }
 
   get manager() {

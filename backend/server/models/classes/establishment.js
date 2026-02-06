@@ -1659,6 +1659,11 @@ class Establishment extends EntityValidator {
           fetchResults.careWorkforcePathwayWorkplaceAwareness = careWorkforcePathwayWorkplaceAwarenessResult;
         }
 
+        if (fetchResults.TravelTimePayOptionFK) {
+          const travelTimePayOption = await fetchResults.getTravelTimePayOption({ raw: true });
+          fetchResults.travelTimePayOption = travelTimePayOption;
+        }
+
         const allAssociatedServiceIndices = [];
 
         if (allCapacitiesResults && allCapacitiesResults.id) {
