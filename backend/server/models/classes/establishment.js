@@ -95,6 +95,7 @@ class Establishment extends EntityValidator {
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._pensionContribution = null;
+    this._pensionContributionPercentage = null;
     this._sickPay = null;
     this._isParentApprovedBannerViewed = null;
     this._primaryAuthorityCssr = null;
@@ -103,6 +104,10 @@ class Establishment extends EntityValidator {
     this._CWPAwarenessQuestionViewed = null;
     this._staffDoDelegatedHealthcareActivities = null;
     this._staffWhatKindDelegatedHealthcareActivities = null;
+    this._staffOptOutOfWorkplacePension = null;
+    this._offerSleepIn = null;
+    this._howToPayForSleepIn = null;
+    this._travelTimePay = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -383,6 +388,10 @@ class Establishment extends EntityValidator {
     return this._pensionContribution;
   }
 
+  get pensionContributionPercentage() {
+    return this._pensionContributionPercentage;
+  }
+
   get sickPay() {
     return this._sickPay;
   }
@@ -421,6 +430,22 @@ class Establishment extends EntityValidator {
     return this._properties.get('StaffWhatKindDelegatedHealthcareActivities')
       ? this._properties.get('StaffWhatKindDelegatedHealthcareActivities').property
       : null;
+  }
+
+  get staffOptOutOfWorkplacePension() {
+    return this._staffOptOutOfWorkplacePension;
+  }
+
+  get offerSleepIn() {
+    return this._offerSleepIn;
+  }
+
+  get howToPayForSleepIn() {
+    return this._howToPayForSleepIn;
+  }
+
+  get travelTimePay() {
+    return this._properties.get('TravelTimePay') ? this._properties.get('TravelTimePay').property : null;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -625,6 +650,10 @@ class Establishment extends EntityValidator {
           this._pensionContribution = document.pensionContribution;
         }
 
+        if ('pensionContributionPercentage' in document) {
+          this._pensionContributionPercentage = document.pensionContributionPercentage;
+        }
+
         if ('sickPay' in document) {
           this._sickPay = document.sickPay;
         }
@@ -647,6 +676,19 @@ class Establishment extends EntityValidator {
 
         if ('staffDoDelegatedHealthcareActivities' in document) {
           this._staffDoDelegatedHealthcareActivities = document.staffDoDelegatedHealthcareActivities;
+        }
+
+        if ('staffOptOutOfWorkplacePension' in document) {
+          this._staffOptOutOfWorkplacePension = document.staffOptOutOfWorkplacePension;
+        }
+        if ('offerSleepIn' in document) {
+          this._offerSleepIn = document.offerSleepIn;
+        }
+        if ('howToPayForSleepIn' in document) {
+          this._howToPayForSleepIn = document.howToPayForSleepIn;
+        }
+        if ('travelTimePay' in document) {
+          this._travelTimePay = document.travelTimePay;
         }
       }
 
@@ -869,12 +911,18 @@ class Establishment extends EntityValidator {
           careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
           sickPay: this._sickPay,
           pensionContribution: this._pensionContribution,
+          pensionContributionPercentage: this._pensionContributionPercentage,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
           careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
           CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
           staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
+          staffOptOutOfWorkplacePension: this._staffOptOutOfWorkplacePension,
+          offerSleepIn: this._offerSleepIn,
+          howToPayForSleepIn: this._howToPayForSleepIn,
+          travelTimePayOptionFK: this._travelTimePay?.id,
+          travelTimePayRate: this._travelTimePay?.rate,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1102,12 +1150,18 @@ class Establishment extends EntityValidator {
             careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
             sickPay: this._sickPay,
             pensionContribution: this._pensionContribution,
+            pensionContributionPercentage: this._pensionContributionPercentage,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
             isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
             primaryAuthorityCssr: this._primaryAuthorityCssr,
             careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
             CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
             staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
+            staffOptOutOfWorkplacePension: this._staffOptOutOfWorkplacePension,
+            offerSleepIn: this._offerSleepIn,
+            howToPayForSleepIn: this._howToPayForSleepIn,
+            travelTimePayOptionFK: this._travelTimePay?.id,
+            travelTimePayRate: this._travelTimePay?.rate,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1420,6 +1474,7 @@ class Establishment extends EntityValidator {
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
         this._sickPay = fetchResults.sickPay;
         this._pensionContribution = fetchResults.pensionContribution;
+        this._pensionContributionPercentage = fetchResults.pensionContributionPercentage;
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
         this._isParentApprovedBannerViewed = fetchResults.isParentApprovedBannerViewed;
@@ -1427,6 +1482,10 @@ class Establishment extends EntityValidator {
         this._CWPAwarenessQuestionViewed = fetchResults.CWPAwarenessQuestionViewed;
         this._careWorkforcePathwayUse = fetchResults.careWorkforcePathwayUse;
         this._staffDoDelegatedHealthcareActivities = fetchResults.staffDoDelegatedHealthcareActivities;
+        this._staffOptOutOfWorkplacePension = fetchResults.staffOptOutOfWorkplacePension;
+        this._offerSleepIn = fetchResults.offerSleepIn;
+        this._howToPayForSleepIn = fetchResults.howToPayForSleepIn;
+        this._travelTimePay = fetchResults.travelTimePay;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1888,11 +1947,16 @@ class Establishment extends EntityValidator {
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.sickPay = this.sickPay;
         myDefaultJSON.pensionContribution = this.pensionContribution;
+        myDefaultJSON.pensionContributionPercentage = this.pensionContributionPercentage;
         myDefaultJSON.careWorkersLeaveDaysPerYear = this.careWorkersLeaveDaysPerYear;
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.isParentApprovedBannerViewed = this.isParentApprovedBannerViewed;
         myDefaultJSON.CWPAwarenessQuestionViewed = this.CWPAwarenessQuestionViewed;
         myDefaultJSON.staffDoDelegatedHealthcareActivities = this.staffDoDelegatedHealthcareActivities;
+        myDefaultJSON.staffOptOutOfWorkplacePension = this.staffOptOutOfWorkplacePension;
+        myDefaultJSON.offerSleepIn = this.offerSleepIn;
+        myDefaultJSON.howToPayForSleepIn = this.howToPayForSleepIn;
+        myDefaultJSON.travelTimePay = this.travelTimePay;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
