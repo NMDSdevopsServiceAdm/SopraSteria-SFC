@@ -738,6 +738,19 @@ module.exports = function (sequelize, DataTypes) {
         values: ['Yes', 'No', "Don't know"],
         field: 'PensionContribution',
       },
+      pensionContributionPercentage: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        field: 'PensionContributionPercentage',
+        get() {
+          const rawValue = this.getDataValue('pensionContributionPercentage');
+          return rawValue ? parseFloat(rawValue) : null;
+        },
+        validate: {
+          min: 3,
+          max: 100,
+        },
+      },
       sickPay: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -849,6 +862,40 @@ module.exports = function (sequelize, DataTypes) {
       StaffWhatKindDelegatedHealthcareActivitiesChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
+      },
+
+      staffOptOutOfWorkplacePension: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'StaffOptOutOfWorkplacePension',
+      },
+      offerSleepIn: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'OfferSleepIn',
+      },
+      howToPayForSleepIn: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Hourly rate', 'Flat rate', 'I do not know'],
+        field: 'HowToPayForSleepIn',
+      },
+      TravelTimePayOptionFK: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'TravelTimePayOptionFK',
+      },
+      travelTimePayRate: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        field: 'TravelTimePayRate',
+        validate: { min: 0 },
+        get() {
+          const rawValue = this.getDataValue('travelTimePayRate');
+          return rawValue ? parseFloat(rawValue) : null;
+        },
       },
     },
     {
@@ -1010,6 +1057,12 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentFk',
       sourceKey: 'id',
       as: 'trainingCourse',
+    });
+
+    Establishment.belongsTo(models.travelTimePayOption, {
+      foreignKey: 'TravelTimePayOptionFK',
+      targetKey: 'id',
+      as: 'travelTimePayOption',
     });
   };
 
@@ -1485,9 +1538,14 @@ module.exports = function (sequelize, DataTypes) {
         'careWorkersCashLoyaltyForFirstTwoYears',
         'sickPay',
         'pensionContribution',
+        'pensionContributionPercentage',
         'careWorkforcePathwayUse',
         'staffDoDelegatedHealthcareActivities',
         'staffWhatKindDelegatedHealthcareActivities',
+        'staffOptOutOfWorkplacePension',
+        'offerSleepIn',
+        'howToPayForSleepIn',
+        'travelTimePayRate',
       ],
       where: {
         [Op.or]: [
@@ -1564,6 +1622,11 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.delegatedHealthcareActivities,
           attributes: ['id', 'bulkUploadCode'],
           as: 'delegatedHealthcareActivities',
+        },
+        {
+          model: sequelize.models.travelTimePayOption,
+          attributes: ['id', 'bulkUploadCode', 'includeRate'],
+          as: 'travelTimePayOption',
         },
       ],
     });
