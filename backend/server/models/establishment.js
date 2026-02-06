@@ -881,13 +881,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         values: ['Hourly rate', 'Flat rate', 'I do not know'],
         field: 'HowToPayForSleepIn',
-        validate: {
-          customValidator(value) {
-            if (value !== null && this.offerSleepIn !== 'Yes') {
-              this.howToPayForSleepIn = null;
-            }
-          },
-        },
       },
       TravelTimePayOptionFK: {
         type: DataTypes.INTEGER,
