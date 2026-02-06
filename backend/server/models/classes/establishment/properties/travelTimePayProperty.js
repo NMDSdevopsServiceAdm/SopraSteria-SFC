@@ -20,7 +20,7 @@ class TravelTimePayProperty extends ChangePropertyPrototype {
       return;
     }
 
-    const travelTimePayOption = await models.travelTimePayOption.findByPk(propertyInDocument.id);
+    const travelTimePayOption = await models.travelTimePayOption.findByPk(propertyInDocument.id, { raw: true });
 
     if (!travelTimePayOption) {
       this.property = null;
@@ -37,9 +37,10 @@ class TravelTimePayProperty extends ChangePropertyPrototype {
     }
 
     const parsedRate = parseFloat(propertyInDocument.rate);
+
     this.property = {
       ...travelTimePayOption,
-      rate: parsedRate ? parsedRate : null,
+      rate: isNaN(parsedRate) ? null : parsedRate,
     };
   }
 
