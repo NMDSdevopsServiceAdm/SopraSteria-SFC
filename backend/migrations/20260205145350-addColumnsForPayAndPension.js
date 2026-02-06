@@ -5,16 +5,16 @@ const travelTimePayOptionTable = { tableName: 'TravelTimePayOption', schema: 'cq
 
 const Sequelize = require('sequelize');
 
-const mainColumns = [
+const newColumns = [
   [
-    'PensionContributionPercentageValue',
+    'PensionContributionPercentage',
     {
       type: Sequelize.DataTypes.DECIMAL(6, 3),
       allowNull: true,
     },
   ],
   [
-    'StaffOptOutOfWorkplacePensionValue',
+    'StaffOptOutOfWorkplacePension',
     {
       type: Sequelize.DataTypes.ENUM,
       allowNull: true,
@@ -22,7 +22,7 @@ const mainColumns = [
     },
   ],
   [
-    'OfferSleepInValue',
+    'OfferSleepIn',
     {
       type: Sequelize.DataTypes.ENUM,
       allowNull: true,
@@ -30,7 +30,7 @@ const mainColumns = [
     },
   ],
   [
-    'HowToPayForSleepInValue',
+    'HowToPayForSleepIn',
     {
       type: Sequelize.DataTypes.ENUM,
       allowNull: true,
@@ -38,7 +38,7 @@ const mainColumns = [
     },
   ],
   [
-    'TravelTimePayOptionFKValue',
+    'TravelTimePayOptionFK',
     {
       type: Sequelize.DataTypes.INTEGER,
       allowNull: true,
@@ -49,7 +49,7 @@ const mainColumns = [
     },
   ],
   [
-    'TravelTimePayRateValue',
+    'TravelTimePayRate',
     {
       type: Sequelize.DataTypes.DECIMAL(9, 2), // same as actual DB type of worker table's AnnualHourlyPayRate
       allowNull: true,
@@ -57,36 +57,11 @@ const mainColumns = [
   ],
 ];
 
-const buildSubColumns = (mainColumnName) => {
-  const columnNameStem = mainColumnName.slice(0, -5);
-
-  const suffixAndType = [
-    ['SavedAt', Sequelize.DataTypes.DATE],
-    ['ChangedAt', Sequelize.DataTypes.DATE],
-    ['SavedBy', Sequelize.DataTypes.TEXT],
-    ['ChangedBy', Sequelize.DataTypes.TEXT],
-  ];
-
-  const subColumns = suffixAndType.map(([suffix, dataType]) => {
-    const subColumnName = columnNameStem + suffix;
-    const properties = { type: dataType, allowNull: true };
-    return [subColumnName, properties];
-  });
-
-  return subColumns;
-};
-
-const allColumns = mainColumns.flatMap((mainColumn) => {
-  const mainColumnName = mainColumn[0];
-  const subColumns = buildSubColumns(mainColumnName);
-  return [mainColumn, ...subColumns];
-});
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
     return queryInterface.sequelize.transaction((transaction) => {
-      const addColumns = allColumns.map(([columnName, properties]) => {
+      const addColumns = newColumns.map(([columnName, properties]) => {
         return queryInterface.addColumn(establishmentTable, columnName, properties, { transaction });
       });
 
@@ -96,7 +71,7 @@ module.exports = {
 
   async down(queryInterface) {
     return queryInterface.sequelize.transaction((transaction) => {
-      const dropColumns = allColumns.map(([columnName, _prop]) => {
+      const dropColumns = newColumns.map(([columnName, _prop]) => {
         return queryInterface.removeColumn(establishmentTable, columnName, { transaction });
       });
 

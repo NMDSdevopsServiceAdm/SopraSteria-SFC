@@ -50,7 +50,7 @@ module.exports = function (sequelize, DataTypes) {
 
   TravelTimePayOption.associate = (models) => {
     TravelTimePayOption.hasMany(models.establishment, {
-      foreignKey: 'TravelTimePayOptionFKValue',
+      foreignKey: 'TravelTimePayOptionFK',
       targetKey: 'id',
       as: 'establishment',
     });
