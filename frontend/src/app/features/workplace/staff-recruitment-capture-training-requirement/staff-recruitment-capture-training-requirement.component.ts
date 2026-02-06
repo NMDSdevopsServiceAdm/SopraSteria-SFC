@@ -54,7 +54,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'how-many-leavers'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
   }
 
   private setupForm(): void {

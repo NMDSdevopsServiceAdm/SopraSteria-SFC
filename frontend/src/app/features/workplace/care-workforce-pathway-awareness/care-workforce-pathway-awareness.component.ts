@@ -41,7 +41,7 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
     this.setPreviousRoute();
     this.prefill();
 
-    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.skipRoute = ['/workplace', this.establishment.uid, 'sharing-data'];
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 

@@ -42,7 +42,9 @@ describe('DoYouHaveLeaversComponent', () => {
             },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
 
@@ -185,7 +187,7 @@ describe('DoYouHaveLeaversComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-leaver-job-roles']);
     });
 
-    it("should navigate to the staff-recruitment-capture-training-requirement page when submitting 'None'", async () => {
+    it("should navigate to the benefits-statutory-sick-pay page when submitting 'None'", async () => {
       const overrides = { returnUrl: false };
       const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
@@ -195,14 +197,10 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-recruitment-capture-training-requirement',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
     });
 
-    it("should navigate to the staff-recruitment-capture-training-requirement page when submitting 'I do not know'", async () => {
+    it("should navigate to the benefits-statutory-sick-pay page when submitting 'I do not know'", async () => {
       const overrides = { returnUrl: false };
       const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
@@ -212,25 +210,17 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-recruitment-capture-training-requirement',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
     });
 
-    it('should navigate to the staff-recruitment-capture-training-requirement page when clicking Skip this question link', async () => {
+    it('should navigate to the benefits-statutory-sick-pay page when clicking Skip this question link', async () => {
       const overrides = { returnUrl: false };
       const { getByText, routerSpy } = await setup(overrides);
 
       const link = getByText('Skip this question');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-recruitment-capture-training-requirement',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
     });
 
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {

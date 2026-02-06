@@ -364,21 +364,21 @@ describe('CareWorkforcePathwayUseComponent', () => {
       expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'care-workforce-pathway-awareness']);
     });
 
-    it('should navigate to cash-loyalty page when skipped the question', async () => {
+    it('should navigate to sharing-data page when skipped the question', async () => {
       const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
       userEvent.click(getByText('Skip this question'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'sharing-data']);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('should navigate to cash-loyalty page after submit', async () => {
+    it('should navigate to sharing-data page after submit', async () => {
       const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
       userEvent.click(getByText('Save and continue'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'cash-loyalty']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'sharing-data']);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 

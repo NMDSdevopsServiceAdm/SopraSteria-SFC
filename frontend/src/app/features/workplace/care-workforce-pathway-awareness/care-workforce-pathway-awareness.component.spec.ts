@@ -155,7 +155,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         expect(getByText('Skip this question')).toBeTruthy();
       });
 
-      it("should navigate to the cash-loyalty page when clicking 'Skip this question'", async () => {
+      it("should navigate to the sharing-data page when clicking 'Skip this question'", async () => {
         const { component, fixture, getByText, routerSpy } = await setup({ returnToUrl: false });
 
         const workplaceId = component.establishment.uid;
@@ -163,7 +163,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         fireEvent.click(skipLink);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'cash-loyalty']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'sharing-data']);
       });
 
       awareAnswers.forEach((awareAnswer) => {
@@ -208,7 +208,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           expect(establishmentServiceSpy).toHaveBeenCalledWith(workplaceId, {
             careWorkforcePathwayWorkplaceAwareness: { id: awareAnswer.id },
           });
-          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'cash-loyalty']);
+          expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceId, 'sharing-data']);
         });
       });
     });

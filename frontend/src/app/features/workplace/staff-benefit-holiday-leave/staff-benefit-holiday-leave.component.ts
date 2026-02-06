@@ -33,7 +33,7 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
     this.prefill();
     this.setPreviousRoute();
 
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
   }
 
   private setupForm(): void {
@@ -83,7 +83,7 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
   }
 
   private customValidator(regexp: RegExp, error: string): ValidatorFn {

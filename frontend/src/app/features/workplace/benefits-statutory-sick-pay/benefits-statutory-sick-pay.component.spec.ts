@@ -224,4 +224,10 @@ describe('BenefitsStatutorySickPayComponent', () => {
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
   });
+
+  it('should set the back link to how-many-leavers page', async () => {
+    const { component } = await setup(null);
+
+    expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
+  });
 });

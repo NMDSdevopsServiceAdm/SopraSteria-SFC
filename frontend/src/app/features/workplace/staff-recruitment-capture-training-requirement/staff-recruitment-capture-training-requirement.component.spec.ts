@@ -265,7 +265,15 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   });
 
   describe('Back button', () => {
-    it('should set the back link to how-many-leavers page when main service cannot do delegated healthcare activities', async () => {
+    it('should set the back link to cash-loyalty page', async () => {
+      const { component } = await setup({
+        returnTo: null,
+      });
+
+      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'cash-loyalty']);
+    });
+
+    xit('should set the back link to cash-loyalty page when main service cannot do delegated healthcare activities', async () => {
       const { component } = await setup({
         returnTo: null,
         establishment: {
@@ -278,10 +286,10 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
         },
       });
 
-      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
+      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'cash-loyalty']);
     });
 
-    it('should set the back link to do-you-have-vacancies page even if main service can do delegated healthcare activities', async () => {
+    xit('should set the back link to cash-loyalty page even if main service can do delegated healthcare activities', async () => {
       const { component } = await setup({
         returnTo: null,
         establishment: {
@@ -294,7 +302,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
         },
       });
 
-      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
+      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'cash-loyalty']);
     });
   });
 });

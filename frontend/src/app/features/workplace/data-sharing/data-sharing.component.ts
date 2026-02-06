@@ -42,7 +42,7 @@ export class DataSharingComponent extends Question {
       });
     }
 
-    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-benefit-holiday-leave'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'care-workforce-pathway-awareness'];
     this.skipRoute = ['/workplace', this.establishment.uid, 'check-answers'];
   }
 

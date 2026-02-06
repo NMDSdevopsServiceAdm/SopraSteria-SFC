@@ -51,7 +51,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'how-many-leavers'];
   }
 
   private setupForm(): void {

@@ -48,7 +48,7 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
     this.setupForm();
     this.prefill();
     this.setPreviousRoute();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.skipRoute = ['/workplace', this.establishment.uid, 'sharing-data'];
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 
@@ -233,6 +233,6 @@ export class CareWorkforcePathwayUseComponent extends Question implements OnInit
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 }

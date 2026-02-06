@@ -63,7 +63,9 @@ describe('HowManyLeaversComponent', () => {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedLeavers: selectedJobRoles }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = renderResults.fixture.componentInstance;
@@ -227,7 +229,7 @@ describe('HowManyLeaversComponent', () => {
         });
       });
 
-      it('should navigate to the staff-recruitment-capture-training-requirement page', async () => {
+      it('should navigate to the benefits-statutory-sick-pay page', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
@@ -235,7 +237,7 @@ describe('HowManyLeaversComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           component.establishment.uid,
-          'staff-recruitment-capture-training-requirement',
+          'benefits-statutory-sick-pay',
         ]);
       });
 

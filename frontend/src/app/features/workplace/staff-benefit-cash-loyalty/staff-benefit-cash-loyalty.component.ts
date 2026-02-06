@@ -52,11 +52,11 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   protected init(): void {
     this.prefill();
     this.setPreviousRoute();
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-capture-training-requirement'];
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-use'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
   }
 
   public onChange(answer: string) {
@@ -138,7 +138,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-capture-training-requirement'];
   }
 
   protected setupFormErrorsMap(): void {
