@@ -742,14 +742,13 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.FLOAT,
         allowNull: true,
         field: 'PensionContributionPercentage',
+        get() {
+          const rawValue = this.getDataValue('pensionContributionPercentage');
+          return rawValue ? parseFloat(rawValue) : null;
+        },
         validate: {
           min: 3,
           max: 100,
-          customValidator(value) {
-            if (value !== null && this.pensionContribution !== 'Yes') {
-              this.pensionContributionPercentage = null;
-            }
-          },
         },
       },
       sickPay: {
@@ -882,8 +881,15 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         values: ['Hourly rate', 'Flat rate', 'I do not know'],
         field: 'HowToPayForSleepIn',
+        validate: {
+          customValidator(value) {
+            if (value !== null && this.offerSleepIn !== 'Yes') {
+              this.howToPayForSleepIn = null;
+            }
+          },
+        },
       },
-      TravelTimePayOptionFKValue: {
+      TravelTimePayOptionFK: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'TravelTimePayOptionFK',
@@ -893,6 +899,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'TravelTimePayRate',
         validate: { min: 0 },
+        get() {
+          const rawValue = this.getDataValue('travelTimePayRate');
+          return rawValue ? parseFloat(rawValue) : null;
+        },
       },
     },
     {
@@ -1057,7 +1067,7 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     Establishment.belongsTo(models.travelTimePayOption, {
-      foreignKey: 'TravelTimePayOptionFKValue',
+      foreignKey: 'TravelTimePayOptionFK',
       targetKey: 'id',
       as: 'travelTimePayOption',
     });
