@@ -70,7 +70,9 @@ describe('CareWorkforcePathwayUseComponent', () => {
         },
         AlertService,
         WindowRef,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const injector = getTestBed();
@@ -106,7 +108,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
     const sectionHeading = getByTestId('section-heading');
 
     expect(heading.textContent).toContain('Is your workplace using the care workforce pathway?');
-    expect(sectionHeading.textContent).toEqual('Recruitment and benefits');
+    expect(sectionHeading.textContent).toEqual('Staff development');
   });
 
   it('should show a reveal text to explain what is the care workforce pathway', async () => {

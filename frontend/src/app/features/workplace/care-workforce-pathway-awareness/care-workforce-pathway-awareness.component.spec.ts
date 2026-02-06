@@ -49,7 +49,9 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         },
         AlertService,
         WindowRef,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
@@ -82,7 +84,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
   it('should show the section and the heading', async () => {
     const { getByTestId, getByText } = await setup();
 
-    const sectionCaption = 'Recruitment and benefits';
+    const sectionCaption = 'Staff development';
     const heading = 'How aware of the care workforce pathway is your workplace?';
 
     expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();

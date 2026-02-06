@@ -34,7 +34,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     },
   ];
 
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

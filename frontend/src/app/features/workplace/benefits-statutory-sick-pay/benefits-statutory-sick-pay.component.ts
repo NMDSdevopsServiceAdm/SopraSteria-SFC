@@ -10,9 +10,9 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-    selector: 'app-benefits-statutory-sick-pay',
-    templateUrl: './benefits-statutory-sick-pay.component.html',
-    standalone: false
+  selector: 'app-benefits-statutory-sick-pay',
+  templateUrl: './benefits-statutory-sick-pay.component.html',
+  standalone: false,
 })
 export class BenefitsStatutorySickPayComponent extends Question implements OnInit, OnDestroy {
   public statuorySickPayOptions = [
@@ -30,7 +30,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     },
   ];
 
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

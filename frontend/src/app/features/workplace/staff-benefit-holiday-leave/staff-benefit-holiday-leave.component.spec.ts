@@ -63,7 +63,7 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
     const heading = 'How many days leave do your full-time care workers get each year?';
     const helpText =
       'Include bank holidays in the total. For example, 20 days annual leave plus 8 bank holidays would be 28 days in total.';
-    const sectionCaption = 'Recruitment and benefits';
+    const sectionCaption = 'Pay and benefits';
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByText(sectionCaption)).toBeTruthy;

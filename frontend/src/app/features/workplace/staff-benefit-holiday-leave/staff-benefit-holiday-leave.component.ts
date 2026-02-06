@@ -9,12 +9,12 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-    selector: 'app-staff-benefit-holiday-leave',
-    templateUrl: './staff-benefit-holiday-leave.component.html',
-    standalone: false
+  selector: 'app-staff-benefit-holiday-leave',
+  templateUrl: './staff-benefit-holiday-leave.component.html',
+  standalone: false,
 })
 export class StaffBenefitHolidayLeaveComponent extends Question implements OnInit, OnDestroy {
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
   private numberCheckRegex = /^-?\d*(\.\d*)?$/;
   private wholeNumberCheckRegex = /^-?[A-Za-z0-9]*$/;
   private positiveNumberCheckRegex = /^[A-Za-z\d*(.\d*)]*$/;
