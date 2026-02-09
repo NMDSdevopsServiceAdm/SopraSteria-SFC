@@ -65,6 +65,8 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
   radioButtonLabels.forEach((radioButtonLabel, index) => {
     it(`subsidiary permission is changed to ${radioButtonLabel}`, () => {
       cy.intercept('POST', '/api/establishment/*/dataPermissions').as('dataPermissions');
+      cy.intercept('GET', '/api/establishment/*/childWorkplaces*').as('childWorkplaces');
+      cy.intercept('GET', '/api/missingCqcProviderLocations*').as('missingCqcProviderLocations');
 
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-owner"]`).contains('Parent');
 
@@ -78,6 +80,8 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
       cy.contains('Save and return').click();
 
       cy.wait('@dataPermissions');
+      cy.wait('@childWorkplaces');
+      cy.wait('@missingCqcProviderLocations');
 
       cy.contains(`You've changed data permissions for ${subsidiaryWorkplaceName}`);
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-permission"]`).contains(dataPermissions[index]);
