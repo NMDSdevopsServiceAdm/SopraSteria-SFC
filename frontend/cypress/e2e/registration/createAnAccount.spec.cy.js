@@ -192,6 +192,27 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.getByLabel('Support worker').type('2');
     cy.get('button').contains('Save and continue').click();
 
+    // Statutory Sick Pay
+    cy.contains('Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?');
+    cy.getByLabel('No').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Workplace pensions
+    cy.contains('Do you contribute more than the minimum 3% into workplace pensions for your care workers?');
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // How many days leave
+    cy.contains('How many days leave do your full-time care workers get each year?');
+    cy.getByLabel('Number of days').type(25);
+    cy.get('button').contains('Save and continue').click();
+
+    // Cash loyalty bonus
+    cy.contains('Do you pay care workers a cash loyalty bonus within their first 2 years of employment?');
+    cy.getByLabel('Yes').check();
+    cy.getByLabel('Amount (optional)').type('300.00');
+    cy.get('button').contains('Save and continue').click();
+
     // Repeat training
     cy.contains("Do new care workers have to repeat training they've done with previous employers?");
     cy.getByLabel('Yes, always').check();
@@ -210,27 +231,6 @@ describe('Create account', { tags: '@registration' }, () => {
     // Using the care workforce pathway
     cy.contains('Is your workplace using the care workforce pathway?');
     cy.getByLabel('No, we do not currently use the pathway').check();
-    cy.get('button').contains('Save and continue').click();
-
-    // Cash loyalty bonus
-    cy.contains('Do you pay care workers a cash loyalty bonus within their first 2 years of employment?');
-    cy.getByLabel('Yes').check();
-    cy.getByLabel('Amount (optional)').type('300.00');
-    cy.get('button').contains('Save and continue').click();
-
-    // Statutory Sick Pay
-    cy.contains('Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?');
-    cy.getByLabel('No').check();
-    cy.get('button').contains('Save and continue').click();
-
-    // Workplace pensions
-    cy.contains('Do you contribute more than the minimum 3% into workplace pensions for your care workers?');
-    cy.getByLabel('Yes').check();
-    cy.get('button').contains('Save and continue').click();
-
-    // How many days leave
-    cy.contains('How many days leave do your full-time care workers get each year?');
-    cy.getByLabel('Number of days').type(25);
     cy.get('button').contains('Save and continue').click();
 
     // Share your data
