@@ -78,7 +78,7 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
       cy.contains(ParentEstablishment.name);
       cy.contains(subsidiaryWorkplaceName);
 
-      cy.getByLabel(radioButtonLabel).click();
+      cy.getByLabel(radioButtonLabel).dblclick();
       cy.contains('Save and return').click();
 
       cy.wait('@dataPermissions');
