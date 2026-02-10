@@ -71,7 +71,9 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
 
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-owner"]`).contains('Parent');
 
-      cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data permissions').click();
+      cy.get(`[data-cy="${subsidiaryWorkplaceName}-change-data-permission"]`)
+        .contains('Change data permissions')
+        .click();
 
       //Change data permissions
       cy.wait('@establishment');
