@@ -67,7 +67,7 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
       cy.intercept('POST', '/api/establishment/*/dataPermissions').as('dataPermissions');
       cy.intercept('GET', '/api/establishment/*/childWorkplaces*').as('childWorkplaces');
       cy.intercept('GET', '/api/missingCqcProviderLocations*').as('missingCqcProviderLocations');
-      cy.intercept('GET', '/api/establishment/*').as('establishment');
+      cy.intercept({ method: 'GET', url: '/api/establishment/*', times: 2 }).as('establishment');
 
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-owner"]`).contains('Parent');
 
@@ -76,15 +76,16 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
         .click();
 
       //Change data permissions
-      cy.wait('@establishment');
       cy.contains(ParentEstablishment.name);
       cy.contains(subsidiaryWorkplaceName);
 
-      cy.getByLabel(radioButtonLabel).dblclick();
+      cy.wait('@establishment');
+      cy.wait('@childWorkplaces');
+
+      cy.getByLabel(radioButtonLabel).click({ waitForAnimations: true });
       cy.contains('Save and return').click();
 
       cy.wait('@dataPermissions');
-      cy.wait('@childWorkplaces');
       cy.wait('@missingCqcProviderLocations');
 
       cy.contains(`You've changed data permissions for ${subsidiaryWorkplaceName}`);
