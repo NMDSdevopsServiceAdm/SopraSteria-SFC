@@ -82,7 +82,11 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
       cy.wait('@establishment');
       cy.wait('@childWorkplaces');
 
-      cy.getByLabel(radioButtonLabel).click({ waitForAnimations: true });
+      cy.getByLabel(radioButtonLabel).as('radioButton');
+
+      cy.contains(`What data do you want ${subsidiaryWorkplaceName} to have view only access to?`);
+
+      cy.get('@radioButton').click();
       cy.contains('Save and return').click();
 
       cy.wait('@dataPermissions');
