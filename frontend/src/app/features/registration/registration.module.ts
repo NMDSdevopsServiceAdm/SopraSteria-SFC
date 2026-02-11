@@ -27,6 +27,7 @@ import { FindYourWorkplaceComponent } from '../create-account/workplace/find-you
 import { IsThisYourWorkplaceComponent } from '../create-account/workplace/is-this-your-workplace/is-this-your-workplace.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
+import { UserResearchInviteComponent } from '@features/create-account/user/user-research-invite/user-research-invite.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule, PagesModule],
@@ -54,6 +55,7 @@ import { CreateAccountComponent } from './create-account/create-account.componen
     AddTotalStaffComponent,
     TypeOfEmployerComponent,
     RegulatedByCqcComponent,
+    UserResearchInviteComponent,
   ],
 })
 export class RegistrationModule {}
