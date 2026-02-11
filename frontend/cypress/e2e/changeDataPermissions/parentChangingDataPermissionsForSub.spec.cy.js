@@ -65,19 +65,32 @@ describe('Parent changing data permissions for a subsidiary', { tags: '@changeDa
   radioButtonLabels.forEach((radioButtonLabel, index) => {
     it(`subsidiary permission is changed to ${radioButtonLabel}`, () => {
       cy.intercept('POST', '/api/establishment/*/dataPermissions').as('dataPermissions');
+      cy.intercept('GET', '/api/establishment/*/childWorkplaces*').as('childWorkplaces');
+      cy.intercept('GET', '/api/missingCqcProviderLocations*').as('missingCqcProviderLocations');
+      cy.intercept({ method: 'GET', url: '/api/establishment/*', times: 2 }).as('establishment');
 
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-owner"]`).contains('Parent');
 
-      cy.get(`[data-cy="${subsidiaryWorkplaceName}"]`).contains('Change data permissions').click();
+      cy.get(`[data-cy="${subsidiaryWorkplaceName}-change-data-permission"]`)
+        .contains('Change data permissions')
+        .click();
 
       //Change data permissions
       cy.contains(ParentEstablishment.name);
       cy.contains(subsidiaryWorkplaceName);
 
-      cy.getByLabel(radioButtonLabel).click();
+      cy.wait('@establishment');
+      cy.wait('@childWorkplaces');
+
+      cy.getByLabel(radioButtonLabel).as('radioButton');
+
+      cy.contains(`What data do you want ${subsidiaryWorkplaceName} to have view only access to?`);
+
+      cy.get('@radioButton').click();
       cy.contains('Save and return').click();
 
       cy.wait('@dataPermissions');
+      cy.wait('@missingCqcProviderLocations');
 
       cy.contains(`You've changed data permissions for ${subsidiaryWorkplaceName}`);
       cy.get(`[data-cy="${subsidiaryWorkplaceName}-data-permission"]`).contains(dataPermissions[index]);

@@ -135,13 +135,13 @@ export class TrainingCourseDetailsComponent implements OnInit, AfterViewInit {
       {
         item: 'validityPeriodInMonth',
         type: [
-          { name: 'required', message: 'Enter the number of months' },
+          { name: 'required', message: 'Enter the number of months or confirm the training does not expire' },
           { name: 'pattern', message: 'Number of months must be between 1 and 999' },
         ],
       },
       {
         item: 'doesNotExpire',
-        type: [{ name: 'required', message: 'Confirm the training does not expire' }],
+        type: [{ name: 'required', message: '' }],
       },
     ];
   }
