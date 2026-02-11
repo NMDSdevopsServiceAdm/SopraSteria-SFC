@@ -33,7 +33,14 @@ const createUser = async (reqUser, establishmentId, transaction) => {
   return await saveUserToDatabase(userData, newUser, transaction);
 };
 
+const getDailyRegistrationCount = async () => {
+  const registeredUsersCount = User.sendDailyRegistrationCount();
+
+  return await registeredUsersCount;
+};
+
 module.exports = {
   saveUserToDatabase,
   createUser,
+  getDailyRegistrationCount,
 };

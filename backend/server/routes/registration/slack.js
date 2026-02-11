@@ -18,7 +18,12 @@ const postRegistrationToSlack = (req, establishmentInfo) => {
   sns.postToRegistrations(slackMessage);
 };
 
+const postDailyRegistrationCountToSlack = (getDailyRegistrationCount) => {
+  slack.info('Daily Registrations', `Total registrations today: ${getDailyRegistrationCount}`);
+};
+
 module.exports = {
   removeSensitiveData,
   postRegistrationToSlack,
+  postDailyRegistrationCountToSlack,
 };

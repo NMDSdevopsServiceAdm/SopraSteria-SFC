@@ -40,6 +40,18 @@ const registerAccountWithTransaction = async (req, res, transaction) => {
   }
 };
 
+const dailyRegistrationCount = async () => {
+  try {
+    const getDailyRegistrationCount = await user.getDailyRegistrationCount();
+
+    slack.postDailyRegistrationCountToSlack(getDailyRegistrationCount);
+  } catch (error) {
+    console.error('Registration: rolling back all changes - ', err.message);
+
+    return sendErrorResponse(err, res);
+  }
+};
+
 const validateRequest = (req) => {
   if (isEmpty(req.body)) throw new RegistrationException(registrationErrors.emptyRequest);
   if (!req.body.user || isEmpty(req.body.user)) throw new RegistrationException(registrationErrors.invalidUser);
@@ -72,4 +84,5 @@ const isExpectedError = (err) =>
 module.exports = {
   registerAccount,
   registerAccountWithTransaction,
+  dailyRegistrationCount,
 };

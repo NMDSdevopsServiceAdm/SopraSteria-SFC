@@ -14,6 +14,9 @@ uuidv4();
 const models = require('../index');
 const Sequelize = require('sequelize');
 
+const { Op } = require('sequelize');
+const moment = require('moment-timezone');
+
 // notifications
 const sendAddUserEmail = require('../../utils/email/notify-email').sendAddUser;
 
@@ -1242,6 +1245,21 @@ class User {
     } else {
       return 'Pending';
     }
+  }
+
+  static async sendDailyRegistrationCount() {
+    const startOfDay = moment().tz('Europe/London').startOf('day').toDate();
+    // const endOfDay = moment().tz('Europe/London').endOf('day').toDate();
+    const count = await models.user.count({
+      where: {
+        created: {
+          [Op.gte]: startOfDay,
+        },
+      },
+      raw: true,
+    });
+
+    return count;
   }
 }
 
