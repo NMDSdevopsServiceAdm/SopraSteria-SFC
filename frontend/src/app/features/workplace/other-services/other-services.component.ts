@@ -12,9 +12,9 @@ import filter from 'lodash/filter';
 import { Question } from '../question/question.component';
 
 @Component({
-    selector: 'app-other-services',
-    templateUrl: './other-services.component.html',
-    standalone: false
+  selector: 'app-other-services',
+  templateUrl: './other-services.component.html',
+  standalone: false,
 })
 export class OtherServicesComponent extends Question {
   private additionalOtherServiceMaxLength = 120;
@@ -59,8 +59,28 @@ export class OtherServicesComponent extends Question {
       ),
     );
 
+    this.setRoutes(false);
+  }
+
+  private setRoutes(inSubmit = false): void {
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'service-users'];
+
+    this.subscriptions.add(
+      this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
+        (response) => {
+          this.nextRoute =
+            response.allServiceCapacities && response.allServiceCapacities.length
+              ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
+              : ['/workplace', `${this.establishment.uid}`, 'service-users'];
+          this.skipRoute = this.nextRoute;
+
+          if (inSubmit) {
+            this.navigate();
+          }
+        },
+        (error) => this.onError(error),
+      ),
+    );
   }
 
   private oneCheckboxRequiredIfYes(form: UntypedFormGroup) {
@@ -187,17 +207,6 @@ export class OtherServicesComponent extends Question {
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
-    this.subscriptions.add(
-      this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
-        (response) => {
-          this.nextRoute =
-            response.allServiceCapacities && response.allServiceCapacities.length
-              ? ['/workplace', `${this.establishment.uid}`, 'capacity-of-services']
-              : ['/workplace', `${this.establishment.uid}`, 'service-users'];
-          this.navigate();
-        },
-        (error) => this.onError(error),
-      ),
-    );
+    this.setRoutes(true);
   }
 }
