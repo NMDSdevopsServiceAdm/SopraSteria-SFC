@@ -17,8 +17,37 @@ describe('RegistrationService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should update the userResearchInviteResponse', async () => {
-    service.userResearchInviteResponse$.next('yes')
-    expect(service.userResearchInviteResponse$.value).toEqual('yes');
+  describe('resetService', () => {
+    it('should update registrationInProgress', async () => {
+      service.registrationInProgress$.next(true)
+      service.resetService();
+      expect(service.registrationInProgress$.value).toEqual(false);
+    })
+
+    it('should update loginCredentials', async () => {
+      const credentials = {username: 'Username', password: 'Password'}
+      service.loginCredentials$.next(credentials);
+      service.resetService();
+      expect(service.loginCredentials$.value).toEqual(null);
+    })
+
+    it('should update securityDetails', async () => {
+      const details = {securityQuestion: 'Favourite colour', securityQuestionAnswer: 'Red'}
+      service.securityDetails$.next(details)
+      service.resetService();
+      expect(service.securityDetails$.value).toEqual(null);
+    })
+
+    it('should update termsAndConditionsCheckbox$', async () => {
+      service.termsAndConditionsCheckbox$.next(true)
+      service.resetService();
+      expect(service.termsAndConditionsCheckbox$.value).toEqual(false);
+    })
+
+    it('should update the userResearchInviteResponse', async () => {
+      service.userResearchInviteResponse$.next(true)
+      service.resetService();
+      expect(service.userResearchInviteResponse$.value).toEqual(null);
+    })
   })
 });

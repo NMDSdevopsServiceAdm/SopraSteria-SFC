@@ -85,6 +85,7 @@ export class MockRegistrationService extends RegistrationService {
     securityQuestion: 'What is your favourite colour?',
     securityQuestionAnswer: 'Blue',
   });
+  public userResearchInviteResponse$: BehaviorSubject<boolean> = new BehaviorSubject(true);
 
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
   public headOfficeServices$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -152,4 +153,14 @@ export class MockRegistrationServiceWithMainService extends MockRegistrationServ
       return service;
     };
   }
+}
+
+@Injectable()
+export class MockRegistrationServiceWithNegativeUserResearchInviteResponse extends MockRegistrationServiceWithMainService {
+  public userResearchInviteResponse$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+}
+
+@Injectable()
+export class MockRegistrationServiceWithNoUserResearchInviteResponse extends MockRegistrationServiceWithMainService {
+  public userResearchInviteResponse$: BehaviorSubject<boolean> = new BehaviorSubject(null);
 }

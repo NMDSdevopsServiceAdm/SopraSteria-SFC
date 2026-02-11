@@ -8,9 +8,12 @@ import { SharedModule } from '@shared/shared.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BackService } from '@core/services/back.service';
 import { provideHttpClient } from '@angular/common/http';
+import { BehaviorSubject } from 'rxjs';
 
 describe('UserResearchInviteComponent', () => {
-  async function setup(registrationFlow = true) {
+  async function setup(registrationFlow = true, mockResponse = null) {
+    const mockSubject = new BehaviorSubject<boolean>(mockResponse);
+
     const setupTools = await render(UserResearchInviteComponent,
       {
         imports: [SharedModule, ReactiveFormsModule, FormsModule, RouterModule],
@@ -29,6 +32,12 @@ describe('UserResearchInviteComponent', () => {
                   ],
                 },
               },
+            },
+          },
+          {
+            provide: RegistrationService,
+            useValue: {
+              userResearchInviteResponse$: mockSubject,
             },
           },
         ],
@@ -85,9 +94,9 @@ describe('UserResearchInviteComponent', () => {
       'We’d like your help and it doesn’t matter if you’re new to ASC-WDS.' +
       'If you want to take part, select Yes so that a user researcher from our digital partner can contact you.'
     expect(text.textContent.trim()).toEqual(textContent);
-  })
+  });
 
-  describe('Additional details toggle', ()=> {
+  describe('Additional details toggle', () => {
     it('should display the additional details toggle', async () => {
       const { getByTestId } = await setup();
       const toggle = getByTestId('details-toggle');
@@ -115,6 +124,27 @@ describe('UserResearchInviteComponent', () => {
       const form = component.form;
       expect(form.value.inviteResponse).toEqual(null);
     });
+
+    it('should preselect the yes option if accessing from the summary page and this option was chosen previously', async () => {
+      const { component } = await setup(false, true);
+
+      const form = component.form;
+      expect(form.value.inviteResponse).toEqual('yes');
+    });
+
+    it('should preselect the no option if accessing from the summary page and this option was chosen previously', async () => {
+      const { component } = await setup(false, false);
+
+      const form = component.form;
+      expect(form.value.inviteResponse).toEqual('no');
+    });
+
+    it('should not preselect an option if the question was not previously answered', async () => {
+      const { component } = await setup(false, null);
+
+      const form = component.form;
+      expect(form.value.inviteResponse).toEqual(null);
+    });
   })
 
   describe('Submit button', () => {
@@ -123,7 +153,13 @@ describe('UserResearchInviteComponent', () => {
         const { getByRole } = await setup();
         const button = getByRole('button', { name: 'Continue' });
         expect(button).toBeTruthy();
-      })
+      });
+
+      it('should not display a Cancel link', async () => {
+        const { queryByText } = await setup();
+        const button = queryByText('Cancel');
+        expect(button).toBeFalsy();
+      });
     })
 
     it('should navigate to the summary page', async () => {
@@ -134,8 +170,8 @@ describe('UserResearchInviteComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['registration/confirm-details']);
     })
 
-    describe('When a radio option has been selected', () => {
-      it('should call the registration service with the value selected', async () => {
+    describe('When the yes radio option has been selected', () => {
+      it('should call the registration service with true', async () => {
         const { userResearchInviteResponseSpy, getByRole } = await setup();
         const yesRadioButton = getByRole('radio', { name: 'Yes' });
         yesRadioButton.click();
@@ -143,9 +179,22 @@ describe('UserResearchInviteComponent', () => {
         const continueButton = getByRole('button');
         continueButton.click();
 
-        expect(userResearchInviteResponseSpy).toHaveBeenCalledWith('yes');
+        expect(userResearchInviteResponseSpy).toHaveBeenCalledWith(true);
       })
 
+    })
+
+    describe('When the no radio option has been selected', () => {
+      it('should call the registration service with false', async () => {
+        const { userResearchInviteResponseSpy, getByRole } = await setup();
+        const yesRadioButton = getByRole('radio', { name: 'No' });
+        yesRadioButton.click();
+
+        const continueButton = getByRole('button');
+        continueButton.click();
+
+        expect(userResearchInviteResponseSpy).toHaveBeenCalledWith(false);
+      })
     })
 
     describe('When a radio option has not been selected', () => {
@@ -159,5 +208,35 @@ describe('UserResearchInviteComponent', () => {
       })
     })
   })
-});
 
+  describe('When viewing the page from the summary page', () => {
+    it('should preselect the correct option', async () => {
+      const { component } = await setup(false);
+
+      const form = component.form;
+      expect(form.value.inviteResponse).toEqual(null);
+    });
+
+    describe('Save and return button', () => {
+      it('should display', async () => {
+        const { getByRole } = await setup(false);
+        const button = getByRole('button', { name: 'Save and return' });
+        expect(button).toBeTruthy();
+      });
+    })
+
+    describe('Cancel link', () => {
+      it('should display', async () => {
+        const { getByText } = await setup(false);
+        const link = getByText('Cancel');
+        expect(link).toBeTruthy();
+      });
+
+      it('should navigate to the summary page', async () => {
+        const { getByText } = await setup(false);
+        const link = getByText('Cancel');
+        expect(link.getAttribute('href')).toEqual('/registration/confirm-details');
+      });
+    })
+  });
+})
