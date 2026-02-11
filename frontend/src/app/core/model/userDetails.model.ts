@@ -18,6 +18,7 @@ export interface UserDetails {
   registrationSurveyCompleted?: boolean;
   securityQuestion?: string;
   securityQuestionAnswer?: string;
+  userResearchInviteAccepted?: boolean;
   status?: UserStatus;
   password?: string;
   uid?: string;
