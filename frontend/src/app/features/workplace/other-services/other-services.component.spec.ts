@@ -162,7 +162,7 @@ describe('OtherServicesComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'capacity-of-services']);
       });
 
-      it('should navigate to service-users page when if there are services', async () => {
+      it('should navigate to service-users page when when there are services', async () => {
         const { fixture, getByText, routerSpy, getByTestId } = await setup({
           returnUrl: false,
           hasServiceCapacity: false,
