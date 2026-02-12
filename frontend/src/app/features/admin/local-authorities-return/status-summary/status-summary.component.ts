@@ -24,6 +24,7 @@ export class StatusSummaryComponent {
   public activeNumber: number;
   public failedDataQualityNumber: number;
   public noActivityNumber: number;
+  public currentYear = new Date().getFullYear();
 
   constructor(private route: ActivatedRoute) {}
 
