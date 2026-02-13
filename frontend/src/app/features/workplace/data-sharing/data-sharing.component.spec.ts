@@ -32,7 +32,9 @@ describe('DataSharingComponent', () => {
             ),
             deps: [HttpClient],
           },
-        provideHttpClient(), provideHttpClientTesting(),],
+          provideHttpClient(),
+          provideHttpClientTesting(),
+        ],
       },
     );
 
@@ -408,5 +410,15 @@ describe('DataSharingComponent', () => {
 
       expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: false });
     });
+  });
+
+  it('should set the back link to care-workforce-pathway-awareness page', async () => {
+    const { component } = await setup();
+
+    expect(component.previousRoute).toEqual([
+      '/workplace',
+      component.establishment.uid,
+      'care-workforce-pathway-awareness',
+    ]);
   });
 });

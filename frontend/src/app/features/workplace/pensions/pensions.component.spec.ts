@@ -61,7 +61,7 @@ describe('PensionsComponent', () => {
   it('should render the headings', async () => {
     const { getByText } = await setup();
     const heading = `Do you contribute more than the minimum 3% into workplace pensions for your care workers?`;
-    const sectionCaption = 'Recruitment and benefits';
+    const sectionCaption = 'Pay and benefits';
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByText(sectionCaption)).toBeTruthy;

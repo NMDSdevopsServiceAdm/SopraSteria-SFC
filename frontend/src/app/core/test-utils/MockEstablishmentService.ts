@@ -364,6 +364,10 @@ export class MockEstablishmentService extends EstablishmentService {
   ) {
     return of();
   }
+
+  updateOtherServices(establishmentId, data): Observable<any> {
+    return of(null);
+  }
 }
 
 @Injectable()

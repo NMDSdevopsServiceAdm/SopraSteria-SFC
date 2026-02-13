@@ -34,7 +34,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     },
   ];
 
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -54,7 +54,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'how-many-leavers'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
   }
 
   private setupForm(): void {

@@ -62,7 +62,7 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
     const { getByText } = await setup();
     const heading = 'Do you pay care workers a cash loyalty bonus within their first 2 years of employment?';
     const helpText = 'We only want to know about bonuses given for staying in a role, not for things like performance.';
-    const sectionCaption = 'Recruitment and benefits';
+    const sectionCaption = 'Pay and benefits';
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByText(sectionCaption)).toBeTruthy;
@@ -131,9 +131,9 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
     expect(component.form.value).toEqual({ cashLoyalty: 'No' });
   });
 
-  it('should set the previous route as care workforce pathway use question page', async () => {
+  it('should set the previous route as annual leave question page', async () => {
     const { component } = await setup(false);
-    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'care-workforce-pathway-use']);
+    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'staff-benefit-holiday-leave']);
   });
 
   describe('submit buttons and submitting form', () => {
@@ -185,7 +185,11 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
     });
 
     it('should navigate to the next page when user clicks skip button in the flow', async () => {
@@ -195,7 +199,11 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {

@@ -61,7 +61,7 @@ describe('BenefitsStatutorySickPayComponent', () => {
   it('should render the headings', async () => {
     const { getByText } = await setup();
     const heading = `Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?`;
-    const sectionCaption = 'Recruitment and benefits';
+    const sectionCaption = 'Pay and benefits';
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByText(sectionCaption)).toBeTruthy;
@@ -223,5 +223,11 @@ describe('BenefitsStatutorySickPayComponent', () => {
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
+  });
+
+  it('should set the back link to how-many-leavers page', async () => {
+    const { component } = await setup(null);
+
+    expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
   });
 });

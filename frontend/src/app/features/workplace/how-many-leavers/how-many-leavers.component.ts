@@ -61,6 +61,6 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
+    this.nextRoute = ['/workplace', this.establishment.uid, 'benefits-statutory-sick-pay'];
   }
 }

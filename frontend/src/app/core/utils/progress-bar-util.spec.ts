@@ -40,7 +40,7 @@ describe('ProgressBarUtil', () => {
     it('should return an array with a length of 5', () => {
       const workplaceFlowProgressBarSections = ProgressBarUtil.workplaceFlowProgressBarSections();
 
-      expect(workplaceFlowProgressBarSections.length).toEqual(4);
+      expect(workplaceFlowProgressBarSections.length).toEqual(5);
     });
 
     it('should return the correct values', () => {
@@ -49,7 +49,8 @@ describe('ProgressBarUtil', () => {
       expect(workplaceFlowProgressBarSections).toEqual([
         'Services',
         'Vacancies and turnover',
-        'Recruitment and benefits',
+        'Pay and benefits',
+        'Staff development',
         'Permissions',
       ]);
     });

@@ -10,12 +10,12 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '../question/question.component';
 
 @Component({
-    selector: 'app-accept-previous-care-certificate',
-    templateUrl: './accept-previous-care-certificate.component.html',
-    standalone: false
+  selector: 'app-accept-previous-care-certificate',
+  templateUrl: './accept-previous-care-certificate.component.html',
+  standalone: false,
 })
 export class AcceptPreviousCareCertificateComponent extends Question implements OnInit, OnDestroy {
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
   public previousCareCertificateOptions = [
     {
       label: 'Yes, always',
