@@ -5,14 +5,14 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
-    selector: 'app-type-of-employer',
-    templateUrl: './type-of-employer.component.html',
-    standalone: false
+  selector: 'app-type-of-employer',
+  templateUrl: './type-of-employer.component.html',
+  standalone: false,
 })
-export class TypeOfEmployerComponent extends Question {
+export class TypeOfEmployerComponent extends WorkplaceQuestion {
   public options = [
     { value: 'Local Authority (adult services)', text: 'Local authority (adult services)' },
     { value: 'Local Authority (generic/other)', text: 'Local authority (generic, other)' },
@@ -25,6 +25,9 @@ export class TypeOfEmployerComponent extends Question {
   public callToAction = 'Save and continue';
   public dataOwner: any;
   public showOtherInputField = false;
+
+  private _nextRoute: Array<string>;
+  private _previousRoute: Array<string>;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -44,9 +47,25 @@ export class TypeOfEmployerComponent extends Question {
     );
   }
 
+  public set previousRoute(route: Array<string>) {
+    this._previousRoute = route;
+  }
+
+  public set nextRoute(route: Array<string>) {
+    this._nextRoute = route;
+  }
+
+  public get previousRoute(): Array<string> {
+    return this._previousRoute;
+  }
+
+  public get nextRoute(): Array<string> {
+    return this._nextRoute;
+  }
+
   protected init(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'other-services'];
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'start'];
+    this.nextQuestionPage = 'other-services';
+    this.previousQuestionPage = 'start';
 
     if (this.establishmentService.employerTypeHasValue === false) {
       this.callToAction = 'Continue to homepage';

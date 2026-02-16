@@ -4,10 +4,10 @@ import { UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turnover/how-many-starters-leavers-vacancies.directive';
 
 @Component({
-    selector: 'app-how-many-vacancies',
-    templateUrl: '../vacancies-and-turnover/how-many-starters-leavers-vacancies.html',
-    styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
-    standalone: false
+  selector: 'app-how-many-vacancies',
+  templateUrl: '../vacancies-and-turnover/how-many-starters-leavers-vacancies.html',
+  styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
+  standalone: false,
 })
 export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDirective {
   public heading = 'How many current staff vacancies do you have?';
@@ -36,15 +36,15 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
   }
 
   protected returnToFirstPage(): void {
-    this.router.navigate(['/workplace', this.establishment.uid, 'do-you-have-vacancies']);
+    this.navigateToQuestionPage('do-you-have-vacancies');
   }
 
   protected returnToJobRoleSelectionPage(): void {
-    this.router.navigate(['/workplace', this.establishment.uid, 'select-vacancy-job-roles']);
+    this.navigateToQuestionPage('select-vacancy-job-roles');
   }
 
   protected setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'select-vacancy-job-roles'];
+    this.previousQuestionPage = 'select-vacancy-job-roles';
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -61,6 +61,6 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
 
   protected onSuccess(): void {
     this.vacanciesAndTurnoverService.clearAllSelectedJobRoles();
-    this.nextRoute = ['/workplace', this.establishment.uid, 'do-you-have-starters'];
+    this.nextQuestionPage = 'do-you-have-starters';
   }
 }

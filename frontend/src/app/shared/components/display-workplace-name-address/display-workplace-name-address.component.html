@@ -21,7 +21,7 @@
           <app-summary-record-change
             *ngIf="canEditEstablishment"
             [explanationText]="''"
-            [link]="['/workplace', workplace.uid, 'update-workplace-details']"
+            [link]="'update-workplace-details' | workplaceSummaryPath: workplace.uid"
             [hasData]="workplace.name"
             (setReturnClicked)="this.setReturn()"
           ></app-summary-record-change>

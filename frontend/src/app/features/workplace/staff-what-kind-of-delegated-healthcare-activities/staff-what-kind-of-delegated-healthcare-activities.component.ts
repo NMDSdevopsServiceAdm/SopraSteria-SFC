@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 import { FormArray, FormControl, UntypedFormBuilder } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AlertService } from '@core/services/alert.service';
@@ -17,7 +17,7 @@ import { PreviousRouteService } from '@core/services/previous-route.service';
   templateUrl: './staff-what-kind-of-delegated-healthcare-activities.component.html',
   standalone: false,
 })
-export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Question implements OnInit {
+export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends WorkplaceQuestion implements OnInit {
   public section = WorkplaceFlowSections.SERVICES;
   public delegatedHealthcareActivities: DelegatedHealthcareActivity[];
   public doNotKnowOption: any = {};
@@ -50,13 +50,13 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Quest
     this.allDelegatedHealthcareActivitiesOptions = [...this.delegatedHealthcareActivities, this.doNotKnowOption];
     this.setupForm();
     this.prefill();
-    this.skipRoute = ['/workplace', this.establishment.uid, 'do-you-have-vacancies'];
+    this.skipToQuestionPage = 'do-you-have-vacancies';
     this.setPreviousRoute();
-    this.nextRoute = this.skipRoute;
+    this.nextQuestionPage = this.skipToQuestionPage;
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-do-delegated-healthcare-activities'];
+    this.previousQuestionPage = 'staff-do-delegated-healthcare-activities';
   }
 
   setupForm() {

@@ -1,18 +1,22 @@
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { provideRouter, RouterModule } from '@angular/router';
+import { provideRouter, Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { LocationService } from '@core/services/location.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { WorkplaceNotFoundComponent } from './workplace-not-found.component';
+import { BackService } from '@core/services/back.service';
+import { RouterTestingHarness } from '@angular/router/testing';
 
 describe('WorkplaceNotFoundComponent', () => {
   const workplaceUid = 'abc131355543435';
 
   async function setup() {
+    const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
+
     const { fixture, getByText } = await render(WorkplaceNotFoundComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
@@ -23,16 +27,28 @@ describe('WorkplaceNotFoundComponent', () => {
             establishment: { uid: workplaceUid },
           },
         },
+        {
+          provide: BackService,
+          useValue: backServiceSpy,
+        },
         LocationService,
-        provideRouter([]),
+        provideRouter([
+          {
+            path: `workplace/${workplaceUid}/workplace-data/workplace-summary/workplace-not-found`,
+            component: WorkplaceNotFoundComponent,
+          },
+        ]),
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
     });
 
+    await RouterTestingHarness.create(`workplace/${workplaceUid}/workplace-data/workplace-summary/workplace-not-found`);
+
     const component = fixture.componentInstance;
 
     return {
+      backServiceSpy,
       component,
       fixture,
       getByText,
@@ -44,11 +60,19 @@ describe('WorkplaceNotFoundComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show a go back link with workplace uid in url', async () => {
+  it('should show a go back link to regulated-by-cqc page', async () => {
     const { getByText } = await setup();
 
     const link = getByText('go back and try again');
 
-    expect(link.getAttribute('href')).toEqual(`/workplace/${workplaceUid}/regulated-by-cqc`);
+    expect(link.getAttribute('href')).toContain('regulated-by-cqc');
+  });
+
+  it('should set the back link to regulated-by-cqc page', async () => {
+    const { backServiceSpy } = await setup();
+
+    expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+      url: [`/workplace/${workplaceUid}/workplace-data/workplace-summary/regulated-by-cqc`],
+    });
   });
 });

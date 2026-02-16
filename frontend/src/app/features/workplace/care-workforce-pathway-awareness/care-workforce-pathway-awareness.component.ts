@@ -9,14 +9,14 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
-    selector: 'app-care-workforce-pathway-awareness',
-    templateUrl: './care-workforce-pathway-awareness.component.html',
-    standalone: false
+  selector: 'app-care-workforce-pathway-awareness',
+  templateUrl: './care-workforce-pathway-awareness.component.html',
+  standalone: false,
 })
-export class CareWorkforcePathwayAwarenessComponent extends Question implements OnInit, OnDestroy {
+export class CareWorkforcePathwayAwarenessComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
   public careWorkforcePathwayAwarenessAnswers: CareWorkforcePathwayWorkplaceAwarenessAnswer[];
   private hasGivenNotAwareAnswer: boolean;
@@ -41,12 +41,12 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
     this.setPreviousRoute();
     this.prefill();
 
-    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.skipToQuestionPage = 'cash-loyalty';
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'accept-previous-care-certificate'];
+    this.previousQuestionPage = 'accept-previous-care-certificate';
   }
 
   private setupForm(): void {
@@ -105,10 +105,10 @@ export class CareWorkforcePathwayAwarenessComponent extends Question implements 
     const { careWorkforcePathwayAwareness } = this.form.value;
 
     if (awareAnswersIds.includes(careWorkforcePathwayAwareness)) {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'care-workforce-pathway-use'];
+      this.nextQuestionPage = 'care-workforce-pathway-use';
       this.submitAction = { action: 'continue', save: true };
     } else {
-      this.nextRoute = this.skipRoute;
+      this.nextQuestionPage = this.skipToQuestionPage;
       this.hasGivenNotAwareAnswer = true;
     }
   }

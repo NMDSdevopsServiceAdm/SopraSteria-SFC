@@ -15,15 +15,19 @@ import { BackService } from '@core/services/back.service';
 import { mockDHADefinition, mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 import { HttpClient } from '@angular/common/http';
 import { PreviousRouteService } from '@core/services/previous-route.service';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
   const doNotKnowText = 'I do not know';
   async function setup(overrides: any = {}) {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
 
+    const isInAddDetailsFlow = !overrides?.establishmentService?.returnTo;
+
     const setupTools = await render(StaffWhatKindOfDelegatedHealthcareActivitiesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: BackService,
@@ -225,14 +229,26 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
     it('should set the previous page to service users question page', async () => {
       const { component } = await setup(overrides);
 
-      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'staff-do-delegated-healthcare-activities']);
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'staff-do-delegated-healthcare-activities',
+      ]);
     });
 
     it('should set the back link to the service users question', async () => {
       const { backServiceSpy } = await setup(overrides);
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'staff-do-delegated-healthcare-activities'],
+        url: [
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'staff-do-delegated-healthcare-activities',
+        ],
       });
     });
 
@@ -241,7 +257,13 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
 
       fireEvent.click(getByText('Skip this question'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'do-you-have-vacancies',
+      ]);
     });
 
     it('should navigate to do-you-have-vacancies page after submit', async () => {
@@ -249,7 +271,13 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
 
       fireEvent.click(getByText('Save and continue'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'do-you-have-vacancies',
+      ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
   });
@@ -280,7 +308,13 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
       });
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'staff-do-delegated-healthcare-activities'],
+        url: [
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'workplace-summary',
+          'staff-do-delegated-healthcare-activities',
+        ],
       });
     });
   });

@@ -8,9 +8,9 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-start',
-    templateUrl: './start.component.html',
-    standalone: false
+  selector: 'app-start',
+  templateUrl: './start.component.html',
+  standalone: false,
 })
 export class StartComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
@@ -47,14 +47,25 @@ export class StartComponent implements OnInit, OnDestroy {
     this.backService.setBackLink({ url: ['/dashboard'], fragment: returnTo });
   }
 
-  public removeAddDetailsBanner(event: Event): void {
+  public onSubmit(event: Event): void {
     event.preventDefault();
 
+    this.removeAddDetailsBanner();
+
+    const nextRoute = this.establishmentService.buildPathForAddWorkplaceDetails(
+      this.establishment.uid,
+      'other-services',
+    );
+
+    this.router.navigate(nextRoute);
+  }
+
+  private removeAddDetailsBanner(): void {
     const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
+
     this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe((response) => {
       this.establishment.showAddWorkplaceDetailsBanner = response.data.showAddWorkplaceDetailsBanner;
       this.establishmentService.setState(this.establishment);
     });
-    this.router.navigate(['workplace', this.establishment.uid, 'other-services']);
   }
 }

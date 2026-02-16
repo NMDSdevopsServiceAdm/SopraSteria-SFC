@@ -7,14 +7,17 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-recruitment-capture-training-requirement',
   templateUrl: './staff-recruitment-capture-training-requirement.component.html',
   standalone: false,
 })
-export class StaffRecruitmentCaptureTrainingRequirementComponent extends Question implements OnInit, OnDestroy {
+export class StaffRecruitmentCaptureTrainingRequirementComponent
+  extends WorkplaceQuestion
+  implements OnInit, OnDestroy
+{
   public trainingRequiredOptions = [
     {
       label: 'Yes, always',
@@ -50,11 +53,11 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     this.setupForm();
     this.setPreviousRoute();
     this.prefill();
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
+    this.skipToQuestionPage = 'accept-previous-care-certificate';
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'how-many-leavers'];
+    this.previousQuestionPage = 'how-many-leavers';
   }
 
   private setupForm(): void {
@@ -98,7 +101,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
+    this.nextQuestionPage = 'accept-previous-care-certificate';
   }
 
   ngOnDestroy(): void {

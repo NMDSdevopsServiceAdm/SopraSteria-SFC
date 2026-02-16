@@ -5,10 +5,10 @@ import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turno
 import { DateUtil } from '@core/utils/date-util';
 
 @Component({
-    selector: 'app-how-many-starters',
-    templateUrl: '../vacancies-and-turnover/how-many-starters-leavers-vacancies.html',
-    styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
-    standalone: false
+  selector: 'app-how-many-starters',
+  templateUrl: '../vacancies-and-turnover/how-many-starters-leavers-vacancies.html',
+  styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
+  standalone: false,
 })
 export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDirective {
   public heading = `How many starters have you had SINCE ${DateUtil.getDateForOneYearAgo()}?`;
@@ -37,15 +37,15 @@ export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDir
   }
 
   protected returnToFirstPage(): void {
-    this.router.navigate(['/workplace', this.establishment.uid, 'do-you-have-starters']);
+    this.navigateToQuestionPage('do-you-have-starters');
   }
 
   protected returnToJobRoleSelectionPage(): void {
-    this.router.navigate(['/workplace', this.establishment.uid, 'select-starter-job-roles']);
+    this.navigateToQuestionPage('select-starter-job-roles');
   }
 
   protected setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'select-starter-job-roles'];
+    this.previousQuestionPage = 'select-starter-job-roles';
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
@@ -61,6 +61,6 @@ export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDir
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', this.establishment.uid, 'do-you-have-leavers'];
+    this.nextQuestionPage = 'do-you-have-leavers';
   }
 }

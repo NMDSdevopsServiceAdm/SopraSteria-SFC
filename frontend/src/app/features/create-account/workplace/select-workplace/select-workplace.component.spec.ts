@@ -33,7 +33,7 @@ describe('SelectWorkplaceComponent', () => {
               parent: {
                 url: [
                   {
-                    path: overrides.registrationFlow ?? true ? 'registration' : 'confirm-details',
+                    path: (overrides.registrationFlow ?? true) ? 'registration' : 'confirm-details',
                   },
                 ],
               },

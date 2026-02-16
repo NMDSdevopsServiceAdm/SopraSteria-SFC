@@ -88,7 +88,9 @@ describe('UpdateStartersComponent', () => {
             snapshot: { data: override.snapshot },
           },
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -333,7 +335,7 @@ describe('UpdateStartersComponent', () => {
         fixture.detectChanges();
 
         // @ts-expect-error: TS2341: Property 'route' is private
-        expect(routerSpy).toHaveBeenCalledWith(['../update-starters-job-roles'], { relativeTo: component.route });
+        expect(routerSpy).toHaveBeenCalledWith(['../update-starter-job-roles'], { relativeTo: component.route });
       });
 
       it('should store the current job role selections in service', async () => {

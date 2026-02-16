@@ -52,6 +52,12 @@ describe('SelectMainServiceCQCComponent', () => {
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'main-service']);
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      component.establishment.uid,
+      'workplace-data',
+      'workplace-summary',
+      'main-service',
+    ]);
   });
 });

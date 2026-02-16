@@ -15,12 +15,15 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('SelectLeaverJobRolesComponent', () => {
   const mockAvailableJobs = MockJobRoles;
 
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
+    const isInAddDetailsFlow = !returnToUrl;
+
     const leaversFromDatabase = override.leaversFromDatabase ?? null;
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
     const selectedLeavers = override.selectedLeavers ?? null;
@@ -28,6 +31,7 @@ describe('SelectLeaverJobRolesComponent', () => {
     const renderResults = await render(SelectLeaverJobRolesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
@@ -51,7 +55,9 @@ describe('SelectLeaverJobRolesComponent', () => {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedLeavers }),
         },
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
 
     const component = renderResults.fixture.componentInstance;
@@ -307,7 +313,13 @@ describe('SelectLeaverJobRolesComponent', () => {
         userEvent.click(getByText('Registered nurse'));
         userEvent.click(getByText('Save and continue'));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'how-many-leavers']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'how-many-leavers',
+        ]);
       });
     });
 
@@ -387,7 +399,13 @@ describe('SelectLeaverJobRolesComponent', () => {
     it('should set the backlink to "do you have leavers" page', async () => {
       const { component } = await setup();
       expect(component.back).toEqual({
-        url: ['/workplace', component.establishment.uid, 'do-you-have-leavers'],
+        url: [
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-leavers',
+        ],
       });
     });
   });
