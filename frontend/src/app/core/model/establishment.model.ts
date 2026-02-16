@@ -11,6 +11,7 @@ export interface MainService {
   otherName?: string;
   reportingID?: number;
   canDoDelegatedHealthcareActivities?: boolean;
+  payAndPensionsGroup?: number;
 }
 
 export interface EmployerType {
