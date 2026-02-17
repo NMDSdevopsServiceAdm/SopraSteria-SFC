@@ -32,7 +32,7 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
         name: document.mainService.name,
         other: document.mainService.other ? document.mainService.other : undefined,
         canDoDelegatedHealthcareActivities: document.mainService.canDoDelegatedHealthcareActivities,
-        payAndPensionsGroup: document.payAndPensionsGroup,
+        payAndPensionsGroup: document.mainService.payAndPensionsGroup,
       };
     }
   }
