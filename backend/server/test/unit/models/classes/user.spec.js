@@ -9,6 +9,54 @@ describe('server/models/classes/user.js', () => {
     sinon.restore();
   });
 
+  describe('get userResearchInviteResponse', () => {
+    it('should return yes if the property manager returns yes', () => {
+      const user = new User(123);
+      sinon.stub(user._properties, 'get').returns({ property: 'Yes' });
+
+      expect(user.userResearchInviteResponse).to.equal('Yes');
+    });
+
+    it('should return null if the property manager returns null', () => {
+      const user = new User(123);
+      sinon.stub(user._properties, 'get').returns({ property: null});
+
+      expect(user.userResearchInviteResponse).to.equal(null);
+    });
+
+    it('should return null if the property does not exist', () => {
+      const user = new User(123);
+      sinon.stub(user._properties, 'get').returns(null);
+
+      expect(user.userResearchInviteResponse).to.equal(null);
+    });
+
+  });
+
+  describe('isValid', () => {
+    it('should return true if all properties are valid', () => {
+      const user = new User(123);
+
+      sinon.stub(user._properties, 'isValid').value(true);
+      sinon.stub(user, 'isUsernameValid').value(true);
+      sinon.stub(user, 'isPasswordValid').value(true);
+
+      expect(user.isValid()).to.equal(true);
+    });
+
+    it('should return false if a property is not valid', () => {
+      const user = new User(123);
+      const logStub = sinon.stub(user, '_log');
+
+      sinon.stub(user._properties, 'isValid').value(false);
+      sinon.stub(user, 'isUsernameValid').value(true);
+      sinon.stub(user, 'isPasswordValid').value(true);
+
+      expect(user.isValid()).to.equal(false);
+      expect(logStub.calledOnce).to.equal(true);
+    });
+  });
+
   describe('statusTranslator', () => {
     it('should return "Pending" when login attributes are null', () => {
       const result = User.statusTranslator(null);
