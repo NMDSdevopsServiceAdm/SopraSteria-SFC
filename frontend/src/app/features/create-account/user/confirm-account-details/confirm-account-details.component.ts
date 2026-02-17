@@ -9,6 +9,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-account-details.directive';
 import { combineLatest } from 'rxjs';
+import { InviteResponse } from '@core/model/userDetails.model';
 
 @Component({
     selector: 'app-confirm-account-details',
@@ -162,7 +163,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
       return '-';
     }
 
-    if (this.userResearchInviteResponse) {
+    if (this.userResearchInviteResponse === InviteResponse.Yes) {
       return 'Yes';
     } else {
       return 'No';

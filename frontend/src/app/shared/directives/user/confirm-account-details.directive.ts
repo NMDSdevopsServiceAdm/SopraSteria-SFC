@@ -8,7 +8,7 @@ import { LoginCredentials } from '@core/model/login-credentials.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
-import { UserDetails } from '@core/model/userDetails.model';
+import { InviteResponse, UserDetails } from '@core/model/userDetails.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
@@ -28,7 +28,7 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
   public form: UntypedFormGroup;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
-  public userResearchInviteResponse: boolean;
+  public userResearchInviteResponse: InviteResponse;
   public serverError: string;
   public submitted = false;
   public userDetails: UserDetails;

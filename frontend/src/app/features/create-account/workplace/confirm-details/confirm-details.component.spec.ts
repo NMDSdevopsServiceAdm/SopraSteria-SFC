@@ -16,6 +16,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { BehaviorSubject, of } from 'rxjs';
 
 import { ConfirmDetailsComponent } from './confirm-details.component';
+import { InviteResponse } from '@core/model/userDetails.model';
 
 describe('ConfirmDetailsComponent', () => {
   async function setup(registrationFlow = true) {
@@ -201,7 +202,7 @@ describe('ConfirmDetailsComponent', () => {
         password: 'Passw0rd',
         securityQuestion: 'What is your favourite colour?',
         securityQuestionAnswer: 'Blue',
-        userResearchInviteAccepted: true,
+        userResearchInviteResponse: InviteResponse.Yes,
       });
     });
   });

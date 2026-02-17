@@ -4,6 +4,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegistrationService } from '@core/services/registration.service';
 import { SecurityDetails } from '@core/model/security-details.model';
+import { InviteResponse } from '@core/model/userDetails.model';
 
 @Component({
   selector: 'app-user-research-invite',
@@ -21,7 +22,7 @@ export class UserResearchInviteComponent {
   public submitted = false;
   public insideFlow: boolean;
   public confirmPagePath: string = 'registration/confirm-details';
-  public userResearchInviteResponse: boolean;
+  public userResearchInviteResponse: InviteResponse;
 
   constructor(
     private backLinkService: BackLinkService,
@@ -43,7 +44,11 @@ export class UserResearchInviteComponent {
     const responseValue = this.form.value.inviteResponse;
 
     if (responseValue !== null) {
-      this.registrationService.userResearchInviteResponse$.next(responseValue === 'yes');
+      const responseValueToSubmit = responseValue.toLowerCase() === 'yes'
+        ? InviteResponse.Yes
+        : InviteResponse.No;
+
+      this.registrationService.userResearchInviteResponse$.next(responseValueToSubmit);
     }
 
     this.router.navigate(['registration/confirm-details']);

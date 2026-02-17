@@ -8,6 +8,7 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { InviteResponse } from '@core/model/userDetails.model';
 
 const lessThanFiveLocationAddresses = [
   {
@@ -85,7 +86,7 @@ export class MockRegistrationService extends RegistrationService {
     securityQuestion: 'What is your favourite colour?',
     securityQuestionAnswer: 'Blue',
   });
-  public userResearchInviteResponse$: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  public userResearchInviteResponse$: BehaviorSubject<InviteResponse> = new BehaviorSubject(InviteResponse.Yes);
 
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
   public headOfficeServices$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -157,10 +158,10 @@ export class MockRegistrationServiceWithMainService extends MockRegistrationServ
 
 @Injectable()
 export class MockRegistrationServiceWithNegativeUserResearchInviteResponse extends MockRegistrationServiceWithMainService {
-  public userResearchInviteResponse$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public userResearchInviteResponse$: BehaviorSubject<InviteResponse> = new BehaviorSubject(InviteResponse.No);
 }
 
 @Injectable()
 export class MockRegistrationServiceWithNoUserResearchInviteResponse extends MockRegistrationServiceWithMainService {
-  public userResearchInviteResponse$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public userResearchInviteResponse$: BehaviorSubject<InviteResponse> = new BehaviorSubject(null);
 }
