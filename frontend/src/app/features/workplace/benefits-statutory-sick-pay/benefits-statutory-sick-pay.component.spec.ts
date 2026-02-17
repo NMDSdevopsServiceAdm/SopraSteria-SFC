@@ -244,6 +244,12 @@ describe('BenefitsStatutorySickPayComponent', () => {
   it('should set the back link to how-many-leavers page', async () => {
     const { component } = await setup(null);
 
-    expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'how-many-leavers']);
+    expect(component.previousRoute).toEqual([
+      '/workplace',
+      component.establishment.uid,
+      'workplace-data',
+      'add-workplace-details',
+      'how-many-leavers',
+    ]);
   });
 });

@@ -81,8 +81,6 @@ export class OtherServicesComponent extends WorkplaceQuestion {
         (error) => this.onError(error),
       ),
     );
-
-    this.skipToQuestionPage = 'service-users';
   }
 
   private oneCheckboxRequiredIfYes(form: UntypedFormGroup) {

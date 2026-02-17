@@ -429,7 +429,7 @@ describe('DataSharingComponent', () => {
   });
 
   it('should set the back link to care-workforce-pathway-awareness page', async () => {
-    const { component } = await setup();
+    const { component } = await setup({ returnUrl: false });
 
     expect(component.previousRoute).toEqual([
       '/workplace',

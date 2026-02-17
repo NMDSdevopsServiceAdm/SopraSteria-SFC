@@ -14,7 +14,7 @@ import { WorkplaceQuestion } from '../question/question.component';
   standalone: false,
 })
 export class StaffBenefitHolidayLeaveComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
-  public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
+  public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
   private numberCheckRegex = /^-?\d*(\.\d*)?$/;
   private wholeNumberCheckRegex = /^-?[A-Za-z0-9]*$/;
   private positiveNumberCheckRegex = /^[A-Za-z\d*(.\d*)]*$/;
