@@ -18,7 +18,7 @@ export interface UserDetails {
   registrationSurveyCompleted?: boolean;
   securityQuestion?: string;
   securityQuestionAnswer?: string;
-  userResearchInviteAccepted?: boolean;
+  userResearchInviteResponse?: InviteResponse;
   status?: UserStatus;
   password?: string;
   uid?: string;
@@ -39,4 +39,9 @@ export interface UserPermissionsType {
   role?: Roles;
   permissionsQuestionValue?: string;
   isPrimary?: boolean;
+}
+
+export enum InviteResponse {
+  Yes = 'Yes',
+  No = 'No',
 }

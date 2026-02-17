@@ -1,6 +1,7 @@
 import { RegistrationService } from '@core/services/registration.service';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { InviteResponse } from '@core/model/userDetails.model';
 
 describe('RegistrationService', () => {
   let service: RegistrationService;
@@ -45,7 +46,7 @@ describe('RegistrationService', () => {
     })
 
     it('should update the userResearchInviteResponse', async () => {
-      service.userResearchInviteResponse$.next(true)
+      service.userResearchInviteResponse$.next(InviteResponse.Yes);
       service.resetService();
       expect(service.userResearchInviteResponse$.value).toEqual(null);
     })
