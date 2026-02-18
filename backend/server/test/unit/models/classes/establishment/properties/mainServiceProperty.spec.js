@@ -55,7 +55,7 @@ describe('mainServiceProperty', () => {
       });
     });
 
-    it('should restore from sequelize correctly when null', async () => {
+    it('should restore correctly when null', async () => {
       const mainServiceProperty = new mainServicePropertyClass();
       const document = {
         mainService: null,
