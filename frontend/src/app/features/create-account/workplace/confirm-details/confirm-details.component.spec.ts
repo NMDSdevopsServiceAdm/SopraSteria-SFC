@@ -201,6 +201,7 @@ describe('ConfirmDetailsComponent', () => {
         password: 'Passw0rd',
         securityQuestion: 'What is your favourite colour?',
         securityQuestionAnswer: 'Blue',
+        userResearchInviteAccepted: true,
       });
     });
   });

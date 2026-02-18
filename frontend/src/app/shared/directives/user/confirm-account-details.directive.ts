@@ -24,13 +24,15 @@ export class ConfirmAccountDetailsDirective implements OnInit, OnDestroy, AfterV
   public userInfo: SummaryList[];
   public loginInfo: SummaryList[];
   public securityInfo: SummaryList[];
+  public userResearchInviteResponseInfo: SummaryList[];
   public form: UntypedFormGroup;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
+  public userResearchInviteResponse: boolean;
   public serverError: string;
   public submitted = false;
   public userDetails: UserDetails;
-  public slectedCqcValue: boolean;
+  public selectedCqcValue: boolean;
 
   constructor(
     protected errorSummaryService: ErrorSummaryService,

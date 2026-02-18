@@ -31,7 +31,7 @@ describe('RegistrationSubmitButtonsComponent', () => {
     expect(getByText('Continue')).toBeTruthy();
   });
 
-  it('should render a Save and return button and an cancel link when inside flow is false', async () => {
+  it('should render a Save and return button and a cancel link when inside flow is false', async () => {
     const { getByText } = await setup(false);
 
     expect(getByText('Save and return')).toBeTruthy();

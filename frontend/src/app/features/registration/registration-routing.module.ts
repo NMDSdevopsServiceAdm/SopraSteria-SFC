@@ -217,6 +217,12 @@ const routes: Routes = [
         canActivate: [RegisterGuard],
         data: { title: 'Add your user details' },
       },
+      {
+        path: 'user-research-invite',
+        component: UserResearchInviteComponent,
+        canActivate: [RegisterGuard],
+        data: { title: 'Select if you would like to take part in user research' },
+      },
     ],
   },
   {
