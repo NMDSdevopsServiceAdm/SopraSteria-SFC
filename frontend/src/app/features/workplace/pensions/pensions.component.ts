@@ -31,6 +31,10 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
   ];
 
   public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
+  public showOtherInputField = false;
+
+  public minPercentage = 3;
+  public maxPercentage = 100;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -40,10 +44,16 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
     protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    this.form = this.formBuilder.group(
+      {
+        pension: null,
+        amount: null,
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   protected init(): void {
-    this.setupForm();
     this.setRoutes();
     this.prefill();
   }
@@ -51,15 +61,6 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
   private setRoutes(): void {
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
-  }
-
-  private setupForm(): void {
-    this.form = this.formBuilder.group(
-      {
-        pension: null,
-      },
-      { updateOn: 'submit' },
-    );
   }
 
   private prefill(): void {
@@ -94,5 +95,9 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
 
   protected onSuccess(): void {
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
+  }
+
+  protected onOtherSelect(radioValue: string): void {
+    this.showOtherInputField = radioValue === 'Yes';
   }
 }
