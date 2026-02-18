@@ -12,37 +12,74 @@
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <h1 class="govuk-fieldset__heading">
             <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-            Do you contribute more than the minimum 3% into workplace pensions for your care workers?
+            Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?
           </h1>
         </legend>
         <div class="govuk-!-margin-bottom-6">
           <p>
-            Workplace pensions are sometimes called 'automatic enrolment', 'occupational', 'works', 'company' or
+            Workplace pensions are sometimes called 'automatic enrolment', 'company', 'occupational', 'works', or
             'work-based' pensions.
           </p>
         </div>
         <app-details [title]="'Why we ask for this information'">
           <p>
-            This data is used to determine whether rewards and benefits act as incentives when it comes to staff
-            retention. It also reveals the type of incentives that are being offered in the sector and how common they
-            are.
+            The information will be used by DHSC and other sector bodies to ensure the Fair Pay Agreement is based on
+            accurate data. It will not be shared in any way that identifies your workplace or staff.
           </p>
         </app-details>
         <div class="govuk-form-group">
           <div class="govuk-radios govuk-!-margin-bottom-4">
-            <ng-container *ngFor="let option of pensionsOptions; let i = index">
-              <div class="govuk-radios__item">
-                <input
-                  class="govuk-radios__input"
-                  type="radio"
-                  id="pensionsOption-{{ i }}"
-                  name="pension"
-                  [formControlName]="'pension'"
-                  [value]="option.value"
-                />
-                <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
-              </div>
-            </ng-container>
+            <div class="govuk-radios govuk-radios--conditional">
+              <ng-container *ngFor="let option of pensionsOptions; let i = index">
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    type="radio"
+                    id="pensionsOption-{{ i }}"
+                    name="pension"
+                    [formControlName]="'pension'"
+                    [value]="option.value"
+                    (click)="onOtherSelect(option.value)"
+                  />
+                  <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
+                </div>
+                <div
+                  *ngIf="option.value === 'Yes'"
+                  class="govuk-radios__conditional"
+                  [class.govuk-radios__conditional--hidden]="!showOtherInputField"
+                  id="conditional-amount-conditional-1"
+                  data-testid="conditionalTextBox"
+                >
+                  <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-one-half">
+                      <div class="govuk-form-group">
+                        <label class="govuk-label" for="amount"> Actual contribution</label>
+                        <span id="amount-hint" class="govuk-hint govuk-!-margin-bottom-4">
+                          Leave blank if not known
+                        </span>
+                        <span
+                          *ngIf="submitted && form.get('amount').invalid"
+                          id="amount-error"
+                          class="govuk-error-message"
+                        >
+                          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('amount') }}
+                        </span>
+                        <div class="govuk-input__wrapper">
+                          <app-number-input-with-buttons
+                            [min]="minPercentage"
+                            [max]="maxPercentage"
+                            inputId="pension-amount"
+                            formControlName="amount"
+                            [hasError]="submitted && form.get('amount').invalid"
+                          ></app-number-input-with-buttons>
+                          <div class="govuk-input__suffix" aria-hidden="true">%</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
           </div>
         </div>
       </fieldset>
