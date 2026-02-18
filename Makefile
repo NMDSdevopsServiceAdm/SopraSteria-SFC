@@ -45,7 +45,7 @@ stop-containers:
 	docker stop soprasteria-sfc-sfc-redis-1
 
 test-e2e-inside-docker:
-	docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
+	TAGS='@registration @workplace' docker-compose -f docker-compose-e2e.yml up --build --abort-on-container-exit --exit-code-from cypress
 
 deploy-bu-dev:
 	cd lambdas/bulkUpload && npm ci && npx serverless deploy --stage dev
