@@ -48,7 +48,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
   init() {
     this.setupForm();
     this.setPreviousRoute();
-    this.skipToQuestionPage = 'do-you-have-vacancies';
+    this.setSkipToQuestionPage();
     this.nextQuestionPage = 'do-you-have-vacancies';
     this.prefill();
     this.dhaDefinition = this.delegatedHealthcareActivitiesService.dhaDefinition;
@@ -78,6 +78,16 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
 
   private setPreviousRoute(): void {
     this.previousQuestionPage = 'service-users';
+  }
+
+  private setSkipToQuestionPage(): void {
+    const payAndPensionsGroup = this.establishment.mainService.payAndPensionsGroup;
+
+    if (payAndPensionsGroup === 1 || payAndPensionsGroup === 2) {
+      this.skipToQuestionPage = 'workplace-offer-sleep-ins';
+    } else {
+      this.skipToQuestionPage = 'do-you-have-vacancies';
+    }
   }
 
   protected generateUpdateProps(): any {
