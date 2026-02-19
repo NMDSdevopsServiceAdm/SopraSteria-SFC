@@ -179,6 +179,7 @@ export interface Establishment {
   CWPAwarenessQuestionViewed?: boolean;
   staffDoDelegatedHealthcareActivities?: string;
   staffWhatKindDelegatedHealthcareActivities?: StaffWhatKindDelegatedHealthcareActivities;
+  offerSleepIn?: string;
 }
 
 export interface UpdateJobsRequest {
