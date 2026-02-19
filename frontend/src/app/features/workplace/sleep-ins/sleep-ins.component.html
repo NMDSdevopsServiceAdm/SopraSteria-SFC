@@ -1,0 +1,55 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group govuk-!-padding-bottom-4">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              Does your workplace offer sleep-ins?
+            </h1>
+          </legend>
+          <p>
+            Sleep-ins require a worker to sleep overnight at their workplace or at the service user's residence, with
+            the possibility of having to wake and provide care if needed. We do not need to know about live-in care or
+            waking nights.
+          </p>
+          <div class="govuk-form-group">
+            <div class="govuk-radios govuk-!-margin-top-6">
+              @for (option of options; track option; let index = $index){
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  id="offerSleepIn-{{ index }}"
+                  type="radio"
+                  [formControlName]="'offerSleepIn'"
+                  [value]="option.value"
+                />
+                <label class="govuk-label govuk-radios__label" for="offerSleepIn-{{ index }}">
+                  {{ option.label }}
+                </label>
+              </div>
+              }
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+        [hasConditionalRouting]="true"
+      ></app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      @if (!return){
+      <div class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+      }
+    </div>
+  </div>
+</form>
