@@ -112,6 +112,32 @@ describe('DoYouHaveVacanciesComponent', () => {
 
   describe('back link', () => {
     describe('in workplace flow', () => {
+      [1, 2].forEach((group) => {
+        it(`should set the previous page to workplace-offer-sleep-ins when main service payAndPensionsGroup is ${group}`, async () => {
+          const overrides = {
+            returnUrl: false,
+            workplace: {
+              mainService: {
+                canDoDelegatedHealthcareActivities: true,
+                id: 11,
+                name: 'Domestic services and home help',
+                reportingID: 10,
+                payAndPensionsGroup: group,
+              },
+            },
+          };
+          const { component } = await setup(overrides);
+
+          expect(component.previousRoute).toEqual([
+            '/workplace',
+            `${component.establishment.uid}`,
+            'workplace-data',
+            'add-workplace-details',
+            'workplace-offer-sleep-ins',
+          ]);
+        });
+      });
+
       it('should set the previous page to service-users page when main service cannot do delegated healthcare activities', async () => {
         const overrides = {
           returnUrl: false,
@@ -121,6 +147,7 @@ describe('DoYouHaveVacanciesComponent', () => {
               id: 11,
               name: 'Domestic services and home help',
               reportingID: 10,
+              payAndPensionsGroup: 3,
             },
           },
         };
@@ -145,6 +172,7 @@ describe('DoYouHaveVacanciesComponent', () => {
               id: 9,
               name: 'Day care and day services',
               reportingID: 6,
+              payAndPensionsGroup: 3,
             },
           },
         };

@@ -32,7 +32,7 @@ export class SleepInsComponent extends WorkplaceQuestion implements OnInit, OnDe
     this.setSectionHeading();
     this.setupForm();
     this.setPreviousRoute();
-
+    this.prefill()
     this.skipToQuestionPage = 'do-you-have-vacancies';
   }
 
@@ -47,6 +47,16 @@ export class SleepInsComponent extends WorkplaceQuestion implements OnInit, OnDe
       },
       { updateOn: 'submit' },
     );
+  }
+
+  private prefill(): void {
+    const offerSleepIn = this.establishment.offerSleepIn
+
+    if(!offerSleepIn) return
+
+    this.form.patchValue({
+      offerSleepIn
+    })
   }
 
   private setPreviousRoute(): void {
@@ -69,19 +79,6 @@ export class SleepInsComponent extends WorkplaceQuestion implements OnInit, OnDe
     if (!props) {
       return;
     }
-
-    // const offerSleepInData = {
-    //   offerSleepIn: props,
-    // };
-
-    // this.subscriptions.add(
-    //   this.establishmentService
-    //     .updateEstablishmentFieldWithAudit(this.establishment.uid, 'OfferSleepIn', offerSleepInData)
-    //     .subscribe(
-    //       (data) => this._onSuccess(data),
-    //       (error) => this.onError(error),
-    //     ),
-    // );
 
     const offerSleepInData = {
       property: 'offerSleepIn',

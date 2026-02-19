@@ -24,8 +24,14 @@ export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanci
   }
 
   private setPreviousRoute(): void {
-    this.previousQuestionPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
-      ? 'what-kind-of-delegated-healthcare-activities'
-      : 'service-users';
+    const payAndPensionsGroup = this.establishment.mainService.payAndPensionsGroup;
+
+    if (payAndPensionsGroup === 1 || payAndPensionsGroup === 2) {
+      this.previousQuestionPage = 'workplace-offer-sleep-ins';
+    } else if (this.establishment.mainService.canDoDelegatedHealthcareActivities) {
+      this.previousQuestionPage = 'what-kind-of-delegated-healthcare-activities';
+    } else {
+      this.previousQuestionPage = 'service-users';
+    }
   }
 }

@@ -41,8 +41,8 @@ describe('SleepInsComponent', () => {
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
-          of({ data: {  } }),
-        );
+      of({ data: {} }),
+    );
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -79,6 +79,15 @@ describe('SleepInsComponent', () => {
         expect(getByRole('radio', { name: option.label })).toBeTruthy();
       });
     });
+
+    it('prefill when there is a previously saved answer', async () => {
+      const overrides = { establishment: { offerSleepIn: 'Yes' } };
+      const { getByLabelText } = await setup(overrides);
+
+      const radioButton = getByLabelText('Yes') as HTMLInputElement;
+
+      expect(radioButton.checked).toBeTruthy();
+    });
   });
 
   describe('workplace flow', () => {
@@ -101,7 +110,7 @@ describe('SleepInsComponent', () => {
       it('should set the previous page to service-users question page if canDoDelegatedHealthcareActivities is false', async () => {
         const updatedOverrides = {
           ...overrides,
-          establishmentObj: { mainService: { canDoDelegatedHealthcareActivities: false } },
+          establishment: { mainService: { canDoDelegatedHealthcareActivities: false } },
         };
 
         const { component } = await setup(updatedOverrides);
@@ -118,7 +127,7 @@ describe('SleepInsComponent', () => {
       it('should set the previous page to what-kind-of-delegated-healthcare-activities question page if canDoDelegatedHealthcareActivities is true', async () => {
         const updatedOverrides = {
           ...overrides,
-          establishmentObj: { mainService: { canDoDelegatedHealthcareActivities: true } },
+          establishment: { mainService: { canDoDelegatedHealthcareActivities: true } },
         };
 
         const { component } = await setup(updatedOverrides);
@@ -194,7 +203,7 @@ describe('SleepInsComponent', () => {
         overrides,
       );
 
-      fireEvent.click(getByLabelText("Yes"));
+      fireEvent.click(getByLabelText('Yes'));
       fixture.detectChanges();
 
       fireEvent.click(getByText('Save and continue'));
@@ -209,7 +218,7 @@ describe('SleepInsComponent', () => {
       ]);
       expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
         property: 'offerSleepIn',
-        value: "Yes",
+        value: 'Yes',
       });
     });
   });
