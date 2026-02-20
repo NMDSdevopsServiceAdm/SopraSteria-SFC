@@ -97,6 +97,7 @@ export class SleepInsComponent extends WorkplaceQuestion implements OnInit, OnDe
     const { offerSleepIn } = this.form.value;
 
     if (offerSleepIn === YesNoDontKnowOptions[0].label) {
+      this.submitAction = { action: 'continue', save: true };
       this.nextQuestionPage = 'how-to-pay-for-sleep-in';
     } else {
       this.nextQuestionPage = this.skipToQuestionPage;
