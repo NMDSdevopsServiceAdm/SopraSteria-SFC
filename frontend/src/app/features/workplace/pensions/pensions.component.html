@@ -39,38 +39,42 @@
                     name="pension"
                     [formControlName]="'pension'"
                     [value]="option.value"
-                    (click)="onOtherSelect(option.value)"
+                    (click)="onChange(option.value)"
                   />
-                  <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
+                  <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.value }}</label>
                 </div>
                 <div
                   *ngIf="option.value === 'Yes'"
                   class="govuk-radios__conditional"
-                  [class.govuk-radios__conditional--hidden]="!showOtherInputField"
-                  id="conditional-amount-conditional-1"
+                  [class.govuk-radios__conditional--hidden]="!showPercentageTextBox"
+                  id="conditional-pensionPercentage-conditional-1"
                   data-testid="conditionalTextBox"
                 >
                   <div class="govuk-grid-row">
                     <div class="govuk-grid-column-one-half">
-                      <div class="govuk-form-group">
-                        <label class="govuk-label" for="amount"> Actual contribution</label>
-                        <span id="amount-hint" class="govuk-hint govuk-!-margin-bottom-4">
+                      <div
+                        class="govuk-form-group"
+                        [class.govuk-form-group--error]="submitted && form.get('pensionPercentage').invalid"
+                      >
+                        <label class="govuk-label" for="pensionPercentage"> Actual contribution</label>
+                        <span id="pensionPercentage-hint" class="govuk-hint govuk-!-margin-bottom-4">
                           Leave blank if not known
                         </span>
                         <span
-                          *ngIf="submitted && form.get('amount').invalid"
-                          id="amount-error"
+                          *ngIf="submitted && form.get('pensionPercentage').invalid"
+                          id="pensionPercentage-error"
                           class="govuk-error-message"
                         >
-                          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('amount') }}
+                          <span class="govuk-visually-hidden">Error:</span>
+                          {{ getFirstErrorMessage('pensionPercentage', 'minMax') }}
                         </span>
                         <div class="govuk-input__wrapper">
                           <app-number-input-with-buttons
                             [min]="minPercentage"
                             [max]="maxPercentage"
-                            inputId="pension-amount"
-                            formControlName="amount"
-                            [hasError]="submitted && form.get('amount').invalid"
+                            inputId="pensionPercentage"
+                            formControlName="pensionPercentage"
+                            [hasError]="submitted && form.get('pensionPercentage').invalid"
                           ></app-number-input-with-buttons>
                           <div class="govuk-input__suffix" aria-hidden="true">%</div>
                         </div>
