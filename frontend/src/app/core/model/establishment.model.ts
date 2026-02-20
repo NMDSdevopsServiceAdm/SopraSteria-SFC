@@ -168,6 +168,7 @@ export interface Establishment {
   peopleInterviewedInTheLastFourWeeks?: string;
   showAddWorkplaceDetailsBanner?: boolean;
   pensionContribution?: string;
+  pensionContributionPercentage?: number;
   careWorkersLeaveDaysPerYear?: string;
   careWorkersCashLoyaltyForFirstTwoYears?: string;
   sickPay?: string;
@@ -211,6 +212,10 @@ export enum StaffBenefitEnum {
   DONT_KNOW = "Don't know",
 }
 
+export interface PensionContribution {
+  pensionContribution?: string;
+  pensionContributionPercentage?: number;
+}
 export interface LocalIdentifiersRequest {
   localIdentifiers: LocalIdentifier[];
 }
@@ -325,4 +330,3 @@ export enum FilterTrainingAndQualsOptions {
   '1_expired' = 'Expired',
   '2_expires_soon' = 'Expires soon',
 }
-

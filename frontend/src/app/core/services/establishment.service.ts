@@ -14,6 +14,7 @@ import {
   LocalIdentifiersRequest,
   LocalIdentifiersResponse,
   mandatoryTraining,
+  PensionContribution,
   setPermission,
   UpdateJobsRequest,
 } from '@core/model/establishment.model';
@@ -301,6 +302,13 @@ export class EstablishmentService {
     return this.http.post<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/updateSingleEstablishmentField`,
       data,
+    );
+  }
+
+  updatePensionContribution(establishmentId: string, pensionData: PensionContribution): Observable<any> {
+    return this.http.post<Establishment>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/pensionContribution`,
+      pensionData,
     );
   }
 
