@@ -50,13 +50,23 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Workp
     this.allDelegatedHealthcareActivitiesOptions = [...this.delegatedHealthcareActivities, this.doNotKnowOption];
     this.setupForm();
     this.prefill();
-    this.skipToQuestionPage = 'do-you-have-vacancies';
     this.setPreviousRoute();
-    this.nextQuestionPage = this.skipToQuestionPage;
+    this.setNextRoute();
   }
 
   private setPreviousRoute(): void {
     this.previousQuestionPage = 'staff-do-delegated-healthcare-activities';
+  }
+
+  private setNextRoute(): void {
+    const payAndPensionsGroup = this.establishment.mainService.payAndPensionsGroup;
+
+    if (payAndPensionsGroup === 1 || payAndPensionsGroup === 2) {
+      this.skipToQuestionPage = 'workplace-offer-sleep-ins'
+    } else {
+      this.skipToQuestionPage = 'do-you-have-vacancies';
+    }
+    this.nextQuestionPage = this.skipToQuestionPage;
   }
 
   setupForm() {
