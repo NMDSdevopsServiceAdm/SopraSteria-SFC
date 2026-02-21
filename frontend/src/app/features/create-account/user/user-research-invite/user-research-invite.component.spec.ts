@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BackService } from '@core/services/back.service';
 import { provideHttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
+import { InviteResponse } from '@core/model/userDetails.model';
 
 describe('UserResearchInviteComponent', () => {
   async function setup(registrationFlow = true, mockResponse = null) {
@@ -171,7 +172,7 @@ describe('UserResearchInviteComponent', () => {
     })
 
     describe('When the yes radio option has been selected', () => {
-      it('should call the registration service with true', async () => {
+      it('should call the registration service with Yes', async () => {
         const { userResearchInviteResponseSpy, getByRole } = await setup();
         const yesRadioButton = getByRole('radio', { name: 'Yes' });
         yesRadioButton.click();
@@ -179,13 +180,13 @@ describe('UserResearchInviteComponent', () => {
         const continueButton = getByRole('button');
         continueButton.click();
 
-        expect(userResearchInviteResponseSpy).toHaveBeenCalledWith(true);
+        expect(userResearchInviteResponseSpy).toHaveBeenCalledWith(InviteResponse.Yes);
       })
 
     })
 
     describe('When the no radio option has been selected', () => {
-      it('should call the registration service with false', async () => {
+      it('should call the registration service with No', async () => {
         const { userResearchInviteResponseSpy, getByRole } = await setup();
         const yesRadioButton = getByRole('radio', { name: 'No' });
         yesRadioButton.click();
@@ -193,7 +194,7 @@ describe('UserResearchInviteComponent', () => {
         const continueButton = getByRole('button');
         continueButton.click();
 
-        expect(userResearchInviteResponseSpy).toHaveBeenCalledWith(false);
+        expect(userResearchInviteResponseSpy).toHaveBeenCalledWith(InviteResponse.No);
       })
     })
 

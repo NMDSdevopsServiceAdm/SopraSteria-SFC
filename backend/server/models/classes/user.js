@@ -157,6 +157,10 @@ class User {
     const prop = this._properties.get('SecurityQuestionAnswer');
     return prop ? prop.property : null;
   }
+  get userResearchInviteResponse() {
+    const prop = this._properties.get('UserResearchInviteResponse');
+    return prop ? prop.property : null;
+  }
   get created() {
     return this._created;
   }
@@ -294,11 +298,26 @@ class User {
     }
   }
 
+  get isUserResearchInviteResponseValid() {
+    const userResearchInviteResponse = this._properties.get('UserResearchInviteResponse');
+    const validResponses = ['Yes', 'No', null];
+
+    if (validResponses.includes(userResearchInviteResponse.property)) {
+      return true;
+    } else {
+      this._log(User.LOG_WARN, 'userResearchInviteResponse is not valid; must be "Yes", "No" or null');
+      return false;
+    }
+  }
+
   // returns true if User is valid, otherwise false
   isValid() {
     // must also validate username and password - IF they are defined
     // the property manager returns a list of all properties that are invalid; or true
-    const thisUserIsValid = this._properties.isValid === true && this.isUsernameValid && this.isPasswordValid;
+    const thisUserIsValid = this._properties.isValid === true &&
+                                     this.isUsernameValid &&
+                                     this.isPasswordValid &&
+                                     this.isUserResearchInviteResponseValid;
 
     if (thisUserIsValid === true) {
       return true;
@@ -831,6 +850,7 @@ class User {
           JobTitle: '',
           SecurityQuestionValue: '',
           SecurityQuestionAnswerValue: '',
+          UserResearchInviteResponseValue: '',
         };
 
         let [updatedRecordCount] = await models.user.update(updateDocument, {
@@ -1185,7 +1205,7 @@ class User {
     return allExistAndValid;
   }
 
-  // returns true if all default properties required to createa new User exist and are valid
+  // returns true if all default properties required to create a new User exist and are valid
   get hasDefaultNewUserProperties() {
     let allExistAndValid = true; // assume all exist until proven otherwise
     try {

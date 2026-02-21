@@ -189,6 +189,32 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"SecurityQuestionAnswerChangedBy"',
       },
+      UserResearchInviteResponseValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No'],
+        field: '"UserResearchInviteResponseValue"',
+      },
+      UserResearchInviteResponseSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"UserResearchInviteResponseSavedAt"',
+      },
+      UserResearchInviteResponseChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"UserResearchInviteResponseChangedAt"',
+      },
+      UserResearchInviteResponseSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"UserResearchInviteResponseSavedBy"',
+      },
+      UserResearchInviteResponseChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"UserResearchInviteResponseChangedBy"',
+      },
       UserRoleValue: {
         type: DataTypes.ENUM,
         allowNull: false,

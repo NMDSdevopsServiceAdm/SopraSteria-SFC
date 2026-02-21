@@ -9,6 +9,8 @@ const phoneProperty = require('./properties/phoneProperty').UserPhoneProperty;
 const securityQuestionProperty = require('./properties/securityQuestionProperty').UserSecurityQuestionProperty;
 const securityQuestionAnswerProperty =
   require('./properties/securityQuestionAnswerProperty').UserSecurityQuestionAnswerProperty;
+const userResearchInviteResponseProperty =
+  require('./properties/userResearchInviteResponseProperty').UserUserResearchInviteResponseProperty;
 const roleProperty = require('./properties/roleProperty').UserRoleProperty;
 
 class UserPropertyManager {
@@ -22,6 +24,7 @@ class UserPropertyManager {
     this._thisManager.registerProperty(roleProperty);
     this._thisManager.registerProperty(securityQuestionProperty);
     this._thisManager.registerProperty(securityQuestionAnswerProperty);
+    this._thisManager.registerProperty(userResearchInviteResponseProperty);
   }
 
   get manager() {
