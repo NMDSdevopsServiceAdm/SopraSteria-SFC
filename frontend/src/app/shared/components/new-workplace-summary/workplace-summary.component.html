@@ -398,8 +398,33 @@
         ></app-summary-record-change>
       </dd>
     </div>
+    <div
+      class="govuk-summary-list__row"
+      *ngIf="
+        !workplace.showAddWorkplaceDetailsBanner &&
+        (workplace.mainService?.payAndPensionsGroup === 1 || workplace.mainService?.payAndPensionsGroup === 2)
+      "
+      data-testid="offer-sleep-ins"
+    >
+      <dt class="govuk-summary-list__key">Offer sleep-ins</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value>
+          <ng-container *ngIf="!workplace.offerSleepIn; else offerSleepIn"> - </ng-container>
+          <ng-template #offerSleepIn>
+            {{ workplace.offerSleepIn | closedEndedAnswer }}
+          </ng-template>
+        </app-summary-record-value>
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="'offer sleep-ins'"
+          [link]="'workplace-offer-sleep-ins' | workplaceSummaryPath: workplace.uid"
+          [hasData]="workplace.offerSleepIn"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
   </dl>
-
   <ng-container *ngIf="!workplace?.showAddWorkplaceDetailsBanner">
     <h2 class="govuk-heading-m govuk-!-padding-top-1">Recruitment and benefits</h2>
     <dl

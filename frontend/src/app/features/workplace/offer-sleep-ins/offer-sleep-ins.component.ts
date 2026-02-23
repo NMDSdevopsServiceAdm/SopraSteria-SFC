@@ -9,11 +9,11 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 
 @Component({
-  selector: 'app-sleep-ins',
-  templateUrl: './sleep-ins.component.html',
+  selector: 'app-offer-sleep-ins',
+  templateUrl: './offer-sleep-ins.component.html',
   standalone: false,
 })
-export class SleepInsComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
+export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public section: string;
   public options = YesNoDontKnowOptions;
 

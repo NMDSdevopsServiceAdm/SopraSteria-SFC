@@ -49,7 +49,7 @@ import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-import { SleepInsComponent } from './sleep-ins/sleep-ins.component';
+import { OfferSleepInsComponent } from './offer-sleep-ins/offer-sleep-ins.component';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -212,9 +212,10 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
   },
   {
     path: 'workplace-offer-sleep-ins',
-    component: SleepInsComponent,
+    component: OfferSleepInsComponent,
     data: {
-      title: 'Workplace Offer Sleep-ins',
+      permissions: ['canEditEstablishment'],
+      title: 'Does your workplace offer sleep-ins',
     },
   },
   {

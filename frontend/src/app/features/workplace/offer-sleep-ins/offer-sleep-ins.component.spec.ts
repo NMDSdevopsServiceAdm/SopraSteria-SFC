@@ -1,5 +1,5 @@
 import { fireEvent, render, within } from '@testing-library/angular';
-import { SleepInsComponent } from './sleep-ins.component';
+import { OfferSleepInsComponent } from './offer-sleep-ins.component';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
@@ -14,14 +14,14 @@ import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlFo
 import { of } from 'rxjs';
 import { BackService } from '@core/services/back.service';
 
-describe('SleepInsComponent', () => {
+describe('OfferSleepInsComponent', () => {
   const options = YesNoDontKnowOptions;
 
   async function setup(overrides: any = {}) {
     const isInAddDetailsFlow = !overrides.returnToUrl;
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
 
-    const setupTools = await render(SleepInsComponent, {
+    const setupTools = await render(OfferSleepInsComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
@@ -57,7 +57,7 @@ describe('SleepInsComponent', () => {
     return { ...setupTools, component, establishmentServiceSpy, routerSpy, backServiceSpy, setSubmitActionSpy };
   }
 
-  it('should render SleepInsComponent', async () => {
+  it('should render OfferSleepInsComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });

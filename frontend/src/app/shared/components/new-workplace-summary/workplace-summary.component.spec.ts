@@ -1040,6 +1040,157 @@ describe('NewWorkplaceSummaryComponent', () => {
         });
       });
     });
+
+    describe('Offer sleep-ins', () => {
+      [1, 2].forEach((group) => {
+        it(`should show the row and table cell name when the payAndPensionsGroup is ${group}`, async () => {
+          const { component, fixture, getByTestId } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: group },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          component.workplace.showAddWorkplaceDetailsBanner = false;
+          fixture.detectChanges();
+
+          const offerSleepInsRow = getByTestId('offer-sleep-ins');
+          const cellName = within(offerSleepInsRow).queryByText('Offer sleep-ins');
+
+          expect(offerSleepInsRow).toBeTruthy();
+          expect(cellName).toBeTruthy();
+        });
+
+        it(`should not show the row and table cell name when the payAndPensionsGroup is ${group} but showAddWorkplaceDetailsBanner is true`, async () => {
+          const { component, fixture, queryByTestId } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: group },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          component.workplace.showAddWorkplaceDetailsBanner = true;
+          fixture.detectChanges();
+
+          const offerSleepInsRow = queryByTestId('offer-sleep-ins');
+
+          expect(offerSleepInsRow).toBeFalsy();
+        });
+      });
+
+      [null, 3].forEach((group) => {
+        it(`should not show the row and table cell name when the payAndPensionsGroup is ${group} but showAddWorkplaceDetailsBanner is false`, async () => {
+          const { component, fixture, queryByTestId } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: 3 },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          component.workplace.showAddWorkplaceDetailsBanner = false;
+          fixture.detectChanges();
+
+          const offerSleepInsRow = queryByTestId('offer-sleep-ins');
+
+          expect(offerSleepInsRow).toBeFalsy();
+        });
+      });
+
+      it('should not show an add link when there is no canEditEstablishment permission', async () => {
+        const { component, fixture, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+          },
+          permissions: [],
+        });
+
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+        fixture.detectChanges();
+
+        const offerSleepInsRow = queryByTestId('offer-sleep-ins');
+
+        const link = within(offerSleepInsRow).queryByText('Add');
+
+        expect(link).toBeFalsy();
+        expect(offerSleepInsRow).toBeTruthy();
+      });
+
+      it('should not show a change link when there is no canEditEstablishment permission', async () => {
+        const { component, fixture, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            offerSleepIn: 'Yes',
+          },
+          permissions: [],
+        });
+
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+        fixture.detectChanges();
+
+        const offerSleepInsRow = queryByTestId('offer-sleep-ins');
+
+        const link = within(offerSleepInsRow).queryByText('Change');
+
+        expect(link).toBeFalsy();
+        expect(offerSleepInsRow).toBeTruthy();
+      });
+
+      it('should show should show "-" and an add link when offerSleepIn is null', async () => {
+        const { component, fixture, getByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            offerSleepIn: null,
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+        fixture.detectChanges();
+
+        const offerSleepInsRow = getByTestId('offer-sleep-ins');
+
+        const link = within(offerSleepInsRow).queryByText('Add');
+        const answer = within(offerSleepInsRow).queryByText('-');
+
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/workplace-offer-sleep-ins`,
+        );
+        expect(offerSleepInsRow).toBeTruthy();
+      });
+
+      const offerSleepInValues = [
+        { database: 'Yes', formatted: 'Yes' },
+        { database: 'No', formatted: 'No' },
+        { database: "Don't know", formatted: 'Not known' },
+      ];
+      offerSleepInValues.forEach((offerSleepInValue) => {
+        it(`should display the answers with a change link when offerSleepIn is ${offerSleepInValue.database}`, async () => {
+          const { component, fixture, getByTestId } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: 1 },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          component.workplace.showAddWorkplaceDetailsBanner = false;
+          component.workplace.offerSleepIn = offerSleepInValue.database;
+          fixture.detectChanges();
+
+          const offerSleepInsRow = getByTestId('offer-sleep-ins');
+
+          const link = within(offerSleepInsRow).queryByText('Change');
+          const answer = within(offerSleepInsRow).queryByText(offerSleepInValue.formatted);
+
+          expect(answer).toBeTruthy();
+          expect(link).toBeTruthy();
+          expect(link.getAttribute('href')).toEqual(
+            `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/workplace-offer-sleep-ins`,
+          );
+        });
+      });
+    });
   });
 
   describe('Vacancies and turnover section', () => {
