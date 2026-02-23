@@ -490,6 +490,47 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     });
   });
 
+  describe('sleep-ins', async () => {
+    const heading = 'Does your workplace offer sleep-ins?';
+    const mainServiceThatCanOfferSleepIns = { id: 20, name: 'Domiciliary care services' };
+
+    beforeEach(() => {
+      cy.setWorkplaceMainService(establishmentId, mainServiceThatCanOfferSleepIns.id);
+      cy.reload();
+      cy.get('[data-cy="tab-list"]').contains('Workplace').click();
+    });
+
+    it('updates offer sleeps if the answer is "Yes"', () => {
+      cy.get('[data-testid="offer-sleep-ins"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+      cy.getByLabel('Yes').click();
+      cy.contains('button', 'Save').click();
+
+      // add second sleep in question
+    });
+
+    it('adds and updates if the answer is not "Yes"', () => {
+      cy.get('[data-testid="offer-sleep-ins"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+      cy.getByLabel('No').click();
+      cy.contains('button', 'Save').click();
+
+      cy.get('@testId').contains('No');
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
+
+      cy.getByLabel('I do not know').check();
+      cy.get('button').contains('Save').click();
+    });
+  });
+
   it('updates repeat training', () => {
     const repeatedTrainingAnswer = 'Yes, but not very often';
     const heading = "Do new care workers have to repeat training they've done with previous employers?";
