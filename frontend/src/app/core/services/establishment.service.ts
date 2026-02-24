@@ -513,4 +513,11 @@ export class EstablishmentService {
   public buildPathForWorkplaceSummary(workplaceUid: string, pathSegment: string): Array<string> {
     return [...this.baseRouteForWorkplaceSummary(workplaceUid), pathSegment];
   }
+
+  public showSleepInsQuestions(payAndPensionsGroup: number): string {
+    if (payAndPensionsGroup === 1 || payAndPensionsGroup === 2) {
+      return 'workplace-offer-sleep-ins';
+    }
+    return null;
+  }
 }

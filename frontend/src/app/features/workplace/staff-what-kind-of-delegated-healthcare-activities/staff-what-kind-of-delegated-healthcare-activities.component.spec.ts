@@ -252,33 +252,112 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
       });
     });
 
-    it('should navigate to do-you-have-vacancies page when user skips the question', async () => {
-      const { getByText, routerSpy } = await setup(overrides);
+    describe('user skips the question', () => {
+      it('should navigate to do-you-have-vacancies page when payAndPensionsGroup is 3', async () => {
+        const updatedOverrides = {
+          establishmentService: {
+            returnTo: null,
+            establishment: {
+              mainService: {
+                payAndPensionsGroup: 3,
+              },
+            },
+          },
+        };
 
-      fireEvent.click(getByText('Skip this question'));
+        const { getByText, routerSpy } = await setup(updatedOverrides);
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'workplace-data',
-        'add-workplace-details',
-        'do-you-have-vacancies',
-      ]);
+        fireEvent.click(getByText('Skip this question'));
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
+      });
+
+      [1, 2].forEach((group) => {
+        it(`should navigate to do-you-have-vacancies page when payAndPensionsGroup is ${group}`, async () => {
+          const updatedOverrides = {
+            establishmentService: {
+              returnTo: null,
+              establishment: {
+                mainService: {
+                  payAndPensionsGroup: group,
+                },
+              },
+            },
+          };
+
+          const { getByText, routerSpy } = await setup(updatedOverrides);
+
+          fireEvent.click(getByText('Skip this question'));
+
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'workplace-offer-sleep-ins',
+          ]);
+        });
+      });
     });
 
-    it('should navigate to do-you-have-vacancies page after submit', async () => {
-      const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+    describe('submit', () => {
+      it('should navigate to do-you-have-vacancies page when payAndPensionsGroup is 3', async () => {
+        const updatedOverrides = {
+          establishmentService: {
+            returnTo: null,
+            establishment: {
+              mainService: {
+                payAndPensionsGroup: 3,
+              },
+            },
+          },
+        };
+        const { getByText, routerSpy, establishmentServiceSpy } = await setup(updatedOverrides);
 
-      fireEvent.click(getByText('Save and continue'));
+        fireEvent.click(getByText('Save and continue'));
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'workplace-data',
-        'add-workplace-details',
-        'do-you-have-vacancies',
-      ]);
-      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
+        expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      });
+
+      [1, 2].forEach((group) => {
+        it(`should navigate to do-you-have-vacancies page when payAndPensionsGroup is ${group}`, async () => {
+          const updatedOverrides = {
+            establishmentService: {
+              returnTo: null,
+              establishment: {
+                mainService: {
+                  payAndPensionsGroup: group,
+                },
+              },
+            },
+          };
+
+          const { getByText, routerSpy } = await setup(updatedOverrides);
+
+          fireEvent.click(getByText('Save and continue'));
+
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'workplace-offer-sleep-ins',
+          ]);
+        });
+      });
     });
   });
 

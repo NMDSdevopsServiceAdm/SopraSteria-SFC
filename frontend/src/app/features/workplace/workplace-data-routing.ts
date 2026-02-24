@@ -49,6 +49,7 @@ import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { OfferSleepInsComponent } from './offer-sleep-ins/offer-sleep-ins.component';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -209,7 +210,14 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
       title: 'What kind of delegated healthcare activities',
     },
   },
-
+  {
+    path: 'workplace-offer-sleep-ins',
+    component: OfferSleepInsComponent,
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Does your workplace offer sleep-ins',
+    },
+  },
   {
     path: 'staff-recruitment-capture-training-requirement',
     component: StaffRecruitmentCaptureTrainingRequirementComponent,
