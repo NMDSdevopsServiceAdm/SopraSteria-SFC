@@ -231,7 +231,7 @@ describe('OfferSleepInsComponent', () => {
     });
   });
 
-  describe('workplace summary', () => {
+  describe('when viewing the page from the workplace summary', () => {
     const overrides = { returnTo: { url: ['/dashboard'], fragment: 'workplace' } };
 
     it('should not show a progress bar', async () => {

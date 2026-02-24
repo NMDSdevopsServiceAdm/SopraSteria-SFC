@@ -83,11 +83,8 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
   private setSkipToQuestionPage(): void {
     const payAndPensionsGroup = this.establishment.mainService.payAndPensionsGroup;
 
-    if (payAndPensionsGroup === 1 || payAndPensionsGroup === 2) {
-      this.skipToQuestionPage = 'workplace-offer-sleep-ins';
-    } else {
-      this.skipToQuestionPage = 'do-you-have-vacancies';
-    }
+    this.skipToQuestionPage =
+      this.establishmentService.showSleepInsQuestions(payAndPensionsGroup) ?? 'do-you-have-vacancies';
   }
 
   protected generateUpdateProps(): any {
