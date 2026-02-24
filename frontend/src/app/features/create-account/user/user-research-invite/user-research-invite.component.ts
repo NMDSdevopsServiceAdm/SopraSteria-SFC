@@ -3,8 +3,8 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegistrationService } from '@core/services/registration.service';
-import { SecurityDetails } from '@core/model/security-details.model';
 import { InviteResponse } from '@core/model/userDetails.model';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
 @Component({
   selector: 'app-user-research-invite',
@@ -23,6 +23,8 @@ export class UserResearchInviteComponent {
   public insideFlow: boolean;
   public confirmPagePath: string = 'registration/confirm-details';
   public userResearchInviteResponse: InviteResponse;
+  public workplaceSections: string[];
+  public userAccountSections: string[];
 
   constructor(
     private backLinkService: BackLinkService,
@@ -38,6 +40,8 @@ export class UserResearchInviteComponent {
     this.insideFlow = this.route.snapshot.parent.url[0].path === 'registration';
     this.userResearchInviteResponse = this.registrationService.userResearchInviteResponse$.value
     this.preFillForm();
+    this.workplaceSections = ProgressBarUtil.workplaceProgressBarSections();
+    this.userAccountSections = ProgressBarUtil.userProgressBarSections();
   }
 
   public onSubmit(): void {
@@ -69,7 +73,7 @@ export class UserResearchInviteComponent {
       return;
     }
 
-    if (this.userResearchInviteResponse) {
+    if (this.userResearchInviteResponse === InviteResponse.Yes) {
       this.form.get('inviteResponse').setValue('yes');
     } else {
       this.form.get('inviteResponse').setValue('no');

@@ -23,16 +23,18 @@ describe('ProgressBarUtil', () => {
   });
 
   describe('userProgressBarSections', () => {
-    it('should return an array with a length of 3', () => {
+    it('should return an array with a length of 4', () => {
       const userProgressBarSections = ProgressBarUtil.userProgressBarSections();
 
-      expect(userProgressBarSections.length).toEqual(3);
+      expect(userProgressBarSections.length).toEqual(4);
     });
 
     it('should return the correct values', () => {
       const userProgressBarSections = ProgressBarUtil.userProgressBarSections();
 
-      expect(userProgressBarSections).toEqual(['User details', 'Username and password', 'Security question']);
+      expect(userProgressBarSections).toEqual(
+        ['User details', 'Username and password', 'Security question', 'User research']
+      );
     });
   });
 

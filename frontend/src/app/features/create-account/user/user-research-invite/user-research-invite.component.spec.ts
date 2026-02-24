@@ -12,8 +12,8 @@ import { BehaviorSubject } from 'rxjs';
 import { InviteResponse } from '@core/model/userDetails.model';
 
 describe('UserResearchInviteComponent', () => {
-  async function setup(registrationFlow = true, mockResponse = null) {
-    const mockSubject = new BehaviorSubject<boolean>(mockResponse);
+  async function setup(registrationFlow = true, mockUserResearchInviteResponse = null) {
+    const mockSubject = new BehaviorSubject<InviteResponse>(mockUserResearchInviteResponse);
 
     const setupTools = await render(UserResearchInviteComponent,
       {
@@ -127,14 +127,14 @@ describe('UserResearchInviteComponent', () => {
     });
 
     it('should preselect the yes option if accessing from the summary page and this option was chosen previously', async () => {
-      const { component } = await setup(false, true);
+      const { component } = await setup(false, InviteResponse.Yes);
 
       const form = component.form;
       expect(form.value.inviteResponse).toEqual('yes');
     });
 
     it('should preselect the no option if accessing from the summary page and this option was chosen previously', async () => {
-      const { component } = await setup(false, false);
+      const { component } = await setup(false, InviteResponse.No);
 
       const form = component.form;
       expect(form.value.inviteResponse).toEqual('no');
@@ -146,7 +146,7 @@ describe('UserResearchInviteComponent', () => {
       const form = component.form;
       expect(form.value.inviteResponse).toEqual(null);
     });
-  })
+  });
 
   describe('Submit button', () => {
     describe('When viewing the page during the create account flow', () => {
@@ -161,7 +161,7 @@ describe('UserResearchInviteComponent', () => {
         const button = queryByText('Cancel');
         expect(button).toBeFalsy();
       });
-    })
+    });
 
     it('should navigate to the summary page', async () => {
       const { getByRole, routerSpy } = await setup();
@@ -169,7 +169,7 @@ describe('UserResearchInviteComponent', () => {
       const button = getByRole('button');
       button.click();
       expect(routerSpy).toHaveBeenCalledWith(['registration/confirm-details']);
-    })
+    });
 
     describe('When the yes radio option has been selected', () => {
       it('should call the registration service with Yes', async () => {
@@ -181,9 +181,8 @@ describe('UserResearchInviteComponent', () => {
         continueButton.click();
 
         expect(userResearchInviteResponseSpy).toHaveBeenCalledWith(InviteResponse.Yes);
-      })
-
-    })
+      });
+    });
 
     describe('When the no radio option has been selected', () => {
       it('should call the registration service with No', async () => {
@@ -195,8 +194,8 @@ describe('UserResearchInviteComponent', () => {
         continueButton.click();
 
         expect(userResearchInviteResponseSpy).toHaveBeenCalledWith(InviteResponse.No);
-      })
-    })
+      });
+    });
 
     describe('When a radio option has not been selected', () => {
       it('should not call the registration service', async () => {
@@ -206,9 +205,25 @@ describe('UserResearchInviteComponent', () => {
         continueButton.click();
 
         expect(userResearchInviteResponseSpy).not.toHaveBeenCalled();
-      })
-    })
-  })
+      });
+    });
+  });
+
+  describe('Progress bar', ()=> {
+    it('should render the workplace and user account progress bars', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('progress-bar-1')).toBeTruthy();
+      expect(getByTestId('progress-bar-2')).toBeTruthy();
+    });
+
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { queryByTestId } = await setup(false, null);
+
+      expect(queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(queryByTestId('progress-bar-2')).toBeFalsy();
+    });
+  });
 
   describe('When viewing the page from the summary page', () => {
     it('should preselect the correct option', async () => {
@@ -224,7 +239,7 @@ describe('UserResearchInviteComponent', () => {
         const button = getByRole('button', { name: 'Save and return' });
         expect(button).toBeTruthy();
       });
-    })
+    });
 
     describe('Cancel link', () => {
       it('should display', async () => {
@@ -238,6 +253,6 @@ describe('UserResearchInviteComponent', () => {
         const link = getByText('Cancel');
         expect(link.getAttribute('href')).toEqual('/registration/confirm-details');
       });
-    })
+    });
   });
-})
+});
