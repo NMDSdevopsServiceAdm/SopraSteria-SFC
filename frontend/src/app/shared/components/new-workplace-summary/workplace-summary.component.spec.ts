@@ -1119,12 +1119,12 @@ describe('NewWorkplaceSummaryComponent', () => {
         const { component, fixture, queryByTestId } = await setup({
           establishment: {
             mainService: { payAndPensionsGroup: 1 },
-            offerSleepIn: 'Yes',
           },
           permissions: [],
         });
 
         component.workplace.showAddWorkplaceDetailsBanner = false;
+        component.workplace.offerSleepIn = 'Yes';
         fixture.detectChanges();
 
         const offerSleepInsRow = queryByTestId('offer-sleep-ins');
@@ -1139,12 +1139,12 @@ describe('NewWorkplaceSummaryComponent', () => {
         const { component, fixture, getByTestId } = await setup({
           establishment: {
             mainService: { payAndPensionsGroup: 1 },
-            offerSleepIn: null,
           },
           permissions: ['canEditEstablishment'],
         });
 
         component.workplace.showAddWorkplaceDetailsBanner = false;
+        component.workplace.offerSleepIn = null;
         fixture.detectChanges();
 
         const offerSleepInsRow = getByTestId('offer-sleep-ins');
