@@ -98,7 +98,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
 
     if (offerSleepIn === YesNoDontKnowOptions[0].label) {
       this.submitAction = { action: 'continue', save: true };
-      this.nextQuestionPage = 'how-to-pay-for-sleep-in';
+      this.nextQuestionPage = 'how-do-you-pay-for-sleep-ins';
     } else {
       this.nextQuestionPage = this.skipToQuestionPage;
     }

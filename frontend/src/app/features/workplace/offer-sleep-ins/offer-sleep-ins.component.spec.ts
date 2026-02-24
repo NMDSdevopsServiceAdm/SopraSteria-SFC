@@ -14,7 +14,7 @@ import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlFo
 import { of } from 'rxjs';
 import { BackService } from '@core/services/back.service';
 
-describe('OfferSleepInsComponent', () => {
+fdescribe('OfferSleepInsComponent', () => {
   const options = YesNoDontKnowOptions;
 
   async function setup(overrides: any = {}) {
@@ -206,7 +206,7 @@ describe('OfferSleepInsComponent', () => {
       });
     });
 
-    it('should navigate to how-to-pay-for-sleep-in page after submit if user answered "Yes', async () => {
+    it('should navigate to how-do-you-pay-for-sleep-ins page after submit if user answered "Yes', async () => {
       const { component, getByText, getByLabelText, fixture, routerSpy, establishmentServiceSpy } = await setup(
         overrides,
       );
@@ -222,7 +222,7 @@ describe('OfferSleepInsComponent', () => {
         component.establishment.uid,
         'workplace-data',
         'add-workplace-details',
-        'how-to-pay-for-sleep-in',
+        'how-do-you-pay-for-sleep-ins',
       ]);
       expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
         property: 'offerSleepIn',
@@ -299,7 +299,7 @@ describe('OfferSleepInsComponent', () => {
       });
     });
 
-    it('should navigate to how-to-pay-for-sleep-in page after submit if user answered "Yes', async () => {
+    it('should navigate to how-do-you-pay-for-sleep-ins page after submit if user answered "Yes', async () => {
       const { component, getByText, getByLabelText, fixture, routerSpy, establishmentServiceSpy } = await setup(
         overrides,
       );
@@ -315,7 +315,7 @@ describe('OfferSleepInsComponent', () => {
         component.establishment.uid,
         'workplace-data',
         'workplace-summary',
-        'how-to-pay-for-sleep-in',
+        'how-do-you-pay-for-sleep-ins',
       ]);
       expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
         property: 'offerSleepIn',
