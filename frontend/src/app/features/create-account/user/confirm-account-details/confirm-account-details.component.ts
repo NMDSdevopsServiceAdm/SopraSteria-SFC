@@ -160,7 +160,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
 
   private setUserResearchInviteResponseValue(): string {
     if (this.userResearchInviteResponse === null) {
-      return '-';
+      return this.userResearchInviteResponse;
     }
 
     if (this.userResearchInviteResponse === InviteResponse.Yes) {

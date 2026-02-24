@@ -1,11 +1,11 @@
-<app-error-summary
-  *ngIf="(form.invalid || serverError) && submitted"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary>
-
+@if ((form.invalid || serverError) && submitted) {
+  <app-error-summary
+    [formErrorsMap]="formErrorsMap"
+    [form]="form"
+    [serverError]="serverError"
+  >
+  </app-error-summary>
+}
 <div class="govuk-grid-row" id="server-error">
   <div class="govuk-grid-column-full-from-desktop">
     <h1 class="govuk-heading-m">User account</h1>

@@ -44,13 +44,36 @@ describe('SummaryListComponent', () => {
 
       const { getByText, queryByText } = await setup(mockListWithLink);
 
-      const link = getByText('Change')
+      const changeLink = getByText('Change')
 
       expect(queryByText('Full name')).toBeTruthy();
       expect(queryByText('John Doe')).toBeTruthy();
-      expect(link.getAttribute('href')).toEqual(
+      expect(changeLink.getAttribute('href')).toEqual(
         '/registration/confirm-details/user-research-invite'
       );
+      expect(queryByText('Add')).toBeFalsy();
+    });
+  })
+
+  describe('When there is no data', () => {
+    it('should show the summary list label, value and an add link', async () => {
+      const mockListWithLink = [
+        { label: 'Full name',
+          data: null,
+          route: { url: ['/registration/confirm-details/user-research-invite'] }
+        }
+      ];
+
+      const { getByText, queryByText } = await setup(mockListWithLink);
+
+      const addLink = queryByText('Add')
+
+      expect(queryByText('Full name')).toBeTruthy();
+      expect(getByText('-')).toBeTruthy();
+      expect(addLink.getAttribute('href')).toEqual(
+        '/registration/confirm-details/user-research-invite'
+      );
+      expect(queryByText('Change')).toBeFalsy();
     });
   })
 

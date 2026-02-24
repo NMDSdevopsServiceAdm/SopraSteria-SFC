@@ -28,14 +28,22 @@
           </dd>
         } @else {
           <dd class="govuk-summary-list__value asc__preline">
-            {{ item.data }}
+            @if (item.data === null) {
+              -
+            } @else {
+              {{ item.data }}
+            }
           </dd>
         }
         @if (item.route) {
           @if (canNavigate === undefined ? true : canNavigate) {
             <dd class="govuk-summary-list__actions">
               <a [routerLink]="item.route.url" (click)="emitSetReturn()">
-                Change
+                @if (item.data === null) {
+                  Add
+                } @else {
+                  Change
+                }
                 <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>
               </a>
             </dd>
