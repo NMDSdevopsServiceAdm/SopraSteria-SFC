@@ -605,7 +605,8 @@ describe('Standalone workplace page as edit user', { tags: '@workplace' }, () =>
 
   it('updates higher pension contributions', () => {
     const answer = 'Yes';
-    const heading = 'Do you contribute more than the minimum 3% into workplace pensions for your care workers?';
+    const heading =
+      'Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?';
 
     cy.get('[data-testid="higher-pension-contributions"]').as('testId');
 
