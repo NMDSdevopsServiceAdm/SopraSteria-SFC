@@ -47,6 +47,24 @@ describe('EstablishmentService', () => {
     });
   });
 
+  describe('updatePensionContribution', () => {
+    it('should call updatePensionContribution for a given establishment with the correct data', () => {
+      const requestBody = {
+        pension: 'Yes',
+        pensionContribution: '100',
+      };
+
+      service.updatePensionContribution('establishmentId', requestBody).subscribe();
+
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/establishment/establishmentId/pensionContribution`,
+      );
+
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(requestBody);
+    });
+  });
+
   describe('workplaceOrSubHasTrainingCertificates', () => {
     const mockWorkplaceUid = 'mockWorkplaceUid';
 
