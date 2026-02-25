@@ -214,6 +214,7 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
   {
     path: 'workplace-offer-sleep-ins',
     component: OfferSleepInsComponent,
+    canActivate: [CheckPermissionsGuard],
     data: {
       permissions: ['canEditEstablishment'],
       title: 'Does your workplace offer sleep-ins',
@@ -222,6 +223,7 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
   {
     path: 'how-do-you-pay-for-sleep-ins',
     component: HowDoYouPayForSleepInsComponent,
+    canActivate: [CheckPermissionsGuard],
     data: {
       permissions: ['canEditEstablishment'],
       title: 'How do you pay for sleep-ins',

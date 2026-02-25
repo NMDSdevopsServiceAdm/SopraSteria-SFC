@@ -11,6 +11,7 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { DelegatedHealthcareActivity } from '@core/model/delegated-healthcare-activities.model';
 import { DelegatedHealthcareActivitiesService } from '@core/services/delegated-healthcare-activities.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Component({
   selector: 'app-staff-what-kind-of-delegated-healthcare-activities',
@@ -38,6 +39,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Workp
     private alertService: AlertService,
     private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
     private previousRouteService: PreviousRouteService,
+    protected payAndPensionService: PayAndPensionService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -62,7 +64,7 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Workp
     const payAndPensionsGroup = this.establishment.mainService.payAndPensionsGroup;
 
     this.skipToQuestionPage =
-      this.establishmentService.showSleepInsQuestions(payAndPensionsGroup) ?? 'do-you-have-vacancies';
+      this.payAndPensionService.showSleepInsQuestions(payAndPensionsGroup) ?? 'do-you-have-vacancies';
 
     this.nextQuestionPage = this.skipToQuestionPage;
   }

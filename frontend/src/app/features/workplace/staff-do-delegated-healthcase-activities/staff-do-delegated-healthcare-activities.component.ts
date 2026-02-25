@@ -13,6 +13,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { WorkplaceQuestion } from '../question/question.component';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Component({
   selector: 'app-staff-do-delegated-healthcare-activities',
@@ -41,6 +42,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
     protected route: ActivatedRoute,
     private delegatedHealthcareActivitiesService: DelegatedHealthcareActivitiesService,
     private alertService: AlertService,
+    protected payAndPensionService: PayAndPensionService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -84,7 +86,7 @@ export class StaffDoDelegatedHealthcareActivitiesComponent extends WorkplaceQues
     const payAndPensionsGroup = this.establishment.mainService.payAndPensionsGroup;
 
     this.skipToQuestionPage =
-      this.establishmentService.showSleepInsQuestions(payAndPensionsGroup) ?? 'do-you-have-vacancies';
+      this.payAndPensionService.showSleepInsQuestions(payAndPensionsGroup) ?? 'do-you-have-vacancies';
   }
 
   protected generateUpdateProps(): any {
