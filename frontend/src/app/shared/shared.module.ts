@@ -145,6 +145,7 @@ import { SeperatorLineComponent } from './components/seperator-line/seperator-li
 import { AddANoteAccordionComponent } from '@shared/components/accordions/add-a-note-accordion/add-a-note-accordion.component';
 import { ExternalTrainingProviderInputComponent } from './components/external-training-provider-input/external-training-provider-input.component';
 import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
+import { DecimalInputWithButtonsComponent } from './components/decimal-input-with-buttons/decimal-input-with-buttons.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule, A11yModule],
@@ -289,6 +290,7 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
+    DecimalInputWithButtonsComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -423,6 +425,7 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
+    DecimalInputWithButtonsComponent,
   ],
   providers: [
     DialogService,
