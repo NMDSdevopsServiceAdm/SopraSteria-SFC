@@ -31,7 +31,7 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
   ];
 
   public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
-  public minPercentage = 3.05;
+  public minPercentage = 3.5;
   public maxPercentage = 100;
   public showPercentageTextBox = false;
 
@@ -182,7 +182,7 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
           { name: 'minMax', message: 'Actual contribution must be higher than 3% and no more than 100%' },
           {
             name: 'maxTwoDecimals',
-            message: 'Actual contribution can only have 1 digit after the decimal point',
+            message: 'Actual contribution can only have 2 digits after the decimal point',
           },
         ],
       },

@@ -69,7 +69,7 @@ describe('DecimalInputWithButtonsComponent', () => {
     });
   });
 
-  fdescribe('behaviour', () => {
+  describe('behaviour', () => {
     describe('number input', async () => {
       it('should update the value and emit onChange event when entered a number', async () => {
         const { fixture, getByRole, onChangeSpy } = await setup();
