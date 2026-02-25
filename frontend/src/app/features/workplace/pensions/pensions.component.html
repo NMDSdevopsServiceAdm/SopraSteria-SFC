@@ -12,7 +12,8 @@
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <h1 class="govuk-fieldset__heading">
             <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-            Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?
+            Does your company contribute <br />more than the minimum 3% into workplace pensions for care <br />and
+            support workers?
           </h1>
         </legend>
         <div class="govuk-!-margin-bottom-6">
@@ -41,7 +42,7 @@
                     [value]="option.value"
                     (click)="onChange(option.value)"
                   />
-                  <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.value }}</label>
+                  <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
                 </div>
                 <div
                   *ngIf="option.value === 'Yes'"
@@ -51,7 +52,7 @@
                   data-testid="conditionalTextBox"
                 >
                   <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-one-half">
+                    <div class="govuk-grid-column-two-thirds">
                       <div
                         class="govuk-form-group"
                         [class.govuk-form-group--error]="submitted && form.get('pensionPercentage').invalid"
@@ -66,18 +67,18 @@
                           class="govuk-error-message"
                         >
                           <span class="govuk-visually-hidden">Error:</span>
-                          {{ getFirstErrorMessage('pensionPercentage', 'minMax') }}
+                          {{ getFirstErrorMessage('pensionPercentage') }}
                         </span>
-                        <div class="govuk-input__wrapper">
-                          <app-number-input-with-buttons
-                            [min]="minPercentage"
-                            [max]="maxPercentage"
-                            inputId="pensionPercentage"
-                            formControlName="pensionPercentage"
-                            [hasError]="submitted && form.get('pensionPercentage').invalid"
-                          ></app-number-input-with-buttons>
-                          <div class="govuk-input__suffix" aria-hidden="true">%</div>
-                        </div>
+
+                        <app-decimal-input-with-buttons
+                          [min]="minPercentage"
+                          [max]="maxPercentage"
+                          inputId="pensionPercentage"
+                          formControlName="pensionPercentage"
+                          [hasError]="submitted && form.get('pensionPercentage').invalid"
+                          [step]="0.05"
+                          suffix="%"
+                        ></app-decimal-input-with-buttons>
                       </div>
                     </div>
                   </div>

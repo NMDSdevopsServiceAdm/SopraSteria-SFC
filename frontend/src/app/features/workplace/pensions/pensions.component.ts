@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, ValidatorFn } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
@@ -25,13 +25,13 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
       value: StaffBenefitEnum.NO,
     },
     {
-      label: `Don't know`,
+      label: `I do not know`,
       value: StaffBenefitEnum.DONT_KNOW,
     },
   ];
 
   public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
-  public minPercentage = 3;
+  public minPercentage = 3.05;
   public maxPercentage = 100;
   public showPercentageTextBox = false;
 
@@ -82,7 +82,13 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
   }
 
   public addValidationToControl() {
-    this.form.get('pensionPercentage')?.setValidators([this.minMaxValidator(this.minPercentage, this.maxPercentage)]);
+    this.form
+      .get('pensionPercentage')
+      ?.setValidators([
+        this.minMaxValidator(this.minPercentage, this.maxPercentage),
+        this.maxTwoDecimalPlacesValidator(),
+      ]);
+
     this.form.get('pensionPercentage').updateValueAndValidity();
   }
 
@@ -97,6 +103,26 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
       const numericValue = Number(value);
       if (isNaN(numericValue) || numericValue < min || numericValue > max) {
         return { minMax: true };
+      }
+
+      return null;
+    };
+  }
+
+  private maxTwoDecimalPlacesValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+
+      if (value === null || value === undefined || value === '') {
+        return null; // let required validator handle empties
+      }
+
+      const stringValue = value.toString();
+
+      const decimalPart = stringValue.split('.')[1];
+
+      if (decimalPart && decimalPart.length > 2) {
+        return { maxTwoDecimals: true };
       }
 
       return null;
@@ -152,7 +178,13 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
     this.formErrorsMap = [
       {
         item: 'pensionPercentage',
-        type: [{ name: 'minMax', message: 'Actual contribution must be higher than 3% and no more than 100%' }],
+        type: [
+          { name: 'minMax', message: 'Actual contribution must be higher than 3% and no more than 100%' },
+          {
+            name: 'maxTwoDecimals',
+            message: 'Actual contribution can only have 1 digit after the decimal point',
+          },
+        ],
       },
     ];
   }
