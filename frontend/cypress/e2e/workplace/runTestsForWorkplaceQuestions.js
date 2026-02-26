@@ -500,7 +500,7 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
       cy.get('[data-cy="tab-list"]').contains('Workplace').click();
     });
 
-    it('updates offer sleeps if the answer is "Yes"', () => {
+    it('updates offer sleeps-in and sleep-in pay if the answer is "Yes"', () => {
       cy.get('[data-testid="offer-sleep-ins"]').as('testId');
 
       cy.get('@testId').contains('Add').click();
@@ -509,7 +509,14 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
       cy.getByLabel('Yes').click();
       cy.contains('button', 'Save').click();
 
-      // add second sleep in question
+      // second sleep in question
+      cy.get('h1').should('contain.text', 'How do you pay care and support workers for a sleep-in?');
+      cy.getByLabel('Hourly').click();
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
     });
 
     it('adds and updates if the answer is not "Yes"', () => {
