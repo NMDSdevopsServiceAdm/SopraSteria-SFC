@@ -10,14 +10,18 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { PensionsComponent } from './pensions.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('PensionsComponent', () => {
   async function setup(returnUrl = true, pension = undefined, pensionPercentage = undefined) {
+    const isInAddDetailsFlow = !returnUrl;
+
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       PensionsComponent,
       {
         imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
+          patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
           UntypedFormBuilder,
           {
             provide: EstablishmentService,
@@ -189,7 +193,13 @@ describe('PensionsComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-benefit-holiday-leave']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'staff-benefit-holiday-leave',
+      ]);
     });
 
     it('should navigate to the next page when skipping from the flow', async () => {
@@ -199,7 +209,13 @@ describe('PensionsComponent', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-benefit-holiday-leave']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'staff-benefit-holiday-leave',
+      ]);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {

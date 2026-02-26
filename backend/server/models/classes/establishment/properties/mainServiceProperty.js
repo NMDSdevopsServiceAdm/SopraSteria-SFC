@@ -32,6 +32,7 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
         name: document.mainService.name,
         other: document.mainService.other ? document.mainService.other : undefined,
         canDoDelegatedHealthcareActivities: document.mainService.canDoDelegatedHealthcareActivities,
+        payAndPensionsGroup: document.mainService.payAndPensionsGroup,
       };
     }
   }
@@ -130,6 +131,7 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
           name: referenceService.name,
           other: serviceDef.other && referenceService.other ? serviceDef.other : undefined,
           canDoDelegatedHealthcareActivities: referenceService.canDoDelegatedHealthcareActivities,
+          payAndPensionsGroup: referenceService.payAndPensionsGroup,
         };
       }
     } else {

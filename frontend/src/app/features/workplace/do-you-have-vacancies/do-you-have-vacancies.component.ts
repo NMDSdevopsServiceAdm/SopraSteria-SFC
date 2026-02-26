@@ -19,15 +19,19 @@ export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanci
 
   protected setupRoutes(): void {
     this.setPreviousRoute();
-    this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'do-you-have-starters'];
+    this.skipToQuestionPage = 'do-you-have-starters';
     this.startersLeaversOrVacanciesPageTwo = 'select-vacancy-job-roles';
   }
 
   private setPreviousRoute(): void {
-    const previousPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
-      ? 'what-kind-of-delegated-healthcare-activities'
-      : 'service-users';
+    const payAndPensionsGroup = this.establishment.mainService.payAndPensionsGroup;
 
-    this.previousRoute = ['/workplace', this.establishment.uid, previousPage];
+    this.previousQuestionPage = this.establishmentService.showSleepInsQuestions(payAndPensionsGroup);
+
+    if (this.previousQuestionPage === null) {
+      this.previousQuestionPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
+        ? 'what-kind-of-delegated-healthcare-activities'
+        : 'service-users';
+    }
   }
 }

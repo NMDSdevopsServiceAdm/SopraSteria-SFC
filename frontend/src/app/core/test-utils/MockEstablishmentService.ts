@@ -447,6 +447,10 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
   public get returnTo(): URLStructure {
     return;
   }
+
+  public showSleepInsQuestions(payAndPensionsGroup: number): string {
+    return 'workplace-offer-sleep-ins';
+  }
 }
 
 @Injectable()

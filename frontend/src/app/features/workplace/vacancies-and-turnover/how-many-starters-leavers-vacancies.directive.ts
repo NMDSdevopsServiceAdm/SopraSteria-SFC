@@ -10,10 +10,10 @@ import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { JobRoleNumbersTableComponent } from '@shared/components/job-role-numbers-table/job-role-numbers-table.component';
 
 import { VacanciesAndTurnoverService } from '../../../core/services/vacancies-and-turnover.service';
-import { Question } from '../question/question.component';
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Directive()
-export class HowManyStartersLeaversVacanciesDirective extends Question implements OnInit, OnDestroy {
+export class HowManyStartersLeaversVacanciesDirective extends WorkplaceQuestion implements OnInit, OnDestroy {
   @ViewChild('jobRoleNumbersTable') jobRoleNumbersTable: JobRoleNumbersTableComponent;
   public heading: string;
   public instruction: string;

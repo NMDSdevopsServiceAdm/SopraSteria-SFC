@@ -13,15 +13,20 @@ import { fireEvent, render, within } from '@testing-library/angular';
 
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers.component';
 import { FormatUtil } from '@core/utils/format-util';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('DoYouHaveLeaversComponent', () => {
   const today = new Date();
   today.setFullYear(today.getFullYear() - 1);
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(today);
+
   async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnUrl;
+
     const setupTools = await render(DoYouHaveLeaversComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         WindowRef,
         UntypedFormBuilder,
         {
@@ -184,7 +189,13 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-leaver-job-roles']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'select-leaver-job-roles',
+      ]);
     });
 
     it("should navigate to the benefits-statutory-sick-pay page when submitting 'None'", async () => {
@@ -197,7 +208,13 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'benefits-statutory-sick-pay',
+      ]);
     });
 
     it("should navigate to the benefits-statutory-sick-pay page when submitting 'I do not know'", async () => {
@@ -210,7 +227,13 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'benefits-statutory-sick-pay',
+      ]);
     });
 
     it('should navigate to the benefits-statutory-sick-pay page when clicking Skip this question link', async () => {
@@ -220,7 +243,13 @@ describe('DoYouHaveLeaversComponent', () => {
       const link = getByText('Skip this question');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'benefits-statutory-sick-pay']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'benefits-statutory-sick-pay',
+      ]);
     });
 
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
@@ -249,7 +278,13 @@ describe('DoYouHaveLeaversComponent', () => {
 
         const { component } = await setup(overrides);
 
-        expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'how-many-starters']);
+        expect(component.previousRoute).toEqual([
+          '/workplace',
+          `${component.establishment.uid}`,
+          'workplace-data',
+          'add-workplace-details',
+          'how-many-starters',
+        ]);
       });
 
       it('should set back link to go to do you have starters page when workplace does not have starters', async () => {
@@ -260,6 +295,8 @@ describe('DoYouHaveLeaversComponent', () => {
         expect(component.previousRoute).toEqual([
           '/workplace',
           `${component.establishment.uid}`,
+          'workplace-data',
+          'add-workplace-details',
           'do-you-have-starters',
         ]);
       });
@@ -272,6 +309,8 @@ describe('DoYouHaveLeaversComponent', () => {
         expect(component.previousRoute).toEqual([
           '/workplace',
           `${component.establishment.uid}`,
+          'workplace-data',
+          'add-workplace-details',
           'do-you-have-starters',
         ]);
       });
@@ -299,7 +338,13 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-leaver-job-roles']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'workplace-summary',
+        'select-leaver-job-roles',
+      ]);
     });
 
     it("should navigate to the workplace summary page when submitting 'None'", async () => {

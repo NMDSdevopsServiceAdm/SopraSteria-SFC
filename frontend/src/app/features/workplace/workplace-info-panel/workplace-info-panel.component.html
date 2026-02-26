@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-one-quarter">
     <p>
       <ng-container *ngIf="canViewEstablishment; else noPermission">
-        <a href="#" class="govuk-link" (click)="setEmployerType($event)">
+        <a href="#" class="govuk-link" (click)="visitSubWorkplaceOrsetEmployerType($event)">
           {{ workplace.name }}
         </a>
       </ng-container>
@@ -29,7 +29,7 @@
             <a
               *ngIf="!(workplace.dataPermissions === 'None' && workplace.dataOwner === 'Workplace'); else linkedOnly"
               href="#"
-              (click)="setEmployerType($event)"
+              (click)="visitSubWorkplaceOrsetEmployerType($event)"
               class="govuk-util__float-right"
               >Check this workplace</a
             >
@@ -76,7 +76,11 @@
           <ng-template #dataPermissions>
             <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
               <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                <a (click)="navigateToChangeDataPermissions($event)" href="#" class="govuk-link"
+                <a
+                  (click)="navigateToChangeDataPermissions($event)"
+                  href="#"
+                  class="govuk-link"
+                  [attr.data-cy]="workplace.name + '-change-data-permission'"
                   >Change data permissions</a
                 >
               </ng-container>

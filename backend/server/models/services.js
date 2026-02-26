@@ -42,6 +42,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'CanDoDelegatedHealthcareActivities',
       },
+      payAndPensionsGroup: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'PayAndPensionsGroup',
+      },
     },
     {
       tableName: 'services',

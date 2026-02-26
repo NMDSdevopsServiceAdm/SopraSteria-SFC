@@ -10,14 +10,18 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffBenefitCashLoyaltyComponent', () => {
   async function setup(returnUrl = true, cashLoyalty = undefined) {
+    const isInAddDetailsFlow = !returnUrl;
+
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       StaffBenefitCashLoyaltyComponent,
       {
         imports: [SharedModule, RouterModule, ReactiveFormsModule],
         providers: [
+          patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
           UntypedFormBuilder,
           {
             provide: EstablishmentService,
@@ -133,7 +137,13 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
 
   it('should set the previous route as annual leave question page', async () => {
     const { component } = await setup(false);
-    expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'staff-benefit-holiday-leave']);
+    expect(component.previousRoute).toEqual([
+      '/workplace',
+      'mocked-uid',
+      'workplace-data',
+      'add-workplace-details',
+      'staff-benefit-holiday-leave',
+    ]);
   });
 
   describe('submit buttons and submitting form', () => {
@@ -188,6 +198,8 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
         'staff-recruitment-capture-training-requirement',
       ]);
     });
@@ -202,6 +214,8 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
         'staff-recruitment-capture-training-requirement',
       ]);
     });

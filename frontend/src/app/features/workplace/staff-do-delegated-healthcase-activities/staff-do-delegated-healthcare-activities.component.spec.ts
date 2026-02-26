@@ -21,6 +21,7 @@ import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { StaffDoDelegatedHealthcareActivitiesComponent } from './staff-do-delegated-healthcare-activities.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
   const labels = ['Yes', 'No', 'I do not know'];
@@ -33,9 +34,12 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
     const workerHasDHAAnswered = overrides.someWorkersHasDHAAnswered ?? true;
 
+    const isInAddDetailsFlow = !overrides?.establishmentService?.returnTo;
+
     const setupTools = await render(StaffDoDelegatedHealthcareActivitiesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
@@ -255,32 +259,131 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
     it('should set the previous page to service users question page', async () => {
       const { component } = await setup(overrides);
 
-      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'service-users']);
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'service-users',
+      ]);
     });
 
     it('should set the back link to the service users question', async () => {
       const { backServiceSpy } = await setup(overrides);
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'service-users'],
+        url: ['/workplace', 'mocked-uid', 'workplace-data', 'add-workplace-details', 'service-users'],
       });
     });
 
-    it('should navigate to do-you-have-vacancies page when user skips the question', async () => {
-      const { getByText, routerSpy } = await setup(overrides);
+    describe('user skips the question', () => {
+      it('should navigate to do-you-have-vacancies page when the payAndPensionsGroup is 3', async () => {
+        const updatedOverrides = {
+          establishmentService: {
+            returnTo: null,
+            establishment: {
+              mainService: {
+                payAndPensionsGroup: 3,
+              },
+            },
+          },
+        };
 
-      userEvent.click(getByText('Skip this question'));
+        const { getByText, routerSpy } = await setup(updatedOverrides);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+        userEvent.click(getByText('Skip this question'));
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
+      });
+
+      [1, 2].forEach((group) => {
+        it(`should navigate to workplace-offer-sleep-ins page when the payAndPensionsGroup is ${group}`, async () => {
+          const updatedOverrides = {
+            establishmentService: {
+              returnTo: null,
+              establishment: {
+                mainService: {
+                  payAndPensionsGroup: group,
+                },
+              },
+            },
+          };
+
+          const { getByText, routerSpy } = await setup(updatedOverrides);
+
+          userEvent.click(getByText('Skip this question'));
+
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'workplace-offer-sleep-ins',
+          ]);
+        });
+      });
     });
 
-    it('should navigate to do-you-have-vacancies page after submit if user did not answer', async () => {
-      const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+    describe('user did not answer', () => {
+      it('should navigate to do-you-have-vacancies page after submit when the payAndPensionsGroup is 3', async () => {
+        const updatedOverrides = {
+          establishmentService: {
+            returnTo: null,
+            establishment: {
+              mainService: {
+                payAndPensionsGroup: 3,
+              },
+            },
+          },
+        };
 
-      userEvent.click(getByText('Save and continue'));
+        const { getByText, routerSpy, establishmentServiceSpy } = await setup(updatedOverrides);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
-      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+        userEvent.click(getByText('Save and continue'));
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
+        expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      });
+
+      [1, 2].forEach((group) => {
+        it(`should navigate to workplace-offer-sleep-ins page when the payAndPensionsGroup is ${group}`, async () => {
+          const updatedOverrides = {
+            establishmentService: {
+              returnTo: null,
+              establishment: {
+                mainService: {
+                  payAndPensionsGroup: group,
+                },
+              },
+            },
+          };
+
+          const { getByText, routerSpy, establishmentServiceSpy } = await setup(updatedOverrides);
+
+          userEvent.click(getByText('Save and continue'));
+
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'workplace-offer-sleep-ins',
+          ]);
+          expect(establishmentServiceSpy).not.toHaveBeenCalled();
+        });
+      });
     });
 
     it('should navigate to what-kind-of-delegated-healthcare-activities page if user choose Yes', async () => {
@@ -292,6 +395,8 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
         'what-kind-of-delegated-healthcare-activities',
       ]);
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'StaffDoDelegatedHealthcareActivities', {
@@ -301,14 +406,62 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
 
     ['No', 'I do not know'].forEach((answer) => {
       it(`should navigate to do-you-have-vacancies if user choose '${answer}'`, async () => {
-        const { getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+        const updatedOverrides = {
+          establishmentService: {
+            returnTo: null,
+            establishment: {
+              mainService: {
+                payAndPensionsGroup: 3,
+              },
+            },
+          },
+        };
+
+        const { getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(updatedOverrides);
 
         const expectedValue = answer === 'I do not know' ? "Don't know" : answer;
 
         userEvent.click(getByLabelText(answer));
         userEvent.click(getByText('Save and continue'));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
+        expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'StaffDoDelegatedHealthcareActivities', {
+          staffDoDelegatedHealthcareActivities: expectedValue,
+        });
+      });
+
+      it(`should navigate to do-you-have-vacancies if user choose '${answer}'`, async () => {
+        const updatedOverrides = {
+          establishmentService: {
+            returnTo: null,
+            establishment: {
+              mainService: {
+                payAndPensionsGroup: 1,
+              },
+            },
+          },
+        };
+
+        const { getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(updatedOverrides);
+
+        const expectedValue = answer === 'I do not know' ? "Don't know" : answer;
+
+        userEvent.click(getByLabelText(answer));
+        userEvent.click(getByText('Save and continue'));
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'workplace-offer-sleep-ins',
+        ]);
         expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', 'StaffDoDelegatedHealthcareActivities', {
           staffDoDelegatedHealthcareActivities: expectedValue,
         });
@@ -335,6 +488,8 @@ describe('StaffDoDelegatedHealthcareActivitiesComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         'mocked-uid',
+        'workplace-data',
+        'workplace-summary',
         'what-kind-of-delegated-healthcare-activities',
       ]);
       expect(establishmentServiceSpy).toHaveBeenCalled();

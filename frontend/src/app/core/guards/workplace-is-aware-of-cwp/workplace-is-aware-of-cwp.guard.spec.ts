@@ -42,7 +42,7 @@ describe('WorkplaceIsAwareOfCwpGuard', () => {
   };
 
   const mockRouterStateSnapshot = {
-    url: '/workplace/mock-workplace-uid/care-workforce-pathway-use',
+    url: '/workplace/mock-workplace-uid/workplace-data/workplace-summary/care-workforce-pathway-use',
   } as RouterStateSnapshot;
 
   it('should be created', async () => {
@@ -71,7 +71,9 @@ describe('WorkplaceIsAwareOfCwpGuard', () => {
     const result = await guard.canActivate(route, mockRouterStateSnapshot);
 
     expect(result).toBeInstanceOf(UrlTree);
-    expect(result.toString()).toEqual('/workplace/mock-workplace-uid/care-workforce-pathway-awareness');
+    expect(result.toString()).toEqual(
+      '/workplace/mock-workplace-uid/workplace-data/workplace-summary/care-workforce-pathway-awareness',
+    );
     expect(cwpServiceSpy).toHaveBeenCalledWith(
       establishmentService.establishment.careWorkforcePathwayWorkplaceAwareness,
     );

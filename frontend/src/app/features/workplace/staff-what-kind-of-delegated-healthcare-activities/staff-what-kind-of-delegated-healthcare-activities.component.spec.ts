@@ -15,15 +15,19 @@ import { BackService } from '@core/services/back.service';
 import { mockDHADefinition, mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 import { HttpClient } from '@angular/common/http';
 import { PreviousRouteService } from '@core/services/previous-route.service';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
   const doNotKnowText = 'I do not know';
   async function setup(overrides: any = {}) {
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
 
+    const isInAddDetailsFlow = !overrides?.establishmentService?.returnTo;
+
     const setupTools = await render(StaffWhatKindOfDelegatedHealthcareActivitiesComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: BackService,
@@ -225,32 +229,135 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
     it('should set the previous page to service users question page', async () => {
       const { component } = await setup(overrides);
 
-      expect(component.previousRoute).toEqual(['/workplace', 'mocked-uid', 'staff-do-delegated-healthcare-activities']);
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'staff-do-delegated-healthcare-activities',
+      ]);
     });
 
     it('should set the back link to the service users question', async () => {
       const { backServiceSpy } = await setup(overrides);
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'staff-do-delegated-healthcare-activities'],
+        url: [
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'staff-do-delegated-healthcare-activities',
+        ],
       });
     });
 
-    it('should navigate to do-you-have-vacancies page when user skips the question', async () => {
-      const { getByText, routerSpy } = await setup(overrides);
+    describe('user skips the question', () => {
+      it('should navigate to do-you-have-vacancies page when payAndPensionsGroup is 3', async () => {
+        const updatedOverrides = {
+          establishmentService: {
+            returnTo: null,
+            establishment: {
+              mainService: {
+                payAndPensionsGroup: 3,
+              },
+            },
+          },
+        };
 
-      fireEvent.click(getByText('Skip this question'));
+        const { getByText, routerSpy } = await setup(updatedOverrides);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+        fireEvent.click(getByText('Skip this question'));
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
+      });
+
+      [1, 2].forEach((group) => {
+        it(`should navigate to do-you-have-vacancies page when payAndPensionsGroup is ${group}`, async () => {
+          const updatedOverrides = {
+            establishmentService: {
+              returnTo: null,
+              establishment: {
+                mainService: {
+                  payAndPensionsGroup: group,
+                },
+              },
+            },
+          };
+
+          const { getByText, routerSpy } = await setup(updatedOverrides);
+
+          fireEvent.click(getByText('Skip this question'));
+
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'workplace-offer-sleep-ins',
+          ]);
+        });
+      });
     });
 
-    it('should navigate to do-you-have-vacancies page after submit', async () => {
-      const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+    describe('submit', () => {
+      it('should navigate to do-you-have-vacancies page when payAndPensionsGroup is 3', async () => {
+        const updatedOverrides = {
+          establishmentService: {
+            returnTo: null,
+            establishment: {
+              mainService: {
+                payAndPensionsGroup: 3,
+              },
+            },
+          },
+        };
+        const { getByText, routerSpy, establishmentServiceSpy } = await setup(updatedOverrides);
 
-      fireEvent.click(getByText('Save and continue'));
+        fireEvent.click(getByText('Save and continue'));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
-      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
+        expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      });
+
+      [1, 2].forEach((group) => {
+        it(`should navigate to do-you-have-vacancies page when payAndPensionsGroup is ${group}`, async () => {
+          const updatedOverrides = {
+            establishmentService: {
+              returnTo: null,
+              establishment: {
+                mainService: {
+                  payAndPensionsGroup: group,
+                },
+              },
+            },
+          };
+
+          const { getByText, routerSpy } = await setup(updatedOverrides);
+
+          fireEvent.click(getByText('Save and continue'));
+
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'workplace-offer-sleep-ins',
+          ]);
+        });
+      });
     });
   });
 
@@ -280,7 +387,13 @@ describe('StaffWhatKindOfDelegatedHealthcareActivitiesComponent', () => {
       });
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
-        url: ['/workplace', 'mocked-uid', 'staff-do-delegated-healthcare-activities'],
+        url: [
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'workplace-summary',
+          'staff-do-delegated-healthcare-activities',
+        ],
       });
     });
   });

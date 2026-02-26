@@ -147,6 +147,12 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.getByLabel('Feeding and digestive care').check();
     cy.get('button').contains('Save and continue').click();
 
+    // Does your workplace offer sleep-ins?
+    cy.contains('Does your workplace offer sleep-ins?');
+    // change to Yes when next page is done
+    cy.getByLabel('No').check();
+    cy.get('button').contains('Save and continue').click();
+
     // Vacancies
     cy.get('h1').contains('Do you have any current staff vacancies?');
     cy.getByLabel('Yes').check();

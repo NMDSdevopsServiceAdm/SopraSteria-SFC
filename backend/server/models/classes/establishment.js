@@ -1534,7 +1534,7 @@ class Establishment extends EntityValidator {
             where: {
               id: fetchResults.MainServiceFKValue,
             },
-            attributes: ['id', 'name', 'reportingID', 'canDoDelegatedHealthcareActivities'],
+            attributes: ['id', 'name', 'reportingID', 'canDoDelegatedHealthcareActivities', 'payAndPensionsGroup'],
             raw: true,
           }),
           models.serviceUsers.findAll({

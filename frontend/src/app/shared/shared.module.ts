@@ -110,7 +110,7 @@ import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-pane
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { DisplayWorkplaceNameAddress } from './components/display-workplace-name-address/display-workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
-import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
+import { CheckAnswersWorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
@@ -146,9 +146,20 @@ import { AddANoteAccordionComponent } from '@shared/components/accordions/add-a-
 import { ExternalTrainingProviderInputComponent } from './components/external-training-provider-input/external-training-provider-input.component';
 import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
 import { DecimalInputWithButtonsComponent } from './components/decimal-input-with-buttons/decimal-input-with-buttons.component';
+import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.pipe';
+import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule, A11yModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    OverlayModule,
+    A11yModule,
+    AddWorkplaceDetailsPathPipe,
+    WorkplaceSummaryPathPipe,
+  ],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,
@@ -235,7 +246,7 @@ import { DecimalInputWithButtonsComponent } from './components/decimal-input-wit
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    WorkplaceSummaryComponent,
+    CheckAnswersWorkplaceSummaryComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
@@ -375,7 +386,7 @@ import { DecimalInputWithButtonsComponent } from './components/decimal-input-wit
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    WorkplaceSummaryComponent,
+    CheckAnswersWorkplaceSummaryComponent,
     SummaryRecordChangeComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
@@ -426,6 +437,8 @@ import { DecimalInputWithButtonsComponent } from './components/decimal-input-wit
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
     DecimalInputWithButtonsComponent,
+    AddWorkplaceDetailsPathPipe,
+    WorkplaceSummaryPathPipe,
   ],
   providers: [
     DialogService,

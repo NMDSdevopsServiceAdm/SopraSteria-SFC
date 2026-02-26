@@ -138,7 +138,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(cqcLocationIdRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/regulated-by-cqc`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/regulated-by-cqc`,
+        );
         expect(within(cqcLocationIdRow).queryByText(component.workplace.locationId)).toBeTruthy();
       });
 
@@ -194,7 +196,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(numberOfStaffRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/total-staff`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/total-staff`,
+        );
         expect(within(numberOfStaffRow).queryByText('4')).toBeTruthy();
         expect(numberOfStaffRow.getAttribute('class')).not.toContain('govuk-summary-list__error');
         expect(within(numberOfStaffRow).queryByTestId('number-of-staff-top-row').getAttribute('class')).not.toContain(
@@ -214,7 +218,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(numberOfStaffRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/total-staff`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/total-staff`,
+        );
         expect(within(numberOfStaffRow).queryByText('0')).toBeTruthy();
       });
 
@@ -230,7 +236,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(numberOfStaffRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/total-staff`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/total-staff`,
+        );
         expect(within(numberOfStaffRow).queryByText('-')).toBeTruthy();
       });
 
@@ -369,7 +377,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(employerTypeRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/type-of-employer`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/type-of-employer`,
+        );
         expect(within(employerTypeRow).queryByText('-')).toBeTruthy();
       });
 
@@ -385,7 +395,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(employerTypeRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/type-of-employer`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/type-of-employer`,
+        );
         expect(within(employerTypeRow).queryByText('Adult care')).toBeTruthy();
       });
 
@@ -401,7 +413,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(employerTypeRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/type-of-employer`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/type-of-employer`,
+        );
         expect(within(employerTypeRow).queryByText('Voluntary, charity, not for profit')).toBeTruthy();
       });
     });
@@ -488,7 +502,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(mainServiceRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/main-service-cqc`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/main-service-cqc`,
+        );
       });
 
       it('should show the Provide information link when there is not a main service', async () => {
@@ -502,7 +518,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(mainServiceRow).queryByText('Provide information');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/main-service-cqc`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/main-service-cqc`,
+        );
       });
 
       it('should show the Pending link when the cqcStatusRequested is true', async () => {
@@ -531,7 +549,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(otherServicesRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/other-services`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/other-services`,
+        );
         expect(within(otherServicesRow).queryByText('-')).toBeTruthy();
       });
 
@@ -546,7 +566,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(otherServicesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/other-services`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/other-services`,
+        );
         expect(within(otherServicesRow).queryByText('None')).toBeTruthy();
       });
 
@@ -565,7 +587,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(otherServicesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/other-services`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/other-services`,
+        );
         expect(within(otherServicesRow).queryByText('Carers')).toBeTruthy();
       });
 
@@ -593,7 +617,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(otherServicesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/other-services`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/other-services`,
+        );
         expect(within(otherServicesRow).queryByText('Carers')).toBeTruthy();
         expect(within(otherServicesRow).queryByText('Nursing')).toBeTruthy();
         expect(within(otherServicesRow).queryByText('Care')).toBeTruthy();
@@ -636,7 +662,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(serviceCapacityRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/capacity-of-services`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/capacity-of-services`,
+        );
         expect(within(serviceCapacityRow).queryByText('-')).toBeTruthy();
       });
 
@@ -671,7 +699,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(serviceCapacityRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/capacity-of-services`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/capacity-of-services`,
+        );
         expect(within(serviceCapacityRow).queryByText('4 people receiving care')).toBeTruthy();
       });
 
@@ -705,7 +735,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(serviceCapacityRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/capacity-of-services`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/capacity-of-services`,
+        );
         expect(within(serviceCapacityRow).queryByText('1 bed available')).toBeTruthy();
         expect(within(serviceCapacityRow).queryByText('4 people receiving care')).toBeTruthy();
       });
@@ -723,7 +755,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(serviceUsersRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/service-users`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/service-users`,
+        );
         expect(within(serviceUsersRow).queryByText('-')).toBeTruthy();
       });
 
@@ -745,7 +779,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(serviceUsersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/service-users`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/service-users`,
+        );
         expect(within(serviceUsersRow).queryByText('Service for group 1')).toBeTruthy();
       });
 
@@ -772,7 +808,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(serviceUsersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/service-users`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/service-users`,
+        );
         expect(within(serviceUsersRow).queryByText('Service for group 1')).toBeTruthy();
         expect(within(serviceUsersRow).queryByText('Service for group 2')).toBeTruthy();
       });
@@ -799,7 +837,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-do-delegated-healthcare-activities`,
         );
         expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText('-')).toBeTruthy();
       });
@@ -819,7 +857,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
           expect(link).toBeTruthy();
           expect(link.getAttribute('href')).toEqual(
-            `/workplace/${component.workplace.uid}/staff-do-delegated-healthcare-activities`,
+            `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-do-delegated-healthcare-activities`,
           );
           expect(within(staffDoDelegatedHealthcareActivitiesRow).queryByText(summaryAnswers[i])).toBeTruthy();
         });
@@ -923,7 +961,7 @@ describe('NewWorkplaceSummaryComponent', () => {
             expect(answer).toBeTruthy();
             expect(link).toBeTruthy();
             expect(link.getAttribute('href')).toEqual(
-              `/workplace/${component.workplace.uid}/what-kind-of-delegated-healthcare-activities`,
+              `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/what-kind-of-delegated-healthcare-activities`,
             );
             expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
           });
@@ -950,7 +988,7 @@ describe('NewWorkplaceSummaryComponent', () => {
             });
             expect(link).toBeTruthy();
             expect(link.getAttribute('href')).toEqual(
-              `/workplace/${component.workplace.uid}/what-kind-of-delegated-healthcare-activities`,
+              `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/what-kind-of-delegated-healthcare-activities`,
             );
             expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
           });
@@ -973,7 +1011,7 @@ describe('NewWorkplaceSummaryComponent', () => {
               expect(answer).toBeTruthy();
               expect(link).toBeTruthy();
               expect(link.getAttribute('href')).toEqual(
-                `/workplace/${component.workplace.uid}/what-kind-of-delegated-healthcare-activities`,
+                `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/what-kind-of-delegated-healthcare-activities`,
               );
 
               expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
@@ -999,6 +1037,157 @@ describe('NewWorkplaceSummaryComponent', () => {
             expect(link).toBeFalsy();
             expect(knowWhatDelegatedHealthcareActivitiesRow).toBeTruthy();
           });
+        });
+      });
+    });
+
+    describe('Offer sleep-ins', () => {
+      [1, 2].forEach((group) => {
+        it(`should show the row and table cell name when the payAndPensionsGroup is ${group}`, async () => {
+          const { component, fixture, getByTestId } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: group },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          component.workplace.showAddWorkplaceDetailsBanner = false;
+          fixture.detectChanges();
+
+          const offerSleepInsRow = getByTestId('offer-sleep-ins');
+          const cellName = within(offerSleepInsRow).queryByText('Offer sleep-ins');
+
+          expect(offerSleepInsRow).toBeTruthy();
+          expect(cellName).toBeTruthy();
+        });
+
+        it(`should not show the row and table cell name when the payAndPensionsGroup is ${group} but showAddWorkplaceDetailsBanner is true`, async () => {
+          const { component, fixture, queryByTestId } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: group },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          component.workplace.showAddWorkplaceDetailsBanner = true;
+          fixture.detectChanges();
+
+          const offerSleepInsRow = queryByTestId('offer-sleep-ins');
+
+          expect(offerSleepInsRow).toBeFalsy();
+        });
+      });
+
+      [null, 3].forEach((group) => {
+        it(`should not show the row and table cell name when the payAndPensionsGroup is ${group} but showAddWorkplaceDetailsBanner is false`, async () => {
+          const { component, fixture, queryByTestId } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: 3 },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          component.workplace.showAddWorkplaceDetailsBanner = false;
+          fixture.detectChanges();
+
+          const offerSleepInsRow = queryByTestId('offer-sleep-ins');
+
+          expect(offerSleepInsRow).toBeFalsy();
+        });
+      });
+
+      it('should not show an add link when there is no canEditEstablishment permission', async () => {
+        const { component, fixture, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+          },
+          permissions: [],
+        });
+
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+        fixture.detectChanges();
+
+        const offerSleepInsRow = queryByTestId('offer-sleep-ins');
+
+        const link = within(offerSleepInsRow).queryByText('Add');
+
+        expect(link).toBeFalsy();
+        expect(offerSleepInsRow).toBeTruthy();
+      });
+
+      it('should not show a change link when there is no canEditEstablishment permission', async () => {
+        const { component, fixture, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+          },
+          permissions: [],
+        });
+
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+        component.workplace.offerSleepIn = 'Yes';
+        fixture.detectChanges();
+
+        const offerSleepInsRow = queryByTestId('offer-sleep-ins');
+
+        const link = within(offerSleepInsRow).queryByText('Change');
+
+        expect(link).toBeFalsy();
+        expect(offerSleepInsRow).toBeTruthy();
+      });
+
+      it('should show should show "-" and an add link when offerSleepIn is null', async () => {
+        const { component, fixture, getByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+        component.workplace.offerSleepIn = null;
+        fixture.detectChanges();
+
+        const offerSleepInsRow = getByTestId('offer-sleep-ins');
+
+        const link = within(offerSleepInsRow).queryByText('Add');
+        const answer = within(offerSleepInsRow).queryByText('-');
+
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/workplace-offer-sleep-ins`,
+        );
+        expect(offerSleepInsRow).toBeTruthy();
+      });
+
+      const offerSleepInValues = [
+        { database: 'Yes', formatted: 'Yes' },
+        { database: 'No', formatted: 'No' },
+        { database: "Don't know", formatted: 'Not known' },
+      ];
+      offerSleepInValues.forEach((offerSleepInValue) => {
+        it(`should display the answers with a change link when offerSleepIn is ${offerSleepInValue.database}`, async () => {
+          const { component, fixture, getByTestId } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: 1 },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          component.workplace.showAddWorkplaceDetailsBanner = false;
+          component.workplace.offerSleepIn = offerSleepInValue.database;
+          fixture.detectChanges();
+
+          const offerSleepInsRow = getByTestId('offer-sleep-ins');
+
+          const link = within(offerSleepInsRow).queryByText('Change');
+          const answer = within(offerSleepInsRow).queryByText(offerSleepInValue.formatted);
+
+          expect(answer).toBeTruthy();
+          expect(link).toBeTruthy();
+          expect(link.getAttribute('href')).toEqual(
+            `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/workplace-offer-sleep-ins`,
+          );
         });
       });
     });
@@ -1092,7 +1281,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-vacancies`,
+        );
         expect(within(vacanciesRow).queryByText('-')).toBeTruthy();
       });
 
@@ -1107,7 +1298,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-vacancies`,
+        );
         expect(within(vacanciesRow).queryByText('Not known')).toBeTruthy();
       });
 
@@ -1122,7 +1315,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-vacancies`,
+        );
         expect(within(vacanciesRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -1137,7 +1332,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-vacancies`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-vacancies`,
+        );
         expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
@@ -1229,7 +1426,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-starters`,
+        );
         expect(within(startersRow).queryByText('-')).toBeTruthy();
       });
 
@@ -1244,7 +1443,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-starters`,
+        );
         expect(within(startersRow).queryByText('Not known')).toBeTruthy();
       });
 
@@ -1259,7 +1460,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-starters`,
+        );
         expect(within(startersRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -1274,7 +1477,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-starters`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-starters`,
+        );
         expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
@@ -1328,7 +1533,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-leavers`,
+        );
         expect(within(leaversRow).queryByText('-')).toBeTruthy();
       });
 
@@ -1343,7 +1550,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-leavers`,
+        );
         expect(within(leaversRow).queryByText('Not known')).toBeTruthy();
       });
 
@@ -1358,7 +1567,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-leavers`,
+        );
         expect(within(leaversRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -1373,7 +1584,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-leavers`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/update-leavers`,
+        );
         expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
@@ -1422,7 +1635,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/staff-recruitment-capture-training-requirement`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-recruitment-capture-training-requirement`,
         );
         expect(within(repeatTrainingRow).queryByText('-')).toBeTruthy();
       });
@@ -1439,7 +1652,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/staff-recruitment-capture-training-requirement`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-recruitment-capture-training-requirement`,
         );
         expect(
           within(repeatTrainingRow).queryByText(
@@ -1462,7 +1675,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/accept-previous-care-certificate`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/accept-previous-care-certificate`,
         );
         expect(within(acceptCareCertificateRow).queryByText('Add')).toBeTruthy();
         expect(within(acceptCareCertificateRow).queryByText('-')).toBeTruthy();
@@ -1479,7 +1692,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/accept-previous-care-certificate`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/accept-previous-care-certificate`,
         );
         expect(
           within(acceptCareCertificateRow).queryByText(
@@ -1502,7 +1715,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/care-workforce-pathway-awareness`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-workforce-pathway-awareness`,
         );
         expect(within(careWorkforcePathwayAwarenessRow).queryByText('-')).toBeTruthy();
       });
@@ -1524,7 +1737,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/care-workforce-pathway-awareness`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-workforce-pathway-awareness`,
         );
         expect(within(careWorkforcePathwayAwarenessRow).getByText('Not aware')).toBeTruthy();
       });
@@ -1551,7 +1764,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(cwpUseRow).getByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-workforce-pathway-use`,
+        );
         expect(within(cwpUseRow).getByText('-')).toBeTruthy();
       });
 
@@ -1563,7 +1778,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(cwpUseRow).getByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-workforce-pathway-use`,
+        );
         expect(within(cwpUseRow).getByText('Not known')).toBeTruthy();
       });
 
@@ -1581,7 +1798,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(cwpUseRow).getByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/care-workforce-pathway-use`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-workforce-pathway-use`,
+        );
         expect(within(cwpUseRow).getByText(MockCWPUseReasons[0].text)).toBeTruthy();
         expect(within(cwpUseRow).getByText(MockCWPUseReasons[1].text)).toBeTruthy();
         expect(within(cwpUseRow).getByText('some free text')).toBeTruthy();
@@ -1600,7 +1819,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(careWorkersCashLoyaltyRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/cash-loyalty`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/cash-loyalty`,
+        );
         expect(within(careWorkersCashLoyaltyRow).queryByText('-')).toBeTruthy();
       });
 
@@ -1614,7 +1835,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(careWorkersCashLoyaltyRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/cash-loyalty`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/cash-loyalty`,
+        );
         expect(
           within(careWorkersCashLoyaltyRow).getByText(
             `£${component.formatMonetaryValue(component.workplace.careWorkersCashLoyaltyForFirstTwoYears)}`,
@@ -1635,7 +1858,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(statutorySickPayRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/benefits-statutory-sick-pay`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/benefits-statutory-sick-pay`,
+        );
         expect(within(statutorySickPayRow).queryByText('-')).toBeTruthy();
       });
 
@@ -1649,7 +1874,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(statutorySickPayRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/benefits-statutory-sick-pay`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/benefits-statutory-sick-pay`,
+        );
         expect(within(statutorySickPayRow).getByText(component.workplace.sickPay)).toBeTruthy();
       });
     });
@@ -1666,7 +1893,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(pensionContributionRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/pensions`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/pensions`,
+        );
         expect(within(pensionContributionRow).queryByText('-')).toBeTruthy();
       });
 
@@ -1681,7 +1910,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(pensionContributionRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/pensions`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/pensions`,
+        );
         expect(within(pensionContributionRow).getByText(component.workplace.pensionContribution)).toBeTruthy();
       });
     });
@@ -1698,7 +1929,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(careWorkersLeaveDaysPerYearRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/staff-benefit-holiday-leave`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-benefit-holiday-leave`,
+        );
         expect(within(careWorkersLeaveDaysPerYearRow).queryByText('-')).toBeTruthy();
       });
 
@@ -1712,7 +1945,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(careWorkersLeaveDaysPerYearRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/staff-benefit-holiday-leave`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-benefit-holiday-leave`,
+        );
         expect(
           within(careWorkersLeaveDaysPerYearRow).getByText(component.workplace.careWorkersLeaveDaysPerYear),
         ).toBeTruthy();
@@ -1732,7 +1967,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(dataSharing).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/sharing-data`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/sharing-data`,
+        );
         expect(within(dataSharing).queryByText('-')).toBeTruthy();
       });
 
@@ -1746,7 +1983,9 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(dataSharing).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/sharing-data`);
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/sharing-data`,
+        );
         expect(within(dataSharing).queryByText('Local authorities')).toBeTruthy();
       });
 

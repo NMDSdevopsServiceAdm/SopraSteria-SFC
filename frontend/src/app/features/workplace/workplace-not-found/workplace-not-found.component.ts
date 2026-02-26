@@ -1,46 +1,33 @@
 import { Component } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { LocationService } from '@core/services/location.service';
-import { RegistrationService } from '@core/services/registration.service';
-import { WorkplaceNotFound } from '@features/workplace-find-and-select/workplace-not-found/workplace-not-found';
 
 @Component({
-    selector: 'app-workplace-not-found',
-    templateUrl: './workplace-not-found.component.html',
-    standalone: false
+  selector: 'app-workplace-not-found',
+  templateUrl: './workplace-not-found.component.html',
+  standalone: false,
 })
-export class WorkplaceNotFoundComponent extends WorkplaceNotFound {
+export class WorkplaceNotFoundComponent {
   public workplace: Establishment;
   constructor(
-    private registrationService: RegistrationService,
-    protected formBuilder: UntypedFormBuilder,
-    protected errorSummaryService: ErrorSummaryService,
-    protected locationService: LocationService,
     protected router: Router,
     protected backService: BackService,
     private establishmentService: EstablishmentService,
-  ) {
-    super(formBuilder, backService, errorSummaryService, locationService, router);
-  }
-  protected init(): void {
+    private route: ActivatedRoute,
+  ) {}
+
+  ngOnInit(): void {
     this.workplace = this.establishmentService.establishment;
-    this.flow = `workplace/${this.workplace.uid}`;
     this.setBackLink();
   }
 
-  public onSuccess(data: LocationSearchResponse) {
-    this.registrationService.locationAddresses$.next(data.postcodedata);
-    this.navigateToSelectWorkplaceAddressRoute();
+  private setBackLink(): void {
+    const backLinkUrl = this.router.createUrlTree(['..', 'regulated-by-cqc'], { relativeTo: this.route }).toString();
+    this.backService.setBackLink({ url: [backLinkUrl] });
   }
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
-  }
+
   public returnToWorkPlace(event: Event) {
     event.preventDefault();
     this.router.navigate(['/dashboard'], { fragment: 'workplace' });

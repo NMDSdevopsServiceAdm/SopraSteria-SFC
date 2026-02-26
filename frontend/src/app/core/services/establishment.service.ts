@@ -26,6 +26,7 @@ import { map, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { PostServicesModel } from '../model/postServices.model';
 import { UpdateStaffKindDelegatedHealthcareActivitiesPayload } from '@core/model/delegated-healthcare-activities.model';
+import { ADD_WORKPLACE_DETAILS_ROUTE, WORKPLACE_SUMMARY_ROUTE } from '@core/constants/constants';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -503,5 +504,28 @@ export class EstablishmentService {
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/updateStaffKindDelegatedHealthcareActivities`,
       payload,
     );
+  }
+
+  public baseRouteForAddWorkplaceDetails(workplaceUid: string): Array<string> {
+    return ['/workplace', workplaceUid, ...ADD_WORKPLACE_DETAILS_ROUTE];
+  }
+
+  public buildPathForAddWorkplaceDetails(workplaceUid: string, pathSegment: string): Array<string> {
+    return [...this.baseRouteForAddWorkplaceDetails(workplaceUid), pathSegment];
+  }
+
+  public baseRouteForWorkplaceSummary(workplaceUid: string): Array<string> {
+    return ['/workplace', workplaceUid, ...WORKPLACE_SUMMARY_ROUTE];
+  }
+
+  public buildPathForWorkplaceSummary(workplaceUid: string, pathSegment: string): Array<string> {
+    return [...this.baseRouteForWorkplaceSummary(workplaceUid), pathSegment];
+  }
+
+  public showSleepInsQuestions(payAndPensionsGroup: number): string {
+    if (payAndPensionsGroup === 1 || payAndPensionsGroup === 2) {
+      return 'workplace-offer-sleep-ins';
+    }
+    return null;
   }
 }

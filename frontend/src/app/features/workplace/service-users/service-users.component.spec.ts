@@ -18,6 +18,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { ServiceUsersComponent } from './service-users.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 const mockServiceUser = [
   {
@@ -66,11 +67,13 @@ const mockServiceUser = [
 
 describe('ServiceUsersComponent', () => {
   const setup = async (overrides: any = {}) => {
+    const isInAddDetailsFlow = !overrides?.returnToUrl;
     const getServiceUsersSpy = jasmine.createSpy('getServiceUsers').and.returnValue(of(mockServiceUser));
 
     const setupTools = await render(ServiceUsersComponent, {
       imports: [BrowserModule, SharedModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
           provide: EstablishmentService,
@@ -85,7 +88,9 @@ describe('ServiceUsersComponent', () => {
         ErrorSummaryService,
         SubmitButtonComponent,
         QuestionComponent,
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
@@ -165,7 +170,13 @@ describe('ServiceUsersComponent', () => {
         const link = getByText('Skip this question');
         fireEvent.click(link);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
       });
 
       it('should navigate to do-you-have-vacancies page when user submits and establishment has main service which cannot do delegated healthcare activities', async () => {
@@ -174,7 +185,13 @@ describe('ServiceUsersComponent', () => {
         const link = getByText('Save and continue');
         fireEvent.click(link);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-vacancies']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'do-you-have-vacancies',
+        ]);
       });
 
       it('should navigate to staff-do-delegated-healthcare-activities page when user skips and establishment has main service which can do delegated healthcare activities', async () => {
@@ -186,6 +203,8 @@ describe('ServiceUsersComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
           'staff-do-delegated-healthcare-activities',
         ]);
       });
@@ -199,6 +218,8 @@ describe('ServiceUsersComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
           'staff-do-delegated-healthcare-activities',
         ]);
       });

@@ -9,12 +9,12 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { Question } from '@features/workplace/question/question.component';
+import { WorkplaceQuestion } from '@features/workplace/question/question.component';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Directive()
-export class SelectJobRolesDirective extends Question {
+export class SelectJobRolesDirective extends WorkplaceQuestion {
   @ViewChild('accordion') accordion: AccordionGroupComponent;
   public section = WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
   public heading: string;
@@ -55,8 +55,8 @@ export class SelectJobRolesDirective extends Question {
   }
 
   protected setupRoutes(): void {
-    this.nextRoute = ['/workplace', this.establishment.uid, `how-many-${this.field}`];
-    this.previousRoute = ['/workplace', this.establishment.uid, `do-you-have-${this.field}`];
+    this.nextQuestionPage = `how-many-${this.field}`;
+    this.previousQuestionPage = `do-you-have-${this.field}`;
   }
 
   public setBackLink() {

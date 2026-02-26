@@ -12,12 +12,12 @@ import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-workplace-summary',
-    templateUrl: './workplace-summary.component.html',
-    providers: [I18nPluralPipe],
-    standalone: false
+  selector: 'app-workplace-summary',
+  templateUrl: './workplace-summary.component.html',
+  providers: [I18nPluralPipe],
+  standalone: false,
 })
-export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
+export class CheckAnswersWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   private _workplace: any;
   public resp: any;
   protected subscriptions: Subscription = new Subscription();
@@ -36,6 +36,7 @@ export class WorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   public now: Date = new Date();
   public typeOfEmployer: string;
   public isAwareOfCareWorkforcePathway: boolean;
+
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
   @Input() removeServiceSectionMargin = false;

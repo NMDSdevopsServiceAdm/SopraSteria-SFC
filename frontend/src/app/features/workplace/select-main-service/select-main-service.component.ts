@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -10,9 +10,9 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
 
 @Component({
-    selector: 'app-select-main-service',
-    templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
-    standalone: false
+  selector: 'app-select-main-service',
+  templateUrl: '../../../shared/directives/create-workplace/select-main-service/select-main-service.component.html',
+  standalone: false,
 })
 export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public workplace: Establishment;
@@ -24,6 +24,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected workplaceService: WorkplaceService,
+    protected route: ActivatedRoute,
   ) {
     super(backService, backLinkService, errorSummaryService, formBuilder, router, workplaceService);
   }
@@ -50,19 +51,29 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
         ...(selectedMainService.otherName && { other: selectedMainService.otherName }),
       },
     };
+
     this.subscriptions.add(
       this.establishmentService.updateMainService(this.workplace.uid, request).subscribe((data) => {
         this.establishmentService.setState({ ...this.workplace, ...data });
         if (this.establishmentService.mainServiceCQC && !this.workplace.isRegulated) {
-          this.router.navigate(['/workplace', this.workplace.uid, 'main-service-cqc-confirm']);
+          this.navigateToCQCChangeConfirmationPage();
         } else {
-          this.router.navigate(this.establishmentService.returnTo.url, {
-            fragment: this.establishmentService.returnTo.fragment,
-          });
-          this.establishmentService.setReturnTo(null);
+          this.returnToPreviousPage();
         }
       }),
     );
+  }
+
+  private navigateToCQCChangeConfirmationPage(): void {
+    this.router.navigate(['..', 'main-service-cqc-confirm'], { relativeTo: this.route });
+  }
+
+  private returnToPreviousPage(): void {
+    const returnTo = this.establishmentService.returnTo ?? { url: ['/dashboard'], fragment: 'workplace' };
+    this.router.navigate(returnTo.url, {
+      fragment: returnTo.fragment,
+    });
+    this.establishmentService.setReturnTo(null);
   }
 
   public setSubmitAction(payload: { action: string; save: boolean }): void {

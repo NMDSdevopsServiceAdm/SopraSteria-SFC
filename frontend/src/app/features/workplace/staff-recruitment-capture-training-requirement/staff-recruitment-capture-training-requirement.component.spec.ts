@@ -10,12 +10,16 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnTo;
+
     const setupTools = await render(StaffRecruitmentCaptureTrainingRequirementComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
@@ -131,7 +135,13 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'accept-previous-care-certificate']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'accept-previous-care-certificate',
+      ]);
     });
 
     it('should not call the updateSingleEstablishmentField when submitting form when the form has not been filled out', async () => {
@@ -264,45 +274,17 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
   });
 
-  describe('Back button', () => {
-    it('should set the back link to cash-loyalty page', async () => {
-      const { component } = await setup({
-        returnTo: null,
-      });
-
-      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'cash-loyalty']);
+  it('should set the back link to cash-loyalty page', async () => {
+    const { component } = await setup({
+      returnTo: null,
     });
 
-    it('should set the back link to cash-loyalty page when main service cannot do delegated healthcare activities', async () => {
-      const { component } = await setup({
-        returnTo: null,
-        establishment: {
-          mainService: {
-            canDoDelegatedHealthcareActivities: null,
-            id: 11,
-            name: 'Domestic services and home help',
-            reportingID: 10,
-          },
-        },
-      });
-
-      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'cash-loyalty']);
-    });
-
-    it('should set the back link to cash-loyalty page even if main service can do delegated healthcare activities', async () => {
-      const { component } = await setup({
-        returnTo: null,
-        establishment: {
-          mainService: {
-            canDoDelegatedHealthcareActivities: true,
-            id: 9,
-            name: 'Day care and day services',
-            reportingID: 6,
-          },
-        },
-      });
-
-      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'cash-loyalty']);
-    });
+    expect(component.previousRoute).toEqual([
+      '/workplace',
+      component.establishment.uid,
+      'workplace-data',
+      'add-workplace-details',
+      'cash-loyalty',
+    ]);
   });
 });
