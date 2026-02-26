@@ -7,6 +7,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Component({
   selector: 'app-offer-sleep-ins',
@@ -24,6 +25,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected route: ActivatedRoute,
+    protected payAndPensionService: PayAndPensionService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -32,12 +34,14 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     this.setSectionHeading();
     this.setupForm();
     this.setPreviousRoute();
-    this.prefill()
+    this.prefill();
     this.skipToQuestionPage = 'do-you-have-vacancies';
   }
 
   public setSectionHeading() {
-    this.section = WorkplaceFlowSections.SERVICES;
+    const inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
+
+    this.section = inPayAndPensionsMiniFlow ? 'Workplace' : WorkplaceFlowSections.SERVICES;
   }
 
   setupForm() {
@@ -50,13 +54,13 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
   }
 
   private prefill(): void {
-    const offerSleepIn = this.establishment.offerSleepIn
+    const offerSleepIn = this.establishment.offerSleepIn;
 
-    if(!offerSleepIn) return
+    if (!offerSleepIn) return;
 
     this.form.patchValue({
-      offerSleepIn
-    })
+      offerSleepIn,
+    });
   }
 
   private setPreviousRoute(): void {

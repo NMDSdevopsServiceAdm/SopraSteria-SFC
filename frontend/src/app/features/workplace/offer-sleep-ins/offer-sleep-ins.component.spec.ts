@@ -13,8 +13,10 @@ import { WindowRef } from '@core/services/window.ref';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { of } from 'rxjs';
 import { BackService } from '@core/services/back.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 
-fdescribe('OfferSleepInsComponent', () => {
+describe('OfferSleepInsComponent', () => {
   const options = YesNoDontKnowOptions;
 
   async function setup(overrides: any = {}) {
@@ -34,6 +36,11 @@ fdescribe('OfferSleepInsComponent', () => {
         {
           provide: BackService,
           useValue: backServiceSpy,
+        },
+        {
+          provide: PayAndPensionService,
+          useFactory: MockPayAndPensionService.factory(overrides.inPayAndPensionsMiniFlow),
+          deps: [HttpClient],
         },
         WindowRef,
         provideHttpClient(),
@@ -71,6 +78,13 @@ fdescribe('OfferSleepInsComponent', () => {
   });
 
   describe('caption', () => {
+    it('should show "Workplace" as the caption when in the pay and permissions mini flow', async () => {
+      const { getByTestId } = await setup({ inPayAndPensionsMiniFlow: true });
+      const sectionCaption = 'Workplace';
+
+      expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
+    });
+
     it('should show "Services" as the caption', async () => {
       const { getByTestId } = await setup();
       const sectionCaption = 'Services';
@@ -270,7 +284,7 @@ fdescribe('OfferSleepInsComponent', () => {
     });
 
     it('should navigate back to the workplace summary when submit is clicked without an answer', async () => {
-      const { component, fixture, getByText, routerSpy, setSubmitActionSpy } = await setup(overrides);
+      const { fixture, getByText, routerSpy, setSubmitActionSpy } = await setup(overrides);
 
       const button = getByText('Save');
       fireEvent.click(button);
