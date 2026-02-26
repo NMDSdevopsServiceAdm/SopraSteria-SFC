@@ -101,6 +101,13 @@ export class ReportService {
     );
   }
 
+  public getUserResearchInviteResponseReport(): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/reports/UserResearchInviteResponseReport`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
   // Function to check for the lock status
   private checkLockStatus(httpOptions, workplaceUid, report): Observable<any> {
     let requestId;
