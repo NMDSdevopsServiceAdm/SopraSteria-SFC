@@ -50,21 +50,23 @@
       </app-registration-submit-buttons>
       </div>
       </div>
-    <div class="govuk-grid-column-one-third govuk-!-margin-top-1" *ngIf="insideFlow">
-      <div class="govuk-util__float-right">
-        <app-progress-bar
-          data-testid="progress-bar-1"
-          [header]="'Workplace'"
-          [sections]="workplaceSections"
-          [completeProgressBar]="true"
-        ></app-progress-bar>
-        <app-progress-bar
-          data-testid="progress-bar-2"
-          [header]="'User account'"
-          [sections]="userAccountSections"
-          [currentSection]="'User research'"
-        ></app-progress-bar>
+    @if (insideFlow) {
+      <div class="govuk-grid-column-one-third">
+        <div class="govuk-!-margin-left-8">
+          <app-progress-bar
+            data-testid="progress-bar-1"
+            [header]="'Workplace'"
+            [sections]="workplaceSections"
+            [completeProgressBar]="true"
+          ></app-progress-bar>
+          <app-progress-bar
+            data-testid="progress-bar-2"
+            [header]="'User account'"
+            [sections]="userAccountSections"
+            [currentSection]="'User research'"
+          ></app-progress-bar>
+        </div>
       </div>
-    </div>
+    }
   </div>
 </form>
