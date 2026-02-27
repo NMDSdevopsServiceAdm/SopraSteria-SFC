@@ -13,7 +13,7 @@ import { PensionsComponent } from './pensions.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('PensionsComponent', () => {
-  async function setup(returnUrl = true, pension = undefined) {
+  async function setup(returnUrl = true, pension = undefined, pensionPercentage = undefined) {
     const isInAddDetailsFlow = !returnUrl;
 
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
@@ -27,6 +27,7 @@ describe('PensionsComponent', () => {
             provide: EstablishmentService,
             useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
               pensionContribution: pension,
+              pensionContributionPercentage: pensionPercentage,
             }),
             deps: [HttpClient],
           },
@@ -39,7 +40,7 @@ describe('PensionsComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updatePensionContribution').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -64,7 +65,7 @@ describe('PensionsComponent', () => {
 
   it('should render the headings', async () => {
     const { getByText } = await setup();
-    const heading = `Do you contribute more than the minimum 3% into workplace pensions for your care workers?`;
+    const heading = `Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?`;
     const sectionCaption = 'Pay and benefits';
 
     expect(getByText(heading)).toBeTruthy;
@@ -76,20 +77,47 @@ describe('PensionsComponent', () => {
 
     const reveal = getByText('Why we ask for this information');
     const revealText = getByText(
-      `This data is used to determine whether rewards and benefits act as incentives when it comes to staff retention. It also reveals the type of incentives that are being offered in the sector and how common they are.`,
+      `Workplace pensions are sometimes called 'automatic enrolment', 'company', 'occupational', 'works', or 'work-based' pensions.`,
     );
 
     expect(reveal).toBeTruthy();
     expect(revealText).toBeTruthy();
   });
 
-  it('should pre select the first radio button if the establishment has a pension value of Yes', async () => {
+  it('should display text boxes when Yes is selected', async () => {
+    const { fixture, getByTestId } = await setup();
+
+    const YesRadio = getByTestId('pensionPercentageRadio-conditional');
+
+    fireEvent.click(YesRadio);
+    fixture.detectChanges();
+
+    expect(YesRadio).toHaveClass('govuk-radios__conditional--hidden');
+  });
+
+  it('should pre select the second radio button if the establishment has a pension value of Yes', async () => {
     const pensionContribution = 'Yes';
     const { component, fixture } = await setup(true, pensionContribution);
 
     const radioButton = fixture.nativeElement.querySelector('input[id="pensionsOption-0"]');
     expect(radioButton.checked).toBeTruthy();
-    expect(component.form.value).toEqual({ pension: 'Yes' });
+    expect(component.form.value).toEqual({
+      pension: 'Yes',
+      pensionPercentage: undefined,
+    });
+  });
+
+  it('should prefill the input if the establishment has a pension Percentage value', async () => {
+    const pensionContribution = 'Yes';
+    const pensionPercentage = 100;
+
+    const { component, fixture } = await setup(true, pensionContribution, pensionPercentage);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.form.get('pension')?.value).toBe('Yes');
+    expect(component.form.get('pensionPercentage')?.value).toBe(100);
   });
 
   it('should pre select the second radio button if the establishment has a pension value of No', async () => {
@@ -98,7 +126,10 @@ describe('PensionsComponent', () => {
 
     const radioButton = fixture.nativeElement.querySelector('input[id="pensionsOption-1"]');
     expect(radioButton.checked).toBeTruthy();
-    expect(component.form.value).toEqual({ pension: 'No' });
+    expect(component.form.value).toEqual({
+      pension: 'No',
+      pensionPercentage: undefined,
+    });
   });
 
   it(`should pre select the third radio button if the establishment has a pension value of Don't know`, async () => {
@@ -107,7 +138,10 @@ describe('PensionsComponent', () => {
 
     const radioButton = fixture.nativeElement.querySelector('input[id="pensionsOption-2"]');
     expect(radioButton.checked).toBeTruthy();
-    expect(component.form.value).toEqual({ pension: `Don't know` });
+    expect(component.form.value).toEqual({
+      pension: `Don't know`,
+      pensionPercentage: undefined,
+    });
   });
 
   describe('submit buttons and submitting form', () => {

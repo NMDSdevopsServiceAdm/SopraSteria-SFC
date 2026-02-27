@@ -207,8 +207,11 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.get('button').contains('Save and continue').click();
 
     // Workplace pensions
-    cy.contains('Do you contribute more than the minimum 3% into workplace pensions for your care workers?');
+    cy.contains(
+      'Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?',
+    );
     cy.getByLabel('Yes').check();
+    cy.getByLabel('Actual contribution').type('3.5');
     cy.get('button').contains('Save and continue').click();
 
     // How many days leave

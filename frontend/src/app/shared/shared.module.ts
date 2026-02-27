@@ -145,6 +145,7 @@ import { SeperatorLineComponent } from './components/seperator-line/seperator-li
 import { AddANoteAccordionComponent } from '@shared/components/accordions/add-a-note-accordion/add-a-note-accordion.component';
 import { ExternalTrainingProviderInputComponent } from './components/external-training-provider-input/external-training-provider-input.component';
 import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
+import { DecimalInputWithButtonsComponent } from './components/decimal-input-with-buttons/decimal-input-with-buttons.component';
 import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.pipe';
 import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
 
@@ -300,6 +301,7 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
+    DecimalInputWithButtonsComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -434,6 +436,7 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
+    DecimalInputWithButtonsComponent,
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
   ],

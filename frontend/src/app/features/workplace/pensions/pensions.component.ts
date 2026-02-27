@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
@@ -25,12 +25,15 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
       value: StaffBenefitEnum.NO,
     },
     {
-      label: `Don't know`,
+      label: `I do not know`,
       value: StaffBenefitEnum.DONT_KNOW,
     },
   ];
 
   public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
+  public minPercentage = 3.5;
+  public maxPercentage = 100;
+  public showPercentageTextBox = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -40,12 +43,22 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
     protected establishmentService: EstablishmentService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    this.form = this.formBuilder.group(
+      {
+        pension: null,
+        pensionPercentage: null,
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   protected init(): void {
-    this.setupForm();
     this.setRoutes();
     this.prefill();
+
+    if (this.establishment.pensionContribution === 'Yes') {
+      this.showPercentageTextBox = true;
+    }
   }
 
   private setRoutes(): void {
@@ -53,39 +66,104 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
     this.skipToQuestionPage = 'staff-benefit-holiday-leave';
   }
 
-  private setupForm(): void {
-    this.form = this.formBuilder.group(
-      {
-        pension: null,
-      },
-      { updateOn: 'submit' },
-    );
+  public onChange(answer: string) {
+    if (answer === 'Yes') {
+      this.showPercentageTextBox = true;
+      this.addValidationToControl();
+      this.addErrorLinkFunctionality();
+    } else if (answer) {
+      this.showPercentageTextBox = false;
+      const { pensionPercentage } = this.form.controls;
+      if (pensionPercentage) {
+        this.form.get('pensionPercentage').clearValidators();
+        this.form.get('pensionPercentage').updateValueAndValidity();
+      }
+    }
+  }
+
+  public addValidationToControl() {
+    this.form
+      .get('pensionPercentage')
+      ?.setValidators([
+        this.minMaxValidator(this.minPercentage, this.maxPercentage),
+        this.maxTwoDecimalPlacesValidator(),
+      ]);
+
+    this.form.get('pensionPercentage').updateValueAndValidity();
+  }
+
+  private minMaxValidator(min: number, max: number): ValidatorFn {
+    return (control: AbstractControl) => {
+      const value = control.value;
+
+      if (value === null || value === undefined || value === '') {
+        return null;
+      }
+
+      const numericValue = Number(value);
+      if (isNaN(numericValue) || numericValue < min || numericValue > max) {
+        return { minMax: true };
+      }
+
+      return null;
+    };
+  }
+
+  private maxTwoDecimalPlacesValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+
+      if (value === null || value === undefined || value === '') {
+        return null; // let required validator handle empties
+      }
+
+      const stringValue = value.toString();
+
+      const decimalPart = stringValue.split('.')[1];
+
+      if (decimalPart && decimalPart.length > 2) {
+        return { maxTwoDecimals: true };
+      }
+
+      return null;
+    };
   }
 
   private prefill(): void {
     if (this.establishment.pensionContribution) {
       this.form.patchValue({
         pension: this.establishment.pensionContribution,
+        pensionPercentage: this.establishment.pensionContributionPercentage,
       });
+
+      this.onChange(this.establishment.pensionContribution);
     }
   }
 
   protected generateUpdateProps(): any {
-    const { pension } = this.form.value;
-    if (pension) {
-      return { pension };
+    const { pension, pensionPercentage } = this.form.value;
+    if (!pension) return null;
+
+    const payload: any = {
+      pension: {
+        pensionContribution: pension,
+      },
+    };
+
+    if (pension === 'Yes' && pensionPercentage != null) {
+      payload.pension.pensionContributionPercentage = pensionPercentage;
     }
-    return null;
+
+    return payload;
   }
 
   protected updateEstablishment(props: any): void {
-    const pensionData = {
-      property: 'pensionContribution',
-      value: props.pension,
-    };
+    if (!props) return;
+
+    const payload = props.pension;
 
     this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, pensionData).subscribe(
+      this.establishmentService.updatePensionContribution(this.establishment.uid, payload).subscribe(
         (data) => this._onSuccess(data.data),
         (error) => this.onError(error),
       ),
@@ -94,5 +172,25 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
 
   protected onSuccess(): void {
     this.nextQuestionPage = 'staff-benefit-holiday-leave';
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'pensionPercentage',
+        type: [
+          { name: 'minMax', message: 'Actual contribution must be higher than 3% and no more than 100%' },
+          {
+            name: 'maxTwoDecimals',
+            message: 'Actual contribution can only have 2 digits after the decimal point',
+          },
+        ],
+      },
+    ];
+  }
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
   }
 }
