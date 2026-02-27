@@ -63,8 +63,9 @@ export class StaffWhatKindOfDelegatedHealthcareActivitiesComponent extends Workp
   private setNextRoute(): void {
     const payAndPensionsGroup = this.establishment.mainService.payAndPensionsGroup;
 
-    this.skipToQuestionPage =
-      this.payAndPensionService.showSleepInsQuestions(payAndPensionsGroup) ?? 'do-you-have-vacancies';
+    this.skipToQuestionPage = this.payAndPensionService.showSleepInsQuestions(payAndPensionsGroup)
+      ? 'workplace-offer-sleep-ins'
+      : 'do-you-have-vacancies';
 
     this.nextQuestionPage = this.skipToQuestionPage;
   }

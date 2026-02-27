@@ -45,7 +45,7 @@ describe("PayAndPensionService", () => {
   describe('showSleepInsQuestions', () => {
     [1, 2].forEach((payAndPensionsGroup) => {
       it(`should return workplace-offer-sleep-ins when payAndPensionsGroup is ${payAndPensionsGroup}`, () => {
-        const expected = 'workplace-offer-sleep-ins';
+        const expected = true;
         const actual = service.showSleepInsQuestions(payAndPensionsGroup);
 
         expect(actual).toEqual(expected);
@@ -53,7 +53,7 @@ describe("PayAndPensionService", () => {
     });
 
     it('should return null when payAndPensionsGroup is not an allowed group number', () => {
-      const expected = null;
+      const expected = false;
       const actual = service.showSleepInsQuestions(3);
 
       expect(actual).toEqual(expected);

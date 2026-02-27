@@ -4,12 +4,11 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-
 export class PayAndPensionService {
   private readonly _payAndPensionQuestionRevealText: string =
-    'The information will be used by DHSC and other sector bodies to ensure the Fair Pay Agreement is based on accurate data. It will not be shared in any way that identifies your workplace or staff.'
+    'The information will be used by DHSC and other sector bodies to ensure the Fair Pay Agreement is based on accurate data. It will not be shared in any way that identifies your workplace or staff.';
 
-  private _inPayAndPensionsMiniFlow: boolean = false
+  private _inPayAndPensionsMiniFlow: boolean = false;
 
   constructor(private http: HttpClient) {}
 
@@ -18,21 +17,23 @@ export class PayAndPensionService {
   }
 
   setInPayAndPensionsMiniFlow(status: boolean) {
-    this._inPayAndPensionsMiniFlow = status
+    this._inPayAndPensionsMiniFlow = status;
   }
 
   getInPayAndPensionsMiniFlow(): boolean {
-    return this._inPayAndPensionsMiniFlow
+    return this._inPayAndPensionsMiniFlow;
   }
 
-  clearInPayAndPensionsMiniFlow(){
+  clearInPayAndPensionsMiniFlow() {
     this._inPayAndPensionsMiniFlow = null;
   }
 
-  public showSleepInsQuestions(payAndPensionsGroup: number): string {
+  public showSleepInsQuestions(payAndPensionsGroup: number): boolean {
     if (payAndPensionsGroup === 1 || payAndPensionsGroup === 2) {
-      return 'workplace-offer-sleep-ins';
+      return true;
+      // return 'workplace-offer-sleep-ins';
+      // return 'how-do-you-pay-for-sleep-ins';
     }
-    return null;
+    return false;
   }
 }

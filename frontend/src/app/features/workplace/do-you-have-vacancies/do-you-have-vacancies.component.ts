@@ -26,7 +26,9 @@ export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanci
   private setPreviousRoute(): void {
     const payAndPensionsGroup = this.establishment.mainService.payAndPensionsGroup;
 
-    this.previousQuestionPage = this.payAndPensionService.showSleepInsQuestions(payAndPensionsGroup);
+    this.previousQuestionPage = this.payAndPensionService.showSleepInsQuestions(payAndPensionsGroup)
+      ? 'how-do-you-pay-for-sleep-ins'
+      : null;
 
     if (this.previousQuestionPage === null) {
       this.previousQuestionPage = this.establishment.mainService.canDoDelegatedHealthcareActivities

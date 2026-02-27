@@ -113,7 +113,7 @@ describe('DoYouHaveVacanciesComponent', () => {
   describe('back link', () => {
     describe('in workplace flow', () => {
       [1, 2].forEach((group) => {
-        it(`should set the previous page to workplace-offer-sleep-ins when main service payAndPensionsGroup is ${group}`, async () => {
+        it(`should set the previous page to how-do-you-pay-for-sleep-ins when main service payAndPensionsGroup is ${group}`, async () => {
           const overrides = {
             returnUrl: false,
             workplace: {
@@ -133,7 +133,7 @@ describe('DoYouHaveVacanciesComponent', () => {
             `${component.establishment.uid}`,
             'workplace-data',
             'add-workplace-details',
-            'workplace-offer-sleep-ins',
+            'how-do-you-pay-for-sleep-ins',
           ]);
         });
       });
