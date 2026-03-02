@@ -117,68 +117,66 @@ fdescribe('StaffOptOutOfWorkplacePensionComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    describe('back link', () => {
-      it('should set the previous page to pensions question page', async () => {
-        const { component } = await setup(overrides);
+    it('should set the previous page to pensions question page', async () => {
+      const { component } = await setup(overrides);
 
-        expect(component.previousRoute).toEqual([
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        component.establishment.uid,
+        'workplace-data',
+        'add-workplace-details',
+        'pensions',
+      ]);
+    });
+
+    it('should navigate to staff-benefit-holiday-leave page when user skips the question', async () => {
+      const { getByText, routerSpy, fixture } = await setup(overrides);
+
+      userEvent.click(getByText('Skip this question'));
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'staff-benefit-holiday-leave',
+      ]);
+    });
+
+    it('should navigate to staff-benefit-holiday-leave after submit if user did not answer', async () => {
+      const { getByText, fixture, routerSpy, establishmentServiceSpy } = await setup(overrides);
+
+      userEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'add-workplace-details',
+        'staff-benefit-holiday-leave',
+      ]);
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+    });
+
+    options.forEach((option) => {
+      it(`should navigate to staff-benefit-holiday-leave page after submit if user answered ${option.label}`, async () => {
+        const { component, getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
+
+        userEvent.click(getByLabelText(option.label));
+        userEvent.click(getByText('Save and continue'));
+
+        expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           component.establishment.uid,
           'workplace-data',
           'add-workplace-details',
-          'pensions',
-        ]);
-      });
-
-      it('should navigate to staff-benefit-holiday-leave page when user skips the question', async () => {
-        const { getByText, routerSpy, fixture } = await setup(overrides);
-
-        userEvent.click(getByText('Skip this question'));
-        fixture.detectChanges();
-
-        expect(routerSpy).toHaveBeenCalledWith([
-          '/workplace',
-          'mocked-uid',
-          'workplace-data',
-          'add-workplace-details',
           'staff-benefit-holiday-leave',
         ]);
-      });
-
-      it('should navigate to staff-benefit-holiday-leave after submit if user did not answer', async () => {
-        const { getByText, fixture, routerSpy, establishmentServiceSpy } = await setup(overrides);
-
-        userEvent.click(getByText('Save and continue'));
-        fixture.detectChanges();
-
-        expect(routerSpy).toHaveBeenCalledWith([
-          '/workplace',
-          'mocked-uid',
-          'workplace-data',
-          'add-workplace-details',
-          'staff-benefit-holiday-leave',
-        ]);
-        expect(establishmentServiceSpy).not.toHaveBeenCalled();
-      });
-
-      options.forEach((option) => {
-        it(`should navigate to staff-benefit-holiday-leave page after submit if user answered ${option.label}`, async () => {
-          const { component, getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
-
-          userEvent.click(getByLabelText(option.label));
-          userEvent.click(getByText('Save and continue'));
-
-          expect(routerSpy).toHaveBeenCalledWith([
-            '/workplace',
-            component.establishment.uid,
-            'workplace-data',
-            'add-workplace-details',
-            'staff-benefit-holiday-leave',
-          ]);
-          expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-            property: 'staffOptOutOfWorkplacePension',
-            value: option.value,
-          });
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
+          property: 'staffOptOutOfWorkplacePension',
+          value: option.value,
         });
       });
     });
