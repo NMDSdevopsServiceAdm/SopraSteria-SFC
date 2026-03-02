@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { WorkplaceQuestion } from '../question/question.component';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Component({
   selector: 'app-pensions',
@@ -34,6 +35,7 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
   public minPercentage = 3.5;
   public maxPercentage = 100;
   public showPercentageTextBox = false;
+  public payAndPensionQuestionRevealText: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -41,6 +43,7 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
+    protected payAndPensionService: PayAndPensionService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
     this.form = this.formBuilder.group(
@@ -53,6 +56,7 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
   }
 
   protected init(): void {
+    this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
     this.setRoutes();
     this.prefill();
 
