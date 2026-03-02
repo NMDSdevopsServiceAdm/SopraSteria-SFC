@@ -36,6 +36,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     this.setPreviousRoute();
     this.prefill();
     this.skipToQuestionPage = 'do-you-have-vacancies';
+    this.nextQuestionPage = this.skipToQuestionPage;
   }
 
   public setSectionHeading() {
@@ -76,7 +77,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
       return null;
     }
 
-    return offerSleepIn;
+    return { offerSleepIn };
   }
 
   protected updateEstablishment(props: any): void {
@@ -84,25 +85,22 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
       return;
     }
 
-    const offerSleepInData = {
-      property: 'offerSleepIn',
-      value: props,
-    };
-
     this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, offerSleepInData).subscribe(
-        (data) => this._onSuccess(data.data),
-        (error) => this.onError(error),
-      ),
+      this.establishmentService
+        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'OfferSleepIn', props)
+        .subscribe(
+          (data) => this._onSuccess(data),
+          (error) => this.onError(error),
+        ),
     );
   }
 
   protected onSuccess(): void {
     const { offerSleepIn } = this.form.value;
 
-    if (offerSleepIn === YesNoDontKnowOptions[0].label) {
-      this.submitAction = { action: 'continue', save: true };
+    if (offerSleepIn === 'Yes') {
       this.nextQuestionPage = 'how-do-you-pay-for-sleep-ins';
+      this.submitAction = { action: 'continue', save: true };
     } else {
       this.nextQuestionPage = this.skipToQuestionPage;
     }

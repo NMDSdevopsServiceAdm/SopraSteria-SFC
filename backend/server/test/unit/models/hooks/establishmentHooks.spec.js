@@ -4,6 +4,7 @@ const {
   clearDHAWorkerAnswersOnWorkplaceChange,
   clearDoDHAWorkplaceOnMainServiceChange,
   clearDHAWorkplaceAnswerOnChange,
+  clearSleepInsPayQuestionsOnOfferSleepInAnswerChange,
 } = require('../../../../models/hooks/establishmentHooks');
 
 describe('Establishment sequelize hooks', () => {
@@ -307,6 +308,69 @@ describe('Establishment sequelize hooks', () => {
             { transaction: mockTransaction },
           );
           expect(mockEstablishment.staffDoDelegatedHealthcareActivities).to.equal(null);
+        });
+      });
+    });
+  });
+
+  describe('clearSleepInsPayQuestionsOnOfferSleepInAnswerChange', () => {
+    let mockEstablishmentAuditModel = { create: () => {} };
+
+    let mockSelectedService = {
+      getPayAndPensionsGroup: () => {},
+    };
+
+    beforeEach(() => {
+      sinon.spy(mockEstablishmentAuditModel, 'create');
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const howToPayForSleepInAnswer = 'Hourly rate';
+
+    const mockEstablishmentSequelizeInstance = {
+      id: '155',
+      changed: () => false,
+      MainServiceFKValue: 7,
+      offerSleepIn: 'Yes',
+      howToPayForSleepIn: howToPayForSleepInAnswer,
+      sequelize: {
+        models: {
+          establishmentAudit: mockEstablishmentAuditModel,
+        },
+      },
+    };
+
+    it('should not clear anything if offerSleepIn did not change', async () => {
+      const mockEstablishment = {
+        ...mockEstablishmentSequelizeInstance,
+        changed: () => false,
+      };
+
+      await clearSleepInsPayQuestionsOnOfferSleepInAnswerChange(mockEstablishment, mockOptions);
+
+      expect(mockEstablishment.howToPayForSleepIn).to.equal(howToPayForSleepInAnswer);
+    });
+
+    ['No', "Don't know", null].forEach((answer) => {
+      it(`should clear howToPayForSleepIn if offerSleepIn is changed to ${answer} `, async () => {
+        const mockEstablishment = {
+          ...mockEstablishmentSequelizeInstance,
+          changed: (fieldName) => fieldName === 'offerSleepIn',
+          offerSleepIn: answer,
+        };
+
+        await clearSleepInsPayQuestionsOnOfferSleepInAnswerChange(mockEstablishment, mockOptions);
+
+        expect(mockEstablishment.howToPayForSleepIn).to.equal(null);
+        expect(mockEstablishmentAuditModel.create).to.have.been.calledWith({
+          establishmentFk: mockEstablishment.id,
+          username: mockOptions.savedBy,
+          type: 'changed',
+          property: 'HowToPayForSleepIn',
+          event: { new: null },
         });
       });
     });

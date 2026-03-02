@@ -53,8 +53,8 @@ describe('OfferSleepInsComponent', () => {
     const injector = getTestBed();
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
-      of({ data: {} }),
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.returnValue(
+      of({ ...establishmentService.establishment }),
     );
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
@@ -213,9 +213,8 @@ describe('OfferSleepInsComponent', () => {
           'add-workplace-details',
           'do-you-have-vacancies',
         ]);
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          property: 'offerSleepIn',
-          value: option.value,
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
+          offerSleepIn: option.value,
         });
       });
     });
@@ -238,9 +237,8 @@ describe('OfferSleepInsComponent', () => {
         'add-workplace-details',
         'how-do-you-pay-for-sleep-ins',
       ]);
-      expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        property: 'offerSleepIn',
-        value: 'Yes',
+      expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
+        offerSleepIn: 'Yes',
       });
     });
   });
@@ -306,9 +304,8 @@ describe('OfferSleepInsComponent', () => {
         fixture.detectChanges();
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          property: 'offerSleepIn',
-          value: option.value,
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
+          offerSleepIn: option.value,
         });
       });
     });
@@ -331,9 +328,8 @@ describe('OfferSleepInsComponent', () => {
         'workplace-summary',
         'how-do-you-pay-for-sleep-ins',
       ]);
-      expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-        property: 'offerSleepIn',
-        value: 'Yes',
+      expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
+        offerSleepIn: 'Yes',
       });
     });
   });

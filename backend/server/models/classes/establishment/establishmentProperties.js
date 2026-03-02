@@ -31,6 +31,7 @@ const staffDoDelegatedHealthcareActivitiesProperty =
 const staffWhatKindDelegatedHealthcareActivitiesProperty =
   require('./properties/staffWhatKindDelegatedHealthcareActivitiesProperty').StaffWhatKindDelegatedHealthcareActivitiesProperty;
 const travelTimePayProperty = require('./properties/travelTimePayProperty').TravelTimePayProperty;
+const offerSleepInProperty = require('./properties/offerSleepInProperty').OfferSleepInProperty;
 
 class EstablishmentPropertyManager {
   constructor() {
@@ -61,6 +62,7 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(staffDoDelegatedHealthcareActivitiesProperty);
     this._thisManager.registerProperty(staffWhatKindDelegatedHealthcareActivitiesProperty);
     this._thisManager.registerProperty(travelTimePayProperty);
+    this._thisManager.registerProperty(offerSleepInProperty);
   }
 
   get manager() {
