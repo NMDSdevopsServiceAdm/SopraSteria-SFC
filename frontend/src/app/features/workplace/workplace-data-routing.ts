@@ -52,6 +52,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
 import { OfferSleepInsComponent } from './offer-sleep-ins/offer-sleep-ins.component';
 import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins/how-do-you-pay-for-sleep-ins.component';
 import { WorkplaceSleepInsGuard } from '@core/guards/workplace-sleep-ins/workplace-sleep-ins.guard';
+import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension/staff-opt-out-of-workplace-pension.component';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -294,6 +295,14 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
     data: {
       permissions: ['canEditEstablishment'],
       title: 'Pensions',
+    },
+  },
+  {
+    path: 'staff-opt-out-of-workplace-pension',
+    component: StaffOptOutOfWorkplacePensionComponent,
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Staff opt out of workplace pension',
     },
   },
   {

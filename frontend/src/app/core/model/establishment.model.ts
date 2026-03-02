@@ -182,6 +182,7 @@ export interface Establishment {
   staffWhatKindDelegatedHealthcareActivities?: StaffWhatKindDelegatedHealthcareActivities;
   offerSleepIn?: string;
   howToPayForSleepIn?: string;
+  staffOptOutOfWorkplacePension?: string;
 }
 
 export interface UpdateJobsRequest {
