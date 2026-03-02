@@ -31,8 +31,6 @@ export class PayAndPensionService {
   public showSleepInsQuestions(payAndPensionsGroup: number): boolean {
     if (payAndPensionsGroup === 1 || payAndPensionsGroup === 2) {
       return true;
-      // return 'workplace-offer-sleep-ins';
-      // return 'how-do-you-pay-for-sleep-ins';
     }
     return false;
   }

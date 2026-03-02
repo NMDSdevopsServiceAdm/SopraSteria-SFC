@@ -1,5 +1,3 @@
-//how-do-you-pay-for-sleep-ins.component.
-
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';

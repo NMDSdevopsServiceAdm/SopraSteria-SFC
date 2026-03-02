@@ -1,10 +1,8 @@
-// the contract property is an enumeration
+// the offerSleepIn property is an enumeration
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const OFFER_SLEEP_IN_TYPE = ['Yes', 'No', "Don't know"];
-exports.OfferSleepInProperty = class OfferSleepInProperty extends (
-  ChangePropertyPrototype
-) {
+exports.OfferSleepInProperty = class OfferSleepInProperty extends ChangePropertyPrototype {
   constructor() {
     super('OfferSleepIn');
     this._allowNull = true;
