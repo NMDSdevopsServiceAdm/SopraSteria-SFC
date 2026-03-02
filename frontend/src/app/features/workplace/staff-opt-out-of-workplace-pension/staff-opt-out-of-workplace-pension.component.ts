@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { WorkplaceQuestion } from '../question/question.component';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+
+import { WorkplaceQuestion } from '../question/question.component';
 
 @Component({
   selector: 'app-staff-opt-out-of-workplace-pension',

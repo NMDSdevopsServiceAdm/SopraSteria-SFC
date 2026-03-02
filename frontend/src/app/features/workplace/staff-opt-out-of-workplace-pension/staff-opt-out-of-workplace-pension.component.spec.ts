@@ -1,19 +1,21 @@
-import { fireEvent, render, within } from '@testing-library/angular';
-import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension.component';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
+import { of } from 'rxjs';
+
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
-import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { getTestBed } from '@angular/core/testing';
-import { WindowRef } from '@core/services/window.ref';
-import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
-import { of } from 'rxjs';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { BackService } from '@core/services/back.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
+import { SharedModule } from '@shared/shared.module';
+import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+
+import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension.component';
 
 fdescribe('StaffOptOutOfWorkplacePensionComponent', () => {
   const options = YesNoDontKnowOptions;
@@ -131,7 +133,7 @@ fdescribe('StaffOptOutOfWorkplacePensionComponent', () => {
       it('should navigate to staff-benefit-holiday-leave page when user skips the question', async () => {
         const { getByText, routerSpy, fixture } = await setup(overrides);
 
-        fireEvent.click(getByText('Skip this question'));
+        userEvent.click(getByText('Skip this question'));
         fixture.detectChanges();
 
         expect(routerSpy).toHaveBeenCalledWith([
@@ -146,7 +148,7 @@ fdescribe('StaffOptOutOfWorkplacePensionComponent', () => {
       it('should navigate to staff-benefit-holiday-leave after submit if user did not answer', async () => {
         const { getByText, fixture, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
-        fireEvent.click(getByText('Save and continue'));
+        userEvent.click(getByText('Save and continue'));
         fixture.detectChanges();
 
         expect(routerSpy).toHaveBeenCalledWith([
@@ -213,7 +215,7 @@ fdescribe('StaffOptOutOfWorkplacePensionComponent', () => {
       const { fixture, getByText, routerSpy, setSubmitActionSpy } = await setup(overrides);
 
       const link = getByText('Cancel');
-      fireEvent.click(link);
+      userEvent.click(link);
       fixture.detectChanges();
 
       expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: false });
@@ -224,7 +226,7 @@ fdescribe('StaffOptOutOfWorkplacePensionComponent', () => {
       const { fixture, getByText, routerSpy, setSubmitActionSpy } = await setup(overrides);
 
       const button = getByText('Save');
-      fireEvent.click(button);
+      userEvent.click(button);
       fixture.detectChanges();
 
       expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: true });
