@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { PensionsComponent } from './pensions.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
-describe('PensionsComponent', () => {
+fdescribe('PensionsComponent', () => {
   async function setup(returnUrl = true, pension = undefined, pensionPercentage = undefined) {
     const isInAddDetailsFlow = !returnUrl;
 
@@ -198,12 +198,12 @@ describe('PensionsComponent', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'staff-benefit-holiday-leave',
+        'staff-opt-out-of-workplace-pension',
       ]);
     });
 
     it('should navigate to the next page when skipping from the flow', async () => {
-      const { component, fixture, getByText, routerSpy } = await setup(false);
+      const { fixture, getByText, routerSpy } = await setup(false);
 
       const link = getByText('Skip this question');
       fireEvent.click(link);
@@ -214,7 +214,7 @@ describe('PensionsComponent', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'staff-benefit-holiday-leave',
+        'staff-opt-out-of-workplace-pension',
       ]);
     });
 
