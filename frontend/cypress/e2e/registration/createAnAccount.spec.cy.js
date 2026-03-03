@@ -58,7 +58,7 @@ describe('Create account', { tags: '@registration' }, () => {
     );
   });
 
-  it('should be able to create a new account', () => {
+  it.only('should be able to create a new account', () => {
     cy.contains('Create an account').click();
     cy.contains('Start now').click();
     cy.get('button').contains('Continue').click();
@@ -216,6 +216,11 @@ describe('Create account', { tags: '@registration' }, () => {
     );
     cy.getByLabel('Yes').check();
     cy.getByLabel('Actual contribution').type('3.5');
+    cy.get('button').contains('Save and continue').click();
+
+    // Staff opt out of workplace pension
+    cy.contains('Are any of your staff currently opted out of their workplace pension?').should('be.visible');
+    cy.getByLabel('Yes').check();
     cy.get('button').contains('Save and continue').click();
 
     // How many days leave
