@@ -627,7 +627,7 @@
         <dt class="govuk-summary-list__key">Staff opted out of workplace pension</dt>
         <dd class="govuk-summary-list__value">
           <app-summary-record-value>
-            {{ workplace.staffOptOutOfWorkplacePension ?? workplace.staffOptOutOfWorkplacePension | closedEndedAnswer }}
+            {{ workplace.staffOptOutOfWorkplacePension | closedEndedAnswer }}
           </app-summary-record-value>
         </dd>
         <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
