@@ -633,8 +633,7 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
 
   it('updates staff opt out of workplace pension', () => {
     const answer = 'Yes';
-    const heading =
-      'Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?';
+    const heading = 'Are any of your staff currently opted out of their workplace pension?';
 
     cy.get('[data-testid="staff-opt-out-of-workplace-pension"]').as('testId');
 
