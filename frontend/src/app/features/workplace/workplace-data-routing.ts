@@ -300,6 +300,7 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
   {
     path: 'staff-opt-out-of-workplace-pension',
     component: StaffOptOutOfWorkplacePensionComponent,
+    canActivate: [CheckPermissionsGuard],
     data: {
       permissions: ['canEditEstablishment'],
       title: 'Staff opt out of workplace pension',
