@@ -52,7 +52,7 @@
       'govuk-summary-list__row--no-bottom-border':
         showWdfConfirmations.numberOfStaff ||
         workplace.wdf?.numberOfStaff?.isEligible === Eligibility.NO ||
-        showTotalStaffWarning
+        showTotalStaffWarning,
     }"
     data-testid="numberOfStaff"
   >
@@ -93,7 +93,7 @@
     class="govuk-summary-list__row"
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border': workplace.wdf?.employerType?.isEligible === Eligibility.NO,
-      }"
+    }"
     data-testid="employerType"
   >
     <dt class="govuk-summary-list__key">Employer type</dt>
@@ -137,7 +137,8 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-panel--light-blue': cqcStatusRequested,
-        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.mainService || (workplace.wdf?.mainService?.isEligible === Eligibility.NO),
+        'govuk-summary-list__row--no-bottom-border':
+          showWdfConfirmations.mainService || workplace.wdf?.mainService?.isEligible === Eligibility.NO,
       }"
       data-testid="mainService"
     >
@@ -223,7 +224,7 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          showWdfConfirmations.capacities || workplace.wdf?.capacities?.isEligible === Eligibility.NO
+          showWdfConfirmations.capacities || workplace.wdf?.capacities?.isEligible === Eligibility.NO,
       }"
       data-testid="serviceCapacity"
     >
@@ -264,7 +265,7 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          showWdfConfirmations.serviceUsers || workplace.wdf?.serviceUsers?.isEligible === Eligibility.NO
+          showWdfConfirmations.serviceUsers || workplace.wdf?.serviceUsers?.isEligible === Eligibility.NO,
       }"
       data-testid="serviceUsers"
     >
@@ -409,7 +410,7 @@
       data-testid="vacancies"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          showWdfConfirmations.vacancies || workplace.wdf?.vacancies?.isEligible === Eligibility.NO
+          showWdfConfirmations.vacancies || workplace.wdf?.vacancies?.isEligible === Eligibility.NO,
       }"
     >
       <dt class="govuk-summary-list__key">Current staff vacancies</dt>
@@ -453,7 +454,7 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          showWdfConfirmations.starters || workplace.wdf?.starters?.isEligible === Eligibility.NO
+          showWdfConfirmations.starters || workplace.wdf?.starters?.isEligible === Eligibility.NO,
       }"
       data-testid="starters"
     >
@@ -499,7 +500,7 @@
       data-testid="leavers"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          showWdfConfirmations.leavers || workplace.wdf?.leavers?.isEligible === Eligibility.NO
+          showWdfConfirmations.leavers || workplace.wdf?.leavers?.isEligible === Eligibility.NO,
       }"
     >
       <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
@@ -707,6 +708,21 @@
           [explanationText]="' pension'"
           [link]="['/workplace', workplace.uid, 'pensions']"
           [hasData]="workplace.pensionContribution"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+
+    <div class="govuk-summary-list__row" data-testid="staff-opt-out-of-workplace-pension">
+      <dt class="govuk-summary-list__key">Staff opted out of workplace pension</dt>
+      <dd class="govuk-summary-list__value">
+        {{ workplace.staffOptOutOfWorkplacePension | closedEndedAnswer }}
+      </dd>
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' staff opted out of workplace pension'"
+          [link]="['/workplace', workplace.uid, 'staff-opt-out-of-workplace-pension']"
+          [hasData]="workplace.staffOptOutOfWorkplacePension"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
       </dd>
