@@ -1,0 +1,49 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-form-group govuk-!-padding-bottom-4">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading asc__negative-margin-right-6">
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              Are any of your staff currently opted&nbsp;out of their workplace pension?
+            </h1>
+          </legend>
+          <div class="govuk-form-group govuk-!-padding-bottom-4">
+            <div class="govuk-radios">
+              @for (option of options; track option; let index = $index) {
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    id="staffOptOutOfWorkplacePension-{{ index }}"
+                    type="radio"
+                    [formControlName]="'staffOptOutOfWorkplacePension'"
+                    [value]="option.value"
+                  />
+                  <label class="govuk-label govuk-radios__label" for="staffOptOutOfWorkplacePension-{{ index }}">
+                    {{ option.label }}
+                  </label>
+                </div>
+              }
+            </div>
+          </div>
+        </fieldset>
+        <app-workplace-submit-button
+          [return]="!!return"
+          (clicked)="setSubmitAction($event)"
+        ></app-workplace-submit-button>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      @if (!return) {
+        <div class="govuk-util__float-right">
+          <app-progress-bar
+            data-testid="progress-bar"
+            [sections]="workplaceFlowSections"
+            [currentSection]="section"
+          ></app-progress-bar>
+        </div>
+      }
+    </div>
+  </div>
+</form>

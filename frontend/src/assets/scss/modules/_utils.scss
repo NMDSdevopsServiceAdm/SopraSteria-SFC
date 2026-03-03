@@ -150,6 +150,10 @@
   margin-right: -1 * govuk-spacing(4);
 }
 
+.asc__negative-margin-right-6 {
+  margin-right: -1 * govuk-spacing(6);
+}
+
 .asc__width-three-fifths {
   width: 100%;
   @include govuk-media-query($from: tablet) {

@@ -218,6 +218,11 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.getByLabel('Actual contribution').type('3.5');
     cy.get('button').contains('Save and continue').click();
 
+    // Staff opt out of workplace pension
+    cy.contains('Are any of your staff currently opted out of their workplace pension?').should('be.visible');
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
     // How many days leave
     cy.contains('How many days leave do your full-time care workers get each year?');
     cy.getByLabel('Number of days').type(25);

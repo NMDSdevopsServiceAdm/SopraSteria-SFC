@@ -1660,6 +1660,40 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
     });
 
+    describe('staff opted out of workplace pension', () => {
+      it('should show dash and have Add information button on staff opted out of workplace pension row when it is null (not answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.staffOptOutOfWorkplacePension = null;
+        fixture.detectChanges();
+
+        const row = within(document.body).queryByTestId('staff-opt-out-of-workplace-pension');
+        const link = within(row).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/staff-opt-out-of-workplace-pension`,
+        );
+        expect(within(row).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button on staff opted out of workplace pension row when it has a value (answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.staffOptOutOfWorkplacePension = "Don't know";
+        fixture.detectChanges();
+
+        const pensionContributionRow = within(document.body).queryByTestId('staff-opt-out-of-workplace-pension');
+        const link = within(pensionContributionRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/staff-opt-out-of-workplace-pension`,
+        );
+        expect(within(pensionContributionRow).getByText('Not known')).toBeTruthy();
+      });
+    });
+
     describe('number of days leave', () => {
       it('should show dash and have Add information button on number of days leave row when careWorkersLeaveDaysPerYear is set to null (not answered)', async () => {
         const { component, fixture } = await setup();

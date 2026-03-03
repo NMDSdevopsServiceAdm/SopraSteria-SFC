@@ -631,6 +631,24 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     cy.get('h1').should('contain.text', heading);
   });
 
+  it('updates staff opt out of workplace pension', () => {
+    const answer = 'Yes';
+    const heading = 'Are any of your staff currently opted out of their workplace pension?';
+
+    cy.get('[data-testid="staff-opt-out-of-workplace-pension"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel(answer).click();
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains(answer);
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
+  });
+
   it('updates number of days leave', () => {
     const answer = 5;
     const heading = 'How many days leave do your full-time care workers get each year?';
