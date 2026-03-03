@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 
 import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension.component';
 
-fdescribe('StaffOptOutOfWorkplacePensionComponent', () => {
+describe('StaffOptOutOfWorkplacePensionComponent', () => {
   const options = YesNoDontKnowOptions;
 
   async function setup(overrides: any = {}) {

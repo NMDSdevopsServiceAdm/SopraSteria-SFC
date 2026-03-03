@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { PensionsComponent } from './pensions.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
-fdescribe('PensionsComponent', () => {
+describe('PensionsComponent', () => {
   async function setup(returnUrl = true, pension = undefined, pensionPercentage = undefined) {
     const isInAddDetailsFlow = !returnUrl;
 
