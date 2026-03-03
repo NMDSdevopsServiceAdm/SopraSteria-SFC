@@ -27,7 +27,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
-describe('NewWorkplaceSummaryComponent', () => {
+fdescribe('NewWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const shareWith = overrides?.shareWith ?? null;
     const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
@@ -2070,6 +2070,42 @@ describe('NewWorkplaceSummaryComponent', () => {
           `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/pensions`,
         );
         expect(within(pensionContributionRow).getByText(component.workplace.pensionContribution)).toBeTruthy();
+      });
+    });
+
+    describe('staff opted out of workplace pension', () => {
+      it('should show dash and have Add information button on staff opted out of workplace pension row when it is null (not answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.staffOptOutOfWorkplacePension = null;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const row = within(document.body).queryByTestId('staff-opt-out-of-workplace-pension');
+        const link = within(row).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-opt-out-of-workplace-pension`,
+        );
+        expect(within(row).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button on staff opted out of workplace pension row when it has a value (answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.staffOptOutOfWorkplacePension = "Don't know";
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const pensionContributionRow = within(document.body).queryByTestId('staff-opt-out-of-workplace-pension');
+        const link = within(pensionContributionRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-opt-out-of-workplace-pension`,
+        );
+        expect(within(pensionContributionRow).getByText('Not known')).toBeTruthy();
       });
     });
 
