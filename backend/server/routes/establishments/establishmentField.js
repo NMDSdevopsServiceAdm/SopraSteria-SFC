@@ -69,11 +69,8 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   const thisEstablishment = new Establishment.Establishment(req.username);
 
   const property = req.params?.property;
-  console.log(property);
 
   const filteredProperties = ['Name', property];
-
-  console.log(filteredProperties);
 
   try {
     checkIfRequestedPropertyIsAllowed(property);
