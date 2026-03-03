@@ -61,6 +61,6 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
   }
 
   protected onSuccess(): void {
-    this.nextQuestionPage = 'benefits-statutory-sick-pay';
+    this.nextQuestionPage = 'travel-time-pay';
   }
 }
