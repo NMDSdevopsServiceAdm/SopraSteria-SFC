@@ -29,7 +29,7 @@ import { WdfStaffMismatchMessageComponent } from '../wdf-staff-mismatch-message/
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
-fdescribe('WDFWorkplaceSummaryComponent', () => {
+describe('WDFWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? null;
     const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
