@@ -398,24 +398,19 @@
         ></app-summary-record-change>
       </dd>
     </div>
-    <div
-      class="govuk-summary-list__row"
-      *ngIf="
-        !workplace.showAddWorkplaceDetailsBanner &&
-        (workplace.mainService?.payAndPensionsGroup === 1 || workplace.mainService?.payAndPensionsGroup === 2)
-      "
-      data-testid="offer-sleep-ins"
-    >
+    @if(!workplace.showAddWorkplaceDetailsBanner && (workplace.mainService?.payAndPensionsGroup === 1 ||
+    workplace.mainService?.payAndPensionsGroup === 2)){
+    <div class="govuk-summary-list__row" data-testid="offer-sleep-ins">
       <dt class="govuk-summary-list__key">Offer sleep-ins</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value>
-          <ng-container *ngIf="!workplace.offerSleepIn; else offerSleepIn"> - </ng-container>
-          <ng-template #offerSleepIn>
-            {{ workplace.offerSleepIn | closedEndedAnswer }}
-          </ng-template>
+          @if(!workplace.offerSleepIn) { - } @else {
+          {{ workplace.offerSleepIn | closedEndedAnswer }}
+          }
         </app-summary-record-value>
       </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
+      @if(canEditEstablishment){
+      <dd class="govuk-summary-list__actions">
         <app-summary-record-change
           [explanationText]="'offer sleep-ins'"
           [link]="'workplace-offer-sleep-ins' | workplaceSummaryPath: workplace.uid"
@@ -423,7 +418,30 @@
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
       </dd>
+      }
     </div>
+    } @if(!workplace.showAddWorkplaceDetailsBanner && workplace?.offerSleepIn === "Yes"){
+    <div class="govuk-summary-list__row" data-testid="sleep-in-pay">
+      <dt class="govuk-summary-list__key">Care and support worker sleep-in pay</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value>
+          @if(!workplace.howToPayForSleepIn) { - } @else {
+          {{ workplace.howToPayForSleepIn }}
+          }
+        </app-summary-record-value>
+      </dd>
+      @if(canEditEstablishment){
+      <dd class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="'sleep-ins pay'"
+          [link]="'how-do-you-pay-for-sleep-ins' | workplaceSummaryPath: workplace.uid"
+          [hasData]="workplace.howToPayForSleepIn"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+      }
+    </div>
+    }
   </dl>
   <ng-container *ngIf="!workplace?.showAddWorkplaceDetailsBanner">
     <h2 class="govuk-heading-m govuk-!-padding-top-1">Recruitment and benefits</h2>

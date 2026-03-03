@@ -6,17 +6,18 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
-import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
-  selector: 'app-offer-sleep-ins',
-  templateUrl: './offer-sleep-ins.component.html',
+  selector: 'app-how-do-you-pay-for-sleep-ins',
+  templateUrl: './how-do-you-pay-for-sleep-ins.component.html',
   standalone: false,
 })
-export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
+export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public section: string;
-  public options = YesNoDontKnowOptions;
+  public payAndPensionQuestionRevealText: string;
+  public options = ['Hourly rate', 'Flat rate', 'I do not know'];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -26,15 +27,17 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     protected establishmentService: EstablishmentService,
     protected route: ActivatedRoute,
     protected payAndPensionService: PayAndPensionService,
+    private previousRouteService: PreviousRouteService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
   init(): void {
+    this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
     this.setSectionHeading();
     this.setupForm();
-    this.setPreviousRoute();
     this.prefill();
+    this.previousQuestionPage = 'workplace-offer-sleep-ins';
     this.skipToQuestionPage = 'do-you-have-vacancies';
     this.nextQuestionPage = this.skipToQuestionPage;
   }
@@ -45,39 +48,33 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     this.section = inPayAndPensionsMiniFlow ? 'Workplace' : WorkplaceFlowSections.SERVICES;
   }
 
-  setupForm() {
+  private setupForm() {
     this.form = this.formBuilder.group(
       {
-        offerSleepIn: null,
+        howToPayForSleepIn: null,
       },
       { updateOn: 'submit' },
     );
   }
 
   private prefill(): void {
-    const offerSleepIn = this.establishment.offerSleepIn;
+    const howToPayForSleepIn = this.establishment.howToPayForSleepIn;
 
-    if (!offerSleepIn) return;
+    if (!howToPayForSleepIn) return;
 
     this.form.patchValue({
-      offerSleepIn,
+      howToPayForSleepIn,
     });
   }
 
-  private setPreviousRoute(): void {
-    this.previousQuestionPage = this.establishment.mainService.canDoDelegatedHealthcareActivities
-      ? 'what-kind-of-delegated-healthcare-activities'
-      : 'service-users';
-  }
-
   protected generateUpdateProps(): any {
-    const { offerSleepIn } = this.form.value;
+    const { howToPayForSleepIn } = this.form.value;
 
-    if (!offerSleepIn) {
+    if (!howToPayForSleepIn) {
       return null;
     }
 
-    return { offerSleepIn };
+    return howToPayForSleepIn;
   }
 
   protected updateEstablishment(props: any): void {
@@ -85,25 +82,34 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
       return;
     }
 
+    const howToPayForSleepInData = {
+      property: 'howToPayForSleepIn',
+      value: props,
+    };
+
     this.subscriptions.add(
       this.establishmentService
-        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'OfferSleepIn', props)
+        .updateSingleEstablishmentField(this.establishment.uid, howToPayForSleepInData)
         .subscribe(
-          (data) => this._onSuccess(data),
+          (data) => this._onSuccess(data.data),
           (error) => this.onError(error),
         ),
     );
   }
 
-  protected onSuccess(): void {
-    const { offerSleepIn } = this.form.value;
+  protected setBackLink(): void {
+    const isInWorkflow = !this.return;
 
-    if (offerSleepIn === 'Yes') {
-      this.nextQuestionPage = 'how-do-you-pay-for-sleep-ins';
-      this.submitAction = { action: 'continue', save: true };
+    const previousPage = this.previousRouteService.getPreviousPage();
+    const previousPageWasOfferSleepIns = previousPage === this.previousQuestionPage;
+
+    if (isInWorkflow || previousPageWasOfferSleepIns) {
+      this.back = { url: this.previousRoute };
     } else {
-      this.nextQuestionPage = this.skipToQuestionPage;
+      this.back = this.return;
     }
+
+    this.backService.setBackLink(this.back);
   }
 
   ngOnDestroy(): void {

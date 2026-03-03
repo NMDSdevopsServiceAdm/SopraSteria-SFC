@@ -1,29 +1,29 @@
-import { fireEvent, render, within } from '@testing-library/angular';
-import { OfferSleepInsComponent } from './offer-sleep-ins.component';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
+import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins.component';
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { WindowRef } from '@core/services/window.ref';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
-import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
-import { getTestBed } from '@angular/core/testing';
-import { WindowRef } from '@core/services/window.ref';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
-import { of } from 'rxjs';
-import { BackService } from '@core/services/back.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
+import { getTestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { BackService } from '@core/services/back.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
-describe('OfferSleepInsComponent', () => {
-  const options = YesNoDontKnowOptions;
+describe('HowDoYouPayForSleepInsComponent', () => {
+  const options = ['Hourly rate', 'Flat rate', 'I do not know'];
 
   async function setup(overrides: any = {}) {
     const isInAddDetailsFlow = !overrides.returnToUrl;
     const backServiceSpy = jasmine.createSpyObj('BackService', ['setBackLink']);
 
-    const setupTools = await render(OfferSleepInsComponent, {
+    const setupTools = await render(HowDoYouPayForSleepInsComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
@@ -42,6 +42,10 @@ describe('OfferSleepInsComponent', () => {
           useFactory: MockPayAndPensionService.factory(overrides.inPayAndPensionsMiniFlow),
           deps: [HttpClient],
         },
+        {
+          provide: PreviousRouteService,
+          useValue: { getPreviousPage: () => overrides?.previousPage },
+        },
         WindowRef,
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -53,18 +57,16 @@ describe('OfferSleepInsComponent', () => {
     const injector = getTestBed();
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.returnValue(
-      of({ ...establishmentService.establishment }),
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+      of({ data: {} }),
     );
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
-
-    return { ...setupTools, component, establishmentServiceSpy, routerSpy, backServiceSpy, setSubmitActionSpy };
+    return { ...setupTools, component, routerSpy, establishmentServiceSpy, backServiceSpy };
   }
 
-  it('should render OfferSleepInsComponent', async () => {
+  it('should render HowDoYouPayForSleepInsComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
@@ -72,13 +74,13 @@ describe('OfferSleepInsComponent', () => {
   it('should show the heading', async () => {
     const { getByText } = await setup();
 
-    const heading = 'Does your workplace offer sleep-ins?';
+    const heading = 'How do you pay care and support workers for a sleep-in?';
 
     expect(getByText(heading)).toBeTruthy();
   });
 
   describe('caption', () => {
-    it('should show "Workplace" as the caption when in the pay and permissions mini flow', async () => {
+    it('should show "Workplace" as the caption when in the pay and penmsions mini flow', async () => {
       const { getByTestId } = await setup({ inPayAndPensionsMiniFlow: true });
       const sectionCaption = 'Workplace';
 
@@ -93,26 +95,37 @@ describe('OfferSleepInsComponent', () => {
     });
   });
 
+  it('should show the reveal title with the reason for asking question', async () => {
+    const { getByText } = await setup();
+
+    expect(getByText('Why we ask for this information')).toBeTruthy();
+    expect(
+      getByText(
+        'The information will be used by DHSC and other sector bodies to ensure the Fair Pay Agreement is based on accurate data. It will not be shared in any way that identifies your workplace or staff.',
+      ),
+    ).toBeTruthy();
+  });
+
   describe('form', () => {
     it('should show the radio buttons', async () => {
       const { getByRole } = await setup();
 
       options.forEach((option) => {
-        expect(getByRole('radio', { name: option.label })).toBeTruthy();
+        expect(getByRole('radio', { name: option })).toBeTruthy();
       });
     });
 
     it('should prefill when there is a previously saved answer', async () => {
-      const overrides = { establishment: { offerSleepIn: 'Yes' } };
+      const overrides = { establishment: { howToPayForSleepIn: options[0] } };
       const { getByLabelText } = await setup(overrides);
 
-      const radioButton = getByLabelText('Yes') as HTMLInputElement;
+      const radioButton = getByLabelText(options[0]) as HTMLInputElement;
 
       expect(radioButton.checked).toBeTruthy();
     });
   });
 
-  describe('workplace flow', () => {
+  describe('inside workplace flow', () => {
     const overrides = { returnToUrl: null };
 
     it('should show a progress bar', async () => {
@@ -129,37 +142,15 @@ describe('OfferSleepInsComponent', () => {
     });
 
     describe('back link', () => {
-      it('should set the previous page to service-users question page if canDoDelegatedHealthcareActivities is false', async () => {
-        const updatedOverrides = {
-          ...overrides,
-          establishment: { mainService: { canDoDelegatedHealthcareActivities: false } },
-        };
-
-        const { component } = await setup(updatedOverrides);
+      it('should set the previous page to workplace-offer-sleep-ins question page', async () => {
+        const { component } = await setup(overrides);
 
         expect(component.previousRoute).toEqual([
           '/workplace',
           component.establishment.uid,
           'workplace-data',
           'add-workplace-details',
-          'service-users',
-        ]);
-      });
-
-      it('should set the previous page to what-kind-of-delegated-healthcare-activities question page if canDoDelegatedHealthcareActivities is true', async () => {
-        const updatedOverrides = {
-          ...overrides,
-          establishment: { mainService: { canDoDelegatedHealthcareActivities: true } },
-        };
-
-        const { component } = await setup(updatedOverrides);
-
-        expect(component.previousRoute).toEqual([
-          '/workplace',
-          component.establishment.uid,
-          'workplace-data',
-          'add-workplace-details',
-          'what-kind-of-delegated-healthcare-activities',
+          'workplace-offer-sleep-ins',
         ]);
       });
     });
@@ -195,55 +186,34 @@ describe('OfferSleepInsComponent', () => {
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
-    [options[1], options[2]].forEach((option) => {
-      it(`should navigate to do-you-have-vacancies page after submit if user answered ${option.label}`, async () => {
-        const { component, getByText, getByLabelText, fixture, routerSpy, establishmentServiceSpy } = await setup(
+    options.forEach((option) => {
+      it(`should navigate to do-you-have-vacancies page after submit if user answered ${option}`, async () => {
+        const { component, getByText, fixture, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(
           overrides,
         );
 
-        fireEvent.click(getByLabelText(option.label));
+        fireEvent.click(getByLabelText(option));
         fixture.detectChanges();
+
         fireEvent.click(getByText('Save and continue'));
         fixture.detectChanges();
 
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
-          component.establishment.uid,
+          'mocked-uid',
           'workplace-data',
           'add-workplace-details',
           'do-you-have-vacancies',
         ]);
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
-          offerSleepIn: option.value,
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
+          property: 'howToPayForSleepIn',
+          value: option,
         });
-      });
-    });
-
-    it('should navigate to how-do-you-pay-for-sleep-ins page after submit if user answered "Yes', async () => {
-      const { component, getByText, getByLabelText, fixture, routerSpy, establishmentServiceSpy } = await setup(
-        overrides,
-      );
-
-      fireEvent.click(getByLabelText('Yes'));
-      fixture.detectChanges();
-
-      fireEvent.click(getByText('Save and continue'));
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        component.establishment.uid,
-        'workplace-data',
-        'add-workplace-details',
-        'how-do-you-pay-for-sleep-ins',
-      ]);
-      expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
-        offerSleepIn: 'Yes',
       });
     });
   });
 
-  describe('when viewing the page from the workplace summary', () => {
+  describe('from workplace summary', () => {
     const overrides = { returnTo: { url: ['/dashboard'], fragment: 'workplace' } };
 
     it('should not show a progress bar', async () => {
@@ -252,84 +222,87 @@ describe('OfferSleepInsComponent', () => {
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
 
-    it('should set the previous page to workplace summary', async () => {
-      const { backServiceSpy } = await setup(overrides);
-
-      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+    describe('back link', () => {
+      const returnTo = {
         url: ['/dashboard'],
         fragment: 'workplace',
+      };
+      it('should set the previous page to workplace summary when directly visited from workplace summary', async () => {
+        const updatedOverrides = {
+          ...overrides,
+          previousPage: 'workplace',
+        };
+        const { backServiceSpy } = await setup(updatedOverrides);
+
+        expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+          url: ['/dashboard'],
+          fragment: 'workplace',
+        });
+      });
+
+      it('should be set to offer-sleep-ins when visited via workplace summary then offer sleep ins', async () => {
+        const updatedOverrides = {
+          ...overrides,
+          previousPage: 'workplace-offer-sleep-ins',
+        };
+        const { component, backServiceSpy } = await setup(updatedOverrides);
+
+        expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+          url: [
+            '/workplace',
+            component.establishment.uid,
+            'workplace-data',
+            'workplace-summary',
+            'workplace-offer-sleep-ins',
+          ],
+        });
       });
     });
 
-    it('should show a "Save" cta button and "Cancel" link', async () => {
-      const { getByText, queryByText } = await setup(overrides);
+    it('should show a "Save and return" cta button and "Cancel" link', async () => {
+      const { getByText } = await setup(overrides);
 
-      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
-      expect(queryByText('Save and continue')).toBeFalsy();
-      expect(queryByText('Save and return')).toBeFalsy();
     });
 
-    it(`should call the setSubmitAction function with an action of exit and save as false when clicking 'Cancel' link`, async () => {
-      const { component, fixture, getByText, routerSpy, setSubmitActionSpy } = await setup(overrides);
+    it('should navigate back to the workplace summary when clicking "Cancel" link', async () => {
+      const { fixture, getByText, routerSpy } = await setup(overrides);
 
       const link = getByText('Cancel');
       fireEvent.click(link);
       fixture.detectChanges();
 
-      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: false });
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
     });
 
     it('should navigate back to the workplace summary when submit is clicked without an answer', async () => {
-      const { fixture, getByText, routerSpy, setSubmitActionSpy } = await setup(overrides);
+      const { fixture, getByText, routerSpy } = await setup(overrides);
 
-      const button = getByText('Save');
+      const button = getByText('Save and return');
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: true });
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
     });
 
-    [options[1], options[2]].forEach((option) => {
-      it(`should navigate to workplace summary after submit if user answered ${option.label}`, async () => {
-        const { component, getByText, getByLabelText, fixture, routerSpy, establishmentServiceSpy } = await setup(
+    options.forEach((option) => {
+      it(`should navigate back to the workplace summary after submit if user answered ${option}`, async () => {
+        const { component, getByText, fixture, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(
           overrides,
         );
 
-        fireEvent.click(getByLabelText(option.label));
+        fireEvent.click(getByLabelText(option));
         fixture.detectChanges();
-        fireEvent.click(getByText('Save'));
+
+        fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
-          offerSleepIn: option.value,
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
+          property: 'howToPayForSleepIn',
+          value: option,
         });
-      });
-    });
-
-    it('should navigate to how-do-you-pay-for-sleep-ins page after submit if user answered "Yes', async () => {
-      const { component, getByText, getByLabelText, fixture, routerSpy, establishmentServiceSpy } = await setup(
-        overrides,
-      );
-
-      fireEvent.click(getByLabelText('Yes'));
-      fixture.detectChanges();
-
-      fireEvent.click(getByText('Save'));
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        component.establishment.uid,
-        'workplace-data',
-        'workplace-summary',
-        'how-do-you-pay-for-sleep-ins',
-      ]);
-      expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
-        offerSleepIn: 'Yes',
       });
     });
   });

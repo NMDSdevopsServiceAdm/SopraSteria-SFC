@@ -4,6 +4,7 @@ const {
   clearDHAWorkerAnswersOnWorkplaceChange,
   clearDoDHAWorkplaceOnMainServiceChange,
   clearDHAWorkplaceAnswerOnChange,
+  clearSleepInsPayQuestionsOnOfferSleepInAnswerChange,
 } = require('./hooks/establishmentHooks');
 
 module.exports = function (sequelize, DataTypes) {
@@ -2753,6 +2754,11 @@ module.exports = function (sequelize, DataTypes) {
   Establishment.addHook('beforeSave', 'clearDHAWorkerAnswersOnWorkplaceChange', clearDHAWorkerAnswersOnWorkplaceChange);
   Establishment.addHook('beforeSave', 'clearDHAWorkplaceAnswerOnChange', clearDHAWorkplaceAnswerOnChange);
   Establishment.addHook('beforeSave', 'clearDoDHAWorkplaceOnMainServiceChange', clearDoDHAWorkplaceOnMainServiceChange);
+  Establishment.addHook(
+    'beforeSave',
+    'clearSleepInsPayQuestionsOnOfferSleepInAnswerChange',
+    clearSleepInsPayQuestionsOnOfferSleepInAnswerChange,
+  );
 
   return Establishment;
 };

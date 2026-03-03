@@ -324,7 +324,10 @@
     </div>
     <div
       class="govuk-summary-list__row"
-      *ngIf="workplace.staffDoDelegatedHealthcareActivities === 'Yes'  && workplace.mainService?.canDoDelegatedHealthcareActivities"
+      *ngIf="
+        workplace.staffDoDelegatedHealthcareActivities === 'Yes' &&
+        workplace.mainService?.canDoDelegatedHealthcareActivities
+      "
       data-testid="know-what-delegated-healthcare-activities"
     >
       <dt class="govuk-summary-list__key">Which delegated healthcare activities</dt>
@@ -351,6 +354,46 @@
         ></app-summary-record-change>
       </dd>
     </div>
+    @if(!workplace.showAddWorkplaceDetailsBanner && (workplace.mainService?.payAndPensionsGroup === 1 ||
+    workplace.mainService?.payAndPensionsGroup === 2)){
+    <div class="govuk-summary-list__row" data-testid="offer-sleep-ins">
+      <dt class="govuk-summary-list__key">Offer sleep-ins</dt>
+      <dd class="govuk-summary-list__value">
+        @if(!workplace.offerSleepIn) { - } @else {
+        {{ workplace.offerSleepIn | closedEndedAnswer }}
+        }
+      </dd>
+      @if(canEditEstablishment){
+      <dd class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="'offer sleep-ins'"
+          [link]="['/workplace', workplace.uid, 'workplace-offer-sleep-ins']"
+          [hasData]="workplace.offerSleepIn"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+      }
+    </div>
+    } @if(!workplace.showAddWorkplaceDetailsBanner && workplace?.offerSleepIn === "Yes"){
+    <div class="govuk-summary-list__row" data-testid="sleep-in-pay">
+      <dt class="govuk-summary-list__key">Care and support worker sleep-in pay</dt>
+      <dd class="govuk-summary-list__value">
+        @if(!workplace.howToPayForSleepIn) { - } @else {
+        {{ workplace.howToPayForSleepIn }}
+        }
+      </dd>
+      @if(canEditEstablishment){
+      <dd class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="'sleep-ins pay'"
+          [link]="['/workplace', workplace.uid, 'how-do-you-pay-for-sleep-ins']"
+          [hasData]="workplace.howToPayForSleepIn"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+      }
+    </div>
+    }
   </ng-container>
 
   <ng-container>

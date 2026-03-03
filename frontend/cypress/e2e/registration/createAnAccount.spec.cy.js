@@ -149,8 +149,12 @@ describe('Create account', { tags: '@registration' }, () => {
 
     // Does your workplace offer sleep-ins?
     cy.contains('Does your workplace offer sleep-ins?');
-    // change to Yes when next page is done
-    cy.getByLabel('No').check();
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // How do you pay care and support workers for a sleep-in?
+    cy.contains('How do you pay care and support workers for a sleep-in?');
+    cy.getByLabel('Hourly rate').check();
     cy.get('button').contains('Save and continue').click();
 
     // Vacancies

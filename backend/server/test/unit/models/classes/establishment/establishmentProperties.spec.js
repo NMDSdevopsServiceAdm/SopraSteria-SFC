@@ -31,6 +31,7 @@ describe('EstablishmentPropertyManager', () => {
     'StaffDoDelegatedHealthcareActivitiesProperty',
     'StaffWhatKindDelegatedHealthcareActivitiesProperty',
     'TravelTimePayProperty',
+    'OfferSleepInProperty',
   ];
 
   it('should have the correct property types', () => {

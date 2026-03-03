@@ -181,6 +181,7 @@ export interface Establishment {
   staffDoDelegatedHealthcareActivities?: string;
   staffWhatKindDelegatedHealthcareActivities?: StaffWhatKindDelegatedHealthcareActivities;
   offerSleepIn?: string;
+  howToPayForSleepIn?: string;
 }
 
 export interface UpdateJobsRequest {

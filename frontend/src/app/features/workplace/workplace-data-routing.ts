@@ -50,6 +50,8 @@ import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.com
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { OfferSleepInsComponent } from './offer-sleep-ins/offer-sleep-ins.component';
+import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins/how-do-you-pay-for-sleep-ins.component';
+import { WorkplaceSleepInsGuard } from '@core/guards/workplace-sleep-ins/workplace-sleep-ins.guard';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -213,9 +215,19 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
   {
     path: 'workplace-offer-sleep-ins',
     component: OfferSleepInsComponent,
+    canActivate: [CheckPermissionsGuard],
     data: {
       permissions: ['canEditEstablishment'],
       title: 'Does your workplace offer sleep-ins',
+    },
+  },
+  {
+    path: 'how-do-you-pay-for-sleep-ins',
+    component: HowDoYouPayForSleepInsComponent,
+    canActivate: [CheckPermissionsGuard, WorkplaceSleepInsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'How do you pay for sleep-ins',
     },
   },
   {

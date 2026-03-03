@@ -100,6 +100,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
 import { SortByService } from '@core/services/sort-by.service';
 import { TrainingCoursesLoginMessage } from '@features/login/training-courses-login-message/training-courses-login-message.component';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @NgModule({
   declarations: [
@@ -183,6 +184,7 @@ import { TrainingCoursesLoginMessage } from '@features/login/training-courses-lo
     InternationalRecruitmentService,
     PreviousRouteService,
     SortByService,
+    PayAndPensionService,
     { provide: WindowToken, useFactory: windowProvider },
     {
       provide: HTTP_INTERCEPTORS,
