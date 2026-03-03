@@ -200,13 +200,12 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
       });
     });
 
-    it('should show a "Save" cta button and "Cancel" link', async () => {
+    it('should show a "Save and return" cta button and "Cancel" link', async () => {
       const { getByText, queryByText } = await setup(overrides);
 
-      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
       expect(queryByText('Save and continue')).toBeFalsy();
-      expect(queryByText('Save and return')).toBeFalsy();
     });
 
     it(`should call the setSubmitAction function with an action of exit and save as false when clicking 'Cancel' link`, async () => {
@@ -223,7 +222,7 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
     it('should navigate back to the workplace summary when submit is clicked without an answer', async () => {
       const { fixture, getByText, routerSpy, setSubmitActionSpy } = await setup(overrides);
 
-      const button = getByText('Save');
+      const button = getByText('Save and return');
       userEvent.click(button);
       fixture.detectChanges();
 
@@ -236,7 +235,7 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
         const { component, getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
         userEvent.click(getByLabelText(option.label));
-        userEvent.click(getByText('Save'));
+        userEvent.click(getByText('Save and return'));
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
         expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
