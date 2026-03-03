@@ -1,0 +1,104 @@
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+></app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+            What do you pay care and support workers for travel time between visits?
+          </h1>
+        </legend>
+        <div class="govuk-!-margin-bottom-6">
+          <p>
+            We only want to know about travel time from one service user to another during their shift. Do not include
+            mileage and fuel allowances.
+          </p>
+        </div>
+        <!-- <app-details [title]="'Why we ask for this information'">
+            {{ payAndPensionQuestionRevealText }}
+          </app-details> -->
+        <div class="govuk-form-group">
+          <div class="govuk-radios govuk-!-margin-bottom-4">
+            <div class="govuk-radios govuk-radios--conditional">
+              <ng-container *ngFor="let option of pensionsOptions; let i = index">
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    type="radio"
+                    id="pensionsOption-{{ i }}"
+                    name="pension"
+                    [formControlName]="'travelTimePay '"
+                    [value]="option.value"
+                    (click)="onChange(option.value)"
+                  />
+                  <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
+                </div>
+                <!-- <div
+                  *ngIf="option.value === 'Yes'"
+                  class="govuk-radios__conditional"
+                  [class.govuk-radios__conditional--hidden]="!showPercentageTextBox"
+                  id="conditional-pensionPercentage-conditional-1"
+                  data-testid="pensionPercentageRadio-conditional"
+                >
+                  <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+                      <div
+                        class="govuk-form-group"
+                        [class.govuk-form-group--error]="submitted && form.get('pensionPercentage').invalid"
+                      >
+                        <label class="govuk-label" for="pensionPercentage"> Actual contribution</label>
+                        <span id="pensionPercentage-hint" class="govuk-hint govuk-!-margin-bottom-4">
+                          Leave blank if not known
+                        </span>
+                        <span
+                          *ngIf="submitted && form.get('pensionPercentage').invalid"
+                          id="pensionPercentage-error"
+                          class="govuk-error-message"
+                        >
+                          <span class="govuk-visually-hidden">Error:</span>
+                          {{ getFirstErrorMessage('pensionPercentage') }}
+                        </span>
+
+                        <app-decimal-input-with-buttons
+                          [min]="minPercentage"
+                          [max]="maxPercentage"
+                          inputId="pensionPercentage"
+                          formControlName="pensionPercentage"
+                          [hasError]="submitted && form.get('pensionPercentage').invalid"
+                          [step]="0.05"
+                          suffix="%"
+                        ></app-decimal-input-with-buttons>
+                      </div>
+                    </div>
+                  </div>
+                </div> -->
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <!-- <app-workplace-submit-button
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button> -->
+    </div>
+    <div class="govuk-grid-column-one-third">
+      @if (!return){
+      <div class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+      }
+    </div>
+  </div>
+</form>
