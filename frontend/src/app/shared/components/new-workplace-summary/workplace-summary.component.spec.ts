@@ -22,7 +22,7 @@ import {
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, queryByTestId, render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
@@ -34,9 +34,6 @@ const SectionId = {
   PayAndBenefits: 'pay-and-benefits-section',
   StaffDevelopment: 'staff-development-section',
   Permissions: 'permissions-section',
-
-  // to be removed:
-  RecrumentAndBenefits: 'recruitment-and-benefits-section',
 };
 
 fdescribe('NewWorkplaceSummaryComponent', () => {
@@ -120,7 +117,7 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
   });
 
   it('should render all the sections', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
+    const { component, fixture, getByTestId } = await setup();
 
     component.workplace.isRegulated = true;
     fixture.detectChanges();
