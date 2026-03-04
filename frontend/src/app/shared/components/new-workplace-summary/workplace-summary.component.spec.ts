@@ -1880,6 +1880,18 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
         );
         expect(within(pensionContributionRow).getByText(component.workplace.pensionContribution)).toBeTruthy();
       });
+
+      it('should show the percentage as well if answer is Yes and the pensionContributionPercentage is given', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.pensionContribution = 'Yes';
+        component.workplace.pensionContributionPercentage = 4.5;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
+        expect(within(pensionContributionRow).getByText('Yes, 4.5%')).toBeTruthy();
+      });
     });
 
     describe('staff opted out of workplace pension', () => {

@@ -501,10 +501,14 @@
         <dt class="govuk-summary-list__key">Higher pension contributions</dt>
         <dd class="govuk-summary-list__value">
           <app-summary-record-value>
-            @if (!workplace.pensionContribution) {
-              -
+            @if (workplace.pensionContribution) {
+              @if (workplace.pensionContribution === 'Yes' && workplace.pensionContributionPercentage) {
+                {{ `${workplace.pensionContribution}, ${workplace.pensionContributionPercentage}%` }}
+              } @else {
+                {{ workplace.pensionContribution }}
+              }
             } @else {
-              {{ workplace.pensionContribution }}
+              -
             }
           </app-summary-record-value>
         </dd>
