@@ -64,7 +64,10 @@ export const establishmentBuilder = build('Establishment', {
     },
     careWorkforcePathwayUse: {
       use: 'Yes',
-      reasons: [{ id: 1 }, { id: 10, other: 'some specific reason' }],
+      reasons: [
+        { id: 1, text: "To help define our organisation's values" },
+        { id: 10, text: 'For something else', other: 'some specific reason' },
+      ],
     },
     staffDoDelegatedHealthcareActivities: null,
     staffWhatKindDelegatedHealthcareActivities: null,
