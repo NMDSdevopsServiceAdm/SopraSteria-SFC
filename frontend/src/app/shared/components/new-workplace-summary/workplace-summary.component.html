@@ -1,17 +1,3 @@
-<ng-template #summaryRecordValueForSLV let-slvValue="slvValue">
-  <app-summary-record-value>
-    @if (isArray(slvValue) && slvValue?.length) {
-      <ul class="govuk-list govuk-!-margin-bottom-0">
-        @for (job of slvValue; track job) {
-          <li>{{ job | formatSLV }}</li>
-        }
-      </ul>
-    } @else {
-      {{ slvValue | closedEndedAnswer }}
-    }
-  </app-summary-record-value>
-</ng-template>
-
 @if (workplace) {
   @if (!workplace?.showAddWorkplaceDetailsBanner) {
     <div [class.govuk-summary-list__warning]="noVacancyAndTurnoverData" data-testid="vacancies-and-turnover-section">
@@ -748,3 +734,18 @@
     </dl>
   }
 }
+
+<!-- reuse for vacancy / leaver / starter  -->
+<ng-template #summaryRecordValueForSLV let-slvValue="slvValue">
+  <app-summary-record-value>
+    @if (isArray(slvValue) && slvValue?.length) {
+      <ul class="govuk-list govuk-!-margin-bottom-0">
+        @for (job of slvValue; track job) {
+          <li>{{ job | formatSLV }}</li>
+        }
+      </ul>
+    } @else {
+      {{ slvValue | closedEndedAnswer }}
+    }
+  </app-summary-record-value>
+</ng-template>

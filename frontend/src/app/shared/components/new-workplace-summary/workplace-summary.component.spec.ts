@@ -36,7 +36,7 @@ const SectionId = {
   Permissions: 'permissions-section',
 };
 
-fdescribe('NewWorkplaceSummaryComponent', () => {
+describe('NewWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const shareWith = overrides?.shareWith ?? null;
     const permissions: PermissionType[] = overrides?.permissions ?? ['canEditEstablishment'];
