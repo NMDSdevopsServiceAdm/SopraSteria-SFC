@@ -22,7 +22,7 @@ import {
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockVacanciesAndTurnoverService } from '@core/test-utils/MockVacanciesAndTurnoverService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { fireEvent, queryByTestId, render, within } from '@testing-library/angular';
 
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
@@ -1809,6 +1809,163 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
       fixture.detectChanges();
 
       expect(queryByTestId(SectionId.PayAndBenefits)).toBeFalsy();
+    });
+
+    describe('care and support worker travel time pay', () => {
+      it('should show the row and table cells when payAndPensionsGroup is 1', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = getByTestId('care-and-support-worker-travel-time-pay');
+        expect(travelTimePayRow).toBeTruthy();
+
+        const cellName = within(travelTimePayRow).queryByText('Care and support worker travel time pay');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(cellName).toBeTruthy();
+      });
+
+      [2, 3, null].forEach((group) => {
+        it(`should not show the row and table cells when payAndPensionsGroup is ${group}`, async () => {
+          const { queryByTestId, queryByText } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: group },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+          expect(travelTimePayRow).toBeFalsy();
+
+          expect(queryByText('Care and support worker travel time pay')).toBeFalsy;
+        });
+      });
+
+      it('should show "-" and an add link when travelTimePay is null', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: null,
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Add');
+        const answer = within(travelTimePayRow).queryByText('-');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-and-support-worker-travel-time-pay`,
+        );
+      });
+
+      it('should show the traval time pay answer and a change link when travelTimePay is answered', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: {
+              id: 1,
+              label: 'The same rate for travel time as for visits',
+              includeRate: false,
+              rate: null,
+            },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Change');
+        const answer = within(travelTimePayRow).queryByText('The same rate for travel time as for visits');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-and-support-worker-travel-time-pay`,
+        );
+      });
+
+      it('should show the travel time pay rate as well if the answer includes a rate', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: {
+              id: 3,
+              label: 'A different travel time rate',
+              includeRate: true,
+              rate: 12.5,
+            },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Change');
+        const answer = within(travelTimePayRow).queryByText('A different travel time rate, £12.5');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-and-support-worker-travel-time-pay`,
+        );
+      });
+
+      it('should not show the Add link if user does not have canEditEstablishment permission', async () => {
+        const { queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: null,
+          },
+          permissions: [],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Add');
+        const answer = within(travelTimePayRow).queryByText('-');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeFalsy();
+      });
+
+      it('should not show the Change link if user does not have canEditEstablishment permission', async () => {
+        const { queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: {
+              id: 1,
+              label: 'The same rate for travel time as for visits',
+              includeRate: false,
+              rate: null,
+            },
+          },
+          permissions: [],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Change');
+        const answer = within(travelTimePayRow).queryByText('The same rate for travel time as for visits');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeFalsy();
+      });
     });
 
     describe('statutory sick pay', () => {

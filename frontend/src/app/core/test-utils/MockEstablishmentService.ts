@@ -68,6 +68,11 @@ export const establishmentBuilder = build('Establishment', {
     },
     staffDoDelegatedHealthcareActivities: null,
     staffWhatKindDelegatedHealthcareActivities: null,
+    pensionContributionPercentage: null,
+    staffOptOutOfWorkplacePensionComponent: null,
+    offerSleepIn: null,
+    howToPayForSleepIn: null,
+    travelTimePay: null,
   },
 });
 

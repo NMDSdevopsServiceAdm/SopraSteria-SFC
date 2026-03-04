@@ -446,11 +446,7 @@
           <dt class="govuk-summary-list__key">Care and support worker sleep-in pay</dt>
           <dd class="govuk-summary-list__value">
             <app-summary-record-value>
-              @if (!workplace.howToPayForSleepIn) {
-                -
-              } @else {
-                {{ workplace.howToPayForSleepIn }}
-              }
+              {{ workplace.howToPayForSleepIn ?? '-' }}
             </app-summary-record-value>
           </dd>
           @if (canEditEstablishment) {
@@ -474,15 +470,40 @@
       class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
       data-testid="pay-and-benefits-section"
     >
+      @if (workplace?.mainService?.payAndPensionsGroup === 1) {
+        <div class="govuk-summary-list__row" data-testid="care-and-support-worker-travel-time-pay">
+          <dt class="govuk-summary-list__key">Care and support worker travel time pay</dt>
+          <dd class="govuk-summary-list__value">
+            <app-summary-record-value>
+              @if (workplace?.travelTimePay) {
+                @if (workplace?.travelTimePay?.includeRate && workplace?.travelTimePay?.rate) {
+                  {{ `${workplace.travelTimePay.label}, £${workplace.travelTimePay?.rate}` }}
+                } @else {
+                  {{ workplace.travelTimePay.label }}
+                }
+              } @else {
+                -
+              }
+            </app-summary-record-value>
+          </dd>
+          @if (canEditEstablishment) {
+            <dd class="govuk-summary-list__actions">
+              <app-summary-record-change
+                [explanationText]="' care and support worker travel time pay'"
+                [link]="'care-and-support-worker-travel-time-pay' | workplaceSummaryPath: workplace.uid"
+                [hasData]="workplace.travelTimePay"
+                (setReturnClicked)="this.setReturn()"
+              ></app-summary-record-change>
+            </dd>
+          }
+        </div>
+      }
+
       <div class="govuk-summary-list__row" data-testid="offer-more-than-statutory-sick-pay">
         <dt class="govuk-summary-list__key">Offer more than Statutory Sick Pay</dt>
         <dd class="govuk-summary-list__value">
           <app-summary-record-value>
-            @if (!workplace.sickPay) {
-              -
-            } @else {
-              {{ workplace.sickPay }}
-            }
+            {{ workplace.sickPay ?? '-' }}
           </app-summary-record-value>
         </dd>
         @if (canEditEstablishment) {
@@ -547,11 +568,7 @@
         <dt class="govuk-summary-list__key">Number of days leave</dt>
         <dd class="govuk-summary-list__value">
           <app-summary-record-value>
-            @if (!workplace.careWorkersLeaveDaysPerYear) {
-              -
-            } @else {
-              {{ workplace.careWorkersLeaveDaysPerYear }}
-            }
+            {{ workplace.careWorkersLeaveDaysPerYear ?? '-' }}
           </app-summary-record-value>
         </dd>
         @if (canEditEstablishment) {
