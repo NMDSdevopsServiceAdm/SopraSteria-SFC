@@ -5,7 +5,7 @@
   [form]="form"
 ></app-error-summary>
 
-<form #formEl novalidate (ngSubmit)="onSubmit()">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
@@ -21,24 +21,25 @@
             mileage and fuel allowances.
           </p>
         </div>
-        <!-- <app-details [title]="'Why we ask for this information'">
-            {{ payAndPensionQuestionRevealText }}
-          </app-details> -->
+        <app-details [title]="'Why we ask for this information'">
+          {{ payAndPensionQuestionRevealText }}
+        </app-details>
         <div class="govuk-form-group">
           <div class="govuk-radios govuk-!-margin-bottom-4">
             <div class="govuk-radios govuk-radios--conditional">
-              <ng-container *ngFor="let option of pensionsOptions; let i = index">
+              <ng-container *ngFor="let travelTimePayOption of travelTimePayOptions; let i = index">
                 <div class="govuk-radios__item">
                   <input
                     class="govuk-radios__input"
                     type="radio"
-                    id="pensionsOption-{{ i }}"
-                    name="pension"
-                    [formControlName]="'travelTimePay '"
-                    [value]="option.value"
-                    (click)="onChange(option.value)"
+                    id="travelTimePay-{{ i }}"
+                    name="travelTimePay"
+                    [formControlName]="'travelTimePay'"
+                    [value]="travelTimePayOption.id"
                   />
-                  <label for="pensionsOption-{{ i }}" class="govuk-label govuk-radios__label">{{ option.label }}</label>
+                  <label for="travelTimePay-{{ i }}" class="govuk-label govuk-radios__label">{{
+                    travelTimePayOption.label
+                  }}</label>
                 </div>
                 <!-- <div
                   *ngIf="option.value === 'Yes'"
@@ -84,10 +85,10 @@
           </div>
         </div>
       </fieldset>
-      <!-- <app-workplace-submit-button
+      <app-workplace-submit-button
         [return]="!!return"
         (clicked)="setSubmitAction($event)"
-      ></app-workplace-submit-button> -->
+      ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
       @if (!return){

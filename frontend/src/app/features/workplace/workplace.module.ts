@@ -78,6 +78,7 @@ import { ChangeDataPermissionsComponent } from './change-data-permissions/change
 import { OfferSleepInsComponent } from './offer-sleep-ins/offer-sleep-ins.component';
 import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins/how-do-you-pay-for-sleep-ins.component';
 import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
+import { TravelTimePayComponent } from './travel-time-pay/travel-time-pay.component';
 
 @NgModule({
   imports: [
@@ -145,6 +146,7 @@ import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver'
     ChangeDataPermissionsComponent,
     OfferSleepInsComponent,
     HowDoYouPayForSleepInsComponent,
+    TravelTimePayComponent,
   ],
   providers: [
     DialogService,
