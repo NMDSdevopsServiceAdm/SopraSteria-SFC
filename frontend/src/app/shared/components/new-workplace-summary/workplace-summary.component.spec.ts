@@ -129,9 +129,8 @@ fdescribe('NewWorkplaceSummaryComponent', () => {
 
     expect(getByTestId(SectionId.Services)).toBeTruthy();
     expect(getByTestId(SectionId.VacanciesAndTurnover)).toBeTruthy();
-    // expect(getByTestId(SectionId.PayAndBenefits)).toBeTruthy();
-    // expect(getByTestId(SectionId.StaffDevelopment)).toBeTruthy();
-    // expect(queryByTestId(SectionId.RecrumentAndBenefits)).toBeFalsy();
+    expect(getByTestId(SectionId.PayAndBenefits)).toBeTruthy();
+    expect(getByTestId(SectionId.StaffDevelopment)).toBeTruthy();
     expect(getByTestId(SectionId.Permissions)).toBeTruthy();
 
     expect(getByTestId('cqcLocationId')).toBeTruthy();
