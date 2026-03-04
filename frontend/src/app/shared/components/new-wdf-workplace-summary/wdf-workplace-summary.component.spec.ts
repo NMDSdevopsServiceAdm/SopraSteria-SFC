@@ -29,7 +29,7 @@ import { WdfStaffMismatchMessageComponent } from '../wdf-staff-mismatch-message/
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
-fdescribe('WDFWorkplaceSummaryComponent', () => {
+describe('WDFWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const careWorkforcePathwayWorkplaceAwareness = overrides?.careWorkforcePathwayWorkplaceAwareness ?? null;
     const careWorkforcePathwayUse = overrides?.careWorkforcePathwayUse ?? null;
@@ -1537,7 +1537,15 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
       });
     });
 
-    describe('higher pension contributions', () => {
+    describe('higher workplace pension contributions', () => {
+      it('should show the row name as "Higher workplace pension contributions"', async () => {
+        await setup();
+
+        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
+
+        expect(within(pensionContributionRow).queryByText('Higher workplace pension contributions')).toBeTruthy();
+      });
+
       it('should show dash and have Add information button on higher pension contributions row when pensionContribution is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
 
