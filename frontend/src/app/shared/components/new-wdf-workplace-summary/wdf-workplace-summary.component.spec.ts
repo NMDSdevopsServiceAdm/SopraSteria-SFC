@@ -121,10 +121,10 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
     expect(getByTestId('employerType')).toBeTruthy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    // expect(getByTestId('pay-and-benefits-section')).toBeTruthy();
-    // expect(getByTestId('staff-development-section')).toBeTruthy();
+    expect(getByTestId('pay-and-benefits-section')).toBeTruthy();
+    expect(getByTestId('staff-development-section')).toBeTruthy();
 
-    // expect(queryByTestId('recruitment-and-benefits-section')).toBeFalsy();
+    expect(queryByTestId('recruitment-and-benefits-section')).toBeFalsy();
     expect(getByTestId('permissions-section')).toBeTruthy();
   });
 
@@ -815,15 +815,12 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
     describe('Offer sleep-ins', () => {
       [1, 2].forEach((group) => {
         it(`should show the row and table cell name when the payAndPensionsGroup is ${group}`, async () => {
-          const { component, fixture, getByTestId } = await setup({
+          const { getByTestId } = await setup({
             establishment: {
               mainService: { payAndPensionsGroup: group },
             },
             permissions: ['canEditEstablishment'],
           });
-
-          component.workplace.showAddWorkplaceDetailsBanner = false;
-          fixture.detectChanges();
 
           const offerSleepInsRow = getByTestId('offer-sleep-ins');
           const cellName = within(offerSleepInsRow).queryByText('Offer sleep-ins');
@@ -831,35 +828,16 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
           expect(offerSleepInsRow).toBeTruthy();
           expect(cellName).toBeTruthy();
         });
+      });
 
-        it(`should not show the row and table cell name when the payAndPensionsGroup is ${group} but showAddWorkplaceDetailsBanner is true`, async () => {
-          const { component, fixture, queryByTestId } = await setup({
+      [null, 3].forEach((group) => {
+        it(`should not show the row and table cell name when the payAndPensionsGroup is ${group} `, async () => {
+          const { queryByTestId } = await setup({
             establishment: {
               mainService: { payAndPensionsGroup: group },
             },
             permissions: ['canEditEstablishment'],
           });
-
-          component.workplace.showAddWorkplaceDetailsBanner = true;
-          fixture.detectChanges();
-
-          const offerSleepInsRow = queryByTestId('offer-sleep-ins');
-
-          expect(offerSleepInsRow).toBeFalsy();
-        });
-      });
-
-      [null, 3].forEach((group) => {
-        it(`should not show the row and table cell name when the payAndPensionsGroup is ${group} but showAddWorkplaceDetailsBanner is false`, async () => {
-          const { component, fixture, queryByTestId } = await setup({
-            establishment: {
-              mainService: { payAndPensionsGroup: 3 },
-            },
-            permissions: ['canEditEstablishment'],
-          });
-
-          component.workplace.showAddWorkplaceDetailsBanner = false;
-          fixture.detectChanges();
 
           const offerSleepInsRow = queryByTestId('offer-sleep-ins');
 
@@ -868,15 +846,12 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should not show an add link when there is no canEditEstablishment permission', async () => {
-        const { component, fixture, queryByTestId } = await setup({
+        const { queryByTestId } = await setup({
           establishment: {
             mainService: { payAndPensionsGroup: 1 },
           },
           permissions: [],
         });
-
-        component.workplace.showAddWorkplaceDetailsBanner = false;
-        fixture.detectChanges();
 
         const offerSleepInsRow = queryByTestId('offer-sleep-ins');
 
@@ -894,7 +869,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
           permissions: [],
         });
 
-        component.workplace.showAddWorkplaceDetailsBanner = false;
         component.workplace.offerSleepIn = 'Yes';
         fixture.detectChanges();
 
@@ -906,7 +880,7 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
         expect(offerSleepInsRow).toBeTruthy();
       });
 
-      it('should show should show "-" and an add link when offerSleepIn is null', async () => {
+      it('should show "-" and an add link when offerSleepIn is null', async () => {
         const { component, fixture, getByTestId } = await setup({
           establishment: {
             mainService: { payAndPensionsGroup: 1 },
@@ -914,7 +888,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
           permissions: ['canEditEstablishment'],
         });
 
-        component.workplace.showAddWorkplaceDetailsBanner = false;
         component.workplace.offerSleepIn = null;
         fixture.detectChanges();
 
@@ -943,7 +916,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
             permissions: ['canEditEstablishment'],
           });
 
-          component.workplace.showAddWorkplaceDetailsBanner = false;
           component.workplace.offerSleepIn = offerSleepInValue.database;
           fixture.detectChanges();
 
@@ -968,7 +940,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
           permissions: ['canEditEstablishment'],
         });
 
-        component.workplace.showAddWorkplaceDetailsBanner = false;
         component.workplace.offerSleepIn = 'Yes';
         fixture.detectChanges();
 
@@ -977,23 +948,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
 
         expect(sleepInPayRow).toBeTruthy();
         expect(cellName).toBeTruthy();
-      });
-
-      it('should not show the row and table cell name when offerSleepIn is "Yes" but showAddWorkplaceDetailsBanner is true', async () => {
-        const { component, fixture, queryByTestId } = await setup({
-          establishment: {
-            mainService: { payAndPensionsGroup: 3 },
-          },
-          permissions: ['canEditEstablishment'],
-        });
-
-        component.workplace.showAddWorkplaceDetailsBanner = true;
-        component.workplace.offerSleepIn = 'Yes';
-        fixture.detectChanges();
-
-        const sleepInPayRow = queryByTestId('sleep-in-pay');
-
-        expect(sleepInPayRow).toBeFalsy();
       });
 
       const offerSleepInValues = ['No', "Don't know", null];
@@ -1006,7 +960,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
             permissions: ['canEditEstablishment'],
           });
 
-          component.workplace.showAddWorkplaceDetailsBanner = false;
           component.workplace.offerSleepIn = answer;
           fixture.detectChanges();
 
@@ -1024,7 +977,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
           permissions: [],
         });
 
-        component.workplace.showAddWorkplaceDetailsBanner = false;
         component.workplace.offerSleepIn = 'Yes';
         component.workplace.howToPayForSleepIn = null;
         fixture.detectChanges();
@@ -1045,7 +997,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
           permissions: [],
         });
 
-        component.workplace.showAddWorkplaceDetailsBanner = false;
         component.workplace.offerSleepIn = 'Yes';
         component.workplace.howToPayForSleepIn = null;
         fixture.detectChanges();
@@ -1066,7 +1017,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
           permissions: ['canEditEstablishment'],
         });
 
-        component.workplace.showAddWorkplaceDetailsBanner = false;
         component.workplace.offerSleepIn = 'Yes';
         component.workplace.howToPayForSleepIn = null;
 
@@ -1093,7 +1043,6 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
             permissions: ['canEditEstablishment'],
           });
 
-          component.workplace.showAddWorkplaceDetailsBanner = false;
           component.workplace.offerSleepIn = 'Yes';
           component.workplace.howToPayForSleepIn = sleepInPayValue;
 
@@ -1404,6 +1353,163 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
   });
 
   describe('Pay and benefits section', () => {
+    describe('care and support worker travel time pay', () => {
+      it('should show the row and table cells when payAndPensionsGroup is 1', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = getByTestId('care-and-support-worker-travel-time-pay');
+        expect(travelTimePayRow).toBeTruthy();
+
+        const cellName = within(travelTimePayRow).queryByText('Care and support worker travel time pay');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(cellName).toBeTruthy();
+      });
+
+      [2, 3, null].forEach((group) => {
+        it(`should not show the row and table cells when payAndPensionsGroup is ${group}`, async () => {
+          const { queryByTestId, queryByText } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: group },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+          expect(travelTimePayRow).toBeFalsy();
+
+          expect(queryByText('Care and support worker travel time pay')).toBeFalsy;
+        });
+      });
+
+      it('should show "-" and an add link when travelTimePay is null', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: null,
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Add');
+        const answer = within(travelTimePayRow).queryByText('-');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-and-support-worker-travel-time-pay`,
+        );
+      });
+
+      it('should show the traval time pay answer and a change link when travelTimePay is answered', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: {
+              id: 1,
+              label: 'The same rate for travel time as for visits',
+              includeRate: false,
+              rate: null,
+            },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Change');
+        const answer = within(travelTimePayRow).queryByText('The same rate for travel time as for visits');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-and-support-worker-travel-time-pay`,
+        );
+      });
+
+      it('should show the travel time pay rate as well if the answer includes a rate', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: {
+              id: 3,
+              label: 'A different travel time rate',
+              includeRate: true,
+              rate: 12.5,
+            },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Change');
+        const answer = within(travelTimePayRow).queryByText('A different travel time rate, £12.5');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-and-support-worker-travel-time-pay`,
+        );
+      });
+
+      it('should not show the Add link if user does not have canEditEstablishment permission', async () => {
+        const { queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: null,
+          },
+          permissions: [],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Add');
+        const answer = within(travelTimePayRow).queryByText('-');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeFalsy();
+      });
+
+      it('should not show the Change link if user does not have canEditEstablishment permission', async () => {
+        const { queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: {
+              id: 1,
+              label: 'The same rate for travel time as for visits',
+              includeRate: false,
+              rate: null,
+            },
+          },
+          permissions: [],
+        });
+
+        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Change');
+        const answer = within(travelTimePayRow).queryByText('The same rate for travel time as for visits');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeFalsy();
+      });
+    });
+
     describe('statutory sick pay', () => {
       it('should show dash and have Add information button on statutory sick pay row when sickPay is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
@@ -1458,6 +1564,18 @@ fdescribe('WDFWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/pensions`);
         expect(within(pensionContributionRow).getByText(component.workplace.pensionContribution)).toBeTruthy();
+      });
+
+      it('should show the percentage as well if answer is Yes and the pensionContributionPercentage is given', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.pensionContribution = 'Yes';
+        component.workplace.pensionContributionPercentage = 4.5;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
+        expect(within(pensionContributionRow).getByText('Yes, 4.5%')).toBeTruthy();
       });
     });
 
