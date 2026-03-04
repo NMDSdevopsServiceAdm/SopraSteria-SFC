@@ -4,6 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { TabsService } from '@core/services/tabs.service';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
@@ -71,6 +72,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   public isParent: boolean;
   private careWorkforcePathwayLinkDisplaying: boolean;
+  private payAndPensionWorkplaceQuestionsLinkDisplaying: boolean;
   private setReturn: boolean;
   private subscriptions: Subscription = new Subscription();
 
@@ -78,6 +80,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     private tabsService: TabsService,
     private establishmentService: EstablishmentService,
     private router: Router,
+    private payAndPensionService: PayAndPensionService,
   ) {}
 
   ngOnInit(): void {
@@ -91,6 +94,11 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
 
   public async onClick(event: Event, fragment: string, route: string[], skipTabSwitch: boolean = false): Promise<void> {
     event.preventDefault();
+    if (this.payAndPensionWorkplaceQuestionsLinkDisplaying && fragment == 'workplace') {
+      this.payAndPensionService.setInPayAndPensionsMiniFlow(true);
+      this.setPayAndPensionsMiniFlowViewed();
+    }
+
     if (this.careWorkforcePathwayLinkDisplaying && fragment == 'workplace') {
       this.setCwpAwarenessQuestionViewed();
     }
@@ -118,10 +126,26 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   };
 
   public getWorkplaceSummaryMessage(): void {
-    const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;
+    const {
+      showAddWorkplaceDetailsBanner,
+      numberOfStaff,
+      vacancies,
+      starters,
+      leavers,
+      mainService,
+      payAndPensionsMiniFlowViewed,
+    } = this.workplace;
     this.sections[0].redFlag = false;
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
+    } else if (
+      this.payAndPensionService.showSleepInsQuestions(mainService.payAndPensionsGroup) &&
+      !payAndPensionsMiniFlowViewed
+    ) {
+      this.sections[0].message = "We've added some Workplace questions";
+      this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(this.workplace.uid, 'pensions');
+      this.setReturn = true;
+      this.payAndPensionWorkplaceQuestionsLinkDisplaying = true;
     } else if (!this.workplace.CWPAwarenessQuestionViewed && !this.workplace.careWorkforcePathwayWorkplaceAwareness) {
       this.sections[0].message = 'How aware of the CWP is your workplace?';
       this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(
@@ -310,14 +334,26 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
     }
   }
 
+  private updateSingleEstablishmentField(dataToUpdate: any): void {
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, dataToUpdate).subscribe(),
+    );
+  }
+
   private setCwpAwarenessQuestionViewed(): void {
     const cwpData = {
       property: 'CWPAwarenessQuestionViewed',
       value: true,
     };
-    this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, cwpData).subscribe(),
-    );
+    this.updateSingleEstablishmentField(cwpData);
+  }
+
+  private setPayAndPensionsMiniFlowViewed(): void {
+    const payAndPensionData = {
+      property: 'payAndPensionsMiniFlowViewed',
+      value: true,
+    };
+    this.updateSingleEstablishmentField(payAndPensionData);
   }
 
   public navigateToYourOtherWorkplaces(event: Event, yourOtherWorkplacesSortValue: string) {
