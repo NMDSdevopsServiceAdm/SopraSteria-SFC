@@ -12,6 +12,7 @@ import { PreviousRouteService } from '@core/services/previous-route.service';
 @Component({
   selector: 'app-travel-time-pay',
   templateUrl: './travel-time-pay.component.html',
+  styleUrls: ['./travel-time-pay.component.scss'],
   standalone: false,
 })
 export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
@@ -19,6 +20,7 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
   public payAndPensionQuestionRevealText: string;
 
   public travelTimePayOptions: any;
+  public showTextBox = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -38,10 +40,13 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
     this.setSectionHeading();
     this.setupForm();
-
+    if (this.travelTimePayOptions.label === 'A different travel time rate') {
+      this.showTextBox = true;
+    }
     this.previousQuestionPage = 'how-many-leavers';
     this.skipToQuestionPage = 'benefits-statutory-sick-pay';
     this.nextQuestionPage = this.skipToQuestionPage;
+    console.log(this.travelTimePayOptions);
   }
 
   public setSectionHeading() {
@@ -54,9 +59,25 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     this.form = this.formBuilder.group(
       {
         travelTimePay: null,
+        travelTimePayRate: null,
       },
       { updateOn: 'submit' },
     );
+  }
+
+  public onChange(answer: string) {
+    if (answer === 'A different travel time rate') {
+      this.showTextBox = true;
+      // this.addValidationToControl();
+      // this.addErrorLinkFunctionality();
+    } else if (answer) {
+      this.showTextBox = false;
+      // const { pensionPercentage } = this.form.controls;
+      // if (pensionPercentage) {
+      //   this.form.get('pensionPercentage').clearValidators();
+      //   this.form.get('pensionPercentage').updateValueAndValidity();
+      // }
+    }
   }
 
   protected setBackLink(): void {
