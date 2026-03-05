@@ -50,6 +50,11 @@ export class ReportComponent {
     this.subscriptions.add(this.reportsService.getWdfSummaryReport().subscribe((response) => this.saveFile(response)));
   }
 
+  public downloadUserResearchInviteResponses(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(this.reportsService.getUserResearchInviteResponsesReport().subscribe((response) => this.saveFile(response)));
+  }
+
   public saveFile(response: HttpResponse<Blob>) {
     const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
     const header = response.headers.get('content-disposition');
