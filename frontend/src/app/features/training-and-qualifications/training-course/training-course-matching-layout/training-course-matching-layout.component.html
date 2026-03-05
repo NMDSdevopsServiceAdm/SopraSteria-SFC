@@ -77,7 +77,9 @@
                     <div
                       data-testid="expiresDate"
                       class="govuk-form-group"
-                      [class.govuk-summary-list__warning]="expiryMismatchWarning"
+                      [class.asc__govuk-form-group--error--orange]="
+                        (expiryMismatchWarning || doesNotExpireMismatchWarning) && !form.get('expires').invalid
+                      "
                       [class.govuk-form-group--error]="submitted && form.get('expires').invalid"
                     >
                       <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
@@ -85,18 +87,14 @@
                         <legend id="expires-hint" class="govuk-hint">For example, 31 3 2025</legend>
                         @if (expiryMismatchWarning) {
                           <div>
-                            <span
-                              class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
-                            >
+                            <span class="govuk-error-message asc__govuk-error-message--orange">
                               This training is usually valid for
                               {{ trainingToDisplay?.validityPeriodInMonth }} months
                             </span>
                           </div>
                         } @else if (doesNotExpireMismatchWarning) {
                           <div>
-                            <span
-                              class="govuk-summary-list__key govuk-error-message govuk-summary-list__warning-message govuk__nowrap"
-                            >
+                            <span class="govuk-error-message asc__govuk-error-message--orange">
                               This training usually does not expire
                             </span>
                           </div>
