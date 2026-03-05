@@ -3,6 +3,7 @@ const sinon = require('sinon');
 const expect = require('chai').expect;
 const Establishment = require('../../../../models/classes/establishment').Establishment;
 const WdfCalculator = require('../../../../models/classes/wdfCalculator').WdfCalculator;
+const ServiceCache = require('../../../../models/cache/singletons/services').ServiceCache;
 
 let establishment;
 
@@ -188,6 +189,29 @@ describe('Establishment Class', () => {
   });
 
   describe('restore', () => {
+    const services = [
+      {
+        id: 1,
+        name: 'foo',
+        category: 'foo',
+      },
+      {
+        id: 2,
+        name: 'foo',
+        category: 'foo',
+      },
+      {
+        id: 3,
+        name: 'foo',
+        category: 'foo',
+      },
+      {
+        id: 4,
+        name: 'foo',
+        category: 'foo',
+      },
+    ];
+
     const testWorkplace = {
       id: 4321,
       isRegulated: false,
@@ -198,15 +222,41 @@ describe('Establishment Class', () => {
       postcode: 'CA1 1AA',
       getCareWorkforcePathwayReasons() {},
       getDelegatedHealthcareActivities() {},
+      mainService: services[0],
     };
 
     beforeEach(() => {
       establishment = new Establishment();
+
+      establishment._mainService = testWorkplace.MainServiceFKValue;
+
+      sinon.stub(models.establishmentServiceUsers, 'findAll').returns([
+        {
+          serviceUserId: 2,
+        },
+      ]);
+      sinon.stub(models.establishmentServices, 'findAll').returns([
+        { serviceId: 1, other: null },
+        { serviceId: 11, other: null },
+      ]);
+
+      sinon.stub(ServiceCache, 'allMyServices').returns(services);
+      sinon.stub(models.services, 'findOne').returns([services[0]]);
+      sinon.stub(models.serviceUsers, 'findAll').returns([
+        {
+          id: 2,
+        },
+      ]);
+      sinon.stub(models.establishmentCapacity, 'findAll').returns([]);
+      sinon.stub(models.establishmentJobs, 'findAll').returns([]);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').returns([]);
     });
 
     booleanValues.forEach((value) => {
       it(`should restore payAndPensionsMiniFlowViewed when the value is ${value}`, async () => {
-        sinon.stub(models.establishment, 'findOne').returns({ ...testWorkplace, payAndPensionsMiniFlowViewed: value });
+        const establishmentStub = sinon.stub(models.establishment, 'findOne');
+        establishmentStub.onCall(0).returns({ ...testWorkplace, payAndPensionsMiniFlowViewed: value });
+        establishmentStub.onCall(1).returns(testWorkplace.id);
 
         const restoredEstablishment = await establishment.restore(testWorkplace.id);
 
