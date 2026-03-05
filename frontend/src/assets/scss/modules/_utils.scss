@@ -222,3 +222,12 @@ dl.asc__name-value-pair {
   width: 42px;
   height: 19px;
 }
+
+.asc__govuk-form-group--error--orange {
+  padding-left: 15px;
+  border-left: 5px solid govuk-colour('orange');
+}
+
+.asc__govuk-error-message--orange {
+  color: govuk-colour('orange');
+}
