@@ -11,6 +11,8 @@ describe('Establishment Class', () => {
     sinon.restore();
   });
 
+  const booleanValues = [true, false, null];
+
   describe('load()', () => {
     beforeEach(() => {
       establishment = new Establishment();
@@ -44,12 +46,22 @@ describe('Establishment Class', () => {
       expect(parent.parentPostcode).to.equal('LE5 1AA');
       expect(parentEst).to.deep.equal(true);
     });
+
+    booleanValues.forEach((value) => {
+      it(`should return payAndPensionsMiniFlowViewed when in the document and the value is ${value} `, async () => {
+        const document = { payAndPensionsMiniFlowViewed: value };
+        const establishmentLoaded = await establishment.load(document);
+
+        expect(establishmentLoaded).to.deep.equal(true);
+        expect(establishment._payAndPensionsMiniFlowViewed).to.deep.equal(value);
+      });
+    });
   });
 
   describe('save()', () => {
     const postCode = 'CA1 1AA';
 
-    const updateEstablishmentProperties = () => {
+    const updateEstablishmentProperties = (overrides) => {
       sinon
         .stub(establishment._properties, 'get')
         .withArgs('Name')
@@ -61,13 +73,18 @@ describe('Establishment Class', () => {
       establishment._postcode = postCode;
       establishment._isRegulated = false;
       establishment._workerEntities = null;
+
+      if (overrides?.propertiesToUpdate) {
+        overrides?.propertiesToUpdate.forEach((property) => {
+          establishment[property.name] = property.value;
+        });
+      }
     };
 
     const theLoggedInUser = 'admin';
 
     const createNewEstablishment = (overrides) => {
       let bulkUploadStatus = overrides.bulkUploadStatus ? overrides.bulkUploadStatus : null;
-
       establishment = new Establishment(theLoggedInUser, bulkUploadStatus);
     };
 
@@ -75,8 +92,7 @@ describe('Establishment Class', () => {
 
     const setupTests = async (overrides = {}) => {
       createNewEstablishment(overrides);
-      updateEstablishmentProperties();
-
+      updateEstablishmentProperties(overrides);
       isWdfEligibleSpy = sinon.stub(establishment, 'isWdfEligible').returns({
         currentEligibility: overrides.currentEligibility,
       });
@@ -151,6 +167,69 @@ describe('Establishment Class', () => {
         expect(isWdfEligibleSpy).not.to.have.been.called;
         expect(updateFundingEligibilitySpy).not.to.have.been.called;
         expect(establishmentAuditSpy).not.to.have.been.called;
+      });
+
+      booleanValues.forEach((value) => {
+        it(`should call the database to update payAndPensionsMiniFlowViewed when the value is ${value}`, async () => {
+          await setupTests({
+            bulkUploadStatus: 'NEW',
+            currentEligibility: true,
+            bulkUploaded: true,
+            propertiesToUpdate: [{ name: '_payAndPensionsMiniFlowViewed', value: value }],
+          });
+
+          establishmentAuditSpy.resolves(true);
+
+          expect(establishmentAuditSpy).to.have.been.called;
+          expect(establishment._payAndPensionsMiniFlowViewed).to.deep.equal(value);
+        });
+      });
+    });
+  });
+
+  describe('restore', () => {
+    const testWorkplace = {
+      id: 4321,
+      isRegulated: false,
+      MainServiceFKValue: 1,
+      nmdsId: 'I1234567',
+      NameValue: 'Test Workplace',
+      address1: 'address 1',
+      postcode: 'CA1 1AA',
+      getCareWorkforcePathwayReasons() {},
+      getDelegatedHealthcareActivities() {},
+    };
+
+    beforeEach(() => {
+      establishment = new Establishment();
+    });
+
+    booleanValues.forEach((value) => {
+      it(`should restore payAndPensionsMiniFlowViewed when the value is ${value}`, async () => {
+        sinon.stub(models.establishment, 'findOne').returns({ ...testWorkplace, payAndPensionsMiniFlowViewed: value });
+
+        const restoredEstablishment = await establishment.restore(testWorkplace.id);
+
+        expect(restoredEstablishment).to.equal(true);
+        expect(establishment._payAndPensionsMiniFlowViewed).to.equal(value);
+      });
+    });
+  });
+
+  describe('toJSON', () => {
+    beforeEach(() => {
+      establishment = new Establishment();
+    });
+
+    booleanValues.forEach((value) => {
+      it(`should return payAndPensionsMiniFlowViewed when the value is ${value}`, async () => {
+        establishment.id = 1234;
+        establishment.postcode = 'CA1 1AA';
+        establishment._payAndPensionsMiniFlowViewed = value;
+
+        const establishmentToJson = await establishment.toJSON();
+
+        expect(establishmentToJson.payAndPensionsMiniFlowViewed).to.deep.equal(value);
       });
     });
   });
