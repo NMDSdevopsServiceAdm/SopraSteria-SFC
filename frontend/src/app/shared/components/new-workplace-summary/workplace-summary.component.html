@@ -606,11 +606,7 @@
         <dt class="govuk-summary-list__key">Repeat training</dt>
         <dd class="govuk-summary-list__value">
           <app-summary-record-value>
-            @if (!workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment) {
-              -
-            } @else {
-              {{ workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment }}
-            }
+            {{ workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment ?? '-' }}
           </app-summary-record-value>
         </dd>
         @if (canEditEstablishment) {
@@ -629,11 +625,7 @@
         <dt class="govuk-summary-list__key">Accept Care Certificate</dt>
         <dd class="govuk-summary-list__value">
           <app-summary-record-value>
-            @if (!workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment) {
-              -
-            } @else {
-              {{ workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment }}
-            }
+            {{ workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment ?? '-' }}
           </app-summary-record-value>
         </dd>
         @if (canEditEstablishment) {
