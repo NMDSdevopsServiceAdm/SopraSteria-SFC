@@ -1412,7 +1412,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         );
       });
 
-      it('should show the traval time pay answer and a change link when travelTimePay is answered', async () => {
+      it('should show the travel time pay answer and a change link when travelTimePay is answered', async () => {
         const { component, queryByTestId } = await setup({
           establishment: {
             mainService: { payAndPensionsGroup: 1 },
