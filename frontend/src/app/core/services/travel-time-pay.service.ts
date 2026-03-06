@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { TravelTimePayOptions, TravelTimePayResponse } from '@core/model/travel-time-pay.model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +11,9 @@ import { map } from 'rxjs/operators';
 export class TravelTimePayService {
   constructor(private http: HttpClient) {}
 
-  getAllTravelTimePayOptions(): Observable<any> {
+  getAllTravelTimePayOptions(): Observable<TravelTimePayOptions[]> {
     return this.http
-      .get<any>(`${environment.appRunnerEndpoint}/api/travelTimePayOptions`)
+      .get<TravelTimePayResponse>(`${environment.appRunnerEndpoint}/api/travelTimePayOptions`)
       .pipe(map((res) => res.travelTimePayOptions));
   }
 }
