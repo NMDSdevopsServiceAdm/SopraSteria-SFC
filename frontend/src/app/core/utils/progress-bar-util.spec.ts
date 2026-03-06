@@ -74,4 +74,18 @@ describe('ProgressBarUtil', () => {
       ]);
     });
   });
+
+  describe('payAndPensionsMiniFlowGroup2BarSections', () => {
+    it('should return an array with the length 3', async () => {
+      const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+
+      expect(payAndPensionsMiniFlowGroup2BarSections.length).toEqual(3);
+    });
+
+    it('should return the correct values', () => {
+      const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+
+      expect(payAndPensionsMiniFlowGroup2BarSections).toEqual(['Question 1', 'Question 2', 'Question 3']);
+    });
+  });
 });
