@@ -241,7 +241,7 @@ describe('BenefitsStatutorySickPayComponent', () => {
     });
   });
 
-  it('should set the back link to how-many-leavers page', async () => {
+  it('should set the back link to travel-time-pay page', async () => {
     const { component } = await setup(null);
 
     expect(component.previousRoute).toEqual([
@@ -249,7 +249,7 @@ describe('BenefitsStatutorySickPayComponent', () => {
       component.establishment.uid,
       'workplace-data',
       'add-workplace-details',
-      'how-many-leavers',
+      'travel-time-pay',
     ]);
   });
 });

@@ -51,7 +51,7 @@ export class BenefitsStatutorySickPayComponent extends WorkplaceQuestion impleme
   }
 
   private setPreviousRoute(): void {
-    this.previousQuestionPage = 'how-many-leavers';
+    this.previousQuestionPage = 'travel-time-pay';
   }
 
   private setupForm(): void {
