@@ -1331,14 +1331,17 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       const sleepInPayValues = ['Hourly pay', 'Flat rate', 'I do not know'];
+
       sleepInPayValues.forEach((sleepInPayValue) => {
-        it(`should display the answers with a change link when offerSleepIn is ${sleepInPayValue}`, async () => {
+        it(`should display the answers with a change link when sleepInPay is ${sleepInPayValue}`, async () => {
           const { component, fixture, getByTestId } = await setup({
             establishment: {
               mainService: { payAndPensionsGroup: 1 },
             },
             permissions: ['canEditEstablishment'],
           });
+
+          const expectedTextInWorkplaceRow = sleepInPayValue === 'I do not know' ? 'Not known' : sleepInPayValue;
 
           component.workplace.showAddWorkplaceDetailsBanner = false;
           component.workplace.offerSleepIn = 'Yes';
@@ -1349,7 +1352,7 @@ describe('NewWorkplaceSummaryComponent', () => {
           const sleepInPayRow = getByTestId('sleep-in-pay');
 
           const link = within(sleepInPayRow).queryByText('Change');
-          const answer = within(sleepInPayRow).queryByText(sleepInPayValue);
+          const answer = within(sleepInPayRow).queryByText(expectedTextInWorkplaceRow);
 
           expect(answer).toBeTruthy();
           expect(link).toBeTruthy();

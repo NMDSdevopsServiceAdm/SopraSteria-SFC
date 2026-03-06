@@ -425,7 +425,7 @@
         <div class="govuk-summary-list__row" data-testid="sleep-in-pay">
           <dt class="govuk-summary-list__key">Care and support worker sleep-in pay</dt>
           <dd class="govuk-summary-list__value">
-            {{ workplace.howToPayForSleepIn ?? '-' }}
+            {{ workplace.howToPayForSleepIn | closedEndedAnswer }}
           </dd>
           @if (canEditEstablishment) {
             <dd class="govuk-summary-list__actions">
@@ -586,14 +586,10 @@
           <dt class="govuk-summary-list__key">Care and support worker travel time pay</dt>
           <dd class="govuk-summary-list__value">
             <app-summary-record-value>
-              @if (workplace?.travelTimePay) {
-                @if (workplace?.travelTimePay?.includeRate && workplace?.travelTimePay?.rate) {
-                  {{ `${workplace.travelTimePay.label}, £${workplace.travelTimePay?.rate}` }}
-                } @else {
-                  {{ workplace.travelTimePay.label }}
-                }
+              @if (workplace?.travelTimePay?.includeRate && workplace?.travelTimePay?.rate) {
+                {{ `${workplace.travelTimePay.label}, £${workplace.travelTimePay?.rate}` }}
               } @else {
-                -
+                {{ workplace.travelTimePay?.label | closedEndedAnswer }}
               }
             </app-summary-record-value>
           </dd>

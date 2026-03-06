@@ -1043,6 +1043,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
             permissions: ['canEditEstablishment'],
           });
 
+          const expectedTextInWorkplaceRow = sleepInPayValue === 'I do not know' ? 'Not known' : sleepInPayValue;
+
           component.workplace.offerSleepIn = 'Yes';
           component.workplace.howToPayForSleepIn = sleepInPayValue;
 
@@ -1051,7 +1053,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           const sleepInPayRow = getByTestId('sleep-in-pay');
 
           const link = within(sleepInPayRow).queryByText('Change');
-          const answer = within(sleepInPayRow).queryByText(sleepInPayValue);
+          const answer = within(sleepInPayRow).queryByText(expectedTextInWorkplaceRow);
 
           expect(answer).toBeTruthy();
           expect(link).toBeTruthy();
