@@ -898,6 +898,11 @@ module.exports = function (sequelize, DataTypes) {
           return rawValue ? parseFloat(rawValue) : null;
         },
       },
+      payAndPensionsMiniFlowViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'PayAndPensionsMiniFlowViewed',
+      },
     },
     {
       defaultScope: {

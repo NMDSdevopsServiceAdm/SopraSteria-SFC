@@ -183,6 +183,7 @@ export interface Establishment {
   offerSleepIn?: string;
   howToPayForSleepIn?: string;
   staffOptOutOfWorkplacePension?: string;
+  payAndPensionsMiniFlowViewed?: boolean;
 }
 
 export interface UpdateJobsRequest {
