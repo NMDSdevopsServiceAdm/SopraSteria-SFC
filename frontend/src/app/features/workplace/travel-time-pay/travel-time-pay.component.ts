@@ -41,7 +41,8 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
     this.setSectionHeading();
     this.setupForm();
-    if (this.form.get('travelTimePay')?.value === 'A different travel time rate') {
+    this.prefill();
+    if (this.form.get('travelTimePay')?.value === 3) {
       this.showTextBox = true;
     }
     this.previousQuestionPage = 'how-many-leavers';
@@ -119,13 +120,50 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     ];
   }
 
+  private prefill(): void {
+    if (this.establishment.travelTimePay) {
+      this.form.patchValue({
+        travelTimePay: this.establishment.travelTimePay.id,
+        travelTimePayRate: this.establishment.travelTimePay.rate,
+      });
+
+      this.onChange(this.establishment.travelTimePay.label);
+    }
+  }
+
+  generateUpdateProps() {
+    const { travelTimePay, travelTimePayRate } = this.form.value;
+
+    return travelTimePay
+      ? {
+          travelTimePay: {
+            id: travelTimePay,
+            ...(travelTimePay === 3 && {
+              rate: travelTimePayRate,
+            }),
+          },
+        }
+      : null;
+  }
+
+  updateEstablishment(props): void {
+    if (!props) return;
+    const property = 'TravelTimePay';
+    this.subscriptions.add(
+      this.establishmentService.updateEstablishmentFieldWithAudit(this.establishment.uid, property, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
+    );
+  }
+
   protected setBackLink(): void {
     const isInWorkflow = !this.return;
 
     const previousPage = this.previousRouteService.getPreviousPage();
-    const previousPageWasOfferSleepIns = previousPage === this.previousQuestionPage;
+    const previousPageWasTravelTime = previousPage === this.previousQuestionPage;
 
-    if (isInWorkflow || previousPageWasOfferSleepIns) {
+    if (isInWorkflow || previousPageWasTravelTime) {
       this.back = { url: this.previousRoute };
     } else {
       this.back = this.return;
