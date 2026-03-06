@@ -457,7 +457,7 @@
       data-testid="pay-and-benefits-section"
     >
       @if (workplace?.mainService?.payAndPensionsGroup === 1) {
-        <div class="govuk-summary-list__row" data-testid="care-and-support-worker-travel-time-pay">
+        <div class="govuk-summary-list__row" data-testid="travel-time-pay">
           <dt class="govuk-summary-list__key">Care and support worker travel time pay</dt>
           <dd class="govuk-summary-list__value">
             <app-summary-record-value>
@@ -472,7 +472,7 @@
             <dd class="govuk-summary-list__actions">
               <app-summary-record-change
                 [explanationText]="' care and support worker travel time pay'"
-                [link]="'care-and-support-worker-travel-time-pay' | workplaceSummaryPath: workplace.uid"
+                [link]="'travel-time-pay' | workplaceSummaryPath: workplace.uid"
                 [hasData]="workplace.travelTimePay"
                 (setReturnClicked)="this.setReturn()"
               ></app-summary-record-change>

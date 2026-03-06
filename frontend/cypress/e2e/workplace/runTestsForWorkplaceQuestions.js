@@ -549,7 +549,7 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     });
 
     it('updates care and support worker travel time pay', () => {
-      cy.get('[data-testid="care-and-support-worker-travel-time-pay"]').as('testId');
+      cy.get('[data-testid="travel-time-pay"]').as('testId');
 
       cy.get('@testId').contains('Add').click();
 

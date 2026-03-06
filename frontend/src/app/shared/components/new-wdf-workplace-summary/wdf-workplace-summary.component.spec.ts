@@ -1364,7 +1364,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           permissions: ['canEditEstablishment'],
         });
 
-        const travelTimePayRow = getByTestId('care-and-support-worker-travel-time-pay');
+        const travelTimePayRow = getByTestId('travel-time-pay');
         expect(travelTimePayRow).toBeTruthy();
 
         const cellName = within(travelTimePayRow).queryByText('Care and support worker travel time pay');
@@ -1382,7 +1382,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
             permissions: ['canEditEstablishment'],
           });
 
-          const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+          const travelTimePayRow = queryByTestId('travel-time-pay');
           expect(travelTimePayRow).toBeFalsy();
 
           expect(queryByText('Care and support worker travel time pay')).toBeFalsy;
@@ -1398,7 +1398,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           permissions: ['canEditEstablishment'],
         });
 
-        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+        const travelTimePayRow = queryByTestId('travel-time-pay');
 
         const link = within(travelTimePayRow).queryByText('Add');
         const answer = within(travelTimePayRow).queryByText('-');
@@ -1408,7 +1408,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
 
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-and-support-worker-travel-time-pay`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/travel-time-pay`,
         );
       });
 
@@ -1426,7 +1426,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           permissions: ['canEditEstablishment'],
         });
 
-        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+        const travelTimePayRow = queryByTestId('travel-time-pay');
 
         const link = within(travelTimePayRow).queryByText('Change');
         const answer = within(travelTimePayRow).queryByText('The same rate for travel time as for visits');
@@ -1436,7 +1436,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
 
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-and-support-worker-travel-time-pay`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/travel-time-pay`,
         );
       });
 
@@ -1454,7 +1454,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           permissions: ['canEditEstablishment'],
         });
 
-        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+        const travelTimePayRow = queryByTestId('travel-time-pay');
 
         const link = within(travelTimePayRow).queryByText('Change');
         const answer = within(travelTimePayRow).queryByText('A different travel time rate, £12.5');
@@ -1464,7 +1464,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
 
         expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/care-and-support-worker-travel-time-pay`,
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/travel-time-pay`,
         );
       });
 
@@ -1477,7 +1477,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           permissions: [],
         });
 
-        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+        const travelTimePayRow = queryByTestId('travel-time-pay');
 
         const link = within(travelTimePayRow).queryByText('Add');
         const answer = within(travelTimePayRow).queryByText('-');
@@ -1501,7 +1501,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           permissions: [],
         });
 
-        const travelTimePayRow = queryByTestId('care-and-support-worker-travel-time-pay');
+        const travelTimePayRow = queryByTestId('travel-time-pay');
 
         const link = within(travelTimePayRow).queryByText('Change');
         const answer = within(travelTimePayRow).queryByText('The same rate for travel time as for visits');
