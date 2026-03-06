@@ -27,69 +27,67 @@
         <div class="govuk-form-group">
           <div class="govuk-radios govuk-!-margin-bottom-4">
             <div class="govuk-radios govuk-radios--conditional">
-              <ng-container *ngFor="let travelTimePayOption of travelTimePayOptions; let i = index">
-                <hr
-                  *ngIf="i === travelTimePayOptions.length - 2"
-                  class="govuk-section-break govuk-section-break--l govuk-section-break--visible"
+              @for (travelTimePayOption of travelTimePayOptions; track travelTimePayOption.id) { @if
+              (travelTimePayOption.id === travelTimePayOptions.length - 1) {
+              <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible" />
+              }
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  type="radio"
+                  id="travelTimePay-{{ i }}"
+                  name="travelTimePay"
+                  [formControlName]="'travelTimePay'"
+                  [value]="travelTimePayOption.id"
+                  (click)="onChange(travelTimePayOption.label)"
                 />
-                <div class="govuk-radios__item">
-                  <input
-                    class="govuk-radios__input"
-                    type="radio"
-                    id="travelTimePay-{{ i }}"
-                    name="travelTimePay"
-                    [formControlName]="'travelTimePay'"
-                    [value]="travelTimePayOption.id"
-                    (click)="onChange(travelTimePayOption.label)"
-                  />
-                  <label for="travelTimePay-{{ i }}" class="govuk-label govuk-radios__label">{{
-                    travelTimePayOption.label
-                  }}</label>
-                </div>
-                @if (travelTimePayOption.label === 'A different travel time rate') {
-                <div
-                  class="govuk-radios__conditional"
-                  [class.govuk-radios__conditional--hidden]="!showTextBox"
-                  id="conditional-travelTimePayRate-conditional-1"
-                  data-testid="travelTimePayRateRadio-conditional"
-                >
-                  <div class="govuk-grid-row">
-                    <div class="govuk-grid-column-two-thirds">
-                      <div
-                        class="govuk-form-group"
-                        [class.govuk-form-group--error]="submitted && form.get('travelTimePayRate').invalid"
+                <label for="travelTimePay-{{ i }}" class="govuk-label govuk-radios__label">{{
+                  travelTimePayOption.label
+                }}</label>
+              </div>
+              @if (travelTimePayOption.label === 'A different travel time rate') {
+              <div
+                class="govuk-radios__conditional"
+                [class.govuk-radios__conditional--hidden]="!showTextBox"
+                id="conditional-travelTimePayRate-conditional-1"
+                data-testid="travelTimePayRateRadio-conditional"
+              >
+                <div class="govuk-grid-row">
+                  <div class="govuk-grid-column-two-thirds">
+                    <div
+                      class="govuk-form-group"
+                      [class.govuk-form-group--error]="submitted && form.get('travelTimePayRate').invalid"
+                    >
+                      <label class="govuk-label" for="travelTimePayRate">Amount (optional)</label>
+                      <span id="travelTimePayRate-hint" class="govuk-hint govuk-!-margin-bottom-4">
+                        For example, 13.45
+                      </span>
+                      <span
+                        *ngIf="submitted && form.get('travelTimePayRate').invalid"
+                        id="travelTimePayRate-error"
+                        class="govuk-error-message"
                       >
-                        <label class="govuk-label" for="travelTimePayRate">Amount (optional)</label>
-                        <span id="travelTimePayRate-hint" class="govuk-hint govuk-!-margin-bottom-4">
-                          For example, 13.45
-                        </span>
-                        <span
-                          *ngIf="submitted && form.get('travelTimePayRate').invalid"
-                          id="travelTimePayRate-error"
-                          class="govuk-error-message"
-                        >
-                          <span class="govuk-visually-hidden">Error:</span>
-                          {{ getFirstErrorMessage('travelTimePayRate') }}
-                        </span>
+                        <span class="govuk-visually-hidden">Error:</span>
+                        {{ getFirstErrorMessage('travelTimePayRate') }}
+                      </span>
 
-                        <div class="govuk-input__wrapper govuk-!-margin-top-2">
-                          <div class="govuk-input__prefix" aria-hidden="true">£</div>
-                          <input
-                            class="govuk-input asc-max-width"
-                            [class.govuk-input--error]="submitted && form.get('travelTimePayRate').invalid"
-                            [formControlName]="'travelTimePayRate'"
-                            id="travelTimePayRate"
-                            name="travelTimePayRate"
-                            type="number"
-                            aria-describedby="travelTimePayRate-hint"
-                          />
-                        </div>
+                      <div class="govuk-input__wrapper govuk-!-margin-top-2">
+                        <div class="govuk-input__prefix" aria-hidden="true">£</div>
+                        <input
+                          class="govuk-input asc-max-width"
+                          [class.govuk-input--error]="submitted && form.get('travelTimePayRate').invalid"
+                          [formControlName]="'travelTimePayRate'"
+                          id="travelTimePayRate"
+                          name="travelTimePayRate"
+                          type="number"
+                          aria-describedby="travelTimePayRate-hint"
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
-                }
-              </ng-container>
+              </div>
+              } }
             </div>
           </div>
         </div>

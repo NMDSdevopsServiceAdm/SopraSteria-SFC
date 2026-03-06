@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { WorkplaceQuestion } from '../question/question.component';
-import { UntypedFormBuilder } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
+import { TravelTimePayOptions } from '@core/model/travel-time-pay.model';
 
 @Component({
   selector: 'app-travel-time-pay',
@@ -19,7 +20,7 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
   public section: string;
   public payAndPensionQuestionRevealText: string;
 
-  public travelTimePayOptions: any;
+  public travelTimePayOptions: TravelTimePayOptions[];
   public showTextBox = false;
 
   constructor(
@@ -40,13 +41,12 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
     this.setSectionHeading();
     this.setupForm();
-    if (this.travelTimePayOptions.label === 'A different travel time rate') {
+    if (this.form.get('travelTimePay')?.value === 'A different travel time rate') {
       this.showTextBox = true;
     }
     this.previousQuestionPage = 'how-many-leavers';
     this.skipToQuestionPage = 'benefits-statutory-sick-pay';
     this.nextQuestionPage = this.skipToQuestionPage;
-    console.log(this.travelTimePayOptions);
   }
 
   public setSectionHeading() {
@@ -68,16 +68,55 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
   public onChange(answer: string) {
     if (answer === 'A different travel time rate') {
       this.showTextBox = true;
-      // this.addValidationToControl();
-      // this.addErrorLinkFunctionality();
+      this.addValidationToControl();
+      this.addErrorLinkFunctionality();
     } else if (answer) {
       this.showTextBox = false;
-      // const { pensionPercentage } = this.form.controls;
-      // if (pensionPercentage) {
-      //   this.form.get('pensionPercentage').clearValidators();
-      //   this.form.get('pensionPercentage').updateValueAndValidity();
-      // }
+      const { travelTimePayRate } = this.form.controls;
+      if (travelTimePayRate) {
+        this.form.get('travelTimePayRate').clearValidators();
+        this.form.get('travelTimePayRate').updateValueAndValidity();
+      }
     }
+  }
+
+  public addValidationToControl() {
+    this.form.get('travelTimePayRate')?.setValidators([this.maxTwoDecimalPlacesValidator()]);
+    this.form.get('travelTimePayRate').updateValueAndValidity();
+  }
+
+  private maxTwoDecimalPlacesValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+
+      if (value === null || value === undefined || value === '') {
+        return null; // let required validator handle empties
+      }
+
+      const stringValue = value.toString();
+
+      const decimalPart = stringValue.split('.')[1];
+
+      if (decimalPart && decimalPart.length > 2) {
+        return { maxTwoDecimals: true };
+      }
+
+      return null;
+    };
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'travelTimePayRate',
+        type: [
+          {
+            name: 'maxTwoDecimals',
+            message: 'You can only have 1 or 2 digits for pence after the decimal point',
+          },
+        ],
+      },
+    ];
   }
 
   protected setBackLink(): void {
@@ -93,6 +132,12 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     }
 
     this.backService.setBackLink(this.back);
+  }
+
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
   }
 
   ngOnDestroy(): void {
