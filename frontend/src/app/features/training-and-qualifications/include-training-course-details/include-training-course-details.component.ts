@@ -33,10 +33,13 @@ export class IncludeTrainingCourseDetailsComponent {
 
   ngOnInit(): void {
     this.setBackLink();
-    this.trainingRecord = this.route.snapshot.data.trainingRecord;
-    this.trainingCourses = this.route.snapshot.data.trainingCourses;
     this.workplace = this.route.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
+    this.trainingRecord = this.route.snapshot.data.trainingRecord;
+
+    this.loadTrainingCourse();
+    this.prefill();
+
     this.clearSelectedTrainingCourseWhenClickedAway();
   }
 
@@ -44,17 +47,44 @@ export class IncludeTrainingCourseDetailsComponent {
     this.backLinkService.showBackLink();
   }
 
+  private loadTrainingCourse(): void {
+    this.trainingCourses = this.route.snapshot.data.trainingCourses;
+    if (!this.trainingCourses?.length) {
+      this.returnToPreviousPage();
+    }
+  }
+
+  private prefill(): void {
+    const isShowingRadioButton = this.trainingCourses.length > 1;
+    if (!isShowingRadioButton) {
+      return;
+    }
+
+    const previouslySelectedCourse =
+      this.trainingService.getSelectedTrainingCourse() ??
+      this.trainingCourses.find((course) => course.id === this.trainingRecord.trainingCourseFK);
+
+    if (previouslySelectedCourse) {
+      this.userSelectedTrainingCourse.setValue(previouslySelectedCourse.id);
+    }
+  }
+
+  private returnToPreviousPage(): void {
+    const previousPage = [
+      '/workplace',
+      this.workplace.uid,
+      'training-and-qualifications-record',
+      this.worker.uid,
+      'training',
+      this.trainingRecord.uid,
+    ];
+    this.router.navigate(previousPage);
+  }
+
   public onSubmit(): void {
-    if (this.userSelectedTrainingCourse.value === '' || this.userSelectedTrainingCourse.value === false) {
-      const previousPage = [
-        '/workplace',
-        this.workplace.uid,
-        'training-and-qualifications-record',
-        this.worker.uid,
-        'training',
-        this.trainingRecord.uid,
-      ];
-      this.router.navigate(previousPage);
+    const notSelectedAnyCourse = !this.userSelectedTrainingCourse.value;
+    if (notSelectedAnyCourse) {
+      this.returnToPreviousPage();
       return;
     }
 

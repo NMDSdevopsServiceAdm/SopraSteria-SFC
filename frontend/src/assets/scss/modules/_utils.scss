@@ -205,3 +205,12 @@ dl.asc__name-value-pair {
     margin-left: 0px;
   }
 }
+
+.asc__govuk-form-group--error--orange {
+  padding-left: 15px;
+  border-left: 5px solid govuk-colour('orange');
+}
+
+.asc__govuk-error-message--orange {
+  color: govuk-colour('orange');
+}
