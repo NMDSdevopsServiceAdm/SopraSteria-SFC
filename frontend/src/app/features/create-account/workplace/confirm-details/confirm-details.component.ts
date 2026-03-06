@@ -10,7 +10,7 @@ import { RegistrationPayload } from '@core/model/registration.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
 import { SummaryList } from '@core/model/summary-list.model';
-import { UserDetails } from '@core/model/userDetails.model';
+import { InviteResponse, UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -39,9 +39,9 @@ export class ConfirmDetailsComponent implements OnInit {
   public totalStaff: any;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
+  public userResearchInviteResponse: InviteResponse;
   protected locationAddress: LocationAddress;
   public userDetails: UserDetails;
-  protected actionType: string;
   public isCqcRegulated: boolean;
   public typeOfEmployer: EmployerType;
   public workplaceName: string;
@@ -82,6 +82,7 @@ export class ConfirmDetailsComponent implements OnInit {
       this.registrationService.selectedWorkplaceService$,
       this.registrationService.loginCredentials$,
       this.registrationService.securityDetails$,
+      this.registrationService.userResearchInviteResponse$,
       this.registrationService.totalStaff$,
       this.registrationService.typeOfEmployer$,
     ]);
@@ -89,7 +90,7 @@ export class ConfirmDetailsComponent implements OnInit {
     const subscriptions = combineLatest([registrationSubscriptions, userSubscriptions]).pipe(
       map(
         ([
-          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, totalStaff, typeOfEmployer],
+          [isCqcRegulated, locationAddress, service, loginCredentials, securityDetails, userResearchInviteResponse, totalStaff, typeOfEmployer],
           [userDetails],
         ]) => {
           return {
@@ -99,6 +100,7 @@ export class ConfirmDetailsComponent implements OnInit {
             service,
             loginCredentials,
             securityDetails,
+            userResearchInviteResponse,
             totalStaff,
             typeOfEmployer,
           };
@@ -113,6 +115,7 @@ export class ConfirmDetailsComponent implements OnInit {
         this.service = res.service;
         this.loginCredentials = res.loginCredentials;
         this.securityDetails = res.securityDetails;
+        this.userResearchInviteResponse = res.userResearchInviteResponse;
         this.totalStaff = res.totalStaff;
         this.typeOfEmployer = res.typeOfEmployer;
       }),
@@ -147,6 +150,7 @@ export class ConfirmDetailsComponent implements OnInit {
         password: this.loginCredentials.password,
         securityQuestion: this.securityDetails.securityQuestion,
         securityQuestionAnswer: this.securityDetails.securityQuestionAnswer,
+        userResearchInviteResponse: this.userResearchInviteResponse,
       },
     };
   }

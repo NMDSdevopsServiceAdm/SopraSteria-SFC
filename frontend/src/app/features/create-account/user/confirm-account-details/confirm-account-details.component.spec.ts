@@ -5,16 +5,25 @@ import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/f
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
-import { MockRegistrationServiceWithMainService } from '@core/test-utils/MockRegistrationService';
+import {
+  MockRegistrationServiceWithMainService, MockRegistrationServiceWithNegativeUserResearchInviteResponse,
+  MockRegistrationServiceWithNoUserResearchInviteResponse,
+} from '@core/test-utils/MockRegistrationService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { ConfirmAccountDetailsComponent } from './confirm-account-details.component';
 
 describe('ConfirmAccountDetailsComponent', () => {
-  async function setup(registrationFlow = 'registration') {
+  async function setup(registrationFlow = 'registration', userResearchInviteResponse = 'yes') {
+    const mockServiceMap = {
+      'yes': MockRegistrationServiceWithMainService,
+      'no': MockRegistrationServiceWithNegativeUserResearchInviteResponse,
+      'none': MockRegistrationServiceWithNoUserResearchInviteResponse,
+    };
+
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       ConfirmAccountDetailsComponent,
       {
@@ -22,7 +31,7 @@ describe('ConfirmAccountDetailsComponent', () => {
         providers: [
           {
             provide: RegistrationService,
-            useClass: MockRegistrationServiceWithMainService,
+            useClass: mockServiceMap[userResearchInviteResponse],
           },
           {
             provide: UserService,
@@ -109,41 +118,39 @@ describe('ConfirmAccountDetailsComponent', () => {
     expect(getByText(expectedSecurityAnswer)).toBeTruthy();
   });
 
-  describe('Show password button', () => {
-    it('should hide the password before clicking show', async () => {
-      const { fixture, getByText } = await setup();
-
-      const expectedHiddenPassword = '******';
-      fixture.detectChanges();
-
-      expect(getByText(expectedHiddenPassword)).toBeTruthy();
+  describe('User research sessions', ()=> {
+    it('should show the summary list label', async () => {
+      const { getByText } = await setup();
+      const key = getByText('User research sessions');
+      expect(key).toBeTruthy();
     });
 
-    it('should display the password after clicking show', async () => {
-      const { fixture, getByText, queryByText } = await setup();
+    it('should show the value when yes has been chosen', async () => {
+      const { getByText } = await setup();
+      const response = getByText('Yes');
+      expect(response).toBeTruthy();
+    });
 
-      const expectedHiddenPassword = '******';
-      const expectedShownPassword = 'Passw0rd';
+    it('should show the value when no has been chosen', async () => {
+      const { getByText } = await setup('registration', 'no');
+      const response = getByText('No');
+      expect(response).toBeTruthy();
+    });
 
-      expect(queryByText(expectedHiddenPassword)).toBeTruthy();
-      expect(queryByText(expectedShownPassword)).toBeFalsy();
-
-      const showPasswordButton = getByText('Show password');
-      fireEvent.click(showPasswordButton);
-      fixture.detectChanges();
-
-      expect(queryByText(expectedHiddenPassword)).toBeFalsy();
-      expect(queryByText(expectedShownPassword)).toBeTruthy();
+    it('should show "-" as the value if the question has not been answered', async () => {
+      const { getByText } = await setup('registration', 'none');
+      const response = getByText('-');
+      expect(response).toBeTruthy();
     });
   });
 
   describe('Change links', () => {
-    it('should always display three change links', async () => {
+    it('should always display four change links', async () => {
       const { getAllByText } = await setup();
 
       const changeLinks = getAllByText('Change');
 
-      expect(changeLinks.length).toEqual(3);
+      expect(changeLinks.length).toEqual(4);
     });
 
     it('should set the change link for user info to `add-user-details`', async () => {
@@ -171,6 +178,15 @@ describe('ConfirmAccountDetailsComponent', () => {
       const changeLink = securityInfoSummaryList.getByText('Change');
 
       expect(changeLink.getAttribute('href')).toBe('/registration/confirm-details/create-security-question');
+    });
+
+    it('should set the change link for user research sessions to `user-research-invite`', async () => {
+      const { getByTestId } = await setup();
+
+      const userResearchInviteResponseInfoSummaryList = within(getByTestId('userResearchInviteResponseInfo'));
+      const changeLink = userResearchInviteResponseInfoSummaryList.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe('/registration/confirm-details/user-research-invite');
     });
   });
 });

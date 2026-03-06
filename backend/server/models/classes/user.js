@@ -157,6 +157,10 @@ class User {
     const prop = this._properties.get('SecurityQuestionAnswer');
     return prop ? prop.property : null;
   }
+  get userResearchInviteResponse() {
+    const prop = this._properties.get('UserResearchInviteResponse');
+    return prop ? prop.property : null;
+  }
   get created() {
     return this._created;
   }
@@ -831,6 +835,7 @@ class User {
           JobTitle: '',
           SecurityQuestionValue: '',
           SecurityQuestionAnswerValue: '',
+          UserResearchInviteResponseValue: '',
         };
 
         let [updatedRecordCount] = await models.user.update(updateDocument, {
@@ -1185,7 +1190,7 @@ class User {
     return allExistAndValid;
   }
 
-  // returns true if all default properties required to createa new User exist and are valid
+  // returns true if all default properties required to create a new User exist and are valid
   get hasDefaultNewUserProperties() {
     let allExistAndValid = true; // assume all exist until proven otherwise
     try {
