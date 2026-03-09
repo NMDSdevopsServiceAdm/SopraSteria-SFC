@@ -100,6 +100,28 @@ describe('WorkplaceSubmitButtonComponent', () => {
       expect(getByText('Exit')).toBeTruthy();
     });
 
+    describe('isInMiniFlow', () => {
+      it(`should render the 'Save and continue' button and 'Skip this question' link when isInMiniFlow is true`, async () => {
+        const overrides = { return: true, isInMiniFlow: true };
+        const { getByText, queryByText } = await setup(overrides);
+
+        expect(getByText('Save and continue')).toBeTruthy();
+        expect(getByText('Skip this question')).toBeTruthy();
+        expect(queryByText('Save and return')).toBeFalsy();
+        expect(queryByText('Cancel')).toBeFalsy();
+      });
+
+      it(`should render the 'Save and return' button and 'Cancel' link when isInMiniFlow is false`, async () => {
+        const overrides = { return: true, isInMiniFlow: false };
+        const { getByText, queryByText } = await setup(overrides);
+
+        expect(getByText('Save and return')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
+        expect(queryByText('Save and continue')).toBeFalsy();
+        expect(queryByText('Skip this question')).toBeFalsy();
+      });
+    });
+
     describe('hasConditionalRouting', () => {
       it('should render "Save and continue" button when hasConditionalRouting is false', async () => {
         const overrides = { return: false, hasConditionalRouting: false };
