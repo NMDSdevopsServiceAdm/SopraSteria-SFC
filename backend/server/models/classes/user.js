@@ -835,7 +835,6 @@ class User {
           JobTitle: '',
           SecurityQuestionValue: '',
           SecurityQuestionAnswerValue: '',
-          UserResearchInviteResponseValue: '',
         };
 
         let [updatedRecordCount] = await models.user.update(updateDocument, {
