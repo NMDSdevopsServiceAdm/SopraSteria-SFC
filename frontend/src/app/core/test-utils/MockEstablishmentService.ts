@@ -68,6 +68,12 @@ export const establishmentBuilder = build('Establishment', {
     },
     staffDoDelegatedHealthcareActivities: null,
     staffWhatKindDelegatedHealthcareActivities: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: 13.45,
+    },
   },
 });
 
@@ -153,6 +159,12 @@ export class MockEstablishmentService extends EstablishmentService {
     },
     careWorkforcePathwayUse: null,
     staffWhatKindDelegatedHealthcareActivities: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}, childWorkplaces: any = null) {
@@ -228,6 +240,12 @@ export class MockEstablishmentService extends EstablishmentService {
       title: 'Aware of how the care workforce pathway works in practice',
     },
     careWorkforcePathwayUse: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
     created: undefined,
     dataOwner: undefined,
     dataOwnershipRequested: '',
@@ -386,6 +404,13 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
       title: 'Aware of how the care workforce pathway works in practice',
     },
     careWorkforcePathwayUse: null,
+
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
     created: undefined,
     dataOwner: 'Workplace',
     dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
