@@ -110,7 +110,6 @@ import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-pane
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { DisplayWorkplaceNameAddress } from './components/display-workplace-name-address/display-workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
-import { CheckAnswersWorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
@@ -246,7 +245,6 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    CheckAnswersWorkplaceSummaryComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
@@ -386,7 +384,6 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    CheckAnswersWorkplaceSummaryComponent,
     SummaryRecordChangeComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,

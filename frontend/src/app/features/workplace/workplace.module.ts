@@ -33,10 +33,6 @@ import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
 import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
-import { CheckAnswersComponent } from './check-answers/check-answers.component';
-import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
-import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
-import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers/do-you-have-leavers.component';
@@ -92,10 +88,6 @@ import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workp
     DataAreaTabModule,
   ],
   declarations: [
-    CheckAnswersComponent,
-    ConfirmLeaversComponent,
-    ConfirmStartersComponent,
-    ConfirmVacanciesComponent,
     CreateUserAccountComponent,
     DataSharingComponent,
     EditWorkplaceComponent,
