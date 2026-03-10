@@ -108,6 +108,7 @@ class Establishment extends EntityValidator {
     this._offerSleepIn = null;
     this._howToPayForSleepIn = null;
     this._travelTimePay = null;
+    this._payAndPensionsMiniFlowViewed = null
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -448,6 +449,10 @@ class Establishment extends EntityValidator {
     return this._properties.get('TravelTimePay') ? this._properties.get('TravelTimePay').property : null;
   }
 
+  get payAndPensionsMiniFlowViewed(){
+    return this._payAndPensionsMiniFlowViewed
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -690,6 +695,9 @@ class Establishment extends EntityValidator {
         if ('travelTimePay' in document) {
           this._travelTimePay = document.travelTimePay;
         }
+        if ('payAndPensionsMiniFlowViewed' in document) {
+          this._payAndPensionsMiniFlowViewed = document.payAndPensionsMiniFlowViewed;
+        }
       }
 
       // allow for deep restoration of entities (associations - namely Worker here)
@@ -923,6 +931,7 @@ class Establishment extends EntityValidator {
           howToPayForSleepIn: this._howToPayForSleepIn,
           travelTimePayOptionFK: this._travelTimePay?.id,
           travelTimePayRate: this._travelTimePay?.rate,
+          payAndPensionsMiniFlowViewed: this._payAndPensionsMiniFlowViewed,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1162,6 +1171,7 @@ class Establishment extends EntityValidator {
             howToPayForSleepIn: this._howToPayForSleepIn,
             travelTimePayOptionFK: this._travelTimePay?.id,
             travelTimePayRate: this._travelTimePay?.rate,
+            payAndPensionsMiniFlowViewed: this._payAndPensionsMiniFlowViewed,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1486,6 +1496,7 @@ class Establishment extends EntityValidator {
         this._offerSleepIn = fetchResults.offerSleepIn;
         this._howToPayForSleepIn = fetchResults.howToPayForSleepIn;
         this._travelTimePay = fetchResults.travelTimePay;
+        this._payAndPensionsMiniFlowViewed = fetchResults.payAndPensionsMiniFlowViewed;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1962,6 +1973,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.offerSleepIn = this.offerSleepIn;
         myDefaultJSON.howToPayForSleepIn = this.howToPayForSleepIn;
         myDefaultJSON.travelTimePay = this.travelTimePay;
+        myDefaultJSON.payAndPensionsMiniFlowViewed = this.payAndPensionsMiniFlowViewed;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

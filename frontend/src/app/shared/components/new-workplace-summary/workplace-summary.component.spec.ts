@@ -27,6 +27,15 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 import { mockDHAs } from '@core/test-utils/MockDelegatedHealthcareActivitiesService';
 
+const SectionId = {
+  Workplace: 'workplace-section',
+  VacanciesAndTurnover: 'vacancies-and-turnover-section',
+  Services: 'services-section',
+  PayAndBenefits: 'pay-and-benefits-section',
+  StaffDevelopment: 'staff-development-section',
+  Permissions: 'permissions-section',
+};
+
 describe('NewWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
     const shareWith = overrides?.shareWith ?? null;
@@ -113,14 +122,17 @@ describe('NewWorkplaceSummaryComponent', () => {
     component.workplace.isRegulated = true;
     fixture.detectChanges();
 
-    expect(getByTestId('workplace-section')).toBeTruthy();
+    expect(getByTestId(SectionId.Workplace)).toBeTruthy();
+
+    expect(getByTestId(SectionId.Services)).toBeTruthy();
+    expect(getByTestId(SectionId.VacanciesAndTurnover)).toBeTruthy();
+    expect(getByTestId(SectionId.PayAndBenefits)).toBeTruthy();
+    expect(getByTestId(SectionId.StaffDevelopment)).toBeTruthy();
+    expect(getByTestId(SectionId.Permissions)).toBeTruthy();
+
     expect(getByTestId('cqcLocationId')).toBeTruthy();
     expect(getByTestId('numberOfStaff')).toBeTruthy();
     expect(getByTestId('employerType')).toBeTruthy();
-    expect(getByTestId('services-section')).toBeTruthy();
-    expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-and-benefits-section')).toBeTruthy();
-    expect(getByTestId('permissions-section')).toBeTruthy();
   });
 
   describe('workplace-section', () => {
@@ -1319,14 +1331,17 @@ describe('NewWorkplaceSummaryComponent', () => {
       });
 
       const sleepInPayValues = ['Hourly pay', 'Flat rate', 'I do not know'];
+
       sleepInPayValues.forEach((sleepInPayValue) => {
-        it(`should display the answers with a change link when offerSleepIn is ${sleepInPayValue}`, async () => {
+        it(`should display the answers with a change link when sleepInPay is ${sleepInPayValue}`, async () => {
           const { component, fixture, getByTestId } = await setup({
             establishment: {
               mainService: { payAndPensionsGroup: 1 },
             },
             permissions: ['canEditEstablishment'],
           });
+
+          const expectedTextInWorkplaceRow = sleepInPayValue === 'I do not know' ? 'Not known' : sleepInPayValue;
 
           component.workplace.showAddWorkplaceDetailsBanner = false;
           component.workplace.offerSleepIn = 'Yes';
@@ -1337,7 +1352,7 @@ describe('NewWorkplaceSummaryComponent', () => {
           const sleepInPayRow = getByTestId('sleep-in-pay');
 
           const link = within(sleepInPayRow).queryByText('Change');
-          const answer = within(sleepInPayRow).queryByText(sleepInPayValue);
+          const answer = within(sleepInPayRow).queryByText(expectedTextInWorkplaceRow);
 
           expect(answer).toBeTruthy();
           expect(link).toBeTruthy();
@@ -1350,6 +1365,15 @@ describe('NewWorkplaceSummaryComponent', () => {
   });
 
   describe('Vacancies and turnover section', () => {
+    it('should not show the section if showAddWorkplaceDetailsBanner is true', async () => {
+      const { component, fixture, queryByTestId } = await setup();
+
+      component.workplace.showAddWorkplaceDetailsBanner = true;
+      fixture.detectChanges();
+
+      expect(queryByTestId('vacancies-and-turnover-section')).toBeFalsy();
+    });
+
     it('should show a warning if there are no values for vacancies, leavers and starters', async () => {
       const { component, fixture, getByText, getByTestId } = await setup();
 
@@ -1359,7 +1383,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       component.canEditEstablishment = true;
       fixture.detectChanges();
 
-      const section = getByTestId('vacancies-and-turnover-section');
+      const section = getByTestId(SectionId.VacanciesAndTurnover);
 
       expect(getByText(`You've not added any vacancy and turnover data`)).toBeTruthy();
       expect(section.getAttribute('class')).toContain('govuk-summary-list__warning');
@@ -1378,7 +1402,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       component.checkVacancyAndTurnoverData();
       fixture.detectChanges();
 
-      const section = getByTestId('vacancies-and-turnover-section');
+      const section = getByTestId(SectionId.VacanciesAndTurnover);
 
       expect(queryByText(`You've not added any vacancy and turnover data`)).toBeFalsy();
       expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
@@ -1397,7 +1421,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       component.checkVacancyAndTurnoverData();
       fixture.detectChanges();
 
-      const section = getByTestId('vacancies-and-turnover-section');
+      const section = getByTestId(SectionId.VacanciesAndTurnover);
 
       expect(queryByText(`You've not added any vacancy and turnover data`)).toBeFalsy();
       expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
@@ -1416,7 +1440,7 @@ describe('NewWorkplaceSummaryComponent', () => {
       component.checkVacancyAndTurnoverData();
       fixture.detectChanges();
 
-      const section = getByTestId('vacancies-and-turnover-section');
+      const section = getByTestId(SectionId.VacanciesAndTurnover);
 
       expect(queryByText(`You've not added any vacancy and turnover data`)).toBeFalsy();
       expect(section.getAttribute('class')).not.toContain('govuk-summary-list__warning');
@@ -1777,7 +1801,387 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
   });
 
-  describe('Recruitment and benefits section', () => {
+  describe('Pay and benefits section', () => {
+    it('should not show the section if showAddWorkplaceDetailsBanner is true', async () => {
+      const { component, fixture, queryByTestId } = await setup();
+
+      component.workplace.showAddWorkplaceDetailsBanner = true;
+      fixture.detectChanges();
+
+      expect(queryByTestId(SectionId.PayAndBenefits)).toBeFalsy();
+    });
+
+    describe('care and support worker travel time pay', () => {
+      it('should show the row and table cells when payAndPensionsGroup is 1', async () => {
+        const { getByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = getByTestId('travel-time-pay');
+        expect(travelTimePayRow).toBeTruthy();
+
+        const cellName = within(travelTimePayRow).queryByText('Care and support worker travel time pay');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(cellName).toBeTruthy();
+      });
+
+      [2, 3, null].forEach((group) => {
+        it(`should not show the row and table cells when payAndPensionsGroup is ${group}`, async () => {
+          const { queryByTestId, queryByText } = await setup({
+            establishment: {
+              mainService: { payAndPensionsGroup: group },
+            },
+            permissions: ['canEditEstablishment'],
+          });
+
+          const travelTimePayRow = queryByTestId('travel-time-pay');
+          expect(travelTimePayRow).toBeFalsy();
+
+          expect(queryByText('Care and support worker travel time pay')).toBeFalsy;
+        });
+      });
+
+      it('should show "-" and an add link when travelTimePay is null', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: null,
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = queryByTestId('travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Add');
+        const answer = within(travelTimePayRow).queryByText('-');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/travel-time-pay`,
+        );
+      });
+
+      it('should show the travel time pay answer and a change link when travelTimePay is answered', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: {
+              id: 1,
+              label: 'The same rate for travel time as for visits',
+              includeRate: false,
+              rate: null,
+            },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = queryByTestId('travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Change');
+        const answer = within(travelTimePayRow).queryByText('The same rate for travel time as for visits');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/travel-time-pay`,
+        );
+      });
+
+      it('should show the travel time pay rate as well if the answer includes a rate', async () => {
+        const { component, queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: {
+              id: 3,
+              label: 'A different travel time rate',
+              includeRate: true,
+              rate: 12.5,
+            },
+          },
+          permissions: ['canEditEstablishment'],
+        });
+
+        const travelTimePayRow = queryByTestId('travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Change');
+        const answer = within(travelTimePayRow).queryByText('A different travel time rate, £12.5');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeTruthy();
+
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/travel-time-pay`,
+        );
+      });
+
+      it('should not show the Add link if user does not have canEditEstablishment permission', async () => {
+        const { queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: null,
+          },
+          permissions: [],
+        });
+
+        const travelTimePayRow = queryByTestId('travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Add');
+        const answer = within(travelTimePayRow).queryByText('-');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeFalsy();
+      });
+
+      it('should not show the Change link if user does not have canEditEstablishment permission', async () => {
+        const { queryByTestId } = await setup({
+          establishment: {
+            mainService: { payAndPensionsGroup: 1 },
+            travelTimePay: {
+              id: 1,
+              label: 'The same rate for travel time as for visits',
+              includeRate: false,
+              rate: null,
+            },
+          },
+          permissions: [],
+        });
+
+        const travelTimePayRow = queryByTestId('travel-time-pay');
+
+        const link = within(travelTimePayRow).queryByText('Change');
+        const answer = within(travelTimePayRow).queryByText('The same rate for travel time as for visits');
+
+        expect(travelTimePayRow).toBeTruthy();
+        expect(answer).toBeTruthy();
+        expect(link).toBeFalsy();
+      });
+    });
+
+    describe('statutory sick pay', () => {
+      it('should show dash and have Add information button on statutory sick pay row when sickPay is set to null (not answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.sickPay = null;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const statutorySickPayRow = within(document.body).queryByTestId('offer-more-than-statutory-sick-pay');
+        const link = within(statutorySickPayRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/benefits-statutory-sick-pay`,
+        );
+        expect(within(statutorySickPayRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button on statutory sick pay row when sickPay has a value (answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const statutorySickPayRow = within(document.body).queryByTestId('offer-more-than-statutory-sick-pay');
+        const link = within(statutorySickPayRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/benefits-statutory-sick-pay`,
+        );
+        expect(within(statutorySickPayRow).getByText(component.workplace.sickPay)).toBeTruthy();
+      });
+    });
+
+    describe('higher workplace pension contributions', () => {
+      it('should show the row name as "Higher workplace pension contributions"', async () => {
+        await setup();
+
+        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
+
+        expect(within(pensionContributionRow).queryByText('Higher workplace pension contributions')).toBeTruthy();
+      });
+
+      it('should show dash and have Add information button on higher pension contributions row when pensionContribution is set to null (not answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.pensionContribution = null;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
+        const link = within(pensionContributionRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/pensions`,
+        );
+        expect(within(pensionContributionRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button on higher pension contributions row when pensionContribution has a value (answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.pensionContribution = 'Yes';
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
+        const link = within(pensionContributionRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/pensions`,
+        );
+        expect(within(pensionContributionRow).getByText(component.workplace.pensionContribution)).toBeTruthy();
+      });
+
+      it('should show the percentage as well if answer is Yes and the pensionContributionPercentage is given', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.pensionContribution = 'Yes';
+        component.workplace.pensionContributionPercentage = 4.5;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
+        expect(within(pensionContributionRow).getByText('Yes, 4.5%')).toBeTruthy();
+      });
+    });
+
+    describe('staff opted out of workplace pension', () => {
+      it('should show dash and have Add information button on staff opted out of workplace pension row when it is null (not answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.staffOptOutOfWorkplacePension = null;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const row = within(document.body).queryByTestId('staff-opt-out-of-workplace-pension');
+        const link = within(row).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-opt-out-of-workplace-pension`,
+        );
+        expect(within(row).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button on staff opted out of workplace pension row when it has a value (answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.staffOptOutOfWorkplacePension = "Don't know";
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const pensionContributionRow = within(document.body).queryByTestId('staff-opt-out-of-workplace-pension');
+        const link = within(pensionContributionRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-opt-out-of-workplace-pension`,
+        );
+        expect(within(pensionContributionRow).getByText('Not known')).toBeTruthy();
+      });
+    });
+
+    describe('number of days leave', () => {
+      it('should show dash and have Add information button on number of days leave row when careWorkersLeaveDaysPerYear is set to null (not answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.careWorkersLeaveDaysPerYear = null;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const careWorkersLeaveDaysPerYearRow = within(document.body).queryByTestId('number-of-days-leave');
+        const link = within(careWorkersLeaveDaysPerYearRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-benefit-holiday-leave`,
+        );
+        expect(within(careWorkersLeaveDaysPerYearRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button on number of days leave row when careWorkersLeaveDaysPerYear has a value (answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const careWorkersLeaveDaysPerYearRow = within(document.body).queryByTestId('number-of-days-leave');
+        const link = within(careWorkersLeaveDaysPerYearRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-benefit-holiday-leave`,
+        );
+        expect(
+          within(careWorkersLeaveDaysPerYearRow).getByText(component.workplace.careWorkersLeaveDaysPerYear),
+        ).toBeTruthy();
+      });
+    });
+
+    describe('Cash loyalty bonus', () => {
+      it('should show dash and have Add information button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears is set to null (not answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.workplace.careWorkersCashLoyaltyForFirstTwoYears = null;
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
+        const link = within(careWorkersCashLoyaltyRow).queryByText('Add');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/cash-loyalty`,
+        );
+        expect(within(careWorkersCashLoyaltyRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should show Change button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears has a value (answered)', async () => {
+        const { component, fixture } = await setup();
+
+        component.canEditEstablishment = true;
+        fixture.detectChanges();
+
+        const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
+        const link = within(careWorkersCashLoyaltyRow).queryByText('Change');
+
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual(
+          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/cash-loyalty`,
+        );
+        expect(
+          within(careWorkersCashLoyaltyRow).getByText(
+            `£${component.formatMonetaryValue(component.workplace.careWorkersCashLoyaltyForFirstTwoYears)}`,
+          ),
+        ).toBeTruthy();
+      });
+    });
+  });
+
+  describe('Staff development section', () => {
+    it('should not show the section if showAddWorkplaceDetailsBanner is true', async () => {
+      const { component, fixture, queryByTestId } = await setup();
+
+      component.workplace.showAddWorkplaceDetailsBanner = true;
+      fixture.detectChanges();
+
+      expect(queryByTestId(SectionId.StaffDevelopment)).toBeFalsy();
+    });
+
     describe('Repeat training', () => {
       it('should show dash and have Add information button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
@@ -1960,153 +2364,6 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(cwpUseRow).getByText(MockCWPUseReasons[0].text)).toBeTruthy();
         expect(within(cwpUseRow).getByText(MockCWPUseReasons[1].text)).toBeTruthy();
         expect(within(cwpUseRow).getByText('some free text')).toBeTruthy();
-      });
-    });
-
-    describe('Cash loyalty bonus', () => {
-      it('should show dash and have Add information button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.careWorkersCashLoyaltyForFirstTwoYears = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
-        const link = within(careWorkersCashLoyaltyRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/cash-loyalty`,
-        );
-        expect(within(careWorkersCashLoyaltyRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
-        const link = within(careWorkersCashLoyaltyRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/cash-loyalty`,
-        );
-        expect(
-          within(careWorkersCashLoyaltyRow).getByText(
-            `£${component.formatMonetaryValue(component.workplace.careWorkersCashLoyaltyForFirstTwoYears)}`,
-          ),
-        ).toBeTruthy();
-      });
-    });
-
-    describe('statutory sick pay', () => {
-      it('should show dash and have Add information button on statutory sick pay row when sickPay is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.sickPay = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const statutorySickPayRow = within(document.body).queryByTestId('offer-more-than-statutory-sick-pay');
-        const link = within(statutorySickPayRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/benefits-statutory-sick-pay`,
-        );
-        expect(within(statutorySickPayRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on statutory sick pay row when sickPay has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const statutorySickPayRow = within(document.body).queryByTestId('offer-more-than-statutory-sick-pay');
-        const link = within(statutorySickPayRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/benefits-statutory-sick-pay`,
-        );
-        expect(within(statutorySickPayRow).getByText(component.workplace.sickPay)).toBeTruthy();
-      });
-    });
-
-    describe('higher pension contributions', () => {
-      it('should show dash and have Add information button on higher pension contributions row when pensionContribution is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.pensionContribution = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
-        const link = within(pensionContributionRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/pensions`,
-        );
-        expect(within(pensionContributionRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on higher pension contributions row when pensionContribution has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.pensionContribution = 'Yes';
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
-        const link = within(pensionContributionRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/pensions`,
-        );
-        expect(within(pensionContributionRow).getByText(component.workplace.pensionContribution)).toBeTruthy();
-      });
-    });
-
-    describe('number of days leave', () => {
-      it('should show dash and have Add information button on number of days leave row when careWorkersLeaveDaysPerYear is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.careWorkersLeaveDaysPerYear = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const careWorkersLeaveDaysPerYearRow = within(document.body).queryByTestId('number-of-days-leave');
-        const link = within(careWorkersLeaveDaysPerYearRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-benefit-holiday-leave`,
-        );
-        expect(within(careWorkersLeaveDaysPerYearRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on number of days leave row when careWorkersLeaveDaysPerYear has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const careWorkersLeaveDaysPerYearRow = within(document.body).queryByTestId('number-of-days-leave');
-        const link = within(careWorkersLeaveDaysPerYearRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(
-          `/workplace/${component.workplace.uid}/workplace-data/workplace-summary/staff-benefit-holiday-leave`,
-        );
-        expect(
-          within(careWorkersLeaveDaysPerYearRow).getByText(component.workplace.careWorkersLeaveDaysPerYear),
-        ).toBeTruthy();
       });
     });
   });

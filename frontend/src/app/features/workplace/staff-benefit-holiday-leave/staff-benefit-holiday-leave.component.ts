@@ -121,7 +121,7 @@ export class StaffBenefitHolidayLeaveComponent extends WorkplaceQuestion impleme
   }
 
   private setPreviousRoute(): void {
-    this.previousQuestionPage = 'pensions';
+    this.previousQuestionPage = 'staff-opt-out-of-workplace-pension';
   }
 
   ngOnDestroy(): void {

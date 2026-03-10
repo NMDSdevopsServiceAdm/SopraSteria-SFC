@@ -54,6 +54,7 @@ import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins/
 import { WorkplaceSleepInsGuard } from '@core/guards/workplace-sleep-ins/workplace-sleep-ins.guard';
 import { TravelTimePayComponent } from './travel-time-pay/travel-time-pay.component';
 import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
+import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension/staff-opt-out-of-workplace-pension.component';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -306,6 +307,15 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
     data: {
       permissions: ['canEditEstablishment'],
       title: 'Pensions',
+    },
+  },
+  {
+    path: 'staff-opt-out-of-workplace-pension',
+    component: StaffOptOutOfWorkplacePensionComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Staff opt out of workplace pension',
     },
   },
   {

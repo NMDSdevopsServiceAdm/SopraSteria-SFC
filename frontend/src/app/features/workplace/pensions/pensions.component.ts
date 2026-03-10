@@ -67,7 +67,8 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
 
   private setRoutes(): void {
     this.previousQuestionPage = 'benefits-statutory-sick-pay';
-    this.skipToQuestionPage = 'staff-benefit-holiday-leave';
+    this.skipToQuestionPage = 'staff-opt-out-of-workplace-pension';
+    this.nextQuestionPage = 'staff-opt-out-of-workplace-pension';
   }
 
   public onChange(answer: string) {
@@ -172,10 +173,6 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
         (error) => this.onError(error),
       ),
     );
-  }
-
-  protected onSuccess(): void {
-    this.nextQuestionPage = 'staff-benefit-holiday-leave';
   }
 
   protected setupFormErrorsMap(): void {

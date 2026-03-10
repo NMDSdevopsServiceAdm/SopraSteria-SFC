@@ -188,6 +188,8 @@ export interface Establishment {
     includeRate: boolean;
     rate?: number;
   };
+  staffOptOutOfWorkplacePension?: string;
+  payAndPensionsMiniFlowViewed?: boolean;
 }
 
 export interface UpdateJobsRequest {

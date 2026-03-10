@@ -538,6 +538,33 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     });
   });
 
+  describe('care and support worker travel time pay', () => {
+    const heading = 'What do you pay care and support workers for travel time between visits?';
+    const mainService = { id: 20, name: 'Domiciliary care services' };
+
+    beforeEach(() => {
+      cy.setWorkplaceMainService(establishmentId, mainService.id);
+      cy.reload();
+      cy.get('[data-cy="tab-list"]').contains('Workplace').click();
+    });
+
+    it('updates care and support worker travel time pay', () => {
+      cy.get('[data-testid="travel-time-pay"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      // TODO: finish this test after ticket #1887
+      // cy.get('h1').should('contain.text', heading);
+      // cy.getByLabel(answer).click();
+      // cy.contains('button', 'Save and return').click();
+
+      // cy.get('@testId').contains(answer);
+      // cy.get('@testId').contains('Change').click();
+
+      // cy.get('h1').should('contain.text', heading);
+    });
+  });
+
   it('updates repeat training', () => {
     const repeatedTrainingAnswer = 'Yes, but not very often';
     const heading = "Do new care workers have to repeat training they've done with previous employers?";
@@ -612,12 +639,32 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     cy.get('h1').should('contain.text', heading);
   });
 
-  it('updates higher pension contributions', () => {
+  it('updates higher workplace pension contributions', () => {
     const answer = 'Yes';
+    const percentage = '5.5';
     const heading =
       'Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?';
 
     cy.get('[data-testid="higher-pension-contributions"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel(answer).click();
+    cy.getByLabel('Actual contribution').type(percentage);
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains('Yes, 5.5%');
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
+  });
+
+  it('updates staff opt out of workplace pension', () => {
+    const answer = 'Yes';
+    const heading = 'Are any of your staff currently opted out of their workplace pension?';
+
+    cy.get('[data-testid="staff-opt-out-of-workplace-pension"]').as('testId');
 
     cy.get('@testId').contains('Add').click();
 

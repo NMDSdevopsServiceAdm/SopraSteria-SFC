@@ -64,16 +64,18 @@ export const establishmentBuilder = build('Establishment', {
     },
     careWorkforcePathwayUse: {
       use: 'Yes',
-      reasons: [{ id: 1 }, { id: 10, other: 'some specific reason' }],
+      reasons: [
+        { id: 1, text: "To help define our organisation's values" },
+        { id: 10, text: 'For something else', other: 'some specific reason' },
+      ],
     },
     staffDoDelegatedHealthcareActivities: null,
     staffWhatKindDelegatedHealthcareActivities: null,
-    travelTimePay: {
-      id: 1,
-      label: 'The same rate for travel time as for visits',
-      includeRate: false,
-      rate: 13.45,
-    },
+    pensionContributionPercentage: null,
+    staffOptOutOfWorkplacePensionComponent: null,
+    offerSleepIn: null,
+    howToPayForSleepIn: null,
+    travelTimePay: null,
   },
 });
 

@@ -13,7 +13,10 @@ import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 
 describe('StaffBenefitHolidayLeaveComponent', () => {
-  async function setup(returnUrl = true, holidayLeave = undefined) {
+  async function setup(overrides: any = {}) {
+    const returnUrl = overrides?.returnUrl ?? true;
+    const holidayLeave = overrides?.holidayLeave ?? undefined;
+
     const isInAddDetailsFlow = !returnUrl;
 
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
@@ -88,24 +91,24 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
 
   it('should prefill the input if the establishment has a cash loyalty value', async () => {
     const holidayLeave = '35';
-    const { component, fixture } = await setup(true, holidayLeave);
+    const { component, fixture } = await setup({ holidayLeave: holidayLeave });
 
     const input = fixture.nativeElement.querySelector('input[id="holidayLeave"]');
 
-    expect(input.value).toEqual('35');
-    expect(component.form.value).toEqual({ holidayLeave: '35' });
+    expect(input.value).toEqual(holidayLeave);
+    expect(component.form.value).toEqual({ holidayLeave: holidayLeave });
   });
 
   describe('submit buttons and submitting form', () => {
     it(`should show 'Save and continue' cta button and 'Skip this question'`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup({ returnUrl: false });
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
-      const { component, fixture, getByText } = await setup(false);
+      const { component, fixture, getByText } = await setup({ returnUrl: false });
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
@@ -117,7 +120,7 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
     });
 
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
-      const { component, fixture, getByText } = await setup(false);
+      const { component, fixture, getByText } = await setup({ returnUrl: false });
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
@@ -138,8 +141,20 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('should navigate to the sharing page when submitting from the workplace flow', async () => {
-      const { fixture, getByText, routerSpy } = await setup(false);
+    it('should set the previous page to staff-opt-out-of-workplace-pension question when in the flow', async () => {
+      const { component } = await setup({ returnUrl: false });
+
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        component.establishment.uid,
+        'workplace-data',
+        'add-workplace-details',
+        'staff-opt-out-of-workplace-pension',
+      ]);
+    });
+
+    it('should navigate to the cash-loyalty page when submitting from the workplace flow', async () => {
+      const { fixture, getByText, routerSpy } = await setup({ returnUrl: false });
 
       const button = getByText('Save and continue');
       fireEvent.click(button);
@@ -150,7 +165,7 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'cash-loyalty'
+        'cash-loyalty',
       ]);
     });
 
@@ -198,14 +213,14 @@ describe('StaffBenefitHolidayLeaveComponent', () => {
 
   describe('progress bar', () => {
     it('should render the section, the question but not the progress bar when not in the flow', async () => {
-      const { getByTestId, queryByTestId, fixture, component } = await setup();
+      const { getByTestId, queryByTestId } = await setup();
 
       expect(getByTestId('section-heading')).toBeTruthy();
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
 
     it('should render the workplace progress bar when in the workplace flow', async () => {
-      const { getByTestId } = await setup(null);
+      const { getByTestId } = await setup({ returnUrl: false });
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
