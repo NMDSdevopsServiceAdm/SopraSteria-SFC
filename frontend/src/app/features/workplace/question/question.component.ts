@@ -35,6 +35,7 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   protected initiated = false;
   public submitAction: { action: string; save: boolean } = null;
   public workplaceFlowSections: string[] = ProgressBarUtil.workplaceFlowProgressBarSections();
+  public isAtEndOfMiniFlow: boolean = false;
 
   private _isInAddDetailsFlow: Signal<boolean> = computed(() => {
     return this.router.url.includes('add-workplace-details');
@@ -163,6 +164,16 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
     return this.router.navigate(destinationUrl, ...extras);
   }
 
+  protected handleSkipAction(): Promise<boolean> {
+    if (this.isAtEndOfMiniFlow) {
+      return this.router.navigate(this.return.url, {
+        fragment: this.return.fragment,
+        queryParams: this.return.queryParams,
+      });
+    }
+    return this.router.navigate(this.skipRoute);
+  }
+
   protected navigate(): Promise<boolean> {
     const action = this.submitAction.action;
 
@@ -176,7 +187,7 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
       case 'summary':
         return this.router.navigate(['/dashboard'], { fragment: 'workplace' });
       case 'skip':
-        return this.router.navigate(this.skipRoute);
+        return this.handleSkipAction();
       case 'exit':
         return this.router.navigate(['/dashboard'], { fragment: 'workplace' });
       case 'return':
