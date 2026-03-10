@@ -11,11 +11,17 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <h1 class="govuk-fieldset__heading">
-            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+            <span class="govuk-caption-l" data-testid="section-heading">{{ sectionHeading }}</span>
             Does your company contribute <br />more than the minimum 3% into workplace pensions for care <br />and
             support workers?
           </h1>
         </legend>
+        @if(inPayAndPensionsMiniFlow){
+        <div class="govuk-details__text govuk-!-margin-bottom-4" data-testid="check-previous-response">
+          <p>Check your response to an older version of this question.</p>
+          <p>If you answered Yes, then we'd like to know the actual percentage contributed (optional).</p>
+        </div>
+        }
         <div class="govuk-!-margin-bottom-6">
           <p>
             Workplace pensions are sometimes called 'automatic enrolment', 'company', 'occupational', 'works', or
@@ -87,17 +93,23 @@
           </div>
         </div>
       </fieldset>
-      <app-workplace-submit-button [return]="!!return" (clicked)="setSubmitAction($event)">
+      <app-workplace-submit-button
+        [return]="!!return"
+        [isInMiniFlow]="inPayAndPensionsMiniFlow"
+        (clicked)="setSubmitAction($event)"
+      >
       </app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div *ngIf="!return" class="govuk-util__float-right">
+      @if(!return || inPayAndPensionsMiniFlow) {
+      <div class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
-          [sections]="workplaceFlowSections"
+          [sections]="progressBarSections"
           [currentSection]="section"
         ></app-progress-bar>
       </div>
+      }
     </div>
   </div>
 </form>
