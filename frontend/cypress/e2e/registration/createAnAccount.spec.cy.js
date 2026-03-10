@@ -264,14 +264,9 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.getByLabel('Yes, I agree to you sharing our data with local authorities').check();
     cy.get('button').contains('Save and continue').click();
 
-    // Check answers
-    cy.contains('Workplace summary').should('be.visible');
-    cy.contains(workplaceName).should('be.visible');
-    cy.contains('Check these details before you confirm them.').should('be.visible');
-    cy.get('button').contains('Confirm workplace details').click();
-
     // Workplace tab
+    cy.url().should('contain', '/dashboard#workplace');
     cy.contains(workplaceName).should('be.visible');
-    cy.contains("You've confirmed the workplace details that you added").should('be.visible');
+    cy.contains('.govuk-inset-text', 'Workplace details added').should('be.visible');
   });
 });
