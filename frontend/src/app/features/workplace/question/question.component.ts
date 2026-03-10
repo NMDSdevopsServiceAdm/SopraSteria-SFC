@@ -174,7 +174,7 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
       case 'continue':
         return this.router.navigate(this.nextRoute);
       case 'summary':
-        return this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
+        return this.router.navigate(['/dashboard'], { fragment: 'workplace' });
       case 'skip':
         return this.router.navigate(this.skipRoute);
       case 'exit':
