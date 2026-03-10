@@ -75,7 +75,12 @@ export const establishmentBuilder = build('Establishment', {
     staffOptOutOfWorkplacePensionComponent: null,
     offerSleepIn: null,
     howToPayForSleepIn: null,
-    travelTimePay: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
   },
 });
 
