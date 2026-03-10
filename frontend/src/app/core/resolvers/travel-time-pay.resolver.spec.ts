@@ -5,7 +5,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { TravelTimePayService } from '@core/services/travel-time-pay.service';
 import { TravelTimePayResolver } from './travel-time-pay.resolver';
 
-fdescribe('getAllTravelTimePayOptionsResolver', () => {
+describe('getAllTravelTimePayOptionsResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
       imports: [],
