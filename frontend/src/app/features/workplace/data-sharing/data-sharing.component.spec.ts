@@ -16,7 +16,7 @@ import { DataSharingComponent } from './data-sharing.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { AlertService } from '@core/services/alert.service';
 
-fdescribe('DataSharingComponent', () => {
+describe('DataSharingComponent', () => {
   async function setup(overrides: any = {}) {
     const isInAddDetailsFlow = !overrides?.returnUrl;
 
