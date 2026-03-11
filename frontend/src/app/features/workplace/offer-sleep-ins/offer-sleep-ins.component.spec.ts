@@ -423,7 +423,7 @@ describe('OfferSleepInsComponent', () => {
       expect(alertSpy).not.toHaveBeenCalled();
     });
 
-    it('should navigate to the home page when submitting with the option "Yes"', async () => {
+    it('should navigate to "how-do-you-pay-for-sleep-ins" when submitting with the option "Yes"', async () => {
       const { component, getByLabelText, getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } =
         await setup(overrides);
 

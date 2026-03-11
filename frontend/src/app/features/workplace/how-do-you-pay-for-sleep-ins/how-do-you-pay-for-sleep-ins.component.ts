@@ -5,9 +5,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-how-do-you-pay-for-sleep-ins',
@@ -16,8 +17,11 @@ import { PreviousRouteService } from '@core/services/previous-route.service';
 })
 export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public section: string;
+  public sectionHeading: string;
   public payAndPensionQuestionRevealText: string;
   public options = ['Hourly rate', 'Flat rate', 'I do not know'];
+  public inPayAndPensionsMiniFlow: boolean = false;
+  public progressBarSections: string[];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -28,24 +32,37 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
     protected route: ActivatedRoute,
     protected payAndPensionService: PayAndPensionService,
     private previousRouteService: PreviousRouteService,
+    protected alertService: AlertService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
   init(): void {
+    this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
     this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
     this.setSectionHeading();
     this.setupForm();
     this.prefill();
+    this.setProgressBarSections();
+    this.setSkipRoute();
     this.previousQuestionPage = 'workplace-offer-sleep-ins';
-    this.skipToQuestionPage = 'do-you-have-vacancies';
     this.nextQuestionPage = this.skipToQuestionPage;
   }
 
   public setSectionHeading() {
-    const inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
+    this.sectionHeading = this.inPayAndPensionsMiniFlow ? 'Workplace' : WorkplaceFlowSections.SERVICES;
+  }
 
-    this.section = inPayAndPensionsMiniFlow ? 'Workplace' : WorkplaceFlowSections.SERVICES;
+  private setProgressBarSections(): void {
+    const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+
+    if (this.inPayAndPensionsMiniFlow) {
+      this.progressBarSections = payAndPensionsMiniFlowGroup2BarSections;
+      this.section = payAndPensionsMiniFlowGroup2BarSections[2];
+    } else {
+      this.progressBarSections = this.workplaceFlowSections;
+      this.section = WorkplaceFlowSections.SERVICES;
+    }
   }
 
   private setupForm() {
@@ -110,6 +127,28 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
     }
 
     this.backService.setBackLink(this.back);
+  }
+
+  private setSkipRoute(): void {
+    this.skipToQuestionPage = 'do-you-have-vacancies';
+    if (this.inPayAndPensionsMiniFlow) {
+      this.isAtEndOfMiniFlow = true;
+    }
+  }
+
+  protected onSuccess(): void {
+    if (this.inPayAndPensionsMiniFlow && this.establishment.mainService.payAndPensionsGroup === 2) {
+      this.submitAction = { action: 'return', save: true };
+    }
+  }
+
+  public addAlert(): void {
+    if (this.inPayAndPensionsMiniFlow) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Your information has been saved in Workplace',
+      });
+    }
   }
 
   ngOnDestroy(): void {
