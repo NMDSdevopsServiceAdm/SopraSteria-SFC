@@ -34,4 +34,8 @@ export class PayAndPensionService {
     }
     return false;
   }
+
+  public showTravelTimePayQuestion(payAndPensionsGroup: number): boolean {
+    return payAndPensionsGroup === 1;
+  }
 }
