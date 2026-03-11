@@ -539,6 +539,8 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
   });
 
   describe('care and support worker travel time pay', () => {
+    const answer = 'A different travel time rate';
+    const rate = '12.21';
     const heading = 'What do you pay care and support workers for travel time between visits?';
     const mainService = { id: 20, name: 'Domiciliary care services' };
 
@@ -553,15 +555,16 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
 
       cy.get('@testId').contains('Add').click();
 
-      // TODO: finish this test after ticket #1887
-      // cy.get('h1').should('contain.text', heading);
-      // cy.getByLabel(answer).click();
-      // cy.contains('button', 'Save and return').click();
+      cy.get('h1').should('contain.text', heading);
 
-      // cy.get('@testId').contains(answer);
-      // cy.get('@testId').contains('Change').click();
+      cy.getByLabel(answer).click();
+      cy.getByLabel('Amount (optional)').type(rate);
+      cy.contains('button', 'Save and return').click();
 
-      // cy.get('h1').should('contain.text', heading);
+      cy.get('@testId').contains('A different travel time rate, £12.21');
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
     });
   });
 
