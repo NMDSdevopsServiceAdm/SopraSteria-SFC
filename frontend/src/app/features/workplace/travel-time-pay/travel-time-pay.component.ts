@@ -82,7 +82,9 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
   }
 
   public addValidationToControl() {
-    this.form.get('travelTimePayRate')?.setValidators([this.maxTwoDecimalPlacesValidator()]);
+    this.form
+      .get('travelTimePayRate')
+      ?.setValidators([this.minMaxValidator(2.5, 200), this.maxTwoDecimalPlacesValidator()]);
     this.form.get('travelTimePayRate').updateValueAndValidity();
   }
 
@@ -106,11 +108,28 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     };
   }
 
+  private minMaxValidator(min: number, max: number): ValidatorFn {
+    return (control: AbstractControl) => {
+      const value = control.value;
+
+      if (value === null || value === undefined || value === '') {
+        return null;
+      }
+
+      const numericValue = Number(value);
+      if (isNaN(numericValue) || numericValue < min || numericValue > max) {
+        return { minMax: true };
+      }
+
+      return null;
+    };
+  }
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'travelTimePayRate',
         type: [
+          { name: 'minMax', message: 'Travel time rate amount must be higher than 2.50 and no more than 200' },
           {
             name: 'maxTwoDecimals',
             message: 'You can only have 1 or 2 digits for pence after the decimal point',
