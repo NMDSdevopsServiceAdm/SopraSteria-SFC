@@ -22,6 +22,7 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
   public options = ['Hourly rate', 'Flat rate', 'I do not know'];
   public inPayAndPensionsMiniFlow: boolean = false;
   public progressBarSections: string[];
+  public showProgressBar: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -40,6 +41,7 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
   init(): void {
     this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
     this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
+    this.showProgressBar = (!this.return || this.inPayAndPensionsMiniFlow) ?? false;
     this.setSectionHeading();
     this.setupForm();
     this.prefill();

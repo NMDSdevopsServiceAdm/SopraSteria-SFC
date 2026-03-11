@@ -21,6 +21,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
   public options = YesNoDontKnowOptions;
   public inPayAndPensionsMiniFlow: boolean = false;
   public progressBarSections: string[];
+  public showProgressBar: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -37,6 +38,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
 
   init(): void {
     this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
+    this.showProgressBar = (!this.return || this.inPayAndPensionsMiniFlow) ?? false;
     this.setSectionHeading();
     this.setupForm();
     this.setPreviousRoute();

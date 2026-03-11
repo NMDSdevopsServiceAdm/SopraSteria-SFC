@@ -46,7 +46,7 @@
       ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
-      @if (!return || inPayAndPensionsMiniFlow){
+      @if (showProgressBar){
       <div class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
