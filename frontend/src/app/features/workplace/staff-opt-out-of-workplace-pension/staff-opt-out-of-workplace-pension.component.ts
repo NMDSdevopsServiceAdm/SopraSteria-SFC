@@ -51,11 +51,9 @@ export class StaffOptOutOfWorkplacePensionComponent extends WorkplaceQuestion im
   }
 
   private setProgressBarSections(): void {
-    const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
-
     if (this.inPayAndPensionsMiniFlow) {
-      this.progressBarSections = payAndPensionsMiniFlowGroup2BarSections;
-      this.section = payAndPensionsMiniFlowGroup2BarSections[1];
+      this.progressBarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      this.section = this.progressBarSections[1];
     } else {
       this.progressBarSections = this.workplaceFlowSections;
       this.section = WorkplaceFlowSections.PAY_AND_BENEFITS;

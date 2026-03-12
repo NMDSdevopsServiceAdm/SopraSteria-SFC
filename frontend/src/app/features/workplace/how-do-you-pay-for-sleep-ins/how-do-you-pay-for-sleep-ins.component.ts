@@ -57,11 +57,9 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
   }
 
   private setProgressBarSections(): void {
-    const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
-
     if (this.inPayAndPensionsMiniFlow) {
-      this.progressBarSections = payAndPensionsMiniFlowGroup2BarSections;
-      this.section = payAndPensionsMiniFlowGroup2BarSections[2];
+      this.progressBarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      this.section = this.progressBarSections[2];
     } else {
       this.progressBarSections = this.workplaceFlowSections;
       this.section = WorkplaceFlowSections.SERVICES;

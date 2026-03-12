@@ -80,11 +80,9 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
   }
 
   private setProgressBarSections(): void {
-    const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
-
     if (this.inPayAndPensionsMiniFlow) {
-      this.progressBarSections = payAndPensionsMiniFlowGroup2BarSections;
-      this.section = payAndPensionsMiniFlowGroup2BarSections[0];
+      this.progressBarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      this.section = this.progressBarSections[0];
     } else {
       this.progressBarSections = this.workplaceFlowSections;
       this.section = WorkplaceFlowSections.PAY_AND_BENEFITS;
