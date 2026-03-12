@@ -46,6 +46,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     this.setProgressBarSections();
     this.setSkipRoute();
     this.nextQuestionPage = this.skipToQuestionPage;
+    this.payAndPensionService.clearInPayAndPensionsMiniFlowWhenClickedAway();
   }
 
   public setSectionHeading() {

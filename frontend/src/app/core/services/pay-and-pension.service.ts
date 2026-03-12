@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +12,7 @@ export class PayAndPensionService {
 
   private _inPayAndPensionsMiniFlow: boolean = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   get payAndPensionQuestionRevealText(): string {
     return this._payAndPensionQuestionRevealText;
@@ -37,5 +39,19 @@ export class PayAndPensionService {
 
   public showTravelTimePayQuestion(payAndPensionsGroup: number): boolean {
     return payAndPensionsGroup === 1;
+  }
+
+  public clearInPayAndPensionsMiniFlowWhenClickedAway(): void {
+    const parentPath = 'workplace-data';
+
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        filter((event: NavigationEnd) => !event.urlAfterRedirects?.includes(parentPath)),
+        take(1),
+      )
+      .subscribe(() => {
+        this.setInPayAndPensionsMiniFlow(null);
+      });
   }
 }

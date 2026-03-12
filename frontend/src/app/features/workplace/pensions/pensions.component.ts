@@ -10,7 +10,6 @@ import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar
 import { WorkplaceQuestion } from '../question/question.component';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
-
 @Component({
   selector: 'app-pensions',
   templateUrl: './pensions.component.html',
@@ -72,6 +71,8 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
     if (this.establishment.pensionContribution === 'Yes') {
       this.showPercentageTextBox = true;
     }
+
+    this.payAndPensionService.clearInPayAndPensionsMiniFlowWhenClickedAway();
   }
 
   private setSectionHeading(): void {

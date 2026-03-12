@@ -49,6 +49,7 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
     this.setSkipRoute();
     this.previousQuestionPage = 'workplace-offer-sleep-ins';
     this.nextQuestionPage = this.skipToQuestionPage;
+    this.payAndPensionService.clearInPayAndPensionsMiniFlowWhenClickedAway();
   }
 
   public setSectionHeading() {

@@ -43,6 +43,7 @@ export class StaffOptOutOfWorkplacePensionComponent extends WorkplaceQuestion im
     this.prefill();
     this.setupRoutes();
     this.setProgressBarSections();
+    this.payAndPensionService.clearInPayAndPensionsMiniFlowWhenClickedAway();
   }
 
   private setSectionHeading(): void {
