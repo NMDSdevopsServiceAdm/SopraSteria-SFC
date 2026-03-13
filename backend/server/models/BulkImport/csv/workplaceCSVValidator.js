@@ -11,6 +11,7 @@ const {
   extractSleepInPay,
   sleepInsMapping,
   sickPayHolidayAndPensionMapping,
+  extractTravelTimePayRate,
 } = require('../../classes/helpers/workplaceCSVHelper');
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 const Establishment = require('../../classes/establishment').Establishment;
@@ -3592,6 +3593,9 @@ class WorkplaceCSVValidator {
 
     const travelTimePayBUCode = entity.travelTimePayOption?.bulkUploadCode ?? '';
     columns.push(travelTimePayBUCode);
+
+    const travelTimePayRate = extractTravelTimePayRate(entity);
+    columns.push(travelTimePayRate);
 
     return columns.join(',');
   }

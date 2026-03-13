@@ -24,6 +24,13 @@ const extractPensionContributionPercentage = (entity) => {
   return entity.pensionContributionPercentage.toString();
 };
 
+const extractTravelTimePayRate = (entity) => {
+  if (!entity.travelTimePayOption?.includeRate) {
+    return '';
+  }
+  return entity.travelTimePayRate ? entity.travelTimePayRate.toString() : '';
+};
+
 const optOutPensionMapping = (staffOptOutOfWorkplacePension) => {
   switch (staffOptOutOfWorkplacePension) {
     case 'Yes':
@@ -62,4 +69,5 @@ module.exports = {
   sleepInsMapping,
   optOutPensionMapping,
   extractSleepInPay,
+  extractTravelTimePayRate,
 };

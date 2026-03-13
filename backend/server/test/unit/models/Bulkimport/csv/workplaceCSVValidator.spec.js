@@ -120,7 +120,7 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 
 const BU_DHA_YES = '1';
 
-describe.only('Bulk Upload - Establishment CSV', () => {
+describe('Bulk Upload - Establishment CSV', () => {
   let establishmentRow;
 
   beforeEach(() => {
@@ -3371,7 +3371,7 @@ describe.only('Bulk Upload - Establishment CSV', () => {
 
       it('should show the bulkUploadCode from travelTimePayOption in TRAVELTIME column', () => {
         const establishment = apiEstablishmentBuilder();
-        establishment.travelTimePayOption = { id: 2, bulkUploadCode: 999 };
+        establishment.travelTimePayOption = { id: 7, bulkUploadCode: 999, includeRate: false };
 
         const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
@@ -3380,6 +3380,41 @@ describe.only('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe('TTDIFFRATE (TravelTimePayRate)', () => {});
+    describe('TTDIFFRATE (TravelTimePayRate)', () => {
+      const travelTimePayRateIndex = getColumnIndex('TTDIFFRATE');
+
+      it('should leave the TTDIFFRATE column blank if value is null', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = { id: 3, bulkUploadCode: 3, includeRate: true };
+        establishment.travelTimePayRate = null;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimePayRateIndex]).to.equal('');
+      });
+
+      it('should show the travelTimePayRate value in TTDIFFRATE column', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = { id: 3, bulkUploadCode: 3, includeRate: true };
+        establishment.travelTimePayRate = 12.34;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimePayRateIndex]).to.equal('12.34');
+      });
+
+      it('should show empty string "" in TTDIFFRATE column if travelTimePayOption does not include rate', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = { id: 1, bulkUploadCode: 1, includeRate: false };
+        establishment.travelTimePayRate = 12.34;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimePayRateIndex]).to.equal('');
+      });
+    });
   });
 });
