@@ -77,6 +77,8 @@ import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-w
 import { ChangeDataPermissionsComponent } from './change-data-permissions/change-data-permissions.component';
 import { OfferSleepInsComponent } from './offer-sleep-ins/offer-sleep-ins.component';
 import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins/how-do-you-pay-for-sleep-ins.component';
+import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
+import { TravelTimePayComponent } from './travel-time-pay/travel-time-pay.component';
 import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension/staff-opt-out-of-workplace-pension.component';
 
 @NgModule({
@@ -145,6 +147,7 @@ import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workp
     ChangeDataPermissionsComponent,
     OfferSleepInsComponent,
     HowDoYouPayForSleepInsComponent,
+    TravelTimePayComponent,
     StaffOptOutOfWorkplacePensionComponent,
   ],
   providers: [
@@ -163,6 +166,7 @@ import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workp
     CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
     GetDelegatedHealthcareActivitiesResolver,
     CheckIfAnyWorkerHasDHAAnsweredResolver,
+    TravelTimePayResolver,
   ],
 })
 export class WorkplaceModule {}

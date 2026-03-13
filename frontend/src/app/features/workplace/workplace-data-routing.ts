@@ -52,6 +52,8 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
 import { OfferSleepInsComponent } from './offer-sleep-ins/offer-sleep-ins.component';
 import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins/how-do-you-pay-for-sleep-ins.component';
 import { WorkplaceSleepInsGuard } from '@core/guards/workplace-sleep-ins/workplace-sleep-ins.guard';
+import { TravelTimePayComponent } from './travel-time-pay/travel-time-pay.component';
+import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
 import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension/staff-opt-out-of-workplace-pension.component';
 
 const workplaceFlowOnlyPages: Routes = [
@@ -229,6 +231,16 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
     data: {
       permissions: ['canEditEstablishment'],
       title: 'How do you pay for sleep-ins',
+    },
+  },
+  {
+    path: 'travel-time-pay',
+    component: TravelTimePayComponent,
+    canActivate: [CheckPermissionsGuard],
+    resolve: { travelTimePayOptions: TravelTimePayResolver },
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Travel time pay',
     },
   },
   {

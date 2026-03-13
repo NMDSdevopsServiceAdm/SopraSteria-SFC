@@ -38,7 +38,7 @@ describe('HowManyLeaversComponent', () => {
     const availableJobs = override.availableJobs;
     const workplace = override.workplace ?? {};
 
-    const selectedJobRoles = override.noLocalStorageData ? null : (override.selectedJobRoles ?? mockSelectedJobRoles);
+    const selectedJobRoles = override.noLocalStorageData ? null : override.selectedJobRoles ?? mockSelectedJobRoles;
 
     const isInAddDetailsFlow = true;
 
@@ -233,7 +233,7 @@ describe('HowManyLeaversComponent', () => {
         });
       });
 
-      it('should navigate to the benefits-statutory-sick-pay page', async () => {
+      it('should navigate to the travel-time-pay page', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
@@ -243,7 +243,7 @@ describe('HowManyLeaversComponent', () => {
           component.establishment.uid,
           'workplace-data',
           'add-workplace-details',
-          'benefits-statutory-sick-pay',
+          'travel-time-pay',
         ]);
       });
 

@@ -182,6 +182,12 @@ export interface Establishment {
   staffWhatKindDelegatedHealthcareActivities?: StaffWhatKindDelegatedHealthcareActivities;
   offerSleepIn?: string;
   howToPayForSleepIn?: string;
+  travelTimePay: {
+    id: number;
+    label: string;
+    includeRate: boolean;
+    rate?: number;
+  };
   staffOptOutOfWorkplacePension?: string;
   payAndPensionsMiniFlowViewed?: boolean;
 }

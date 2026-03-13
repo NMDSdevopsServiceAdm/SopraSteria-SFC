@@ -205,6 +205,11 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.getByLabel('Support worker').type('2');
     cy.get('button').contains('Save and continue').click();
 
+    // Travel time pay
+    cy.contains('What do you pay care and support workers for travel time between visits?').should('be.visible');
+    cy.getByLabel('The same rate for travel time as for visits').check();
+    cy.get('button').contains('Save and continue').click();
+
     // Statutory Sick Pay
     cy.contains('Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?');
     cy.getByLabel('No').check();

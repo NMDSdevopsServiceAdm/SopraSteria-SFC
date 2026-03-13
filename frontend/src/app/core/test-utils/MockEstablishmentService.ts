@@ -75,7 +75,12 @@ export const establishmentBuilder = build('Establishment', {
     staffOptOutOfWorkplacePensionComponent: null,
     offerSleepIn: null,
     howToPayForSleepIn: null,
-    travelTimePay: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
   },
 });
 
@@ -161,6 +166,12 @@ export class MockEstablishmentService extends EstablishmentService {
     },
     careWorkforcePathwayUse: null,
     staffWhatKindDelegatedHealthcareActivities: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}, childWorkplaces: any = null) {
@@ -236,6 +247,12 @@ export class MockEstablishmentService extends EstablishmentService {
       title: 'Aware of how the care workforce pathway works in practice',
     },
     careWorkforcePathwayUse: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
     created: undefined,
     dataOwner: undefined,
     dataOwnershipRequested: '',
@@ -394,6 +411,13 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
       title: 'Aware of how the care workforce pathway works in practice',
     },
     careWorkforcePathwayUse: null,
+
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
     created: undefined,
     dataOwner: 'Workplace',
     dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
