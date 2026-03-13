@@ -20,7 +20,7 @@ batch:
           CY_GROUP_TAGS:
             - '@funding @changeDataPermissions'
             - '@trainingAndQualifications @home'
-            - '@workplace'
+            - '@workplace @payAndPensions'
             - '@admin @benchmarks @others @registration'
             - '@staffRecords'
             - '@dha @trainingCourses'

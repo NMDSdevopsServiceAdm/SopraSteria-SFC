@@ -15,6 +15,9 @@ import { getTestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { BackService } from '@core/services/back.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
+import { AlertService } from '@core/services/alert.service';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
+import { Alert } from '@core/model/alert.model';
 
 describe('HowDoYouPayForSleepInsComponent', () => {
   const options = ['Hourly rate', 'Flat rate', 'I do not know'];
@@ -28,6 +31,7 @@ describe('HowDoYouPayForSleepInsComponent', () => {
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
+        AlertService,
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides),
@@ -63,7 +67,10 @@ describe('HowDoYouPayForSleepInsComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { ...setupTools, component, routerSpy, establishmentServiceSpy, backServiceSpy };
+    const alert = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
+
+    return { ...setupTools, component, routerSpy, establishmentServiceSpy, backServiceSpy, alertSpy };
   }
 
   it('should render HowDoYouPayForSleepInsComponent', async () => {
@@ -304,6 +311,90 @@ describe('HowDoYouPayForSleepInsComponent', () => {
           value: option,
         });
       });
+    });
+  });
+
+  describe('when viewing the page in the pay and pension mini flow', () => {
+    const overrides = {
+      returnToUrl: true,
+      returnTo: { url: ['/dashboard'], fragment: 'home' },
+      inPayAndPensionsMiniFlow: true,
+      establishment: { mainService: { payAndPensionsGroup: 2 } },
+    };
+
+    it('should render the pay and pension group 2 progress bar when in the mini flow', async () => {
+      const { getByTestId } = await setup(overrides);
+
+      const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      const sectionIndex = 2;
+      const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
+      const progressBar = getByTestId('progress-bar');
+
+      expect(progressBar).toBeTruthy();
+      payAndPensionsMiniFlowGroup2BarSections.forEach((section) => {
+        expect(within(progressBar).getByText(section)).toBeTruthy();
+      });
+      expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+
+    it('should show the "Save and continue" and "Skip this question cta buttons', async () => {
+      const { getByText } = await setup(overrides);
+
+      expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
+    });
+
+    it('should navigate to home page when page when "Skip this question" is clicked', async () => {
+      const { getByText, routerSpy, fixture, alertSpy } = await setup(overrides);
+
+      const button = getByText('Skip this question');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
+      await fixture.whenStable();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Workplace details added',
+      } as Alert);
+    });
+
+    it(`should navigate to the home page when submitting without a selecting an option`, async () => {
+      const { getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } = await setup(overrides);
+
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      await fixture.whenStable();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Workplace details added',
+      } as Alert);
+    });
+
+    it('should navigate to the home page when submitting with an option', async () => {
+      const { component, getByLabelText, getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } =
+        await setup(overrides);
+
+      fireEvent.click(getByLabelText(options[0]));
+      fixture.detectChanges();
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
+      expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
+        property: 'howToPayForSleepIn',
+        value: options[0],
+      });
+      await fixture.whenStable();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Workplace details added',
+      } as Alert);
     });
   });
 });

@@ -20,6 +20,10 @@ export class ProgressBarUtil {
   public static staffRecordProgressBarSections = (): string[] => {
     return ['Mandatory information', 'Personal details', 'Employment details', 'Training and qualifications'];
   };
+
+  public static payAndPensionsMiniFlowGroup2BarSections = (): string[] => {
+    return ['Question 1', 'Question 2', 'Question 3'];
+  };
 }
 
 export enum WorkplaceFlowSections {
