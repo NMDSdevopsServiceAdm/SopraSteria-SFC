@@ -108,7 +108,7 @@ class Establishment extends EntityValidator {
     this._offerSleepIn = null;
     this._howToPayForSleepIn = null;
     this._travelTimePay = null;
-    this._payAndPensionsMiniFlowViewed = null
+    this._payAndPensionsMiniFlowViewed = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -449,8 +449,8 @@ class Establishment extends EntityValidator {
     return this._properties.get('TravelTimePay') ? this._properties.get('TravelTimePay').property : null;
   }
 
-  get payAndPensionsMiniFlowViewed(){
-    return this._payAndPensionsMiniFlowViewed
+  get payAndPensionsMiniFlowViewed() {
+    return this._payAndPensionsMiniFlowViewed;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment

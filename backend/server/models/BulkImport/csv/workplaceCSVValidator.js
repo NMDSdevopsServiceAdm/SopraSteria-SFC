@@ -4,6 +4,14 @@ const clonedeep = require('lodash.clonedeep');
 const lodash = require('lodash');
 const moment = require('moment');
 const { sanitisePostcode } = require('../../../utils/postcodeSanitizer');
+const { workplaceHeaders } = require('../../../routes/establishments/bulkUpload/data/workplaceHeaders');
+const {
+  extractPensionContributionPercentage,
+  optOutPensionMapping,
+  extractSleepInPay,
+  sleepInsMapping,
+  sickPayHolidayAndPensionMapping,
+} = require('../../classes/helpers/workplaceCSVHelper');
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 const Establishment = require('../../classes/establishment').Establishment;
 
@@ -31,11 +39,7 @@ function isPerm(worker) {
   return employedContractStatusIds.includes(worker.contractTypeId);
 }
 
-const _headers_v1 =
-  'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
-  'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
-  'SERVICEUSERS,OTHERUSERDESC,DHA,DHAACTIVITIES,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
-  'REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,CWPUSEDESC,BENEFITS,SICKPAY,PENSION,HOLIDAY';
+const _headers_v1 = workplaceHeaders;
 
 class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments, mappings) {
@@ -3333,8 +3337,6 @@ class WorkplaceCSVValidator {
 
   // takes the given establishment entity and writes it out to CSV string (one line)
   static toCSV(entity) {
-    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","DHA","DHAACTIVITIES","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
-
     const defaultYesNoDontKnowMapping = (valueFromDatabase) => {
       switch (valueFromDatabase) {
         case 'Yes':
@@ -3562,6 +3564,7 @@ class WorkplaceCSVValidator {
       }
     };
     const whenValue = '1;';
+
     columns.push(
       cashLoyaltyMapping(
         Number(entity.careWorkersCashLoyaltyForFirstTwoYears)
@@ -3570,24 +3573,25 @@ class WorkplaceCSVValidator {
       ),
     );
 
-    // Sick Pay, Pension Contribution,Holiday
-    const sickPayHolidayAndPensionMapping = (value) => {
-      if (value === "Don't know") {
-        return 'unknown';
-      } else if (value === 'No') {
-        return 0;
-      } else if (value === 'Yes') {
-        return 1;
-      } else if (!value) {
-        return '';
-      } else {
-        return value;
-      }
-    };
+    const sickPay = sickPayHolidayAndPensionMapping(entity.sickPay);
+    const pensionContribution = sickPayHolidayAndPensionMapping(entity.pensionContribution);
 
-    columns.push(sickPayHolidayAndPensionMapping(entity.sickPay));
-    columns.push(sickPayHolidayAndPensionMapping(entity.pensionContribution));
-    columns.push(sickPayHolidayAndPensionMapping(entity.careWorkersLeaveDaysPerYear));
+    columns.push(sickPay);
+    columns.push(pensionContribution);
+
+    columns.push(extractPensionContributionPercentage(entity));
+
+    columns.push(optOutPensionMapping(entity.staffOptOutOfWorkplacePension));
+
+    const careWorkersLeaveDaysPerYear = sickPayHolidayAndPensionMapping(entity.careWorkersLeaveDaysPerYear);
+    columns.push(careWorkersLeaveDaysPerYear);
+
+    columns.push(sleepInsMapping(entity.offerSleepIn));
+
+    columns.push(extractSleepInPay(entity));
+
+    const travelTimePayBUCode = entity.travelTimePayOption?.bulkUploadCode ?? '';
+    columns.push(travelTimePayBUCode);
 
     return columns.join(',');
   }

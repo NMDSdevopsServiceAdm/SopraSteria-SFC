@@ -120,7 +120,7 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 
 const BU_DHA_YES = '1';
 
-describe('Bulk Upload - Establishment CSV', () => {
+describe.only('Bulk Upload - Establishment CSV', () => {
   let establishmentRow;
 
   beforeEach(() => {
@@ -1252,8 +1252,7 @@ describe('Bulk Upload - Establishment CSV', () => {
                 lineNumber: establishment.lineNumber,
                 warnCode: 2530, //although we resuse this code, each line will only raise one of the variants
                 warnType: 'DHAACTIVITIES_WARNING',
-                warning:
-                  'Some codes you have entered for DHAACTIVITIES are invalid; invalid codes will be ignored',
+                warning: 'Some codes you have entered for DHAACTIVITIES are invalid; invalid codes will be ignored',
                 source: mixedInput,
                 column: 'DHAACTIVITIES',
                 name: establishmentRow.LOCALESTID,
@@ -1311,7 +1310,8 @@ describe('Bulk Upload - Establishment CSV', () => {
                 lineNumber: establishment.lineNumber,
                 warnCode: 2530,
                 warnType: 'DHAACTIVITIES_WARNING',
-                warning: 'The code you have entered for DHAACTIVITIES will be ignored as the code for DHA is not set to 1',
+                warning:
+                  'The code you have entered for DHAACTIVITIES will be ignored as the code for DHA is not set to 1',
                 source: '1;2;3',
                 column: 'DHAACTIVITIES',
                 name: establishmentRow.LOCALESTID,
@@ -3139,12 +3139,10 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe('BENEFITS, SICKPAY, PENSION and HOLIDAY', () => {
+    describe('BENEFITS, SICKPAY AND HOLIDAY', () => {
       const benefitsIndex = getColumnIndex('BENEFITS');
-
-      const sickPayIndex = benefitsIndex + 1;
-      const pensionIndex = benefitsIndex + 2;
-      const holidayIndex = benefitsIndex + 3;
+      const sickPayIndex = getColumnIndex('SICKPAY');
+      const holidayIndex = getColumnIndex('HOLIDAY');
 
       it('should leave the BENEFITS, SICKPAY and  PENSION columns blank if there values are null', async () => {
         const establishment = apiEstablishmentBuilder();
@@ -3154,52 +3152,45 @@ describe('Bulk Upload - Establishment CSV', () => {
 
         expect(csvAsArray[benefitsIndex]).to.equal('');
         expect(csvAsArray[sickPayIndex]).to.equal('');
-        expect(csvAsArray[pensionIndex]).to.equal('');
       });
 
       it("should include 0 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'No'", async () => {
         const establishment = apiEstablishmentBuilder();
         establishment.careWorkersCashLoyaltyForFirstTwoYears = 'No';
         establishment.sickPay = 'No';
-        establishment.pensionContribution = 'No';
 
         const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[benefitsIndex]).to.include(0);
         expect(csvAsArray[sickPayIndex]).to.include(0);
-        expect(csvAsArray[pensionIndex]).to.include(0);
       });
 
       it("should include 'unknown' in the BENEFITS ,SICKPAY and PENSION columns if there values are \"Don't know\"", async () => {
         const establishment = apiEstablishmentBuilder();
         establishment.careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
         establishment.sickPay = "Don't know";
-        establishment.pensionContribution = "Don't know";
 
         const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[benefitsIndex]).to.include('unknown');
         expect(csvAsArray[sickPayIndex]).to.include('unknown');
-        expect(csvAsArray[pensionIndex]).to.include('unknown');
       });
 
       it("should include 1 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'Yes'", async () => {
         const establishment = apiEstablishmentBuilder();
         establishment.careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
         establishment.sickPay = 'Yes';
-        establishment.pensionContribution = 'Yes';
 
         const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[benefitsIndex]).to.include('1;');
         expect(csvAsArray[sickPayIndex]).to.include('1');
-        expect(csvAsArray[pensionIndex]).to.include('1');
       });
 
-      it('should include a value in the columns BENEFITS and  HOLIDAY if it they have  values', async () => {
+      it('should include a value in the columns BENEFITS and HOLIDAY if it they have values', async () => {
         const establishment = apiEstablishmentBuilder();
         establishment.careWorkersCashLoyaltyForFirstTwoYears = '200';
         establishment.careWorkersLeaveDaysPerYear = '35';
@@ -3220,5 +3211,175 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(csvAsArray[holidayIndex]).to.equal('');
       });
     });
+
+    describe('PENSION', () => {
+      const pensionIndex = getColumnIndex('PENSION');
+
+      const testCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 'Yes', buCode: '1' },
+        { value: 'No', buCode: '0' },
+        { value: "Don't know", buCode: 'unknown' },
+      ];
+
+      testCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the PENSION column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.pensionContribution = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[pensionIndex]).to.equal(buCode);
+        });
+      });
+    });
+
+    describe('ACTUALCONT (PensionContributionPercentage)', () => {
+      const actualContIndex = getColumnIndex('ACTUALCONT');
+
+      const testCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 4, buCode: '4' },
+        { value: 4.25, buCode: '4.25' },
+        { value: 10.5, buCode: '10.5' },
+        { value: 100, buCode: '100' },
+      ];
+
+      testCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the ACTUALCONT column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.pensionContribution = 'Yes';
+          establishment.pensionContributionPercentage = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[actualContIndex]).to.equal(buCode);
+        });
+      });
+
+      it('should show empty string "" in ACTUALCONT if pensionContribution is not "Yes"', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.pensionContribution = 'No';
+        establishment.pensionContributionPercentage = 4;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[actualContIndex]).to.equal('');
+      });
+    });
+
+    describe('OPTOUTPEN (staffOptOutOfWorkplacePension)', () => {
+      const optOutPenIndex = getColumnIndex('OPTOUTPEN');
+
+      const testCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 'Yes', buCode: '1' },
+        { value: 'No', buCode: '2' },
+        { value: "Don't know", buCode: '999' },
+      ];
+
+      testCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the SLEEPINS column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.staffOptOutOfWorkplacePension = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[optOutPenIndex]).to.equal(buCode);
+        });
+      });
+    });
+
+    const sleepInsIndex = getColumnIndex('SLEEPINS');
+    const sleepInPayIndex = getColumnIndex('SLEEPINPAY');
+
+    describe('SLEEPINS (OfferSleepIn)', () => {
+      const sleepInsTestCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 'Yes', buCode: '1' },
+        { value: 'No', buCode: '2' },
+        { value: "Don't know", buCode: '999' },
+      ];
+
+      sleepInsTestCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the SLEEPINS column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.offerSleepIn = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[sleepInsIndex]).to.equal(buCode);
+        });
+      });
+    });
+
+    describe('SLEEPINPAY (HowToPayForSleepIn)', () => {
+      const sleepInPayTestCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 'Hourly rate', buCode: '1' },
+        { value: 'Flat rate', buCode: '2' },
+        { value: 'I do not know', buCode: '999' },
+      ];
+
+      sleepInPayTestCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the SLEEPINPAY column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.offerSleepIn = 'Yes';
+          establishment.howToPayForSleepIn = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[sleepInPayIndex]).to.equal(buCode);
+        });
+      });
+
+      it('should show empty string "" in SLEEPINPAY column if offerSleepIn is not "Yes"', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.offerSleepIn = 'No';
+        establishment.howToPayForSleepIn = 'Hourly rate';
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[sleepInPayIndex]).to.equal('');
+      });
+    });
+
+    describe('TRAVELTIME (travelTimePayOption)', () => {
+      const travelTimeIndex = getColumnIndex('TRAVELTIME');
+
+      it('should leave the TRAVELTIME column blank if value is null', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = null;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimeIndex]).to.equal('');
+      });
+
+      it('should show the bulkUploadCode from travelTimePayOption in TRAVELTIME column', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = { id: 2, bulkUploadCode: 999 };
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimeIndex]).to.equal('999');
+      });
+    });
+
+    describe('TTDIFFRATE (TravelTimePayRate)', () => {});
   });
 });
