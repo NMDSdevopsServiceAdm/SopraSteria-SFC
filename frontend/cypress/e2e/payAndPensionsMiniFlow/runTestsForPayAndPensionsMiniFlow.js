@@ -55,7 +55,7 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
         // travel time question to be added here
 
         //home
-        cy.get(`[data-testid="generic_alert"]`).contains('Your information has been saved in Workplace');
+        cy.get(`[data-testid="generic_alert"]`).contains('Workplace details added');
         cy.get('[data-testid="workplace-row"]').should('not.contain', payAndPensionFlagMessage);
       });
     });
@@ -106,7 +106,7 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
         cy.get('button').contains('Save and continue').click();
 
         //home
-        cy.get(`[data-testid="generic_alert"]`).contains('Your information has been saved in Workplace');
+        cy.get(`[data-testid="generic_alert"]`).contains('Workplace details added');
         cy.get('[data-testid="workplace-row"]').should('not.contain', payAndPensionFlagMessage);
       });
     });
