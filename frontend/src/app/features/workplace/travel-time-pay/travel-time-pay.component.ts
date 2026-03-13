@@ -66,8 +66,8 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     );
   }
 
-  public onChange(answer: string) {
-    if (answer === 'A different travel time rate') {
+  public onChange(answer: TravelTimePayOptions) {
+    if (answer?.includeRate) {
       this.showTextBox = true;
       this.addValidationToControl();
       this.addErrorLinkFunctionality();
@@ -146,23 +146,23 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
         travelTimePayRate: this.establishment.travelTimePay.rate,
       });
 
-      this.onChange(this.establishment.travelTimePay.label);
+      this.onChange(this.establishment.travelTimePay);
     }
   }
 
   generateUpdateProps() {
     const { travelTimePay, travelTimePayRate } = this.form.value;
 
-    return travelTimePay
-      ? {
-          travelTimePay: {
-            id: travelTimePay,
-            ...(travelTimePay === 3 && {
-              rate: travelTimePayRate,
-            }),
-          },
-        }
-      : null;
+    if (!travelTimePay) {
+      return null;
+    }
+
+    const chosenId = travelTimePay;
+    const chosenOption = this.travelTimePayOptions.find((option) => option.id === chosenId);
+    const chosenOptionIncludeRate = chosenOption?.includeRate;
+
+    const updateProps = chosenOptionIncludeRate ? { id: chosenId, rate: travelTimePayRate } : { id: chosenId };
+    return { travelTimePay: updateProps };
   }
 
   updateEstablishment(props): void {
