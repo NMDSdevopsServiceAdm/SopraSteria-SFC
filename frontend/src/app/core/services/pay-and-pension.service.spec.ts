@@ -1,13 +1,13 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { PayAndPensionService } from './pay-and-pension.service'
+import { PayAndPensionService } from './pay-and-pension.service';
 
-describe("PayAndPensionService", () => {
-   let service: PayAndPensionService
-   let http: HttpTestingController;
+describe('PayAndPensionService', () => {
+  let service: PayAndPensionService;
+  let http: HttpTestingController;
 
-   beforeEach(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
       providers: [PayAndPensionService, provideHttpClient(), provideHttpClientTesting()],
@@ -25,22 +25,22 @@ describe("PayAndPensionService", () => {
     expect(service).toBeTruthy();
   });
 
-  describe("inPayAndPensionsMiniFlow", () => {
+  describe('inPayAndPensionsMiniFlow', () => {
     it('should set inPayAndPensionsMiniFlow', () => {
-      service.setInPayAndPensionsMiniFlow(true)
-      const expected = service.getInPayAndPensionsMiniFlow()
+      service.setInPayAndPensionsMiniFlow(true);
+      const expected = service.getInPayAndPensionsMiniFlow();
 
-      expect(expected).toEqual(true)
-    })
+      expect(expected).toEqual(true);
+    });
 
     it('should clear inPayAndPensionsMiniFlow', () => {
-      service.setInPayAndPensionsMiniFlow(true)
-      service.clearInPayAndPensionsMiniFlow()
-      const expected = service.getInPayAndPensionsMiniFlow()
+      service.setInPayAndPensionsMiniFlow(true);
+      service.clearInPayAndPensionsMiniFlow();
+      const expected = service.getInPayAndPensionsMiniFlow();
 
-      expect(expected).toEqual(null)
-    })
-  })
+      expect(expected).toEqual(null);
+    });
+  });
 
   describe('showSleepInsQuestions', () => {
     [1, 2].forEach((payAndPensionsGroup) => {
@@ -59,4 +59,22 @@ describe("PayAndPensionService", () => {
       expect(actual).toEqual(expected);
     });
   });
-})
+
+  describe('show showTravelTimePayQuestion', () => {
+    it('should return true when payAndPensionsGroup is 1', () => {
+      const expected = true;
+      const actual = service.showTravelTimePayQuestion(1);
+
+      expect(actual).toEqual(expected);
+    });
+
+    [2, 3, null, undefined].forEach((payAndPensionsGroup) => {
+      it(`should return false when payAndPensionsGroup is ${payAndPensionsGroup}`, () => {
+        const expected = false;
+        const actual = service.showTravelTimePayQuestion(payAndPensionsGroup);
+
+        expect(actual).toEqual(expected);
+      });
+    });
+  });
+});

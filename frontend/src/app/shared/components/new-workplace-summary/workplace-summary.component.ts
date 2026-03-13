@@ -14,12 +14,13 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Component({
-    selector: 'app-new-workplace-summary',
-    templateUrl: './workplace-summary.component.html',
-    providers: [I18nPluralPipe],
-    standalone: false
+  selector: 'app-new-workplace-summary',
+  templateUrl: './workplace-summary.component.html',
+  providers: [I18nPluralPipe],
+  standalone: false,
 })
 export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -44,6 +45,8 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public typeOfEmployer: string;
   public isParent: boolean;
   public isAwareOfCareWorkforcePathway: boolean;
+  public showSleepInsQuestions: boolean;
+  public showTravelTimePayQuestion: boolean;
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
@@ -52,6 +55,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     private cqcStatusChangeService: CqcStatusChangeService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
+    private payAndPensionService: PayAndPensionService,
     // TabsService and Router are needed here for navigateToTab() to work properly
     private tabsService: TabsService,
     private router: Router,
@@ -96,6 +100,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     this.checkNumberOfStaffErrorsAndWarnings();
     this.checkVacancyAndTurnoverData();
     this.checkIfWorkplaceIsAwareOfCareWorkforcePathway();
+    this.checkIfShouldShowPayAndPensionQuestions();
   }
 
   public checkNumberOfStaffErrorsAndWarnings(): void {
@@ -114,6 +119,15 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     const awarenessAnswer = this.workplace.careWorkforcePathwayWorkplaceAwareness;
     this.isAwareOfCareWorkforcePathway =
       this.careWorkforcePathwayService.isAwareOfCareWorkforcePathway(awarenessAnswer);
+  }
+
+  private checkIfShouldShowPayAndPensionQuestions(): void {
+    this.showSleepInsQuestions = this.payAndPensionService.showSleepInsQuestions(
+      this.workplace?.mainService?.payAndPensionsGroup,
+    );
+    this.showTravelTimePayQuestion = this.payAndPensionService.showTravelTimePayQuestion(
+      this.workplace?.mainService?.payAndPensionsGroup,
+    );
   }
 
   private getPermissions(): void {

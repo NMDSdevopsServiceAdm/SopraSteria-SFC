@@ -19,7 +19,6 @@ import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-c
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
-import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers/do-you-have-leavers.component';
 import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
@@ -151,15 +150,6 @@ const workplaceFlowOnlyPages: Routes = [
     data: {
       permissions: ['canEditEstablishment'],
       title: 'How many leavers',
-    },
-  },
-  {
-    path: 'check-answers',
-    component: CheckAnswersComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'Check Answers',
     },
   },
 ];

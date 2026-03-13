@@ -935,7 +935,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it("should show the row and table cell name when offerSleepIn is 'Yes'", async () => {
         const { component, fixture, getByTestId } = await setup({
           establishment: {
-            mainService: { payAndPensionsGroup: 3 },
+            mainService: { payAndPensionsGroup: 1 },
           },
           permissions: ['canEditEstablishment'],
         });
@@ -955,7 +955,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         it(`should not show the row and table cell name when offerSleepIn is ${answer} `, async () => {
           const { component, fixture, queryByTestId } = await setup({
             establishment: {
-              mainService: { payAndPensionsGroup: 3 },
+              mainService: { payAndPensionsGroup: 1 },
             },
             permissions: ['canEditEstablishment'],
           });

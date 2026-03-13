@@ -402,7 +402,7 @@
         </div>
       }
 
-      @if (workplace.mainService?.payAndPensionsGroup === 1 || workplace.mainService?.payAndPensionsGroup === 2) {
+      @if (showSleepInsQuestions) {
         <div class="govuk-summary-list__row" data-testid="offer-sleep-ins">
           <dt class="govuk-summary-list__key">Offer sleep-ins</dt>
           <dd class="govuk-summary-list__value">
@@ -427,7 +427,7 @@
         </div>
       }
 
-      @if (workplace?.offerSleepIn === 'Yes') {
+      @if (showSleepInsQuestions && workplace?.offerSleepIn === 'Yes') {
         <div class="govuk-summary-list__row" data-testid="sleep-in-pay">
           <dt class="govuk-summary-list__key">Care and support worker sleep-in pay</dt>
           <dd class="govuk-summary-list__value">
@@ -456,7 +456,7 @@
       class="govuk-summary-list govuk-summary-list--medium govuk-summary-list--top-border"
       data-testid="pay-and-benefits-section"
     >
-      @if (workplace?.mainService?.payAndPensionsGroup === 1) {
+      @if (showTravelTimePayQuestion) {
         <div class="govuk-summary-list__row" data-testid="travel-time-pay">
           <dt class="govuk-summary-list__key">Care and support worker travel time pay</dt>
           <dd class="govuk-summary-list__value">

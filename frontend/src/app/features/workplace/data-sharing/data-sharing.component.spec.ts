@@ -14,41 +14,43 @@ import { of } from 'rxjs';
 
 import { DataSharingComponent } from './data-sharing.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
+import { AlertService } from '@core/services/alert.service';
 
 describe('DataSharingComponent', () => {
   async function setup(overrides: any = {}) {
     const isInAddDetailsFlow = !overrides?.returnUrl;
 
-    const { fixture, getByText, getAllByText, queryByText, getByTestId, queryByTestId } = await render(
-      DataSharingComponent,
-      {
-        imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
-        providers: [
-          patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
-          ErrorSummaryService,
-          BackService,
-          UntypedFormBuilder,
-          {
-            provide: EstablishmentService,
-            useFactory: MockEstablishmentService.factory(
-              overrides.shareWith ?? { cqc: null, localAuthorities: null },
-              overrides.returnUrl ?? true,
-            ),
-            deps: [HttpClient],
-          },
-          provideHttpClient(),
-          provideHttpClientTesting(),
-        ],
-      },
-    );
+    const setupTools = await render(DataSharingComponent, {
+      imports: [SharedModule, RouterModule, FormsModule, ReactiveFormsModule],
+      providers: [
+        patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
+        ErrorSummaryService,
+        BackService,
+        UntypedFormBuilder,
+        {
+          provide: EstablishmentService,
+          useFactory: MockEstablishmentService.factory(
+            overrides.shareWith ?? { cqc: null, localAuthorities: null },
+            overrides.returnUrl ?? true,
+          ),
+          deps: [HttpClient],
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: AlertService,
+          useValue: { addAlert: () => {} },
+        },
+      ],
+    });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
 
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(null);
+    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
     const updateDataSharingSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.returnValue(
       of(true),
     );
@@ -57,17 +59,16 @@ describe('DataSharingComponent', () => {
       'updateSingleEstablishmentField',
     ).and.returnValue(of({ property: 'showAddWorkplaceDetailsBanner', value: false }));
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
-      fixture,
+      ...setupTools,
       component,
-      getByText,
-      getAllByText,
-      queryByText,
-      getByTestId,
-      queryByTestId,
       routerSpy,
       updateDataSharingSpy,
       updateSingleEstablishmentFieldSpy,
+      alertSpy,
     };
   }
 
@@ -298,22 +299,21 @@ describe('DataSharingComponent', () => {
     });
   });
 
-  it('should have link to check-answers page on continue button', async () => {
-    const { fixture, getByText, routerSpy } = await setup();
+  it('should navigate to workplace summary page with an alert when user clicked "Save and continue"', async () => {
+    const { fixture, getByText, routerSpy, alertSpy } = await setup();
     fixture.componentInstance.return = null;
     fixture.detectChanges();
 
-    const workplaceUid = fixture.componentInstance.establishment.uid;
     const continueButton = getByText('Save and continue');
     fireEvent.click(continueButton);
 
-    expect(routerSpy).toHaveBeenCalledWith([
-      '/workplace',
-      workplaceUid,
-      'workplace-data',
-      'add-workplace-details',
-      'check-answers',
-    ]);
+    await fixture.whenStable();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
+    expect(alertSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'Workplace details added',
+    });
   });
 
   describe('removing sharing permission banner function', () => {
@@ -351,7 +351,7 @@ describe('DataSharingComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it('should navigate to the sharing-data page when skip the question', async () => {
+    it('should navigate to workplace summary page when skip the question', async () => {
       const overrides = { shareWith: { cqc: null, localAuthorities: null }, returnUrl: false };
       const { fixture, getByText, routerSpy, component } = await setup(overrides);
 
@@ -361,13 +361,7 @@ describe('DataSharingComponent', () => {
       const link = getByText('Skip this question');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'workplace-data',
-        'add-workplace-details',
-        'check-answers',
-      ]);
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {

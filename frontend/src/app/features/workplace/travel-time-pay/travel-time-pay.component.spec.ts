@@ -259,9 +259,8 @@ describe('TravelTimePayComponent', () => {
 
     travelTimePayOptions.forEach((option) => {
       it(`should navigate to workplace summary  page after submit if user answered ${option.label}`, async () => {
-        const { component, getByRole, getByLabelText, fixture, routerSpy, establishmentServiceSpy } = await setup(
-          overrides,
-        );
+        const { component, getByRole, getByLabelText, fixture, routerSpy, establishmentServiceSpy } =
+          await setup(overrides);
 
         fireEvent.click(getByLabelText(option.label));
         fixture.detectChanges();
