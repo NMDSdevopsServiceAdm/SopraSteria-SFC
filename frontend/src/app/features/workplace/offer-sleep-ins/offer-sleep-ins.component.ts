@@ -95,7 +95,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
   private setSkipRoute(): void {
     this.skipToQuestionPage = 'do-you-have-vacancies';
     if (this.inPayAndPensionsMiniFlow) {
-      this.isAtEndOfMiniFlow = true;
+      this.isAtEndOfPayAndPensionsMiniFlow = true;
     }
   }
 
@@ -130,7 +130,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     if (offerSleepIn === 'Yes') {
       this.nextQuestionPage = 'how-do-you-pay-for-sleep-ins';
       this.submitAction = { action: 'continue', save: true };
-    } else if (this.inPayAndPensionsMiniFlow && this.establishment.mainService.payAndPensionsGroup === 2) {
+    } else if (this.inPayAndPensionsMiniFlow) {
       this.submitAction = { action: 'return', save: true };
     } else {
       this.nextQuestionPage = this.skipToQuestionPage;
@@ -151,7 +151,7 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     if (offerSleepIn !== 'Yes' && this.inPayAndPensionsMiniFlow) {
       this.alertService.addAlert({
         type: 'success',
-        message: 'Your information has been saved in Workplace',
+        message: 'Workplace details added',
       });
     }
   }

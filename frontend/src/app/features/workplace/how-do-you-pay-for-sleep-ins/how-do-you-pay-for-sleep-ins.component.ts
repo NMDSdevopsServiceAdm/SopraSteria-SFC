@@ -132,13 +132,13 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
 
   private setSkipRoute(): void {
     this.skipToQuestionPage = 'do-you-have-vacancies';
-    if (this.inPayAndPensionsMiniFlow) {
-      this.isAtEndOfMiniFlow = true;
+    if (this.inPayAndPensionsMiniFlow && this.establishment.mainService.payAndPensionsGroup === 2) {
+      this.isAtEndOfPayAndPensionsMiniFlow = true;
     }
   }
 
   protected onSuccess(): void {
-    if (this.inPayAndPensionsMiniFlow && this.establishment.mainService.payAndPensionsGroup === 2) {
+    if (this.inPayAndPensionsMiniFlow) {
       this.submitAction = { action: 'return', save: true };
     }
   }
@@ -147,7 +147,7 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
     if (this.inPayAndPensionsMiniFlow) {
       this.alertService.addAlert({
         type: 'success',
-        message: 'Your information has been saved in Workplace',
+        message: 'Workplace details added',
       });
     }
   }

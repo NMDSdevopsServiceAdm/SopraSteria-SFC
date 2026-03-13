@@ -399,13 +399,18 @@ describe('OfferSleepInsComponent', () => {
     });
 
     it('should navigate to home page when page when "Skip this question" is clicked', async () => {
-      const { getByText, routerSpy, fixture } = await setup(overrides);
+      const { getByText, routerSpy, fixture, alertSpy } = await setup(overrides);
 
       const button = getByText('Skip this question');
       fireEvent.click(button);
       fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
+      await fixture.whenStable();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Workplace details added',
+      } as Alert);
     });
 
     it(`should navigate to the home page when submitting without a selecting an option`, async () => {
@@ -420,7 +425,10 @@ describe('OfferSleepInsComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
       await fixture.whenStable();
-      expect(alertSpy).not.toHaveBeenCalled();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Workplace details added',
+      } as Alert);
     });
 
     it('should navigate to "how-do-you-pay-for-sleep-ins" when submitting with the option "Yes"', async () => {
@@ -465,7 +473,7 @@ describe('OfferSleepInsComponent', () => {
         await fixture.whenStable();
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
-          message: 'Your information has been saved in Workplace',
+          message: 'Workplace details added',
         } as Alert);
       });
     });

@@ -35,7 +35,7 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   protected initiated = false;
   public submitAction: { action: string; save: boolean } = null;
   public workplaceFlowSections: string[] = ProgressBarUtil.workplaceFlowProgressBarSections();
-  public isAtEndOfMiniFlow: boolean = false;
+  public isAtEndOfPayAndPensionsMiniFlow: boolean = false;
 
   private _isInAddDetailsFlow: Signal<boolean> = computed(() => {
     return this.router.url.includes('add-workplace-details');
@@ -165,11 +165,14 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
   }
 
   protected handleSkipAction(): Promise<boolean> {
-    if (this.isAtEndOfMiniFlow) {
-      return this.router.navigate(this.return.url, {
-        fragment: this.return.fragment,
-        queryParams: this.return.queryParams,
-      });
+    if (this.isAtEndOfPayAndPensionsMiniFlow) {
+      this.router
+        .navigate(this.return.url, {
+          fragment: this.return.fragment,
+          queryParams: this.return.queryParams,
+        })
+        .then(() => this.addAlert());
+      return;
     }
     return this.router.navigate(this.skipRoute);
   }
@@ -234,7 +237,13 @@ export class WorkplaceQuestion implements OnInit, OnDestroy, AfterViewInit {
 
     if (isNull(props)) {
       this.onSuccess();
-      this.navigate();
+      if (this.isAtEndOfPayAndPensionsMiniFlow) {
+        this.navigate().then(() => {
+          this.addAlert();
+        });
+      } else {
+        this.navigate();
+      }
       return;
     }
 
