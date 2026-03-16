@@ -262,7 +262,9 @@ Cypress.Commands.add('resetNonMandatoryWorkplaceQuestions', (establishmentID) =>
       "CareWorkersLeaveDaysPerYear" = null,
       "OfferSleepIn" = null,
       "HowToPayForSleepIn" = null,
-      "StaffOptOutOfWorkplacePension" = null
+      "StaffOptOutOfWorkplacePension" = null,
+      "TravelTimePayOptionFK" = null,
+      "TravelTimePayRate" = null
       WHERE "EstablishmentID" = $1;`;
 
   const parameters = [establishmentID];
