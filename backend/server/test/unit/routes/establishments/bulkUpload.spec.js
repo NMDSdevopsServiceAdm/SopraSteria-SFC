@@ -287,7 +287,11 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       BENEFITS: '',
       SICKPAY: '',
       PENSION: '',
+      ACTUALCONT: '',
+      OPTOUTPEN: '',
       HOLIDAY: '',
+      SLEEPINS: '',
+      SLEEPINPAY: '',
     };
 
     const myAPIEstablishments = [

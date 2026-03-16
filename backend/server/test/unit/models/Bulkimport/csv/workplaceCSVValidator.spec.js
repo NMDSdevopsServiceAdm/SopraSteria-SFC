@@ -36,9 +36,10 @@ const workplaceMappings = {
   ],
   services: [
     // reliant on services mappings in BUDI/index file
-    { id: 1, canDoDelegatedHealthcareActivities: null }, // { ASC: 1, BUDI: 13 },
+    { id: 1, canDoDelegatedHealthcareActivities: null, payAndPensionsGroup: 3 }, // { ASC: 1, BUDI: 13 } Carers support
     { id: 2, canDoDelegatedHealthcareActivities: true }, // { ASC: 2, BUDI: 15 },
-    { id: 20, canDoDelegatedHealthcareActivities: true }, // { ASC: 20, BUDI: 8 },
+    { id: 20, canDoDelegatedHealthcareActivities: true, payAndPensionsGroup: 1 }, // { ASC: 20, BUDI: 8 } Dom care
+    { id: 24, canDoDelegatedHealthcareActivities: true, payAndPensionsGroup: 2 }, // { ASC: 24, BUDI: '1' }, group 2 Care home services with nursing
   ],
   delegatedHealthcareActivities: [
     { id: 1, bulkUploadCode: 1 },
@@ -2023,6 +2024,351 @@ describe('Bulk Upload - Establishment CSV', () => {
             name: establishmentRow.LOCALESTID,
           },
         ]);
+      });
+    });
+
+    describe('_validatePensionContributionPercentage (ACTUALCONT)', () => {
+      it('should pass if there is no input', async () => {
+        establishmentRow.ACTUALCONT = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.be.empty;
+      });
+
+      const validValues = ['3', '3.5', '10.25', '100'];
+
+      validValues.forEach((value) => {
+        it('should pass if the value is a number between 3 to 100', async () => {
+          establishmentRow.ACTUALCONT = value;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.be.empty;
+        });
+      });
+
+      const outOfRangeValues = ['2', '101', '-10'];
+
+      outOfRangeValues.forEach((value) => {
+        it('should add a warning and ignore if the value is a number out of the range of 3-100', async () => {
+          establishmentRow.ACTUALCONT = value;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2540,
+              warnType: 'ACTUALCONT_WARNING',
+              warning: 'The code you have entered for ACTUALCONT is incorrect and will be ignored',
+              source: value,
+              column: 'ACTUALCONT',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+      });
+
+      it('should add a warning and ignore if ACTUALCONT has a value but the PENSION is not 1 (=YES)', async () => {
+        establishmentRow.PENSION = '';
+        establishmentRow.ACTUALCONT = '5';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2541,
+            warnType: 'ACTUALCONT_PENSION_WARNING',
+            warning: 'Value entered for ACTUALCONT will be ignored as the value for PENSION is not "1" (YES)',
+            source: '5',
+            column: 'ACTUALCONT',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('_validateStaffOptOutOfWorkplacePension (OPTOUTPEN)', () => {
+      it('should pass if there is no input', async () => {
+        establishmentRow.OPTOUTPEN = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.be.empty;
+      });
+
+      const validInputs = ['1', '2', '999'];
+
+      validInputs.forEach((value) => {
+        it(`should pass if the input is valid - ${value}`, async () => {
+          establishmentRow.OPTOUTPEN = value;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.be.empty;
+          expect(establishment._staffOptOutOfWorkplacePension).to.deep.equal(value);
+        });
+      });
+
+      const invalidInputs = ['0', '3', '-10', 'some words'];
+
+      invalidInputs.forEach((invalidValue) => {
+        it(`should add a warning and ignore if input is invalid - ${invalidValue}`, async () => {
+          establishmentRow.OPTOUTPEN = invalidValue;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2550,
+              warnType: 'OPTOUTPEN_WARNING',
+              warning: 'The code you have entered for OPTOUTPEN is incorrect and will be ignored',
+              source: invalidValue,
+              column: 'OPTOUTPEN',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+          expect(establishment._staffOptOutOfWorkplacePension).to.deep.equal(undefined);
+        });
+      });
+    });
+
+    const setMainServicePayAndPensionsGroup = (payAndPensionsGroup) => {
+      establishmentRow.SERVICEDESC = '';
+      establishmentRow.UTILISATION = '';
+      establishmentRow.CAPACITY = '';
+
+      switch (payAndPensionsGroup) {
+        case 1: {
+          establishmentRow.MAINSERVICE = '8'; // { ASC: 20, BUDI: '8' },  group 1 dom care
+          establishmentRow.ALLSERVICES = '8';
+          establishmentRow.REGTYPE = '2';
+          return;
+        }
+        case 2: {
+          establishmentRow.MAINSERVICE = '1'; // { ASC: 24, BUDI: '1' }, group 2 Care home services with nursing
+          establishmentRow.ALLSERVICES = '1';
+          establishmentRow.REGTYPE = '2';
+          return;
+        }
+
+        case 3: {
+          establishmentRow.MAINSERVICE = '13'; // { ASC: 1, BUDI: '13' }, group 3 Carer support
+          establishmentRow.ALLSERVICES = '13';
+          establishmentRow.REGTYPE = '0';
+          establishmentRow.PROVNUM = '';
+          establishmentRow.LOCATIONID = '';
+          establishmentRow.VACANCIES = '0;0;0';
+          return;
+        }
+      }
+    };
+
+    describe('_validateSleepIn (SLEEPINS)', () => {
+      const allowedPayAndPensionsGroup = [1, 2];
+
+      allowedPayAndPensionsGroup.forEach((payAndPensionsGroup) => {
+        describe(`for pay and pension group ${payAndPensionsGroup}:`, () => {
+          beforeEach(() => {
+            setMainServicePayAndPensionsGroup(payAndPensionsGroup);
+          });
+
+          it('should pass if there is no input', async () => {
+            establishmentRow.SLEEPINS = '';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.be.empty;
+          });
+
+          const validInputs = ['1', '2', '999'];
+
+          validInputs.forEach((value) => {
+            it(`should pass if SLEEPINS input is valid - ${value}`, async () => {
+              establishmentRow.SLEEPINS = value;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.be.empty;
+              expect(establishment._offerSleepIn).to.deep.equal(value);
+            });
+          });
+
+          const invalidInputs = ['0', '3', '-10', 'some words'];
+          invalidInputs.forEach((invalidValue) => {
+            it(`should add a warning and ignore if input is invalid - ${invalidValue}`, async () => {
+              establishmentRow.SLEEPINS = invalidValue;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.deep.equal([
+                {
+                  origin: 'Establishments',
+                  lineNumber: establishment.lineNumber,
+                  warnCode: 2560,
+                  warnType: 'SLEEPINS_WARNING',
+                  warning: 'The code you have entered for SLEEPINS is incorrect and will be ignored',
+                  source: invalidValue,
+                  column: 'SLEEPINS',
+                  name: establishmentRow.LOCALESTID,
+                },
+              ]);
+              expect(establishment._offerSleepIn).to.deep.equal(undefined);
+            });
+          });
+        });
+      });
+
+      describe('when main service does not have sleep in (payAndPensionsGroup 3)', () => {
+        beforeEach(() => {
+          setMainServicePayAndPensionsGroup(3);
+        });
+
+        it('should pass if there is no input', async () => {
+          establishmentRow.SLEEPINS = '';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.be.empty;
+        });
+
+        it('should add a warning and ignore if SLEEPINS has an input but main service does not have sleep ins', async () => {
+          establishmentRow.SLEEPINS = '1';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.include({
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2561,
+            warnType: 'SLEEPINS_MAIN_SERVICE_WARNING',
+            warning: 'Value entered for SLEEPINS will be ignored as main service does not involve sleep ins',
+            source: '1',
+            column: 'SLEEPINS',
+            name: establishmentRow.LOCALESTID,
+          });
+          expect(establishment._offerSleepIn).to.deep.equal(null);
+        });
+      });
+    });
+
+    describe('_validateSleepInPay (SLEEPINPAY)', () => {
+      const allowedPayAndPensionsGroup = [1, 2];
+
+      allowedPayAndPensionsGroup.forEach((payAndPensionsGroup) => {
+        describe(`For pay and pension group ${payAndPensionsGroup}:`, () => {
+          beforeEach(() => {
+            setMainServicePayAndPensionsGroup(payAndPensionsGroup);
+          });
+
+          it('should pass if there is no input', async () => {
+            establishmentRow.SLEEPINPAY = '';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.be.empty;
+          });
+
+          const validInputs = ['1', '2', '999'];
+          validInputs.forEach((value) => {
+            it(`should pass if SLEEPINPAY input is a valid value - ${value}`, async () => {
+              establishmentRow.SLEEPINS = '1';
+              establishmentRow.SLEEPINPAY = value;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.be.empty;
+              expect(establishment._howToPayForSleepIn).to.deep.equal(value);
+            });
+          });
+
+          const invalidInputs = ['0', '3', '-10', 'some words'];
+          invalidInputs.forEach((invalidValue) => {
+            it(`should add a warning and ignore if input is invalid - ${invalidValue}`, async () => {
+              establishmentRow.SLEEPINS = '1';
+              establishmentRow.SLEEPINPAY = invalidValue;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.deep.equal([
+                {
+                  origin: 'Establishments',
+                  lineNumber: establishment.lineNumber,
+                  warnCode: 2570,
+                  warnType: 'SLEEPINPAY_WARNING',
+                  warning: 'The code you have entered for SLEEPINPAY is incorrect and will be ignored',
+                  source: invalidValue,
+                  column: 'SLEEPINPAY',
+                  name: establishmentRow.LOCALESTID,
+                },
+              ]);
+              expect(establishment._howToPayForSleepIn).to.deep.equal(undefined);
+            });
+          });
+        });
+      });
+
+      it('should add a warning and ignore if SLEEPINPAY has an input but SLEEPINS is not 1 (YES)', async () => {
+        establishmentRow.SLEEPINS = '999';
+        establishmentRow.SLEEPINPAY = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2572,
+            warnType: 'SLEEPINPAY_SLEEPIN_WARNING',
+            warning:
+              'The code you have entered for SLEEPINPAY will be ignored as the code for SLEEPIN is not set to 1 (Yes)',
+            source: '1',
+            column: 'SLEEPINPAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+        expect(establishment._howToPayForSleepIn).to.deep.equal(undefined);
+      });
+
+      describe('when main service does not have sleep in (payAndPensionsGroup 3)', () => {
+        beforeEach(() => {
+          setMainServicePayAndPensionsGroup(3);
+        });
+
+        it('should pass if there is no input', async () => {
+          establishmentRow.SLEEPINPAY = '';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.be.empty;
+        });
+
+        it('should add a warning and ignore if SLEEPINPAY has an input but main service does not have sleep ins', async () => {
+          establishmentRow.SLEEPINS = '1';
+          establishmentRow.SLEEPINPAY = '1';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.include({
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2571,
+            warnType: 'SLEEPINPAY_MAIN_SERVICE_WARNING',
+            warning: 'Value entered for SLEEPINPAY will be ignored as main service does not involve sleep ins',
+            source: '1',
+            column: 'SLEEPINPAY',
+            name: establishmentRow.LOCALESTID,
+          });
+          expect(establishment._howToPayForSleepIn).to.deep.equal(null);
+        });
       });
     });
 

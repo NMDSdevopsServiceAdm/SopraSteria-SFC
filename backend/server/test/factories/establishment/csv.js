@@ -44,7 +44,7 @@ module.exports = build('EstablishmentCSV', {
     SICKPAY: '0',
 
     PENSION: '1',
-    ACTUALCONT: '4.0',
+    ACTUALCONT: '',
     OPTOUTPEN: '2',
 
     HOLIDAY: '35',
