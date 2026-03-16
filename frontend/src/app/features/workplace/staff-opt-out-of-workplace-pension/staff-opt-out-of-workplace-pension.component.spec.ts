@@ -16,6 +16,9 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension.component';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
 describe('StaffOptOutOfWorkplacePensionComponent', () => {
   const options = YesNoDontKnowOptions;
@@ -37,6 +40,11 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
         {
           provide: BackService,
           useValue: backServiceSpy,
+        },
+        {
+          provide: PayAndPensionService,
+          useFactory: MockPayAndPensionService.factory(overrides?.inPayAndPensionsMiniFlow),
+          deps: [HttpClient],
         },
         WindowRef,
         provideHttpClient(),
@@ -74,10 +82,27 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
   });
 
   describe('caption', () => {
-    it('should show "Pay and benefits" as the caption', async () => {
-      const { getByTestId } = await setup();
+    it('should show "Pay and benefits" as the caption when in the workplace flow', async () => {
+      const { getByTestId } = await setup({ returnUrl: true, inPayAndPensionsMiniFlow: false });
       const sectionCaption = 'Pay and benefits';
 
+      expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
+    });
+
+    it('should show "Pay and benefits" when coming from the workplace summary', async () => {
+      const { getByTestId } = await setup({
+        returnUrl: { url: ['/dashboard'], fragment: 'workplace' },
+        inPayAndPensionsMiniFlow: false,
+      });
+
+      const sectionCaption = 'Pay and benefits';
+      expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
+    });
+
+    it('should show "Workplace" when in the pay and pensions mini flow', async () => {
+      const { getByTestId } = await setup({ returnUrl: null, inPayAndPensionsMiniFlow: true });
+
+      const sectionCaption = 'Workplace';
       expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
     });
   });
@@ -243,6 +268,76 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
           value: option.value,
         });
       });
+    });
+  });
+
+  describe('when viewing the page in the pay and pensions mini flow', () => {
+    it('should render the pay and pension group 2 progress bar when in the mini flow', async () => {
+      const { getByTestId } = await setup({ returnUrl: null, inPayAndPensionsMiniFlow: true });
+
+      const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      const sectionIndex = 1;
+      const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
+      const progressBar = getByTestId('progress-bar');
+
+      expect(progressBar).toBeTruthy();
+      payAndPensionsMiniFlowGroup2BarSections.forEach((section) => {
+        expect(within(progressBar).getByText(section)).toBeTruthy();
+      });
+      expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+
+    it('should set the correct back link when in the pay and pension mini flow', async () => {
+      const overrides = {
+        returnToUrl: true,
+        returnTo: { url: ['/dashboard'], fragment: 'home' },
+        inPayAndPensionsMiniFlow: true,
+        establishment: { mainService: { payAndPensionsGroup: 2 } },
+      };
+      const { backServiceSpy } = await setup(overrides);
+
+      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'pensions'],
+      });
+    });
+
+    it('should show the "Save and continue" and "Skip this question cta buttons', async () => {
+      const { getByText } = await setup({ inPayAndPensionsMiniFlow: true });
+
+      expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
+    });
+
+    it('should navigate to "workplace-offer-sleep-ins" page when "Skip this question" is clicked', async () => {
+      const { getByText, routerSpy, fixture } = await setup({ inPayAndPensionsMiniFlow: true });
+
+      const button = getByText('Skip this question');
+      userEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'workplace-summary',
+        'workplace-offer-sleep-ins',
+      ]);
+    });
+
+    it('should navigate to "workplace-offer-sleep-ins" page', async () => {
+      const { getByText, routerSpy, fixture } = await setup({ inPayAndPensionsMiniFlow: true });
+
+      const button = getByText('Save and continue');
+      userEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'workplace-data',
+        'workplace-summary',
+        'workplace-offer-sleep-ins',
+      ]);
     });
   });
 });

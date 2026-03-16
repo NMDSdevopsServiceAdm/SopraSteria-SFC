@@ -5,7 +5,7 @@ import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { WorkplaceQuestion } from '../question/question.component';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
@@ -31,11 +31,15 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
     },
   ];
 
-  public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
+  public section: string;
+  public sectionHeading: string;
   public minPercentage = 3.5;
   public maxPercentage = 100;
   public showPercentageTextBox = false;
   public payAndPensionQuestionRevealText: string;
+  public inPayAndPensionsMiniFlow: boolean = false;
+  public progressBarSections: string[];
+  public showProgressBar: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -57,11 +61,31 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
 
   protected init(): void {
     this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
+    this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
+    this.showProgressBar = (!this.return || this.inPayAndPensionsMiniFlow) ?? false;
     this.setRoutes();
     this.prefill();
+    this.setSectionHeading();
+    this.setProgressBarSections();
 
     if (this.establishment.pensionContribution === 'Yes') {
       this.showPercentageTextBox = true;
+    }
+
+    this.payAndPensionService.clearInPayAndPensionsMiniFlowWhenClickedAway();
+  }
+
+  private setSectionHeading(): void {
+    this.sectionHeading = this.inPayAndPensionsMiniFlow ? 'Workplace' : WorkplaceFlowSections.PAY_AND_BENEFITS;
+  }
+
+  private setProgressBarSections(): void {
+    if (this.inPayAndPensionsMiniFlow) {
+      this.progressBarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      this.section = this.progressBarSections[0];
+    } else {
+      this.progressBarSections = this.workplaceFlowSections;
+      this.section = WorkplaceFlowSections.PAY_AND_BENEFITS;
     }
   }
 
@@ -192,6 +216,12 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
   protected addErrorLinkFunctionality(): void {
     if (!this.errorSummaryService.formEl$.value) {
       this.errorSummaryService.formEl$.next(this.formEl);
+    }
+  }
+
+  protected onSuccess(): void {
+    if (this.inPayAndPensionsMiniFlow) {
+      this.submitAction = { action: 'continue', save: true };
     }
   }
 }

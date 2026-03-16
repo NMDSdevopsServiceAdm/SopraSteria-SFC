@@ -2,19 +2,39 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { PayAndPensionService } from './pay-and-pension.service';
+import { NavigationEnd, Router, RouterEvent } from '@angular/router';
+import { ReplaySubject } from 'rxjs';
 
 describe('PayAndPensionService', () => {
   let service: PayAndPensionService;
   let http: HttpTestingController;
 
+  let router: Router;
+
+  const eventSubject = new ReplaySubject<RouterEvent>(1);
+
+  const routerMock = {
+    events: eventSubject.asObservable(),
+    url: '/workplace-data/workplace-summary/pensions',
+  };
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [],
-      providers: [PayAndPensionService, provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        PayAndPensionService,
+        {
+          provide: Router,
+          useValue: routerMock,
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     });
     service = TestBed.inject(PayAndPensionService);
 
     http = TestBed.inject(HttpTestingController);
+    router = TestBed.inject(Router);
   });
 
   afterEach(() => {
@@ -75,6 +95,31 @@ describe('PayAndPensionService', () => {
 
         expect(actual).toEqual(expected);
       });
+    });
+  });
+
+  describe('clearInPayAndPensionsMiniFlowWhenClickedAway', () => {
+    const inPayAndPensionsMiniFlowValueSet = true;
+    it('should call setInPayAndPensionsMiniFlow and set to null', () => {
+      service.setInPayAndPensionsMiniFlow(inPayAndPensionsMiniFlowValueSet);
+
+      const url = 'staff-records';
+      eventSubject.next(new NavigationEnd(0, url, url));
+
+      service.clearInPayAndPensionsMiniFlowWhenClickedAway();
+
+      expect(service.getInPayAndPensionsMiniFlow()).toEqual(null);
+    });
+
+    it('should not call setInPayAndPensionsMiniFlow and should have the same value', () => {
+      service.setInPayAndPensionsMiniFlow(inPayAndPensionsMiniFlowValueSet);
+
+      const url = '/workplace-data/workplace-summary/pensions';
+      eventSubject.next(new NavigationEnd(0, url, url));
+
+      service.clearInPayAndPensionsMiniFlowWhenClickedAway();
+
+      expect(service.getInPayAndPensionsMiniFlow()).toEqual(inPayAndPensionsMiniFlowValueSet);
     });
   });
 });

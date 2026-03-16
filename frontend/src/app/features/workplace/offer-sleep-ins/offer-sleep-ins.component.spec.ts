@@ -15,6 +15,9 @@ import { of } from 'rxjs';
 import { BackService } from '@core/services/back.service';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
+import { AlertService } from '@core/services/alert.service';
+import { Alert } from '@core/model/alert.model';
 
 describe('OfferSleepInsComponent', () => {
   const options = YesNoDontKnowOptions;
@@ -28,6 +31,7 @@ describe('OfferSleepInsComponent', () => {
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
+        AlertService,
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides),
@@ -61,7 +65,19 @@ describe('OfferSleepInsComponent', () => {
 
     const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
-    return { ...setupTools, component, establishmentServiceSpy, routerSpy, backServiceSpy, setSubmitActionSpy };
+    const alert = injector.inject(AlertService) as AlertService;
+
+    const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
+
+    return {
+      ...setupTools,
+      component,
+      establishmentServiceSpy,
+      routerSpy,
+      backServiceSpy,
+      setSubmitActionSpy,
+      alertSpy,
+    };
   }
 
   it('should render OfferSleepInsComponent', async () => {
@@ -85,10 +101,20 @@ describe('OfferSleepInsComponent', () => {
       expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
     });
 
-    it('should show "Services" as the caption', async () => {
-      const { getByTestId } = await setup();
-      const sectionCaption = 'Services';
+    it('should show "Services" when in the workplace flow', async () => {
+      const { getByTestId } = await setup({ returnUrl: true, inPayAndPensionsMiniFlow: false });
 
+      const sectionCaption = 'Services';
+      expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
+    });
+
+    it('should show "Services" when coming from the workplace summary', async () => {
+      const { getByTestId } = await setup({
+        returnUrl: { url: ['/dashboard'], fragment: 'workplace' },
+        inPayAndPensionsMiniFlow: false,
+      });
+
+      const sectionCaption = 'Services';
       expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
     });
   });
@@ -330,6 +356,125 @@ describe('OfferSleepInsComponent', () => {
       ]);
       expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
         offerSleepIn: 'Yes',
+      });
+    });
+  });
+
+  describe('when viewing the page in the pay and pension mini flow', () => {
+    const overrides = {
+      returnToUrl: true,
+      returnTo: { url: ['/dashboard'], fragment: 'home' },
+      inPayAndPensionsMiniFlow: true,
+      establishment: { mainService: { payAndPensionsGroup: 2 } },
+    };
+
+    it('should render the pay and pension group 2 progress bar when in the mini flow', async () => {
+      const { getByTestId } = await setup(overrides);
+
+      const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      const sectionIndex = 2;
+      const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
+      const progressBar = getByTestId('progress-bar');
+
+      expect(progressBar).toBeTruthy();
+      payAndPensionsMiniFlowGroup2BarSections.forEach((section) => {
+        expect(within(progressBar).getByText(section)).toBeTruthy();
+      });
+      expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+
+    it('should set the correct back link when in the pay and pension mini flow', async () => {
+      const { backServiceSpy } = await setup(overrides);
+
+      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+        url: ['/workplace', 'mocked-uid', 'workplace-data', 'workplace-summary', 'staff-opt-out-of-workplace-pension'],
+      });
+    });
+
+    it('should show the "Save and continue" and "Skip this question cta buttons', async () => {
+      const { getByText } = await setup({ inPayAndPensionsMiniFlow: true });
+
+      expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('Skip this question')).toBeTruthy();
+    });
+
+    it('should navigate to home page when page when "Skip this question" is clicked', async () => {
+      const { getByText, routerSpy, fixture, alertSpy } = await setup(overrides);
+
+      const button = getByText('Skip this question');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
+      await fixture.whenStable();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Workplace details added',
+      } as Alert);
+    });
+
+    it(`should navigate to the home page when submitting without a selecting an option`, async () => {
+      const { getByLabelText, getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } = await setup(
+        overrides,
+      );
+
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      await fixture.whenStable();
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Workplace details added',
+      } as Alert);
+    });
+
+    it('should navigate to "how-do-you-pay-for-sleep-ins" when submitting with the option "Yes"', async () => {
+      const { component, getByLabelText, getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } =
+        await setup(overrides);
+
+      fireEvent.click(getByLabelText('Yes'));
+      fixture.detectChanges();
+      const button = getByText('Save and continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.establishment.uid,
+        'workplace-data',
+        'workplace-summary',
+        'how-do-you-pay-for-sleep-ins',
+      ]);
+      expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
+        offerSleepIn: 'Yes',
+      });
+      await fixture.whenStable();
+      expect(alertSpy).not.toHaveBeenCalled();
+    });
+
+    [options[1], options[2]].forEach((option) => {
+      it(`should navigate to the home page when submitting with the option "${option.label}"`, async () => {
+        const { component, getByLabelText, getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } =
+          await setup(overrides);
+
+        fireEvent.click(getByLabelText(option.label));
+        fixture.detectChanges();
+        const button = getByText('Save and continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'OfferSleepIn', {
+          offerSleepIn: option.value,
+        });
+        await fixture.whenStable();
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Workplace details added',
+        } as Alert);
       });
     });
   });

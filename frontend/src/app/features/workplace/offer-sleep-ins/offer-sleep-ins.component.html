@@ -5,7 +5,7 @@
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading" style="width: 102%">
-              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              <span class="govuk-caption-l" data-testid="section-heading">{{ sectionHeading }}</span>
               Does your workplace offer sleep-ins?
             </h1>
           </legend>
@@ -37,15 +37,16 @@
       <app-workplace-submit-button
         [return]="!!return"
         (clicked)="setSubmitAction($event)"
+        [isInMiniFlow]="inPayAndPensionsMiniFlow"
         [hasConditionalRouting]="true"
       ></app-workplace-submit-button>
     </div>
     <div class="govuk-grid-column-one-third">
-      @if (!return){
+      @if (showProgressBar){
       <div class="govuk-util__float-right">
         <app-progress-bar
           data-testid="progress-bar"
-          [sections]="workplaceFlowSections"
+          [sections]="progressBarSections"
           [currentSection]="section"
         ></app-progress-bar>
       </div>

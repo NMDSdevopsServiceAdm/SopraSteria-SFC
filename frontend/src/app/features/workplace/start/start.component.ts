@@ -58,6 +58,16 @@ export class StartComponent implements OnInit, OnDestroy {
     this.router.navigate(nextRoute);
   }
 
+  private setPayAndPensionsMiniFlowViewed(): void {
+    const data = {
+      property: 'payAndPensionsMiniFlowViewed',
+      value: true,
+    };
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe(),
+    );
+  }
+
   private removeAddDetailsBanner(): void {
     const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
 
@@ -65,5 +75,7 @@ export class StartComponent implements OnInit, OnDestroy {
       this.establishment.showAddWorkplaceDetailsBanner = response.data.showAddWorkplaceDetailsBanner;
       this.establishmentService.setState(this.establishment);
     });
+
+    this.setPayAndPensionsMiniFlowViewed();
   }
 }

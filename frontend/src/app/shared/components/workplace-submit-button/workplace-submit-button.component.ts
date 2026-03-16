@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-    selector: 'app-workplace-submit-button',
-    templateUrl: './workplace-submit-button.component.html',
-    standalone: false
+  selector: 'app-workplace-submit-button',
+  templateUrl: './workplace-submit-button.component.html',
+  standalone: false,
 })
 export class WorkplaceSubmitButtonComponent {
   @Input() return: boolean;
@@ -16,6 +16,7 @@ export class WorkplaceSubmitButtonComponent {
   @Input() marginTop4 = false;
   @Input() continue = false;
   @Input() hasConditionalRouting = false;
+  @Input() isInMiniFlow: boolean = false;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
   onLinkClick(event: Event, action: string, save: boolean): void {

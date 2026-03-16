@@ -143,6 +143,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       !payAndPensionsMiniFlowViewed
     ) {
       this.sections[0].message = "We've added some Workplace questions";
+      this.sections[0].skipTabSwitch = true;
       this.sections[0].route = this.establishmentService.buildPathForWorkplaceSummary(this.workplace.uid, 'pensions');
       this.setReturn = true;
       this.payAndPensionWorkplaceQuestionsLinkDisplaying = true;

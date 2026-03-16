@@ -177,8 +177,10 @@ describe('StartComponent (workplace)', () => {
     fireEvent.click(continueButton);
     fixture.detectChanges();
 
-    const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
-    expect(updateSingleEstablishmentFieldSpy).toHaveBeenCalledWith(workplaceUid, data);
+    const showAddWorkplaceDetailsBannerData = { property: 'showAddWorkplaceDetailsBanner', value: false };
+    const payAndPensionsMiniFlowViewedData = { property: 'payAndPensionsMiniFlowViewed', value: true };
+    expect(updateSingleEstablishmentFieldSpy).toHaveBeenCalledWith(workplaceUid, showAddWorkplaceDetailsBannerData);
+    expect(updateSingleEstablishmentFieldSpy).toHaveBeenCalledWith(workplaceUid, payAndPensionsMiniFlowViewedData);
   });
 
   it('should set establishment in service with showBanner field set to data returned from update (false) after clicking Continue button', async () => {

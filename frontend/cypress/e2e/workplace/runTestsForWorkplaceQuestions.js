@@ -221,10 +221,12 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
 
     const heading = 'Do you provide any other services?';
     it('updates when there are no other services', () => {
+      cy.intercept('GET', '/api/establishment/*/services*').as('services');
       cy.get('[data-testid="otherServices"]').as('testId');
 
       cy.get('@testId').contains('Add').click();
 
+      cy.wait('@services');
       cy.get('h1').should('contain.text', heading);
       cy.getByLabel('No').as('NoButton');
       cy.get('@NoButton').click();
@@ -239,10 +241,13 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     });
 
     it('updates when there are other services', () => {
+      cy.intercept('GET', '/api/establishment/*/services*').as('services');
+
       cy.get('[data-testid="otherServices"]').as('testId');
 
       cy.get('@testId').contains('Add').click();
 
+      cy.wait('@services');
       cy.get('h1').should('contain.text', heading);
 
       cy.getByLabel('Yes, we provide other services').as('YesButton');
