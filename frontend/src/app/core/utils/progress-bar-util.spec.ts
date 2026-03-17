@@ -88,4 +88,27 @@ describe('ProgressBarUtil', () => {
       expect(payAndPensionsMiniFlowGroup2BarSections).toEqual(['Question 1', 'Question 2', 'Question 3']);
     });
   });
+
+  describe('payAndPensionsMiniFlowBarSections', () => {
+    it('should return an array with the default length 3 and values when nothing is sent', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections();
+
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(3);
+      expect(payAndPensionsMiniFlowBarSections).toEqual(['Question 1', 'Question 2', 'Question 3']);
+    });
+
+    it('should return an array with the default length 3 and values when 2 is sent', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections(2);
+
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(3);
+      expect(payAndPensionsMiniFlowBarSections).toEqual(['Question 1', 'Question 2', 'Question 3']);
+    });
+
+    it('should return an array with the length 4 and correct values when 4 is sent', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections(4);
+
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(4);
+      expect(payAndPensionsMiniFlowBarSections).toEqual(['Question 1', 'Question 2', 'Question 3', 'Question 4']);
+    });
+  });
 });

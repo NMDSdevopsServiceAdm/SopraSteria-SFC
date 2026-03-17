@@ -24,6 +24,14 @@ export class ProgressBarUtil {
   public static payAndPensionsMiniFlowGroup2BarSections = (): string[] => {
     return ['Question 1', 'Question 2', 'Question 3'];
   };
+
+  public static payAndPensionsMiniFlowBarSections = (value: number = 3): string[] => {
+    const sections = ['Question 1', 'Question 2', 'Question 3'];
+    if (value === 4) {
+      sections.push('Question 4');
+    }
+    return sections;
+  };
 }
 
 export enum WorkplaceFlowSections {
