@@ -92,6 +92,9 @@ class WorkplaceCSVValidator {
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._sickPay = null;
     this._pensionContribution = null;
+    this._pensionContributionPercentage = null;
+    this._staffOptOutOfWorkplacePension = null;
+
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkforcePathwayAwareness = null;
     this._careWorkforcePathwayUse = null;
@@ -99,6 +102,11 @@ class WorkplaceCSVValidator {
     this._staffDoDelegatedHealthcareActivities = null;
     // { knowWhatActivities, activities }
     this._staffWhatKindDelegatedHealthcareActivities = null;
+
+    this._offerSleepIn = null;
+    this._howToPayForSleepIn = null;
+    this._travelTimePayOption = null;
+    this._travelTimePayRate = null;
 
     this._id = null;
 
@@ -3184,6 +3192,38 @@ class WorkplaceCSVValidator {
     this._pensionContribution = mapping[pension];
   }
 
+  _transformStaffOptOutOfWorkplacePension() {
+    const mapping = {
+      1: 'Yes',
+      2: 'No',
+      999: "Don't know",
+    };
+
+    this._staffOptOutOfWorkplacePension = mapping[this._staffOptOutOfWorkplacePension] ?? null;
+  }
+
+  _transformOfferSleepIn() {
+    const mapping = {
+      1: 'Yes',
+      2: 'No',
+      999: "Don't know",
+    };
+
+    this._offerSleepIn = mapping[this._offerSleepIn] ?? null;
+  }
+
+  _transformHowToPayForSleepIn() {
+    const mapping = {
+      1: 'Hourly rate',
+      2: 'Flat rate',
+      999: 'I do not know',
+    };
+
+    this._howToPayForSleepIn = mapping[this._howToPayForSleepIn] ?? null;
+  }
+
+  _transformTravelTimePay() {}
+
   /** end transforms */
 
   preValidate(headers) {
@@ -3418,7 +3458,13 @@ class WorkplaceCSVValidator {
       status = !this._transformCareWorkforcePathwayUse() ? false : status;
       status = !this._transformCareWorkforcePathwayUseDesc() ? false : status;
       status = !this._transformCashLoyaltyForFirstTwoYears() ? false : status;
-      status = !this._transformPensionAndSickPay() ? false : status;
+
+      status = !!this._transformPensionAndSickPay() && status;
+      status = !!this._transformStaffOptOutOfWorkplacePension() && status;
+      status = !!this._transformOfferSleepIn() && status;
+      status = !!this._transformHowToPayForSleepIn() && status;
+      status = !!this._transformTravelTimePay() && status;
+
       return status;
     } else {
       return true;
@@ -3557,7 +3603,11 @@ class WorkplaceCSVValidator {
       careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
       sickPay: this._sickPay,
       pensionContribution: this._pensionContribution,
+      pensionContributionPercentage: this._pensionContributionPercentage,
+      staffOptOutOfWorkplacePension: this._staffOptOutOfWorkplacePension,
       careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
+      offerSleepIn: this._offerSleepIn,
+      howToPayForSleepIn: this._howToPayForSleepIn,
     };
     if (this._allServices) {
       if (this._allServices.length === 1) {
