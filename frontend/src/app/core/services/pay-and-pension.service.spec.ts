@@ -122,4 +122,24 @@ describe('PayAndPensionService', () => {
       expect(service.getInPayAndPensionsMiniFlow()).toEqual(inPayAndPensionsMiniFlowValueSet);
     });
   });
+
+  describe('getPayAndPensionsMiniFlowProgressBarSections', () => {
+    it('should return an array length of 3 when the payAndPensionsGroup is 1', async () => {
+      const sections = service.getPayAndPensionsMiniFlowProgressBarSections(1);
+
+      expect(sections.length).toEqual(4);
+    });
+
+    it('should return an array length of 3 when the payAndPensionsGroup is 2', async () => {
+      const sections = service.getPayAndPensionsMiniFlowProgressBarSections(2);
+
+      expect(sections.length).toEqual(3);
+    });
+
+    it('should return an array length of 0 when payAndPensionsGroup is 3', async () => {
+      const sections = service.getPayAndPensionsMiniFlowProgressBarSections(3);
+
+      expect(sections.length).toEqual(0);
+    });
+  });
 });
