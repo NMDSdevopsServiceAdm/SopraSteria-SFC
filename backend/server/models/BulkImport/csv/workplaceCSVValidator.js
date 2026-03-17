@@ -336,9 +336,20 @@ class WorkplaceCSVValidator {
   static get TRAVELTIME_WARNING() {
     return 2580;
   }
+  static get TRAVELTIME_MAIN_SERVICE_WARNING() {
+    return 2581;
+  }
 
   static get TTDIFFRATE_WARNING() {
     return 2590;
+  }
+
+  static get TTDIFFRATE_MAIN_SERVICE_WARNING() {
+    return 2591;
+  }
+
+  static get TTDIFFRATE_TRAVELTIME_WARNING() {
+    return 2592;
   }
 
   /** end error codes */
@@ -2442,7 +2453,66 @@ class WorkplaceCSVValidator {
     return true;
   }
 
-  _validateTravelTimePay() {}
+  _validateTravelTimePay() {
+    const allowedTravelTimePayValues = this.mappings.travelTimePayOptions.map((option) =>
+      option.bulkUploadCode.toString(),
+    );
+
+    const travelTimePayOption = this._currentLine.TRAVELTIME;
+
+    if (travelTimePayOption === '') {
+      return true;
+    }
+
+    const travelTimePayIsValid = allowedTravelTimePayValues.includes(travelTimePayOption);
+    if (!travelTimePayIsValid) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for TRAVELTIME is incorrect and will be ignored',
+          'TRAVELTIME',
+          'TRAVELTIME_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    this._travelTimePayOption = travelTimePayOption;
+  }
+
+  _validateTravelTimePayRate() {
+    const differentPayRate = this._currentLine.TTDIFFRATE;
+    if (differentPayRate == '') {
+      return true;
+    }
+
+    if (this._travelTimePayOption !== '3') {
+      this._validationErrors.push(
+        this._generateWarning(
+          'TTDIFFRATE will be ignored as TRAVELTIME is not 3 (A different travel time rate)',
+          'TTDIFFRATE',
+          'TTDIFFRATE_TRAVELTIME_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    const parsedPayRate = parseFloat(differentPayRate);
+    const roundedTo2DecimalPlace = Math.round(parsedPayRate * 100) / 100;
+    const payRateIsInRange = 2.5 <= roundedTo2DecimalPlace && roundedTo2DecimalPlace <= 200;
+
+    if (!payRateIsInRange) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'TTDIFFRATE will be ignored as it should be between £2.5 and £200',
+          'TTDIFFRATE',
+          'TTDIFFRATE_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    this._travelTimePayRate = roundedTo2DecimalPlace;
+  }
 
   _validateNoChange() {
     let localValidationErrors = [];
@@ -3257,6 +3327,7 @@ class WorkplaceCSVValidator {
       this._validateSleepIn();
       this._validateSleepInPay();
       this._validateTravelTimePay();
+      this._validateTravelTimePayRate();
 
       // this._validateNoChange(); // Not working, disabled for LA Window
     }

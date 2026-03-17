@@ -41,6 +41,15 @@ const workplaceMappings = {
     { id: 20, canDoDelegatedHealthcareActivities: true, payAndPensionsGroup: 1 }, // { ASC: 20, BUDI: 8 } Dom care
     { id: 24, canDoDelegatedHealthcareActivities: true, payAndPensionsGroup: 2 }, // { ASC: 24, BUDI: '1' }, group 2 Care home services with nursing
   ],
+  travelTimePayOptions: [
+    { id: 1, includeRate: false, bulkUploadCode: 1 },
+    { id: 2, includeRate: false, bulkUploadCode: 2 },
+    { id: 3, includeRate: true, bulkUploadCode: 3 },
+    { id: 4, includeRate: false, bulkUploadCode: 4 },
+    { id: 5, includeRate: false, bulkUploadCode: 5 },
+    { id: 6, includeRate: false, bulkUploadCode: 6 },
+    { id: 7, includeRate: false, bulkUploadCode: 999 },
+  ],
   delegatedHealthcareActivities: [
     { id: 1, bulkUploadCode: 1 },
     { id: 2, bulkUploadCode: 2 },
@@ -121,7 +130,7 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 
 const BU_DHA_YES = '1';
 
-describe('Bulk Upload - Establishment CSV', () => {
+describe.only('Bulk Upload - Establishment CSV', () => {
   let establishmentRow;
 
   beforeEach(() => {
@@ -2411,28 +2420,103 @@ describe('Bulk Upload - Establishment CSV', () => {
             const establishment = await generateEstablishmentFromCsv(establishmentRow);
             establishment.transform();
 
-            expect(establishment.validationErrors).to.deep.include({
-              origin: 'Establishments',
-              lineNumber: establishment.lineNumber,
-              warnCode: 2580,
-              warnType: 'TRAVELTIME_WARNING',
-              warning: 'The code you have entered for TRAVELTIME is incorrect and will be ignored',
-              source: '1',
-              column: 'TRAVELTIME',
-              name: establishmentRow.LOCALESTID,
-            });
-            expect(establishment._travelTimePay).to.deep.equal(null);
+            expect(establishment.validationErrors).to.deep.equal([
+              {
+                origin: 'Establishments',
+                lineNumber: establishment.lineNumber,
+                warnCode: 2580,
+                warnType: 'TRAVELTIME_WARNING',
+                warning: 'The code you have entered for TRAVELTIME is incorrect and will be ignored',
+                source: invalidValue,
+                column: 'TRAVELTIME',
+                name: establishmentRow.LOCALESTID,
+              },
+            ]);
+            expect(establishment._travelTimePay).to.deep.equal(undefined);
           });
         });
 
         describe('when TRAVELTIME = 3 (a different travel time rate)', () => {
-          it('should pass if TTDIFFRATE is a number between 2.5 and 200', async () => {});
+          const validValues = ['2.5', '5', '100.25', '200'];
+          validValues.forEach((value) => {
+            it(`should pass if TTDIFFRATE is a number between 2.5 and 200 - ${value}`, async () => {
+              establishmentRow.TRAVELTIME = '3';
+              establishmentRow.TTDIFFRATE = value;
 
-          it('should add a warning and ignore if TTDIFFRATE is invalid', async () => {});
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.be.empty;
+            });
+          });
+
+          const invalidValues = ['2.4', '201', '0', '-10', '999', 'some words'];
+          invalidValues.forEach((invalidValue) => {
+            it(`should add a warning and ignore if TTDIFFRATE is invalid - ${invalidValue}`, async () => {
+              establishmentRow.TRAVELTIME = '3';
+              establishmentRow.TTDIFFRATE = invalidValue;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.deep.equal([
+                {
+                  origin: 'Establishments',
+                  lineNumber: establishment.lineNumber,
+                  warnCode: 2590,
+                  warnType: 'TTDIFFRATE_WARNING',
+                  warning: 'TTDIFFRATE will be ignored as it should be between £2.5 and £200',
+                  source: invalidValue,
+                  column: 'TTDIFFRATE',
+                  name: establishmentRow.LOCALESTID,
+                },
+              ]);
+            });
+          });
         });
 
-        it('should add a warning and ignore if TTDIFFRATE is given but TRAVELTIME is empty', async () => {});
-        it('should add a warning and ignore if TTDIFFRATE is given but TRAVELTIME is not 3', async () => {});
+        it('should add a warning and ignore if TTDIFFRATE is given but TRAVELTIME is empty', async () => {
+          establishmentRow.TRAVELTIME = '';
+          establishmentRow.TTDIFFRATE = '5.5';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2592,
+              warnType: 'TTDIFFRATE_TRAVELTIME_WARNING',
+              warning: 'TTDIFFRATE will be ignored as TRAVELTIME is not 3 (A different travel time rate)',
+              source: '5.5',
+              column: 'TTDIFFRATE',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+
+        it('should add a warning and ignore if TTDIFFRATE is given but TRAVELTIME is not 3', async () => {
+          establishmentRow.TRAVELTIME = '1';
+          establishmentRow.TTDIFFRATE = '5.5';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2592,
+              warnType: 'TTDIFFRATE_TRAVELTIME_WARNING',
+              warning: 'TTDIFFRATE will be ignored as TRAVELTIME is not 3 (A different travel time rate)',
+              source: '5.5',
+              column: 'TTDIFFRATE',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+          expect(establishment._travelTimePayRate).to.deep.equal(undefined);
+        });
       });
 
       const payAndPensionsGroupNotAllowed = [2, 3];
@@ -2442,7 +2526,15 @@ describe('Bulk Upload - Establishment CSV', () => {
             setMainServicePayAndPensionsGroup(payAndPensionsGroup);
           });
 
-          it('should pass if both TRAVELTIME and TTDIFFRATE are empty', async () => {});
+          it('should pass if both TRAVELTIME and TTDIFFRATE are empty', async () => {
+            establishmentRow.TRAVELTIME = '3';
+            establishmentRow.TTDIFFRATE = '5.5';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.deep.equal([]);
+          });
 
           it('should add a warning and ignore if got any input', async () => {});
         });

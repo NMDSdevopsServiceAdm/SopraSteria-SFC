@@ -20,21 +20,24 @@ const validateEstablishmentCsv = async (
     attributes: ['id', 'bulkUploadCode'],
   });
 
-  const serviceDHAMappings = await models.services.findAll({
-    attributes: ['id', 'canDoDelegatedHealthcareActivities'],
+  const serviceMappings = await models.services.findAll({
+    attributes: ['id', 'canDoDelegatedHealthcareActivities', 'payAndPensionsGroup'],
   });
 
   const delegatedHealthcareActivitiesMappings = await models.delegatedHealthcareActivities.findAll({
     attributes: ['id', 'bulkUploadCode'],
   });
 
-  // todo add mappings for DelegatedHealthcareActivities
+  const travelTimePayOptionMappings = await models.travelTimePayOption.findAll({
+    attributes: ['id', 'bulkUploadCode', 'includeRate'],
+  });
 
   const mappings = {
     cwpAwareness: cwpAwarenessMappings,
     cwpUseReason: cwpUseReasonMappings,
     delegatedHealthcareActivities: delegatedHealthcareActivitiesMappings,
-    services: serviceDHAMappings,
+    services: serviceMappings,
+    travelTimePayOptions: travelTimePayOptionMappings,
   };
 
   const lineValidator = new WorkplaceCsvValidator(thisLine, currentLineNumber, myCurrentEstablishments, mappings);
