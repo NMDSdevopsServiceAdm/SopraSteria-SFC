@@ -2713,9 +2713,13 @@ class WorkplaceCSVValidator {
     return service?.canDoDelegatedHealthcareActivities;
   }
 
-  _crossCheckMainServiceAndSleepIns() {
+  _crossCheckMainServiceWithSleepIns() {
     const sleepInHasValue = this._offerSleepIn || this._howToPayForSleepIn;
-    const shouldSeeSleepInQuestions = this._mainServiceShouldSeeSleepInQuestions();
+
+    const mainServiceIdFromInput = this._mainService?.id;
+    const mainService = this.mappings.services?.find((service) => service.id === mainServiceIdFromInput);
+
+    const shouldSeeSleepInQuestions = this._mainServiceShouldSeeSleepInQuestions(mainService);
 
     const shouldRaiseWarning = sleepInHasValue & !shouldSeeSleepInQuestions;
 
@@ -2748,17 +2752,12 @@ class WorkplaceCSVValidator {
     }
   }
 
-  _mainServiceShouldSeeSleepInQuestions() {
-    const mainServiceIdFromInput = this._mainService?.id;
-    const service = this.mappings.services?.find((service) => service.id === mainServiceIdFromInput);
-    const payAndPensionsGroup = service?.payAndPensionsGroup;
-    return payAndPensionsGroup === 1 || payAndPensionsGroup === 2;
+  _mainServiceShouldSeeSleepInQuestions(mainService) {
+    return [1, 2].includes(mainService?.payAndPensionsGroup);
   }
 
-  _mainServiceShouldSeeTravelPayQuestion() {
-    const mainServiceIdFromInput = this._mainService?.id;
-    const service = this.mappings.services?.find((service) => service.id === mainServiceIdFromInput);
-    return service?.payAndPensionsGroup === 1;
+  _mainServiceShouldSeeTravelPayQuestion(mainService) {
+    return mainService?.payAndPensionsGroup === 1;
   }
 
   _transformAllServices() {
@@ -3333,7 +3332,7 @@ class WorkplaceCSVValidator {
 
       status = !this._transformMainService() ? false : status;
       this._addMainServiceDHAWarningIfMismatch();
-      this._crossCheckMainServiceAndSleepIns();
+      this._crossCheckMainServiceWithSleepIns();
 
       status = !this._transformEstablishmentType() ? false : status;
       status = !this._transformAllServices() ? false : status;

@@ -2164,9 +2164,9 @@ describe('Bulk Upload - Establishment CSV', () => {
     };
 
     describe('_validateSleepIn (SLEEPINS)', () => {
-      const allowedPayAndPensionsGroup = [1, 2];
+      const allowedPayAndPensionsGroups = [1, 2];
 
-      allowedPayAndPensionsGroup.forEach((payAndPensionsGroup) => {
+      allowedPayAndPensionsGroups.forEach((payAndPensionsGroup) => {
         describe(`for pay and pension group ${payAndPensionsGroup}:`, () => {
           beforeEach(() => {
             setMainServicePayAndPensionsGroup(payAndPensionsGroup);
@@ -2257,9 +2257,9 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     describe('_validateSleepInPay (SLEEPINPAY)', () => {
-      const allowedPayAndPensionsGroup = [1, 2];
+      const allowedPayAndPensionsGroups = [1, 2];
 
-      allowedPayAndPensionsGroup.forEach((payAndPensionsGroup) => {
+      allowedPayAndPensionsGroups.forEach((payAndPensionsGroup) => {
         describe(`For pay and pension group ${payAndPensionsGroup}:`, () => {
           beforeEach(() => {
             setMainServicePayAndPensionsGroup(payAndPensionsGroup);
@@ -2368,6 +2368,83 @@ describe('Bulk Upload - Establishment CSV', () => {
             name: establishmentRow.LOCALESTID,
           });
           expect(establishment._howToPayForSleepIn).to.deep.equal(null);
+        });
+      });
+    });
+
+    describe('_validateTravelTimePay (TRAVELTIME / TTDIFFRATE)', () => {
+      describe('for pay and pensions group 1', () => {
+        beforeEach(() => {
+          setMainServicePayAndPensionsGroup(1);
+        });
+
+        it('should pass if there is no input', async () => {
+          establishmentRow.TRAVELTIME = '';
+          establishmentRow.TTDIFFRATE = '';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.be.empty;
+        });
+
+        const allowedTravelTimePayValues = ['1', '2', '3', '4', '5', '6', '999'];
+
+        allowedTravelTimePayValues.forEach((value) => {
+          it(`should pass if TRAVELTIME is a valid value (${value}) and TTDIFFRATE is empty`, async () => {
+            establishmentRow.TRAVELTIME = value;
+            establishmentRow.TTDIFFRATE = '';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.be.empty;
+          });
+        });
+
+        const invalidTravelTimePayValues = ['0', '-10', '7', '100', 'some words'];
+        invalidTravelTimePayValues.forEach((invalidValue) => {
+          it(`should add a warning and ignore if TRAVELTIME is not valid - ${invalidValue}`, async () => {
+            establishmentRow.TRAVELTIME = invalidValue;
+            establishmentRow.TTDIFFRATE = '';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.deep.include({
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2580,
+              warnType: 'TRAVELTIME_WARNING',
+              warning: 'The code you have entered for TRAVELTIME is incorrect and will be ignored',
+              source: '1',
+              column: 'TRAVELTIME',
+              name: establishmentRow.LOCALESTID,
+            });
+            expect(establishment._travelTimePay).to.deep.equal(null);
+          });
+        });
+
+        describe('when TRAVELTIME = 3 (a different travel time rate)', () => {
+          it('should pass if TTDIFFRATE is a number between 2.5 and 200', async () => {});
+
+          it('should add a warning and ignore if TTDIFFRATE is invalid', async () => {});
+        });
+
+        it('should add a warning and ignore if TTDIFFRATE is given but TRAVELTIME is empty', async () => {});
+        it('should add a warning and ignore if TTDIFFRATE is given but TRAVELTIME is not 3', async () => {});
+      });
+
+      const payAndPensionsGroupNotAllowed = [2, 3];
+      payAndPensionsGroupNotAllowed.forEach((payAndPensionsGroup) => {
+        describe(`for pay and pensions group ${payAndPensionsGroup}`, () => {
+          beforeEach(() => {
+            setMainServicePayAndPensionsGroup(payAndPensionsGroup);
+          });
+
+          it('should pass if both TRAVELTIME and TTDIFFRATE are empty', async () => {});
+
+          it('should add a warning and ignore if got any input', async () => {});
         });
       });
     });
