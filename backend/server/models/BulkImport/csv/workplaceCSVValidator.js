@@ -2484,7 +2484,7 @@ class WorkplaceCSVValidator {
       return false;
     }
 
-    this._travelTimePayOption = travelTimePayOption;
+    this._travelTimePayOption = parseInt(travelTimePayOption);
   }
 
   _validateTravelTimePayRate() {
@@ -2493,7 +2493,7 @@ class WorkplaceCSVValidator {
       return true;
     }
 
-    if (this._travelTimePayOption !== '3') {
+    if (this._travelTimePayOption !== 3) {
       this._validationErrors.push(
         this._generateWarning(
           'TTDIFFRATE will be ignored as TRAVELTIME is not 3 (A different travel time rate)',
@@ -3222,7 +3222,21 @@ class WorkplaceCSVValidator {
     this._howToPayForSleepIn = mapping[this._howToPayForSleepIn] ?? null;
   }
 
-  _transformTravelTimePay() {}
+  _transformTravelTimePay() {
+    const optionsMapping = this.mappings.travelTimePayOptions;
+    const matchedOption = optionsMapping.find((option) => option.bulkUploadCode === this._travelTimePayOption);
+    if (!matchedOption?.id) {
+      this._travelTimePay = null;
+      return;
+    }
+
+    if (!matchedOption?.includeRate) {
+      this._travelTimePay = { id: matchedOption.id, rate: null };
+    }
+
+    const travelTimePayRate = this._travelTimePayRate ?? null;
+    this._travelTimePay = { id: matchedOption.id, rate: travelTimePayRate };
+  }
 
   /** end transforms */
 
@@ -3608,6 +3622,7 @@ class WorkplaceCSVValidator {
       careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
       offerSleepIn: this._offerSleepIn,
       howToPayForSleepIn: this._howToPayForSleepIn,
+      travelTimePay: this._travelTimePay ?? null,
     };
     if (this._allServices) {
       if (this._allServices.length === 1) {

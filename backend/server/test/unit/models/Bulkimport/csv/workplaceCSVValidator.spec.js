@@ -101,6 +101,7 @@ const validateAPIObject = (establishmentRow) => {
     careWorkersLeaveDaysPerYear: '35',
     offerSleepIn: null,
     howToPayForSleepIn: null,
+    travelTimePay: null,
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
@@ -953,6 +954,56 @@ describe.only('Bulk Upload - Establishment CSV', () => {
 
           expect(apiObject.offerSleepIn).to.equal(expectedOfferSleepIn);
           expect(apiObject.howToPayForSleepIn).to.equal(expectedHowToPayForSleepIn);
+        });
+      });
+    });
+
+    describe('travelTimePay', () => {
+      const testCases = [
+        { TRAVELTIME: '', TTDIFFRATE: '', expected: null },
+        // valid inputs
+        { TRAVELTIME: '1', TTDIFFRATE: '', expected: { id: 1, rate: null } },
+        { TRAVELTIME: '2', TTDIFFRATE: '', expected: { id: 2, rate: null } },
+        { TRAVELTIME: '3', TTDIFFRATE: '', expected: { id: 3, rate: null } },
+        { TRAVELTIME: '4', TTDIFFRATE: '', expected: { id: 4, rate: null } },
+        { TRAVELTIME: '5', TTDIFFRATE: '', expected: { id: 5, rate: null } },
+        { TRAVELTIME: '6', TTDIFFRATE: '', expected: { id: 6, rate: null } },
+        { TRAVELTIME: '999', TTDIFFRATE: '', expected: { id: 7, rate: null } },
+
+        { TRAVELTIME: '3', TTDIFFRATE: '3.5', expected: { id: 3, rate: 3.5 } },
+        { TRAVELTIME: '3', TTDIFFRATE: '150.25', expected: { id: 3, rate: 150.25 } },
+
+        // invalid inputs
+        { TRAVELTIME: '0', TTDIFFRATE: '', expected: null },
+        { TRAVELTIME: '-10', TTDIFFRATE: '', expected: null },
+        { TRAVELTIME: '7', TTDIFFRATE: '', expected: null },
+        { TRAVELTIME: '100', TTDIFFRATE: '', expected: null },
+        { TRAVELTIME: 'some words', TTDIFFRATE: '', expected: null },
+
+        { TRAVELTIME: '1', TTDIFFRATE: '3.5', expected: { id: 1, rate: null } },
+        { TRAVELTIME: '999', TTDIFFRATE: '3.5', expected: { id: 7, rate: null } },
+
+        { TRAVELTIME: '3', TTDIFFRATE: '0', expected: { id: 3, rate: null } },
+        { TRAVELTIME: '3', TTDIFFRATE: '-100', expected: { id: 3, rate: null } },
+        { TRAVELTIME: '3', TTDIFFRATE: 'some words', expected: { id: 3, rate: null } },
+        { TRAVELTIME: '3', TTDIFFRATE: '2.0', expected: { id: 3, rate: null } }, // out of range 2.5 ~ 200
+        { TRAVELTIME: '3', TTDIFFRATE: '201', expected: { id: 3, rate: null } }, // out of range 2.5 ~ 200
+
+        { TRAVELTIME: 'invalid value', TTDIFFRATE: '3.5', expected: null },
+        { TRAVELTIME: 'invalid value', TTDIFFRATE: 'invalid value', expected: null },
+      ];
+
+      testCases.forEach(({ TRAVELTIME, TTDIFFRATE, expected }) => {
+        it(`should set the travelTimePay for API object - TRAVELTIME: ${TRAVELTIME}, TTDIFFRATE: ${TTDIFFRATE}`, async () => {
+          establishmentRow.TRAVELTIME = TRAVELTIME;
+          establishmentRow.TTDIFFRATE = TTDIFFRATE;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          const apiObject = establishment.toAPI();
+
+          expect(apiObject.travelTimePay).to.deep.equal(expected);
         });
       });
     });
@@ -2542,7 +2593,7 @@ describe.only('Bulk Upload - Establishment CSV', () => {
                 name: establishmentRow.LOCALESTID,
               },
             ]);
-            expect(establishment._travelTimePay).to.deep.equal(undefined);
+            expect(establishment._travelTimePay).to.deep.equal(null);
           });
         });
 
