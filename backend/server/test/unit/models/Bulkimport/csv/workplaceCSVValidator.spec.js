@@ -2417,7 +2417,7 @@ describe.only('Bulk Upload - Establishment CSV', () => {
             lineNumber: establishment.lineNumber,
             warnCode: 2561,
             warnType: 'SLEEPINS_MAIN_SERVICE_WARNING',
-            warning: 'Value entered for SLEEPINS will be ignored as main service does not involve sleep ins',
+            warning: 'Value entered for SLEEPINS will be ignored as main service does not fall in the correct category',
             source: '1',
             column: 'SLEEPINS',
             name: establishmentRow.LOCALESTID,
@@ -2532,7 +2532,8 @@ describe.only('Bulk Upload - Establishment CSV', () => {
             lineNumber: establishment.lineNumber,
             warnCode: 2571,
             warnType: 'SLEEPINPAY_MAIN_SERVICE_WARNING',
-            warning: 'Value entered for SLEEPINPAY will be ignored as main service does not involve sleep ins',
+            warning:
+              'Value entered for SLEEPINPAY will be ignored as main service does not fall in the correct category',
             source: '1',
             column: 'SLEEPINPAY',
             name: establishmentRow.LOCALESTID,

@@ -2808,7 +2808,7 @@ class WorkplaceCSVValidator {
     if (this._offerSleepIn) {
       this._validationErrors.push(
         this._generateWarning(
-          'Value entered for SLEEPINS will be ignored as main service does not involve sleep ins',
+          'Value entered for SLEEPINS will be ignored as main service does not fall in the correct category',
           'SLEEPINS',
           'SLEEPINS_MAIN_SERVICE_WARNING',
         ),
@@ -2820,7 +2820,7 @@ class WorkplaceCSVValidator {
     if (this._howToPayForSleepIn) {
       this._validationErrors.push(
         this._generateWarning(
-          'Value entered for SLEEPINPAY will be ignored as main service does not involve sleep ins',
+          'Value entered for SLEEPINPAY will be ignored as main service does not fall in the correct category',
           'SLEEPINPAY',
           'SLEEPINPAY_MAIN_SERVICE_WARNING',
         ),
