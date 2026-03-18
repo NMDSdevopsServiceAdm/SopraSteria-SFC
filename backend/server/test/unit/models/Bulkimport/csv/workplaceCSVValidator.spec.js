@@ -2231,7 +2231,7 @@ describe.only('Bulk Upload - Establishment CSV', () => {
               lineNumber: establishment.lineNumber,
               warnCode: 2540,
               warnType: 'ACTUALCONT_WARNING',
-              warning: 'The code you have entered for ACTUALCONT is incorrect and will be ignored',
+              warning: 'ACTUALCONT will be ignored as it should be a number between 3 and 100',
               source: value,
               column: 'ACTUALCONT',
               name: establishmentRow.LOCALESTID,

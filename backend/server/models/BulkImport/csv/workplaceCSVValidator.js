@@ -2368,7 +2368,7 @@ class WorkplaceCSVValidator {
     if (Number.isNaN(parsedPercentage) || !valueInAllowedRange) {
       this._validationErrors.push(
         this._generateWarning(
-          'The code you have entered for ACTUALCONT is incorrect and will be ignored',
+          'ACTUALCONT will be ignored as it should be a number between 3 and 100',
           'ACTUALCONT',
           'ACTUALCONT_WARNING',
         ),
