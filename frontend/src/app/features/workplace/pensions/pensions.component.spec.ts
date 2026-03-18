@@ -12,7 +12,11 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { PensionsComponent } from './pensions.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
-import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
+import {
+  MockPayAndPensionService,
+  mockPayAndPensionsGroup1ProgressBarSections,
+  mockPayAndPensionsGroup2ProgressBarSections,
+} from '@core/test-utils/MockPayAndPensionService';
 import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 describe('PensionsComponent', () => {
@@ -36,7 +40,7 @@ describe('PensionsComponent', () => {
           },
           {
             provide: PayAndPensionService,
-            useFactory: MockPayAndPensionService.factory(overrides?.inPayAndPensionsMiniFlow),
+            useFactory: MockPayAndPensionService.factory(overrides),
             deps: [HttpClient],
           },
           provideHttpClient(),
@@ -369,16 +373,39 @@ describe('PensionsComponent', () => {
       expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
     });
 
-    it('should render the pay and pension group 2 progress bar when in the mini flow', async () => {
-      const { getByTestId } = await setup({ returnUrl: null, inPayAndPensionsMiniFlow: true });
+    it('should render the pay and pension group 1 progress bar when in the mini flow', async () => {
+      const overrides = {
+        returnUrl: null,
+        inPayAndPensionsMiniFlow: true,
+        isGroup1: true,
+      };
+      const { getByTestId } = await setup(overrides);
 
-      const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
       const sectionIndex = 0;
       const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
       const progressBar = getByTestId('progress-bar');
 
       expect(progressBar).toBeTruthy();
-      payAndPensionsMiniFlowGroup2BarSections.forEach((section) => {
+      mockPayAndPensionsGroup1ProgressBarSections.forEach((section) => {
+        expect(within(progressBar).getByText(section)).toBeTruthy();
+      });
+      expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+
+    it('should render the pay and pension group 2 progress bar when in the mini flow', async () => {
+      const overrides = {
+        returnUrl: null,
+        inPayAndPensionsMiniFlow: true,
+        isGroup1: false,
+      };
+      const { getByTestId } = await setup(overrides);
+
+      const sectionIndex = 0;
+      const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
+      const progressBar = getByTestId('progress-bar');
+
+      expect(progressBar).toBeTruthy();
+      mockPayAndPensionsGroup2ProgressBarSections.forEach((section) => {
         expect(within(progressBar).getByText(section)).toBeTruthy();
       });
       expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
