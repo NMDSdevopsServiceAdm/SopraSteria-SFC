@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
+const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 const httpMocks = require('node-mocks-http');
 const moment = require('moment');
 
@@ -304,6 +304,100 @@ describe('worker route', () => {
 
       expect(res._getData().workers).to.deep.equal([]);
       expect(res._getData().workerCount).to.equal(0);
+    });
+  });
+
+  describe('getAllWorkersGroupedByJobRole()', () => {
+    const jobRoles = [
+      { id: 10, title: 'Care worker' },
+      { id: 22, title: 'Registered manager' },
+      { id: 25, title: 'Senior care worker' },
+    ];
+    const mockWorkers = [
+      {
+        uid: 'uid-0',
+        mainJob: jobRoles[2],
+      },
+      {
+        uid: 'uid-1',
+        mainJob: jobRoles[1],
+      },
+      {
+        uid: 'uid-2',
+        mainJob: jobRoles[0],
+      },
+      {
+        uid: 'uid-3',
+        mainJob: jobRoles[1],
+      },
+      {
+        uid: 'uid-4',
+        mainJob: jobRoles[2],
+      },
+      {
+        uid: 'uid-5',
+        mainJob: jobRoles[2],
+      },
+    ];
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const request = {
+      method: 'GET',
+      url: '/api/establishment/uid/worker/total',
+      params: {
+        establishmentId: '123',
+      },
+    };
+
+    it('should respond with 200 and all workers in the workplace, grouped by their job roles', async () => {
+      sinon.stub(models.worker, 'findAll').resolves(mockWorkers);
+      const expectedResponse = {
+        groups: [
+          { jobId: 10, title: 'Care worker', count: 1, workers: [mockWorkers[2]] },
+          { jobId: 22, title: 'Registered manager', count: 2, workers: [mockWorkers[1], mockWorkers[3]] },
+          {
+            jobId: 25,
+            title: 'Senior care worker',
+            count: 3,
+            workers: [mockWorkers[0], mockWorkers[4], mockWorkers[5]],
+          },
+        ],
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getAllWorkersGroupedByJobRole(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(expectedResponse);
+    });
+
+    it('should respond with 200 and an empty array if no workers were found', async () => {
+      sinon.stub(models.worker, 'findAll').resolves([]);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getAllWorkersGroupedByJobRole(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal({ groups: [] });
+    });
+
+    it('should respond with 500 if error occured', async () => {
+      sinon.stub(models.worker, 'findAll').rejects(new Error('some database error'));
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getAllWorkersGroupedByJobRole(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
     });
   });
 
