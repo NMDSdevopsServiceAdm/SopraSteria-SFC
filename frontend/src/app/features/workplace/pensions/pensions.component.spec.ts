@@ -374,10 +374,12 @@ describe('PensionsComponent', () => {
     });
 
     it('should render the pay and pension group 1 progress bar when in the mini flow', async () => {
+      const payAndPensionsGroup = 1;
       const overrides = {
         returnUrl: null,
         inPayAndPensionsMiniFlow: true,
-        isGroup1: true,
+        payAndPensionsGroup,
+        establishment: { mainService: { payAndPensionsGroup } },
       };
       const { getByTestId } = await setup(overrides);
 
@@ -393,10 +395,12 @@ describe('PensionsComponent', () => {
     });
 
     it('should render the pay and pension group 2 progress bar when in the mini flow', async () => {
+      const payAndPensionsGroup = 2;
       const overrides = {
         returnUrl: null,
         inPayAndPensionsMiniFlow: true,
-        isGroup1: false,
+        payAndPensionsGroup,
+        establishment: { mainService: { payAndPensionsGroup } },
       };
       const { getByTestId } = await setup(overrides);
 

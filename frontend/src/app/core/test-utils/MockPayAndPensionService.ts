@@ -12,7 +12,7 @@ export const mockPayAndPensionsGroup1ProgressBarSections = mockPayAndPensionsGro
 export class MockPayAndPensionService extends PayAndPensionService {
   inPayAndPensionsMiniFlow: boolean = false;
   private _showTravelTimePayQuestion: boolean = false;
-  private _isGroup1: boolean = false;
+  private _payAndPensionsGroup: number;
 
   getInPayAndPensionsMiniFlow(): boolean {
     return this.inPayAndPensionsMiniFlow;
@@ -23,7 +23,7 @@ export class MockPayAndPensionService extends PayAndPensionService {
       const service = new MockPayAndPensionService(httpClient, router);
       service.inPayAndPensionsMiniFlow = overrides?.inPayAndPensionsMiniFlow;
       service._showTravelTimePayQuestion = overrides?.showTravelTimePayQuestion;
-      service._isGroup1 = overrides?.isGroup1;
+      service._payAndPensionsGroup = overrides?.payAndPensionsGroup;
       return service;
     };
   }
@@ -35,7 +35,7 @@ export class MockPayAndPensionService extends PayAndPensionService {
   }
 
   public getPayAndPensionsMiniFlowProgressBarSections(): string[] {
-    if (this._isGroup1) {
+    if (this._payAndPensionsGroup === 1) {
       return mockPayAndPensionsGroup1ProgressBarSections;
     }
     return mockPayAndPensionsGroup2ProgressBarSections;
