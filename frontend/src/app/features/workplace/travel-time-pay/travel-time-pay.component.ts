@@ -5,10 +5,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { TravelTimePayOptions } from '@core/model/travel-time-pay.model';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-travel-time-pay',
@@ -19,9 +20,13 @@ import { TravelTimePayOptions } from '@core/model/travel-time-pay.model';
 export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
   public section: string;
   public payAndPensionQuestionRevealText: string;
-
+  public sectionHeading: string;
   public travelTimePayOptions: TravelTimePayOptions[];
   public showTextBox = false;
+  public inPayAndPensionsMiniFlow: boolean = false;
+  public progressBarSections: string[];
+  public showProgressBar: boolean = false;
+  public payAndPensionsGroup: number;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -32,28 +37,44 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     protected route: ActivatedRoute,
     protected payAndPensionService: PayAndPensionService,
     private previousRouteService: PreviousRouteService,
+    protected alertService: AlertService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
   init(): void {
     this.travelTimePayOptions = this.route.snapshot.data.travelTimePayOptions;
+    this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
+    this.showProgressBar = (!this.return || this.inPayAndPensionsMiniFlow) ?? false;
     this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
+    this.payAndPensionsGroup = this.establishment?.mainService?.payAndPensionsGroup;
     this.setSectionHeading();
     this.setupForm();
     this.prefill();
+    this.setProgressBarSections();
     if (this.form.get('travelTimePay')?.value === 3) {
       this.showTextBox = true;
     }
-    this.previousQuestionPage = 'how-many-leavers';
-    this.skipToQuestionPage = 'benefits-statutory-sick-pay';
+    this.setPreviousRoute();
+    this.setSkipRoute();
     this.nextQuestionPage = this.skipToQuestionPage;
+    this.payAndPensionService.clearInPayAndPensionsMiniFlowWhenClickedAway();
+  }
+
+  private setProgressBarSections(): void {
+    if (this.inPayAndPensionsMiniFlow) {
+      this.progressBarSections = this.payAndPensionService.getPayAndPensionsMiniFlowProgressBarSections(
+        this.payAndPensionsGroup,
+      );
+      this.section = this.progressBarSections[3];
+    } else {
+      this.progressBarSections = this.workplaceFlowSections;
+      this.section = WorkplaceFlowSections.PAY_AND_BENEFITS;
+    }
   }
 
   public setSectionHeading() {
-    const inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
-
-    this.section = inPayAndPensionsMiniFlow ? 'Workplace' : WorkplaceFlowSections.PAY_AND_BENEFITS;
+    this.sectionHeading = this.inPayAndPensionsMiniFlow ? 'Workplace' : WorkplaceFlowSections.PAY_AND_BENEFITS;
   }
 
   private setupForm() {
@@ -165,7 +186,7 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     return { travelTimePay: updateProps };
   }
 
-  updateEstablishment(props): void {
+  updateEstablishment(props: any): void {
     if (!props) return;
     const property = 'TravelTimePay';
     this.subscriptions.add(
@@ -180,9 +201,9 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     const isInWorkflow = !this.return;
 
     const previousPage = this.previousRouteService.getPreviousPage();
-    const previousPageWasTravelTime = previousPage === this.previousQuestionPage;
+    const previousPageWasHowManyLeavers = previousPage === this.previousQuestionPage;
 
-    if (isInWorkflow || previousPageWasTravelTime) {
+    if (isInWorkflow || previousPageWasHowManyLeavers || this.inPayAndPensionsMiniFlow) {
       this.back = { url: this.previousRoute };
     } else {
       this.back = this.return;
@@ -194,6 +215,36 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
   protected addErrorLinkFunctionality(): void {
     if (!this.errorSummaryService.formEl$.value) {
       this.errorSummaryService.formEl$.next(this.formEl);
+    }
+  }
+
+  private setPreviousRoute(): void {
+    if (this.inPayAndPensionsMiniFlow) {
+      this.previousQuestionPage = 'how-do-you-pay-for-sleep-ins';
+    } else {
+      this.previousQuestionPage = 'how-many-leavers';
+    }
+  }
+
+  private setSkipRoute(): void {
+    this.skipToQuestionPage = 'benefits-statutory-sick-pay';
+    if (this.inPayAndPensionsMiniFlow && this.payAndPensionsGroup === 1) {
+      this.isAtEndOfPayAndPensionsMiniFlow = true;
+    }
+  }
+
+  protected onSuccess(): void {
+    if (this.inPayAndPensionsMiniFlow) {
+      this.submitAction = { action: 'return', save: true };
+    }
+  }
+
+  public addAlert(): void {
+    if (this.inPayAndPensionsMiniFlow) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Workplace details added',
+      });
     }
   }
 

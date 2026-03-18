@@ -24,7 +24,7 @@ export class StaffOptOutOfWorkplacePensionComponent extends WorkplaceQuestion im
   public inPayAndPensionsMiniFlow: boolean = false;
   public progressBarSections: string[];
   public showProgressBar: boolean = false;
-  public payAndPensionGroup: number;
+  public payAndPensionsGroup: number;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -41,7 +41,7 @@ export class StaffOptOutOfWorkplacePensionComponent extends WorkplaceQuestion im
   init(): void {
     this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
     this.showProgressBar = (!this.return || this.inPayAndPensionsMiniFlow) ?? false;
-    this.payAndPensionGroup = this.establishment?.mainService?.payAndPensionsGroup;
+    this.payAndPensionsGroup = this.establishment?.mainService?.payAndPensionsGroup;
     this.setSectionHeading();
     this.setupForm();
     this.prefill();
@@ -57,7 +57,7 @@ export class StaffOptOutOfWorkplacePensionComponent extends WorkplaceQuestion im
   private setProgressBarSections(): void {
     if (this.inPayAndPensionsMiniFlow) {
       this.progressBarSections = this.payAndPensionService.getPayAndPensionsMiniFlowProgressBarSections(
-        this.payAndPensionGroup,
+        this.payAndPensionsGroup,
       );
       this.section = this.progressBarSections[1];
     } else {
