@@ -8,6 +8,7 @@ const Establishment = require('../../models/classes/establishment');
 
 const moment = require('moment');
 const get = require('lodash/get');
+const lodash = require('lodash');
 
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
@@ -297,6 +298,45 @@ const viewAllWorkers = async (req, res) => {
   }
 };
 
+const getAllWorkersGroupedByJobRole = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+
+    const allWorkers = await models.worker.findAll({
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: models.job,
+          as: 'mainJob',
+          attributes: ['id', 'title'],
+        },
+      ],
+      attributes: ['uid'],
+      orderBy: ['mainJob.title'],
+      raw: true,
+      nest: true,
+    });
+
+    const groupedByJobRole = lodash
+      .chain(allWorkers)
+      .groupBy('mainJob.title')
+      .entries()
+      .map(([mainJobTitle, workers]) => {
+        return { jobId: workers[0].mainJob.id, title: mainJobTitle, workers, count: workers.length };
+      })
+      .orderBy('title')
+      .value();
+
+    return res.status(200).json({ groups: groupedByJobRole });
+  } catch (err) {
+    console.error('/api/establishment/:uid/worker/groupedByJobRole', err);
+    return res.status(500).send({ message: 'failed to get workers' });
+  }
+};
+
 const updateLocalIdentifiers = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
@@ -347,6 +387,7 @@ router.route('/').post(hasPermission('canAddWorker'), createWorker);
 
 router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocalIdentifiers);
 router.route('/total').get(hasPermission('canViewEstablishment'), getTotalWorkers);
+router.get('/groupedByJobRole', hasPermission('canViewWorker'), getAllWorkersGroupedByJobRole);
 
 router.use('/multiple-training', MutipleTrainingRecordsRoute);
 
@@ -363,3 +404,4 @@ module.exports = router;
 module.exports.editWorker = editWorker;
 module.exports.viewAllWorkers = viewAllWorkers;
 module.exports.getTotalWorkers = getTotalWorkers;
+module.exports.getAllWorkersGroupedByJobRole = getAllWorkersGroupedByJobRole;
