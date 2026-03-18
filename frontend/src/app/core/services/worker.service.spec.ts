@@ -1,4 +1,4 @@
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { WorkerService } from './worker.service';
@@ -7,6 +7,7 @@ import { provideHttpClient } from '@angular/common/http';
 
 describe('WorkerService', () => {
   let service: WorkerService;
+  let http: HttpTestingController;
 
   const workerBuilder = build('Worker', {
     fields: {
@@ -29,6 +30,7 @@ describe('WorkerService', () => {
       providers: [WorkerService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(WorkerService);
+    http = TestBed.inject(HttpTestingController);
   });
 
   it('should create the service', () => {
@@ -88,6 +90,18 @@ describe('WorkerService', () => {
       service.clearDoYouWantToDownloadTrainAndQualsAnswer();
 
       expect(service.getDoYouWantToDownloadTrainAndQualsAnswer()).toEqual(null);
+    });
+  });
+
+  describe('getAllWorkersGroupedByJobRole', () => {
+    const mockEstablishmentUid = 'mock-uid';
+    const expectedEndpoint = `/api/establishment/${mockEstablishmentUid}/worker/groupedByJobRole`;
+
+    it('should call the expected endpoint', () => {
+      service.getAllWorkersGroupedByJobRole(mockEstablishmentUid).subscribe();
+
+      const req = http.expectOne(expectedEndpoint);
+      expect(req.request.method).toBe('GET');
     });
   });
 });

@@ -19,7 +19,14 @@ import {
 } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
-import { MandatoryInfoAndMetadataFields, Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
+import {
+  MandatoryInfoAndMetadataFields,
+  Worker,
+  WorkerEditResponse,
+  WorkersGroupedByJobRole,
+  WorkersGroupedByJobRoleResponse,
+  WorkersResponse,
+} from '@core/model/worker.model';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -137,6 +144,12 @@ export class WorkerService {
         params: queryParams || {},
       })
       .pipe(map((data) => data));
+  }
+
+  public getAllWorkersGroupedByJobRole(establishmentUid: string): Observable<WorkersGroupedByJobRoleResponse> {
+    return this.http.get<WorkersGroupedByJobRoleResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/worker/groupedByJobRole`,
+    );
   }
 
   public getTotalStaffRecords(establishmentuid: string): Observable<number> {

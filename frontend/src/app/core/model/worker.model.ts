@@ -170,6 +170,16 @@ export interface WorkerWdfRecord {
   zeroHoursContract: WDFValue;
 }
 
+export type WorkersGroupedByJobRole = {
+  title: string;
+  jobId: number;
+  workers: Array<{ uid: string }>;
+};
+
+export interface WorkersGroupedByJobRoleResponse {
+  groups: Array<WorkersGroupedByJobRole>;
+}
+
 export interface WorkersResponse {
   workers: Worker[];
   workerCount: number;
