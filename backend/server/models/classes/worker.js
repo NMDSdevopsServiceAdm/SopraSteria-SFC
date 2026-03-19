@@ -369,6 +369,17 @@ class Worker extends EntityValidator {
       : null;
   }
 
+  get updatePayForMultiStaffPageViewed() {
+    return this._properties.get('UpdatePayForMultiStaffPageViewed')
+      ? this._properties.get('UpdatePayForMultiStaffPageViewed').property
+      : null;
+  }
+  get fastTrackPayByJobRolesViewed() {
+    return this._properties.get('FastTrackPayByJobRolesViewed')
+      ? this._properties.get('FastTrackPayByJobRolesViewed').property
+      : null;
+  }
+
   patchPropertyValue(propertyName, newValue) {
     const propertyObject = this._properties.get(propertyName);
     if (!propertyObject) {
