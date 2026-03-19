@@ -35,12 +35,23 @@ module.exports = build('EstablishmentCSV', {
     REASONNOS: '',
     REPEATTRAINING: '1',
     ACCEPTCARECERT: '2',
+
     CWPAWARE: '',
     CWPUSE: '',
     CWPUSEDESC: '',
+
     BENEFITS: '200',
     SICKPAY: '0',
+
     PENSION: '1',
+    ACTUALCONT: '',
+    OPTOUTPEN: '',
+
     HOLIDAY: '35',
+
+    SLEEPINS: '',
+    SLEEPINPAY: '',
+    TRAVELTIME: '',
+    TTDIFFRATE: '',
   },
 });

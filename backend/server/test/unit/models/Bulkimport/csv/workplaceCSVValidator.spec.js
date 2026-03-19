@@ -36,9 +36,19 @@ const workplaceMappings = {
   ],
   services: [
     // reliant on services mappings in BUDI/index file
-    { id: 1, canDoDelegatedHealthcareActivities: null }, // { ASC: 1, BUDI: 13 },
+    { id: 1, canDoDelegatedHealthcareActivities: null, payAndPensionsGroup: 3 }, // { ASC: 1, BUDI: 13 } Carers support
     { id: 2, canDoDelegatedHealthcareActivities: true }, // { ASC: 2, BUDI: 15 },
-    { id: 20, canDoDelegatedHealthcareActivities: true }, // { ASC: 20, BUDI: 8 },
+    { id: 20, canDoDelegatedHealthcareActivities: true, payAndPensionsGroup: 1 }, // { ASC: 20, BUDI: 8 } Dom care
+    { id: 24, canDoDelegatedHealthcareActivities: true, payAndPensionsGroup: 2 }, // { ASC: 24, BUDI: '1' }, group 2 Care home services with nursing
+  ],
+  travelTimePayOptions: [
+    { id: 1, includeRate: false, bulkUploadCode: 1 },
+    { id: 2, includeRate: false, bulkUploadCode: 2 },
+    { id: 3, includeRate: true, bulkUploadCode: 3 },
+    { id: 4, includeRate: false, bulkUploadCode: 4 },
+    { id: 5, includeRate: false, bulkUploadCode: 5 },
+    { id: 6, includeRate: false, bulkUploadCode: 6 },
+    { id: 7, includeRate: false, bulkUploadCode: 999 },
   ],
   delegatedHealthcareActivities: [
     { id: 1, bulkUploadCode: 1 },
@@ -86,7 +96,12 @@ const validateAPIObject = (establishmentRow) => {
     careWorkersCashLoyaltyForFirstTwoYears: '200',
     sickPay: 0,
     pensionContribution: 1,
+    pensionContributionPercentage: null,
+    staffOptOutOfWorkplacePension: null,
     careWorkersLeaveDaysPerYear: '35',
+    offerSleepIn: null,
+    howToPayForSleepIn: null,
+    travelTimePay: null,
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
@@ -120,7 +135,7 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 
 const BU_DHA_YES = '1';
 
-describe('Bulk Upload - Establishment CSV', () => {
+describe.only('Bulk Upload - Establishment CSV', () => {
   let establishmentRow;
 
   beforeEach(() => {
@@ -587,48 +602,99 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(apiObject.careWorkforcePathwayWorkplaceAwareness).to.equal(null);
       });
     });
-  });
 
-  describe('careWorkforcePathwayUse', () => {
-    const testCases = [
-      {
-        bulkUploadInput: '1',
-        expectedValue: { use: 'Yes', reasons: [] },
-      },
-      {
-        bulkUploadInput: '1;1;2',
-        expectedValue: { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }] },
-      },
-      {
-        bulkUploadInput: '1;2;3;2;3;5',
-        expectedValue: { use: 'Yes', reasons: [{ id: 2 }, { id: 3 }, { id: 5 }] },
-      },
-      {
-        bulkUploadInput: '1;555',
-        expectedValue: { use: 'Yes', reasons: [] },
-      },
-      {
-        bulkUploadInput: '1;555;2',
-        expectedValue: { use: 'Yes', reasons: [{ id: 2 }] },
-      },
-      {
-        bulkUploadInput: '2',
-        expectedValue: { use: 'No', reasons: [] },
-      },
-      {
-        bulkUploadInput: '2;1;2',
-        expectedValue: { use: 'No', reasons: [] },
-      },
-      {
-        bulkUploadInput: '999',
-        expectedValue: { use: "Don't know", reasons: [] },
-      },
-    ];
+    describe('careWorkforcePathwayUse', () => {
+      const testCases = [
+        {
+          bulkUploadInput: '1',
+          expectedValue: { use: 'Yes', reasons: [] },
+        },
+        {
+          bulkUploadInput: '1;1;2',
+          expectedValue: { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }] },
+        },
+        {
+          bulkUploadInput: '1;2;3;2;3;5',
+          expectedValue: { use: 'Yes', reasons: [{ id: 2 }, { id: 3 }, { id: 5 }] },
+        },
+        {
+          bulkUploadInput: '1;555',
+          expectedValue: { use: 'Yes', reasons: [] },
+        },
+        {
+          bulkUploadInput: '1;555;2',
+          expectedValue: { use: 'Yes', reasons: [{ id: 2 }] },
+        },
+        {
+          bulkUploadInput: '2',
+          expectedValue: { use: 'No', reasons: [] },
+        },
+        {
+          bulkUploadInput: '2;1;2',
+          expectedValue: { use: 'No', reasons: [] },
+        },
+        {
+          bulkUploadInput: '999',
+          expectedValue: { use: "Don't know", reasons: [] },
+        },
+      ];
 
-    testCases.forEach(({ bulkUploadInput, expectedValue }) => {
-      const reasonAsString = JSON.stringify(expectedValue.reasons);
-      it(`should set cwpUse as (${expectedValue.use}) and reasons as (${reasonAsString}) when bulk upload input is (${bulkUploadInput})`, async () => {
-        establishmentRow.CWPUSE = bulkUploadInput;
+      testCases.forEach(({ bulkUploadInput, expectedValue }) => {
+        const reasonAsString = JSON.stringify(expectedValue.reasons);
+        it(`should set cwpUse as (${expectedValue.use}) and reasons as (${reasonAsString}) when bulk upload input is (${bulkUploadInput})`, async () => {
+          establishmentRow.CWPUSE = bulkUploadInput;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+          const apiObject = establishment.toAPI();
+
+          expect(apiObject.careWorkforcePathwayUse).to.deep.equal(expectedValue);
+        });
+      });
+
+      it('should keep cwpUse as null when no answer provided', async () => {
+        establishmentRow.CWPUSE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.careWorkforcePathwayUse).to.equal(null);
+      });
+    });
+
+    describe('careWorkforcePathwayUse description (free text for reason "Something else")', () => {
+      it('should add a description when CWPUSEDESC has input value and CWPUSE is 1 (Yes) with reason 10', async () => {
+        establishmentRow.CWPUSE = '1;1;2;10';
+        establishmentRow.CWPUSEDESC = 'some description';
+
+        const expectedValue = { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }, { id: 10, other: 'some description' }] };
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.careWorkforcePathwayUse).to.deep.equal(expectedValue);
+      });
+
+      it('should not set the description when CWPUSEDESC has input value but reason 10 is not selected', async () => {
+        establishmentRow.CWPUSE = '1;1;2';
+        establishmentRow.CWPUSEDESC = 'some description';
+
+        const expectedValue = { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }] };
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.careWorkforcePathwayUse).to.deep.equal(expectedValue);
+      });
+
+      it('should not set the description when CWPUSEDESC is given but CWPUSE is not "Yes"', async () => {
+        establishmentRow.CWPUSE = '2';
+        establishmentRow.CWPUSEDESC = 'some description';
+
+        const expectedValue = { use: 'No', reasons: [] };
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
         establishment.transform();
@@ -638,223 +704,330 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    it('should keep cwpUse as null when no answer provided', async () => {
-      establishmentRow.CWPUSE = '';
+    describe('benefit', () => {
+      it('should return the value when a number in CSV', async () => {
+        establishmentRow.BENEFITS = '200';
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
 
-      expect(apiObject.careWorkforcePathwayUse).to.equal(null);
-    });
-  });
+        expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('200');
+      });
 
-  describe('careWorkforcePathwayUse description (free text for reason "Something else")', () => {
-    it('should add a description when CWPUSEDESC has input value and CWPUSE is 1 (Yes) with reason 10', async () => {
-      establishmentRow.CWPUSE = '1;1;2;10';
-      establishmentRow.CWPUSEDESC = 'some description';
+      it("should return 'Yes' when 1; in CSV", async () => {
+        establishmentRow.BENEFITS = '1;';
 
-      const expectedValue = { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }, { id: 10, other: 'some description' }] };
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('Yes');
+      });
 
-      expect(apiObject.careWorkforcePathwayUse).to.deep.equal(expectedValue);
-    });
+      it("should return 'Yes' when 1 in CSV", async () => {
+        establishmentRow.BENEFITS = '1';
 
-    it('should not set the description when CWPUSEDESC has input value but reason 10 is not selected', async () => {
-      establishmentRow.CWPUSE = '1;1;2';
-      establishmentRow.CWPUSEDESC = 'some description';
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
 
-      const expectedValue = { use: 'Yes', reasons: [{ id: 1 }, { id: 2 }] };
+        expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('Yes');
+      });
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+      it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+        establishmentRow.BENEFITS = 'unknown';
 
-      expect(apiObject.careWorkforcePathwayUse).to.deep.equal(expectedValue);
-    });
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
 
-    it('should not set the description when CWPUSEDESC is given but CWPUSE is not "Yes"', async () => {
-      establishmentRow.CWPUSE = '2';
-      establishmentRow.CWPUSEDESC = 'some description';
+        expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal("Don't know");
+      });
 
-      const expectedValue = { use: 'No', reasons: [] };
+      it("should return 'No' when 0 in CSV", async () => {
+        establishmentRow.BENEFITS = '0';
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
 
-      expect(apiObject.careWorkforcePathwayUse).to.deep.equal(expectedValue);
-    });
-  });
+        expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('No');
+      });
 
-  describe('benefit', () => {
-    it('should return the value when a number in CSV', async () => {
-      establishmentRow.BENEFITS = '200';
+      it('should return null when empty in CSV', async () => {
+        establishmentRow.BENEFITS = '';
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
 
-      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('200');
-    });
-
-    it("should return 'Yes' when 1; in CSV", async () => {
-      establishmentRow.BENEFITS = '1;';
-
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
-
-      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('Yes');
+        expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('');
+      });
     });
 
-    it("should return 'Yes' when 1 in CSV", async () => {
-      establishmentRow.BENEFITS = '1';
+    describe('sickPay', () => {
+      it("should return 'Yes' when 1 in CSV", async () => {
+        establishmentRow.SICKPAY = '1';
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
 
-      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('Yes');
+        expect(apiObject.sickPay).to.equal('Yes');
+      });
+
+      it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+        establishmentRow.SICKPAY = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.sickPay).to.equal("Don't know");
+      });
+
+      it("should return 'No' when 0 in CSV", async () => {
+        establishmentRow.SICKPAY = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.sickPay).to.equal('No');
+      });
+
+      it('should return null when empty in CSV', async () => {
+        establishmentRow.SICKPAY = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.sickPay).to.equal(null);
+      });
     });
 
-    it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-      establishmentRow.BENEFITS = 'unknown';
+    describe('Pension contribution', () => {
+      it("should return 'Yes' when 1 in CSV", async () => {
+        establishmentRow.PENSION = '1';
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
 
-      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal("Don't know");
+        expect(apiObject.pensionContribution).to.equal('Yes');
+      });
+
+      it("should return \"Don't know\" when 'unknown' in CSV", async () => {
+        establishmentRow.PENSION = 'unknown';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.pensionContribution).to.equal("Don't know");
+      });
+
+      it("should return 'No' when 0 in CSV", async () => {
+        establishmentRow.PENSION = '0';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.pensionContribution).to.equal('No');
+      });
+
+      it('should return null when empty in CSV', async () => {
+        establishmentRow.PENSION = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.pensionContribution).to.equal(null);
+      });
     });
 
-    it("should return 'No' when 0 in CSV", async () => {
-      establishmentRow.BENEFITS = '0';
+    describe('PensionContributionPercentage', () => {
+      const testCases = [
+        { PENSION: '', ACTUALCONT: '', expected: null },
+        // valid inputs
+        { PENSION: '1', ACTUALCONT: '3', expected: 3 },
+        { PENSION: '1', ACTUALCONT: '4.5', expected: 4.5 },
+        { PENSION: '1', ACTUALCONT: '10.25', expected: 10.25 },
+        { PENSION: '1', ACTUALCONT: '100', expected: 100 },
+        // invalid inputs, should be ignored
+        { PENSION: '1', ACTUALCONT: '2', expected: null },
+        { PENSION: '1', ACTUALCONT: '100.1', expected: null },
+        { PENSION: '1', ACTUALCONT: '-10', expected: null },
+        { PENSION: '1', ACTUALCONT: '0', expected: null },
+        { PENSION: '1', ACTUALCONT: 'test string', expected: null },
+        { PENSION: '2', ACTUALCONT: '4.5', expected: null },
+      ];
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+      testCases.forEach(({ PENSION, ACTUALCONT, expected }) => {
+        it(`should set the pensionContributionPercentage for API object - ACTUALCONT: ${ACTUALCONT}`, async () => {
+          establishmentRow.PENSION = PENSION;
+          establishmentRow.ACTUALCONT = ACTUALCONT;
 
-      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('No');
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+          const apiObject = establishment.toAPI();
+
+          expect(apiObject.pensionContributionPercentage).to.equal(expected);
+        });
+      });
     });
 
-    it('should return null when empty in CSV', async () => {
-      establishmentRow.BENEFITS = '';
+    describe('StaffOptOutOfWorkplacePension', () => {
+      const testCases = [
+        { OPTOUTPEN: '', expected: null },
+        // valid inputs
+        { OPTOUTPEN: '1', expected: 'Yes' },
+        { OPTOUTPEN: '2', expected: 'No' },
+        { OPTOUTPEN: '999', expected: "Don't know" },
+        // invalid inputs
+        { OPTOUTPEN: '0', expected: null },
+        { OPTOUTPEN: '3', expected: null },
+        { OPTOUTPEN: 'unknown', expected: null },
+        { OPTOUTPEN: 'some strings', expected: null },
+      ];
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+      testCases.forEach(({ OPTOUTPEN, expected }) => {
+        it(`should set the staffOptOutOfWorkplacePension for API object - OPTOUTPEN: ${OPTOUTPEN}`, async () => {
+          establishmentRow.OPTOUTPEN = OPTOUTPEN;
 
-      expect(apiObject.careWorkersCashLoyaltyForFirstTwoYears).to.equal('');
-    });
-  });
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+          const apiObject = establishment.toAPI();
 
-  describe('sickPay', () => {
-    it("should return 'Yes' when 1 in CSV", async () => {
-      establishmentRow.SICKPAY = '1';
-
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
-
-      expect(apiObject.sickPay).to.equal('Yes');
-    });
-
-    it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-      establishmentRow.SICKPAY = 'unknown';
-
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
-
-      expect(apiObject.sickPay).to.equal("Don't know");
+          expect(apiObject.staffOptOutOfWorkplacePension).to.equal(expected);
+        });
+      });
     });
 
-    it("should return 'No' when 0 in CSV", async () => {
-      establishmentRow.SICKPAY = '0';
+    describe('offerSleepIn / howToPayForSleepIn', () => {
+      const testCases = [
+        { SLEEPINS: '', SLEEPINPAY: '', expectedOfferSleepIn: null, expectedHowToPayForSleepIn: null },
+        // valid inputs
+        { SLEEPINS: '1', SLEEPINPAY: '', expectedOfferSleepIn: 'Yes', expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '2', SLEEPINPAY: '', expectedOfferSleepIn: 'No', expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '999', SLEEPINPAY: '', expectedOfferSleepIn: "Don't know", expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '1', SLEEPINPAY: '1', expectedOfferSleepIn: 'Yes', expectedHowToPayForSleepIn: 'Hourly rate' },
+        { SLEEPINS: '1', SLEEPINPAY: '2', expectedOfferSleepIn: 'Yes', expectedHowToPayForSleepIn: 'Flat rate' },
+        { SLEEPINS: '1', SLEEPINPAY: '999', expectedOfferSleepIn: 'Yes', expectedHowToPayForSleepIn: 'I do not know' },
+        // invalid inputs
+        { SLEEPINS: '0', SLEEPINPAY: '', expectedOfferSleepIn: null, expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '3', SLEEPINPAY: '', expectedOfferSleepIn: null, expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '100', SLEEPINPAY: '', expectedOfferSleepIn: null, expectedHowToPayForSleepIn: null },
+        { SLEEPINS: 'some word', SLEEPINPAY: '', expectedOfferSleepIn: null, expectedHowToPayForSleepIn: null },
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        { SLEEPINS: '2', SLEEPINPAY: '1', expectedOfferSleepIn: 'No', expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '999', SLEEPINPAY: '1', expectedOfferSleepIn: "Don't know", expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '3', SLEEPINPAY: '1', expectedOfferSleepIn: null, expectedHowToPayForSleepIn: null },
 
-      expect(apiObject.sickPay).to.equal('No');
+        { SLEEPINS: '1', SLEEPINPAY: '0', expectedOfferSleepIn: 'Yes', expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '1', SLEEPINPAY: '3', expectedOfferSleepIn: 'Yes', expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '1', SLEEPINPAY: '100', expectedOfferSleepIn: 'Yes', expectedHowToPayForSleepIn: null },
+        { SLEEPINS: '1', SLEEPINPAY: 'some words', expectedOfferSleepIn: 'Yes', expectedHowToPayForSleepIn: null },
+
+        { SLEEPINS: '2', SLEEPINPAY: 'invalid value', expectedOfferSleepIn: 'No', expectedHowToPayForSleepIn: null },
+        {
+          SLEEPINS: '999',
+          SLEEPINPAY: 'invalid value',
+          expectedOfferSleepIn: "Don't know",
+          expectedHowToPayForSleepIn: null,
+        },
+      ];
+
+      testCases.forEach(({ SLEEPINS, SLEEPINPAY, expectedOfferSleepIn, expectedHowToPayForSleepIn }) => {
+        it(`should set the offerSleepIn and howToPayForSleepIn for API object - SLEEPINS: ${SLEEPINS}, SLEEPINPAY: ${SLEEPINPAY}`, async () => {
+          establishmentRow.SLEEPINS = SLEEPINS;
+          establishmentRow.SLEEPINPAY = SLEEPINPAY;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          const apiObject = establishment.toAPI();
+
+          expect(apiObject.offerSleepIn).to.equal(expectedOfferSleepIn);
+          expect(apiObject.howToPayForSleepIn).to.equal(expectedHowToPayForSleepIn);
+        });
+      });
     });
 
-    it('should return null when empty in CSV', async () => {
-      establishmentRow.SICKPAY = '';
+    describe('travelTimePay', () => {
+      const testCases = [
+        { TRAVELTIME: '', TTDIFFRATE: '', expected: null },
+        // valid inputs
+        { TRAVELTIME: '1', TTDIFFRATE: '', expected: { id: 1, rate: null } },
+        { TRAVELTIME: '2', TTDIFFRATE: '', expected: { id: 2, rate: null } },
+        { TRAVELTIME: '3', TTDIFFRATE: '', expected: { id: 3, rate: null } },
+        { TRAVELTIME: '4', TTDIFFRATE: '', expected: { id: 4, rate: null } },
+        { TRAVELTIME: '5', TTDIFFRATE: '', expected: { id: 5, rate: null } },
+        { TRAVELTIME: '6', TTDIFFRATE: '', expected: { id: 6, rate: null } },
+        { TRAVELTIME: '999', TTDIFFRATE: '', expected: { id: 7, rate: null } },
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        { TRAVELTIME: '3', TTDIFFRATE: '3.5', expected: { id: 3, rate: 3.5 } },
+        { TRAVELTIME: '3', TTDIFFRATE: '150.25', expected: { id: 3, rate: 150.25 } },
 
-      expect(apiObject.sickPay).to.equal(null);
-    });
-  });
+        // invalid inputs
+        { TRAVELTIME: '0', TTDIFFRATE: '', expected: null },
+        { TRAVELTIME: '-10', TTDIFFRATE: '', expected: null },
+        { TRAVELTIME: '7', TTDIFFRATE: '', expected: null },
+        { TRAVELTIME: '100', TTDIFFRATE: '', expected: null },
+        { TRAVELTIME: 'some words', TTDIFFRATE: '', expected: null },
 
-  describe('Pension contribution', () => {
-    it("should return 'Yes' when 1 in CSV", async () => {
-      establishmentRow.PENSION = '1';
+        { TRAVELTIME: '1', TTDIFFRATE: '3.5', expected: { id: 1, rate: null } },
+        { TRAVELTIME: '999', TTDIFFRATE: '3.5', expected: { id: 7, rate: null } },
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        { TRAVELTIME: '3', TTDIFFRATE: '0', expected: { id: 3, rate: null } },
+        { TRAVELTIME: '3', TTDIFFRATE: '-100', expected: { id: 3, rate: null } },
+        { TRAVELTIME: '3', TTDIFFRATE: 'some words', expected: { id: 3, rate: null } },
+        { TRAVELTIME: '3', TTDIFFRATE: '2.0', expected: { id: 3, rate: null } }, // out of range 2.5 ~ 200
+        { TRAVELTIME: '3', TTDIFFRATE: '201', expected: { id: 3, rate: null } }, // out of range 2.5 ~ 200
 
-      expect(apiObject.pensionContribution).to.equal('Yes');
-    });
+        { TRAVELTIME: 'invalid value', TTDIFFRATE: '3.5', expected: null },
+        { TRAVELTIME: 'invalid value', TTDIFFRATE: 'invalid value', expected: null },
+      ];
 
-    it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-      establishmentRow.PENSION = 'unknown';
+      testCases.forEach(({ TRAVELTIME, TTDIFFRATE, expected }) => {
+        it(`should set the travelTimePay for API object - TRAVELTIME: ${TRAVELTIME}, TTDIFFRATE: ${TTDIFFRATE}`, async () => {
+          establishmentRow.TRAVELTIME = TRAVELTIME;
+          establishmentRow.TTDIFFRATE = TTDIFFRATE;
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
 
-      expect(apiObject.pensionContribution).to.equal("Don't know");
-    });
+          const apiObject = establishment.toAPI();
 
-    it("should return 'No' when 0 in CSV", async () => {
-      establishmentRow.PENSION = '0';
-
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
-
-      expect(apiObject.pensionContribution).to.equal('No');
-    });
-
-    it('should return null when empty in CSV', async () => {
-      establishmentRow.PENSION = '';
-
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
-
-      expect(apiObject.pensionContribution).to.equal(null);
-    });
-  });
-
-  describe('Holiday Leave', () => {
-    it('should return the value when a number in CSV', async () => {
-      establishmentRow.HOLIDAY = '35';
-
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
-
-      expect(apiObject.careWorkersLeaveDaysPerYear).to.equal('35');
+          expect(apiObject.travelTimePay).to.deep.equal(expected);
+        });
+      });
     });
 
-    it('should return empty when empty in CSV', async () => {
-      establishmentRow.HOLIDAY = '';
+    describe('Holiday Leave', () => {
+      it('should return the value when a number in CSV', async () => {
+        establishmentRow.HOLIDAY = '35';
 
-      const establishment = await generateEstablishmentFromCsv(establishmentRow);
-      establishment.transform();
-      const apiObject = establishment.toAPI();
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
 
-      expect(apiObject.careWorkersLeaveDaysPerYear).to.equal('');
+        expect(apiObject.careWorkersLeaveDaysPerYear).to.equal('35');
+      });
+
+      it('should return empty when empty in CSV', async () => {
+        establishmentRow.HOLIDAY = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        establishment.transform();
+        const apiObject = establishment.toAPI();
+
+        expect(apiObject.careWorkersLeaveDaysPerYear).to.equal('');
+      });
     });
   });
 
@@ -1252,8 +1425,7 @@ describe('Bulk Upload - Establishment CSV', () => {
                 lineNumber: establishment.lineNumber,
                 warnCode: 2530, //although we resuse this code, each line will only raise one of the variants
                 warnType: 'DHAACTIVITIES_WARNING',
-                warning:
-                  'Some codes you have entered for DHAACTIVITIES are invalid; invalid codes will be ignored',
+                warning: 'Some codes you have entered for DHAACTIVITIES are invalid; invalid codes will be ignored',
                 source: mixedInput,
                 column: 'DHAACTIVITIES',
                 name: establishmentRow.LOCALESTID,
@@ -1311,7 +1483,8 @@ describe('Bulk Upload - Establishment CSV', () => {
                 lineNumber: establishment.lineNumber,
                 warnCode: 2530,
                 warnType: 'DHAACTIVITIES_WARNING',
-                warning: 'The code you have entered for DHAACTIVITIES will be ignored as the code for DHA is not set to 1',
+                warning:
+                  'The code you have entered for DHAACTIVITIES will be ignored as the code for DHA is not set to 1',
                 source: '1;2;3',
                 column: 'DHAACTIVITIES',
                 name: establishmentRow.LOCALESTID,
@@ -2023,6 +2196,510 @@ describe('Bulk Upload - Establishment CSV', () => {
             name: establishmentRow.LOCALESTID,
           },
         ]);
+      });
+    });
+
+    describe('_validatePensionContributionPercentage (ACTUALCONT)', () => {
+      it('should pass if there is no input', async () => {
+        establishmentRow.ACTUALCONT = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.be.empty;
+      });
+
+      const validValues = ['3', '3.5', '10.25', '100'];
+
+      validValues.forEach((value) => {
+        it('should pass if the value is a number between 3 to 100', async () => {
+          establishmentRow.ACTUALCONT = value;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.be.empty;
+        });
+      });
+
+      const outOfRangeValues = ['2', '101', '-10'];
+
+      outOfRangeValues.forEach((value) => {
+        it('should add a warning and ignore if the value is a number out of the range of 3-100', async () => {
+          establishmentRow.ACTUALCONT = value;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2540,
+              warnType: 'ACTUALCONT_WARNING',
+              warning: 'ACTUALCONT will be ignored as it should be a number between 3 and 100',
+              source: value,
+              column: 'ACTUALCONT',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+      });
+
+      it('should add a warning and ignore if ACTUALCONT has a value but the PENSION is not 1 (=YES)', async () => {
+        establishmentRow.PENSION = '';
+        establishmentRow.ACTUALCONT = '5';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2541,
+            warnType: 'ACTUALCONT_PENSION_WARNING',
+            warning: 'Value entered for ACTUALCONT will be ignored as the value for PENSION is not "1" (YES)',
+            source: '5',
+            column: 'ACTUALCONT',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+    });
+
+    describe('_validateStaffOptOutOfWorkplacePension (OPTOUTPEN)', () => {
+      it('should pass if there is no input', async () => {
+        establishmentRow.OPTOUTPEN = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.be.empty;
+      });
+
+      const validInputs = ['1', '2', '999'];
+
+      validInputs.forEach((value) => {
+        it(`should pass if the input is valid - ${value}`, async () => {
+          establishmentRow.OPTOUTPEN = value;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.be.empty;
+          expect(establishment._staffOptOutOfWorkplacePension).to.deep.equal(value);
+        });
+      });
+
+      const invalidInputs = ['0', '3', '-10', 'some words'];
+
+      invalidInputs.forEach((invalidValue) => {
+        it(`should add a warning and ignore if input is invalid - ${invalidValue}`, async () => {
+          establishmentRow.OPTOUTPEN = invalidValue;
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2550,
+              warnType: 'OPTOUTPEN_WARNING',
+              warning: 'The code you have entered for OPTOUTPEN is incorrect and will be ignored',
+              source: invalidValue,
+              column: 'OPTOUTPEN',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+          expect(establishment._staffOptOutOfWorkplacePension).to.deep.equal(null);
+        });
+      });
+    });
+
+    const setMainServicePayAndPensionsGroup = (payAndPensionsGroup) => {
+      establishmentRow.SERVICEDESC = '';
+      establishmentRow.UTILISATION = '';
+      establishmentRow.CAPACITY = '';
+
+      switch (payAndPensionsGroup) {
+        case 1: {
+          establishmentRow.MAINSERVICE = '8'; // { ASC: 20, BUDI: '8' },  group 1 dom care
+          establishmentRow.ALLSERVICES = '8';
+          establishmentRow.REGTYPE = '2';
+          return;
+        }
+        case 2: {
+          establishmentRow.MAINSERVICE = '1'; // { ASC: 24, BUDI: '1' }, group 2 Care home services with nursing
+          establishmentRow.ALLSERVICES = '1';
+          establishmentRow.REGTYPE = '2';
+          return;
+        }
+
+        case 3: {
+          establishmentRow.MAINSERVICE = '13'; // { ASC: 1, BUDI: '13' }, group 3 Carer support
+          establishmentRow.ALLSERVICES = '13';
+          establishmentRow.REGTYPE = '0';
+          establishmentRow.PROVNUM = '';
+          establishmentRow.LOCATIONID = '';
+          establishmentRow.VACANCIES = '0;0;0';
+          return;
+        }
+      }
+    };
+
+    describe('_validateSleepIn (SLEEPINS)', () => {
+      const allowedPayAndPensionsGroups = [1, 2];
+
+      allowedPayAndPensionsGroups.forEach((payAndPensionsGroup) => {
+        describe(`for pay and pension group ${payAndPensionsGroup}:`, () => {
+          beforeEach(() => {
+            setMainServicePayAndPensionsGroup(payAndPensionsGroup);
+          });
+
+          it('should pass if there is no input', async () => {
+            establishmentRow.SLEEPINS = '';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.be.empty;
+          });
+
+          const validInputs = ['1', '2', '999'];
+
+          validInputs.forEach((value) => {
+            it(`should pass if SLEEPINS input is valid - ${value}`, async () => {
+              establishmentRow.SLEEPINS = value;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.be.empty;
+            });
+          });
+
+          const invalidInputs = ['0', '3', '-10', 'some words'];
+          invalidInputs.forEach((invalidValue) => {
+            it(`should add a warning and ignore if input is invalid - ${invalidValue}`, async () => {
+              establishmentRow.SLEEPINS = invalidValue;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.deep.equal([
+                {
+                  origin: 'Establishments',
+                  lineNumber: establishment.lineNumber,
+                  warnCode: 2560,
+                  warnType: 'SLEEPINS_WARNING',
+                  warning: 'The code you have entered for SLEEPINS is incorrect and will be ignored',
+                  source: invalidValue,
+                  column: 'SLEEPINS',
+                  name: establishmentRow.LOCALESTID,
+                },
+              ]);
+              expect(establishment._offerSleepIn).to.deep.equal(null);
+            });
+          });
+        });
+      });
+
+      describe('when main service does not have sleep in (payAndPensionsGroup 3)', () => {
+        beforeEach(() => {
+          setMainServicePayAndPensionsGroup(3);
+        });
+
+        it('should pass if there is no input', async () => {
+          establishmentRow.SLEEPINS = '';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.be.empty;
+        });
+
+        it('should add a warning and ignore if SLEEPINS has an input but main service does not have sleep ins', async () => {
+          establishmentRow.SLEEPINS = '1';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.include({
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2561,
+            warnType: 'SLEEPINS_MAIN_SERVICE_WARNING',
+            warning: 'Value entered for SLEEPINS will be ignored as main service does not fall in the correct category',
+            source: '1',
+            column: 'SLEEPINS',
+            name: establishmentRow.LOCALESTID,
+          });
+          expect(establishment._offerSleepIn).to.deep.equal(null);
+        });
+      });
+    });
+
+    describe('_validateSleepInPay (SLEEPINPAY)', () => {
+      const allowedPayAndPensionsGroups = [1, 2];
+
+      allowedPayAndPensionsGroups.forEach((payAndPensionsGroup) => {
+        describe(`For pay and pension group ${payAndPensionsGroup}:`, () => {
+          beforeEach(() => {
+            setMainServicePayAndPensionsGroup(payAndPensionsGroup);
+          });
+
+          it('should pass if there is no input', async () => {
+            establishmentRow.SLEEPINPAY = '';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.be.empty;
+          });
+
+          const validInputs = ['1', '2', '999'];
+          validInputs.forEach((value) => {
+            it(`should pass if SLEEPINPAY input is a valid value - ${value}`, async () => {
+              establishmentRow.SLEEPINS = '1';
+              establishmentRow.SLEEPINPAY = value;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.be.empty;
+            });
+          });
+
+          const invalidInputs = ['0', '3', '-10', 'some words'];
+          invalidInputs.forEach((invalidValue) => {
+            it(`should add a warning and ignore if input is invalid - ${invalidValue}`, async () => {
+              establishmentRow.SLEEPINS = '1';
+              establishmentRow.SLEEPINPAY = invalidValue;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.deep.equal([
+                {
+                  origin: 'Establishments',
+                  lineNumber: establishment.lineNumber,
+                  warnCode: 2570,
+                  warnType: 'SLEEPINPAY_WARNING',
+                  warning: 'The code you have entered for SLEEPINPAY is incorrect and will be ignored',
+                  source: invalidValue,
+                  column: 'SLEEPINPAY',
+                  name: establishmentRow.LOCALESTID,
+                },
+              ]);
+              expect(establishment._howToPayForSleepIn).to.deep.equal(null);
+            });
+          });
+        });
+      });
+
+      it('should add a warning and ignore if SLEEPINPAY has an input but SLEEPINS is not 1 (YES)', async () => {
+        establishmentRow.SLEEPINS = '999';
+        establishmentRow.SLEEPINPAY = '1';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2572,
+            warnType: 'SLEEPINPAY_SLEEPIN_WARNING',
+            warning:
+              'The code you have entered for SLEEPINPAY will be ignored as the code for SLEEPIN is not set to 1 (Yes)',
+            source: '1',
+            column: 'SLEEPINPAY',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+        expect(establishment._howToPayForSleepIn).to.deep.equal(null);
+      });
+
+      describe('when main service does not have sleep in (payAndPensionsGroup 3)', () => {
+        beforeEach(() => {
+          setMainServicePayAndPensionsGroup(3);
+        });
+
+        it('should pass if there is no input', async () => {
+          establishmentRow.SLEEPINPAY = '';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.be.empty;
+        });
+
+        it('should add a warning and ignore if SLEEPINPAY has an input but main service does not have sleep ins', async () => {
+          establishmentRow.SLEEPINS = '1';
+          establishmentRow.SLEEPINPAY = '1';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.include({
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 2571,
+            warnType: 'SLEEPINPAY_MAIN_SERVICE_WARNING',
+            warning:
+              'Value entered for SLEEPINPAY will be ignored as main service does not fall in the correct category',
+            source: '1',
+            column: 'SLEEPINPAY',
+            name: establishmentRow.LOCALESTID,
+          });
+          expect(establishment._howToPayForSleepIn).to.deep.equal(null);
+        });
+      });
+    });
+
+    describe('_validateTravelTimePay (TRAVELTIME / TTDIFFRATE)', () => {
+      describe('for pay and pensions group 1', () => {
+        beforeEach(() => {
+          setMainServicePayAndPensionsGroup(1);
+        });
+
+        it('should pass if there is no input', async () => {
+          establishmentRow.TRAVELTIME = '';
+          establishmentRow.TTDIFFRATE = '';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.be.empty;
+        });
+
+        const allowedTravelTimePayValues = ['1', '2', '3', '4', '5', '6', '999'];
+
+        allowedTravelTimePayValues.forEach((value) => {
+          it(`should pass if TRAVELTIME is a valid value (${value}) and TTDIFFRATE is empty`, async () => {
+            establishmentRow.TRAVELTIME = value;
+            establishmentRow.TTDIFFRATE = '';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.be.empty;
+          });
+        });
+
+        const invalidTravelTimePayValues = ['0', '-10', '7', '100', 'some words'];
+        invalidTravelTimePayValues.forEach((invalidValue) => {
+          it(`should add a warning and ignore if TRAVELTIME is not valid - ${invalidValue}`, async () => {
+            establishmentRow.TRAVELTIME = invalidValue;
+            establishmentRow.TTDIFFRATE = '';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.deep.equal([
+              {
+                origin: 'Establishments',
+                lineNumber: establishment.lineNumber,
+                warnCode: 2580,
+                warnType: 'TRAVELTIME_WARNING',
+                warning: 'The code you have entered for TRAVELTIME is incorrect and will be ignored',
+                source: invalidValue,
+                column: 'TRAVELTIME',
+                name: establishmentRow.LOCALESTID,
+              },
+            ]);
+            expect(establishment._travelTimePay).to.deep.equal(null);
+          });
+        });
+
+        describe('when TRAVELTIME = 3 (a different travel time rate)', () => {
+          const validValues = ['2.5', '5', '100.25', '200'];
+          validValues.forEach((value) => {
+            it(`should pass if TTDIFFRATE is a number between 2.5 and 200 - ${value}`, async () => {
+              establishmentRow.TRAVELTIME = '3';
+              establishmentRow.TTDIFFRATE = value;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.be.empty;
+            });
+          });
+
+          const invalidValues = ['2.4', '201', '0', '-10', '999', 'some words'];
+          invalidValues.forEach((invalidValue) => {
+            it(`should add a warning and ignore if TTDIFFRATE is invalid - ${invalidValue}`, async () => {
+              establishmentRow.TRAVELTIME = '3';
+              establishmentRow.TTDIFFRATE = invalidValue;
+
+              const establishment = await generateEstablishmentFromCsv(establishmentRow);
+              establishment.transform();
+
+              expect(establishment.validationErrors).to.deep.equal([
+                {
+                  origin: 'Establishments',
+                  lineNumber: establishment.lineNumber,
+                  warnCode: 2590,
+                  warnType: 'TTDIFFRATE_WARNING',
+                  warning: 'TTDIFFRATE will be ignored as it should be between £2.5 and £200',
+                  source: invalidValue,
+                  column: 'TTDIFFRATE',
+                  name: establishmentRow.LOCALESTID,
+                },
+              ]);
+            });
+          });
+        });
+
+        it('should add a warning and ignore if TTDIFFRATE is given but TRAVELTIME is empty', async () => {
+          establishmentRow.TRAVELTIME = '';
+          establishmentRow.TTDIFFRATE = '5.5';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2592,
+              warnType: 'TTDIFFRATE_TRAVELTIME_WARNING',
+              warning: 'TTDIFFRATE will be ignored as TRAVELTIME is not 3 (A different travel time rate)',
+              source: '5.5',
+              column: 'TTDIFFRATE',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+        });
+
+        it('should add a warning and ignore if TTDIFFRATE is given but TRAVELTIME is not 3', async () => {
+          establishmentRow.TRAVELTIME = '1';
+          establishmentRow.TTDIFFRATE = '5.5';
+
+          const establishment = await generateEstablishmentFromCsv(establishmentRow);
+          establishment.transform();
+
+          expect(establishment.validationErrors).to.deep.equal([
+            {
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2592,
+              warnType: 'TTDIFFRATE_TRAVELTIME_WARNING',
+              warning: 'TTDIFFRATE will be ignored as TRAVELTIME is not 3 (A different travel time rate)',
+              source: '5.5',
+              column: 'TTDIFFRATE',
+              name: establishmentRow.LOCALESTID,
+            },
+          ]);
+          expect(establishment._travelTimePayRate).to.deep.equal(null);
+        });
+      });
+
+      const payAndPensionsGroupNotAllowed = [2, 3];
+      payAndPensionsGroupNotAllowed.forEach((payAndPensionsGroup) => {
+        describe(`for pay and pensions group ${payAndPensionsGroup}`, () => {
+          beforeEach(() => {
+            setMainServicePayAndPensionsGroup(payAndPensionsGroup);
+          });
+
+          it('should pass if both TRAVELTIME and TTDIFFRATE are empty', async () => {
+            establishmentRow.TRAVELTIME = '3';
+            establishmentRow.TTDIFFRATE = '5.5';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.deep.equal([]);
+          });
+
+          it('should add a warning and ignore if got any input', async () => {});
+        });
       });
     });
 
@@ -3139,12 +3816,10 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
 
-    describe('BENEFITS, SICKPAY, PENSION and HOLIDAY', () => {
+    describe('BENEFITS, SICKPAY AND HOLIDAY', () => {
       const benefitsIndex = getColumnIndex('BENEFITS');
-
-      const sickPayIndex = benefitsIndex + 1;
-      const pensionIndex = benefitsIndex + 2;
-      const holidayIndex = benefitsIndex + 3;
+      const sickPayIndex = getColumnIndex('SICKPAY');
+      const holidayIndex = getColumnIndex('HOLIDAY');
 
       it('should leave the BENEFITS, SICKPAY and  PENSION columns blank if there values are null', async () => {
         const establishment = apiEstablishmentBuilder();
@@ -3154,52 +3829,45 @@ describe('Bulk Upload - Establishment CSV', () => {
 
         expect(csvAsArray[benefitsIndex]).to.equal('');
         expect(csvAsArray[sickPayIndex]).to.equal('');
-        expect(csvAsArray[pensionIndex]).to.equal('');
       });
 
       it("should include 0 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'No'", async () => {
         const establishment = apiEstablishmentBuilder();
         establishment.careWorkersCashLoyaltyForFirstTwoYears = 'No';
         establishment.sickPay = 'No';
-        establishment.pensionContribution = 'No';
 
         const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[benefitsIndex]).to.include(0);
         expect(csvAsArray[sickPayIndex]).to.include(0);
-        expect(csvAsArray[pensionIndex]).to.include(0);
       });
 
       it("should include 'unknown' in the BENEFITS ,SICKPAY and PENSION columns if there values are \"Don't know\"", async () => {
         const establishment = apiEstablishmentBuilder();
         establishment.careWorkersCashLoyaltyForFirstTwoYears = "Don't know";
         establishment.sickPay = "Don't know";
-        establishment.pensionContribution = "Don't know";
 
         const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[benefitsIndex]).to.include('unknown');
         expect(csvAsArray[sickPayIndex]).to.include('unknown');
-        expect(csvAsArray[pensionIndex]).to.include('unknown');
       });
 
       it("should include 1 in the BENEFITS ,SICKPAY and PENSION columns if there values are 'Yes'", async () => {
         const establishment = apiEstablishmentBuilder();
         establishment.careWorkersCashLoyaltyForFirstTwoYears = 'Yes';
         establishment.sickPay = 'Yes';
-        establishment.pensionContribution = 'Yes';
 
         const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[benefitsIndex]).to.include('1;');
         expect(csvAsArray[sickPayIndex]).to.include('1');
-        expect(csvAsArray[pensionIndex]).to.include('1');
       });
 
-      it('should include a value in the columns BENEFITS and  HOLIDAY if it they have  values', async () => {
+      it('should include a value in the columns BENEFITS and HOLIDAY if it they have values', async () => {
         const establishment = apiEstablishmentBuilder();
         establishment.careWorkersCashLoyaltyForFirstTwoYears = '200';
         establishment.careWorkersLeaveDaysPerYear = '35';
@@ -3218,6 +3886,211 @@ describe('Bulk Upload - Establishment CSV', () => {
         const csvAsArray = csv.split(',');
 
         expect(csvAsArray[holidayIndex]).to.equal('');
+      });
+    });
+
+    describe('PENSION', () => {
+      const pensionIndex = getColumnIndex('PENSION');
+
+      const testCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 'Yes', buCode: '1' },
+        { value: 'No', buCode: '0' },
+        { value: "Don't know", buCode: 'unknown' },
+      ];
+
+      testCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the PENSION column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.pensionContribution = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[pensionIndex]).to.equal(buCode);
+        });
+      });
+    });
+
+    describe('ACTUALCONT (PensionContributionPercentage)', () => {
+      const actualContIndex = getColumnIndex('ACTUALCONT');
+
+      const testCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 4, buCode: '4' },
+        { value: 4.25, buCode: '4.25' },
+        { value: 10.5, buCode: '10.5' },
+        { value: 100, buCode: '100' },
+      ];
+
+      testCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the ACTUALCONT column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.pensionContribution = 'Yes';
+          establishment.pensionContributionPercentage = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[actualContIndex]).to.equal(buCode);
+        });
+      });
+
+      it('should show empty string "" in ACTUALCONT if pensionContribution is not "Yes"', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.pensionContribution = 'No';
+        establishment.pensionContributionPercentage = 4;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[actualContIndex]).to.equal('');
+      });
+    });
+
+    describe('OPTOUTPEN (staffOptOutOfWorkplacePension)', () => {
+      const optOutPenIndex = getColumnIndex('OPTOUTPEN');
+
+      const testCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 'Yes', buCode: '1' },
+        { value: 'No', buCode: '2' },
+        { value: "Don't know", buCode: '999' },
+      ];
+
+      testCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the SLEEPINS column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.staffOptOutOfWorkplacePension = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[optOutPenIndex]).to.equal(buCode);
+        });
+      });
+    });
+
+    const sleepInsIndex = getColumnIndex('SLEEPINS');
+    const sleepInPayIndex = getColumnIndex('SLEEPINPAY');
+
+    describe('SLEEPINS (OfferSleepIn)', () => {
+      const sleepInsTestCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 'Yes', buCode: '1' },
+        { value: 'No', buCode: '2' },
+        { value: "Don't know", buCode: '999' },
+      ];
+
+      sleepInsTestCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the SLEEPINS column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.offerSleepIn = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[sleepInsIndex]).to.equal(buCode);
+        });
+      });
+    });
+
+    describe('SLEEPINPAY (HowToPayForSleepIn)', () => {
+      const sleepInPayTestCases = [
+        { value: null, buCode: '' },
+        { value: undefined, buCode: '' },
+        { value: 'Hourly rate', buCode: '1' },
+        { value: 'Flat rate', buCode: '2' },
+        { value: 'I do not know', buCode: '999' },
+      ];
+
+      sleepInPayTestCases.forEach(({ value, buCode }) => {
+        it(`should show '${buCode}' in the SLEEPINPAY column if the value is '${value}'`, () => {
+          const establishment = apiEstablishmentBuilder();
+          establishment.offerSleepIn = 'Yes';
+          establishment.howToPayForSleepIn = value;
+
+          const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+          const csvAsArray = csv.split(',');
+
+          expect(csvAsArray[sleepInPayIndex]).to.equal(buCode);
+        });
+      });
+
+      it('should show empty string "" in SLEEPINPAY column if offerSleepIn is not "Yes"', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.offerSleepIn = 'No';
+        establishment.howToPayForSleepIn = 'Hourly rate';
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[sleepInPayIndex]).to.equal('');
+      });
+    });
+
+    describe('TRAVELTIME (travelTimePayOption)', () => {
+      const travelTimeIndex = getColumnIndex('TRAVELTIME');
+
+      it('should leave the TRAVELTIME column blank if value is null', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = null;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimeIndex]).to.equal('');
+      });
+
+      it('should show the bulkUploadCode from travelTimePayOption in TRAVELTIME column', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = { id: 7, bulkUploadCode: 999, includeRate: false };
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimeIndex]).to.equal('999');
+      });
+    });
+
+    describe('TTDIFFRATE (TravelTimePayRate)', () => {
+      const travelTimePayRateIndex = getColumnIndex('TTDIFFRATE');
+
+      it('should leave the TTDIFFRATE column blank if value is null', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = { id: 3, bulkUploadCode: 3, includeRate: true };
+        establishment.travelTimePayRate = null;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimePayRateIndex]).to.equal('');
+      });
+
+      it('should show the travelTimePayRate value in TTDIFFRATE column', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = { id: 3, bulkUploadCode: 3, includeRate: true };
+        establishment.travelTimePayRate = 12.34;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimePayRateIndex]).to.equal('12.34');
+      });
+
+      it('should show empty string "" in TTDIFFRATE column if travelTimePayOption does not include rate', () => {
+        const establishment = apiEstablishmentBuilder();
+        establishment.travelTimePayOption = { id: 1, bulkUploadCode: 1, includeRate: false };
+        establishment.travelTimePayRate = 12.34;
+
+        const csv = WorkplaceCSVValidator.toCSV(establishment, workplaceMappings);
+        const csvAsArray = csv.split(',');
+
+        expect(csvAsArray[travelTimePayRateIndex]).to.equal('');
       });
     });
   });
