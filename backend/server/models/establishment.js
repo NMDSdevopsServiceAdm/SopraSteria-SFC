@@ -850,6 +850,16 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      updatePayForMultiStaffViewed: {
+        type: DataTypes.BOOLEAN,
+        field: '"UpdatePayForMultiStaffViewed"',
+        allowNull: true,
+      },
+      fastTrackPayByJobRolesViewed: {
+        type: DataTypes.BOOLEAN,
+        field: '"FastTrackPayByJobRolesViewed"',
+        allowNull: true,
+      },
     },
     {
       defaultScope: {
