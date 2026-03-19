@@ -2,15 +2,15 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
   const establishmentId = mockEstablishmentData.id;
   const payAndPensionFlagMessage = "We've added some Workplace questions";
 
-  const mainServiceWithPayAndPensionGroup1 = { id: 20, name: 'Domiciliary care services' };
-  const mainServiceWithPayAndPensionGroup2 = { id: 7, name: 'Short breaks, respite care' };
-  const mainServiceWithPayAndPensionGroup3 = { id: 9, name: 'Day care and day services' };
+  const mainServiceWithPayAndPensionsGroup1 = { id: 20, name: 'Domiciliary care services' };
+  const mainServiceWithPayAndPensionsGroup2 = { id: 7, name: 'Short breaks, respite care' };
+  const mainServiceWithPayAndPensionsGroup3 = { id: 9, name: 'Day care and day services' };
 
   describe('pay and pensions', () => {
-    describe('main service with payAndPensionGroup as 1', () => {
+    describe('main service with payAndPensionsGroup as 1', () => {
       before(() => {
         cy.resetPayAndPensionWorkplaceQuestions(establishmentId);
-        cy.setWorkplaceMainService(establishmentId, mainServiceWithPayAndPensionGroup1.id);
+        cy.setWorkplaceMainService(establishmentId, mainServiceWithPayAndPensionsGroup1.id);
         cy.reload();
       });
 
@@ -52,7 +52,10 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
         cy.getByLabel('Hourly rate').click();
         cy.get('button').contains('Save and continue').click();
 
-        // travel time question to be added here
+        // travel time
+        cy.get('h1').should('contain.text', 'What do you pay care and support workers for travel time between visits?');
+        cy.getByLabel('Minimum wage').click();
+        cy.get('button').contains('Save and continue').click();
 
         //home
         cy.get(`[data-testid="generic_alert"]`).contains('Workplace details added');
@@ -60,10 +63,10 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
       });
     });
 
-    describe('main service with payAndPensionGroup as 2', () => {
+    describe('main service with payAndPensionsGroup as 2', () => {
       before(() => {
         cy.resetPayAndPensionWorkplaceQuestions(establishmentId);
-        cy.setWorkplaceMainService(establishmentId, mainServiceWithPayAndPensionGroup2.id);
+        cy.setWorkplaceMainService(establishmentId, mainServiceWithPayAndPensionsGroup2.id);
         cy.reload();
       });
 
@@ -111,10 +114,10 @@ export const runTestsForPayAndPensionsMiniFlow = (mockEstablishmentData) => {
       });
     });
 
-    describe('main service with payAndPensionGroup as 3', () => {
+    describe('main service with payAndPensionsGroup as 3', () => {
       before(() => {
         cy.resetPayAndPensionWorkplaceQuestions(establishmentId);
-        cy.setWorkplaceMainService(establishmentId, mainServiceWithPayAndPensionGroup3.id);
+        cy.setWorkplaceMainService(establishmentId, mainServiceWithPayAndPensionsGroup3.id);
         cy.reload();
       });
 
