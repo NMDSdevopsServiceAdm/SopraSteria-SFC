@@ -5,7 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { AlertService } from '@core/services/alert.service';

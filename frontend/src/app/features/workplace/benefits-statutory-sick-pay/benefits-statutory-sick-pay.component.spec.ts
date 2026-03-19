@@ -11,10 +11,12 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 
 describe('BenefitsStatutorySickPayComponent', () => {
-  async function setup(returnUrl = true, sickPay = undefined) {
-    const isInAddDetailsFlow = !returnUrl;
+  async function setup(overrides: any = {}) {
+    const isInAddDetailsFlow = !overrides?.returnUrl;
 
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       BenefitsStatutorySickPayComponent,
@@ -25,9 +27,15 @@ describe('BenefitsStatutorySickPayComponent', () => {
           UntypedFormBuilder,
           {
             provide: EstablishmentService,
-            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-              sickPay: sickPay,
+            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, overrides?.returnUrl, {
+              sickPay: overrides?.sickPay ?? undefined,
+              mainService: overrides?.mainService,
             }),
+            deps: [HttpClient],
+          },
+          {
+            provide: PayAndPensionService,
+            useFactory: MockPayAndPensionService.factory(overrides),
             deps: [HttpClient],
           },
           provideHttpClient(),
@@ -85,7 +93,11 @@ describe('BenefitsStatutorySickPayComponent', () => {
 
   it('should pre select the first radio button if the establishment has a sick pay value of Yes', async () => {
     const sickPay = 'Yes';
-    const { component, fixture } = await setup(true, sickPay);
+    const overrides = {
+      returnUrl: true,
+      sickPay,
+    };
+    const { component, fixture } = await setup(overrides);
 
     const radioButton = fixture.nativeElement.querySelector('input[id="statutorySickPay-0"]');
     expect(radioButton.checked).toBeTruthy();
@@ -94,7 +106,11 @@ describe('BenefitsStatutorySickPayComponent', () => {
 
   it('should pre select the first radio button if the establishment has a sick pay value of No', async () => {
     const sickPay = 'No';
-    const { component, fixture } = await setup(true, sickPay);
+    const overrides = {
+      returnUrl: true,
+      sickPay,
+    };
+    const { component, fixture } = await setup(overrides);
 
     const radioButton = fixture.nativeElement.querySelector('input[id="statutorySickPay-1"]');
     expect(radioButton.checked).toBeTruthy();
@@ -103,7 +119,11 @@ describe('BenefitsStatutorySickPayComponent', () => {
 
   it(`should pre select the first radio button if the establishment has a sick pay value of Don't know`, async () => {
     const sickPay = `Don't know`;
-    const { component, fixture } = await setup(true, sickPay);
+    const overrides = {
+      returnUrl: true,
+      sickPay,
+    };
+    const { component, fixture } = await setup(overrides);
 
     const radioButton = fixture.nativeElement.querySelector('input[id="statutorySickPay-2"]');
     expect(radioButton.checked).toBeTruthy();
@@ -112,14 +132,14 @@ describe('BenefitsStatutorySickPayComponent', () => {
 
   describe('submit buttons and submitting form', () => {
     it(`should show 'Save and continue' cta button and 'Skip this question'`, async () => {
-      const { getByText } = await setup(false);
+      const { getByText } = await setup({ returnUrl: false });
 
       expect(getByText('Save and continue')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
     it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
-      const { component, fixture, getByText } = await setup(false);
+      const { component, fixture, getByText } = await setup({ returnUrl: false });
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
@@ -131,7 +151,7 @@ describe('BenefitsStatutorySickPayComponent', () => {
     });
 
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
-      const { component, fixture, getByText } = await setup(false);
+      const { component, fixture, getByText } = await setup({ returnUrl: false });
 
       const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
 
@@ -153,7 +173,7 @@ describe('BenefitsStatutorySickPayComponent', () => {
     });
 
     it('should navigate to the next page when submitting from the flow', async () => {
-      const { fixture, getByText, routerSpy } = await setup(false);
+      const { fixture, getByText, routerSpy } = await setup({ returnUrl: false });
 
       const button = getByText('Save and continue');
       fireEvent.click(button);
@@ -169,7 +189,12 @@ describe('BenefitsStatutorySickPayComponent', () => {
     });
 
     it('should navigate to the next page when submitting from the flow', async () => {
-      const { component, fixture, getByText, routerSpy } = await setup(false);
+      const overrides = {
+        returnUrl: false,
+        mainService: { payAndPensionsGroup: 3 },
+        showTravelTimePayQuestion: false,
+      };
+      const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
       const link = getByText('Skip this question');
       fireEvent.click(link);
@@ -235,21 +260,47 @@ describe('BenefitsStatutorySickPayComponent', () => {
     });
 
     it('should render the workplace progress bar when in the workplace flow', async () => {
-      const { getByTestId } = await setup(null);
+      const { getByTestId } = await setup({ returnUrl: null });
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
   });
 
-  it('should set the back link to travel-time-pay page', async () => {
-    const { component } = await setup(null);
+  describe('back link', () => {
+    it('should set the back link to travel-time-pay page when showTravelTimePayQuestion is true', async () => {
+      const overrides = {
+        returnUrl: null,
+        mainService: { payAndPensionsGroup: 1 },
+        showTravelTimePayQuestion: true,
+      };
 
-    expect(component.previousRoute).toEqual([
-      '/workplace',
-      component.establishment.uid,
-      'workplace-data',
-      'add-workplace-details',
-      'travel-time-pay',
-    ]);
+      const { component } = await setup(overrides);
+
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        component.establishment.uid,
+        'workplace-data',
+        'add-workplace-details',
+        'travel-time-pay',
+      ]);
+    });
+
+    it('should set the back link to how-many-leavers page when showTravelTimePayQuestion is false', async () => {
+      const overrides = {
+        returnUrl: null,
+        mainService: { payAndPensionsGroup: 3 },
+        showTravelTimePayQuestion: false,
+      };
+
+      const { component } = await setup(overrides);
+
+      expect(component.previousRoute).toEqual([
+        '/workplace',
+        component.establishment.uid,
+        'workplace-data',
+        'add-workplace-details',
+        'how-many-leavers',
+      ]);
+    });
   });
 });
