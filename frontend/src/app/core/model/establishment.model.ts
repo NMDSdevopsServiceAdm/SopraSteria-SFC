@@ -190,6 +190,8 @@ export interface Establishment {
   };
   staffOptOutOfWorkplacePension?: string;
   payAndPensionsMiniFlowViewed?: boolean;
+  updatePayForMultiStaffViewed?: boolean;
+  fastTrackPayByJobRolesViewed?: boolean;
 }
 
 export interface UpdateJobsRequest {
