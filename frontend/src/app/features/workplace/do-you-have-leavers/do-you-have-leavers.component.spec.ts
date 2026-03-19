@@ -206,7 +206,7 @@ describe('DoYouHaveLeaversComponent', () => {
     });
 
     describe('when showTravelTimePayQuestion is false', () => {
-      ['I don not know', 'None'].forEach((answer) => {
+      ['I do not know', 'None'].forEach((answer) => {
         it(`should navigate to the benefits-statutory-sick-pay page when submitting '${answer}'`, async () => {
           const overrides = { returnUrl: false, showTravelTimePayQuestion: false };
           const { component, fixture, getByText, routerSpy } = await setup(overrides);
@@ -245,7 +245,7 @@ describe('DoYouHaveLeaversComponent', () => {
     });
 
     describe('when showTravelTimePayQuestion is true', () => {
-      ['I don not know', 'None'].forEach((answer) => {
+      ['I do not know', 'None'].forEach((answer) => {
         it(`should navigate to the travel-time-pay page when submitting '${answer}'`, async () => {
           const overrides = { returnUrl: false, showTravelTimePayQuestion: true };
           const { component, fixture, getByText, routerSpy } = await setup(overrides);

@@ -124,7 +124,7 @@ describe('PayAndPensionService', () => {
   });
 
   describe('getPayAndPensionsMiniFlowProgressBarSections', () => {
-    it('should return an array length of 3 when the payAndPensionsGroup is 1', async () => {
+    it('should return an array length of 4 when the payAndPensionsGroup is 1', async () => {
       const sections = service.getPayAndPensionsMiniFlowProgressBarSections(1);
 
       expect(sections.length).toEqual(4);
