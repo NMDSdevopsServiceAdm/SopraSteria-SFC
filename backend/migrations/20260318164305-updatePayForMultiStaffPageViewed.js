@@ -1,6 +1,6 @@
 'use strict';
 
-const workerTable = { tableName: 'Establishment', schema: 'cqc' };
+const establishmentTable = { tableName: 'Establishment', schema: 'cqc' };
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
     return queryInterface.sequelize.transaction(async (transaction) => {
       await Promise.all([
         queryInterface.addColumn(
-          workerTable,
+          establishmentTable,
           'UpdatePayForMultiStaffViewed',
           {
             type: Sequelize.DataTypes.BOOLEAN,
@@ -17,7 +17,7 @@ module.exports = {
           { transaction },
         ),
         queryInterface.addColumn(
-          workerTable,
+          establishmentTable,
           'FastTrackPayByJobRolesViewed',
           {
             type: Sequelize.DataTypes.BOOLEAN,
@@ -32,8 +32,8 @@ module.exports = {
   async down(queryInterface) {
     return queryInterface.sequelize.transaction((transaction) => {
       return Promise.all([
-        queryInterface.removeColumn(workerTable, 'UpdatePayForMultiStaffViewed', { transaction }),
-        queryInterface.removeColumn(workerTable, 'FastTrackPayByJobRolesViewed', { transaction }),
+        queryInterface.removeColumn(establishmentTable, 'UpdatePayForMultiStaffViewed', { transaction }),
+        queryInterface.removeColumn(establishmentTable, 'FastTrackPayByJobRolesViewed', { transaction }),
       ]);
     });
   },
