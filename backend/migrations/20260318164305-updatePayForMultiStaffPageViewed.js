@@ -1,6 +1,6 @@
 'use strict';
 
-const workerTable = { tableName: 'Worker', schema: 'cqc' };
+const workerTable = { tableName: 'Establishment', schema: 'cqc' };
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -9,7 +9,7 @@ module.exports = {
       await Promise.all([
         queryInterface.addColumn(
           workerTable,
-          'UpdatePayForMultiStaffPageViewed',
+          'UpdatePayForMultiStaffViewed',
           {
             type: Sequelize.DataTypes.BOOLEAN,
             allowNull: true,
