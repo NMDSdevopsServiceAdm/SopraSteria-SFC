@@ -900,7 +900,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-
       staffOptOutOfWorkplacePension: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -1023,6 +1022,16 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.BOOLEAN,
         allowNull: true,
         field: 'PayAndPensionsMiniFlowViewed',
+      },
+      updatePayForMultiStaffViewed: {
+        type: DataTypes.BOOLEAN,
+        field: '"UpdatePayForMultiStaffViewed"',
+        allowNull: true,
+      },
+      fastTrackPayByJobRolesViewed: {
+        type: DataTypes.BOOLEAN,
+        field: '"FastTrackPayByJobRolesViewed"',
+        allowNull: true,
       },
     },
     {
