@@ -1109,6 +1109,16 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      UpdatePayForMultiStaffPageViewed: {
+        type: DataTypes.BOOLEAN,
+        field: '"UpdatePayForMultiStaffPageViewed"',
+        allowNull: true,
+      },
+      FastTrackPayByJobRolesViewed: {
+        type: DataTypes.BOOLEAN,
+        field: '"FastTrackPayByJobRolesViewed"',
+        allowNull: true,
+      },
 
       created: {
         type: DataTypes.DATE,
