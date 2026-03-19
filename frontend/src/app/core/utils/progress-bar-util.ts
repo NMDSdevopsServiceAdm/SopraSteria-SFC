@@ -22,12 +22,7 @@ export class ProgressBarUtil {
   };
 
   public static payAndPensionsMiniFlowBarSections = (value: number = 3): string[] => {
-    // let sections = ['Question 1', 'Question 2', 'Question 3'];
-    // if (value === 4) {
-    //   sections.push('Question 4');
-    // }
-    // return sections;
-    let sections = [];
+    const sections = [];
     if (value === 3 || value === 4) {
       for (let i = 0; i < value; i++) {
         sections.push(`Question ${i + 1}`);
