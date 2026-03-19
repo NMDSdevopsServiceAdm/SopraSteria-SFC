@@ -103,6 +103,8 @@ class Establishment extends EntityValidator {
     this._CWPAwarenessQuestionViewed = null;
     this._staffDoDelegatedHealthcareActivities = null;
     this._staffWhatKindDelegatedHealthcareActivities = null;
+    this._updatePayForMultiStaffViewed = null;
+    this._fastTrackPayByJobRolesViewed = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -423,6 +425,17 @@ class Establishment extends EntityValidator {
       : null;
   }
 
+  get updatePayForMultiStaffViewed() {
+    return this._properties.get('UpdatePayForMultiStaffViewed')
+      ? this._properties.get('UpdatePayForMultiStaffPageViewed').property
+      : null;
+  }
+  get fastTrackPayByJobRolesViewed() {
+    return this._properties.get('FastTrackPayByJobRolesViewed')
+      ? this._properties.get('FastTrackPayByJobRolesViewed').property
+      : null;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -647,6 +660,14 @@ class Establishment extends EntityValidator {
 
         if ('staffDoDelegatedHealthcareActivities' in document) {
           this._staffDoDelegatedHealthcareActivities = document.staffDoDelegatedHealthcareActivities;
+        }
+
+        if ('updatePayForMultiStaffViewed' in document) {
+          this._updatePayForMultiStaffViewed = document.updatePayForMultiStaffViewed;
+        }
+
+        if ('fastTrackPayByJobRolesViewed' in document) {
+          this._fastTrackPayByJobRolesViewed = document.fastTrackPayByJobRolesViewed;
         }
       }
 
@@ -875,6 +896,8 @@ class Establishment extends EntityValidator {
           careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
           CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
           staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
+          updatePayForMultiStaffViewed: this._updatePayForMultiStaffViewed,
+          fastTrackPayByJobRolesViewed: this._fastTrackPayByJobRolesViewed,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1108,6 +1131,8 @@ class Establishment extends EntityValidator {
             careWorkforcePathwayWorkplaceAwarenessFK: this._careWorkforcePathwayWorkplaceAwareness?.id,
             CWPAwarenessQuestionViewed: this._CWPAwarenessQuestionViewed,
             staffDoDelegatedHealthcareActivities: this._staffDoDelegatedHealthcareActivities,
+            updatePayForMultiStaffViewed: this._updatePayForMultiStaffViewed,
+            fastTrackPayByJobRolesViewed: this._fastTrackPayByJobRolesViewed,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1427,6 +1452,8 @@ class Establishment extends EntityValidator {
         this._CWPAwarenessQuestionViewed = fetchResults.CWPAwarenessQuestionViewed;
         this._careWorkforcePathwayUse = fetchResults.careWorkforcePathwayUse;
         this._staffDoDelegatedHealthcareActivities = fetchResults.staffDoDelegatedHealthcareActivities;
+        this._updatePayForMultiStaffViewed = fetchResults.updatePayForMultiStaffViewed;
+        this._fastTrackPayByJobRolesViewed = fetchResults.fastTrackPayByJobRolesViewed;
 
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
@@ -1893,6 +1920,8 @@ class Establishment extends EntityValidator {
         myDefaultJSON.isParentApprovedBannerViewed = this.isParentApprovedBannerViewed;
         myDefaultJSON.CWPAwarenessQuestionViewed = this.CWPAwarenessQuestionViewed;
         myDefaultJSON.staffDoDelegatedHealthcareActivities = this.staffDoDelegatedHealthcareActivities;
+        myDefaultJSON.updatePayForMultiStaffViewed = this.updatePayForMultiStaffViewed;
+        myDefaultJSON.fastTrackPayByJobRolesViewed = this.fastTrackPayByJobRolesViewed;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

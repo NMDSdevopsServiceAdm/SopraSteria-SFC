@@ -178,6 +178,8 @@ export interface Establishment {
   CWPAwarenessQuestionViewed?: boolean;
   staffDoDelegatedHealthcareActivities?: string;
   staffWhatKindDelegatedHealthcareActivities?: StaffWhatKindDelegatedHealthcareActivities;
+  updatePayForMultiStaffViewed?: boolean;
+  fastTrackPayByJobRolesViewed?: boolean;
 }
 
 export interface UpdateJobsRequest {
@@ -325,4 +327,3 @@ export enum FilterTrainingAndQualsOptions {
   '1_expired' = 'Expired',
   '2_expires_soon' = 'Expires soon',
 }
-
