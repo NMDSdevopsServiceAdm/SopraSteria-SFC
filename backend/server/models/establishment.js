@@ -733,12 +733,35 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'CareWorkersCashLoyaltyForFirstTwoYears',
       },
+
       pensionContribution: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Yes', 'No', "Don't know"],
         field: 'PensionContribution',
       },
+
+      pensionContributionSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"PensionContributionSavedAt"',
+      },
+      pensionContributionChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"PensionContributionChangedAt"',
+      },
+      pensionContributionSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"PensionContributionSavedBy"',
+      },
+      pensionContributionChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"PensionContributionChangedBy"',
+      },
+
       pensionContributionPercentage: {
         type: DataTypes.FLOAT,
         allowNull: true,
@@ -752,6 +775,27 @@ module.exports = function (sequelize, DataTypes) {
           max: 100,
         },
       },
+      pensionContributionPercentageSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"PensionContributionPercentageSavedAt"',
+      },
+      pensionContributionPercentageChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"PensionContributionPercentageChangedAt"',
+      },
+      pensionContributionPercentageSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"PensionContributionPercentageSavedBy"',
+      },
+      pensionContributionPercentageChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"PensionContributionPercentageChangedBy"',
+      },
+
       sickPay: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -871,23 +915,91 @@ module.exports = function (sequelize, DataTypes) {
         values: ['Yes', 'No', "Don't know"],
         field: 'StaffOptOutOfWorkplacePension',
       },
+      StaffOptOutOfWorkplacePensionSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffOptOutOfWorkplacePensionChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffOptOutOfWorkplacePensionSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      StaffOptOutOfWorkplacePensionChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
       offerSleepIn: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Yes', 'No', "Don't know"],
         field: 'OfferSleepIn',
       },
+      OfferSleepInSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      OfferSleepInChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      OfferSleepInSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      OfferSleepInChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
       howToPayForSleepIn: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Hourly rate', 'Flat rate', 'I do not know'],
         field: 'HowToPayForSleepIn',
       },
+      HowToPayForSleepInSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      HowToPayForSleepInChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      HowToPayForSleepInSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      HowToPayForSleepInChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
       TravelTimePayOptionFK: {
         type: DataTypes.INTEGER,
         allowNull: true,
         field: 'TravelTimePayOptionFK',
       },
+      TravelTimePayOptionSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      TravelTimePayOptionChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      TravelTimePayOptionSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      TravelTimePayOptionChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
       travelTimePayRate: {
         type: DataTypes.FLOAT,
         allowNull: true,
@@ -898,6 +1010,23 @@ module.exports = function (sequelize, DataTypes) {
           return rawValue ? parseFloat(rawValue) : null;
         },
       },
+      TravelTimePayRateSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      TravelTimePayRateChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      TravelTimePayRateSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      TravelTimePayRateChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
       payAndPensionsMiniFlowViewed: {
         type: DataTypes.BOOLEAN,
         allowNull: true,
