@@ -344,7 +344,7 @@ describe('TravelTimePayComponent', () => {
   });
 
   describe('when viewing the page in the pay and pension mini flow', () => {
-    let overrides = {
+    const overrides = {
       returnToUrl: true,
       returnTo: { url: ['/dashboard'], fragment: 'home' },
       inPayAndPensionsMiniFlow: true,
@@ -356,11 +356,11 @@ describe('TravelTimePayComponent', () => {
     };
 
     it('should render the pay and pension group progress bar when in the mini flow', async () => {
-      overrides = {
+      const updatedOverrides = {
         ...overrides,
         payAndPensionsGroup: 1,
       };
-      const { getByTestId } = await setup(overrides);
+      const { getByTestId } = await setup(updatedOverrides);
 
       const sectionIndex = 3;
       const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);

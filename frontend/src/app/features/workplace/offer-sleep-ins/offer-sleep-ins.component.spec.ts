@@ -376,16 +376,15 @@ describe('OfferSleepInsComponent', () => {
   });
 
   describe('when viewing the page in the pay and pension mini flow', () => {
-    let overrides = {
-      returnToUrl: true,
-      returnTo: { url: ['/dashboard'], fragment: 'home' },
-      inPayAndPensionsMiniFlow: true,
-      establishment: { mainService: { payAndPensionsGroup: 1 } },
-      showTravelTimePayQuestion: false,
-      payAndPensionsGroup: 1,
-    };
-
     it('should set the correct back link when in the pay and pension mini flow', async () => {
+      const overrides = {
+        returnToUrl: true,
+        returnTo: { url: ['/dashboard'], fragment: 'home' },
+        inPayAndPensionsMiniFlow: true,
+        establishment: { mainService: { payAndPensionsGroup: 1 } },
+        showTravelTimePayQuestion: false,
+        payAndPensionsGroup: 1,
+      };
       const { backServiceSpy } = await setup(overrides);
 
       expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
@@ -401,19 +400,22 @@ describe('OfferSleepInsComponent', () => {
     });
 
     describe('payAndPensionsGroup 1', () => {
-      overrides = {
-        ...overrides,
-        payAndPensionsGroup: 1,
+      const overrides = {
+        returnToUrl: true,
+        returnTo: { url: ['/dashboard'], fragment: 'home' },
+        inPayAndPensionsMiniFlow: true,
         establishment: { mainService: { payAndPensionsGroup: 1 } },
+        showTravelTimePayQuestion: false,
+        payAndPensionsGroup: 1,
       };
 
       it('should render the pay and pension group 1 progress bar when in the mini flow', async () => {
-        overrides = {
+        const updatedOverrides = {
           ...overrides,
           showTravelTimePayQuestion: true,
           payAndPensionsGroup: 1,
         };
-        const { getByTestId } = await setup(overrides);
+        const { getByTestId } = await setup(updatedOverrides);
 
         const sectionIndex = 2;
         const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
@@ -427,11 +429,11 @@ describe('OfferSleepInsComponent', () => {
       });
 
       it('should navigate to travel-time-pay page when page when "Skip this question" is clicked', async () => {
-        overrides = {
+        const updatedOverrides = {
           ...overrides,
           showTravelTimePayQuestion: true,
         };
-        const { getByText, routerSpy, fixture } = await setup(overrides);
+        const { getByText, routerSpy, fixture } = await setup(updatedOverrides);
 
         const button = getByText('Skip this question');
         fireEvent.click(button);
@@ -447,11 +449,11 @@ describe('OfferSleepInsComponent', () => {
       });
 
       it(`should navigate to the travel-time-pay page when submitting without a selecting an option`, async () => {
-        overrides = {
+        const updatedOverrides = {
           ...overrides,
           showTravelTimePayQuestion: true,
         };
-        const { getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } = await setup(overrides);
+        const { getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } = await setup(updatedOverrides);
 
         const button = getByText('Save and continue');
         fireEvent.click(button);
@@ -469,13 +471,13 @@ describe('OfferSleepInsComponent', () => {
       });
 
       [options[1], options[2]].forEach((option) => {
-        overrides = {
+        const updatedOverrides = {
           ...overrides,
           showTravelTimePayQuestion: true,
         };
         it(`should navigate to the travel-time-pay when submitting with the option "${option.label}"`, async () => {
           const { component, getByLabelText, getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } =
-            await setup(overrides);
+            await setup(updatedOverrides);
 
           fireEvent.click(getByLabelText(option.label));
           fixture.detectChanges();
@@ -500,8 +502,11 @@ describe('OfferSleepInsComponent', () => {
     });
 
     describe('payAndPensionsGroup 2', () => {
-      overrides = {
-        ...overrides,
+      const overrides = {
+        returnToUrl: true,
+        returnTo: { url: ['/dashboard'], fragment: 'home' },
+        inPayAndPensionsMiniFlow: true,
+        showTravelTimePayQuestion: false,
         payAndPensionsGroup: 2,
         establishment: { mainService: { payAndPensionsGroup: 2 } },
       };
@@ -521,11 +526,11 @@ describe('OfferSleepInsComponent', () => {
       });
 
       it('should navigate to home page when page when "Skip this question" is clicked', async () => {
-        overrides = {
+        const updatedOverrides = {
           ...overrides,
           showTravelTimePayQuestion: false,
         };
-        const { getByText, routerSpy, fixture, alertSpy } = await setup(overrides);
+        const { getByText, routerSpy, fixture, alertSpy } = await setup(updatedOverrides);
 
         const button = getByText('Skip this question');
         fireEvent.click(button);
@@ -540,11 +545,11 @@ describe('OfferSleepInsComponent', () => {
       });
 
       it(`should navigate to the home page when submitting without a selecting an option`, async () => {
-        overrides = {
+        const updatedOverrides = {
           ...overrides,
           showTravelTimePayQuestion: false,
         };
-        const { getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } = await setup(overrides);
+        const { getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } = await setup(updatedOverrides);
 
         const button = getByText('Save and continue');
         fireEvent.click(button);
@@ -560,12 +565,12 @@ describe('OfferSleepInsComponent', () => {
       });
 
       it('should navigate to "how-do-you-pay-for-sleep-ins" when submitting with the option "Yes"', async () => {
-        overrides = {
+        const updatedOverrides = {
           ...overrides,
           showTravelTimePayQuestion: false,
         };
         const { component, getByLabelText, getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } =
-          await setup(overrides);
+          await setup(updatedOverrides);
 
         fireEvent.click(getByLabelText('Yes'));
         fixture.detectChanges();
@@ -588,13 +593,13 @@ describe('OfferSleepInsComponent', () => {
       });
 
       [options[1], options[2]].forEach((option) => {
-        overrides = {
+        const updatedOverrides = {
           ...overrides,
           showTravelTimePayQuestion: false,
         };
         it(`should navigate to the home page when submitting with the option "${option.label}"`, async () => {
           const { component, getByLabelText, getByText, establishmentServiceSpy, routerSpy, fixture, alertSpy } =
-            await setup(overrides);
+            await setup(updatedOverrides);
 
           fireEvent.click(getByLabelText(option.label));
           fixture.detectChanges();
