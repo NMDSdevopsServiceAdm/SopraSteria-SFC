@@ -148,6 +148,7 @@ import { DecimalInputWithButtonsComponent } from './components/decimal-input-wit
 import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.pipe';
 import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
 import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.pipe';
+import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pill-with-link.component';
 
 @NgModule({
   imports: [
@@ -302,6 +303,7 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
     ShowTrainingValidityPipe,
     DecimalInputWithButtonsComponent,
     FormatMoneyWithDecimalsPipe,
+    NewPillWithLinkComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -439,6 +441,7 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
     FormatMoneyWithDecimalsPipe,
+    NewPillWithLinkComponent,
   ],
   providers: [
     DialogService,
