@@ -12,11 +12,16 @@ const allowedProperties = [
   'ShareData',
   'StaffDoDelegatedHealthcareActivities',
   'PensionContribution',
-  'PensionContributionPercentage',
   'StaffOptOutOfWorkplacePension',
   'TravelTimePay',
   'OfferSleepIn',
   'HowToPayForSleepIn',
+];
+
+const allowedFieldNamesInRequest = [
+  ...allowedProperties.map(lodash.lowerFirst),
+  'shareWith',
+  'pensionContributionPercentage',
 ];
 
 const getEstablishmentField = async (req, res) => {
@@ -125,8 +130,8 @@ const checkIfRequestedPropertyIsAllowed = (property) => {
 
 const checkIfRequestBodyIsAllowed = (req) => {
   const requestBody = req.body;
-  const allRequestBodyFieldsAreAllowed = Object.keys(requestBody).every((field) =>
-    allowedProperties.includes(lodash.upperFirst(field)),
+  const allRequestBodyFieldsAreAllowed = Object.keys(requestBody).every((fieldName) =>
+    allowedFieldNamesInRequest.includes(fieldName),
   );
 
   if (!allRequestBodyFieldsAreAllowed) {
