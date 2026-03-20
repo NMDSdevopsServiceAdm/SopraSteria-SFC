@@ -292,6 +292,8 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       HOLIDAY: '',
       SLEEPINS: '',
       SLEEPINPAY: '',
+      TRAVELTIME: '',
+      TTDIFFRATE: '',
     };
 
     const myAPIEstablishments = [
