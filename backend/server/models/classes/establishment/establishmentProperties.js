@@ -31,6 +31,7 @@ const staffDoDelegatedHealthcareActivitiesProperty =
 const staffWhatKindDelegatedHealthcareActivitiesProperty =
   require('./properties/staffWhatKindDelegatedHealthcareActivitiesProperty').StaffWhatKindDelegatedHealthcareActivitiesProperty;
 
+const pensionContributionProperty = require('./properties/pensionContributionProperty').PensionContributionProperty;
 const pensionContributionPercentageProperty =
   require('./properties/pensionContributionPercentageProperty').PensionContributionPercentageProperty;
 const travelTimePayProperty = require('./properties/travelTimePayProperty').TravelTimePayProperty;
@@ -69,6 +70,7 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(staffDoDelegatedHealthcareActivitiesProperty);
     this._thisManager.registerProperty(staffWhatKindDelegatedHealthcareActivitiesProperty);
 
+    this._thisManager.registerProperty(pensionContributionProperty);
     this._thisManager.registerProperty(pensionContributionPercentageProperty);
     this._thisManager.registerProperty(travelTimePayProperty);
     this._thisManager.registerProperty(travelTimePayRateProperty);

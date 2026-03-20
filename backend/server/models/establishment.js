@@ -741,25 +741,21 @@ module.exports = function (sequelize, DataTypes) {
         field: 'PensionContribution',
       },
 
-      pensionContributionSavedAt: {
+      PensionContributionSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"PensionContributionSavedAt"',
       },
-      pensionContributionChangedAt: {
+      PensionContributionChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"PensionContributionChangedAt"',
       },
-      pensionContributionSavedBy: {
+      PensionContributionSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"PensionContributionSavedBy"',
       },
-      pensionContributionChangedBy: {
+      PensionContributionChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"PensionContributionChangedBy"',
       },
 
       pensionContributionPercentage: {

@@ -10,17 +10,18 @@ class PensionContributionPercentageProperty extends classDef {
   async restoreFromJson(document) {
     const propertyInDocument = document[fieldName];
 
-    if (propertyInDocument === null) {
-      this.property = propertyInDocument;
-    }
-
     const pensionContributionIsYes = document.pensionContribution === 'Yes';
+
+    if (propertyInDocument === null || !pensionContributionIsYes) {
+      this.property = null;
+      return;
+    }
 
     const parsedNumber = parseFloat(propertyInDocument);
     const isValidNumber = !isNaN(parsedNumber);
     const numberIsInRange = (3 <= parsedNumber) & (parsedNumber <= 100);
 
-    if (pensionContributionIsYes && isValidNumber && numberIsInRange) {
+    if (isValidNumber && numberIsInRange) {
       this.property = parsedNumber;
     }
   }

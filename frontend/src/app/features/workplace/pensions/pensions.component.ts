@@ -175,31 +175,29 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
 
   protected generateUpdateProps(): any {
     const { pension, pensionPercentage } = this.form.value;
+
     if (!pension) return null;
 
-    const payload: any = {
-      pension: {
-        pensionContribution: pension,
-      },
+    const props = {
+      pensionContribution: pension,
+      pensionContributionPercentage: pension === 'Yes' ? pensionPercentage : null,
     };
 
-    if (pension === 'Yes' && pensionPercentage != null) {
-      payload.pension.pensionContributionPercentage = pensionPercentage;
-    }
-
-    return payload;
+    return props;
   }
 
   protected updateEstablishment(props: any): void {
     if (!props) return;
 
-    const payload = props.pension;
+    const payload = props;
 
     this.subscriptions.add(
-      this.establishmentService.updatePensionContribution(this.establishment.uid, payload).subscribe(
-        (data) => this._onSuccess(data.data),
-        (error) => this.onError(error),
-      ),
+      this.establishmentService
+        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'pensionContribution', payload)
+        .subscribe(
+          (data) => this._onSuccess(data.data),
+          (error) => this.onError(error),
+        ),
     );
   }
 

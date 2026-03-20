@@ -74,8 +74,7 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   const thisEstablishment = new Establishment.Establishment(req.username);
 
   const property = extractParamProperty(req);
-
-  const filteredProperties = ['Name', property];
+  const filteredProperties = propertiesToIncludeInReponse(property);
 
   try {
     checkIfRequestedPropertyIsAllowed(property);
@@ -107,6 +106,15 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
 const extractParamProperty = (req) => {
   const propertyName = req.params?.property;
   return lodash.upperFirst(propertyName);
+};
+
+const propertiesToIncludeInReponse = (property) => {
+  // special case handling as PensionContributionPercentage is a new column added lately
+  if (property === 'PensionContribution') {
+    return ['Name', 'PensionContribution', 'PensionContributionPercentage'];
+  }
+
+  return ['Name', property];
 };
 
 const checkIfRequestedPropertyIsAllowed = (property) => {

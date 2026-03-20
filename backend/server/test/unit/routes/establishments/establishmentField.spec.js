@@ -127,6 +127,25 @@ describe('server/routes/establishments/establishmentField', () => {
       expect(res.statusCode).to.equal(200);
     });
 
+    it('should add PensionContributionPercentage to filteredProperties if the property being updated is PensionContribution', async () => {
+      establishmentRecord.restore = sinon.stub().resolves(true);
+      establishmentRecord.load = sinon.stub().resolves(true);
+      establishmentRecord.save = sinon.stub().resolves(true);
+      establishmentRecord.toJSON = sinon.stub().resolves(true);
+
+      setupTests('pensionContribution');
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+      await updateEstablishmentFieldWithAudit(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(establishmentRecord.toJSON).to.have.been.called;
+
+      const filteredProperties = establishmentRecord.toJSON.getCall(0).args.at(-1);
+      expect(filteredProperties).to.deep.equal(['Name', 'PensionContribution', 'PensionContributionPercentage']);
+    });
+
     it('should return with 404 if the requested property to update is not on the allowed list', async () => {
       setupTests('Capacity');
       const req = httpMocks.createRequest(mockRequest);

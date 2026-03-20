@@ -30,6 +30,7 @@ describe('EstablishmentPropertyManager', () => {
     'CareWorkforcePathwayUseProperty',
     'StaffDoDelegatedHealthcareActivitiesProperty',
     'StaffWhatKindDelegatedHealthcareActivitiesProperty',
+    'PensionContributionProperty',
     'PensionContributionPercentageProperty',
     'StaffOptOutOfWorkplacePensionProperty',
     'OfferSleepInProperty',
