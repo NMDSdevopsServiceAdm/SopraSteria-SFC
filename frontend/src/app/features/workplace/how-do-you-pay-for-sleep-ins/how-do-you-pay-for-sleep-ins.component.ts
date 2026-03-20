@@ -107,14 +107,11 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
       return;
     }
 
-    const howToPayForSleepInData = {
-      property: 'howToPayForSleepIn',
-      value: props,
-    };
+    const payload = { howToPayForSleepIn: props };
 
     this.subscriptions.add(
       this.establishmentService
-        .updateSingleEstablishmentField(this.establishment.uid, howToPayForSleepInData)
+        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'HowToPayForSleepIn', payload)
         .subscribe(
           (data) => this._onSuccess(data.data),
           (error) => this.onError(error),
