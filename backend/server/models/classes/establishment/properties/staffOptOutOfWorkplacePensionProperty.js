@@ -9,7 +9,7 @@ const classDef = auditPropertyClassBuilder({
 });
 
 class StaffOptOutOfWorkplacePensionProperty extends classDef {
-  restoreFromJson(document) {
+  async restoreFromJson(document) {
     const propertyInDocument = document[fieldName];
 
     if (propertyInDocument === null) {

@@ -6,7 +6,7 @@ const models = require('../../../../../../models');
 const propertyClass =
   require('../../../../../../models/classes/establishment/properties/travelTimePayRateProperty').TravelTimePayRateProperty;
 
-describe.only('TravelTimePayRateProperty', () => {
+describe('TravelTimePayRateProperty', () => {
   const mocktravelTimePayOptions = [
     {
       id: 1,
