@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
+const lodash = require('lodash');
 const Establishment = require('../../models/classes/establishment');
 const { hasPermission } = require('../../utils/security/hasPermission');
 const HttpError = require('../../utils/errors/httpError');
 
-const allowedPropertiesToBeRequested = [
+const allowedProperties = [
   'EmployerType',
   'Name',
   'NumberOfStaff',
   'ShareData',
   'StaffDoDelegatedHealthcareActivities',
-
   'PensionContribution',
   'PensionContributionPercentage',
   'StaffOptOutOfWorkplacePension',
@@ -73,12 +73,14 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
-  const property = req.params?.property;
+  const property = extractParamProperty(req);
 
   const filteredProperties = ['Name', property];
 
   try {
     checkIfRequestedPropertyIsAllowed(property);
+    checkIfRequestBodyIsAllowed(req, property);
+
     const establishmentFound = await thisEstablishment.restore(establishmentId);
 
     if (!establishmentFound) {
@@ -102,9 +104,25 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   }
 };
 
+const extractParamProperty = (req) => {
+  const propertyName = req.params?.property;
+  return lodash.upperFirst(propertyName);
+};
+
 const checkIfRequestedPropertyIsAllowed = (property) => {
-  if (!allowedPropertiesToBeRequested.includes(property)) {
+  if (!allowedProperties.includes(property)) {
     throw new HttpError('Requested property not allowed', 404);
+  }
+};
+
+const checkIfRequestBodyIsAllowed = (req) => {
+  const requestBody = req.body;
+  const allRequestBodyFieldsAreAllowed = Object.keys(requestBody).every((field) =>
+    allowedProperties.includes(lodash.upperFirst(field)),
+  );
+
+  if (!allRequestBodyFieldsAreAllowed) {
+    throw new HttpError('Request body not allowed', 400);
   }
 };
 
