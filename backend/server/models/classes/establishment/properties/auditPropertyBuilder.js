@@ -23,12 +23,12 @@ const auditPropertyClassBuilder = ({ fieldName, propertyPrefix, databaseColumnNa
       return currentValue === newValue;
     }
 
-    restoreFromJson(_document) {
+    async restoreFromJson(_document) {
       throw new Error('to be implemented in each property class');
     }
 
     restorePropertyFromSequelize(document) {
-      return document[databaseColumnName];
+      return document[databaseColumnName] ?? null;
     }
 
     savePropertyToSequelize() {

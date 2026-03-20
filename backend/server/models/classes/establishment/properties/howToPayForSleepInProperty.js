@@ -9,7 +9,7 @@ const classDef = auditPropertyClassBuilder({
 });
 
 class HowToPayForSleepInProperty extends classDef {
-  restoreFromJson(document) {
+  async restoreFromJson(document) {
     const propertyInDocument = document[fieldName];
 
     if (propertyInDocument === null) {
