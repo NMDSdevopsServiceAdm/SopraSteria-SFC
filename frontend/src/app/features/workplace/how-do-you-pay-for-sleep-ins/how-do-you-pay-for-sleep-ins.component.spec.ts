@@ -396,9 +396,8 @@ describe('HowDoYouPayForSleepInsComponent', () => {
           'workplace-summary',
           'travel-time-pay',
         ]);
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          property: 'howToPayForSleepIn',
-          value: options[0],
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'HowToPayForSleepIn', {
+          howToPayForSleepIn: options[0],
         });
         await fixture.whenStable();
         expect(alertSpy).not.toHaveBeenCalled();
@@ -476,15 +475,16 @@ describe('HowDoYouPayForSleepInsComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
-      expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'HowToPayForSleepIn', {
-        howToPayForSleepIn: options[0],
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'HowToPayForSleepIn', {
+          howToPayForSleepIn: options[0],
+        });
+        await fixture.whenStable();
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Workplace details added',
+        } as Alert);
       });
-      await fixture.whenStable();
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Workplace details added',
-      } as Alert);
     });
   });
 });
