@@ -1,13 +1,14 @@
 const lodash = require('lodash');
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
-const auditPropertyClassBuilder = ({ fieldName, propertyPrefix, databaseColumnName }) => {
+const auditPropertyClassBuilder = ({ fieldName, propertyName, propertyPrefix, databaseColumnName }) => {
   propertyPrefix = propertyPrefix ?? lodash.upperFirst(fieldName);
+  propertyName = propertyName ?? lodash.upperFirst(fieldName);
   databaseColumnName = databaseColumnName ?? fieldName;
 
   class AuditPropertyBaseClass extends ChangePropertyPrototype {
     constructor() {
-      super(fieldName, propertyPrefix);
+      super(propertyName, propertyPrefix);
       this._allowNull = true;
     }
 
