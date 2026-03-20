@@ -30,8 +30,15 @@ const staffDoDelegatedHealthcareActivitiesProperty =
   require('./properties/staffDoDelegatedHealthcareActivitiesProperty').StaffDoDelegatedHealthcareActivitiesProperty;
 const staffWhatKindDelegatedHealthcareActivitiesProperty =
   require('./properties/staffWhatKindDelegatedHealthcareActivitiesProperty').StaffWhatKindDelegatedHealthcareActivitiesProperty;
+
+const pensionContributionPercentageProperty =
+  require('./properties/pensionContributionPercentageProperty').PensionContributionPercentageProperty;
 const travelTimePayProperty = require('./properties/travelTimePayProperty').TravelTimePayProperty;
+const travelTimePayRateProperty = require('./properties/travelTimePayRateProperty').TravelTimePayRateProperty;
 const offerSleepInProperty = require('./properties/offerSleepInProperty').OfferSleepInProperty;
+const staffOptOutOfWorkplacePensionProperty =
+  require('./properties/staffOptOutOfWorkplacePensionProperty').StaffOptOutOfWorkplacePensionProperty;
+const howToPayForsleepInProperty = require('./properties/howToPayForSleepInProperty').HowToPayForSleepInProperty;
 
 class EstablishmentPropertyManager {
   constructor() {
@@ -61,8 +68,13 @@ class EstablishmentPropertyManager {
     this._thisManager.registerProperty(careWorkforcePathwayUseProperty);
     this._thisManager.registerProperty(staffDoDelegatedHealthcareActivitiesProperty);
     this._thisManager.registerProperty(staffWhatKindDelegatedHealthcareActivitiesProperty);
+
+    this._thisManager.registerProperty(pensionContributionPercentageProperty);
     this._thisManager.registerProperty(travelTimePayProperty);
+    this._thisManager.registerProperty(travelTimePayRateProperty);
     this._thisManager.registerProperty(offerSleepInProperty);
+    this._thisManager.registerProperty(staffOptOutOfWorkplacePensionProperty);
+    this._thisManager.registerProperty(howToPayForsleepInProperty);
   }
 
   get manager() {
