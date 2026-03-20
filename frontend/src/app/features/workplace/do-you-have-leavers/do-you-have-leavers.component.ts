@@ -17,9 +17,19 @@ export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacancies
   public numbersField = 'leaversJobRoles';
   public valueToUpdate = 'leavers';
   public requiredWarningMessage = `Select yes if you've had leavers since ${this.todayOneYearAgo}`;
+  public showTravelTimePayQuestion: boolean = false;
 
   protected setupRoutes(): void {
-    this.skipToQuestionPage = 'benefits-statutory-sick-pay';
+    const showTravelTimePayQuestion = this.payAndPensionService.showTravelTimePayQuestion(
+      this.establishment?.mainService?.payAndPensionsGroup,
+    );
+
+    if (showTravelTimePayQuestion) {
+      this.skipToQuestionPage = 'travel-time-pay';
+    } else {
+      this.skipToQuestionPage = 'benefits-statutory-sick-pay';
+    }
+
     this.startersLeaversOrVacanciesPageTwo = 'select-leaver-job-roles';
     this.previousQuestionPage = this.getPreviousPage('starters');
   }

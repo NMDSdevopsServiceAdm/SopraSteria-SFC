@@ -75,17 +75,33 @@ describe('ProgressBarUtil', () => {
     });
   });
 
-  describe('payAndPensionsMiniFlowGroup2BarSections', () => {
-    it('should return an array with the length 3', async () => {
-      const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+  describe('payAndPensionsMiniFlowBarSections', () => {
+    it('should return an array with the default length 3 and values when nothing is sent', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections();
 
-      expect(payAndPensionsMiniFlowGroup2BarSections.length).toEqual(3);
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(3);
+      expect(payAndPensionsMiniFlowBarSections).toEqual(['Question 1', 'Question 2', 'Question 3']);
     });
 
-    it('should return the correct values', () => {
-      const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+    it('should return an array with the default length 3 and values when 3 is sent', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections(3);
 
-      expect(payAndPensionsMiniFlowGroup2BarSections).toEqual(['Question 1', 'Question 2', 'Question 3']);
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(3);
+      expect(payAndPensionsMiniFlowBarSections).toEqual(['Question 1', 'Question 2', 'Question 3']);
+    });
+
+    it('should return an array with the length 4 and correct values when 4 is sent', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections(4);
+
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(4);
+      expect(payAndPensionsMiniFlowBarSections).toEqual(['Question 1', 'Question 2', 'Question 3', 'Question 4']);
+    });
+
+    it('should return an array with the length 0 and values when 2', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections(2);
+
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(0);
+      expect(payAndPensionsMiniFlowBarSections).toEqual([]);
     });
   });
 });

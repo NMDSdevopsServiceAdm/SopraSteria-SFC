@@ -17,8 +17,11 @@ import userEvent from '@testing-library/user-event';
 
 import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension.component';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
-import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
-import { ProgressBarUtil } from '@core/utils/progress-bar-util';
+import {
+  MockPayAndPensionService,
+  mockPayAndPensionsGroup1ProgressBarSections,
+  mockPayAndPensionsGroup2ProgressBarSections,
+} from '@core/test-utils/MockPayAndPensionService';
 
 describe('StaffOptOutOfWorkplacePensionComponent', () => {
   const options = YesNoDontKnowOptions;
@@ -43,7 +46,7 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
         },
         {
           provide: PayAndPensionService,
-          useFactory: MockPayAndPensionService.factory(overrides?.inPayAndPensionsMiniFlow),
+          useFactory: MockPayAndPensionService.factory(overrides),
           deps: [HttpClient],
         },
         WindowRef,
@@ -143,7 +146,7 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
     });
 
     it('should set the previous page to pensions question page', async () => {
-      const { component } = await setup(overrides);
+      const { component, backServiceSpy } = await setup(overrides);
 
       expect(component.previousRoute).toEqual([
         '/workplace',
@@ -152,6 +155,9 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
         'add-workplace-details',
         'pensions',
       ]);
+      expect(backServiceSpy.setBackLink).toHaveBeenCalledWith({
+        url: ['/workplace', component.establishment.uid, 'workplace-data', 'add-workplace-details', 'pensions'],
+      });
     });
 
     it('should navigate to staff-benefit-holiday-leave page when user skips the question', async () => {
@@ -272,16 +278,43 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
   });
 
   describe('when viewing the page in the pay and pensions mini flow', () => {
-    it('should render the pay and pension group 2 progress bar when in the mini flow', async () => {
-      const { getByTestId } = await setup({ returnUrl: null, inPayAndPensionsMiniFlow: true });
+    it('should render the pay and pension group 1 progress bar when in the mini flow', async () => {
+      const payAndPensionsGroup = 1;
+      const overrides = {
+        returnUrl: null,
+        inPayAndPensionsMiniFlow: true,
+        payAndPensionsGroup,
+        establishment: { mainService: { payAndPensionsGroup } },
+      };
+      const { getByTestId } = await setup(overrides);
 
-      const payAndPensionsMiniFlowGroup2BarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
       const sectionIndex = 1;
       const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
       const progressBar = getByTestId('progress-bar');
 
       expect(progressBar).toBeTruthy();
-      payAndPensionsMiniFlowGroup2BarSections.forEach((section) => {
+      mockPayAndPensionsGroup1ProgressBarSections.forEach((section) => {
+        expect(within(progressBar).getByText(section)).toBeTruthy();
+      });
+      expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+
+    it('should render the pay and pension group 2 progress bar when in the mini flow', async () => {
+      const payAndPensionsGroup = 2;
+      const overrides = {
+        returnUrl: null,
+        inPayAndPensionsMiniFlow: true,
+        payAndPensionsGroup,
+        establishment: { mainService: { payAndPensionsGroup } },
+      };
+      const { getByTestId } = await setup(overrides);
+
+      const sectionIndex = 1;
+      const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
+      const progressBar = getByTestId('progress-bar');
+
+      expect(progressBar).toBeTruthy();
+      mockPayAndPensionsGroup2ProgressBarSections.forEach((section) => {
         expect(within(progressBar).getByText(section)).toBeTruthy();
       });
       expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');

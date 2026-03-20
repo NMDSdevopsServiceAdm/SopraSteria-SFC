@@ -5,7 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { AlertService } from '@core/services/alert.service';
@@ -23,6 +23,8 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
   public inPayAndPensionsMiniFlow: boolean = false;
   public progressBarSections: string[];
   public showProgressBar: boolean = false;
+  public showTravelTimePayQuestion: boolean = false;
+  public payAndPensionsGroup: number;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -41,14 +43,17 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
   init(): void {
     this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
     this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
+    this.payAndPensionsGroup = this.establishment?.mainService?.payAndPensionsGroup;
+    this.showTravelTimePayQuestion = this.payAndPensionService.showTravelTimePayQuestion(this.payAndPensionsGroup);
     this.showProgressBar = (!this.return || this.inPayAndPensionsMiniFlow) ?? false;
+
     this.setSectionHeading();
     this.setupForm();
     this.prefill();
     this.setProgressBarSections();
     this.setSkipRoute();
     this.previousQuestionPage = 'workplace-offer-sleep-ins';
-    this.nextQuestionPage = this.skipToQuestionPage;
+    this.setNextRoute();
     this.payAndPensionService.clearInPayAndPensionsMiniFlowWhenClickedAway();
   }
 
@@ -58,7 +63,9 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
 
   private setProgressBarSections(): void {
     if (this.inPayAndPensionsMiniFlow) {
-      this.progressBarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      this.progressBarSections = this.payAndPensionService.getPayAndPensionsMiniFlowProgressBarSections(
+        this.payAndPensionsGroup,
+      );
       this.section = this.progressBarSections[2];
     } else {
       this.progressBarSections = this.workplaceFlowSections;
@@ -121,7 +128,7 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
     const previousPage = this.previousRouteService.getPreviousPage();
     const previousPageWasOfferSleepIns = previousPage === this.previousQuestionPage;
 
-    if (isInWorkflow || previousPageWasOfferSleepIns) {
+    if (isInWorkflow || previousPageWasOfferSleepIns || this.inPayAndPensionsMiniFlow) {
       this.back = { url: this.previousRoute };
     } else {
       this.back = this.return;
@@ -132,19 +139,35 @@ export class HowDoYouPayForSleepInsComponent extends WorkplaceQuestion implement
 
   private setSkipRoute(): void {
     this.skipToQuestionPage = 'do-you-have-vacancies';
-    if (this.inPayAndPensionsMiniFlow && this.establishment.mainService.payAndPensionsGroup === 2) {
-      this.isAtEndOfPayAndPensionsMiniFlow = true;
+    if (this.inPayAndPensionsMiniFlow) {
+      if (this.showTravelTimePayQuestion) {
+        this.skipToQuestionPage = 'travel-time-pay';
+      } else {
+        this.isAtEndOfPayAndPensionsMiniFlow = true;
+      }
+    }
+  }
+
+  private setNextRoute(): void {
+    this.nextQuestionPage = this.skipToQuestionPage;
+
+    if (this.inPayAndPensionsMiniFlow && this.showTravelTimePayQuestion) {
+      this.nextQuestionPage = 'travel-time-pay';
     }
   }
 
   protected onSuccess(): void {
     if (this.inPayAndPensionsMiniFlow) {
-      this.submitAction = { action: 'return', save: true };
+      if (this.showTravelTimePayQuestion) {
+        this.submitAction = { action: 'continue', save: true };
+      } else {
+        this.submitAction = { action: 'return', save: true };
+      }
     }
   }
 
   public addAlert(): void {
-    if (this.inPayAndPensionsMiniFlow) {
+    if (this.inPayAndPensionsMiniFlow && !this.showTravelTimePayQuestion) {
       this.alertService.addAlert({
         type: 'success',
         message: 'Workplace details added',

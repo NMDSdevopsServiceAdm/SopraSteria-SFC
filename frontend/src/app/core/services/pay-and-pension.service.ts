@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 import { filter, take } from 'rxjs/operators';
 
 @Injectable({
@@ -53,5 +54,14 @@ export class PayAndPensionService {
       .subscribe(() => {
         this.setInPayAndPensionsMiniFlow(null);
       });
+  }
+
+  public getPayAndPensionsMiniFlowProgressBarSections(payAndPensionsGroup: number): string[] {
+    if (payAndPensionsGroup === 1) {
+      return ProgressBarUtil.payAndPensionsMiniFlowBarSections(4);
+    } else if (payAndPensionsGroup === 2) {
+      return ProgressBarUtil.payAndPensionsMiniFlowBarSections(3);
+    }
+    return [];
   }
 }

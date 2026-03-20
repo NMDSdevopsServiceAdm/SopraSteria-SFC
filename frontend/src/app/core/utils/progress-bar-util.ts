@@ -21,8 +21,14 @@ export class ProgressBarUtil {
     return ['Mandatory information', 'Personal details', 'Employment details', 'Training and qualifications'];
   };
 
-  public static payAndPensionsMiniFlowGroup2BarSections = (): string[] => {
-    return ['Question 1', 'Question 2', 'Question 3'];
+  public static payAndPensionsMiniFlowBarSections = (value: number = 3): string[] => {
+    const sections = [];
+    if (value === 3 || value === 4) {
+      for (let i = 0; i < value; i++) {
+        sections.push(`Question ${i + 1}`);
+      }
+    }
+    return sections;
   };
 }
 

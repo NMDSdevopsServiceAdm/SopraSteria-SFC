@@ -40,6 +40,7 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
   public inPayAndPensionsMiniFlow: boolean = false;
   public progressBarSections: string[];
   public showProgressBar: boolean = false;
+  public payAndPensionsGroup: number;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -63,6 +64,7 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
     this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
     this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
     this.showProgressBar = (!this.return || this.inPayAndPensionsMiniFlow) ?? false;
+    this.payAndPensionsGroup = this.establishment?.mainService?.payAndPensionsGroup;
     this.setRoutes();
     this.prefill();
     this.setSectionHeading();
@@ -81,7 +83,9 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
 
   private setProgressBarSections(): void {
     if (this.inPayAndPensionsMiniFlow) {
-      this.progressBarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      this.progressBarSections = this.payAndPensionService.getPayAndPensionsMiniFlowProgressBarSections(
+        this.payAndPensionsGroup,
+      );
       this.section = this.progressBarSections[0];
     } else {
       this.progressBarSections = this.workplaceFlowSections;

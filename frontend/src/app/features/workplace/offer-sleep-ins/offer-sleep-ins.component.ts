@@ -5,10 +5,11 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { YesNoDontKnowOptions } from '@core/model/YesNoDontKnow.enum';
 import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { AlertService } from '@core/services/alert.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
   selector: 'app-offer-sleep-ins',
@@ -22,6 +23,8 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
   public inPayAndPensionsMiniFlow: boolean = false;
   public progressBarSections: string[];
   public showProgressBar: boolean = false;
+  public showTravelTimePayQuestion: boolean = false;
+  public payAndPensionsGroup: number;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -32,20 +35,25 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
     protected route: ActivatedRoute,
     protected payAndPensionService: PayAndPensionService,
     protected alertService: AlertService,
+    protected previousRouteService: PreviousRouteService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
   init(): void {
     this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
+    this.showTravelTimePayQuestion = this.payAndPensionService.showTravelTimePayQuestion(
+      this.establishment?.mainService?.payAndPensionsGroup,
+    );
     this.showProgressBar = (!this.return || this.inPayAndPensionsMiniFlow) ?? false;
+    this.payAndPensionsGroup = this.establishment?.mainService?.payAndPensionsGroup;
     this.setSectionHeading();
     this.setupForm();
     this.setPreviousRoute();
     this.prefill();
     this.setProgressBarSections();
     this.setSkipRoute();
-    this.nextQuestionPage = this.skipToQuestionPage;
+    this.setNextRoute();
     this.payAndPensionService.clearInPayAndPensionsMiniFlowWhenClickedAway();
   }
 
@@ -55,7 +63,9 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
 
   private setProgressBarSections(): void {
     if (this.inPayAndPensionsMiniFlow) {
-      this.progressBarSections = ProgressBarUtil.payAndPensionsMiniFlowGroup2BarSections();
+      this.progressBarSections = this.payAndPensionService.getPayAndPensionsMiniFlowProgressBarSections(
+        this.payAndPensionsGroup,
+      );
       this.section = this.progressBarSections[2];
     } else {
       this.progressBarSections = this.workplaceFlowSections;
@@ -94,8 +104,21 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
 
   private setSkipRoute(): void {
     this.skipToQuestionPage = 'do-you-have-vacancies';
+
     if (this.inPayAndPensionsMiniFlow) {
-      this.isAtEndOfPayAndPensionsMiniFlow = true;
+      if (this.showTravelTimePayQuestion) {
+        this.skipToQuestionPage = 'travel-time-pay';
+      } else {
+        this.isAtEndOfPayAndPensionsMiniFlow = true;
+      }
+    }
+  }
+
+  private setNextRoute(): void {
+    this.nextQuestionPage = this.skipToQuestionPage;
+
+    if (this.inPayAndPensionsMiniFlow && this.showTravelTimePayQuestion) {
+      this.nextQuestionPage = 'travel-time-pay';
     }
   }
 
@@ -131,14 +154,21 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
       this.nextQuestionPage = 'how-do-you-pay-for-sleep-ins';
       this.submitAction = { action: 'continue', save: true };
     } else if (this.inPayAndPensionsMiniFlow) {
-      this.submitAction = { action: 'return', save: true };
-    } else {
-      this.nextQuestionPage = this.skipToQuestionPage;
+      if (this.showTravelTimePayQuestion) {
+        this.submitAction = { action: 'continue', save: true };
+      } else {
+        this.submitAction = { action: 'return', save: true };
+      }
     }
   }
 
   public setBackLink(): void {
-    if (this.inPayAndPensionsMiniFlow) {
+    const isInWorkflow = !this.return;
+
+    const previousPage = this.previousRouteService.getPreviousPage();
+    const previousPageWasWhatDhaOrServiceUsers = previousPage === this.previousQuestionPage;
+
+    if (isInWorkflow || previousPageWasWhatDhaOrServiceUsers || this.inPayAndPensionsMiniFlow) {
       this.back = { url: this.previousRoute };
     } else {
       this.back = this.return;
@@ -148,7 +178,9 @@ export class OfferSleepInsComponent extends WorkplaceQuestion implements OnInit,
 
   public addAlert(): void {
     const { offerSleepIn } = this.form.value;
-    if (offerSleepIn !== 'Yes' && this.inPayAndPensionsMiniFlow) {
+    const showAlert = offerSleepIn !== 'Yes' && this.inPayAndPensionsMiniFlow && !this.showTravelTimePayQuestion;
+
+    if (showAlert) {
       this.alertService.addAlert({
         type: 'success',
         message: 'Workplace details added',
