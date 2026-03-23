@@ -1,3 +1,4 @@
+const { isUndefined } = require('lodash');
 const { auditPropertyClassBuilder } = require('./auditPropertyBuilder');
 
 const fieldName = 'pensionContributionPercentage';
@@ -9,6 +10,10 @@ const classDef = auditPropertyClassBuilder({
 class PensionContributionPercentageProperty extends classDef {
   async restoreFromJson(document) {
     const propertyInDocument = document[fieldName];
+
+    if (isUndefined(document.pensionContribution)) {
+      return;
+    }
 
     const pensionContributionIsYes = document.pensionContribution === 'Yes';
 
