@@ -58,6 +58,19 @@
       <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
         <a
           class="govuk__flex govuk__align-items-center"
+          href="/download/{{ now }}-sfc-user-research-invite-responses-report.csv"
+          (click)="downloadUserResearchInviteResponses($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" />
+          <span class="govuk-!-margin-left-1">User research invite responses report</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="govuk-!-margin-top-4 govuk__flex govuk-util__horizontal-align-center">
+      <div class="govuk-list--inline govuk-list govuk__flex govuk__align-items-center">
+        <a
+          class="govuk__flex govuk__align-items-center"
           href="/download/{{ now }}-sfc-wdf-summary-report.csv"
           (click)="downloadWdfSummaryReport($event)"
         >

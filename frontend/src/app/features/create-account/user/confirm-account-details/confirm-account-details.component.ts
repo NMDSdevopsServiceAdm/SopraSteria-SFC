@@ -9,6 +9,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { ConfirmAccountDetailsDirective } from '@shared/directives/user/confirm-account-details.directive';
 import { combineLatest } from 'rxjs';
+import { InviteResponse } from '@core/model/userDetails.model';
 
 @Component({
     selector: 'app-confirm-account-details',
@@ -37,7 +38,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     this.setBackLink();
     this.subscriptions.add(
       this.registrationService.isCqcRegulated$.subscribe((value) => {
-        this.slectedCqcValue = value;
+        this.selectedCqcValue = value;
       }),
     );
   }
@@ -50,12 +51,14 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
         this.registrationService.selectedWorkplaceService$,
         this.registrationService.loginCredentials$,
         this.registrationService.securityDetails$,
-      ]).subscribe(([userDetails, locationAddress, service, loginCredentials, securityDetails]) => {
+        this.registrationService.userResearchInviteResponse$,
+      ]).subscribe(([userDetails, locationAddress, service, loginCredentials, securityDetails, userResearchInviteResponse]) => {
         this.userDetails = userDetails;
         this.locationAddress = locationAddress;
         this.service = service;
         this.loginCredentials = loginCredentials;
         this.securityDetails = securityDetails;
+        this.userResearchInviteResponse = userResearchInviteResponse;
         this.setAccountDetails();
       }),
     );
@@ -105,6 +108,14 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
         data: this.securityDetails.securityQuestionAnswer,
       },
     ];
+
+    this.userResearchInviteResponseInfo = [
+      {
+        label: 'User research sessions',
+        data: this.setUserResearchInviteResponseValue(),
+        route: { url: ['/registration/confirm-details/user-research-invite'] },
+      },
+    ];
   }
 
   protected setBackLink(): void {
@@ -116,7 +127,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
     payload.locationId = this.service.isCQC ? this.locationAddress.locationId : null;
     payload.mainService = this.service.name;
     payload.mainServiceOther = this.service.otherName ? this.service.otherName : null;
-    payload.isRegulated = this.service.isCQC === null ? this.slectedCqcValue : this.service.isCQC;
+    payload.isRegulated = this.service.isCQC === null ? this.selectedCqcValue : this.service.isCQC;
     payload.user = this.userDetails;
     payload.user.username = this.loginCredentials.username;
     payload.user.password = this.loginCredentials.password;
@@ -145,5 +156,17 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
 
   private resetReturnTo(): void {
     this.registrationService.returnTo$.next(null);
+  }
+
+  private setUserResearchInviteResponseValue(): string {
+    if (this.userResearchInviteResponse === null) {
+      return this.userResearchInviteResponse;
+    }
+
+    if (this.userResearchInviteResponse === InviteResponse.Yes) {
+      return 'Yes';
+    } else {
+      return 'No';
+    }
   }
 }

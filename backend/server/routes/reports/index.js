@@ -12,6 +12,7 @@ const DeleteReport = require('./deleteReport');
 const RegistrationSurveyReport = require('./registrationSurveyReport');
 const SatisfactionSurveyReport = require('./satisfactionSurveyReport');
 const TrainingAndQualifications = require('./trainingAndQualifications');
+const UserResearchInviteResponsesReport = require('./userResearchInviteResponsesReport');
 
 router.use('/wdf', WDF);
 router.use('/wdfSummary', WDFsummary);
@@ -21,6 +22,7 @@ router.use('/trainingAndQualifications', TrainingAndQualifications);
 router.use('/delete', [isAdmin, DeleteReport]);
 router.use('/registrationSurvey', [isAdmin, RegistrationSurveyReport]);
 router.use('/satisfactionSurvey', [isAdmin, SatisfactionSurveyReport]);
+router.use('/userResearchInviteResponsesReport', [isAdmin, UserResearchInviteResponsesReport]);
 
 router.route('/').get(async (req, res) => {
   return res.status(501).send();

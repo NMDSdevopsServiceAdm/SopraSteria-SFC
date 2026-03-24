@@ -4,9 +4,9 @@ import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { BehaviorSubject, Observable } from 'rxjs';
-
 import { WorkplaceInterfaceService } from './workplace-interface.service';
 import { environment } from 'src/environments/environment';
+import { InviteResponse } from '@core/model/userDetails.model';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +16,7 @@ export class RegistrationService extends WorkplaceInterfaceService {
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
   public termsAndConditionsCheckbox$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public userResearchInviteResponse$: BehaviorSubject<InviteResponse> = new BehaviorSubject(null);
 
   constructor(protected http: HttpClient) {
     super(http);
@@ -37,5 +38,6 @@ export class RegistrationService extends WorkplaceInterfaceService {
     this.loginCredentials$.next(null);
     this.securityDetails$.next(null);
     this.termsAndConditionsCheckbox$.next(false);
+    this.userResearchInviteResponse$.next(null);
   }
 }

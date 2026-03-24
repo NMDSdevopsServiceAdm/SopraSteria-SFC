@@ -4,7 +4,7 @@ export class ProgressBarUtil {
   };
 
   public static userProgressBarSections = (): string[] => {
-    return ['User details', 'Username and password', 'Security question'];
+    return ['User details', 'Username and password', 'Security question', 'User research'];
   };
 
   public static workplaceFlowProgressBarSections = (): string[] => {

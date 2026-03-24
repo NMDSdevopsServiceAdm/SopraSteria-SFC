@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+import { v4 as uuidv4 } from 'uuid';
+
 Cypress.Commands.add('openLoginPage', () => {
   cy.setCookie('cookies_preferences_set', 'true');
   cy.visit('/');
@@ -89,6 +91,53 @@ Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
   const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
 
   cy.task('multipleDbQueries', dbQueries);
+});
+
+Cypress.Commands.add('addTestUser', (userFullName, username, establishmentID) => {
+  const mockUserDetails = {
+    FullNameValue: userFullName,
+    UserUID: uuidv4(),
+    JobTitleValue: 'Manager',
+    EmailValue: 'test@example.com',
+    PhoneValue: '0123456789',
+    EstablishmentID: establishmentID,
+    SecurityQuestionValue: '2+2',
+    SecurityQuestionAnswerValue: '4',
+    UserRoleValue: 'Read',
+    Archived: false,
+    IsPrimary: false,
+    updatedby: 'cypress test',
+  };
+
+  const insertUser = `INSERT INTO cqc."User"
+          (${Object.keys(mockUserDetails)
+            .map((columnName) => `"${columnName}"`)
+            .join(', ')})
+        VALUES
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        RETURNING "RegistrationID"
+        ;`;
+  const parameters = Object.values(mockUserDetails);
+
+  return cy.task('dbQuery', { queryString: insertUser, parameters }).then((response) => {
+    const registrationId = response.rows[0].RegistrationID;
+    const mockLoginDetails = {
+      RegistrationID: registrationId,
+      Username: username,
+      Active: true,
+      InvalidAttempt: 0,
+    };
+
+    const insertLogin = `INSERT INTO cqc."Login"
+        (${Object.keys(mockLoginDetails)
+          .map((columnName) => `"${columnName}"`)
+          .join(', ')})
+      VALUES
+        ($1, $2, $3, $4)`;
+    const parameters = Object.values(mockLoginDetails);
+
+    return cy.task('dbQuery', { queryString: insertLogin, parameters });
+  });
 });
 
 Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {

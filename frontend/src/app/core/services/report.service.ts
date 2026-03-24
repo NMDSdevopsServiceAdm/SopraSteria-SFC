@@ -5,7 +5,6 @@ import { WDFReport } from '@core/model/reports.model';
 import { WDFLockStatus } from '@core/model/wdf.model';
 import { from, interval, Observable } from 'rxjs';
 import { concatMap, filter, map, startWith, take } from 'rxjs/operators';
-
 import { EstablishmentService } from './establishment.service';
 import { environment } from 'src/environments/environment';
 
@@ -99,6 +98,13 @@ export class ReportService {
         responseType: 'blob' as 'json',
       },
     );
+  }
+
+  public getUserResearchInviteResponsesReport(): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/reports/userResearchInviteResponsesReport`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
   }
 
   // Function to check for the lock status
