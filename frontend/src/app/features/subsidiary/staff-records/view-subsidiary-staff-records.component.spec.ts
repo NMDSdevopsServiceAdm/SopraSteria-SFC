@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
@@ -21,17 +21,19 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './view-subsidiary-staff-records.component';
+import { of } from 'rxjs';
 
 describe('ViewSubsidiaryStaffRecordsComponent', () => {
-  const setup = async (workers = [workerBuilder()] as Worker[]) => {
+  const setup = async (overrides: any = {}) => {
+    const workers = overrides?.workers ?? ([workerBuilder()] as Worker[]);
     const workerArr = workers;
-    const establishment = establishmentBuilder() as Establishment;
+    const establishment = overrides?.establishment ?? (establishmentBuilder() as Establishment);
     const role = Roles.Edit;
-    const { fixture, getByTestId, queryByTestId } = await render(ViewSubsidiaryStaffRecordsComponent, {
+    const setupTools = await render(ViewSubsidiaryStaffRecordsComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
@@ -81,17 +83,26 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
       declarations: [NewDashboardHeaderComponent],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const workerService = TestBed.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const updateSingleFieldSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+      of(null),
+    );
+
     return {
       component,
-      getByTestId,
-      queryByTestId,
+      ...setupTools,
       workerSpy,
-      fixture,
+      routerSpy,
+      updateSingleFieldSpy,
     };
   };
 
@@ -101,7 +112,7 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
   });
 
   it('should show the no staff records section if there are no staff records', async () => {
-    const { getByTestId, queryByTestId } = await setup([]);
+    const { getByTestId, queryByTestId } = await setup({ workers: [] });
 
     expect(getByTestId('no-staff-records')).toBeTruthy();
     expect(queryByTestId('staff-records')).toBeFalsy();
@@ -125,7 +136,7 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
     it('should set staffLastUpdatedDate as worker updated date when only one worker', async () => {
       const workers = [workerBuilder()] as Worker[];
 
-      const { component, workerSpy } = await setup(workers);
+      const { component } = await setup({ workers });
       expect(component.staffLastUpdatedDate).toBe(workers[0].updated);
     });
 
@@ -135,15 +146,107 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
       workers[1].updated = '2024-05-08T06:50:45.882Z';
       workers[2].updated = '2024-05-03T11:50:45.882Z';
 
-      const { component } = await setup(workers);
+      const { component } = await setup({ workers });
       expect(component.staffLastUpdatedDate).toBe(workers[1].updated);
     });
 
     it('should not set staffLastUpdatedDate when no workers', async () => {
       const workers = [] as Worker[];
 
-      const { component } = await setup(workers);
+      const { component } = await setup({ workers });
       expect(component.staffLastUpdatedDate).toBeFalsy();
+    });
+  });
+
+  describe('Update pay for multiple staff', () => {
+    const establishment = establishmentBuilder() as Establishment;
+    const linkText = 'Update pay for multiple staff';
+
+    [false, null].forEach((value) => {
+      it(`should show the 'NEW' pill when updatePayForMultiStaffViewed is ${value}`, async () => {
+        const workers = [workerBuilder(), workerBuilder()] as Worker[];
+        const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: value };
+        const overrides = { workers, establishment: overridesEstablishment };
+        const { getByTestId } = await setup(overrides);
+
+        expect(getByTestId('new-pill')).toBeTruthy();
+      });
+    });
+
+    it("should not show the 'NEW' pill when updatePayForMultiStaffViewed is true", async () => {
+      const workers = [workerBuilder(), workerBuilder()] as Worker[];
+      const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: true };
+      const overrides = { workers, establishment: overridesEstablishment };
+      const { queryByTestId } = await setup(overrides);
+
+      expect(queryByTestId('new-pill')).toBeFalsy();
+    });
+
+    it('should show the link when there is more than 1 worker', async () => {
+      const workers = [workerBuilder(), workerBuilder()] as Worker[];
+      const overrides = { workers };
+      const { getByText } = await setup(overrides);
+
+      expect(getByText(linkText)).toBeTruthy();
+    });
+
+    it('should not show the link when there is no staff', async () => {
+      const overrides = { workers: [] };
+      const { queryByText } = await setup(overrides);
+
+      expect(queryByText(linkText)).toBeFalsy();
+    });
+
+    it('should not show the link when there is only 1 worker', async () => {
+      const workers = [workerBuilder()] as Worker[];
+      const overrides = { workers };
+      const { queryByText } = await setup(overrides);
+
+      expect(queryByText(linkText)).toBeFalsy();
+    });
+
+    it('should navigate to the update-pay-multiple-staff page', async () => {
+      const workers = [workerBuilder(), workerBuilder()] as Worker[];
+      const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: true };
+      const overrides = { workers, establishment: overridesEstablishment };
+      const { fixture, getByText, routerSpy } = await setup(overrides);
+
+      const link = getByText(linkText);
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', establishment.uid, 'update-pay-multiple-staff']);
+    });
+
+    [false, null].forEach((value) => {
+      it(`should call updateSingleEstablishmentField if updatePayForMultiStaffViewed is ${value}`, async () => {
+        const workers = [workerBuilder(), workerBuilder()] as Worker[];
+        const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: value };
+        const overrides = { workers, establishment: overridesEstablishment };
+        const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
+
+        const link = getByText(linkText);
+        fireEvent.click(link);
+        fixture.autoDetectChanges();
+
+        expect(updateSingleFieldSpy).toHaveBeenCalledWith(overridesEstablishment.uid, {
+          property: 'updatePayForMultiStaffViewed',
+          value: true,
+        });
+      });
+    });
+
+    it('should not call updateSingleEstablishmentField if updatePayForMultiStaffViewed is true', async () => {
+      const workers = [workerBuilder(), workerBuilder()] as Worker[];
+      const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: true };
+      const overrides = { workers, establishment: overridesEstablishment };
+      const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
+
+      const link = getByText(linkText);
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(updateSingleFieldSpy).not.toHaveBeenCalled();
     });
   });
 });
