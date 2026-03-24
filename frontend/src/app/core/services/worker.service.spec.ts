@@ -104,4 +104,34 @@ describe('WorkerService', () => {
       expect(req.request.method).toBe('GET');
     });
   });
+
+  describe('workersGroupedByJobRole', () => {
+    it('should return null when nothing has been set', () => {
+      expect(service.getWorkersGroupedByJobRole()).toEqual(null);
+    });
+
+    it('should be set when setWorkersGroupedByJobRole is called', () => {
+      const workers = {
+        'groups': [
+          {
+            'jobId': 2,
+            'title': 'Administrative',
+            'workers': [
+              {
+                'uid': '25efe005-eca0-4db8-81fa-cfe0a6849c7d',
+                'mainJob': {
+                  'id': 2,
+                  'title': 'Administrative',
+                }
+              }
+            ],
+            'count': 1,
+          },
+        ],
+      }
+      service.setWorkersGroupedByJobRole(workers);
+
+      expect(service.getWorkersGroupedByJobRole()).toEqual(workers);
+    });
+  });
 });
