@@ -931,7 +931,7 @@ class Establishment extends EntityValidator {
           howToPayForSleepIn: this._howToPayForSleepIn,
           travelTimePayOptionFK: this._travelTimePay?.id,
           travelTimePayRate: this._travelTimePay?.rate,
-          payAndPensionsMiniFlowViewed: this._payAndPensionsMiniFlowViewed,
+          ...(this._payAndPensionsMiniFlowViewed ? { payAndPensionsMiniFlowViewed: true } : {}),
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1171,7 +1171,8 @@ class Establishment extends EntityValidator {
             howToPayForSleepIn: this._howToPayForSleepIn,
             travelTimePayOptionFK: this._travelTimePay?.id,
             travelTimePayRate: this._travelTimePay?.rate,
-            payAndPensionsMiniFlowViewed: this._payAndPensionsMiniFlowViewed,
+            // payAndPensionsMiniFlowViewed: this._payAndPensionsMiniFlowViewed,
+            ...(this._payAndPensionsMiniFlowViewed ? { payAndPensionsMiniFlowViewed: true } : {}),
           };
 
           // Every time the establishment is saved, need to calculate
