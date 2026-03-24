@@ -456,10 +456,9 @@ class Establishment extends EntityValidator {
   }
 
   get updatePayForMultiStaffViewed() {
-    return this._properties.get('UpdatePayForMultiStaffViewed')
-      ? this._properties.get('UpdatePayForMultiStaffPageViewed').property
-      : null;
+    return this._updatePayForMultiStaffViewed;
   }
+
   get fastTrackPayByJobRolesViewed() {
     return this._properties.get('FastTrackPayByJobRolesViewed')
       ? this._properties.get('FastTrackPayByJobRolesViewed').property
