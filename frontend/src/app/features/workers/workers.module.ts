@@ -89,6 +89,8 @@ import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qu
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
+import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
+import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -154,6 +156,7 @@ import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qu
     TrainingCourseMatchingLayoutComponent,
     SelectTrainingCourseForWorkerTraining,
     IncludeTrainingCourseDetailsComponent,
+    FastTrackPayUpdatesComponent,
   ],
   providers: [
     DialogService,
@@ -179,6 +182,7 @@ import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qu
     GetWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver,
     WorkerHasAnyTrainingOrQualificationsResolver,
     DownloadCertificateService,
+    WorkersByJobRoleResolver,
   ],
 })
 export class WorkersModule {}
