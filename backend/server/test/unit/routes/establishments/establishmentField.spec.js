@@ -115,7 +115,7 @@ describe('server/routes/establishments/establishmentField', () => {
       establishmentRecord.load = sinon.stub().resolves(true);
       establishmentRecord.save = sinon.stub().resolves(true);
 
-      setupTests('employerType'); // PUT /api/establishment/:uid/establishmentField/employerType
+      setupTests('employerType');
 
       const req = httpMocks.createRequest(mockRequest);
       const res = httpMocks.createResponse();
