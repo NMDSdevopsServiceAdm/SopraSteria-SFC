@@ -1,16 +1,19 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-new-staff-tab',
-    templateUrl: './staff-tab.component.html',
-    standalone: false
+  selector: 'app-new-staff-tab',
+  templateUrl: './staff-tab.component.html',
+  standalone: false,
 })
 export class NewStaffTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -19,23 +22,46 @@ export class NewStaffTabComponent implements OnInit, OnDestroy {
   @Input() staffLastUpdated: string;
 
   public canAddWorker: boolean;
+  public showNewPill: boolean;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private permissionsService: PermissionsService,
     private workerService: WorkerService,
     private breadcrumbService: BreadcrumbService,
     private alertService: AlertService,
+    private router: Router,
+    private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
     this.workerService.setAddStaffRecordInProgress(false);
     this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
     this.breadcrumbService.show(JourneyType.STAFF_RECORDS_TAB);
+    this.showNewPill = !this.workplace?.updatePayForMultiStaffViewed;
   }
 
+  private setUpdatePayForMultiStaffViewed(): void {
+    const data = {
+      property: 'updatePayForMultiStaffViewed',
+      value: true,
+    };
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, data).subscribe(),
+    );
+  }
+
+  handleOnClick(event: Event): void {
+    if (this.showNewPill) {
+      this.setUpdatePayForMultiStaffViewed();
+    }
+
+    this.router.navigate(['workplace', this.workplace.uid, 'update-pay-multiple-staff']);
+  }
 
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();
     this.alertService.removeAlert();
+    this.subscriptions.unsubscribe();
   }
 }

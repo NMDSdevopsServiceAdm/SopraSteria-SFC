@@ -1,4 +1,4 @@
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { NewPillWithLinkComponent } from './new-pill-with-link.component';
 
 describe('NewPillWithLinkComponent', () => {
@@ -7,8 +7,9 @@ describe('NewPillWithLinkComponent', () => {
       imports: [],
       providers: [],
       componentProperties: {
-        showNewPill: overrides?.showNewPill ?? false
-      }
+        showNewPill: overrides?.showNewPill ?? false,
+        linkText: overrides?.linkText ?? '',
+      },
     });
     const component = setupTools.fixture.componentInstance;
 
@@ -35,5 +36,22 @@ describe('NewPillWithLinkComponent', () => {
 
       expect(getByTestId('new-pill')).toBeTruthy();
     });
+  });
+
+  it('should show the provided linkText', async () => {
+    const textForLink = 'Update pay for multiple staff';
+    const { getByText } = await setup({ showNewPill: true, linkText: textForLink });
+
+    expect(getByText(textForLink)).toBeTruthy();
+  });
+
+  it('should emit an event when the link is clicked', async () => {
+    const textForLink = 'Update pay for multiple staff';
+    const { getByText, fixture } = await setup({ linkText: textForLink });
+
+    const link = getByText(textForLink);
+    const spy = spyOn(fixture.componentInstance.clicked, 'emit');
+    fireEvent.click(link);
+    expect(spy).toHaveBeenCalled();
   });
 });
