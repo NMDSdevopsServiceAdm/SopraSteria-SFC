@@ -311,6 +311,16 @@ Cypress.Commands.add('updateEmployerTypeValue', (establishmentID, employerTypeVa
   cy.task('dbQuery', { queryString: queryString, parameters: parameters });
 });
 
+Cypress.Commands.add('setPayAndPensionsMiniFlowViewed', (establishmentID, value = true) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "PayAndPensionsMiniFlowViewed" = $2
+      WHERE "EstablishmentID" = $1;
+  `;
+  const parameters = [establishmentID, value];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
 Cypress.Commands.add('resetPayAndPensionWorkplaceQuestions', (establishmentID) => {
   const queryString = `UPDATE cqc."Establishment"
       SET "PayAndPensionsMiniFlowViewed" = null,
