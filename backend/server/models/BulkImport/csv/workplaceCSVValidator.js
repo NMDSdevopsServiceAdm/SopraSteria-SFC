@@ -3623,6 +3623,7 @@ class WorkplaceCSVValidator {
       offerSleepIn: this._offerSleepIn,
       howToPayForSleepIn: this._howToPayForSleepIn,
       travelTimePay: this._travelTimePay ?? null,
+      payAndPensionsMiniFlowViewed: true,
     };
     if (this._allServices) {
       if (this._allServices.length === 1) {

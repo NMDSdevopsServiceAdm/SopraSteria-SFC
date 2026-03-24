@@ -102,6 +102,7 @@ const validateAPIObject = (establishmentRow) => {
     offerSleepIn: null,
     howToPayForSleepIn: null,
     travelTimePay: null,
+    payAndPensionsMiniFlowViewed: true,
   };
 };
 const generateWorkerFromCsv = (currentLine, lineNumber = 1, allCurrentEstablishments = []) => {
