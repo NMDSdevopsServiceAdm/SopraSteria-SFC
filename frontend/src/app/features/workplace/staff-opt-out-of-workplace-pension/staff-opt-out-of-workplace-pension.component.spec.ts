@@ -60,7 +60,7 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
     const injector = getTestBed();
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.returnValue(
       of({ data: {} }),
     );
     const router = injector.inject(Router) as Router;
@@ -205,10 +205,11 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
           'add-workplace-details',
           'staff-benefit-holiday-leave',
         ]);
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          property: 'staffOptOutOfWorkplacePension',
-          value: option.value,
-        });
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(
+          component.establishment.uid,
+          'StaffOptOutOfWorkplacePension',
+          { staffOptOutOfWorkplacePension: option.value },
+        );
       });
     });
   });
@@ -269,10 +270,11 @@ describe('StaffOptOutOfWorkplacePensionComponent', () => {
         userEvent.click(getByText('Save and return'));
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          property: 'staffOptOutOfWorkplacePension',
-          value: option.value,
-        });
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(
+          component.establishment.uid,
+          'StaffOptOutOfWorkplacePension',
+          { staffOptOutOfWorkplacePension: option.value },
+        );
       });
     });
   });

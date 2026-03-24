@@ -64,7 +64,7 @@ describe('HowDoYouPayForSleepInsComponent', () => {
     const injector = getTestBed();
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.returnValue(
       of({ data: {} }),
     );
     const router = injector.inject(Router) as Router;
@@ -198,9 +198,8 @@ describe('HowDoYouPayForSleepInsComponent', () => {
 
     options.forEach((option) => {
       it(`should navigate to do-you-have-vacancies page after submit if user answered ${option}`, async () => {
-        const { component, getByText, fixture, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(
-          overrides,
-        );
+        const { component, getByText, fixture, getByLabelText, routerSpy, establishmentServiceSpy } =
+          await setup(overrides);
 
         fireEvent.click(getByLabelText(option));
         fixture.detectChanges();
@@ -215,9 +214,8 @@ describe('HowDoYouPayForSleepInsComponent', () => {
           'add-workplace-details',
           'do-you-have-vacancies',
         ]);
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          property: 'howToPayForSleepIn',
-          value: option,
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'HowToPayForSleepIn', {
+          howToPayForSleepIn: option,
         });
       });
     });
@@ -298,9 +296,8 @@ describe('HowDoYouPayForSleepInsComponent', () => {
 
     options.forEach((option) => {
       it(`should navigate back to the workplace summary after submit if user answered ${option}`, async () => {
-        const { component, getByText, fixture, getByLabelText, routerSpy, establishmentServiceSpy } = await setup(
-          overrides,
-        );
+        const { component, getByText, fixture, getByLabelText, routerSpy, establishmentServiceSpy } =
+          await setup(overrides);
 
         fireEvent.click(getByLabelText(option));
         fixture.detectChanges();
@@ -309,9 +306,8 @@ describe('HowDoYouPayForSleepInsComponent', () => {
         fixture.detectChanges();
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          property: 'howToPayForSleepIn',
-          value: option,
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'HowToPayForSleepIn', {
+          howToPayForSleepIn: option,
         });
       });
     });
@@ -400,9 +396,8 @@ describe('HowDoYouPayForSleepInsComponent', () => {
           'workplace-summary',
           'travel-time-pay',
         ]);
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          property: 'howToPayForSleepIn',
-          value: options[0],
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'HowToPayForSleepIn', {
+          howToPayForSleepIn: options[0],
         });
         await fixture.whenStable();
         expect(alertSpy).not.toHaveBeenCalled();
@@ -481,9 +476,8 @@ describe('HowDoYouPayForSleepInsComponent', () => {
         fixture.detectChanges();
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home', queryParams: undefined });
-        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          property: 'howToPayForSleepIn',
-          value: options[0],
+        expect(establishmentServiceSpy).toHaveBeenCalledWith(component.establishment.uid, 'HowToPayForSleepIn', {
+          howToPayForSleepIn: options[0],
         });
         await fixture.whenStable();
         expect(alertSpy).toHaveBeenCalledWith({

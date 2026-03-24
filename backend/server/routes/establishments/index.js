@@ -39,7 +39,6 @@ const EstablishmentField = require('./establishmentField.js');
 const DelegatedHealthcareActivities = require('./delegatedHealthcareActivities.js');
 const UpdateStaffKindDelegatedHealthcareActivities = require('./updateStaffKindDelegatedHealthcareActivities.js');
 const TrainingCourse = require('./trainingCourse');
-const PensionContribution = require('./pensionContribution.js');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -72,7 +71,6 @@ router.use('/:id/establishmentField', EstablishmentField);
 router.use('/:id/updateStaffKindDelegatedHealthcareActivities', UpdateStaffKindDelegatedHealthcareActivities);
 router.use('/:id/delegatedHealthcareActivities', DelegatedHealthcareActivities);
 router.use('/:id/trainingCourse', TrainingCourse);
-router.use('/:id/pensionContribution', PensionContribution);
 
 router.route('/:id').get(getEstablishment);
 router.route('/:id').post(hasPermission('canAddEstablishment'), addEstablishment);

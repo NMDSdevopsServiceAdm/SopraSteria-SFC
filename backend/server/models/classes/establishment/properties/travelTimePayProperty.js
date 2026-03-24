@@ -4,7 +4,7 @@ const models = require('../../../index');
 
 class TravelTimePayProperty extends ChangePropertyPrototype {
   constructor() {
-    super('TravelTimePay');
+    super('TravelTimePay', 'TravelTimePayOption');
     this._allowNull = true;
     this._isValid;
   }

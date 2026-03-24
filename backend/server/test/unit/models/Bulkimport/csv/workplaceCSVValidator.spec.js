@@ -135,7 +135,7 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 
 const BU_DHA_YES = '1';
 
-describe.only('Bulk Upload - Establishment CSV', () => {
+describe('Bulk Upload - Establishment CSV', () => {
   let establishmentRow;
 
   beforeEach(() => {

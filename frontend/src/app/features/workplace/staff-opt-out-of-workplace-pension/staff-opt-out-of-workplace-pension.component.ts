@@ -11,7 +11,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 
-
 @Component({
   selector: 'app-staff-opt-out-of-workplace-pension',
   templateUrl: './staff-opt-out-of-workplace-pension.component.html',
@@ -119,16 +118,17 @@ export class StaffOptOutOfWorkplacePensionComponent extends WorkplaceQuestion im
       return;
     }
 
-    const updateData = {
-      property: 'staffOptOutOfWorkplacePension',
-      value: props,
+    const payload = {
+      staffOptOutOfWorkplacePension: props,
     };
 
     this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, updateData).subscribe(
-        (data) => this._onSuccess(data.data),
-        (error) => this.onError(error),
-      ),
+      this.establishmentService
+        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'StaffOptOutOfWorkplacePension', payload)
+        .subscribe(
+          (data) => this._onSuccess(data.data),
+          (error) => this.onError(error),
+        ),
     );
   }
 
