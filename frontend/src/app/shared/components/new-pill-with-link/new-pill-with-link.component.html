@@ -1,7 +1,10 @@
-<div>
-  @if(showNewPill){
-  <span>
-    <img src="/assets/images/new-icon.png" alt="" data-testid="new-pill" class="new-pill-icon" />
+<div class="govuk-!-margin-top-5 govuk-!-margin-bottom-5">
+  <span class="new-pill-with-link">
+    @if(showNewPill){
+    <img src="/assets/images/big-red-pill.svg" data-testid="new-pill" alt="" class="new-pill-with-link__icon" />
+    }
+    <a role="button" href="#" class="new-pill-with-link__link" (click)="onLinkClick($event)"
+      > {{ linkText }}</a
+    >
   </span>
-  } <a href="#">Update pay for multiple staff</a>
 </div>

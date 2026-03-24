@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-new-pill-with-link',
@@ -7,10 +7,16 @@ import { Component, Input, OnInit } from '@angular/core';
   standalone: false,
 })
 export class NewPillWithLinkComponent implements OnInit {
-
-  @Input() showNewPill: boolean = false
+  @Input() showNewPill: boolean = false;
+  @Input() linkText: string = '';
+  @Output() clicked = new EventEmitter<boolean>();
 
   constructor() {}
 
   ngOnInit(): void {}
+
+  onLinkClick(event: Event): void {
+    event.preventDefault();
+    this.clicked.emit(true);
+  }
 }

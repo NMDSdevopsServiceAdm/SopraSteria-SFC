@@ -1,6 +1,21 @@
-.new-pill-icon {
+.new-pill-with-link {
+  display: flex;
+  align-items: center;
+
+  &__icon {
+    margin-top: 6px;
     width: 54px;
     height: 23px;
+    margin-right: 8px;
     display: inline-block;
   }
+}
 
+.new-pill-with-link__link {
+  color: govuk-colour('blue');
+  margin-top: 6px;
+  &:visited {
+    margin-top: 5px;
+    color: govuk-colour('blue');
+  }
+}
