@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class NewPillWithLinkComponent implements OnInit {
   @Input() showNewPill: boolean = false;
-  @Input() linkText: string = '';
+  @Input() linkText: string;
   @Output() clicked = new EventEmitter<boolean>();
 
   constructor() {}

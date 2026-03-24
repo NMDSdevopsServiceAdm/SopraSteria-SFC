@@ -2,6 +2,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { NewPillWithLinkComponent } from './new-pill-with-link.component';
 
 describe('NewPillWithLinkComponent', () => {
+  const textForLink = 'Update pay for multiple staff';
   async function setup(overrides: any = {}) {
     const setupTools = await render(NewPillWithLinkComponent, {
       imports: [],
@@ -26,20 +27,19 @@ describe('NewPillWithLinkComponent', () => {
 
   describe('new pill', () => {
     it('should not show if showNewPill is false', async () => {
-      const { queryByTestId } = await setup({ showNewPill: false });
+      const { queryByTestId } = await setup({ showNewPill: false, linkText: textForLink });
 
       expect(queryByTestId('new-pill')).toBeFalsy();
     });
 
     it('should show if showNewPill is true', async () => {
-      const { getByTestId } = await setup({ showNewPill: true });
+      const { getByTestId } = await setup({ showNewPill: true, linkText: textForLink });
 
       expect(getByTestId('new-pill')).toBeTruthy();
     });
   });
 
   it('should show the provided linkText', async () => {
-    const textForLink = 'Update pay for multiple staff';
     const { getByText } = await setup({ showNewPill: true, linkText: textForLink });
 
     expect(getByText(textForLink)).toBeTruthy();
@@ -53,5 +53,12 @@ describe('NewPillWithLinkComponent', () => {
     const spy = spyOn(fixture.componentInstance.clicked, 'emit');
     fireEvent.click(link);
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('should not show the new pill or link if no text is provided', async () => {
+    const { queryByTestId } = await setup({ showNewPill: true });
+
+    expect(queryByTestId('new-pill')).toBeFalsy();
+    expect(queryByTestId('link')).toBeFalsy();
   });
 });
