@@ -337,6 +337,40 @@ const getAllWorkersGroupedByJobRole = async (req, res) => {
   }
 };
 
+const parseIntWithDefault = (numberString, defaultValue) => {
+  const parsed = Number(numberString);
+  if (isNaN(parsed)) {
+    return defaultValue;
+  }
+  return parsed;
+};
+
+const getWorkersWithPayData = async (req, res) => {
+  try {
+    const allowedSortByOptions = ['staffNameAsc', 'staffNameDesc', 'jobRoleAsc', 'jobRoleDesc'];
+    const establishmentId = req.establishmentId;
+
+    const itemsPerPage = parseIntWithDefault(req.query.itemsPerPage, 15);
+    const pageIndex = parseIntWithDefault(req.query.pageIndex, 0);
+    const sortBy = allowedSortByOptions.includes(req.query.sortBy) ? req.query.sortBy : 'staffNameAsc';
+    const jobId = parseIntWithDefault(req.query.jobId, undefined);
+
+    const queryParams = {
+      establishmentId,
+      itemsPerPage,
+      pageIndex,
+      sortBy,
+      ...(jobId ? { jobId } : {}),
+    };
+
+    const results = await models.establishment.getWorkersWithPayData(queryParams);
+    return res.status(200).json(results);
+  } catch (err) {
+    console.error('GET /worker/withPayData: unexpected exception: ', err);
+    return res.status(500).send({ message: 'failed to get workers with pay data' });
+  }
+};
+
 const updateLocalIdentifiers = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
@@ -388,6 +422,7 @@ router.route('/').post(hasPermission('canAddWorker'), createWorker);
 router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocalIdentifiers);
 router.route('/total').get(hasPermission('canViewEstablishment'), getTotalWorkers);
 router.get('/groupedByJobRole', hasPermission('canViewWorker'), getAllWorkersGroupedByJobRole);
+router.get('/withPayData', hasPermission('canViewWorker'), getWorkersWithPayData);
 
 router.use('/multiple-training', MutipleTrainingRecordsRoute);
 
@@ -405,3 +440,4 @@ module.exports.editWorker = editWorker;
 module.exports.viewAllWorkers = viewAllWorkers;
 module.exports.getTotalWorkers = getTotalWorkers;
 module.exports.getAllWorkersGroupedByJobRole = getAllWorkersGroupedByJobRole;
+module.exports.getWorkersWithPayData = getWorkersWithPayData;
