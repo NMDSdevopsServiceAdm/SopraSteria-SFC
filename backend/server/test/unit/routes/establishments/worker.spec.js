@@ -8,25 +8,19 @@ const models = require('../../../../models/index');
 const workerRoute = require('../../../../routes/establishments/worker');
 const WdfCalculator = require('../../../../models/classes/wdfCalculator').WdfCalculator;
 
-let i = 0;
 const worker = {
   establishmentId: 1,
   workerId: '29155c11-11bb-4ab3-ada0-bccac7acecc1',
   id: 1,
-  i,
 };
 const establishment = {
   establishmentId: 2,
 };
 
-describe('worker route', () => {
+describe.only('worker route', () => {
   before(() => {
-    sinon.stub(models.worker, 'findOne').callsFake(async (args) => {
-      return args.i === 3 ? {} : worker;
-    });
-    sinon.stub(models.worker, 'create').callsFake(async () => {
-      return worker;
-    });
+    sinon.stub(models.worker, 'findOne').resolves(worker);
+    sinon.stub(models.worker, 'create').resolves(worker);
     sinon.stub(models.worker, 'update').callsFake(async () => {
       const mockWorker = {
         get: () => {
@@ -35,12 +29,8 @@ describe('worker route', () => {
       };
       return [1, [mockWorker]];
     });
-    sinon.stub(models.workerAudit, 'bulkCreate').callsFake(async () => {
-      return {};
-    });
-    sinon.stub(models.establishment, 'findOne').callsFake(async () => {
-      return establishment;
-    });
+    sinon.stub(models.workerAudit, 'bulkCreate').resolves({});
+    sinon.stub(models.establishment, 'findOne').resolves(establishment);
   });
 
   after(() => {
@@ -401,6 +391,18 @@ describe('worker route', () => {
     });
   });
 
+  describe('getWorkersWithPayData()', () => {
+    it('should respond with 200 and a list of workers and their pay data');
+
+    it('should handle pagination and sort parameters');
+
+    it('should allow search by job id');
+
+    it('should ignore any unexpected query params');
+
+    it('should response with 500 if error occured');
+  });
+
   describe('getTotalWorkers()', () => {
     const workerBuilder = build('Worker', {
       fields: {
@@ -415,9 +417,11 @@ describe('worker route', () => {
         workers: [worker],
       });
     });
+
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return a total number of staff', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',
