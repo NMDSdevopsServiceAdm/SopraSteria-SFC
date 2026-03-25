@@ -2830,6 +2830,45 @@ class WorkplaceCSVValidator {
     }
   }
 
+  _crossCheckMainServiceWithTravelTimePay() {
+    const travelTimePayHasValue = this._travelTimePayOption || this._travelTimePayRate;
+
+    const mainServiceIdFromInput = this._mainService?.id;
+    const mainService = this.mappings.services?.find((service) => service.id === mainServiceIdFromInput);
+
+    const shouldSeeTravelTimePayQuestions = this._mainServiceShouldSeeTravelPayQuestion(mainService);
+
+    const shouldRaiseWarning = travelTimePayHasValue & !shouldSeeTravelTimePayQuestions;
+
+    if (!shouldRaiseWarning) {
+      return;
+    }
+
+    if (this._travelTimePayOption) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'Value entered for TRAVELTIME will be ignored as main service does not fall in the correct category',
+          'TRAVELTIME',
+          'TRAVELTIME_MAIN_SERVICE_WARNING',
+        ),
+      );
+
+      this._travelTimePayOption = null;
+    }
+
+    if (this._travelTimePayRate) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'Value entered for TTDIFFRATE will be ignored as main service does not fall in the correct category',
+          'TTDIFFRATE',
+          'TTDIFFRATE_MAIN_SERVICE_WARNING',
+        ),
+      );
+
+      this._travelTimePayRate = null;
+    }
+  }
+
   _mainServiceShouldSeeSleepInQuestions(mainService) {
     return [1, 2].includes(mainService?.payAndPensionsGroup);
   }
@@ -3458,6 +3497,7 @@ class WorkplaceCSVValidator {
       status = !this._transformMainService() ? false : status;
       this._addMainServiceDHAWarningIfMismatch();
       this._crossCheckMainServiceWithSleepIns();
+      this._crossCheckMainServiceWithTravelTimePay();
 
       status = !this._transformEstablishmentType() ? false : status;
       status = !this._transformAllServices() ? false : status;
