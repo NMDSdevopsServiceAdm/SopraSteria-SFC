@@ -51,6 +51,7 @@ describe('TravelTimePayComponent', () => {
       providers: [
         patchRouterUrlForWorkplaceQuestions(isInAddDetailsFlow),
         UntypedFormBuilder,
+        AlertService,
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentServiceWithOverrides.factory(overrides),
@@ -141,7 +142,7 @@ describe('TravelTimePayComponent', () => {
     });
 
     it('should show "Workplace" when in the pay and pensions mini flow', async () => {
-      const { getByTestId } = await setup({ inPayAndPensionsMiniFlow: true });
+      const { getByTestId } = await setup({ returnUrl: null, inPayAndPensionsMiniFlow: true });
 
       const sectionCaption = 'Workplace';
       expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
@@ -154,6 +155,32 @@ describe('TravelTimePayComponent', () => {
 
       travelTimePayOptions.forEach((option) => {
         expect(getByRole('radio', { name: option.label })).toBeTruthy();
+      });
+    });
+
+    describe('prefill', () => {
+      it(`should have an empty input when ${travelTimePayOptions[2].label} was previously saved with no rate`, async () => {
+        const overrides = { establishment: { travelTimePay: { id: travelTimePayOptions[2].id, rate: null } } };
+
+        const { getByLabelText } = await setup(overrides);
+
+        const radioButton = getByLabelText(travelTimePayOptions[2].label) as HTMLInputElement;
+        const amountInput = getByLabelText('Amount (optional)') as HTMLInputElement;
+
+        expect(radioButton.checked).toBeTruthy();
+        expect(amountInput.value).toEqual('');
+      });
+
+      it(`should show the rate with the correct decimals when ${travelTimePayOptions[2].label} was previously saved with a rate`, async () => {
+        const overrides = { establishment: { travelTimePay: { id: travelTimePayOptions[2].id, rate: 4.5 } } };
+
+        const { getByLabelText } = await setup(overrides);
+
+        const radioButton = getByLabelText(travelTimePayOptions[2].label) as HTMLInputElement;
+        const amountInput = getByLabelText('Amount (optional)') as HTMLInputElement;
+
+        expect(radioButton.checked).toBeTruthy();
+        expect(amountInput.value).toEqual('4.50');
       });
     });
   });
