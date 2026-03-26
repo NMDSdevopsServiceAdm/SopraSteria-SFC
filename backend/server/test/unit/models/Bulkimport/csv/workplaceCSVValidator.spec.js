@@ -2689,8 +2689,8 @@ describe('Bulk Upload - Establishment CSV', () => {
           });
 
           it('should pass if both TRAVELTIME and TTDIFFRATE are empty', async () => {
-            establishmentRow.TRAVELTIME = '3';
-            establishmentRow.TTDIFFRATE = '5.5';
+            establishmentRow.TRAVELTIME = '';
+            establishmentRow.TTDIFFRATE = '';
 
             const establishment = await generateEstablishmentFromCsv(establishmentRow);
             establishment.transform();
@@ -2698,7 +2698,41 @@ describe('Bulk Upload - Establishment CSV', () => {
             expect(establishment.validationErrors).to.deep.equal([]);
           });
 
-          it('should add a warning and ignore if got any input', async () => {});
+          it('should add a warning and ignore if got any input in TRAVELTIME or TTDIFFRATE', async () => {
+            establishmentRow.TRAVELTIME = '3';
+            establishmentRow.TTDIFFRATE = '5.5';
+
+            const establishment = await generateEstablishmentFromCsv(establishmentRow);
+            establishment.transform();
+
+            expect(establishment.validationErrors).to.deep.include({
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2581,
+              warnType: 'TRAVELTIME_MAIN_SERVICE_WARNING',
+              warning:
+                'Value entered for TRAVELTIME will be ignored as main service does not fall in the correct category',
+              source: '3',
+              column: 'TRAVELTIME',
+              name: establishmentRow.LOCALESTID,
+            });
+
+            expect(establishment.validationErrors).to.deep.include({
+              origin: 'Establishments',
+              lineNumber: establishment.lineNumber,
+              warnCode: 2591,
+              warnType: 'TTDIFFRATE_MAIN_SERVICE_WARNING',
+              warning:
+                'Value entered for TTDIFFRATE will be ignored as main service does not fall in the correct category',
+              source: '5.5',
+              column: 'TTDIFFRATE',
+              name: establishmentRow.LOCALESTID,
+            });
+
+            expect(establishment._travelTimePayOption).to.deep.equal(null);
+            expect(establishment._travelTimePayRate).to.deep.equal(null);
+            expect(establishment._travelTimePay).to.deep.equal(null);
+          });
         });
       });
     });
