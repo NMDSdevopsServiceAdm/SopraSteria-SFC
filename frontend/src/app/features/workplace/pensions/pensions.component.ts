@@ -180,7 +180,7 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
 
     const props = {
       pensionContribution: pension,
-      pensionContributionPercentage: pension === 'Yes' ? pensionPercentage : null,
+      pensionContributionPercentage: pension === 'Yes' && pensionPercentage ? pensionPercentage : null,
     };
 
     return props;

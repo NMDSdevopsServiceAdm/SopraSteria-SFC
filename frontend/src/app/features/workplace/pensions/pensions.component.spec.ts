@@ -7,7 +7,7 @@ import { Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { fireEvent, getByLabelText, render, within } from '@testing-library/angular';
 
 import { PensionsComponent } from './pensions.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
@@ -53,7 +53,7 @@ describe('PensionsComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updatePensionContribution').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -262,6 +262,50 @@ describe('PensionsComponent', () => {
           'add-workplace-details',
           'staff-opt-out-of-workplace-pension',
         ]);
+      });
+
+      const answers = [
+        { pension: 'Yes', pensionPercentage: 5 },
+        { pension: 'Yes', pensionPercentage: null },
+      ];
+      answers.forEach((answer) => {
+        it(`should navigate call the updateEstablishmentFieldWithAudit with pensionContribution ${answer.pension} and pensionContributionPercentage ${answer.pensionPercentage}`, async () => {
+          const { component, fixture, getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup({
+            returnUrl: false,
+          });
+
+          const radioButton = getByText(answer.pension);
+          fireEvent.click(radioButton);
+
+          if (answer.pensionPercentage) {
+            const input = getByLabelText('Actual contribution');
+            userEvent.type(input, answer.pensionPercentage.toString());
+          }
+
+          fixture.detectChanges();
+
+          const button = getByText('Save and continue');
+          fireEvent.click(button);
+          fixture.detectChanges();
+
+          const dataToUpdate = {
+            pensionContribution: answer.pension,
+            pensionContributionPercentage: answer.pensionPercentage,
+          };
+
+          expect(establishmentServiceSpy).toHaveBeenCalledWith(
+            component.establishment.uid,
+            'pensionContribution',
+            dataToUpdate,
+          );
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'staff-opt-out-of-workplace-pension',
+          ]);
+        });
       });
 
       it('should navigate to the next page when skipping from the flow', async () => {
