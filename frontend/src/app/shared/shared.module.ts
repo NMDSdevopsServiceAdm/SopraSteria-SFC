@@ -147,6 +147,7 @@ import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
 import { DecimalInputWithButtonsComponent } from './components/decimal-input-with-buttons/decimal-input-with-buttons.component';
 import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.pipe';
 import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
+import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.pipe';
 
 @NgModule({
   imports: [
@@ -300,6 +301,7 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
     DecimalInputWithButtonsComponent,
+    FormatMoneyWithDecimalsPipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -436,6 +438,7 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
     DecimalInputWithButtonsComponent,
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
+    FormatMoneyWithDecimalsPipe,
   ],
   providers: [
     DialogService,
@@ -447,6 +450,7 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
     HasValuePipe,
     FormatCwpUsePipe,
     FormatWhatDhaPipe,
+    FormatMoneyWithDecimalsPipe,
   ],
 })
 export class SharedModule {}
