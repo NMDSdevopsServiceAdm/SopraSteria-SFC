@@ -195,7 +195,7 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
       this.establishmentService
         .updateEstablishmentFieldWithAudit(this.establishment.uid, 'pensionContribution', payload)
         .subscribe(
-          (data) => this._onSuccess(data.data),
+          (data) => this._onSuccess(data),
           (error) => this.onError(error),
         ),
     );

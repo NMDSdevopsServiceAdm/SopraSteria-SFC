@@ -18,6 +18,7 @@ import {
   mockPayAndPensionsGroup2ProgressBarSections,
 } from '@core/test-utils/MockPayAndPensionService';
 import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import userEvent from '@testing-library/user-event';
 
 describe('PensionsComponent', () => {
   async function setup(overrides: any = { returnUrl: true, pension: undefined, pensionPercentage: undefined }) {
@@ -413,6 +414,30 @@ describe('PensionsComponent', () => {
         expect(within(progressBar).getByText(section)).toBeTruthy();
       });
       expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+  });
+
+  describe('error messages', () => {
+    ['2', '101'].forEach((value) => {
+      it(`should show the error message when the enter value is ${value}`, async () => {
+        const { getByText, getByLabelText, fixture, getAllByText } = await setup();
+
+        const yesRadioButton = getByLabelText('Yes');
+        fireEvent.click(yesRadioButton);
+        fixture.detectChanges();
+
+        const input = getByLabelText('Actual contribution');
+        userEvent.type(input, value);
+        fixture.detectChanges();
+
+        const ctaButton = getByText('Save and return');
+        fireEvent.click(ctaButton);
+        fixture.detectChanges();
+
+        const errorMessage = 'Actual contribution must be higher than 3% and no more than 100%';
+
+        expect(getAllByText(errorMessage).length).toBe(2);
+      });
     });
   });
 });
