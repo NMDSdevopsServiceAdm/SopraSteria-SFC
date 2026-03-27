@@ -7,7 +7,7 @@ import { Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { fireEvent, getByLabelText, render, within } from '@testing-library/angular';
 
 import { PensionsComponent } from './pensions.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
@@ -18,6 +18,7 @@ import {
   mockPayAndPensionsGroup2ProgressBarSections,
 } from '@core/test-utils/MockPayAndPensionService';
 import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import userEvent from '@testing-library/user-event';
 
 describe('PensionsComponent', () => {
   async function setup(overrides: any = { returnUrl: true, pension: undefined, pensionPercentage: undefined }) {
@@ -52,7 +53,7 @@ describe('PensionsComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updatePensionContribution').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -263,6 +264,50 @@ describe('PensionsComponent', () => {
         ]);
       });
 
+      const answers = [
+        { pension: 'Yes', pensionPercentage: 5 },
+        { pension: 'Yes', pensionPercentage: null },
+      ];
+      answers.forEach((answer) => {
+        it(`should navigate call the updateEstablishmentFieldWithAudit with pensionContribution ${answer.pension} and pensionContributionPercentage ${answer.pensionPercentage}`, async () => {
+          const { component, fixture, getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup({
+            returnUrl: false,
+          });
+
+          const radioButton = getByText(answer.pension);
+          fireEvent.click(radioButton);
+
+          if (answer.pensionPercentage) {
+            const input = getByLabelText('Actual contribution');
+            userEvent.type(input, answer.pensionPercentage.toString());
+          }
+
+          fixture.detectChanges();
+
+          const button = getByText('Save and continue');
+          fireEvent.click(button);
+          fixture.detectChanges();
+
+          const dataToUpdate = {
+            pensionContribution: answer.pension,
+            pensionContributionPercentage: answer.pensionPercentage,
+          };
+
+          expect(establishmentServiceSpy).toHaveBeenCalledWith(
+            component.establishment.uid,
+            'pensionContribution',
+            dataToUpdate,
+          );
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'staff-opt-out-of-workplace-pension',
+          ]);
+        });
+      });
+
       it('should navigate to the next page when skipping from the flow', async () => {
         const { fixture, getByText, routerSpy } = await setup({ returnUrl: false });
 
@@ -413,6 +458,30 @@ describe('PensionsComponent', () => {
         expect(within(progressBar).getByText(section)).toBeTruthy();
       });
       expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+  });
+
+  describe('error messages', () => {
+    ['2', '101'].forEach((value) => {
+      it(`should show the error message when the enter value is ${value}`, async () => {
+        const { getByText, getByLabelText, fixture, getAllByText } = await setup();
+
+        const yesRadioButton = getByLabelText('Yes');
+        fireEvent.click(yesRadioButton);
+        fixture.detectChanges();
+
+        const input = getByLabelText('Actual contribution');
+        userEvent.type(input, value);
+        fixture.detectChanges();
+
+        const ctaButton = getByText('Save and return');
+        fireEvent.click(ctaButton);
+        fixture.detectChanges();
+
+        const errorMessage = 'Actual contribution must be higher than 3% and no more than 100%';
+
+        expect(getAllByText(errorMessage).length).toBe(2);
+      });
     });
   });
 });

@@ -38,20 +38,20 @@ describe('DecimalInputWithButtonsComponent', () => {
     it('should show an input box', async () => {
       const { getByRole } = await setup();
 
-      expect(getByRole('textbox')).toBeTruthy();
+      expect(getByRole('spinbutton')).toBeTruthy();
     });
 
     it('should show the input box as blank if no initial value given', async () => {
       const { getByRole } = await setup();
 
-      const inputBox = getByRole('textbox') as HTMLInputElement;
+      const inputBox = getByRole('spinbutton') as HTMLInputElement;
       expect(inputBox.value).toEqual('');
     });
 
     it('should show the given initial value in the input box', async () => {
       const { getByRole } = await setup({ initialValue: 3.5 });
 
-      const inputBox = getByRole('textbox') as HTMLInputElement;
+      const inputBox = getByRole('spinbutton') as HTMLInputElement;
       expect(inputBox.value).toEqual('3.5');
     });
 
@@ -75,7 +75,7 @@ describe('DecimalInputWithButtonsComponent', () => {
         const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox') as HTMLInputElement;
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
         userEvent.type(inputBox, '3.5');
 
         expect(inputBox.value).toEqual('3.5');
@@ -89,7 +89,7 @@ describe('DecimalInputWithButtonsComponent', () => {
 
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox') as HTMLInputElement;
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
         userEvent.type(inputBox, '3.5');
 
         expect(onChangeSpy).toHaveBeenCalledWith(3.5);
@@ -100,11 +100,20 @@ describe('DecimalInputWithButtonsComponent', () => {
         const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox') as HTMLInputElement;
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
         userEvent.type(inputBox, '10');
         userEvent.clear(inputBox);
 
         expect(onChangeSpy).toHaveBeenCalledWith(10);
+        expect(onChangeSpy).toHaveBeenCalledWith('');
+      });
+
+      it('should not allow letters to be inputted', async () => {
+        const { fixture, getByRole, onChangeSpy } = await setup();
+        fixture.autoDetectChanges();
+
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
+        userEvent.type(inputBox, 'er');
         expect(onChangeSpy).toHaveBeenCalledWith('');
       });
     });
@@ -114,7 +123,7 @@ describe('DecimalInputWithButtonsComponent', () => {
         const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox') as HTMLInputElement;
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
 
         userEvent.type(inputBox, '10');
 
@@ -135,7 +144,7 @@ describe('DecimalInputWithButtonsComponent', () => {
         const { fixture, getByRole, onChangeSpy } = await setup({ min: 3.5 });
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox') as HTMLInputElement;
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
 
         userEvent.type(inputBox, '1');
         await clickPlusButton();
@@ -148,7 +157,7 @@ describe('DecimalInputWithButtonsComponent', () => {
         const { fixture, getByRole, onChangeSpy } = await setup({ min: 3.5 });
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox') as HTMLInputElement;
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
 
         userEvent.type(inputBox, 'apple banana orange');
         await clickPlusButton();
@@ -161,7 +170,7 @@ describe('DecimalInputWithButtonsComponent', () => {
         const { fixture, getByRole, queryByTestId } = await setup({ max: 10 });
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox') as HTMLInputElement;
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
         expect(queryByTestId('plus-button-number-input')).toBeTruthy();
 
         userEvent.type(inputBox, '10');
@@ -175,7 +184,7 @@ describe('DecimalInputWithButtonsComponent', () => {
         const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox') as HTMLInputElement;
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
 
         userEvent.type(inputBox, '10');
 
@@ -196,7 +205,7 @@ describe('DecimalInputWithButtonsComponent', () => {
         const { fixture, getByRole, onChangeSpy } = await setup({ max: 999 });
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox') as HTMLInputElement;
+        const inputBox = getByRole('spinbutton') as HTMLInputElement;
 
         userEvent.type(inputBox, '10000');
         await clickMinusButton();

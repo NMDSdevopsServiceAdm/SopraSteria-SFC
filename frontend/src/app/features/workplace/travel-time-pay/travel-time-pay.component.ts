@@ -73,7 +73,7 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     }
   }
 
-  public setSectionHeading() {
+  public setSectionHeading(): void {
     this.sectionHeading = this.inPayAndPensionsMiniFlow ? 'Workplace' : WorkplaceFlowSections.PAY_AND_BENEFITS;
   }
 
@@ -164,7 +164,9 @@ export class TravelTimePayComponent extends WorkplaceQuestion implements OnInit,
     if (this.establishment.travelTimePay) {
       this.form.patchValue({
         travelTimePay: this.establishment.travelTimePay.id,
-        travelTimePayRate: this.establishment.travelTimePay.rate,
+        travelTimePayRate: this.establishment.travelTimePay.rate
+          ? this.establishment.travelTimePay.rate.toFixed(2)
+          : null,
       });
 
       this.onChange(this.establishment.travelTimePay);

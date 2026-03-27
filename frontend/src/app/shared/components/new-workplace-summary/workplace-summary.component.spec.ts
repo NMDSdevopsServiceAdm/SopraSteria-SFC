@@ -1913,7 +1913,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const travelTimePayRow = queryByTestId('travel-time-pay');
 
         const link = within(travelTimePayRow).queryByText('Change');
-        const answer = within(travelTimePayRow).queryByText('A different travel time rate, £12.5');
+        const answer = within(travelTimePayRow).queryByText('A different travel time rate, £12.50');
 
         expect(travelTimePayRow).toBeTruthy();
         expect(answer).toBeTruthy();

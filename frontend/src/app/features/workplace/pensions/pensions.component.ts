@@ -180,7 +180,7 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
 
     const props = {
       pensionContribution: pension,
-      pensionContributionPercentage: pension === 'Yes' ? pensionPercentage : null,
+      pensionContributionPercentage: pension === 'Yes' && pensionPercentage ? pensionPercentage : null,
     };
 
     return props;
@@ -195,7 +195,7 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
       this.establishmentService
         .updateEstablishmentFieldWithAudit(this.establishment.uid, 'pensionContribution', payload)
         .subscribe(
-          (data) => this._onSuccess(data.data),
+          (data) => this._onSuccess(data),
           (error) => this.onError(error),
         ),
     );
