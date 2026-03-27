@@ -427,7 +427,7 @@ describe('worker route', () => {
     const mockQueryResult = { count: mockWorkers, workers: mockWorkers };
 
     it('should respond with 200 and a list of workers and their pay data', async () => {
-      sinon.stub(models.establishment, 'getWorkersWithPayData').resolves(mockQueryResult);
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -449,7 +449,7 @@ describe('worker route', () => {
         ...request,
         query: { itemsPerPage: 20, pageIndex: 2, sortBy: 'jobRoleAsc' },
       };
-      sinon.stub(models.establishment, 'getWorkersWithPayData').resolves(mockQueryResult);
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
 
       const req = httpMocks.createRequest(requestWithParams);
       const res = httpMocks.createResponse();
@@ -471,7 +471,7 @@ describe('worker route', () => {
         ...request,
         query: { jobId: 19 },
       };
-      sinon.stub(models.establishment, 'getWorkersWithPayData').resolves(mockQueryResult);
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
 
       const req = httpMocks.createRequest(requestWithParams);
       const res = httpMocks.createResponse();
@@ -502,7 +502,7 @@ describe('worker route', () => {
         },
       };
 
-      sinon.stub(models.establishment, 'getWorkersWithPayData').resolves(mockQueryResult);
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
 
       const req = httpMocks.createRequest(requestWithParams);
       const res = httpMocks.createResponse();
@@ -520,7 +520,7 @@ describe('worker route', () => {
     });
 
     it('should response with 500 if error occured', async () => {
-      sinon.stub(models.establishment, 'getWorkersWithPayData').rejects(new Error('database error'));
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').rejects(new Error('database error'));
       sinon.stub(console, 'error');
 
       const req = httpMocks.createRequest(request);

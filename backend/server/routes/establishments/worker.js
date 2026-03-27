@@ -363,7 +363,7 @@ const getWorkersWithPayData = async (req, res) => {
       ...(jobId ? { jobId } : {}),
     };
 
-    const results = await models.establishment.getWorkersWithPayData(queryParams);
+    const results = await models.establishment.fetchWorkersWithPayData(queryParams);
     return res.status(200).json(results);
   } catch (err) {
     console.error('GET /worker/withPayData: unexpected exception: ', err);

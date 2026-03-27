@@ -8,7 +8,7 @@ describe('establishment model', () => {
     sinon.restore();
   });
 
-  describe('getWorkersWithPayData', () => {
+  describe('fetchWorkersWithPayData', () => {
     const workerBuilder = build('Worker', {
       fields: {
         uid: fake((f) => f.datatype.uuid()),
@@ -28,7 +28,7 @@ describe('establishment model', () => {
       const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()];
       sinon.stub(models.worker, 'findAndCountAll').resolves({ count: 3, rows: mockWorkers });
 
-      await models.establishment.getWorkersWithPayData({
+      await models.establishment.fetchWorkersWithPayData({
         establishmentId: mockEstablishmentId,
         itemsPerPage: 20,
         pageIndex: 2,
@@ -99,7 +99,7 @@ describe('establishment model', () => {
 
       sinon.stub(models.worker, 'findAndCountAll').resolves({ count: 3, rows: mockWorkers });
 
-      const result = await models.establishment.getWorkersWithPayData({
+      const result = await models.establishment.fetchWorkersWithPayData({
         establishmentId: mockEstablishmentId,
       });
 
