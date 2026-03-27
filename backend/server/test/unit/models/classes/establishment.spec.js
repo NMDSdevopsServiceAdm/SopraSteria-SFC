@@ -11,14 +11,13 @@ describe('Establishment Class', () => {
   afterEach(() => {
     sinon.restore();
   });
+  beforeEach(() => {
+    establishment = new Establishment();
+  });
 
   const booleanValues = [true, false, null];
 
   describe('load()', () => {
-    beforeEach(() => {
-      establishment = new Establishment();
-    });
-
     it('should set CQC to null in shareWith if an establishment is not CQC regulated', async () => {
       const nonCqc = {
         isRegulated: false,
@@ -97,6 +96,9 @@ describe('Establishment Class', () => {
       isWdfEligibleSpy = sinon.stub(establishment, 'isWdfEligible').returns({
         currentEligibility: overrides.currentEligibility,
       });
+      if (overrides.bulkUploaded && overrides.bulkUploadStatus !== 'NEW') {
+        establishment._uid = 'mock-uid';
+      }
 
       await establishment.save(
         theLoggedInUser,
@@ -134,10 +136,15 @@ describe('Establishment Class', () => {
           return { EstablishmentID: 12, created: timestamp, updated: timestamp };
         },
       };
+      const updatedEstablishment = {
+        get() {
+          return {};
+        },
+      };
 
       sinon.stub(models.establishment, 'create').returns(createdEstablishment);
 
-      updateFundingEligibilitySpy = sinon.stub(models.establishment, 'update');
+      updateFundingEligibilitySpy = sinon.stub(models.establishment, 'update').returns([1, [updatedEstablishment]]);
       establishmentAuditSpy = sinon.stub(models.establishmentAudit, 'create');
     });
 
@@ -170,8 +177,26 @@ describe('Establishment Class', () => {
         expect(establishmentAuditSpy).not.to.have.been.called;
       });
 
-      booleanValues.forEach((value) => {
-        it(`should call the database to update payAndPensionsMiniFlowViewed when the value is ${value}`, async () => {
+      it('should call the database to update payAndPensionsMiniFlowViewed when the value is true', async () => {
+        await setupTests({
+          bulkUploadStatus: 'NEW',
+          currentEligibility: true,
+          bulkUploaded: true,
+          propertiesToUpdate: [{ name: '_payAndPensionsMiniFlowViewed', value: true }],
+        });
+
+        establishmentAuditSpy.resolves(true);
+
+        expect(establishmentAuditSpy).to.have.been.called;
+        expect(models.establishment.create).to.have.been.called;
+        const creationDocument = models.establishment.create.getCalls()[0].args[0];
+        expect(creationDocument).to.haveOwnProperty('payAndPensionsMiniFlowViewed', true);
+      });
+
+      const falsyValues = [null, undefined, false];
+
+      falsyValues.forEach((value) => {
+        it(`should NOT set payAndPensionsMiniFlowViewed when the value is falsy: ${value}`, async () => {
           await setupTests({
             bulkUploadStatus: 'NEW',
             currentEligibility: true,
@@ -182,7 +207,47 @@ describe('Establishment Class', () => {
           establishmentAuditSpy.resolves(true);
 
           expect(establishmentAuditSpy).to.have.been.called;
-          expect(establishment._payAndPensionsMiniFlowViewed).to.deep.equal(value);
+          expect(models.establishment.create).to.have.been.called;
+
+          const creationDocument = models.establishment.create.getCalls()[0].args[0];
+          expect(creationDocument).not.to.haveOwnProperty('payAndPensionsMiniFlowViewed');
+        });
+      });
+    });
+
+    describe('update establishment', () => {
+      it('should call the database to update payAndPensionsMiniFlowViewed when the value is true', async () => {
+        await setupTests({
+          bulkUploadStatus: 'UPDATE',
+          currentEligibility: true,
+          bulkUploaded: true,
+          propertiesToUpdate: [{ name: '_payAndPensionsMiniFlowViewed', value: true }],
+        });
+
+        establishmentAuditSpy.resolves(true);
+
+        expect(models.establishment.update).to.have.been.called;
+        const creationDocument = models.establishment.update.getCalls()[0].args[0];
+        expect(creationDocument).to.haveOwnProperty('payAndPensionsMiniFlowViewed', true);
+      });
+
+      const falsyValues = [null, undefined, false];
+
+      falsyValues.forEach((value) => {
+        it(`should NOT change payAndPensionsMiniFlowViewed when the value is falsy: ${value}`, async () => {
+          await setupTests({
+            bulkUploadStatus: 'UPDATE',
+            currentEligibility: true,
+            bulkUploaded: true,
+            propertiesToUpdate: [{ name: '_payAndPensionsMiniFlowViewed', value: value }],
+          });
+
+          establishmentAuditSpy.resolves(true);
+
+          expect(models.establishment.update).to.have.been.called;
+
+          const creationDocument = models.establishment.update.getCalls()[0].args[0];
+          expect(creationDocument).not.to.haveOwnProperty('payAndPensionsMiniFlowViewed');
         });
       });
     });
