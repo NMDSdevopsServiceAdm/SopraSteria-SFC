@@ -2363,12 +2363,12 @@ class WorkplaceCSVValidator {
 
     const parsedPercentage = parseFloat(pensionPercentage);
     const roundedTo2DecimalPlace = Math.round(parsedPercentage * 100) / 100;
-    const valueInAllowedRange = 3 <= roundedTo2DecimalPlace && roundedTo2DecimalPlace <= 100;
+    const valueInAllowedRange = 3 < roundedTo2DecimalPlace && roundedTo2DecimalPlace <= 100;
 
     if (Number.isNaN(parsedPercentage) || !valueInAllowedRange) {
       this._validationErrors.push(
         this._generateWarning(
-          'ACTUALCONT will be ignored as it should be a number between 3 and 100',
+          'ACTUALCONT will be ignored as it should be a number higher than 3 and no more than 100',
           'ACTUALCONT',
           'ACTUALCONT_WARNING',
         ),

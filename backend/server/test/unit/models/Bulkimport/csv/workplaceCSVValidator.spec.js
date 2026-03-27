@@ -855,12 +855,13 @@ describe('Bulk Upload - Establishment CSV', () => {
       const testCases = [
         { PENSION: '', ACTUALCONT: '', expected: null },
         // valid inputs
-        { PENSION: '1', ACTUALCONT: '3', expected: 3 },
+        { PENSION: '1', ACTUALCONT: '3.1', expected: 3.1 },
         { PENSION: '1', ACTUALCONT: '4.5', expected: 4.5 },
         { PENSION: '1', ACTUALCONT: '10.25', expected: 10.25 },
         { PENSION: '1', ACTUALCONT: '100', expected: 100 },
         // invalid inputs, should be ignored
         { PENSION: '1', ACTUALCONT: '2', expected: null },
+        { PENSION: '1', ACTUALCONT: '3.0', expected: null }, // has to be > 3
         { PENSION: '1', ACTUALCONT: '100.1', expected: null },
         { PENSION: '1', ACTUALCONT: '-10', expected: null },
         { PENSION: '1', ACTUALCONT: '0', expected: null },
@@ -2208,10 +2209,10 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(establishment.validationErrors).to.be.empty;
       });
 
-      const validValues = ['3', '3.5', '10.25', '100'];
+      const validValues = ['3.1', '3.5', '10.25', '100'];
 
       validValues.forEach((value) => {
-        it('should pass if the value is a number between 3 to 100', async () => {
+        it('should pass if the value is a number greater than 3 and less than or equal 100', async () => {
           establishmentRow.ACTUALCONT = value;
 
           const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -2219,7 +2220,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         });
       });
 
-      const outOfRangeValues = ['2', '101', '-10'];
+      const outOfRangeValues = ['2', '3', '3.00', '101', '-10'];
 
       outOfRangeValues.forEach((value) => {
         it('should add a warning and ignore if the value is a number out of the range of 3-100', async () => {
@@ -2232,7 +2233,7 @@ describe('Bulk Upload - Establishment CSV', () => {
               lineNumber: establishment.lineNumber,
               warnCode: 2540,
               warnType: 'ACTUALCONT_WARNING',
-              warning: 'ACTUALCONT will be ignored as it should be a number between 3 and 100',
+              warning: 'ACTUALCONT will be ignored as it should be a number higher than 3 and no more than 100',
               source: value,
               column: 'ACTUALCONT',
               name: establishmentRow.LOCALESTID,
