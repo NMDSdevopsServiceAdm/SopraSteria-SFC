@@ -33,6 +33,7 @@ describe('establishment model', () => {
         itemsPerPage: 20,
         pageIndex: 2,
         sortBy: 'staffNameDesc',
+        jobId: 10,
       });
 
       expect(models.worker.findAndCountAll).to.have.been.calledWithMatch({
@@ -43,6 +44,14 @@ describe('establishment model', () => {
         offset: 20 * 2,
         limit: 20,
         order: [['nameOrId', 'DESC']],
+        include: [
+          {
+            model: models.job,
+            as: 'mainJob',
+            attributes: ['title', 'id'],
+            where: { id: 10 },
+          },
+        ],
       });
     });
 
