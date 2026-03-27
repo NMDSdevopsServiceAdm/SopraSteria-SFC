@@ -1171,7 +1171,6 @@ class Establishment extends EntityValidator {
             howToPayForSleepIn: this._howToPayForSleepIn,
             travelTimePayOptionFK: this._travelTimePay?.id,
             travelTimePayRate: this._travelTimePay?.rate,
-            // payAndPensionsMiniFlowViewed: this._payAndPensionsMiniFlowViewed,
             ...(this._payAndPensionsMiniFlowViewed ? { payAndPensionsMiniFlowViewed: true } : {}),
           };
 
