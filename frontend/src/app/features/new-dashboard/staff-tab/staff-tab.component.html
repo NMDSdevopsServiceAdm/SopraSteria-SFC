@@ -17,13 +17,7 @@
           [returnToDash]="true"
           data-cy="total-staff-panel"
         ></app-total-staff-panel>
-        @if(workers?.length > 1){
-          <app-new-pill-with-link
-            [linkText]="'Update pay for multiple staff'"
-            [showNewPill]="showNewPill"
-            (clicked)="handleOnClick($event)"
-          ></app-new-pill-with-link>
-        }
+
         <app-staff-summary
           *ngIf="workers"
           [workplace]="workplace"
