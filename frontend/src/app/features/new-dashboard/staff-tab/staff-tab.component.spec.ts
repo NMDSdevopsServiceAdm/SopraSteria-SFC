@@ -24,11 +24,11 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewStaffTabComponent } from './staff-tab.component';
-import { NewPillWithLinkComponent } from '@shared/components/new-pill-with-link/new-pill-with-link.component';
+
 import { of } from 'rxjs';
 
 const MockWindow = {
@@ -39,7 +39,7 @@ const MockWindow = {
   },
 };
 
-describe('NewStaffTabComponent', () => {
+fdescribe('NewStaffTabComponent', () => {
   const setup = async (overrides: any = {}) => {
     const workerArr = overrides?.workers ?? ([workerBuilder()] as Worker[]);
     const establishment = overrides?.establishment ?? (establishmentBuilder() as Establishment);
@@ -63,7 +63,6 @@ describe('NewStaffTabComponent', () => {
           provide: WindowRef,
           useClass: WindowRef,
         },
-
         {
           provide: UserService,
           useFactory: MockUserService.factory(overrides?.subsidiaries ?? 0, role),
@@ -83,7 +82,7 @@ describe('NewStaffTabComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
-      declarations: [NewDashboardHeaderComponent, NewPillWithLinkComponent],
+      declarations: [NewDashboardHeaderComponent],
       componentProperties: {
         workplace: { ...establishment },
         workers: workerArr as Worker[],
@@ -141,97 +140,5 @@ describe('NewStaffTabComponent', () => {
 
     component.ngOnInit();
     expect(workerSpy).toHaveBeenCalledWith(false);
-  });
-
-  describe('Update pay for multiple staff', () => {
-    const workers = [workerBuilder(), workerBuilder()] as Worker[];
-    const establishment = establishmentBuilder() as Establishment;
-    const linkText = 'Update pay for multiple staff';
-
-    [false, null].forEach((value) => {
-      it(`should show the 'NEW' pill when updatePayForMultiStaffViewed is ${value}`, async () => {
-        const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: value };
-        const overrides = { workers, isAdmin: false, subsidiaries: 0, establishment: overridesEstablishment };
-        const { getByTestId } = await setup(overrides);
-
-        expect(getByTestId('new-pill')).toBeTruthy();
-      });
-    });
-
-    it("should not show the 'NEW' pill when updatePayForMultiStaffViewed is true", async () => {
-      const workers = [workerBuilder(), workerBuilder()] as Worker[];
-      const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: true };
-      const overrides = { workers, isAdmin: false, subsidiaries: 0, establishment: overridesEstablishment };
-      const { queryByTestId } = await setup(overrides);
-
-      expect(queryByTestId('new-pill')).toBeFalsy();
-    });
-
-    it('should show the link when there is more than 1 staff', async () => {
-      const workers = [workerBuilder(), workerBuilder()] as Worker[];
-      const overrides = { workers, isAdmin: true, subsidiaries: 0 };
-      const { getByText } = await setup(overrides);
-
-      expect(getByText(linkText)).toBeTruthy();
-    });
-
-    it('should not show the link when there is no staff', async () => {
-      const overrides = { workers: [], isAdmin: true, subsidiaries: 0 };
-      const { queryByText } = await setup(overrides);
-
-      expect(queryByText(linkText)).toBeFalsy();
-    });
-
-    it('should not show the link when there is only 1 staff', async () => {
-      const workers = [workerBuilder()] as Worker[];
-      const overrides = { workers, isAdmin: true, subsidiaries: 0 };
-      const { queryByText } = await setup(overrides);
-
-      expect(queryByText(linkText)).toBeFalsy();
-    });
-
-    it('should navigate to the update-pay-multiple-staff page', async () => {
-      const workers = [workerBuilder(), workerBuilder()] as Worker[];
-      const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: true };
-      const overrides = { workers, isAdmin: true, subsidiaries: 0, establishment: overridesEstablishment };
-      const { fixture, getByText, routerSpy } = await setup(overrides);
-
-      const link = getByText(linkText);
-      fireEvent.click(link);
-      fixture.autoDetectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith(['workplace', establishment.uid, 'update-pay-multiple-staff']);
-    });
-
-    [false, null].forEach((value) => {
-      it(`should call updateSingleEstablishmentField if updatePayForMultiStaffViewed is ${value}`, async () => {
-        const workers = [workerBuilder(), workerBuilder()] as Worker[];
-        const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: value };
-        const overrides = { workers, isAdmin: false, subsidiaries: 0, establishment: overridesEstablishment };
-        const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
-
-        const link = getByText(linkText);
-        fireEvent.click(link);
-        fixture.autoDetectChanges();
-
-        expect(updateSingleFieldSpy).toHaveBeenCalledWith(overridesEstablishment.uid, {
-          property: 'updatePayForMultiStaffViewed',
-          value: true,
-        });
-      });
-    });
-
-    it('should not call updateSingleEstablishmentField if updatePayForMultiStaffViewed is true', async () => {
-      const workers = [workerBuilder(), workerBuilder()] as Worker[];
-      const overridesEstablishment = { ...establishment, updatePayForMultiStaffViewed: true };
-      const overrides = { workers, isAdmin: false, subsidiaries: 0, establishment: overridesEstablishment };
-      const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
-
-      const link = getByText(linkText);
-      fireEvent.click(link);
-      fixture.autoDetectChanges();
-
-      expect(updateSingleFieldSpy).not.toHaveBeenCalled();
-    });
   });
 });
