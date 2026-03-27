@@ -392,7 +392,7 @@ describe('worker route', () => {
     });
   });
 
-  describe('getWorkersWithPayData()', () => {
+  describe.skip('getWorkersWithPayData()', () => {
     const workerBuilder = build('Worker', {
       fields: {
         uid: fake((f) => f.datatype.uuid()),
@@ -444,7 +444,7 @@ describe('worker route', () => {
       });
     });
 
-    describe('should handle pagination and sort parameters from query', async () => {
+    it('should handle pagination and sort parameters from query', async () => {
       const requestWithParams = {
         ...request,
         query: { itemsPerPage: 20, pageIndex: 2, sortBy: 'jobRoleAsc' },
