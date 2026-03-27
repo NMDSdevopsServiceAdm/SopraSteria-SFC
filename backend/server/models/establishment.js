@@ -2001,7 +2001,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getWorkersWithPayData = async function ({
+  Establishment.fetchWorkersWithPayData = async function ({
     establishmentId,
     itemsPerPage = 15,
     pageIndex = 0,
