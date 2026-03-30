@@ -2,21 +2,28 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { SortStaffOptions } from '@core/model/establishment.model';
-import { render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { PaginationComponent } from '../pagination/pagination.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { TablePaginationWrapperComponent } from './table-pagination-wrapper.component';
+import { NewPillWithLinkComponent } from '../new-pill-with-link/new-pill-with-link.component';
+import { provideHttpClient } from '@angular/common/http';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { of } from 'rxjs';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('TablePaginationWrapperCompnent', () => {
+  const workplaceUid = 'some-uuid';
   const setup = async (overrides: any = {}) => {
     const totalCount = overrides.totalCount ?? 20;
     const setQueryInParams = overrides.setQueryInParams ?? false;
 
     const setupTools = await render(TablePaginationWrapperComponent, {
       imports: [RouterModule, ReactiveFormsModule],
-      declarations: [PaginationComponent, SearchInputComponent],
+      declarations: [PaginationComponent, SearchInputComponent, NewPillWithLinkComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
       componentProperties: {
         totalCount,
         setQueryInParams,
@@ -31,6 +38,10 @@ describe('TablePaginationWrapperCompnent', () => {
         searchTerm: '',
         currentPageIndex: overrides.currentPageIndex ?? 0,
         maintainedPageIndex: overrides.maintainedPageIndex ?? null,
+        wdfView: overrides.wdfView ?? false,
+        showNewPill: overrides.showNewPill ?? false,
+        showUpdatePayForMultipleStaffLink: overrides.showUpdatePayForMultipleStaffLink ?? false,
+        workplaceUid,
       },
     });
 
@@ -45,6 +56,11 @@ describe('TablePaginationWrapperCompnent', () => {
     const handleSearchSpy = spyOn(component, 'handleSearch').and.callThrough();
     const handlePageUpdateSpy = spyOn(component, 'handlePageUpdate').and.callThrough();
 
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const updateSingleFieldSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+      of(null),
+    );
+
     return {
       ...setupTools,
       component,
@@ -52,6 +68,7 @@ describe('TablePaginationWrapperCompnent', () => {
       handleSearchSpy,
       handlePageUpdateSpy,
       routerSpy,
+      updateSingleFieldSpy,
     };
   };
 
@@ -198,6 +215,213 @@ describe('TablePaginationWrapperCompnent', () => {
       const { component } = await setup({ currentPageIndex: 0 });
 
       expect(component.currentPageIndex).toEqual(0);
+    });
+  });
+
+  describe('Update pay for multiple staff', () => {
+    const linkText = 'Update pay for multiple staff';
+
+    describe('when the search bar is showing', () => {
+      it('should show updatePayForMultipleStaffLinkOnTopOfSearchBar with the new pill when showNewPill is true and totalCount is above itemsPerPage', async () => {
+        const overrides = {
+          showNewPill: true,
+          showUpdatePayForMultipleStaffLink: true,
+          totalCount: 16,
+          wdfView: false,
+        };
+
+        const { getByTestId, queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = getByTestId('updatePayForMultipleStaffLinkOnTopOfSearchBar');
+
+        expect(newPillWithLink).toBeTruthy();
+        expect(within(newPillWithLink).getByText(linkText)).toBeTruthy();
+        expect(within(newPillWithLink).queryByTestId('new-pill')).toBeTruthy();
+        expect(queryByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar')).toBeFalsy();
+      });
+
+      it('should show updatePayForMultipleStaffLinkOnTopOfSearchBar without the new pill when showNewPill is false totalCount is above itemsPerPage', async () => {
+        const overrides = {
+          showNewPill: false,
+          showUpdatePayForMultipleStaffLink: true,
+          totalCount: 16,
+          wdfView: false,
+        };
+
+        const { getByTestId, queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = getByTestId('updatePayForMultipleStaffLinkOnTopOfSearchBar');
+
+        expect(newPillWithLink).toBeTruthy();
+        expect(within(newPillWithLink).getByText(linkText)).toBeTruthy();
+        expect(within(newPillWithLink).queryByTestId('new-pill')).toBeFalsy();
+        expect(queryByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar')).toBeFalsy();
+      });
+
+      it('should not show updatePayForMultipleStaffLinkOnTopOfSearchBar when totalCount is below itemsPerPage', async () => {
+        const overrides = { totalCount: 6, wdfView: false };
+
+        const { queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = queryByTestId('updatePayForMultipleStaffLinkOnTopOfSearchBar');
+
+        expect(newPillWithLink).toBeFalsy();
+      });
+
+      it('should not show updatePayForMultipleStaffLinkOnTopOfSearchBar when totalCount is above itemsPerPage and wdfView is true', async () => {
+        const overrides = { totalCount: 16, wdfView: true };
+
+        const { queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = queryByTestId('updatePayForMultipleStaffLinkOnTopOfSearchBar');
+
+        expect(newPillWithLink).toBeFalsy();
+      });
+
+      it('should not show updatePayForMultipleStaffLinkOnTopOfSearchBar when showUpdatePayForMultipleStaffLink is false', async () => {
+        const overrides = { showUpdatePayForMultipleStaffLink: false, totalCount: 16, wdfView: false };
+
+        const { queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = queryByTestId('updatePayForMultipleStaffLinkOnTopOfSearchBar');
+
+        expect(newPillWithLink).toBeFalsy();
+      });
+
+      it('should navigate to the update-pay-multiple-staff page', async () => {
+        const overrides = { showUpdatePayForMultipleStaffLink: true, totalCount: 16, wdfView: false };
+        const { component, fixture, getByTestId, routerSpy } = await setup(overrides);
+
+        const newPillWithLink = getByTestId('updatePayForMultipleStaffLinkOnTopOfSearchBar');
+        const link = within(newPillWithLink).getByText(linkText);
+
+        fireEvent.click(link);
+        fixture.autoDetectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['workplace', component.workplaceUid, 'update-pay-multiple-staff']);
+      });
+    });
+
+    describe('when the search bar is not showing', () => {
+      it('should show updatePayForMultipleStaffLinkWhenNoSearchBar with the new pill when showNewPill is true, totalCount is below itemsPerPage', async () => {
+        const overrides = { showNewPill: true, showUpdatePayForMultipleStaffLink: true, totalCount: 6, wdfView: false };
+
+        const { getByTestId, queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = getByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar');
+
+        expect(newPillWithLink).toBeTruthy();
+        expect(within(newPillWithLink).getByText(linkText)).toBeTruthy();
+        expect(within(newPillWithLink).getByTestId('new-pill')).toBeTruthy();
+        expect(queryByTestId('updatePayForMultipleStaffLinkOnTopOfSearchBar')).toBeFalsy();
+      });
+
+      it('should show updatePayForMultipleStaffLinkWhenNoSearchBar without the new pill when showNewPill is false, when totalCount is below itemsPerPage', async () => {
+        const overrides = {
+          showNewPill: false,
+          showUpdatePayForMultipleStaffLink: true,
+          totalCount: 6,
+          wdfView: false,
+        };
+
+        const { getByTestId, queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = getByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar');
+
+        expect(newPillWithLink).toBeTruthy();
+        expect(within(newPillWithLink).getByText(linkText)).toBeTruthy();
+        expect(within(newPillWithLink).queryByTestId('new-pill')).toBeFalsy();
+        expect(queryByTestId('updatePayForMultipleStaffLinkOnTopOfSearchBar')).toBeFalsy();
+      });
+
+      it('should show updatePayForMultipleStaffLinkWhenNoSearchBar when totalCount is the same as itemsPerPage', async () => {
+        const overrides = { showUpdatePayForMultipleStaffLink: true, totalCount: 15, wdfView: false };
+
+        const { getByTestId } = await setup(overrides);
+
+        const newPillWithLink = getByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar');
+
+        expect(newPillWithLink).toBeTruthy();
+      });
+
+      it('should not show updatePayForMultipleStaffLinkWhenNoSearchBar when showUpdatePayForMultipleStaffLink is false', async () => {
+        const overrides = { showUpdatePayForMultipleStaffLink: false, totalCount: 13, wdfView: false };
+
+        const { queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = queryByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar');
+
+        expect(newPillWithLink).toBeFalsy();
+      });
+
+      it('should not show updatePayForMultipleStaffLinkWhenNoSearchBar when totalCount is above itemsPerPage', async () => {
+        const overrides = { showUpdatePayForMultipleStaffLink: true, totalCount: 16, wdfView: false };
+
+        const { queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = queryByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar');
+
+        expect(newPillWithLink).toBeFalsy();
+      });
+
+      it('should not show updatePayForMultipleStaffLinkWhenNoSearchBar when totalCount is below itemsPerPage and wdfView is true', async () => {
+        const overrides = { showUpdatePayForMultipleStaffLink: true, totalCount: 6, wdfView: true };
+
+        const { queryByTestId } = await setup(overrides);
+
+        const newPillWithLink = queryByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar');
+
+        expect(newPillWithLink).toBeFalsy();
+      });
+
+      it('should navigate to the update-pay-multiple-staff page', async () => {
+        const overrides = { showUpdatePayForMultipleStaffLink: true, totalCount: 8, wdfView: false };
+        const { fixture, getByTestId, routerSpy } = await setup(overrides);
+
+        const newPillWithLink = getByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar');
+        const link = within(newPillWithLink).getByText(linkText);
+
+        fireEvent.click(link);
+        fixture.autoDetectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['workplace', workplaceUid, 'update-pay-multiple-staff']);
+      });
+    });
+
+    it('should call updateSingleEstablishmentField if showNewPill is true', async () => {
+      const { fixture, getByText, updateSingleFieldSpy } = await setup({
+        showNewPill: true,
+        showUpdatePayForMultipleStaffLink: true,
+        totalCount: 15,
+        wdfView: false,
+      });
+
+      const link = getByText(linkText);
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(updateSingleFieldSpy).toHaveBeenCalledWith(workplaceUid, {
+        property: 'updatePayForMultiStaffViewed',
+        value: true,
+      });
+    });
+
+    [false, null].forEach((value) => {
+      it(`should not call updateSingleEstablishmentField if showNewPill is ${value}`, async () => {
+        const overrides = {
+          showNewPill: value,
+          showUpdatePayForMultipleStaffLink: true,
+          totalCount: 15,
+          wdfView: false,
+        };
+        const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
+
+        const link = getByText(linkText);
+        fireEvent.click(link);
+        fixture.autoDetectChanges();
+
+        expect(updateSingleFieldSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });

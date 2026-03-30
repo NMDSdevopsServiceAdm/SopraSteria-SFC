@@ -1,26 +1,23 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-view-subsidiary-staff-records',
   templateUrl: './view-subsidiary-staff-records.component.html',
   standalone: false,
 })
-export class ViewSubsidiaryStaffRecordsComponent implements OnInit, OnDestroy {
+export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
   public workplace: Establishment;
   public workers: Worker[];
   public workerCount: number;
   public canAddWorker: boolean;
   public staffLastUpdatedDate: string;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -45,9 +42,5 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit, OnDestroy {
   private getStaffLastUpdatedDate(): string {
     const lastUpdatedDates = this.workers.map((worker) => new Date(worker.updated).getTime());
     return new Date(Math.max(...lastUpdatedDates)).toISOString();
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }

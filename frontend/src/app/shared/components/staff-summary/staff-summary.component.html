@@ -9,6 +9,10 @@
   (fetchData)="getPageOfWorkers($event)"
   [label]="searchLabel"
   [maintainedPageIndex]="maintainedPageIndex"
+  [wdfView]="wdfView"
+  [showNewPill]="showNewPill"
+  [showUpdatePayForMultipleStaffLink]="true"
+  [workplaceUid]="workplaceUid"
 >
   <table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
     <thead class="govuk-table__head">
