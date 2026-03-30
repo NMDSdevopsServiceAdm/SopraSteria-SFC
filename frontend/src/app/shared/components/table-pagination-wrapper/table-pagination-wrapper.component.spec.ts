@@ -240,7 +240,7 @@ describe('TablePaginationWrapperCompnent', () => {
         expect(queryByTestId('updatePayForMultipleStaffLinkWhenNoSearchBar')).toBeFalsy();
       });
 
-      it('should show updatePayForMultipleStaffLinkOnTopOfSearchBar without the new pill when showNewPill is false totalCount is above itemsPerPage', async () => {
+      it('should show updatePayForMultipleStaffLinkOnTopOfSearchBar without the new pill when showNewPill is false and totalCount is above itemsPerPage', async () => {
         const overrides = {
           showNewPill: false,
           showUpdatePayForMultipleStaffLink: true,

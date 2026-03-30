@@ -82,7 +82,7 @@ describe('NewStaffTabComponent', () => {
       ],
       declarations: [NewDashboardHeaderComponent],
       componentProperties: {
-        workplace: { ...establishment },
+        workplace: establishment,
         workers: workerArr as Worker[],
         workerCount: workerArr.length,
       },
