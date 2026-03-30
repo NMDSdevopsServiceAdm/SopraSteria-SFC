@@ -147,6 +147,7 @@ import { ExternalTrainingProviderInputComponent } from './components/external-tr
 import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
 import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.pipe';
 import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
+import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pill-with-link.component';
 
 @NgModule({
   imports: [
@@ -300,6 +301,7 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
+    NewPillWithLinkComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -436,6 +438,7 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
     ShowTrainingValidityPipe,
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
+    NewPillWithLinkComponent,
   ],
   providers: [
     DialogService,

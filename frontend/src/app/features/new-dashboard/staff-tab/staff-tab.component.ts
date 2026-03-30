@@ -8,9 +8,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
-    selector: 'app-new-staff-tab',
-    templateUrl: './staff-tab.component.html',
-    standalone: false
+  selector: 'app-new-staff-tab',
+  templateUrl: './staff-tab.component.html',
+  standalone: false,
 })
 export class NewStaffTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
@@ -32,7 +32,6 @@ export class NewStaffTabComponent implements OnInit, OnDestroy {
     this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
     this.breadcrumbService.show(JourneyType.STAFF_RECORDS_TAB);
   }
-
 
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();

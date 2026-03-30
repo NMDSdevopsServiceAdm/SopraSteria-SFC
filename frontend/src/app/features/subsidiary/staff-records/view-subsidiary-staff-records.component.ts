@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -8,9 +8,9 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
-    selector: 'app-view-subsidiary-staff-records',
-    templateUrl: './view-subsidiary-staff-records.component.html',
-    standalone: false
+  selector: 'app-view-subsidiary-staff-records',
+  templateUrl: './view-subsidiary-staff-records.component.html',
+  standalone: false,
 })
 export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
   public workplace: Establishment;

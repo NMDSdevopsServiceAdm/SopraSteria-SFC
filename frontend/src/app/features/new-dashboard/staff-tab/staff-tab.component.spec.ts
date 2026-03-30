@@ -38,11 +38,11 @@ const MockWindow = {
 };
 
 describe('NewStaffTabComponent', () => {
-  const setup = async (worker = true, isAdmin = true, subsidiaries = 0) => {
-    const workerArr = worker ? ([workerBuilder()] as Worker[]) : [];
-    const establishment = establishmentBuilder() as Establishment;
-    const role = isAdmin ? Roles.Admin : Roles.Edit;
-    const { fixture, getByTestId, queryByTestId } = await render(NewStaffTabComponent, {
+  const setup = async (overrides: any = {}) => {
+    const workerArr = overrides?.workers ?? ([workerBuilder()] as Worker[]);
+    const establishment = overrides?.establishment ?? (establishmentBuilder() as Establishment);
+    const role = overrides?.isAdmin ? Roles.Admin : Roles.Edit;
+    const setupTools = await render(NewStaffTabComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
@@ -61,15 +61,14 @@ describe('NewStaffTabComponent', () => {
           provide: WindowRef,
           useClass: WindowRef,
         },
-
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, role),
+          useFactory: MockUserService.factory(overrides?.subsidiaries ?? 0, role),
           deps: [HttpClient],
         },
         {
           provide: AuthService,
-          useFactory: MockAuthService.factory(true, isAdmin),
+          useFactory: MockAuthService.factory(true, overrides?.isAdmin),
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
@@ -89,17 +88,15 @@ describe('NewStaffTabComponent', () => {
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const workerService = TestBed.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
     return {
       component,
-      getByTestId,
-      queryByTestId,
+      ...setupTools,
       workerSpy,
-      fixture,
     };
   };
 
@@ -109,21 +106,24 @@ describe('NewStaffTabComponent', () => {
   });
 
   it('should show the no staff records section if there are no staff records', async () => {
-    const { getByTestId, queryByTestId } = await setup(false);
+    const overrides = { workers: [], isAdmin: true, subsidiaries: 0 };
+    const { getByTestId, queryByTestId } = await setup(overrides);
 
     expect(getByTestId('no-staff-records')).toBeTruthy();
     expect(queryByTestId('staff-records')).toBeFalsy();
   });
 
   it('should show the staff records section if there are staff records', async () => {
-    const { getByTestId, queryByTestId } = await setup();
+    const overrides = { isAdmin: true, subsidiaries: 0 };
+    const { getByTestId, queryByTestId } = await setup(overrides);
 
     expect(getByTestId('staff-records')).toBeTruthy();
     expect(queryByTestId('no-staff-records')).toBeFalsy();
   });
 
   it('should call setAddStaffRecordInProgress when initialising component', async () => {
-    const { component, workerSpy } = await setup();
+    const overrides = { isAdmin: true, subsidiaries: 0 };
+    const { component, workerSpy } = await setup(overrides);
 
     component.ngOnInit();
     expect(workerSpy).toHaveBeenCalledWith(false);

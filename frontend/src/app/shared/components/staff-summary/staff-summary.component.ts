@@ -10,11 +10,14 @@ import { WorkerService } from '@core/services/worker.service';
 import { StaffSummaryDirective } from '@shared/directives/staff-summary/staff-summary.directive';
 
 @Component({
-    selector: 'app-staff-summary',
-    templateUrl: './staff-summary.component.html',
-    standalone: false
+  selector: 'app-staff-summary',
+  templateUrl: './staff-summary.component.html',
+  standalone: false,
 })
 export class StaffSummaryComponent extends StaffSummaryDirective implements OnInit {
+  public showNewPill: boolean = false;
+  public workplaceUid: string;
+
   constructor(
     protected permissionsService: PermissionsService,
     protected workerService: WorkerService,
@@ -28,7 +31,10 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     super(permissionsService, workerService, router, route, establishmentService, tabsService, sortByService);
   }
 
-  protected init(): void {}
+  protected init(): void {
+    this.showNewPill = !this.workplace?.updatePayForMultiStaffViewed;
+    this.workplaceUid = this.workplace.uid;
+  }
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
     event.preventDefault();

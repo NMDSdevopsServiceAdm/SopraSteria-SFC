@@ -27,11 +27,12 @@ import { NewDashboardHeaderComponent } from '../../../shared/components/new-dash
 import { ViewSubsidiaryStaffRecordsComponent } from './view-subsidiary-staff-records.component';
 
 describe('ViewSubsidiaryStaffRecordsComponent', () => {
-  const setup = async (workers = [workerBuilder()] as Worker[]) => {
+  const setup = async (overrides: any = {}) => {
+    const workers = overrides?.workers ?? ([workerBuilder()] as Worker[]);
     const workerArr = workers;
-    const establishment = establishmentBuilder() as Establishment;
+    const establishment = overrides?.establishment ?? (establishmentBuilder() as Establishment);
     const role = Roles.Edit;
-    const { fixture, getByTestId, queryByTestId } = await render(ViewSubsidiaryStaffRecordsComponent, {
+    const setupTools = await render(ViewSubsidiaryStaffRecordsComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         {
@@ -81,17 +82,15 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
       declarations: [NewDashboardHeaderComponent],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const workerService = TestBed.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
     return {
       component,
-      getByTestId,
-      queryByTestId,
+      ...setupTools,
       workerSpy,
-      fixture,
     };
   };
 
@@ -101,7 +100,7 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
   });
 
   it('should show the no staff records section if there are no staff records', async () => {
-    const { getByTestId, queryByTestId } = await setup([]);
+    const { getByTestId, queryByTestId } = await setup({ workers: [] });
 
     expect(getByTestId('no-staff-records')).toBeTruthy();
     expect(queryByTestId('staff-records')).toBeFalsy();
@@ -125,7 +124,7 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
     it('should set staffLastUpdatedDate as worker updated date when only one worker', async () => {
       const workers = [workerBuilder()] as Worker[];
 
-      const { component, workerSpy } = await setup(workers);
+      const { component } = await setup({ workers });
       expect(component.staffLastUpdatedDate).toBe(workers[0].updated);
     });
 
@@ -135,14 +134,14 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
       workers[1].updated = '2024-05-08T06:50:45.882Z';
       workers[2].updated = '2024-05-03T11:50:45.882Z';
 
-      const { component } = await setup(workers);
+      const { component } = await setup({ workers });
       expect(component.staffLastUpdatedDate).toBe(workers[1].updated);
     });
 
     it('should not set staffLastUpdatedDate when no workers', async () => {
       const workers = [] as Worker[];
 
-      const { component } = await setup(workers);
+      const { component } = await setup({ workers });
       expect(component.staffLastUpdatedDate).toBeFalsy();
     });
   });
