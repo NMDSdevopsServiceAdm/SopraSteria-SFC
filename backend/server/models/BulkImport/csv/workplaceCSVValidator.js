@@ -4,6 +4,15 @@ const clonedeep = require('lodash.clonedeep');
 const lodash = require('lodash');
 const moment = require('moment');
 const { sanitisePostcode } = require('../../../utils/postcodeSanitizer');
+const { workplaceHeaders } = require('../../../routes/establishments/bulkUpload/data/workplaceHeaders');
+const {
+  extractPensionContributionPercentage,
+  optOutPensionMapping,
+  extractSleepInPay,
+  sleepInsMapping,
+  sickPayHolidayAndPensionMapping,
+  extractTravelTimePayRate,
+} = require('../../classes/helpers/workplaceCSVHelper');
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 const Establishment = require('../../classes/establishment').Establishment;
 
@@ -31,11 +40,7 @@ function isPerm(worker) {
   return employedContractStatusIds.includes(worker.contractTypeId);
 }
 
-const _headers_v1 =
-  'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,' +
-  'PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,' +
-  'SERVICEUSERS,OTHERUSERDESC,DHA,DHAACTIVITIES,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,' +
-  'REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,CWPUSEDESC,BENEFITS,SICKPAY,PENSION,HOLIDAY';
+const _headers_v1 = workplaceHeaders;
 
 class WorkplaceCSVValidator {
   constructor(currentLine, lineNumber, allCurrentEstablishments, mappings) {
@@ -87,6 +92,9 @@ class WorkplaceCSVValidator {
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._sickPay = null;
     this._pensionContribution = null;
+    this._pensionContributionPercentage = null;
+    this._staffOptOutOfWorkplacePension = null;
+
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkforcePathwayAwareness = null;
     this._careWorkforcePathwayUse = null;
@@ -94,6 +102,11 @@ class WorkplaceCSVValidator {
     this._staffDoDelegatedHealthcareActivities = null;
     // { knowWhatActivities, activities }
     this._staffWhatKindDelegatedHealthcareActivities = null;
+
+    this._offerSleepIn = null;
+    this._howToPayForSleepIn = null;
+    this._travelTimePayOption = null;
+    this._travelTimePayRate = null;
 
     this._id = null;
 
@@ -297,6 +310,56 @@ class WorkplaceCSVValidator {
   static get DHAACTIVITIES_WARNING() {
     return 2530;
   }
+
+  static get ACTUALCONT_WARNING() {
+    return 2540;
+  }
+  static get ACTUALCONT_PENSION_WARNING() {
+    return 2541;
+  }
+
+  static get OPTOUTPEN_WARNING() {
+    return 2550;
+  }
+
+  static get SLEEPINS_WARNING() {
+    return 2560;
+  }
+  static get SLEEPINS_MAIN_SERVICE_WARNING() {
+    return 2561;
+  }
+
+  static get SLEEPINPAY_WARNING() {
+    return 2570;
+  }
+
+  static get SLEEPINPAY_MAIN_SERVICE_WARNING() {
+    return 2571;
+  }
+
+  static get SLEEPINPAY_SLEEPIN_WARNING() {
+    return 2572;
+  }
+
+  static get TRAVELTIME_WARNING() {
+    return 2580;
+  }
+  static get TRAVELTIME_MAIN_SERVICE_WARNING() {
+    return 2581;
+  }
+
+  static get TTDIFFRATE_WARNING() {
+    return 2590;
+  }
+
+  static get TTDIFFRATE_MAIN_SERVICE_WARNING() {
+    return 2591;
+  }
+
+  static get TTDIFFRATE_TRAVELTIME_WARNING() {
+    return 2592;
+  }
+
   /** end error codes */
 
   /** validator properties */
@@ -506,6 +569,7 @@ class WorkplaceCSVValidator {
       column: columnName,
     };
   }
+
   _getIdFromBulkUploadCode(buCode, mappings) {
     const match = mappings.find((mapping) => mapping.bulkUploadCode == buCode);
     return match?.id ? { id: match.id } : null;
@@ -2277,6 +2341,187 @@ class WorkplaceCSVValidator {
     }
   }
 
+  _validatePensionContributionPercentage() {
+    const pensionPercentage = this._currentLine.ACTUALCONT;
+
+    if (pensionPercentage === '') {
+      return true;
+    }
+
+    const pensionAnswerIsYes = this._pensionContribution === 1;
+
+    if (!pensionAnswerIsYes) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'Value entered for ACTUALCONT will be ignored as the value for PENSION is not "1" (YES)',
+          'ACTUALCONT',
+          'ACTUALCONT_PENSION_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    const parsedPercentage = parseFloat(pensionPercentage);
+    const roundedTo2DecimalPlace = Math.round(parsedPercentage * 100) / 100;
+    const valueInAllowedRange = 3 < roundedTo2DecimalPlace && roundedTo2DecimalPlace <= 100;
+
+    if (Number.isNaN(parsedPercentage) || !valueInAllowedRange) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'ACTUALCONT will be ignored as it should be a number higher than 3 and no more than 100',
+          'ACTUALCONT',
+          'ACTUALCONT_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    this._pensionContributionPercentage = roundedTo2DecimalPlace;
+    return true;
+  }
+
+  _validateStaffOptOutOfWorkplacePension() {
+    const allowValues = ['1', '2', '999'];
+
+    const optOutOfPension = this._currentLine.OPTOUTPEN;
+    if (optOutOfPension === '') {
+      return true;
+    }
+
+    if (!allowValues.includes(optOutOfPension)) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for OPTOUTPEN is incorrect and will be ignored',
+          'OPTOUTPEN',
+          'OPTOUTPEN_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    this._staffOptOutOfWorkplacePension = optOutOfPension;
+    return true;
+  }
+
+  _validateSleepIn() {
+    const allowValues = ['1', '2', '999'];
+
+    const offerSleepIn = this._currentLine.SLEEPINS;
+    if (offerSleepIn === '') {
+      return true;
+    }
+
+    if (!allowValues.includes(offerSleepIn)) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for SLEEPINS is incorrect and will be ignored',
+          'SLEEPINS',
+          'SLEEPINS_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    this._offerSleepIn = offerSleepIn;
+    return true;
+  }
+
+  _validateSleepInPay() {
+    const allowValues = ['1', '2', '999'];
+
+    const howToPayForSleepIn = this._currentLine.SLEEPINPAY;
+    if (howToPayForSleepIn === '') {
+      return true;
+    }
+
+    const sleepInValueIsYes = this._currentLine.SLEEPINS === '1';
+    if (!sleepInValueIsYes) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for SLEEPINPAY will be ignored as the code for SLEEPIN is not set to 1 (Yes)',
+          'SLEEPINPAY',
+          'SLEEPINPAY_SLEEPIN_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    if (!allowValues.includes(howToPayForSleepIn)) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for SLEEPINPAY is incorrect and will be ignored',
+          'SLEEPINPAY',
+          'SLEEPINPAY_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    this._howToPayForSleepIn = howToPayForSleepIn;
+    return true;
+  }
+
+  _validateTravelTimePay() {
+    const allowedTravelTimePayValues = this.mappings.travelTimePayOptions.map((option) =>
+      option.bulkUploadCode.toString(),
+    );
+
+    const travelTimePayOption = this._currentLine.TRAVELTIME;
+
+    if (travelTimePayOption === '') {
+      return true;
+    }
+
+    const travelTimePayIsValid = allowedTravelTimePayValues.includes(travelTimePayOption);
+    if (!travelTimePayIsValid) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'The code you have entered for TRAVELTIME is incorrect and will be ignored',
+          'TRAVELTIME',
+          'TRAVELTIME_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    this._travelTimePayOption = parseInt(travelTimePayOption);
+  }
+
+  _validateTravelTimePayRate() {
+    const differentPayRate = this._currentLine.TTDIFFRATE;
+    if (differentPayRate == '') {
+      return true;
+    }
+
+    if (this._travelTimePayOption !== 3) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'TTDIFFRATE will be ignored as TRAVELTIME is not 3 (A different travel time rate)',
+          'TTDIFFRATE',
+          'TTDIFFRATE_TRAVELTIME_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    const parsedPayRate = parseFloat(differentPayRate);
+    const roundedTo2DecimalPlace = Math.round(parsedPayRate * 100) / 100;
+    const payRateIsInRange = 2.5 <= roundedTo2DecimalPlace && roundedTo2DecimalPlace <= 200;
+
+    if (!payRateIsInRange) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'TTDIFFRATE will be ignored as it should be between £2.5 and £200',
+          'TTDIFFRATE',
+          'TTDIFFRATE_WARNING',
+        ),
+      );
+      return false;
+    }
+
+    this._travelTimePayRate = roundedTo2DecimalPlace;
+  }
+
   _validateNoChange() {
     let localValidationErrors = [];
     var thisEstablishment = this._allCurrentEstablishments.find(
@@ -2544,6 +2789,92 @@ class WorkplaceCSVValidator {
   _serviceCanDoDelegatedHealthcareActivities(serviceId) {
     const service = this.mappings.services?.find((service) => service.id === serviceId);
     return service?.canDoDelegatedHealthcareActivities;
+  }
+
+  _crossCheckMainServiceWithSleepIns() {
+    const sleepInHasValue = this._offerSleepIn || this._howToPayForSleepIn;
+
+    const mainServiceIdFromInput = this._mainService?.id;
+    const mainService = this.mappings.services?.find((service) => service.id === mainServiceIdFromInput);
+
+    const shouldSeeSleepInQuestions = this._mainServiceShouldSeeSleepInQuestions(mainService);
+
+    const shouldRaiseWarning = sleepInHasValue & !shouldSeeSleepInQuestions;
+
+    if (!shouldRaiseWarning) {
+      return;
+    }
+
+    if (this._offerSleepIn) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'Value entered for SLEEPINS will be ignored as main service does not fall in the correct category',
+          'SLEEPINS',
+          'SLEEPINS_MAIN_SERVICE_WARNING',
+        ),
+      );
+
+      this._offerSleepIn = null;
+    }
+
+    if (this._howToPayForSleepIn) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'Value entered for SLEEPINPAY will be ignored as main service does not fall in the correct category',
+          'SLEEPINPAY',
+          'SLEEPINPAY_MAIN_SERVICE_WARNING',
+        ),
+      );
+
+      this._howToPayForSleepIn = null;
+    }
+  }
+
+  _crossCheckMainServiceWithTravelTimePay() {
+    const travelTimePayHasValue = this._travelTimePayOption || this._travelTimePayRate;
+
+    const mainServiceIdFromInput = this._mainService?.id;
+    const mainService = this.mappings.services?.find((service) => service.id === mainServiceIdFromInput);
+
+    const shouldSeeTravelTimePayQuestions = this._mainServiceShouldSeeTravelPayQuestion(mainService);
+
+    const shouldRaiseWarning = travelTimePayHasValue & !shouldSeeTravelTimePayQuestions;
+
+    if (!shouldRaiseWarning) {
+      return;
+    }
+
+    if (this._travelTimePayOption) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'Value entered for TRAVELTIME will be ignored as main service does not fall in the correct category',
+          'TRAVELTIME',
+          'TRAVELTIME_MAIN_SERVICE_WARNING',
+        ),
+      );
+
+      this._travelTimePayOption = null;
+    }
+
+    if (this._travelTimePayRate) {
+      this._validationErrors.push(
+        this._generateWarning(
+          'Value entered for TTDIFFRATE will be ignored as main service does not fall in the correct category',
+          'TTDIFFRATE',
+          'TTDIFFRATE_MAIN_SERVICE_WARNING',
+        ),
+      );
+
+      this._travelTimePayRate = null;
+    }
+  }
+
+  _mainServiceShouldSeeSleepInQuestions(mainService) {
+    return [1, 2].includes(mainService?.payAndPensionsGroup);
+  }
+
+  _mainServiceShouldSeeTravelPayQuestion(mainService) {
+    return mainService?.payAndPensionsGroup === 1;
   }
 
   _transformAllServices() {
@@ -2900,6 +3231,52 @@ class WorkplaceCSVValidator {
     this._pensionContribution = mapping[pension];
   }
 
+  _transformStaffOptOutOfWorkplacePension() {
+    const mapping = {
+      1: 'Yes',
+      2: 'No',
+      999: "Don't know",
+    };
+
+    this._staffOptOutOfWorkplacePension = mapping[this._staffOptOutOfWorkplacePension] ?? null;
+  }
+
+  _transformOfferSleepIn() {
+    const mapping = {
+      1: 'Yes',
+      2: 'No',
+      999: "Don't know",
+    };
+
+    this._offerSleepIn = mapping[this._offerSleepIn] ?? null;
+  }
+
+  _transformHowToPayForSleepIn() {
+    const mapping = {
+      1: 'Hourly rate',
+      2: 'Flat rate',
+      999: 'I do not know',
+    };
+
+    this._howToPayForSleepIn = mapping[this._howToPayForSleepIn] ?? null;
+  }
+
+  _transformTravelTimePay() {
+    const optionsMapping = this.mappings.travelTimePayOptions;
+    const matchedOption = optionsMapping.find((option) => option.bulkUploadCode === this._travelTimePayOption);
+    if (!matchedOption?.id) {
+      this._travelTimePay = null;
+      return;
+    }
+
+    if (!matchedOption?.includeRate) {
+      this._travelTimePay = { id: matchedOption.id, rate: null };
+    }
+
+    const travelTimePayRate = this._travelTimePayRate ?? null;
+    this._travelTimePay = { id: matchedOption.id, rate: travelTimePayRate };
+  }
+
   /** end transforms */
 
   preValidate(headers) {
@@ -3034,10 +3411,16 @@ class WorkplaceCSVValidator {
       this._validateCwpAwareness();
       this._validateCwpUse();
       this._validateCwpUseDesc();
+      this._validateBenefits();
       this._validateSickPay();
       this._validateHoliday();
       this._validatePensionContribution();
-      this._validateBenefits();
+      this._validatePensionContributionPercentage();
+      this._validateStaffOptOutOfWorkplacePension();
+      this._validateSleepIn();
+      this._validateSleepInPay();
+      this._validateTravelTimePay();
+      this._validateTravelTimePayRate();
 
       // this._validateNoChange(); // Not working, disabled for LA Window
     }
@@ -3113,6 +3496,9 @@ class WorkplaceCSVValidator {
 
       status = !this._transformMainService() ? false : status;
       this._addMainServiceDHAWarningIfMismatch();
+      this._crossCheckMainServiceWithSleepIns();
+      this._crossCheckMainServiceWithTravelTimePay();
+
       status = !this._transformEstablishmentType() ? false : status;
       status = !this._transformAllServices() ? false : status;
       status = !this._transformServiceUsers() ? false : status;
@@ -3126,7 +3512,13 @@ class WorkplaceCSVValidator {
       status = !this._transformCareWorkforcePathwayUse() ? false : status;
       status = !this._transformCareWorkforcePathwayUseDesc() ? false : status;
       status = !this._transformCashLoyaltyForFirstTwoYears() ? false : status;
-      status = !this._transformPensionAndSickPay() ? false : status;
+
+      status = !!this._transformPensionAndSickPay() && status;
+      status = !!this._transformStaffOptOutOfWorkplacePension() && status;
+      status = !!this._transformOfferSleepIn() && status;
+      status = !!this._transformHowToPayForSleepIn() && status;
+      status = !!this._transformTravelTimePay() && status;
+
       return status;
     } else {
       return true;
@@ -3265,7 +3657,13 @@ class WorkplaceCSVValidator {
       careWorkersCashLoyaltyForFirstTwoYears: this._careWorkersCashLoyaltyForFirstTwoYears,
       sickPay: this._sickPay,
       pensionContribution: this._pensionContribution,
+      pensionContributionPercentage: this._pensionContributionPercentage,
+      staffOptOutOfWorkplacePension: this._staffOptOutOfWorkplacePension,
       careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
+      offerSleepIn: this._offerSleepIn,
+      howToPayForSleepIn: this._howToPayForSleepIn,
+      travelTimePay: this._travelTimePay ?? null,
+      payAndPensionsMiniFlowViewed: true,
     };
     if (this._allServices) {
       if (this._allServices.length === 1) {
@@ -3333,8 +3731,6 @@ class WorkplaceCSVValidator {
 
   // takes the given establishment entity and writes it out to CSV string (one line)
   static toCSV(entity) {
-    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","DHA","DHAACTIVITIES","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
-
     const defaultYesNoDontKnowMapping = (valueFromDatabase) => {
       switch (valueFromDatabase) {
         case 'Yes':
@@ -3562,6 +3958,7 @@ class WorkplaceCSVValidator {
       }
     };
     const whenValue = '1;';
+
     columns.push(
       cashLoyaltyMapping(
         Number(entity.careWorkersCashLoyaltyForFirstTwoYears)
@@ -3570,24 +3967,28 @@ class WorkplaceCSVValidator {
       ),
     );
 
-    // Sick Pay, Pension Contribution,Holiday
-    const sickPayHolidayAndPensionMapping = (value) => {
-      if (value === "Don't know") {
-        return 'unknown';
-      } else if (value === 'No') {
-        return 0;
-      } else if (value === 'Yes') {
-        return 1;
-      } else if (!value) {
-        return '';
-      } else {
-        return value;
-      }
-    };
+    const sickPay = sickPayHolidayAndPensionMapping(entity.sickPay);
+    const pensionContribution = sickPayHolidayAndPensionMapping(entity.pensionContribution);
 
-    columns.push(sickPayHolidayAndPensionMapping(entity.sickPay));
-    columns.push(sickPayHolidayAndPensionMapping(entity.pensionContribution));
-    columns.push(sickPayHolidayAndPensionMapping(entity.careWorkersLeaveDaysPerYear));
+    columns.push(sickPay);
+    columns.push(pensionContribution);
+
+    columns.push(extractPensionContributionPercentage(entity));
+
+    columns.push(optOutPensionMapping(entity.staffOptOutOfWorkplacePension));
+
+    const careWorkersLeaveDaysPerYear = sickPayHolidayAndPensionMapping(entity.careWorkersLeaveDaysPerYear);
+    columns.push(careWorkersLeaveDaysPerYear);
+
+    columns.push(sleepInsMapping(entity.offerSleepIn));
+
+    columns.push(extractSleepInPay(entity));
+
+    const travelTimePayBUCode = entity.travelTimePayOption?.bulkUploadCode ?? '';
+    columns.push(travelTimePayBUCode);
+
+    const travelTimePayRate = extractTravelTimePayRate(entity);
+    columns.push(travelTimePayRate);
 
     return columns.join(',');
   }

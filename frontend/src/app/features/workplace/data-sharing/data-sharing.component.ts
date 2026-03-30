@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { WorkplaceQuestion } from '../question/question.component';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-data-sharing',
@@ -22,6 +23,7 @@ export class DataSharingComponent extends WorkplaceQuestion {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
+    protected alertService: AlertService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -42,8 +44,7 @@ export class DataSharingComponent extends WorkplaceQuestion {
       });
     }
 
-    this.previousQuestionPage = 'staff-benefit-holiday-leave';
-    this.skipToQuestionPage = 'check-answers';
+    this.previousQuestionPage = 'care-workforce-pathway-awareness';
   }
 
   protected setupServerErrorsMap(): void {
@@ -82,10 +83,6 @@ export class DataSharingComponent extends WorkplaceQuestion {
       : completeUpdateEstablishment();
   }
 
-  protected onSuccess(): void {
-    this.nextQuestionPage = 'check-answers';
-  }
-
   protected removeSharingPermissionsBanner(completeFunction): void {
     const data = { property: 'showSharingPermissionsBanner', value: false };
     this.subscriptions.add(
@@ -99,5 +96,26 @@ export class DataSharingComponent extends WorkplaceQuestion {
         },
       ),
     );
+  }
+
+  protected navigate(): Promise<boolean> {
+    const action = this.submitAction.action;
+
+    if (!action) {
+      return;
+    }
+
+    if (this.isInAddDetailsFlow && ['continue', 'skip'].includes(action)) {
+      return this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+    }
+
+    return super.navigate();
+  }
+
+  protected addAlert(): void {
+    const action = this.submitAction.action;
+    if (this.isInAddDetailsFlow && action === 'continue') {
+      this.alertService.addAlert({ type: 'success', message: 'Workplace details added' });
+    }
   }
 }

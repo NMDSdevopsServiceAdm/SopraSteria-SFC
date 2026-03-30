@@ -16,6 +16,8 @@ import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 
 describe('Summary section', () => {
   const setup = async (overrides: any = {}) => {
@@ -29,6 +31,10 @@ describe('Summary section', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: PayAndPensionService,
+          useClass: MockPayAndPensionService,
         },
         provideRouter([]),
         provideHttpClient(),
@@ -75,6 +81,9 @@ describe('Summary section', () => {
 
     const localStorageSpy = spyOn(localStorage, 'setItem');
 
+    const payAndPensionService = injector.inject(PayAndPensionService) as PayAndPensionService;
+    const payAndPensionServiceSpy = spyOn(payAndPensionService, 'setInPayAndPensionsMiniFlow');
+
     return {
       ...setupTools,
       component,
@@ -83,6 +92,7 @@ describe('Summary section', () => {
       updateSingleFieldSpy,
       setReturnToSpy,
       localStorageSpy,
+      payAndPensionServiceSpy,
     };
   };
 
@@ -183,6 +193,167 @@ describe('Summary section', () => {
       const workplaceRow = getByTestId('workplace-row');
       expect(within(workplaceRow).getByText('Add more details to your workplace')).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+    });
+
+    describe('pay and pension workplace questions', () => {
+      const setupEstablishment = {
+        ...Establishment,
+        showAddWorkplaceDetailsBanner: false,
+        mainService: {
+          canDoDelegatedHealthcareActivities: true,
+          id: 7,
+          name: 'Short breaks, respite care',
+        },
+      };
+
+      [1, 2].forEach((group) => {
+        it(`shows the message for the added workplace questions when payAndPensionsMiniFlowViewed is null and the main service payAndPensionsGroup is ${group}`, async () => {
+          const establishment = {
+            ...setupEstablishment,
+            mainService: {
+              payAndPensionsGroup: group,
+            },
+            payAndPensionsMiniFlowViewed: null,
+          };
+
+          const { getByTestId } = await setup({ establishment });
+
+          const workplaceRow = getByTestId('workplace-row');
+          expect(within(workplaceRow).getByText("We've added some Workplace questions")).toBeTruthy();
+          expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+        });
+      });
+
+      it('should navigate to the pensions page when the link is clicked', async () => {
+        const establishment = {
+          ...setupEstablishment,
+          mainService: {
+            payAndPensionsGroup: 1,
+          },
+          payAndPensionsMiniFlowViewed: null,
+        };
+
+        const { getByTestId, routerSpy } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText("We've added some Workplace questions");
+        fireEvent.click(link);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          Establishment.uid,
+          'workplace-data',
+          'workplace-summary',
+          'pensions',
+        ]);
+      });
+
+      it('should set return in establishment service when question link clicked', async () => {
+        const establishment = {
+          ...setupEstablishment,
+          mainService: {
+            payAndPensionsGroup: 1,
+          },
+          payAndPensionsMiniFlowViewed: null,
+        };
+
+        const { getByTestId, setReturnToSpy } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText("We've added some Workplace questions");
+
+        fireEvent.click(link);
+        expect(setReturnToSpy).toHaveBeenCalled();
+      });
+
+      it('should set setInPayAndPensionsMiniFlow when question link clicked', async () => {
+        const establishment = {
+          ...setupEstablishment,
+          mainService: {
+            payAndPensionsGroup: 1,
+          },
+          payAndPensionsMiniFlowViewed: null,
+        };
+
+        const { getByTestId, payAndPensionServiceSpy } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText("We've added some Workplace questions");
+
+        fireEvent.click(link);
+        expect(payAndPensionServiceSpy).toHaveBeenCalledWith(true);
+      });
+
+      it('should set payAndPensionsMiniFlowViewed when the question link is clicked', async () => {
+        const establishment = {
+          ...setupEstablishment,
+          mainService: {
+            payAndPensionsGroup: 1,
+          },
+          payAndPensionsMiniFlowViewed: null,
+        };
+
+        const { getByTestId, updateSingleFieldSpy } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText("We've added some Workplace questions");
+
+        fireEvent.click(link);
+        expect(updateSingleFieldSpy).toHaveBeenCalledWith(establishment.uid, {
+          property: 'payAndPensionsMiniFlowViewed',
+          value: true,
+        });
+      });
+
+      it('should not update payAndPensionsMiniFlowViewed when Workplace link clicked', async () => {
+        const establishment = {
+          ...setupEstablishment,
+          mainService: {
+            payAndPensionsGroup: 1,
+          },
+          payAndPensionsMiniFlowViewed: null,
+        };
+
+        const { getByTestId, updateSingleFieldSpy } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        const link = within(workplaceRow).getByText('Workplace');
+
+        fireEvent.click(link);
+        expect(updateSingleFieldSpy).not.toHaveBeenCalled();
+      });
+
+      [3, null].forEach((group) => {
+        it(`should not show the message for the added workplace questions if payAndPensionsGroup is ${group}`, async () => {
+          const establishment = {
+            ...setupEstablishment,
+            mainService: {
+              payAndPensionsGroup: group,
+            },
+            payAndPensionsMiniFlowViewed: null,
+          };
+
+          const { getByTestId } = await setup({ establishment });
+
+          const workplaceRow = getByTestId('workplace-row');
+          expect(within(workplaceRow).queryByText("We've added some Workplace questions")).toBeFalsy();
+        });
+      });
+
+      it('should not show if payAndPensionsMiniFlowViewed is true', async () => {
+        const establishment = {
+          ...setupEstablishment,
+          mainService: {
+            payAndPensionsGroup: 1,
+          },
+          payAndPensionsMiniFlowViewed: true,
+        };
+
+        const { getByTestId } = await setup({ establishment });
+
+        const workplaceRow = getByTestId('workplace-row');
+        expect(within(workplaceRow).queryByText("We've added some Workplace questions")).toBeFalsy();
+      });
     });
 
     describe('CWP awareness question', () => {

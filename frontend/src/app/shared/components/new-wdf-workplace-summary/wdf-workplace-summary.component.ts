@@ -6,6 +6,7 @@ import { Eligibility } from '@core/model/wdf.model';
 import { CareWorkforcePathwayService } from '@core/services/care-workforce-pathway.service';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { VacanciesAndTurnoverService } from '@core/services/vacancies-and-turnover.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
@@ -13,10 +14,10 @@ import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-wdf-workplace-summary',
-    templateUrl: './wdf-workplace-summary.component.html',
-    providers: [I18nPluralPipe],
-    standalone: false
+  selector: 'app-wdf-workplace-summary',
+  templateUrl: './wdf-workplace-summary.component.html',
+  providers: [I18nPluralPipe],
+  standalone: false,
 })
 export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   private _workplace: any;
@@ -46,6 +47,8 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   public Eligibility = Eligibility;
   public wdfView = true;
   public isAwareOfCareWorkforcePathway: boolean;
+  public showSleepInsQuestions: boolean;
+  public showTravelTimePayQuestion: boolean;
 
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
@@ -88,6 +91,7 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     private cqcStatusChangeService: CqcStatusChangeService,
     private vacanciesAndTurnoverService: VacanciesAndTurnoverService,
     private careWorkforcePathwayService: CareWorkforcePathwayService,
+    private payAndPensionService: PayAndPensionService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
@@ -168,6 +172,7 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
 
     this.setShowWdfConfirmations();
     this.checkIfWorkplaceIsAwareOfCareWorkforcePathway();
+    this.checkIfShouldShowPayAndPensionQuestions();
   }
 
   public sortedCapacityService(capacityService: any) {
@@ -281,6 +286,15 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     const awarenessAnswer = this.workplace.careWorkforcePathwayWorkplaceAwareness;
     this.isAwareOfCareWorkforcePathway =
       this.careWorkforcePathwayService.isAwareOfCareWorkforcePathway(awarenessAnswer);
+  }
+
+  private checkIfShouldShowPayAndPensionQuestions(): void {
+    this.showSleepInsQuestions = this.payAndPensionService.showSleepInsQuestions(
+      this.workplace?.mainService?.payAndPensionsGroup,
+    );
+    this.showTravelTimePayQuestion = this.payAndPensionService.showTravelTimePayQuestion(
+      this.workplace?.mainService?.payAndPensionsGroup,
+    );
   }
 
   ngOnDestroy(): void {

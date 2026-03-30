@@ -14,6 +14,8 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers.component';
 import { FormatUtil } from '@core/utils/format-util';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 
 describe('DoYouHaveLeaversComponent', () => {
   const today = new Date();
@@ -36,6 +38,11 @@ describe('DoYouHaveLeaversComponent', () => {
             overrides?.returnUrl,
             overrides?.workplace,
           ),
+          deps: [HttpClient],
+        },
+        {
+          provide: PayAndPensionService,
+          useFactory: MockPayAndPensionService.factory(overrides),
           deps: [HttpClient],
         },
         {
@@ -198,58 +205,82 @@ describe('DoYouHaveLeaversComponent', () => {
       ]);
     });
 
-    it("should navigate to the staff-recruitment-capture-training-requirement page when submitting 'None'", async () => {
-      const overrides = { returnUrl: false };
-      const { component, fixture, getByText, routerSpy } = await setup(overrides);
+    describe('when showTravelTimePayQuestion is false', () => {
+      ['I do not know', 'None'].forEach((answer) => {
+        it(`should navigate to the benefits-statutory-sick-pay page when submitting '${answer}'`, async () => {
+          const overrides = { returnUrl: false, showTravelTimePayQuestion: false };
+          const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-      component.form.get('startersLeaversVacanciesKnown').setValue('None');
+          component.form.get('startersLeaversVacanciesKnown').setValue(answer);
 
-      const button = getByText('Save and continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
+          const button = getByText('Save and continue');
+          fireEvent.click(button);
+          fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'workplace-data',
-        'add-workplace-details',
-        'staff-recruitment-capture-training-requirement',
-      ]);
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'benefits-statutory-sick-pay',
+          ]);
+        });
+      });
+
+      it('should navigate to the benefits-statutory-sick-pay page when clicking Skip this question link', async () => {
+        const overrides = { returnUrl: false, showTravelTimePayQuestion: false };
+        const { getByText, routerSpy } = await setup(overrides);
+
+        const link = getByText('Skip this question');
+        fireEvent.click(link);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'benefits-statutory-sick-pay',
+        ]);
+      });
     });
 
-    it("should navigate to the staff-recruitment-capture-training-requirement page when submitting 'I do not know'", async () => {
-      const overrides = { returnUrl: false };
-      const { component, fixture, getByText, routerSpy } = await setup(overrides);
+    describe('when showTravelTimePayQuestion is true', () => {
+      ['I do not know', 'None'].forEach((answer) => {
+        it(`should navigate to the travel-time-pay page when submitting '${answer}'`, async () => {
+          const overrides = { returnUrl: false, showTravelTimePayQuestion: true };
+          const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-      component.form.get('startersLeaversVacanciesKnown').setValue('I do not know');
+          component.form.get('startersLeaversVacanciesKnown').setValue(answer);
 
-      const button = getByText('Save and continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
+          const button = getByText('Save and continue');
+          fireEvent.click(button);
+          fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'workplace-data',
-        'add-workplace-details',
-        'staff-recruitment-capture-training-requirement',
-      ]);
-    });
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'travel-time-pay',
+          ]);
+        });
+      });
 
-    it('should navigate to the staff-recruitment-capture-training-requirement page when clicking Skip this question link', async () => {
-      const overrides = { returnUrl: false };
-      const { getByText, routerSpy } = await setup(overrides);
+      it('should navigate to the travel-time-pay page when clicking Skip this question link', async () => {
+        const overrides = { returnUrl: false, showTravelTimePayQuestion: true };
+        const { getByText, routerSpy } = await setup(overrides);
 
-      const link = getByText('Skip this question');
-      fireEvent.click(link);
+        const link = getByText('Skip this question');
+        fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'workplace-data',
-        'add-workplace-details',
-        'staff-recruitment-capture-training-requirement',
-      ]);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'travel-time-pay',
+        ]);
+      });
     });
 
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {

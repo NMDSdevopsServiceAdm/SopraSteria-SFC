@@ -115,11 +115,14 @@ class ChangePropertyPrototype extends PropertyPrototype {
     savePropertyToSequelize(document) {
         throw new Error("Abstract method");
     }
-    
-    // restore property based on property name
-    async restoreFromSequelize(document) {
 
-        const changePropertyDefaultName = `${this._dbPropertyPrefix}Value`;
+    get changePropertyDefaultName() {
+        return `${this._dbPropertyPrefix}Value`;
+    }
+
+  // restore property based on property name
+    async restoreFromSequelize(document) {
+        const changePropertyDefaultName = this.changePropertyDefaultName;
 
         // false is a valid value - must explicitly check for null.
         if (document[changePropertyDefaultName]!==null) {
@@ -144,7 +147,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
         let sequelizeSaveDefinition = {};
         const auditEvents = [];
 
-        // refer to concrete class to 
+        // refer to concrete class to
         const thisPropertyDef = this.savePropertyToSequelize();
 
         // intercept any additional models resulting from the property; remove from the property set
@@ -179,7 +182,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
                 ...thisPropertyDef,
                 ...sequelizeSaveDefinition
             };
-            
+
             // create a 'changed' audit event for this property
             auditEvents.push({
                 username,
@@ -203,7 +206,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
 
     // helper function to format the change history
     formatChangeHistory(auditEvent) {
-        // when reporting on the change history for 
+        // when reporting on the change history for
         //  a given property, only inclue from the audit:
         //  1. username
         //  2. when

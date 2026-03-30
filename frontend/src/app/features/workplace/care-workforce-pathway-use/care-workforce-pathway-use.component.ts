@@ -20,7 +20,7 @@ import { WorkplaceQuestion } from '../question/question.component';
   standalone: false,
 })
 export class CareWorkforcePathwayUseComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
   public cwpUseOptions = [
     { value: 'Yes', label: 'Yes, we use the pathway for one or more reasons' },
     { value: 'No', label: 'No, we do not currently use the pathway' },
@@ -48,7 +48,7 @@ export class CareWorkforcePathwayUseComponent extends WorkplaceQuestion implemen
     this.setupForm();
     this.prefill();
     this.setPreviousRoute();
-    this.skipToQuestionPage = 'cash-loyalty';
+    this.skipToQuestionPage = 'sharing-data';
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 
@@ -233,6 +233,6 @@ export class CareWorkforcePathwayUseComponent extends WorkplaceQuestion implemen
   }
 
   protected onSuccess(): void {
-    this.nextQuestionPage = 'cash-loyalty';
+    this.nextQuestionPage = 'sharing-data';
   }
 }

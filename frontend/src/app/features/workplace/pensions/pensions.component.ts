@@ -1,13 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
+import { AbstractControl, UntypedFormBuilder, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { WorkplaceQuestion } from '../question/question.component';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Component({
   selector: 'app-pensions',
@@ -25,12 +26,21 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
       value: StaffBenefitEnum.NO,
     },
     {
-      label: `Don't know`,
+      label: `I do not know`,
       value: StaffBenefitEnum.DONT_KNOW,
     },
   ];
 
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section: string;
+  public sectionHeading: string;
+  public minPercentage = 3.5;
+  public maxPercentage = 100;
+  public showPercentageTextBox = false;
+  public payAndPensionQuestionRevealText: string;
+  public inPayAndPensionsMiniFlow: boolean = false;
+  public progressBarSections: string[];
+  public showProgressBar: boolean = false;
+  public payAndPensionsGroup: number;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -38,61 +48,182 @@ export class PensionsComponent extends WorkplaceQuestion implements OnInit, OnDe
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
+    protected payAndPensionService: PayAndPensionService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
+    this.form = this.formBuilder.group(
+      {
+        pension: null,
+        pensionPercentage: null,
+      },
+      { updateOn: 'submit' },
+    );
   }
 
   protected init(): void {
-    this.setupForm();
+    this.payAndPensionQuestionRevealText = this.payAndPensionService.payAndPensionQuestionRevealText;
+    this.inPayAndPensionsMiniFlow = this.payAndPensionService.getInPayAndPensionsMiniFlow();
+    this.showProgressBar = (!this.return || this.inPayAndPensionsMiniFlow) ?? false;
+    this.payAndPensionsGroup = this.establishment?.mainService?.payAndPensionsGroup;
     this.setRoutes();
     this.prefill();
+    this.setSectionHeading();
+    this.setProgressBarSections();
+
+    if (this.establishment.pensionContribution === 'Yes') {
+      this.showPercentageTextBox = true;
+    }
+
+    this.payAndPensionService.clearInPayAndPensionsMiniFlowWhenClickedAway();
+  }
+
+  private setSectionHeading(): void {
+    this.sectionHeading = this.inPayAndPensionsMiniFlow ? 'Workplace' : WorkplaceFlowSections.PAY_AND_BENEFITS;
+  }
+
+  private setProgressBarSections(): void {
+    if (this.inPayAndPensionsMiniFlow) {
+      this.progressBarSections = this.payAndPensionService.getPayAndPensionsMiniFlowProgressBarSections(
+        this.payAndPensionsGroup,
+      );
+      this.section = this.progressBarSections[0];
+    } else {
+      this.progressBarSections = this.workplaceFlowSections;
+      this.section = WorkplaceFlowSections.PAY_AND_BENEFITS;
+    }
   }
 
   private setRoutes(): void {
     this.previousQuestionPage = 'benefits-statutory-sick-pay';
-    this.skipToQuestionPage = 'staff-benefit-holiday-leave';
+    this.skipToQuestionPage = 'staff-opt-out-of-workplace-pension';
+    this.nextQuestionPage = 'staff-opt-out-of-workplace-pension';
   }
 
-  private setupForm(): void {
-    this.form = this.formBuilder.group(
-      {
-        pension: null,
-      },
-      { updateOn: 'submit' },
-    );
+  public onChange(answer: string) {
+    if (answer === 'Yes') {
+      this.showPercentageTextBox = true;
+      this.addValidationToControl();
+      this.addErrorLinkFunctionality();
+    } else if (answer) {
+      this.showPercentageTextBox = false;
+      const { pensionPercentage } = this.form.controls;
+      if (pensionPercentage) {
+        this.form.get('pensionPercentage').clearValidators();
+        this.form.get('pensionPercentage').updateValueAndValidity();
+      }
+    }
+  }
+
+  public addValidationToControl() {
+    this.form
+      .get('pensionPercentage')
+      ?.setValidators([
+        this.minMaxValidator(this.minPercentage, this.maxPercentage),
+        this.maxTwoDecimalPlacesValidator(),
+      ]);
+
+    this.form.get('pensionPercentage').updateValueAndValidity();
+  }
+
+  private minMaxValidator(min: number, max: number): ValidatorFn {
+    return (control: AbstractControl) => {
+      const value = control.value;
+
+      if (value === null || value === undefined || value === '') {
+        return null;
+      }
+
+      const numericValue = Number(value);
+      if (isNaN(numericValue) || numericValue < min || numericValue > max) {
+        return { minMax: true };
+      }
+
+      return null;
+    };
+  }
+
+  private maxTwoDecimalPlacesValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+
+      if (value === null || value === undefined || value === '') {
+        return null; // let required validator handle empties
+      }
+
+      const stringValue = value.toString();
+
+      const decimalPart = stringValue.split('.')[1];
+
+      if (decimalPart && decimalPart.length > 2) {
+        return { maxTwoDecimals: true };
+      }
+
+      return null;
+    };
   }
 
   private prefill(): void {
     if (this.establishment.pensionContribution) {
       this.form.patchValue({
         pension: this.establishment.pensionContribution,
+        pensionPercentage: this.establishment.pensionContributionPercentage,
       });
+
+      this.onChange(this.establishment.pensionContribution);
     }
   }
 
   protected generateUpdateProps(): any {
-    const { pension } = this.form.value;
-    if (pension) {
-      return { pension };
-    }
-    return null;
+    const { pension, pensionPercentage } = this.form.value;
+
+    if (!pension) return null;
+
+    const props = {
+      pensionContribution: pension,
+      pensionContributionPercentage: pension === 'Yes' && pensionPercentage ? pensionPercentage : null,
+    };
+
+    return props;
   }
 
   protected updateEstablishment(props: any): void {
-    const pensionData = {
-      property: 'pensionContribution',
-      value: props.pension,
-    };
+    if (!props) return;
+
+    const payload = props;
 
     this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, pensionData).subscribe(
-        (data) => this._onSuccess(data.data),
-        (error) => this.onError(error),
-      ),
+      this.establishmentService
+        .updateEstablishmentFieldWithAudit(this.establishment.uid, 'pensionContribution', payload)
+        .subscribe(
+          (data) => this._onSuccess(data),
+          (error) => this.onError(error),
+        ),
     );
   }
 
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'pensionPercentage',
+        type: [
+          { name: 'minMax', message: 'Actual contribution must be higher than 3% and no more than 100%' },
+          {
+            name: 'maxTwoDecimals',
+            message: 'Actual contribution can only have 2 digits after the decimal point',
+          },
+        ],
+      },
+    ];
+  }
+  protected addErrorLinkFunctionality(): void {
+    if (!this.errorSummaryService.formEl$.value) {
+      this.errorSummaryService.formEl$.next(this.formEl);
+    }
+  }
+
   protected onSuccess(): void {
-    this.nextQuestionPage = 'staff-benefit-holiday-leave';
+    if (this.inPayAndPensionsMiniFlow) {
+      this.submitAction = { action: 'continue', save: true };
+    }
   }
 }

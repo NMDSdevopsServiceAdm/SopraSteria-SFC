@@ -1,15 +1,27 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
+const lodash = require('lodash');
 const Establishment = require('../../models/classes/establishment');
 const { hasPermission } = require('../../utils/security/hasPermission');
 const HttpError = require('../../utils/errors/httpError');
 
-const allowedPropertiesToBeRequested = [
+const allowedProperties = [
   'EmployerType',
   'Name',
   'NumberOfStaff',
   'ShareData',
   'StaffDoDelegatedHealthcareActivities',
+  'PensionContribution',
+  'StaffOptOutOfWorkplacePension',
+  'TravelTimePay',
+  'OfferSleepIn',
+  'HowToPayForSleepIn',
+];
+
+const allowedFieldNamesInRequest = [
+  ...allowedProperties.map(lodash.lowerFirst),
+  'shareWith',
+  'pensionContributionPercentage',
 ];
 
 const getEstablishmentField = async (req, res) => {
@@ -66,12 +78,13 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
-  const property = req.params?.property;
-
-  const filteredProperties = ['Name', property];
+  const property = extractParamProperty(req);
+  const filteredProperties = propertiesToIncludeInReponse(property);
 
   try {
     checkIfRequestedPropertyIsAllowed(property);
+    checkIfRequestBodyIsAllowed(req, property);
+
     const establishmentFound = await thisEstablishment.restore(establishmentId);
 
     if (!establishmentFound) {
@@ -95,9 +108,34 @@ const updateEstablishmentFieldWithAudit = async (req, res) => {
   }
 };
 
+const extractParamProperty = (req) => {
+  const propertyName = req.params?.property;
+  return lodash.upperFirst(propertyName);
+};
+
+const propertiesToIncludeInReponse = (property) => {
+  // special case handling as PensionContributionPercentage is a new column added lately
+  if (property === 'PensionContribution') {
+    return ['Name', 'PensionContribution', 'PensionContributionPercentage'];
+  }
+
+  return ['Name', property];
+};
+
 const checkIfRequestedPropertyIsAllowed = (property) => {
-  if (!allowedPropertiesToBeRequested.includes(property)) {
+  if (!allowedProperties.includes(property)) {
     throw new HttpError('Requested property not allowed', 404);
+  }
+};
+
+const checkIfRequestBodyIsAllowed = (req) => {
+  const requestBody = req.body;
+  const allRequestBodyFieldsAreAllowed = Object.keys(requestBody).every((fieldName) =>
+    allowedFieldNamesInRequest.includes(fieldName),
+  );
+
+  if (!allRequestBodyFieldsAreAllowed) {
+    throw new HttpError('Request body not allowed', 400);
   }
 };
 

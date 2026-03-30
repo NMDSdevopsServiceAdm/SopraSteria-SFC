@@ -45,6 +45,15 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       { id: 1, bulkUploadCode: 1 },
       { id: 8, bulkUploadCode: 8 },
     ]);
+    sinon.stub(models.travelTimePayOption, 'findAll').returns([
+      { id: 1, includeRate: false, bulkUploadCode: 1 },
+      { id: 2, includeRate: false, bulkUploadCode: 2 },
+      { id: 3, includeRate: true, bulkUploadCode: 3 },
+      { id: 4, includeRate: false, bulkUploadCode: 4 },
+      { id: 5, includeRate: false, bulkUploadCode: 5 },
+      { id: 6, includeRate: false, bulkUploadCode: 6 },
+      { id: 7, includeRate: false, bulkUploadCode: 999 },
+    ]);
   });
 
   afterEach(() => {
@@ -287,7 +296,13 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       BENEFITS: '',
       SICKPAY: '',
       PENSION: '',
+      ACTUALCONT: '',
+      OPTOUTPEN: '',
       HOLIDAY: '',
+      SLEEPINS: '',
+      SLEEPINPAY: '',
+      TRAVELTIME: '',
+      TTDIFFRATE: '',
     };
 
     const myAPIEstablishments = [

@@ -122,7 +122,10 @@ describe('Create account', { tags: '@registration' }, () => {
 
     cy.contains('Add more details to your workplace').click(); // on home page
     cy.contains('Start to add more details about your workplace').click(); // on workplace tab
-    cy.get('button').contains('Continue').click(); // on add more details page
+
+    // Add more details
+    cy.get('h1').should('contain', 'Add more details about your workplace');
+    cy.get('button').contains('Continue').click();
 
     // Other services
     cy.contains('Do you provide any other services?');
@@ -148,6 +151,16 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.getByLabel('Vital signs monitoring').check();
     cy.getByLabel('Airways and breathing care').check();
     cy.getByLabel('Feeding and digestive care').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Does your workplace offer sleep-ins?
+    cy.contains('Does your workplace offer sleep-ins?');
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // How do you pay care and support workers for a sleep-in?
+    cy.contains('How do you pay care and support workers for a sleep-in?');
+    cy.getByLabel('Hourly rate').check();
     cy.get('button').contains('Save and continue').click();
 
     // Vacancies
@@ -198,6 +211,40 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.getByLabel('Support worker').type('2');
     cy.get('button').contains('Save and continue').click();
 
+    // Travel time pay
+    cy.contains('What do you pay care and support workers for travel time between visits?').should('be.visible');
+    cy.getByLabel('The same rate for travel time as for visits').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Statutory Sick Pay
+    cy.contains('Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?');
+    cy.getByLabel('No').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // Workplace pensions
+    cy.contains(
+      'Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?',
+    );
+    cy.getByLabel('Yes').check();
+    cy.getByLabel('Actual contribution').type('3.5');
+    cy.get('button').contains('Save and continue').click();
+
+    // Staff opt out of workplace pension
+    cy.contains('Are any of your staff currently opted out of their workplace pension?').should('be.visible');
+    cy.getByLabel('Yes').check();
+    cy.get('button').contains('Save and continue').click();
+
+    // How many days leave
+    cy.contains('How many days leave do your full-time care workers get each year?');
+    cy.getByLabel('Number of days').type(25);
+    cy.get('button').contains('Save and continue').click();
+
+    // Cash loyalty bonus
+    cy.contains('Do you pay care workers a cash loyalty bonus within their first 2 years of employment?');
+    cy.getByLabel('Yes').check();
+    cy.getByLabel('Amount (optional)').type('300.00');
+    cy.get('button').contains('Save and continue').click();
+
     // Repeat training
     cy.contains("Do new care workers have to repeat training they've done with previous employers?");
     cy.getByLabel('Yes, always').check();
@@ -218,40 +265,14 @@ describe('Create account', { tags: '@registration' }, () => {
     cy.getByLabel('No, we do not currently use the pathway').check();
     cy.get('button').contains('Save and continue').click();
 
-    // Cash loyalty bonus
-    cy.contains('Do you pay care workers a cash loyalty bonus within their first 2 years of employment?');
-    cy.getByLabel('Yes').check();
-    cy.getByLabel('Amount (optional)').type('300.00');
-    cy.get('button').contains('Save and continue').click();
-
-    // Statutory Sick Pay
-    cy.contains('Do you pay your care workers more than Statutory Sick Pay if they cannot work because of illness?');
-    cy.getByLabel('No').check();
-    cy.get('button').contains('Save and continue').click();
-
-    // Workplace pensions
-    cy.contains('Do you contribute more than the minimum 3% into workplace pensions for your care workers?');
-    cy.getByLabel('Yes').check();
-    cy.get('button').contains('Save and continue').click();
-
-    // How many days leave
-    cy.contains('How many days leave do your full-time care workers get each year?');
-    cy.getByLabel('Number of days').type(25);
-    cy.get('button').contains('Save and continue').click();
-
     // Share your data
     cy.getByLabel('Yes, I agree to you sharing our data with the CQC').check();
     cy.getByLabel('Yes, I agree to you sharing our data with local authorities').check();
     cy.get('button').contains('Save and continue').click();
 
-    // Check answers
-    cy.contains('Workplace summary').should('be.visible');
-    cy.contains(workplaceName).should('be.visible');
-    cy.contains('Check these details before you confirm them.').should('be.visible');
-    cy.get('button').contains('Confirm workplace details').click();
-
     // Workplace tab
+    cy.url().should('contain', '/dashboard#workplace');
     cy.contains(workplaceName).should('be.visible');
-    cy.contains("You've confirmed the workplace details that you added").should('be.visible');
+    cy.contains('.govuk-inset-text', 'Workplace details added').should('be.visible');
   });
 });

@@ -14,12 +14,10 @@ import { take } from 'rxjs/operators';
 })
 export class StartComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
-  public returnLink: Array<string>;
   public returnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
   private fragment: string;
   public isViewingSubAsParent: boolean;
-  public continueUrl: Array<string>;
 
   constructor(
     public backService: BackService,
@@ -60,6 +58,16 @@ export class StartComponent implements OnInit, OnDestroy {
     this.router.navigate(nextRoute);
   }
 
+  private setPayAndPensionsMiniFlowViewed(): void {
+    const data = {
+      property: 'payAndPensionsMiniFlowViewed',
+      value: true,
+    };
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe(),
+    );
+  }
+
   private removeAddDetailsBanner(): void {
     const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
 
@@ -67,5 +75,7 @@ export class StartComponent implements OnInit, OnDestroy {
       this.establishment.showAddWorkplaceDetailsBanner = response.data.showAddWorkplaceDetailsBanner;
       this.establishmentService.setState(this.establishment);
     });
+
+    this.setPayAndPensionsMiniFlowViewed();
   }
 }

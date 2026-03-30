@@ -6,6 +6,7 @@ const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const buUtils = require('../../../../../utils/bulkUploadUtils');
 const uploadedFiles = require('../../../../../routes/establishments/bulkUpload/uploadFiles');
 const { trainingHeadersAsArray } = require('../../../mockdata/training');
+const { knownHeaders } = require('../../../mockdata/establishment');
 
 const trainingHeaders = trainingHeadersAsArray.join(',');
 const newLine = '\r\n';
@@ -25,8 +26,7 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
 
   describe('uploadedPut', () => {
     const TrainingFile = trainingHeaders;
-    const EstablishmentFile =
-      'LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRESS3,POSTTOWN,POSTCODE,ESTTYPE,OTHERTYPE,PERMCQC,PERMLA,REGTYPE,PROVNUM,LOCATIONID,MAINSERVICE,ALLSERVICES,CAPACITY,UTILISATION,SERVICEDESC,SERVICEUSERS,OTHERUSERDESC,DHA,DHAACTIVITIES,TOTALPERMTEMP,ALLJOBROLES,STARTERS,LEAVERS,VACANCIES,REASONS,REASONNOS,REPEATTRAINING,ACCEPTCARECERT,CWPAWARE,CWPUSE,CWPUSEDESC,BENEFITS,SICKPAY,PENSION,HOLIDAY';
+    const EstablishmentFile = knownHeaders.join(',');
     const WorkerFile =
       'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMBER,POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,DISABLED,CARECERT,L2CARECERT,RECSOURCE,HANDCVISA,INOUTUK,STARTDATE,STARTINSECT,DHA,APPRENTICE,EMPLSTATUS,ZEROHRCONT,DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,CWPCATEGORY,QUALACH01,QUALACH01NOTES,QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
     const OtherFile = 'Test,This,is,NOT,A,BULK,UPLOAD,FILE';

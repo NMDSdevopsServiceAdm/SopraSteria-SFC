@@ -42,7 +42,7 @@ describe('ProgressBarUtil', () => {
     it('should return an array with a length of 5', () => {
       const workplaceFlowProgressBarSections = ProgressBarUtil.workplaceFlowProgressBarSections();
 
-      expect(workplaceFlowProgressBarSections.length).toEqual(4);
+      expect(workplaceFlowProgressBarSections.length).toEqual(5);
     });
 
     it('should return the correct values', () => {
@@ -51,7 +51,8 @@ describe('ProgressBarUtil', () => {
       expect(workplaceFlowProgressBarSections).toEqual([
         'Services',
         'Vacancies and turnover',
-        'Recruitment and benefits',
+        'Pay and benefits',
+        'Staff development',
         'Permissions',
       ]);
     });
@@ -73,6 +74,36 @@ describe('ProgressBarUtil', () => {
         'Employment details',
         'Training and qualifications',
       ]);
+    });
+  });
+
+  describe('payAndPensionsMiniFlowBarSections', () => {
+    it('should return an array with the default length 3 and values when nothing is sent', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections();
+
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(3);
+      expect(payAndPensionsMiniFlowBarSections).toEqual(['Question 1', 'Question 2', 'Question 3']);
+    });
+
+    it('should return an array with the default length 3 and values when 3 is sent', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections(3);
+
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(3);
+      expect(payAndPensionsMiniFlowBarSections).toEqual(['Question 1', 'Question 2', 'Question 3']);
+    });
+
+    it('should return an array with the length 4 and correct values when 4 is sent', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections(4);
+
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(4);
+      expect(payAndPensionsMiniFlowBarSections).toEqual(['Question 1', 'Question 2', 'Question 3', 'Question 4']);
+    });
+
+    it('should return an array with the length 0 and values when 2', async () => {
+      const payAndPensionsMiniFlowBarSections = ProgressBarUtil.payAndPensionsMiniFlowBarSections(2);
+
+      expect(payAndPensionsMiniFlowBarSections.length).toEqual(0);
+      expect(payAndPensionsMiniFlowBarSections).toEqual([]);
     });
   });
 });

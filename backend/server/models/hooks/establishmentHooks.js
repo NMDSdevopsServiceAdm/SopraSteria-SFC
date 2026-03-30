@@ -103,8 +103,43 @@ const clearDoDHAWorkplaceOnMainServiceChange = async (establishment, options) =>
   }
 };
 
+const clearSleepInsPayQuestionsOnOfferSleepInAnswerChange = async (establishment, options) => {
+  try {
+    const models = establishment.sequelize.models;
+    const establishmentId = establishment.id;
+    const username = options?.savedBy ?? '';
+    const transaction = options.transaction;
+
+    if (!establishment || !models) {
+      return;
+    }
+
+    if (establishment.changed('offerSleepIn')) {
+      const workplaceDoesNotOfferSleepIn = establishment.offerSleepIn !== 'Yes';
+
+      if (workplaceDoesNotOfferSleepIn) {
+        establishment.howToPayForSleepIn = null;
+
+        const auditEvent = {
+          establishmentFk: establishmentId,
+          username,
+          type: 'changed',
+          property: 'HowToPayForSleepIn',
+          event: { new: null },
+        };
+
+        await models.establishmentAudit.create(auditEvent, { transaction });
+        return;
+      }
+    }
+  } catch (err) {
+    console.error('error occurred while running sequelize hook', err);
+  }
+};
+
 module.exports = {
   clearDHAWorkerAnswersOnWorkplaceChange,
   clearDHAWorkplaceAnswerOnChange,
   clearDoDHAWorkplaceOnMainServiceChange,
+  clearSleepInsPayQuestionsOnOfferSleepInAnswerChange,
 };

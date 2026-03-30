@@ -31,6 +31,7 @@ import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } from '@core/resolvers/delegated-healthcare-activities/no-of-workers-with-delegated-healthcare-activities-unanswered.resolver';
+import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
 
 @NgModule({
   imports: [
@@ -70,6 +71,7 @@ import { GetNoOfWorkersWhoRequireDelegatedHealthcareActivitiesAnswerResolver } f
     CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
     GetDelegatedHealthcareActivitiesResolver,
     CheckIfAnyWorkerHasDHAAnsweredResolver,
+    TravelTimePayResolver,
   ],
 })
 export class SubsidiaryModule {}

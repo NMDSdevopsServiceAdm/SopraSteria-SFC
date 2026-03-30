@@ -32,7 +32,7 @@ export class StaffBenefitCashLoyaltyComponent extends WorkplaceQuestion implemen
   ];
 
   public showTextBox = false;
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -52,11 +52,11 @@ export class StaffBenefitCashLoyaltyComponent extends WorkplaceQuestion implemen
   protected init(): void {
     this.prefill();
     this.setPreviousRoute();
-    this.skipToQuestionPage = 'benefits-statutory-sick-pay';
+    this.skipToQuestionPage = 'staff-recruitment-capture-training-requirement';
   }
 
   private setPreviousRoute(): void {
-    this.previousQuestionPage = 'care-workforce-pathway-use';
+    this.previousQuestionPage = 'staff-benefit-holiday-leave';
   }
 
   public onChange(answer: string) {
@@ -138,7 +138,7 @@ export class StaffBenefitCashLoyaltyComponent extends WorkplaceQuestion implemen
   }
 
   protected onSuccess(): void {
-    this.nextQuestionPage = 'benefits-statutory-sick-pay';
+    this.nextQuestionPage = 'staff-recruitment-capture-training-requirement';
   }
 
   protected setupFormErrorsMap(): void {

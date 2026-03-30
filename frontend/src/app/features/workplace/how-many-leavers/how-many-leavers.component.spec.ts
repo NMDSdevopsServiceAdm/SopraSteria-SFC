@@ -18,6 +18,8 @@ import userEvent from '@testing-library/user-event';
 
 import { HowManyLeaversComponent } from './how-many-leavers.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import { MockPayAndPensionService } from '@core/test-utils/MockPayAndPensionService';
 
 describe('HowManyLeaversComponent', () => {
   const todayOneYearAgo = FormatUtil.formatDateToLocaleDateString(dayjs().subtract(1, 'years').toDate());
@@ -38,7 +40,7 @@ describe('HowManyLeaversComponent', () => {
     const availableJobs = override.availableJobs;
     const workplace = override.workplace ?? {};
 
-    const selectedJobRoles = override.noLocalStorageData ? null : (override.selectedJobRoles ?? mockSelectedJobRoles);
+    const selectedJobRoles = override.noLocalStorageData ? null : override.selectedJobRoles ?? mockSelectedJobRoles;
 
     const isInAddDetailsFlow = true;
 
@@ -66,6 +68,11 @@ describe('HowManyLeaversComponent', () => {
         {
           provide: VacanciesAndTurnoverService,
           useFactory: MockVacanciesAndTurnoverService.factory({ selectedLeavers: selectedJobRoles }),
+        },
+        {
+          provide: PayAndPensionService,
+          useFactory: MockPayAndPensionService.factory(override),
+          deps: [HttpClient],
         },
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -233,8 +240,12 @@ describe('HowManyLeaversComponent', () => {
         });
       });
 
-      it('should navigate to the staff-recruitment-capture-training-requirement page', async () => {
-        const { component, getByRole, routerSpy } = await setup();
+      it('should navigate to the travel-time-pay page if showTravelTimePayQuestion is true', async () => {
+        const override = {
+          showTravelTimePayQuestion: true,
+        };
+
+        const { component, getByRole, routerSpy } = await setup(override);
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
@@ -243,7 +254,25 @@ describe('HowManyLeaversComponent', () => {
           component.establishment.uid,
           'workplace-data',
           'add-workplace-details',
-          'staff-recruitment-capture-training-requirement',
+          'travel-time-pay',
+        ]);
+      });
+
+      it('should navigate to the benefits-statutory-sick-pay page if showTravelTimePayQuestion is false', async () => {
+        const override = {
+          showTravelTimePayQuestion: false,
+        };
+
+        const { component, getByRole, routerSpy } = await setup(override);
+
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishment.uid,
+          'workplace-data',
+          'add-workplace-details',
+          'benefits-statutory-sick-pay',
         ]);
       });
 
