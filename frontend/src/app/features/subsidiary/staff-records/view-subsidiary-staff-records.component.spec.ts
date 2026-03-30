@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
@@ -21,11 +21,10 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './view-subsidiary-staff-records.component';
-import { of } from 'rxjs';
 
 describe('ViewSubsidiaryStaffRecordsComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -88,15 +87,10 @@ describe('ViewSubsidiaryStaffRecordsComponent', () => {
     const workerService = TestBed.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
-    const injector = getTestBed();
-    const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
     return {
       component,
       ...setupTools,
       workerSpy,
-      routerSpy,
     };
   };
 

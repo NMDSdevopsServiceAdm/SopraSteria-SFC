@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { provideRouter, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
@@ -29,8 +29,6 @@ import { render } from '@testing-library/angular';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewStaffTabComponent } from './staff-tab.component';
 
-import { of } from 'rxjs';
-
 const MockWindow = {
   dataLayer: {
     push: () => {
@@ -39,7 +37,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('NewStaffTabComponent', () => {
+describe('NewStaffTabComponent', () => {
   const setup = async (overrides: any = {}) => {
     const workerArr = overrides?.workers ?? ([workerBuilder()] as Worker[]);
     const establishment = overrides?.establishment ?? (establishmentBuilder() as Establishment);
@@ -95,21 +93,10 @@ fdescribe('NewStaffTabComponent', () => {
     const workerService = TestBed.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
-    const injector = getTestBed();
-    const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
-    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const updateSingleFieldSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
-      of(null),
-    );
-
     return {
       component,
       ...setupTools,
       workerSpy,
-      routerSpy,
-      updateSingleFieldSpy,
     };
   };
 

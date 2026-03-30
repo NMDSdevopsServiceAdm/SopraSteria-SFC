@@ -25,7 +25,7 @@ describe('NewPillWithLinkComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('new pill', () => {
+  describe('"NEW" pill', () => {
     it('should not show if showNewPill is false', async () => {
       const { queryByTestId } = await setup({ showNewPill: false, linkText: textForLink });
 
