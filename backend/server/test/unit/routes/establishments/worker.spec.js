@@ -392,7 +392,7 @@ describe('worker route', () => {
     });
   });
 
-  describe.skip('getWorkersWithPayData()', () => {
+  describe('getWorkersWithPayData()', () => {
     const workerBuilder = build('Worker', {
       fields: {
         uid: fake((f) => f.datatype.uuid()),
@@ -436,7 +436,7 @@ describe('worker route', () => {
 
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getJSONData()).to.deep.equal(mockQueryResult);
-      expect(models.establishment.getWorkersWithPayData).to.have.been.calledWith({
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
         establishmentId: mockEstablishmentId,
         itemsPerPage: 15,
         pageIndex: 0,
@@ -458,7 +458,7 @@ describe('worker route', () => {
 
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getJSONData()).to.deep.equal(mockQueryResult);
-      expect(models.establishment.getWorkersWithPayData).to.have.been.calledWith({
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
         establishmentId: mockEstablishmentId,
         itemsPerPage: 20,
         pageIndex: 2,
@@ -480,7 +480,7 @@ describe('worker route', () => {
 
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getJSONData()).to.deep.equal(mockQueryResult);
-      expect(models.establishment.getWorkersWithPayData).to.have.been.calledWith({
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
         establishmentId: mockEstablishmentId,
         itemsPerPage: 15,
         pageIndex: 0,
@@ -511,7 +511,7 @@ describe('worker route', () => {
 
       expect(res.statusCode).to.deep.equal(200);
       expect(res._getJSONData()).to.deep.equal(mockQueryResult);
-      expect(models.establishment.getWorkersWithPayData).to.have.been.calledWith({
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
         establishmentId: mockEstablishmentId,
         itemsPerPage: 15,
         pageIndex: 0,
