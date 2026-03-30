@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+const lodash = require('lodash');
 const {
   clearDHAWorkerAnswersOnWorkplaceChange,
   clearDoDHAWorkplaceOnMainServiceChange,
@@ -1998,6 +1999,68 @@ module.exports = function (sequelize, DataTypes) {
       order,
       ...(limit ? workerPagination : {}),
     });
+  };
+
+  Establishment.fetchWorkersWithPayData = async function ({
+    establishmentId,
+    itemsPerPage = 15,
+    pageIndex = 0,
+    sortBy = 'staffNameAsc',
+    jobId = null,
+  }) {
+    const models = sequelize.models;
+
+    const pagination = {
+      offset: itemsPerPage * pageIndex,
+      limit: itemsPerPage,
+    };
+
+    const sortByOptions = {
+      staffNameAsc: [['nameOrId', 'ASC']],
+      staffNameDesc: [['nameOrId', 'DESC']],
+      jobRoleAsc: [[sequelize.literal('"mainJob.title"'), 'ASC']],
+      jobRoleDesc: [[sequelize.literal('"mainJob.title"'), 'DESC']],
+    };
+
+    const order = sortByOptions[sortBy] ?? sortByOptions.staffNameAsc;
+    const jobIdFilter = jobId ? { where: { id: jobId } } : {};
+
+    const { count, rows } = await models.worker.findAndCountAll({
+      attributes: ['id', 'uid', ['NameOrIdValue', 'nameOrId'], 'AnnualHourlyPayValue', 'AnnualHourlyPayRate'],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+      },
+      include: [
+        {
+          model: sequelize.models.job,
+          as: 'mainJob',
+          attributes: ['title', 'id'],
+          ...jobIdFilter,
+        },
+      ],
+      raw: true,
+      nest: true,
+      order,
+      ...pagination,
+    });
+
+    const formatWorkerPay = (worker) => {
+      const payAnswer = worker.AnnualHourlyPayValue;
+      const workerFields = lodash.omit(worker, ['AnnualHourlyPayValue', 'AnnualHourlyPayRate']);
+
+      if (['Annually', 'Hourly'].includes(payAnswer)) {
+        const rate = worker.AnnualHourlyPayRate ? parseFloat(worker.AnnualHourlyPayRate) : null;
+        const annualHourlyPay = { value: payAnswer, rate };
+        return { ...workerFields, annualHourlyPay };
+      }
+
+      return { ...workerFields, annualHourlyPay: { value: payAnswer } };
+    };
+
+    const workers = rows.map(formatWorkerPay);
+
+    return { count, workers };
   };
 
   Establishment.getEstablishmentTrainingRecords = async function (establishmentId, isParent = false) {

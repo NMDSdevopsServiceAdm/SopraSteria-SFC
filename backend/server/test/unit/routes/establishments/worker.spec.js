@@ -8,12 +8,10 @@ const models = require('../../../../models/index');
 const workerRoute = require('../../../../routes/establishments/worker');
 const WdfCalculator = require('../../../../models/classes/wdfCalculator').WdfCalculator;
 
-let i = 0;
 const worker = {
   establishmentId: 1,
   workerId: '29155c11-11bb-4ab3-ada0-bccac7acecc1',
   id: 1,
-  i,
 };
 const establishment = {
   establishmentId: 2,
@@ -21,12 +19,8 @@ const establishment = {
 
 describe('worker route', () => {
   before(() => {
-    sinon.stub(models.worker, 'findOne').callsFake(async (args) => {
-      return args.i === 3 ? {} : worker;
-    });
-    sinon.stub(models.worker, 'create').callsFake(async () => {
-      return worker;
-    });
+    sinon.stub(models.worker, 'findOne').resolves(worker);
+    sinon.stub(models.worker, 'create').resolves(worker);
     sinon.stub(models.worker, 'update').callsFake(async () => {
       const mockWorker = {
         get: () => {
@@ -35,12 +29,8 @@ describe('worker route', () => {
       };
       return [1, [mockWorker]];
     });
-    sinon.stub(models.workerAudit, 'bulkCreate').callsFake(async () => {
-      return {};
-    });
-    sinon.stub(models.establishment, 'findOne').callsFake(async () => {
-      return establishment;
-    });
+    sinon.stub(models.workerAudit, 'bulkCreate').resolves({});
+    sinon.stub(models.establishment, 'findOne').resolves(establishment);
   });
 
   after(() => {
@@ -346,10 +336,11 @@ describe('worker route', () => {
 
     const request = {
       method: 'GET',
-      url: '/api/establishment/uid/worker/total',
+      url: '/api/establishment/:uid/worker/getAllWorkersGroupedByJobRole',
       params: {
-        establishmentId: '123',
+        id: 'mock-uid',
       },
+      establishmentId: 123,
     };
 
     it('should respond with 200 and all workers in the workplace, grouped by their job roles', async () => {
@@ -401,6 +392,145 @@ describe('worker route', () => {
     });
   });
 
+  describe('getWorkersWithPayData()', () => {
+    const workerBuilder = build('Worker', {
+      fields: {
+        uid: fake((f) => f.datatype.uuid()),
+        nameOrId: fake((f) => f.name.findName()),
+        mainJob: {
+          id: sequence(),
+          title: fake((f) => f.name.jobTitle()),
+        },
+        annualHourlyPay: oneOf(
+          { value: 'Annually', rate: '25000' },
+          { value: 'Hourly', rate: '15' },
+          { value: "Don't know" },
+        ),
+      },
+    });
+    const mockEstablishmentId = 123;
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const request = {
+      method: 'GET',
+      url: '/api/establishment/:uid/worker/withPayData',
+      params: {
+        id: 'mock-uid',
+      },
+      establishmentId: mockEstablishmentId,
+    };
+
+    const mockWorkers = [workerBuilder(), workerBuilder(), workerBuilder()];
+    const mockQueryResult = { count: mockWorkers, workers: mockWorkers };
+
+    it('should respond with 200 and a list of workers and their pay data', async () => {
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(mockQueryResult);
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
+        establishmentId: mockEstablishmentId,
+        itemsPerPage: 15,
+        pageIndex: 0,
+        sortBy: 'staffNameAsc',
+      });
+    });
+
+    it('should handle pagination and sort parameters from query', async () => {
+      const requestWithParams = {
+        ...request,
+        query: { itemsPerPage: 20, pageIndex: 2, sortBy: 'jobRoleAsc' },
+      };
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
+
+      const req = httpMocks.createRequest(requestWithParams);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(mockQueryResult);
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
+        establishmentId: mockEstablishmentId,
+        itemsPerPage: 20,
+        pageIndex: 2,
+        sortBy: 'jobRoleAsc',
+      });
+    });
+
+    it('should allow search by job id', async () => {
+      const requestWithParams = {
+        ...request,
+        query: { jobId: 19 },
+      };
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
+
+      const req = httpMocks.createRequest(requestWithParams);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(mockQueryResult);
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
+        establishmentId: mockEstablishmentId,
+        itemsPerPage: 15,
+        pageIndex: 0,
+        sortBy: 'staffNameAsc',
+        jobId: 19,
+      });
+    });
+
+    it('should ignore any unexpected query params', async () => {
+      const requestWithParams = {
+        ...request,
+        query: {
+          pageIndex: 'apple',
+          itemsPerPage: 'banana',
+          sortBy: 'some-random-string',
+          jobId: 'abcd',
+          role: 'admin',
+          subQuery: 'drop table Students;',
+        },
+      };
+
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').resolves(mockQueryResult);
+
+      const req = httpMocks.createRequest(requestWithParams);
+      const res = httpMocks.createResponse();
+
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+      expect(res._getJSONData()).to.deep.equal(mockQueryResult);
+      expect(models.establishment.fetchWorkersWithPayData).to.have.been.calledWith({
+        establishmentId: mockEstablishmentId,
+        itemsPerPage: 15,
+        pageIndex: 0,
+        sortBy: 'staffNameAsc',
+      });
+    });
+
+    it('should response with 500 if error occured', async () => {
+      sinon.stub(models.establishment, 'fetchWorkersWithPayData').rejects(new Error('database error'));
+      sinon.stub(console, 'error');
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+      await workerRoute.getWorkersWithPayData(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
   describe('getTotalWorkers()', () => {
     const workerBuilder = build('Worker', {
       fields: {
@@ -415,9 +545,11 @@ describe('worker route', () => {
         workers: [worker],
       });
     });
+
     afterEach(() => {
       sinon.restore();
     });
+
     it('should return a total number of staff', async () => {
       const req = httpMocks.createRequest({
         method: 'GET',
