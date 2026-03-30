@@ -90,6 +90,7 @@ import { TrainingProvidersResolver } from '@core/resolvers/training/training-pro
 import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
 import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
 import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
+import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff/update-pay-for-multiple-staff.component';
 
 const editTrainingRecordRoute = {
   path: 'training/:trainingRecordId',
@@ -340,6 +341,14 @@ const routes: Routes = [
     path: 'fast-track-pay-updates',
     component: FastTrackPayUpdatesComponent,
     resolve: { workersByJobRole: WorkersByJobRoleResolver },
+  },
+  {
+    path: 'update-pay-for-multiple-staff',
+    component: UpdatePayForMultipleStaffComponent,
+    resolve: {},
+    data: {
+      title: 'Update pay for multiple staff',
+    },
   },
   {
     path: 'basic-records-save-success',

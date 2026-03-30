@@ -26,6 +26,7 @@ import {
   WorkersGroupedByJobRole,
   WorkersGroupedByJobRoleResponse,
   WorkersResponse,
+  WorkersWithPayDataReponse,
 } from '@core/model/worker.model';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -150,6 +151,15 @@ export class WorkerService {
   public getAllWorkersGroupedByJobRole(establishmentUid: string): Observable<WorkersGroupedByJobRoleResponse> {
     return this.http.get<WorkersGroupedByJobRoleResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/worker/groupedByJobRole`,
+    );
+  }
+
+  public getWorkersWithPayData(establishmentUid: string, queryParams?: Params): Observable<WorkersWithPayDataReponse> {
+    return this.http.get<WorkersWithPayDataReponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/worker/withPayData`,
+      {
+        params: queryParams || {},
+      },
     );
   }
 
