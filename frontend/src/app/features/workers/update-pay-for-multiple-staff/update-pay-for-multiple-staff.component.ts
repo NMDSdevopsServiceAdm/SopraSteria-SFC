@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { WorkersWithPayDataResponse } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -14,6 +15,8 @@ import { WorkerService } from '@core/services/worker.service';
 })
 export class UpdatePayForMultipleStaffComponent {
   public form: UntypedFormGroup;
+  public firstPageWorkers: WorkersWithPayDataResponse['workers'];
+  public allWorkersCount: number;
   public workers: Worker;
 
   constructor(
@@ -27,9 +30,7 @@ export class UpdatePayForMultipleStaffComponent {
   ) {}
 
   ngOnInit() {
-    const workplaceUid = this.establishmentService.establishment.uid;
-    this.workerService.getWorkersWithPayData(workplaceUid).subscribe((res) => {
-      console.log(res);
-    });
+    this.firstPageWorkers = this.route.snapshot.data.firstPageWorkers?.workers ?? [];
+    this.allWorkersCount = this.route.snapshot.data.firstPageWorkers?.count;
   }
 }

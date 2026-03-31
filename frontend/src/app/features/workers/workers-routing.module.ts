@@ -91,6 +91,7 @@ import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linke
 import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
 import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff/update-pay-for-multiple-staff.component';
+import { WorkersWithPayDataResolver } from '@core/resolvers/workers-with-pay-data.resolver';
 
 const editTrainingRecordRoute = {
   path: 'training/:trainingRecordId',
@@ -345,7 +346,7 @@ const routes: Routes = [
   {
     path: 'update-pay-for-multiple-staff',
     component: UpdatePayForMultipleStaffComponent,
-    resolve: {},
+    resolve: { firstPageWorkers: WorkersWithPayDataResolver },
     data: {
       title: 'Update pay for multiple staff',
     },

@@ -194,7 +194,7 @@ export type WorkerPayData = {
   annualHourlyPay: WorkerPay;
 };
 
-export interface WorkersWithPayDataReponse {
+export interface WorkersWithPayDataResponse {
   workers: WorkerPayData[];
   count: number;
 }
