@@ -174,6 +174,8 @@ export type WorkersGroupedByJobRole = {
   title: string;
   jobId: number;
   workers: Array<{ uid: string }>;
+  count: number;
+  annualHourlyPay?: WorkerPay;
 };
 
 export interface WorkersGroupedByJobRoleResponse {

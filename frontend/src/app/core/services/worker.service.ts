@@ -68,6 +68,7 @@ export class WorkerService {
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
   public tabChanged: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public _doYouWantToDownloadTrainAndQualsAnswer = null;
+  private _workersGroupedByJobRole: WorkersGroupedByJobRoleResponse = null;
 
   constructor(private http: HttpClient) {}
 
@@ -375,5 +376,13 @@ export class WorkerService {
 
   public clearDoYouWantToDownloadTrainAndQualsAnswer(): void {
     this._doYouWantToDownloadTrainAndQualsAnswer = null;
+  }
+
+  public getWorkersGroupedByJobRole(): WorkersGroupedByJobRoleResponse {
+    return this._workersGroupedByJobRole;
+  }
+
+  public setWorkersGroupedByJobRole(workers: WorkersGroupedByJobRoleResponse) {
+    this._workersGroupedByJobRole = workers;
   }
 }
