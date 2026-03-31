@@ -2215,7 +2215,7 @@ module.exports = function (sequelize, DataTypes) {
     const jobIdFilter = jobId ? { where: { id: jobId } } : {};
 
     const { count, rows } = await models.worker.findAndCountAll({
-      attributes: ['id', 'uid', ['NameOrIdValue', 'nameOrId'], 'AnnualHourlyPayValue', 'AnnualHourlyPayRate'],
+      attributes: ['uid', ['NameOrIdValue', 'nameOrId'], 'AnnualHourlyPayValue', 'AnnualHourlyPayRate'],
       where: {
         establishmentFk: establishmentId,
         archived: false,
