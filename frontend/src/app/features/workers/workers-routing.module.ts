@@ -346,7 +346,7 @@ const routes: Routes = [
   {
     path: 'update-pay-for-multiple-staff',
     component: UpdatePayForMultipleStaffComponent,
-    resolve: { firstPageWorkers: WorkersWithPayDataResolver },
+    resolve: { workersWithPayData: WorkersWithPayDataResolver },
     data: {
       title: 'Update pay for multiple staff',
     },

@@ -1,1 +1,15 @@
-<p>update-pay-for-multiple-staff works!</p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <span class="govuk-caption-l" data-testid="section-heading">Staff records</span>
+      <h1 class="govuk-fieldset__heading">Update pay for multiple staff</h1>
+    </legend>
+  </div>
+</div>
+
+<app-new-pill-with-link
+  [linkText]="'Fast-track pay updates by job roles'"
+  [showNewPill]="true"
+  data-testid="fast-track-pay-update-link"
+  (clicked)="handleClickForFastTrackPageLink()"
+></app-new-pill-with-link>

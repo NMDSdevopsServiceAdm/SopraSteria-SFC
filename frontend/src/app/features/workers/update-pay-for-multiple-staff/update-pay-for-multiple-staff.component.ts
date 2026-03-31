@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WorkersWithPayDataResponse } from '@core/model/worker.model';
+import { WorkerPayData, WorkersWithPayDataResponse } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -15,9 +15,10 @@ import { WorkerService } from '@core/services/worker.service';
 })
 export class UpdatePayForMultipleStaffComponent {
   public form: UntypedFormGroup;
-  public firstPageWorkers: WorkersWithPayDataResponse['workers'];
+  public firstPageWorkers: WorkerPayData[];
   public allWorkersCount: number;
-  public workers: Worker;
+  public workersToShow: WorkerPayData[];
+  public workerUpdated: WorkerPayData[];
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -30,7 +31,11 @@ export class UpdatePayForMultipleStaffComponent {
   ) {}
 
   ngOnInit() {
-    this.firstPageWorkers = this.route.snapshot.data.firstPageWorkers?.workers ?? [];
-    this.allWorkersCount = this.route.snapshot.data.firstPageWorkers?.count;
+    this.firstPageWorkers = this.route.snapshot.data.workersWithPayData?.workers ?? [];
+    this.allWorkersCount = this.route.snapshot.data.workersWithPayData?.count;
+  }
+
+  public handleClickForFastTrackPageLink(): void {
+    this.router.navigate(['../fast-track-pay-updates'], { relativeTo: this.route });
   }
 }

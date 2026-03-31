@@ -288,7 +288,7 @@ describe('TablePaginationWrapperCompnent', () => {
         expect(newPillWithLink).toBeFalsy();
       });
 
-      it('should navigate to the update-pay-multiple-staff page', async () => {
+      it('should navigate to the update-pay-for-multiple-staff page', async () => {
         const overrides = { showUpdatePayForMultipleStaffLink: true, totalCount: 16, wdfView: false };
         const { component, fixture, getByTestId, routerSpy } = await setup(overrides);
 
@@ -298,7 +298,12 @@ describe('TablePaginationWrapperCompnent', () => {
         fireEvent.click(link);
         fixture.autoDetectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['workplace', component.workplaceUid, 'update-pay-multiple-staff']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          'workplace',
+          component.workplaceUid,
+          'staff-record',
+          'update-pay-for-multiple-staff',
+        ]);
       });
     });
 
@@ -374,7 +379,7 @@ describe('TablePaginationWrapperCompnent', () => {
         expect(newPillWithLink).toBeFalsy();
       });
 
-      it('should navigate to the update-pay-multiple-staff page', async () => {
+      it('should navigate to the update-pay-for-multiple-staff page', async () => {
         const overrides = { showUpdatePayForMultipleStaffLink: true, totalCount: 8, wdfView: false };
         const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
@@ -384,7 +389,12 @@ describe('TablePaginationWrapperCompnent', () => {
         fireEvent.click(link);
         fixture.autoDetectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['workplace', workplaceUid, 'update-pay-multiple-staff']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          'workplace',
+          workplaceUid,
+          'staff-record',
+          'update-pay-for-multiple-staff',
+        ]);
       });
     });
 

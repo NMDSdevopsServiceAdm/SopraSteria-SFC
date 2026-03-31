@@ -39,7 +39,10 @@ export class TablePaginationWrapperComponent implements OnInit, OnDestroy {
   public updatePayForMultipleStaffLinkText = 'Update pay for multiple staff';
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private router: Router, private establishmentService: EstablishmentService) {}
+  constructor(
+    private router: Router,
+    private establishmentService: EstablishmentService,
+  ) {}
 
   ngOnInit(): void {
     this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
@@ -126,7 +129,7 @@ export class TablePaginationWrapperComponent implements OnInit, OnDestroy {
     if (this.showNewPill) {
       this.setUpdatePayForMultiStaffViewed();
     }
-    this.router.navigate(['workplace', this.workplaceUid, 'update-pay-multiple-staff']);
+    this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
   }
 
   ngOnDestroy(): void {
