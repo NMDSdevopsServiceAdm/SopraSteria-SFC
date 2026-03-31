@@ -187,7 +187,7 @@ export interface WorkersResponse {
   workerCount: number;
 }
 
-export type WorkerPayData = {
+export type WorkerWithPayData = {
   uid: string;
   nameOrId: string;
   mainJob: JobRole;
@@ -195,7 +195,7 @@ export type WorkerPayData = {
 };
 
 export interface WorkersWithPayDataResponse {
-  workers: WorkerPayData[];
+  workers: WorkerWithPayData[];
   count: number;
 }
 

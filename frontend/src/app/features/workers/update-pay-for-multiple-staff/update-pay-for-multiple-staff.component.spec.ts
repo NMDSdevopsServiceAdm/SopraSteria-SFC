@@ -1,22 +1,22 @@
-import { ComponentFixture, getTestBed, TestBed } from '@angular/core/testing';
-
-import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
-import { SharedModule } from '@shared/shared.module';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { render } from '@testing-library/angular';
-import { WindowRef } from '@core/services/window.ref';
-import { AlertService } from '@core/services/alert.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
-import { MockRouter } from '@core/test-utils/MockRouter';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot';
-import { Component } from '@angular/core';
+import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { WorkersWithPayDataResponse, WorkerWithPayData } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
+import { build, fake, sequence } from '@jackfranklin/test-data-bot';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
+
+import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
 
 fdescribe('UpdatePayForMultipleStaffComponent', () => {
   const workerBuilder = build('Worker', {
@@ -27,16 +27,21 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         id: sequence(),
         title: fake((f) => f.name.jobTitle()),
       },
-      annualHourlyPay: oneOf(
-        { value: 'Annually', rate: '25000' },
-        { value: 'Hourly', rate: '15' },
-        { value: "Don't know" },
-      ),
+      annualHourlyPay: null,
     },
   });
 
+  const mockWorkers = [
+    workerBuilder({ overrides: { annualHourlyPay: { value: 'Annually', rate: 25000 } } }),
+    workerBuilder({ overrides: { annualHourlyPay: { value: 'Hourly', rate: 12.5 } } }),
+    workerBuilder({ overrides: { annualHourlyPay: { value: "Don't know" } } }),
+  ] as WorkerWithPayData[];
+  const radioButtonLabels = ['Hourly', 'Salary', 'Not known'];
+
   const setup = async (overrides: any = {}) => {
-    const mockWorkersWithPayData = { count: 3, workers: [workerBuilder(), workerBuilder(), workerBuilder()] };
+    const firstPageWorker = overrides?.firstPageWorker ?? mockWorkers;
+    const totalWorkersCount = overrides?.totalWorkersCount ?? firstPageWorker.length;
+    const mockWorkersWithPayData = { count: totalWorkersCount, workers: firstPageWorker };
 
     const setuptools = await render(UpdatePayForMultipleStaffComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -119,5 +124,20 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
 
     userEvent.click(link);
     expect(routerSpy).toHaveBeenCalledWith(['../fast-track-pay-updates'], { relativeTo: route });
+  });
+
+  it('should show a table with the nameOrId, jobRole and pay data for the first 15 workers', async () => {
+    const { getByRole } = await setup();
+
+    const workersTable = getByRole('table');
+
+    expect(workersTable).toBeTruthy();
+    mockWorkers.forEach((worker) => {
+      const row = within(workersTable).getByText(worker.nameOrId).closest('tr');
+      expect(row).toBeTruthy();
+      radioButtonLabels.forEach((label) => {
+        expect(within(row).getByLabelText(label)).toBeTruthy();
+      });
+    });
   });
 });
