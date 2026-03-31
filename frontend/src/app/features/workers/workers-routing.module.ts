@@ -88,6 +88,7 @@ import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qu
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
+import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-page/fast-track-confirmation-page.component';
 
 const editTrainingRecordRoute = {
   path: 'training/:trainingRecordId',
@@ -332,6 +333,13 @@ const routes: Routes = [
     },
     data: {
       title: 'Who Carry out Delegated Healthcare Activities',
+    },
+  },
+  {
+    path: 'fast-track-confirmation-page',
+    component: FastTrackConfirmationPageComponent,
+    data: {
+      title: 'Fast Track Confirmation Page',
     },
   },
   {
