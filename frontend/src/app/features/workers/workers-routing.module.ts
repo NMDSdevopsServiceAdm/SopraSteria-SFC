@@ -89,6 +89,8 @@ import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qu
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
 import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-page/fast-track-confirmation-page.component';
+import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
+import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
 
 const editTrainingRecordRoute = {
   path: 'training/:trainingRecordId',
@@ -341,6 +343,11 @@ const routes: Routes = [
     data: {
       title: 'Fast Track Confirmation Page',
     },
+  },
+  {
+    path: 'fast-track-pay-updates',
+    component: FastTrackPayUpdatesComponent,
+    resolve: { workersByJobRole: WorkersByJobRoleResolver },
   },
   {
     path: 'basic-records-save-success',
