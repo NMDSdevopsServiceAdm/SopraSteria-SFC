@@ -13,7 +13,7 @@ import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerServi
 import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import { within } from '@testing-library/dom';
+import { getByLabelText, within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
@@ -38,14 +38,47 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
     workerBuilder({ overrides: { annualHourlyPay: { value: null } } }),
   ] as WorkerWithPayData[];
 
+  const buildMultipleWorkers = (num: number) => {
+    return Array(num)
+      .fill(null)
+      .map(() => workerBuilder());
+  };
+
   const payValues = ['Hourly', 'Annually', "Don't know"];
   const radioButtonLabels = ['Hourly', 'Salary', 'Not known'];
   const payValueToLabel = (payValue: string): string => radioButtonLabels[payValues.indexOf(payValue)];
 
+  const expectWorkerRowToHaveData = (
+    table: HTMLElement,
+    workerNameOrId: string,
+    payOption: string,
+    payRate: number,
+  ) => {
+    const row = within(table).getByText(workerNameOrId).closest('tr');
+    expect(row).toBeTruthy();
+
+    if (payOption) {
+      const label = payValueToLabel(payOption);
+      const radioButton = within(row).getByLabelText(label) as HTMLInputElement;
+      expect(radioButton.checked).toBeTrue();
+    } else {
+      radioButtonLabels.forEach((label) => {
+        const radioButton = within(row).getByLabelText(label) as HTMLInputElement;
+        expect(radioButton.checked).toBeFalse();
+      });
+    }
+
+    const payRateInputBox = within(row).getByLabelText(
+      `Hourly pay rate or salary for ${workerNameOrId}`,
+    ) as HTMLInputElement;
+    const expectedInputBoxValue = payRate ? payRate.toString() : '';
+    expect(payRateInputBox.value).toEqual(expectedInputBoxValue);
+  };
+
   const setup = async (overrides: any = {}) => {
     const firstPageWorker = overrides?.firstPageWorker ?? mockWorkers;
-    const totalWorkersCount = overrides?.totalWorkersCount ?? firstPageWorker.length;
-    const mockWorkersWithPayData = { count: totalWorkersCount, workers: firstPageWorker };
+    const totalWorkerCount = overrides?.totalWorkerCount ?? firstPageWorker.length;
+    const mockWorkersWithPayData = { count: totalWorkerCount, workers: firstPageWorker };
 
     const setuptools = await render(UpdatePayForMultipleStaffComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -146,28 +179,6 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
   });
 
   describe('prefill', () => {
-    const expectWorkerRowFilled = (table: HTMLElement, workerNameOrId: string, payOption: string, payRate: number) => {
-      const row = within(table).getByText(workerNameOrId).closest('tr');
-      expect(row).toBeTruthy();
-
-      if (payOption) {
-        const label = payValueToLabel(payOption);
-        const radioButton = within(row).getByLabelText(label) as HTMLInputElement;
-        expect(radioButton.checked).toBeTrue();
-      } else {
-        radioButtonLabels.forEach((label) => {
-          const radioButton = within(row).getByLabelText(label) as HTMLInputElement;
-          expect(radioButton.checked).toBeFalse();
-        });
-      }
-
-      const payRateInputBox = within(row).getByLabelText(
-        `Hourly pay rate or salary for ${workerNameOrId}`,
-      ) as HTMLInputElement;
-      const expectedInputBoxValue = payRate ? payRate.toString() : '';
-      expect(payRateInputBox.value).toEqual(expectedInputBoxValue);
-    };
-
     it('should prefill the pay answer for existing workers', async () => {
       const { getByRole } = await setup();
 
@@ -176,8 +187,69 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(workersTable).toBeTruthy();
 
       mockWorkers.forEach((worker) => {
-        expectWorkerRowFilled(workersTable, worker.nameOrId, worker.annualHourlyPay.value, worker.annualHourlyPay.rate);
+        expectWorkerRowToHaveData(
+          workersTable,
+          worker.nameOrId,
+          worker.annualHourlyPay.value,
+          worker.annualHourlyPay.rate,
+        );
       });
+    });
+  });
+
+  describe('sorting and pagination', () => {
+    it('should show a sort by select box if more than one worker', async () => {
+      const { getByLabelText } = await setup();
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      expect(sortBySelectBox).toBeTruthy();
+
+      const expectedOptions = ['Staff name (A to Z)', 'Staff name (Z to A)', 'Job role (A to Z)', 'Job role (Z to A)'];
+      within(sortBySelectBox).getByText('Staff name (A to Z)');
+      expectedOptions.forEach((option) => {
+        expect(within(sortBySelectBox).getByText(option)).toBeTruthy();
+      });
+    });
+
+    it('should not show the sort by select box if only one worker', async () => {
+      const { queryByLabelText } = await setup({ firstPageWorker: [workerBuilder()] });
+      const sortBySelectBox = queryByLabelText('Sort by') as HTMLSelectElement;
+      expect(sortBySelectBox).toBeFalsy();
+    });
+
+    it('should show a search bar and pagination footer when there are more than 15 workers', async () => {
+      const { queryByLabelText, queryByTestId } = await setup({
+        totalWorkerCount: 31,
+      });
+
+      const searchInput = queryByLabelText(/Search by job role/);
+      expect(searchInput).toBeTruthy();
+
+      const footer = queryByTestId('pagination-footer');
+      expect(footer).toBeTruthy();
+
+      expect(within(footer).getByTestId('pageNoText-0')).toBeTruthy();
+      expect(within(footer).getByTestId('pageNoLink-1')).toBeTruthy();
+    });
+
+    it('should not show search bar and pagination footer when there are exactly 15 workers', async () => {
+      const { queryByLabelText, queryByTestId } = await setup({ totalWorkerCount: 15 });
+
+      const searchInput = queryByLabelText(/Search by job role/);
+      expect(searchInput).toBeFalsy();
+
+      const footer = queryByTestId('pagination-footer');
+      expect(footer).toBeFalsy();
+    });
+
+    it('should not show search bar and pagination footer when there are less than 14 workers', async () => {
+      const { queryByLabelText, queryByTestId } = await setup({ totalWorkerCount: 14 });
+
+      const searchInput = queryByLabelText(/Search by job role/);
+      expect(searchInput).toBeFalsy();
+
+      const footer = queryByTestId('pagination-footer');
+      expect(footer).toBeFalsy();
     });
   });
 });

@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import {
+  Establishment,
+  SortStaffOptionsForUpdatePay,
+  StaffSummarySortByParamMap,
+} from '@core/model/establishment.model';
 import { WorkerWithPayData } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -21,10 +26,14 @@ const radioButtonLabels = [
 })
 export class UpdatePayForMultipleStaffComponent {
   public form: UntypedFormGroup;
-  public allWorkersCount: number;
+  public workplace: Establishment;
+  public totalWorkerCount: number;
+  public currentWorkerCount: number;
   public workersToShow: WorkerWithPayData[];
   public workerUpdated: WorkerWithPayData[];
   public radioButtonLabels = radioButtonLabels;
+  public sortByParamMap = StaffSummarySortByParamMap;
+  public sortOptions = SortStaffOptionsForUpdatePay;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -38,7 +47,11 @@ export class UpdatePayForMultipleStaffComponent {
 
   ngOnInit() {
     const firstPageWorkers = this.route.snapshot.data.workersWithPayData?.workers ?? [];
-    this.allWorkersCount = this.route.snapshot.data.workersWithPayData?.count;
+    this.workplace = this.establishmentService.establishment;
+
+    const totalWorkerCount = this.route.snapshot.data.workersWithPayData?.count;
+    this.currentWorkerCount = totalWorkerCount;
+    this.totalWorkerCount = totalWorkerCount;
 
     this.workersToShow = firstPageWorkers;
     this.setupForm();

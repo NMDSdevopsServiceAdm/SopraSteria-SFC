@@ -149,6 +149,7 @@ import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.
 import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
 import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.pipe';
 import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pill-with-link.component';
+import { NewTablePaginationWrapperComponent } from './components/table-pagination-wrapper-new/new-table-pagination-wrapper.component';
 
 @NgModule({
   imports: [
@@ -254,6 +255,7 @@ import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pi
     ViewTrainingComponent,
     TrainingSelectViewPanelComponent,
     TablePaginationWrapperComponent,
+    NewTablePaginationWrapperComponent,
     DontKnowPipe,
     NewTabsComponent,
     NewWorkplaceSummaryComponent,
@@ -396,6 +398,7 @@ import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pi
     ViewTrainingComponent,
     TrainingSelectViewPanelComponent,
     TablePaginationWrapperComponent,
+    NewTablePaginationWrapperComponent,
     DontKnowPipe,
     NewTabsComponent,
     NewWorkplaceSummaryComponent,
