@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -10,10 +12,10 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
-import { build, fake, sequence } from '@jackfranklin/test-data-bot';
+import { build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import { getByLabelText, within } from '@testing-library/dom';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
@@ -22,12 +24,17 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
   const workerBuilder = build('Worker', {
     fields: {
       uid: fake((f) => f.datatype.uuid()),
-      nameOrId: fake((f) => f.name.findName()),
+      nameOrId: fake((f) => f.name.findName() + f.datatype.uuid()),
       mainJob: {
         id: sequence(),
         title: fake((f) => f.name.jobTitle()),
       },
-      annualHourlyPay: null,
+      annualHourlyPay: oneOf(
+        { value: 'Annually', rate: 25000 },
+        { value: 'Hourly', rate: 12.5 },
+        { value: "Don't know" },
+        { value: null },
+      ),
     },
   });
 
@@ -41,14 +48,14 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
   const buildMultipleWorkers = (num: number) => {
     return Array(num)
       .fill(null)
-      .map(() => workerBuilder());
+      .map(() => workerBuilder()) as WorkerWithPayData[];
   };
 
   const payValues = ['Hourly', 'Annually', "Don't know"];
   const radioButtonLabels = ['Hourly', 'Salary', 'Not known'];
   const payValueToLabel = (payValue: string): string => radioButtonLabels[payValues.indexOf(payValue)];
 
-  const expectWorkerRowToHaveData = (
+  const expectWorkerTableToHaveData = (
     table: HTMLElement,
     workerNameOrId: string,
     payOption: string,
@@ -76,9 +83,9 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
   };
 
   const setup = async (overrides: any = {}) => {
-    const firstPageWorker = overrides?.firstPageWorker ?? mockWorkers;
-    const totalWorkerCount = overrides?.totalWorkerCount ?? firstPageWorker.length;
-    const mockWorkersWithPayData = { count: totalWorkerCount, workers: firstPageWorker };
+    const pageOneWorkers = overrides?.pageOneWorkers ?? mockWorkers;
+    const totalWorkerCount = overrides?.totalWorkerCount ?? pageOneWorkers.length;
+    const mockWorkersWithPayData = { count: totalWorkerCount, workers: pageOneWorkers };
 
     const setuptools = await render(UpdatePayForMultipleStaffComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -116,7 +123,9 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService);
+
     const workerService = injector.inject(WorkerService);
+    const getWorkersWithPayDataSpy = spyOn(workerService, 'getWorkersWithPayData');
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -131,6 +140,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       fixture,
       establishmentService,
       workerService,
+      getWorkersWithPayDataSpy,
       alertServiceSpy,
       route,
       router,
@@ -187,7 +197,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(workersTable).toBeTruthy();
 
       mockWorkers.forEach((worker) => {
-        expectWorkerRowToHaveData(
+        expectWorkerTableToHaveData(
           workersTable,
           worker.nameOrId,
           worker.annualHourlyPay.value,
@@ -198,6 +208,11 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
   });
 
   describe('sorting and pagination', () => {
+    const mockPageOneWorkers = buildMultipleWorkers(15);
+    const mockPageTwoWorkers = buildMultipleWorkers(15);
+    const mockPageThreeWorkers = buildMultipleWorkers(2);
+    const pages = [mockPageOneWorkers, mockPageTwoWorkers, mockPageThreeWorkers];
+
     it('should show a sort by select box if more than one worker', async () => {
       const { getByLabelText } = await setup();
 
@@ -212,14 +227,14 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
     });
 
     it('should not show the sort by select box if only one worker', async () => {
-      const { queryByLabelText } = await setup({ firstPageWorker: [workerBuilder()] });
+      const { queryByLabelText } = await setup({ pageOneWorkers: [workerBuilder()] });
       const sortBySelectBox = queryByLabelText('Sort by') as HTMLSelectElement;
       expect(sortBySelectBox).toBeFalsy();
     });
 
     it('should show a search bar and pagination footer when there are more than 15 workers', async () => {
       const { queryByLabelText, queryByTestId } = await setup({
-        totalWorkerCount: 31,
+        totalWorkerCount: 32,
       });
 
       const searchInput = queryByLabelText(/Search by job role/);
@@ -228,8 +243,10 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       const footer = queryByTestId('pagination-footer');
       expect(footer).toBeTruthy();
 
-      expect(within(footer).getByTestId('pageNoText-0')).toBeTruthy();
-      expect(within(footer).getByTestId('pageNoLink-1')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-0')).toBeFalsy();
+      expect(queryByTestId('pageNoText-0')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-1')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-2')).toBeTruthy();
     });
 
     it('should not show search bar and pagination footer when there are exactly 15 workers', async () => {
@@ -250,6 +267,58 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
 
       const footer = queryByTestId('pagination-footer');
       expect(footer).toBeFalsy();
+    });
+
+    it('should fetch and display workers of another page when page link is clicked', async () => {
+      const { fixture, getByRole, queryByText, queryByTestId, getWorkersWithPayDataSpy } = await setup({
+        pageOneWorkers: mockPageOneWorkers,
+        totalWorkerCount: 32,
+      });
+
+      getWorkersWithPayDataSpy.and.callFake((_uid, params) => {
+        const pageIndex = params.pageIndex;
+        return of({ count: 32, workers: pages[pageIndex] });
+      });
+
+      const workersTable = getByRole('table');
+
+      userEvent.click(queryByTestId('pageNoLink-1'));
+      await fixture.whenStable();
+
+      mockPageTwoWorkers.forEach((worker) => {
+        expectWorkerTableToHaveData(
+          workersTable,
+          worker.nameOrId,
+          worker.annualHourlyPay.value,
+          worker.annualHourlyPay.rate,
+        );
+      });
+
+      expect(queryByText(mockPageOneWorkers[0].nameOrId)).toBeFalsy();
+
+      expect(queryByTestId('pageNoLink-0')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-1')).toBeFalsy();
+      expect(queryByTestId('pageNoText-1')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-2')).toBeTruthy();
+
+      userEvent.click(queryByTestId('pageNoLink-2'));
+      await fixture.whenStable();
+
+      mockPageThreeWorkers.forEach((worker) => {
+        expectWorkerTableToHaveData(
+          workersTable,
+          worker.nameOrId,
+          worker.annualHourlyPay.value,
+          worker.annualHourlyPay.rate,
+        );
+      });
+
+      expect(queryByText(mockPageTwoWorkers[0].nameOrId)).toBeFalsy();
+
+      expect(queryByTestId('pageNoLink-0')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-1')).toBeTruthy();
+      expect(queryByTestId('pageNoText-2')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-2')).toBeFalsy();
     });
   });
 });

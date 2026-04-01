@@ -28,6 +28,7 @@
       [workplaceUid]="workplace.uid"
       [sortByParamMap]="sortByParamMap"
       [sortOptions]="sortOptions"
+      (fetchData)="getPageOfWorkers($event)"
     >
       <table class="govuk-table govuk-!-margin-bottom-3">
         <thead class="govuk-table__head">

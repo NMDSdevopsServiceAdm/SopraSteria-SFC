@@ -6,11 +6,13 @@ import {
   SortStaffOptionsForUpdatePay,
   StaffSummarySortByParamMap,
 } from '@core/model/establishment.model';
+import { SearchEvent } from '@core/model/pagination.model';
 import { WorkerWithPayData } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { take } from 'rxjs/operators';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -34,6 +36,7 @@ export class UpdatePayForMultipleStaffComponent {
   public radioButtonLabels = radioButtonLabels;
   public sortByParamMap = StaffSummarySortByParamMap;
   public sortOptions = SortStaffOptionsForUpdatePay;
+  public workplaceUid: string;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -48,6 +51,7 @@ export class UpdatePayForMultipleStaffComponent {
   ngOnInit() {
     const firstPageWorkers = this.route.snapshot.data.workersWithPayData?.workers ?? [];
     this.workplace = this.establishmentService.establishment;
+    this.workplaceUid = this.workplace.uid;
 
     const totalWorkerCount = this.route.snapshot.data.workersWithPayData?.count;
     this.currentWorkerCount = totalWorkerCount;
@@ -84,5 +88,28 @@ export class UpdatePayForMultipleStaffComponent {
 
   public handleClickForFastTrackPageLink(): void {
     this.router.navigate(['../fast-track-pay-updates'], { relativeTo: this.route });
+  }
+
+  public getPageOfWorkers(event: SearchEvent): void {
+    const searchParams = {
+      pageIndex: event.index,
+      itemsPerPage: event.itemsPerPage,
+      jobId: event.searchTerm,
+      sortByValue: event.sortByValue,
+    };
+
+    this.workerService
+      .getWorkersWithPayData(this.workplaceUid, searchParams)
+      .pipe(take(1))
+      .subscribe((x) => {
+        if (x.workers) {
+          this.setNewWorkers(x.workers);
+        }
+      });
+  }
+
+  private setNewWorkers(workers: WorkerWithPayData[]) {
+    this.workersToShow = workers;
+    this.addWorkersToForm(workers);
   }
 }
