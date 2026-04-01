@@ -29,25 +29,36 @@
       <tbody class="govuk-table__body asc__workers-pay-data-table">
         @for (worker of workersToShow; track worker.uid; let workerIndex = $index) {
           <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{ worker.nameOrId }}</td>
+            <td class="govuk-table__cell">
+              {{ worker.nameOrId }}
+            </td>
             <td class="govuk-table__cell">{{ worker?.mainJob?.title }}</td>
             <td class="govuk-table__cell">
-              <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
-                @for (button of radioButtonLabels; track $index) {
-                  <div class="govuk-radios__item">
-                    <input
-                      class="govuk-radios__input"
-                      [attr.data-testid]="button.slug + '-radio-' + workerIndex"
-                      [id]="button.slug + '-' + workerIndex"
-                      [name]="worker.uid + '-radio'"
-                      type="radio"
-                      [value]="button.value"
-                    />
-                    <label class="govuk-label govuk-radios__label" [for]="button.slug + '-' + workerIndex">
-                      {{ button.label }}
-                    </label>
-                  </div>
-                }
+              <div class="govuk-input__wrapper">
+                <div class="govuk-input__prefix asc__white-background" aria-hidden="true">£</div>
+                <input
+                  [attr.data-testid]="'amount-input-box-' + $index"
+                  class="govuk-input govuk-input--width-4"
+                  [id]="'rate-' + $index"
+                  type="number"
+                />
+                <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
+                  @for (button of radioButtonLabels; track $index) {
+                    <div class="govuk-radios__item">
+                      <input
+                        class="govuk-radios__input"
+                        [attr.data-testid]="button.slug + '-radio-' + workerIndex"
+                        [id]="button.slug + '-' + workerIndex"
+                        [name]="worker.uid + '-radio'"
+                        type="radio"
+                        [value]="button.value"
+                      />
+                      <label class="govuk-label govuk-radios__label" [for]="button.slug + '-' + workerIndex">
+                        {{ button.label }}
+                      </label>
+                    </div>
+                  }
+                </div>
               </div>
             </td>
           </tr>
