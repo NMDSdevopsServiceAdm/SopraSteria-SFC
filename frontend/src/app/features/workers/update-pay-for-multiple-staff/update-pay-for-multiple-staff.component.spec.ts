@@ -173,23 +173,23 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['../fast-track-pay-updates'], { relativeTo: route });
   });
 
-  it('should show a table with the nameOrId, jobRole and pay for the first 15 workers', async () => {
-    const { getByRole } = await setup();
+  describe('workers table', () => {
+    it('should show a table with the nameOrId, jobRole and pay for the workers', async () => {
+      const { getByRole } = await setup();
 
-    const workersTable = getByRole('table');
+      const workersTable = getByRole('table');
 
-    expect(workersTable).toBeTruthy();
-    mockWorkers.forEach((worker) => {
-      const row = within(workersTable).getByText(worker.nameOrId).closest('tr');
-      expect(row).toBeTruthy();
-      radioButtonLabels.forEach((label) => {
-        expect(within(row).getByLabelText(label)).toBeTruthy();
+      expect(workersTable).toBeTruthy();
+      mockWorkers.forEach((worker) => {
+        const row = within(workersTable).getByText(worker.nameOrId).closest('tr');
+        expect(row).toBeTruthy();
+        radioButtonLabels.forEach((label) => {
+          expect(within(row).getByLabelText(label)).toBeTruthy();
+        });
       });
     });
-  });
 
-  describe('prefill', () => {
-    it('should prefill the pay answer for existing workers', async () => {
+    it('should prefill the form with pay answers for existing workers', async () => {
       const { getByRole } = await setup();
 
       const workersTable = getByRole('table');
@@ -203,6 +203,81 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
           worker.annualHourlyPay.value,
           worker.annualHourlyPay.rate,
         );
+      });
+    });
+
+    it('should clear the pay rate when "Not known" is selected', async () => {
+      const { fixture, getByRole } = await setup();
+
+      const workersTable = getByRole('table');
+      const worker3Row = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+
+      const payRateInputBox = within(worker3Row).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+      userEvent.type(payRateInputBox, '25000');
+
+      expect(payRateInputBox.value).toEqual('25000');
+
+      userEvent.click(within(worker3Row).getByLabelText('Not known'));
+      fixture.detectChanges();
+
+      expect(payRateInputBox.value).toEqual('');
+    });
+
+    it('should clear the "Not known" radio button when user type in pay rate', async () => {
+      const { fixture, getByRole } = await setup();
+
+      const workersTable = getByRole('table');
+      const worker3Row = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+
+      const notKnownRadioButton = within(worker3Row).getByLabelText('Not known') as HTMLInputElement;
+      const payRateInputBox = within(worker3Row).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+
+      userEvent.click(notKnownRadioButton);
+
+      expect(notKnownRadioButton.checked).toBeTrue();
+
+      userEvent.type(payRateInputBox, '25000');
+      fixture.detectChanges();
+
+      expect(payRateInputBox.value).toEqual('25000');
+      expect(notKnownRadioButton.checked).toBeFalse();
+    });
+
+    ['Hourly', 'Salary'].forEach((radioButtonLabel) => {
+      it(`should not clear the pay rate when ${radioButtonLabel} is selected`, async () => {
+        const { fixture, getByRole } = await setup();
+
+        const workersTable = getByRole('table');
+        const worker3Row = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+
+        const payRateInputBox = within(worker3Row).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+        userEvent.type(payRateInputBox, '25000');
+
+        expect(payRateInputBox.value).toEqual('25000');
+
+        userEvent.click(within(worker3Row).getByLabelText(radioButtonLabel));
+        fixture.detectChanges();
+
+        expect(payRateInputBox.value).toEqual('25000');
+      });
+
+      it(`should not clear the ${radioButtonLabel} radio button when user type in pay rate`, async () => {
+        const { fixture, getByRole } = await setup();
+
+        const workersTable = getByRole('table');
+        const worker3Row = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+
+        const radioButton = within(worker3Row).getByLabelText(radioButtonLabel) as HTMLInputElement;
+        const payRateInputBox = within(worker3Row).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+
+        userEvent.click(radioButton);
+        expect(radioButton.checked).toBeTrue();
+
+        userEvent.type(payRateInputBox, '25000');
+        fixture.detectChanges();
+
+        expect(payRateInputBox.value).toEqual('25000');
+        expect(radioButton.checked).toBeTrue();
       });
     });
   });
@@ -269,7 +344,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(footer).toBeFalsy();
     });
 
-    it('should fetch and display workers of another page when page link is clicked', async () => {
+    it('should fetch and display workers of another page when page number link is clicked', async () => {
       const { fixture, getByRole, queryByText, queryByTestId, getWorkersWithPayDataSpy } = await setup({
         pageOneWorkers: mockPageOneWorkers,
         totalWorkerCount: 32,
@@ -320,5 +395,9 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(queryByTestId('pageNoText-2')).toBeTruthy();
       expect(queryByTestId('pageNoLink-2')).toBeFalsy();
     });
+
+    // it('should fetch and display worker of certain job role when ', async () => {
+
+    // })
   });
 });

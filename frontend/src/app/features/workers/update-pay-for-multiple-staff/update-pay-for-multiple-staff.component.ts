@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Establishment,
@@ -12,13 +12,15 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { take } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
   { label: 'Salary', value: 'Annually', slug: 'annually' },
   { label: 'Not known', value: "Don't know", slug: 'dont-know' },
 ];
+const DontKnow = "Don't know";
 
 @Component({
   selector: 'app-update-pay-for-multiple-staff',
@@ -37,6 +39,8 @@ export class UpdatePayForMultipleStaffComponent {
   public sortByParamMap = StaffSummarySortByParamMap;
   public sortOptions = SortStaffOptionsForUpdatePay;
   public workplaceUid: string;
+
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -76,14 +80,34 @@ export class UpdatePayForMultipleStaffComponent {
     const workersFormGroup = this.form.get('workers') as FormGroup;
 
     workers.forEach((worker) => {
-      workersFormGroup.addControl(
-        worker.uid,
-        this.formBuilder.group({
-          payValue: worker.annualHourlyPay?.value,
-          payRate: worker.annualHourlyPay?.rate,
-        }),
-      );
+      workersFormGroup.addControl(worker.uid, this.buildFormControlsForWorker(worker));
     });
+  }
+
+  private buildFormControlsForWorker(worker: WorkerWithPayData): FormGroup {
+    const payValue = this.formBuilder.control(worker.annualHourlyPay?.value);
+    const payRate = this.formBuilder.control(worker.annualHourlyPay?.rate);
+    const workerFormControls = this.formBuilder.group({ payValue, payRate });
+
+    const clearPayRateWhenSelectNotKnown = payValue.valueChanges
+      .pipe(filter((newValue) => newValue === DontKnow))
+      .subscribe(() => {
+        payRate.setValue(null, { emitEvent: false });
+      });
+
+    const clearNotKnownWhenTypeInPayRate = payRate.valueChanges
+      .pipe(
+        filter((newValue) => newValue !== ''),
+        filter(() => payValue.value === DontKnow),
+      )
+      .subscribe(() => {
+        payValue.setValue(null, { emitEvent: false });
+      });
+
+    this.subscriptions.add(clearPayRateWhenSelectNotKnown);
+    this.subscriptions.add(clearNotKnownWhenTypeInPayRate);
+
+    return workerFormControls;
   }
 
   public handleClickForFastTrackPageLink(): void {
@@ -101,10 +125,8 @@ export class UpdatePayForMultipleStaffComponent {
     this.workerService
       .getWorkersWithPayData(this.workplaceUid, searchParams)
       .pipe(take(1))
-      .subscribe((x) => {
-        if (x.workers) {
-          this.setNewWorkers(x.workers);
-        }
+      .subscribe((response) => {
+        this.setNewWorkers(response.workers);
       });
   }
 
