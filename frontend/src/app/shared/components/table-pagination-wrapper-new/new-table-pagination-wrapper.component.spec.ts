@@ -38,9 +38,6 @@ describe('NewTablePaginationWrapperCompnent', () => {
         searchTerm: '',
         currentPageIndex: overrides.currentPageIndex ?? 0,
         maintainedPageIndex: overrides.maintainedPageIndex ?? null,
-        wdfView: overrides.wdfView ?? false,
-        showNewPill: overrides.showNewPill ?? false,
-        showUpdatePayForMultipleStaffLink: overrides.showUpdatePayForMultipleStaffLink ?? false,
         workplaceUid,
       },
     });

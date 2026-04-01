@@ -23,8 +23,7 @@
       [count]="totalWorkerCount"
       accessibleLabel="for staff records"
       label="Search by job role"
-      [wdfView]="false"
-      [searchTerm]="''"
+      [defaultSortByValue]="'staffNameAsc'"
       [workplaceUid]="workplace.uid"
       [sortByParamMap]="sortByParamMap"
       [sortOptions]="sortOptions"
@@ -40,7 +39,7 @@
         </thead>
         <tbody class="govuk-table__body asc__workers-pay-data-table" [formGroup]="workersFormGroup">
           @for (worker of workersToShow; track worker.uid; let workerIndex = $index) {
-            <tr class="govuk-table__row" [formGroupName]="worker.uid">
+            <tr class="govuk-table__row" [formGroupName]="worker.uid" [attr.data-testid]="'worker-row-' + workerIndex">
               <td class="govuk-table__cell">
                 {{ worker.nameOrId }}
               </td>

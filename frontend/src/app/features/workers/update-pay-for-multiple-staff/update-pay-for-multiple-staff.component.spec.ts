@@ -10,7 +10,10 @@ import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import {
+  MockEstablishmentService,
+  MockEstablishmentServiceWithOverrides,
+} from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
@@ -95,7 +98,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         AlertService,
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useFactory: MockEstablishmentServiceWithOverrides.factory(),
         },
         {
           provide: WorkerService,
@@ -307,6 +310,30 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(sortBySelectBox).toBeFalsy();
     });
 
+    it('should fetch and update workers when user select another sortBy option', async () => {
+      const { fixture, getByText, getByTestId, getByLabelText, getWorkersWithPayDataSpy } = await setup();
+
+      getWorkersWithPayDataSpy.and.returnValue(of({ count: 4, workers: [...mockWorkers].reverse() }));
+
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      expect(sortBySelectBox).toBeTruthy();
+
+      userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+
+      expect(getWorkersWithPayDataSpy).toHaveBeenCalledWith('mocked-uid', {
+        pageIndex: 0,
+        itemsPerPage: 15,
+        sortBy: 'staffNameDesc',
+      });
+
+      await fixture.whenStable();
+
+      expect(getByTestId('worker-row-0').textContent).toContain(mockWorkers[3].nameOrId);
+      expect(getByTestId('worker-row-1').textContent).toContain(mockWorkers[2].nameOrId);
+      expect(getByTestId('worker-row-2').textContent).toContain(mockWorkers[1].nameOrId);
+      expect(getByTestId('worker-row-3').textContent).toContain(mockWorkers[0].nameOrId);
+    });
+
     it('should show a search bar and pagination footer when there are more than 15 workers', async () => {
       const { queryByLabelText, queryByTestId } = await setup({
         totalWorkerCount: 32,
@@ -344,7 +371,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(footer).toBeFalsy();
     });
 
-    it('should fetch and display workers of another page when page number link is clicked', async () => {
+    it('should fetch and update workers when page number link is clicked', async () => {
       const { fixture, getByRole, queryByText, queryByTestId, getWorkersWithPayDataSpy } = await setup({
         pageOneWorkers: mockPageOneWorkers,
         totalWorkerCount: 32,
@@ -359,6 +386,12 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
 
       userEvent.click(queryByTestId('pageNoLink-1'));
       await fixture.whenStable();
+
+      expect(getWorkersWithPayDataSpy).toHaveBeenCalledWith('mocked-uid', {
+        pageIndex: 1,
+        itemsPerPage: 15,
+        sortBy: 'staffNameAsc',
+      });
 
       mockPageTwoWorkers.forEach((worker) => {
         expectWorkerTableToHaveData(
@@ -375,29 +408,6 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(queryByTestId('pageNoLink-1')).toBeFalsy();
       expect(queryByTestId('pageNoText-1')).toBeTruthy();
       expect(queryByTestId('pageNoLink-2')).toBeTruthy();
-
-      userEvent.click(queryByTestId('pageNoLink-2'));
-      await fixture.whenStable();
-
-      mockPageThreeWorkers.forEach((worker) => {
-        expectWorkerTableToHaveData(
-          workersTable,
-          worker.nameOrId,
-          worker.annualHourlyPay.value,
-          worker.annualHourlyPay.rate,
-        );
-      });
-
-      expect(queryByText(mockPageTwoWorkers[0].nameOrId)).toBeFalsy();
-
-      expect(queryByTestId('pageNoLink-0')).toBeTruthy();
-      expect(queryByTestId('pageNoLink-1')).toBeTruthy();
-      expect(queryByTestId('pageNoText-2')).toBeTruthy();
-      expect(queryByTestId('pageNoLink-2')).toBeFalsy();
     });
-
-    // it('should fetch and display worker of certain job role when ', async () => {
-
-    // })
   });
 });

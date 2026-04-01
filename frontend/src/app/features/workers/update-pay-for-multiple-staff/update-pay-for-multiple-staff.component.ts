@@ -6,7 +6,7 @@ import {
   SortStaffOptionsForUpdatePay,
   StaffSummarySortByParamMap,
 } from '@core/model/establishment.model';
-import { SearchEvent } from '@core/model/pagination.model';
+import { parseSearchEventForWorkerWithPayData, SearchEvent } from '@core/model/pagination.model';
 import { WorkerWithPayData } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -115,12 +115,7 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   public getPageOfWorkers(event: SearchEvent): void {
-    const searchParams = {
-      pageIndex: event.index,
-      itemsPerPage: event.itemsPerPage,
-      jobId: event.searchTerm,
-      sortByValue: event.sortByValue,
-    };
+    const searchParams = parseSearchEventForWorkerWithPayData(event);
 
     this.workerService
       .getWorkersWithPayData(this.workplaceUid, searchParams)

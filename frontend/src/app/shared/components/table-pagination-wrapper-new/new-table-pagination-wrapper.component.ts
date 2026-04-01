@@ -13,15 +13,12 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
   @Input() totalCount: number;
   @Input() count: number;
   @Input() sortByParamMap: Record<string, string>;
-  @Input() sortByValue: string;
+  @Input() defaultSortByValue: string;
   @Input() sortOptions: Record<string, string>;
   @Input() searchTerm: string = '';
   @Input() label = 'Search';
   @Input() accessibleLabel: string;
   @Input() setQueryInParams: boolean = false;
-  @Input() wdfView: boolean = false;
-  @Input() showNewPill: boolean = false;
-  @Input() showUpdatePayForMultipleStaffLink: boolean = false;
   @Input() workplaceUid: string;
   @Output() fetchData = new EventEmitter<{
     index: number;
@@ -29,6 +26,8 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
     searchTerm: string;
     sortByValue: string;
   }>();
+
+  public sortByValue: string;
   public itemsPerPage = 15;
   public currentPageIndex = 0;
   public sortBySelected: string;
@@ -40,6 +39,7 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.sortByValue = this.defaultSortByValue;
     this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
     if (this.maintainedPageIndex && this.maintainedPageIndex !== this.currentPageIndex) {
       this.currentPageIndex = this.maintainedPageIndex;
@@ -74,20 +74,7 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
     this.fetchData.emit(properties);
   }
 
-  private setUpdatePayForMultiStaffViewed(): void {
-    const data = {
-      property: 'updatePayForMultiStaffViewed',
-      value: true,
-    };
-    this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe(),
-    );
-  }
-
   public handleOnClick() {
-    if (this.showNewPill) {
-      this.setUpdatePayForMultiStaffViewed();
-    }
     this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
   }
 
