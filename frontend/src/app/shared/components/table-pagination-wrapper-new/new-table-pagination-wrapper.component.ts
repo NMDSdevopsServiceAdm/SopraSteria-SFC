@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, contentChild, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
@@ -74,9 +74,9 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
     this.fetchData.emit(properties);
   }
 
-  public handleOnClick() {
-    this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
-  }
+  // public handleOnClick() {
+  //   this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
+  // }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

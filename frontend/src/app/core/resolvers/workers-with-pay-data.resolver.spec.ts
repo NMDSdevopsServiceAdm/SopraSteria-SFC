@@ -8,7 +8,7 @@ import { WorkerService } from '@core/services/worker.service';
 
 import { WorkersWithPayDataResolver } from './workers-with-pay-data.resolver';
 
-fdescribe('WorkersWithPayDataResolver', () => {
+describe('WorkersWithPayDataResolver', () => {
   const setup = () => {
     TestBed.configureTestingModule({
       providers: [

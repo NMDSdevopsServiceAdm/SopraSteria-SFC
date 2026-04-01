@@ -1,13 +1,15 @@
 <div class="govuk-grid-row govuk-util__vertical-align-center">
   @if (totalCount > itemsPerPage) {
     <div class="govuk-grid-column-three-quarters" data-testid="search">
-      <app-search-input
-        ref="search"
-        [accessibleLabel]="accessibleLabel"
-        [label]="label"
-        [prevSearch]="searchTerm"
-        (emitInput)="handleSearch($event)"
-      ></app-search-input>
+      <ng-content select="[searchBox]">
+        <app-search-input
+          ref="search"
+          [accessibleLabel]="accessibleLabel"
+          [label]="label"
+          [prevSearch]="searchTerm"
+          (emitInput)="handleSearch($event)"
+        ></app-search-input>
+      </ng-content>
     </div>
   }
 

@@ -21,14 +21,21 @@
     <app-new-table-pagination-wrapper
       [totalCount]="totalWorkerCount"
       [count]="totalWorkerCount"
-      accessibleLabel="for staff records"
-      label="Search by job role"
       [defaultSortByValue]="'staffNameAsc'"
       [workplaceUid]="workplace.uid"
       [sortByParamMap]="sortByParamMap"
       [sortOptions]="sortOptions"
       (fetchData)="getPageOfWorkers($event)"
     >
+      <ng-container searchBox>
+        <app-search-input
+          ref="search"
+          accessibleLabel="for staff records"
+          label="Search by job role"
+          [prevSearch]=""
+        ></app-search-input>
+      </ng-container>
+
       <table class="govuk-table govuk-!-margin-bottom-3">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row">

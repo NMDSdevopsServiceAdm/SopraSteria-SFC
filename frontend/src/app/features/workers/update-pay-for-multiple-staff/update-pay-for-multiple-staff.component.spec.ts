@@ -10,10 +10,7 @@ import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  MockEstablishmentService,
-  MockEstablishmentServiceWithOverrides,
-} from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
@@ -285,7 +282,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
     });
   });
 
-  describe('sorting and pagination', () => {
+  describe('sorting, pagination and search', () => {
     const mockPageOneWorkers = buildMultipleWorkers(15);
     const mockPageTwoWorkers = buildMultipleWorkers(15);
     const mockPageThreeWorkers = buildMultipleWorkers(2);
@@ -409,5 +406,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(queryByTestId('pageNoText-1')).toBeTruthy();
       expect(queryByTestId('pageNoLink-2')).toBeTruthy();
     });
+
+    describe('search by job role name', async () => {});
   });
 });
