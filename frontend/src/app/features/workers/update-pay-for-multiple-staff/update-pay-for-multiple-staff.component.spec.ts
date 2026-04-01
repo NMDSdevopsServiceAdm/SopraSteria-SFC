@@ -3,7 +3,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { WorkersWithPayDataResponse, WorkerWithPayData } from '@core/model/worker.model';
+import { WorkerWithPayData } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -35,8 +35,12 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
     workerBuilder({ overrides: { annualHourlyPay: { value: 'Annually', rate: 25000 } } }),
     workerBuilder({ overrides: { annualHourlyPay: { value: 'Hourly', rate: 12.5 } } }),
     workerBuilder({ overrides: { annualHourlyPay: { value: "Don't know" } } }),
+    workerBuilder({ overrides: { annualHourlyPay: { value: null } } }),
   ] as WorkerWithPayData[];
+
+  const payValues = ['Hourly', 'Annually', "Don't know"];
   const radioButtonLabels = ['Hourly', 'Salary', 'Not known'];
+  const payValueToLabel = (payValue: string): string => radioButtonLabels[payValues.indexOf(payValue)];
 
   const setup = async (overrides: any = {}) => {
     const firstPageWorker = overrides?.firstPageWorker ?? mockWorkers;
@@ -126,7 +130,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['../fast-track-pay-updates'], { relativeTo: route });
   });
 
-  it('should show a table with the nameOrId, jobRole and pay data for the first 15 workers', async () => {
+  it('should show a table with the nameOrId, jobRole and pay for the first 15 workers', async () => {
     const { getByRole } = await setup();
 
     const workersTable = getByRole('table');
@@ -137,6 +141,42 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(row).toBeTruthy();
       radioButtonLabels.forEach((label) => {
         expect(within(row).getByLabelText(label)).toBeTruthy();
+      });
+    });
+  });
+
+  describe('prefill', () => {
+    const expectWorkerRowFilled = (table: HTMLElement, workerNameOrId: string, payOption: string, payRate: number) => {
+      const row = within(table).getByText(workerNameOrId).closest('tr');
+      expect(row).toBeTruthy();
+
+      if (payOption) {
+        const label = payValueToLabel(payOption);
+        const radioButton = within(row).getByLabelText(label) as HTMLInputElement;
+        expect(radioButton.checked).toBeTrue();
+      } else {
+        radioButtonLabels.forEach((label) => {
+          const radioButton = within(row).getByLabelText(label) as HTMLInputElement;
+          expect(radioButton.checked).toBeFalse();
+        });
+      }
+
+      const payRateInputBox = within(row).getByLabelText(
+        `Hourly pay rate or salary for ${workerNameOrId}`,
+      ) as HTMLInputElement;
+      const expectedInputBoxValue = payRate ? payRate.toString() : '';
+      expect(payRateInputBox.value).toEqual(expectedInputBoxValue);
+    };
+
+    it('should prefill the pay answer for existing workers', async () => {
+      const { getByRole } = await setup();
+
+      const workersTable = getByRole('table');
+
+      expect(workersTable).toBeTruthy();
+
+      mockWorkers.forEach((worker) => {
+        expectWorkerRowFilled(workersTable, worker.nameOrId, worker.annualHourlyPay.value, worker.annualHourlyPay.rate);
       });
     });
   });
