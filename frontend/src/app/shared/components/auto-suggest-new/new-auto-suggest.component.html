@@ -1,0 +1,47 @@
+<div [class]="customClass">
+  @if (label) {
+    <label class="govuk-label govuk-!-margin-bottom-2" for="{{ inputId }}" data-testid="label"
+      >{{ label }}
+      @if (accessibleLabel) {
+        <span class="govuk-visually-hidden">{{ accessibleLabel }}</span>
+      }
+    </label>
+  }
+  <div data-testid="container">
+    <div data-testid="search" class="govuk-auto-suggest">
+      <input
+        [id]="inputId"
+        class="govuk-input"
+        [class.govuk-input--error]="hasError"
+        type="text"
+        [ngClass]="{ 'overflow-ellipsis': showEllipsis }"
+        [formControl]="textInput"
+      />
+      @if (showSuggestion() && suggestions.length > 0) {
+        <ul data-testid="tray-list" [ngClass]="{ 'tray-list': showBackground }">
+          @for (item of suggestions; track item) {
+            <li [class]="{ 'tray-list-item': showEllipsis }" (click)="onClick(item)">
+              {{ item.suggestion }}
+            </li>
+          }
+        </ul>
+      }
+
+      @if (showSearchIcon) {
+        <div>
+          <button
+            class="govuk-button button-override--search govuk-!-margin-bottom-0"
+            name="search"
+            type="button"
+            (click)="emitSearch()"
+            data-testid="search-icon"
+            data-module="govuk-button"
+            aria-label="search button"
+          >
+            <img src="/assets/images/search-icon.svg" alt="" aria-hidden="true" />
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

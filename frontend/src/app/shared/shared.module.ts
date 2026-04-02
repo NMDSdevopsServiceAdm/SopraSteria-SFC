@@ -150,6 +150,7 @@ import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
 import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.pipe';
 import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pill-with-link.component';
 import { NewTablePaginationWrapperComponent } from './components/table-pagination-wrapper-new/new-table-pagination-wrapper.component';
+import { NewAutoSuggestComponent } from './components/auto-suggest-new/new-auto-suggest.component';
 
 @NgModule({
   imports: [
@@ -166,6 +167,7 @@ import { NewTablePaginationWrapperComponent } from './components/table-paginatio
     AbsoluteNumberPipe,
     AlertComponent,
     AutoSuggestComponent,
+    NewAutoSuggestComponent,
     BackLinkComponent,
     BasicRecordComponent,
     BreadcrumbsComponent,
@@ -311,6 +313,7 @@ import { NewTablePaginationWrapperComponent } from './components/table-paginatio
     AbsoluteNumberPipe,
     AlertComponent,
     AutoSuggestComponent,
+    NewAutoSuggestComponent,
     BackLinkComponent,
     BasicRecordComponent,
     BreadcrumbsComponent,

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -13,6 +13,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { JobRoleDataProvider } from '@shared/auto-suggest.model';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
@@ -43,6 +44,7 @@ export class UpdatePayForMultipleStaffComponent {
   public allJobs: Array<Job>;
   public allJobTitles: Array<string>;
   public allJobTitlesLowerCase: Array<string>;
+  public jobRoleDataProvider: WritableSignal<JobRoleDataProvider> = signal(null);
 
   private subscriptions: Subscription = new Subscription();
 
@@ -54,9 +56,7 @@ export class UpdatePayForMultipleStaffComponent {
     private router: Router,
     private alertService: AlertService,
     private route: ActivatedRoute,
-  ) {
-    this.getSuggestedList = this.getSuggestedList.bind(this);
-  }
+  ) {}
 
   ngOnInit() {
     const firstPageWorkers = this.route.snapshot.data.workersWithPayData?.workers ?? [];
@@ -68,8 +68,7 @@ export class UpdatePayForMultipleStaffComponent {
     this.totalWorkerCount = totalWorkerCount;
 
     this.allJobs = this.route.snapshot.data.jobs;
-    this.allJobTitles = this.allJobs.map((job) => job.title);
-    this.allJobTitlesLowerCase = this.allJobTitles.map((title) => title.toLowerCase());
+    this.buildDataProvider();
 
     this.workersToShow = firstPageWorkers;
     this.setupForm();
@@ -141,25 +140,29 @@ export class UpdatePayForMultipleStaffComponent {
     this.addWorkersToForm(workers);
   }
 
-  public getSuggestedList(): string[] {
-    const { jobRoleToSearch } = this.form.value;
-    const isValidString = typeof jobRoleToSearch === 'string';
-    if (!isValidString! || jobRoleToSearch?.length < 2) {
-      return [];
-    }
+  public buildDataProvider() {
+    const allJobs = [...this.allJobs];
+    const dataProvider: JobRoleDataProvider = (searchTerm: string) => {
+      if (!searchTerm) {
+        return [];
+      }
 
-    const searchTerm = jobRoleToSearch.trim().toLowerCase();
-    const matches = this.allJobTitles.filter((jobTitle) => jobTitle.includes(searchTerm));
+      const searchTermInLowerCase = searchTerm.trim().toLowerCase();
 
-    return matches;
+      const matchedJobs = allJobs.filter((job) => {
+        return job.title.toLowerCase().includes(searchTermInLowerCase);
+      });
+
+      return matchedJobs.map((job) => {
+        return { suggestion: job.title, dataValue: job };
+      });
+    };
+
+    this.jobRoleDataProvider.set(dataProvider);
   }
 
-  public handleSearchBoxClick(selectedJobTitle: string): void {
-    console.log('==== here ====');
-    const selectedJob = this.allJobs.find((job) => job.title === selectedJobTitle);
-    console.log(selectedJobTitle, '<---selectedJobTitle');
-    console.log(selectedJob, '<---selectedJob');
-    if (!selectedJob) {
+  public handleSearchBoxClick(selectedJob: Job): void {
+    if (!selectedJob?.id) {
       return;
     }
 
