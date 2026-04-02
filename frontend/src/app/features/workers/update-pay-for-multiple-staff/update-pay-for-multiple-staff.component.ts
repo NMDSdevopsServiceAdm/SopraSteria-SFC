@@ -69,6 +69,7 @@ export class UpdatePayForMultipleStaffComponent {
   private setupForm(): void {
     this.form = this.formBuilder.group({
       workers: this.formBuilder.group({}),
+      jobRoleToSearch: null,
     });
   }
 
