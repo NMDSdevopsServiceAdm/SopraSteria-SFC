@@ -6,6 +6,7 @@ import {
   SortStaffOptionsForUpdatePay,
   StaffSummarySortByParamMap,
 } from '@core/model/establishment.model';
+import { Job } from '@core/model/job.model';
 import { parseSearchEventForWorkerWithPayData, SearchEvent } from '@core/model/pagination.model';
 import { WorkerWithPayData } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -39,6 +40,9 @@ export class UpdatePayForMultipleStaffComponent {
   public sortByParamMap = StaffSummarySortByParamMap;
   public sortOptions = SortStaffOptionsForUpdatePay;
   public workplaceUid: string;
+  public allJobs: Array<Job>;
+  public allJobTitles: Array<string>;
+  public allJobTitlesLowerCase: Array<string>;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -50,7 +54,9 @@ export class UpdatePayForMultipleStaffComponent {
     private router: Router,
     private alertService: AlertService,
     private route: ActivatedRoute,
-  ) {}
+  ) {
+    this.getSuggestedList = this.getSuggestedList.bind(this);
+  }
 
   ngOnInit() {
     const firstPageWorkers = this.route.snapshot.data.workersWithPayData?.workers ?? [];
@@ -60,6 +66,10 @@ export class UpdatePayForMultipleStaffComponent {
     const totalWorkerCount = this.route.snapshot.data.workersWithPayData?.count;
     this.currentWorkerCount = totalWorkerCount;
     this.totalWorkerCount = totalWorkerCount;
+
+    this.allJobs = this.route.snapshot.data.jobs;
+    this.allJobTitles = this.allJobs.map((job) => job.title);
+    this.allJobTitlesLowerCase = this.allJobTitles.map((title) => title.toLowerCase());
 
     this.workersToShow = firstPageWorkers;
     this.setupForm();
@@ -129,5 +139,37 @@ export class UpdatePayForMultipleStaffComponent {
   private setNewWorkers(workers: WorkerWithPayData[]) {
     this.workersToShow = workers;
     this.addWorkersToForm(workers);
+  }
+
+  public getSuggestedList(): string[] {
+    const { jobRoleToSearch } = this.form.value;
+    const isValidString = typeof jobRoleToSearch === 'string';
+    if (!isValidString! || jobRoleToSearch?.length < 2) {
+      return [];
+    }
+
+    const searchTerm = jobRoleToSearch.trim().toLowerCase();
+    const matches = this.allJobTitles.filter((jobTitle) => jobTitle.includes(searchTerm));
+
+    return matches;
+  }
+
+  public handleSearchBoxClick(selectedJobTitle: string): void {
+    console.log('==== here ====');
+    const selectedJob = this.allJobs.find((job) => job.title === selectedJobTitle);
+    console.log(selectedJobTitle, '<---selectedJobTitle');
+    console.log(selectedJob, '<---selectedJob');
+    if (!selectedJob) {
+      return;
+    }
+
+    const searchEvent = {
+      index: 0,
+      itemsPerPage: 15,
+      searchTerm: selectedJob.id.toString(),
+      sortByValue: 'staffNameAsc',
+    } as SearchEvent;
+
+    this.getPageOfWorkers(searchEvent);
   }
 }

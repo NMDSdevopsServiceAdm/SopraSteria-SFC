@@ -28,12 +28,18 @@
       (fetchData)="getPageOfWorkers($event)"
     >
       <ng-container searchBox>
-        <app-search-input
-          ref="search"
-          accessibleLabel="for staff records"
-          label="Search by job role"
-          [prevSearch]=""
-        ></app-search-input>
+        <app-auto-suggest
+          [formGroup]="form"
+          [dataProvider]="getSuggestedList"
+          [formControlName]="'jobRoleToSearch'"
+          [showSearchIcon]="false"
+          (clickItemEvent)="handleSearchBoxClick($event)"
+          [showBackground]="true"
+          [showClickedSuggestionInInput]="false"
+          [label]="'Search'"
+          [accessibleLabel]="'search for questions and answers'"
+        >
+        </app-auto-suggest>
         <!-- <app-auto-suggest [formGroup]="form" formControlName="jobRoleToSearch"> </app-auto-suggest> -->
       </ng-container>
 
