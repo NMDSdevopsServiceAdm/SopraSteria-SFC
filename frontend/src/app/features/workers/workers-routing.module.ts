@@ -337,17 +337,19 @@ const routes: Routes = [
       title: 'Who Carry out Delegated Healthcare Activities',
     },
   },
+
+  {
+    path: 'fast-track-pay-updates',
+    component: FastTrackPayUpdatesComponent,
+    resolve: { workersByJobRole: WorkersByJobRoleResolver },
+  },
+
   {
     path: 'fast-track-confirmation-page',
     component: FastTrackConfirmationPageComponent,
     data: {
       title: 'Fast Track Confirmation Page',
     },
-  },
-  {
-    path: 'fast-track-pay-updates',
-    component: FastTrackPayUpdatesComponent,
-    resolve: { workersByJobRole: WorkersByJobRoleResolver },
   },
   {
     path: 'basic-records-save-success',
