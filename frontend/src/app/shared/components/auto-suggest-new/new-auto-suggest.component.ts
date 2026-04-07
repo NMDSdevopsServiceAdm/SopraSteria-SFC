@@ -6,7 +6,11 @@ import { AutoSuggestDataProvider, AutoSuggestResult } from '@shared/auto-suggest
 @Component({
   selector: 'app-new-auto-suggest',
   templateUrl: './new-auto-suggest.component.html',
-  styleUrls: ['../search-input/search-input.component.scss', '../auto-suggest/auto-suggest.component.scss'],
+  styleUrls: [
+    './new-auto-suggest.component.scss',
+    '../search-input/search-input.component.scss',
+    '../auto-suggest/auto-suggest.component.scss',
+  ],
   standalone: false,
 })
 export class NewAutoSuggestComponent<T> implements OnInit {
@@ -14,8 +18,8 @@ export class NewAutoSuggestComponent<T> implements OnInit {
   @Input() dataProvider: AutoSuggestDataProvider<T>;
   @Input() showSearchIcon: boolean = false;
   @Input() showBackground: boolean = false;
-  @Input() label: string;
-  @Input() accessibleLabel: string = null;
+  @Input() label: string = '';
+  @Input() accessibleLabel: string = '';
   @Input() customClass: string = '';
 
   @Input() showEllipsis: boolean = false;
