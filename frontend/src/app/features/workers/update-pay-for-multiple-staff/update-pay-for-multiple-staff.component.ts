@@ -1,3 +1,7 @@
+import lodash from 'lodash';
+import { Subscription } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
+
 import { Component, ElementRef, signal, viewChild, WritableSignal } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -15,8 +19,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { JobRoleDataProvider } from '@shared/auto-suggest.model';
 import { NewTablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper-new/new-table-pagination-wrapper.component';
-import { Subscription } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -159,24 +161,15 @@ export class UpdatePayForMultipleStaffComponent {
         return job.title.toLowerCase().includes(searchTermInLowerCase);
       });
 
-      return matchedJobs.map((job) => {
+      const resultsMatchTheStartComeFirst = (job: Job) =>
+        job.title.toLowerCase().startsWith(searchTermInLowerCase) ? 1 : 2;
+      const matchesWithUpdateOrders = lodash.sortBy(matchedJobs, [resultsMatchTheStartComeFirst, 'title']);
+
+      return matchesWithUpdateOrders.map((job) => {
         return { suggestion: job.title, dataValue: job };
       });
     };
 
     this.jobRoleDataProvider.set(dataProvider);
-  }
-
-  public handleSearchBoxClick(selectedJob: Job): void {
-    // if (!selectedJob?.id) {
-    //   return;
-    // }
-    // const currentSearchParams = this.paginationWrapper().currentSearchParams;
-    // const searchEvent = {
-    //   ...currentSearchParams,
-    //   index: 0,
-    //   searchTerm: selectedJob.id.toString(),
-    // } as SearchEvent;
-    // this.getPageOfWorkers(searchEvent);
   }
 }

@@ -10,6 +10,7 @@ export class SearchInputComponent {
   @Input() ref = 'search';
   @Input() searchButtonName = 'search';
   @Input() label = 'Search';
+  @Input() showSearchIcon: boolean = false;
   @Input() accessibleLabel: string;
   @Input() set prevSearch(value: string) {
     if (value.trim() !== this.searchTerm.trim()) {

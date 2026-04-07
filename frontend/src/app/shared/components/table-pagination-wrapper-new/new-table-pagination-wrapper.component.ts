@@ -73,12 +73,13 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
   private setUpCustomSearchBox(): void {
     const customSearchBox = this.customSearchBox();
 
-    // @ts-expect-error
-    const emitEvent = customSearchBox.clickItemEvent as EventEmitter;
-    emitEvent.subscribe((dataValue) => {
-      const id = dataValue?.id?.toString();
-      this.handleSearch(id);
-    });
+    this.subscriptions.add(
+      // @ts-expect-error
+      customSearchBox.emitInput.subscribe((dataValue) => {
+        const id = dataValue?.id?.toString();
+        this.handleSearch(id);
+      }),
+    );
   }
 
   public handleSearch(searchTerm: string): void {
@@ -96,10 +97,6 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
   private getData(): void {
     this.fetchData.emit(this.currentSearchParams);
   }
-
-  // public handleOnClick() {
-  //   this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
-  // }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();

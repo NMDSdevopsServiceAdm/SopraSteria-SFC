@@ -511,7 +511,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       });
 
       it('should show a "Clear search results" link when job role filter is active', async () => {
-        const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy, queryByTestId } = await setup({
+        const { getByText, getByLabelText, getWorkersWithPayDataSpy } = await setup({
           totalWorkerCount: 16,
         });
 
@@ -519,11 +519,25 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
           return of({ count: 16, workers: mockWorkers });
         });
 
-        const searchBox = getByLabelText(/Search by job role/)!;
+        const searchBox = getByLabelText(/Search by job role/) as HTMLInputElement;
         userEvent.type(searchBox, 'Care');
+        const searchBoxWrapper = searchBox.parentElement!;
+        userEvent.click(within(searchBoxWrapper).getByText('Senior care worker'));
+
+        getWorkersWithPayDataSpy.calls.reset();
 
         const clearSearchResultsLink = getByText('Clear search results');
         expect(clearSearchResultsLink).toBeTruthy();
+
+        userEvent.click(clearSearchResultsLink);
+
+        expect(getWorkersWithPayDataSpy).toHaveBeenCalledWith('mocked-uid', {
+          pageIndex: 0,
+          itemsPerPage: 15,
+          sortBy: 'staffNameAsc',
+        });
+
+        expect(searchBox.value).toEqual('');
       });
 
       it('when job role filter is active, page change and sort by change should use the job role id in search', async () => {
@@ -541,6 +555,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         const searchBoxWrapper = searchBox.parentElement!;
 
         userEvent.click(within(searchBoxWrapper).getByText('Senior care worker'));
+        getWorkersWithPayDataSpy.calls.reset();
 
         // sort by staff name desc
         const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
@@ -556,6 +571,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         });
 
         // click page 2
+        getWorkersWithPayDataSpy.calls.reset();
         userEvent.click(queryByTestId('pageNoLink-1')!);
 
         await fixture.whenStable();

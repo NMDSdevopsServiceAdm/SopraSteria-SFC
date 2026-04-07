@@ -151,6 +151,7 @@ import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.
 import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pill-with-link.component';
 import { NewTablePaginationWrapperComponent } from './components/table-pagination-wrapper-new/new-table-pagination-wrapper.component';
 import { NewAutoSuggestComponent } from './components/auto-suggest-new/new-auto-suggest.component';
+import { SearchInputAutoSuggestComponent } from './components/search-input-auto-suggest/search-input-auto-suggest.component';
 
 @NgModule({
   imports: [
@@ -243,6 +244,7 @@ import { NewAutoSuggestComponent } from './components/auto-suggest-new/new-auto-
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
+    SearchInputAutoSuggestComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,
@@ -386,6 +388,7 @@ import { NewAutoSuggestComponent } from './components/auto-suggest-new/new-auto-
     RemoveParentConfirmationComponent,
     PaginationComponent,
     SearchInputComponent,
+    SearchInputAutoSuggestComponent,
     ValidationErrorMessageComponent,
     CannotCreateAccountComponent,
     WorkplaceSubmitButtonComponent,

@@ -29,16 +29,16 @@
       (fetchData)="getPageOfWorkers($event)"
     >
       <ng-container searchBoxContainer>
-        <app-new-auto-suggest
+        <app-search-input-auto-suggest
           #searchBox
-          inputId="'job-role-search'"
-          customClass="asc__auto-auggest__update-pay-for_multiple-staff"
+          ref="'job-role-search'"
           [label]="'Search by job role'"
           [dataProvider]="jobRoleDataProvider()"
+          [showClearResults]="true"
           [showSearchIcon]="false"
           [accessibleLabel]="'by job role'"
         >
-        </app-new-auto-suggest>
+        </app-search-input-auto-suggest>
       </ng-container>
 
       <table class="govuk-table govuk-!-margin-bottom-3">
