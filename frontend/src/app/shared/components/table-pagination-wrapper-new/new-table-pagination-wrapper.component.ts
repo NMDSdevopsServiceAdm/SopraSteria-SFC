@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, contentChild, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, contentChild, effect } from '@angular/core';
 import { Router } from '@angular/router';
+import { SearchEvent } from '@core/model/pagination.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
@@ -9,6 +10,8 @@ import { Subscription } from 'rxjs';
   standalone: false,
 })
 export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
+  private customSearchBox = contentChild('searchBox');
+
   @Input() maintainedPageIndex: number;
   @Input() totalCount: number;
   @Input() count: number;
@@ -36,7 +39,13 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private establishmentService: EstablishmentService,
-  ) {}
+  ) {
+    effect(() => {
+      if (this.customSearchBox()) {
+        this.setUpCustomSearchBox();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.sortByValue = this.defaultSortByValue;
@@ -52,6 +61,26 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
     this.getData();
   }
 
+  public get currentSearchParams(): SearchEvent {
+    return {
+      index: this.currentPageIndex,
+      itemsPerPage: this.itemsPerPage,
+      searchTerm: this.searchTerm,
+      sortByValue: this.sortByValue,
+    };
+  }
+
+  private setUpCustomSearchBox(): void {
+    const customSearchBox = this.customSearchBox();
+
+    // @ts-expect-error
+    const emitEvent = customSearchBox.clickItemEvent as EventEmitter;
+    emitEvent.subscribe((dataValue) => {
+      const id = dataValue?.id?.toString();
+      this.handleSearch(id);
+    });
+  }
+
   public handleSearch(searchTerm: string): void {
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
@@ -65,13 +94,7 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
   }
 
   private getData(): void {
-    const properties = {
-      index: this.currentPageIndex,
-      itemsPerPage: this.itemsPerPage,
-      searchTerm: this.searchTerm,
-      sortByValue: this.sortByValue,
-    };
-    this.fetchData.emit(properties);
+    this.fetchData.emit(this.currentSearchParams);
   }
 
   // public handleOnClick() {

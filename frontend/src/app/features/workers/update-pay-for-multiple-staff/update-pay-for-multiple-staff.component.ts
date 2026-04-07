@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, ElementRef, signal, viewChild, WritableSignal } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -14,6 +14,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { JobRoleDataProvider } from '@shared/auto-suggest.model';
+import { NewTablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper-new/new-table-pagination-wrapper.component';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
@@ -31,6 +32,8 @@ const DontKnow = "Don't know";
   standalone: false,
 })
 export class UpdatePayForMultipleStaffComponent {
+  public paginationWrapper = viewChild.required<NewTablePaginationWrapperComponent>('paginationWrapper');
+
   public form: UntypedFormGroup;
   public workplace: Establishment;
   public totalWorkerCount: number;
@@ -73,6 +76,8 @@ export class UpdatePayForMultipleStaffComponent {
     this.workersToShow = firstPageWorkers;
     this.setupForm();
     this.addWorkersToForm(this.workersToShow);
+
+    this.backLinkService.showBackLink();
   }
 
   private setupForm(): void {
@@ -132,6 +137,7 @@ export class UpdatePayForMultipleStaffComponent {
       .pipe(take(1))
       .subscribe((response) => {
         this.setNewWorkers(response.workers);
+        this.currentWorkerCount = response.count;
       });
   }
 
@@ -162,17 +168,15 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   public handleSearchBoxClick(selectedJob: Job): void {
-    if (!selectedJob?.id) {
-      return;
-    }
-
-    const searchEvent = {
-      index: 0,
-      itemsPerPage: 15,
-      searchTerm: selectedJob.id.toString(),
-      sortByValue: 'staffNameAsc',
-    } as SearchEvent;
-
-    this.getPageOfWorkers(searchEvent);
+    // if (!selectedJob?.id) {
+    //   return;
+    // }
+    // const currentSearchParams = this.paginationWrapper().currentSearchParams;
+    // const searchEvent = {
+    //   ...currentSearchParams,
+    //   index: 0,
+    //   searchTerm: selectedJob.id.toString(),
+    // } as SearchEvent;
+    // this.getPageOfWorkers(searchEvent);
   }
 }

@@ -17,6 +17,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
+import { AllJobs } from '../../../../mockdata/jobs.js';
 
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
 
@@ -108,6 +109,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
             snapshot: {
               data: {
                 workersWithPayData: mockWorkersWithPayData,
+                jobs: AllJobs,
               },
             },
           },
@@ -407,6 +409,164 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(queryByTestId('pageNoLink-2')).toBeTruthy();
     });
 
-    describe('search by job role name', async () => {});
+    describe('search by job role name', async () => {
+      it('should show a search box when total count of workers is more than 15 (a single page)', async () => {
+        const { queryAllByLabelText } = await setup({
+          totalWorkerCount: 16,
+        });
+
+        const searchBox = queryAllByLabelText(/Search by job role/);
+        expect(searchBox).toBeTruthy();
+      });
+
+      it('should not show the search box when total count of workers is less than 15', async () => {
+        const { queryByLabelText } = await setup({
+          totalWorkerCount: 14,
+        });
+
+        const searchBox = queryByLabelText(/Search by job role/);
+        expect(searchBox).toBeFalsy();
+      });
+
+      it('should not show the search box when total count of workers is exactly 15', async () => {
+        const { queryByLabelText } = await setup({
+          totalWorkerCount: 15,
+        });
+
+        const searchBox = queryByLabelText(/Search by job role/);
+        expect(searchBox).toBeFalsy();
+      });
+
+      it('should display suggestions when user type in part of a job role name', async () => {
+        const { queryByLabelText } = await setup({
+          totalWorkerCount: 16,
+        });
+
+        const searchBox = queryByLabelText(/Search by job role/)!;
+        userEvent.type(searchBox, 'Care');
+
+        const searchBoxWrapper = searchBox.parentElement!;
+
+        expect(within(searchBoxWrapper).getByText('Care worker')).toBeTruthy();
+        expect(within(searchBoxWrapper).getByText('Senior care worker')).toBeTruthy();
+        expect(within(searchBoxWrapper).queryByText('Registered nurse')).toBeFalsy();
+      });
+
+      const jobIdOfSeniorCareWorker = AllJobs.find((job) => job.title === 'Senior care worker')?.id;
+
+      it('should search workers with given job role id, when a job role name suggestion is clicked', async () => {
+        const { fixture, queryByLabelText, getWorkersWithPayDataSpy } = await setup({
+          totalWorkerCount: 16,
+        });
+
+        getWorkersWithPayDataSpy.and.callFake((_uid) => {
+          return of({ count: 3, workers: mockWorkers.slice(3) });
+        });
+
+        const searchBox = queryByLabelText(/Search by job role/)!;
+        userEvent.type(searchBox, 'Care');
+        const searchBoxWrapper = searchBox.parentElement!;
+
+        userEvent.click(within(searchBoxWrapper).getByText('Senior care worker'));
+
+        await fixture.whenStable();
+
+        expect(getWorkersWithPayDataSpy).toHaveBeenCalledWith('mocked-uid', {
+          pageIndex: 0,
+          itemsPerPage: 15,
+          sortBy: 'staffNameAsc',
+          jobId: jobIdOfSeniorCareWorker,
+        });
+      });
+
+      it('should search with pageIndex = 0 and the current sortBy setting', async () => {
+        const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy, queryByTestId } = await setup({
+          totalWorkerCount: 16,
+        });
+
+        getWorkersWithPayDataSpy.and.callFake((_uid) => {
+          return of({ count: 3, workers: mockWorkers.slice(3) });
+        });
+
+        // go to page 2 and sort by staff name desc
+        userEvent.click(queryByTestId('pageNoLink-1')!);
+
+        const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+        userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+
+        const searchBox = getByLabelText(/Search by job role/)!;
+        userEvent.type(searchBox, 'Care');
+        const searchBoxWrapper = searchBox.parentElement!;
+
+        userEvent.click(within(searchBoxWrapper).getByText('Senior care worker'));
+
+        await fixture.whenStable();
+
+        expect(getWorkersWithPayDataSpy).toHaveBeenCalledWith('mocked-uid', {
+          pageIndex: 0,
+          itemsPerPage: 15,
+          sortBy: 'staffNameDesc',
+          jobId: jobIdOfSeniorCareWorker,
+        });
+      });
+
+      it('should show a "Clear search results" link when job role filter is active', async () => {
+        const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy, queryByTestId } = await setup({
+          totalWorkerCount: 16,
+        });
+
+        getWorkersWithPayDataSpy.and.callFake((_uid) => {
+          return of({ count: 16, workers: mockWorkers });
+        });
+
+        const searchBox = getByLabelText(/Search by job role/)!;
+        userEvent.type(searchBox, 'Care');
+
+        const clearSearchResultsLink = getByText('Clear search results');
+        expect(clearSearchResultsLink).toBeTruthy();
+      });
+
+      it('when job role filter is active, page change and sort by change should use the job role id in search', async () => {
+        const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy, queryByTestId } = await setup({
+          totalWorkerCount: 16,
+        });
+
+        getWorkersWithPayDataSpy.and.callFake((_uid) => {
+          return of({ count: 16, workers: mockWorkers });
+        });
+
+        // search by job role first
+        const searchBox = getByLabelText(/Search by job role/)!;
+        userEvent.type(searchBox, 'Care');
+        const searchBoxWrapper = searchBox.parentElement!;
+
+        userEvent.click(within(searchBoxWrapper).getByText('Senior care worker'));
+
+        // sort by staff name desc
+        const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+        userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+
+        await fixture.whenStable();
+
+        expect(getWorkersWithPayDataSpy).toHaveBeenCalledWith('mocked-uid', {
+          pageIndex: 0,
+          itemsPerPage: 15,
+          sortBy: 'staffNameDesc',
+          jobId: jobIdOfSeniorCareWorker,
+        });
+
+        // click page 2
+        userEvent.click(queryByTestId('pageNoLink-1')!);
+
+        await fixture.whenStable();
+
+        expect(getWorkersWithPayDataSpy).toHaveBeenCalledWith('mocked-uid', {
+          pageIndex: 1,
+          itemsPerPage: 15,
+          sortBy: 'staffNameDesc',
+          jobId: jobIdOfSeniorCareWorker,
+        });
+      });
+    });
   });
 });

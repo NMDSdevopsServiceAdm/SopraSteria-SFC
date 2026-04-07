@@ -19,22 +19,23 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-new-table-pagination-wrapper
+      #paginationWrapper
       [totalCount]="totalWorkerCount"
-      [count]="totalWorkerCount"
+      [count]="currentWorkerCount"
       [defaultSortByValue]="'staffNameAsc'"
       [workplaceUid]="workplace.uid"
       [sortByParamMap]="sortByParamMap"
       [sortOptions]="sortOptions"
       (fetchData)="getPageOfWorkers($event)"
     >
-      <ng-container searchBox>
+      <ng-container searchBoxContainer>
         <app-new-auto-suggest
+          #searchBox
           inputId="'job-role-search'"
           customClass="asc__auto-auggest__update-pay-for_multiple-staff"
           [label]="'Search by job role'"
           [dataProvider]="jobRoleDataProvider()"
           [showSearchIcon]="false"
-          (clickItemEvent)="handleSearchBoxClick($event)"
           [accessibleLabel]="'by job role'"
         >
         </app-new-auto-suggest>

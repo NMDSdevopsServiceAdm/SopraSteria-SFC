@@ -1,7 +1,7 @@
 <div class="govuk-grid-row govuk-util__vertical-align-center">
   @if (totalCount > itemsPerPage) {
     <div class="govuk-grid-column-three-quarters" data-testid="search">
-      <ng-content select="[searchBox]">
+      <ng-content select="[searchBoxContainer]">
         <app-search-input
           ref="search"
           [accessibleLabel]="accessibleLabel"

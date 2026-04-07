@@ -18,8 +18,8 @@
         [formControl]="textInput"
       />
       @if (showSuggestion() && suggestions.length > 0) {
-        <ul data-testid="tray-list" [ngClass]="{ 'tray-list': showBackground }">
-          @for (item of suggestions; track item) {
+        <ul data-testid="tray-list">
+          @for (item of suggestions; track item.dataValue.id) {
             <li [class]="{ 'tray-list-item': showEllipsis }" (click)="onClick(item)">
               {{ item.suggestion }}
             </li>
