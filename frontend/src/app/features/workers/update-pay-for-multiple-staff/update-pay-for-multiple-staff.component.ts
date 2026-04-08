@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
 import { Component, signal, viewChild, WritableSignal } from '@angular/core';
-import { FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Establishment,
@@ -72,7 +72,7 @@ export class UpdatePayForMultipleStaffComponent {
     this.currentWorkerCount = totalWorkerCount;
     this.totalWorkerCount = totalWorkerCount;
 
-    this.allJobs = this.route.snapshot.data.jobs;
+    this.allJobs = this.route.snapshot.data.mainJobRoles;
     this.buildJobDataProvider();
 
     this.workersToShow = firstPageWorkers;
@@ -126,11 +126,6 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   public handleClickForFastTrackPageLink(): void {
-    const data = {
-      property: 'fastTrackPayByJobRolesViewed',
-      value: true,
-    };
-
     this.router
       .navigate(['../fast-track-pay-updates'], { relativeTo: this.route })
       .then(() => this.setFastTrackPayByJobRolesViewed());
@@ -142,21 +137,21 @@ export class UpdatePayForMultipleStaffComponent {
       value: true,
     };
 
-    this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe(),
-    );
+    this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe();
   }
 
   public getPageOfWorkers(event: SearchEvent): void {
     const searchParams = parseSearchEventForWorkerWithPayData(event);
 
-    this.workerService
+    const getWorker = this.workerService
       .getWorkersWithPayData(this.workplaceUid, searchParams)
       .pipe(take(1))
       .subscribe((response) => {
         this.setNewWorkers(response.workers);
         this.currentWorkerCount = response.count;
       });
+
+    this.subscriptions.add(getWorker);
   }
 
   private setNewWorkers(workers: WorkerWithPayData[]) {
@@ -187,5 +182,48 @@ export class UpdatePayForMultipleStaffComponent {
     };
 
     this.jobRoleDataProvider.set(dataProvider);
+  }
+
+  private getUpdatedPayData() {
+    const touchedFormControls = Object.entries(this.workersFormGroup.controls).filter(([_workerUid, control]) => {
+      return control.dirty;
+    });
+    const updates = touchedFormControls.map(([workerUid, control]) => {
+      const { payValue, payRate } = control.value;
+      return { uid: workerUid, annualHourlyPay: { value: payValue, rate: payRate } };
+    });
+
+    return updates;
+  }
+
+  public onSubmit(): void {
+    const updatedPayData = this.getUpdatedPayData();
+    if (!updatedPayData?.length) {
+      this.returnToStaffRecordsPage();
+      return;
+    }
+
+    const alertMessage = `Pay updated in ${updatedPayData.length} staff record${updatedPayData.length > 1 ? 's' : ''}`;
+
+    const submitCall = this.establishmentService.updateWorkers(this.workplaceUid, updatedPayData).subscribe(() => {
+      this.returnToStaffRecordsPage().then(() => {
+        this.alertService.addAlert({ type: 'success', message: alertMessage });
+      });
+    });
+
+    this.subscriptions.add(submitCall);
+  }
+
+  public onCancel(event: Event): void {
+    event.preventDefault();
+    this.returnToStaffRecordsPage();
+  }
+
+  private returnToStaffRecordsPage(): Promise<boolean> {
+    return this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }

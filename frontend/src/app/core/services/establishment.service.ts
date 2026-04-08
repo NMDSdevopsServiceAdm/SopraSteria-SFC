@@ -336,7 +336,7 @@ export class EstablishmentService {
       );
   }
 
-  updateWorkers(establishmentId, data) {
+  updateWorkers(establishmentId: string, data) {
     return this.http.put<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/workers`, data);
   }
 

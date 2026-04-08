@@ -1,100 +1,130 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-      <span class="govuk-caption-l" data-testid="section-heading">Staff records</span>
-      <h1 class="govuk-fieldset__heading">Update pay for multiple staff</h1>
-    </legend>
+<!-- <app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary> -->
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <span class="govuk-caption-l" data-testid="section-heading">Staff records</span>
+        <h1 class="govuk-fieldset__heading">Update pay for multiple staff</h1>
+      </legend>
+    </div>
   </div>
-</div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <app-new-table-pagination-wrapper
-      #paginationWrapper
-      [totalCount]="totalWorkerCount"
-      [count]="currentWorkerCount"
-      [defaultSortByValue]="'staffNameAsc'"
-      [workplaceUid]="workplace.uid"
-      [sortByParamMap]="sortByParamMap"
-      [sortOptions]="sortOptions"
-      (fetchData)="getPageOfWorkers($event)"
-    >
-      <ng-container placeAboveSearchBox>
-        <div class="govuk-grid-column-three-quarters">
-          <app-new-pill-with-link
-            placeAboveSearchBox
-            [linkText]="'Fast-track pay updates by job roles'"
-            [showNewPill]="showNewPillForFastTrackLink"
-            data-testid="fast-track-pay-update-link"
-            (clicked)="handleClickForFastTrackPageLink()"
-          ></app-new-pill-with-link>
-        </div>
-      </ng-container>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <app-new-table-pagination-wrapper
+        #paginationWrapper
+        [totalCount]="totalWorkerCount"
+        [count]="currentWorkerCount"
+        [defaultSortByValue]="'staffNameAsc'"
+        [workplaceUid]="workplace.uid"
+        [sortByParamMap]="sortByParamMap"
+        [sortOptions]="sortOptions"
+        (fetchData)="getPageOfWorkers($event)"
+      >
+        <ng-container placeAboveSearchBox>
+          <div class="govuk-grid-column-three-quarters">
+            <app-new-pill-with-link
+              placeAboveSearchBox
+              [linkText]="'Fast-track pay updates by job roles'"
+              [showNewPill]="showNewPillForFastTrackLink"
+              data-testid="fast-track-pay-update-link"
+              (clicked)="handleClickForFastTrackPageLink()"
+            ></app-new-pill-with-link>
+          </div>
+        </ng-container>
 
-      <ng-container overrideSearchBox>
-        <app-search-input-auto-suggest
-          #searchBox
-          ref="'job-role-search'"
-          [label]="'Search by job role'"
-          [dataProvider]="jobRoleDataProvider()"
-          [showClearResults]="true"
-          [showSearchIcon]="false"
-          [accessibleLabel]="'by job role'"
-        >
-        </app-search-input-auto-suggest>
-      </ng-container>
+        <ng-container overrideSearchBox>
+          <app-search-input-auto-suggest
+            #searchBox
+            ref="'job-role-search'"
+            [label]="'Search by job role'"
+            [dataProvider]="jobRoleDataProvider()"
+            [showClearResults]="true"
+            [showSearchIcon]="false"
+            [accessibleLabel]="'by job role'"
+          >
+          </app-search-input-auto-suggest>
+        </ng-container>
 
-      <table class="govuk-table govuk-!-margin-bottom-3">
-        <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
-            <th data-testid="name-or-id-header" scope="col" class="govuk-table__header">Name or ID number</th>
-            <th data-testid="job-role-header" scope="col" class="govuk-table__header">Job role</th>
-            <th data-testid="pay-header" scope="col" class="govuk-table__header">Hourly pay rate or salary</th>
-          </tr>
-        </thead>
-        <tbody class="govuk-table__body asc__workers-pay-data-table" [formGroup]="workersFormGroup">
-          @for (worker of workersToShow; track worker.uid; let workerIndex = $index) {
-            <tr class="govuk-table__row" [formGroupName]="worker.uid" [attr.data-testid]="'worker-row-' + workerIndex">
-              <td class="govuk-table__cell">
-                {{ worker.nameOrId }}
-              </td>
-              <td class="govuk-table__cell">{{ worker?.mainJob?.title }}</td>
-              <td class="govuk-table__cell">
-                <div class="govuk-input__wrapper">
-                  <div class="govuk-input__prefix asc__white-background" aria-hidden="true">£</div>
-                  <input
-                    [attr.data-testid]="'amount-input-box-' + $index"
-                    class="govuk-input govuk-input--width-4"
-                    [id]="'rate-' + $index"
-                    type="number"
-                    formControlName="payRate"
-                  />
-                  <label class="govuk-visually-hidden" [for]="'rate-' + $index">
-                    Hourly pay rate or salary for {{ worker.nameOrId }}
-                  </label>
-                  <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
-                    @for (button of radioButtonLabels; track $index) {
-                      <div class="govuk-radios__item">
-                        <input
-                          class="govuk-radios__input"
-                          [attr.data-testid]="button.slug + '-radio-' + workerIndex"
-                          [id]="button.slug + '-' + workerIndex"
-                          type="radio"
-                          [value]="button.value"
-                          formControlName="payValue"
-                        />
-                        <label class="govuk-label govuk-radios__label" [for]="button.slug + '-' + workerIndex">
-                          {{ button.label }}
-                        </label>
-                      </div>
-                    }
-                  </div>
-                </div>
-              </td>
+        <table class="govuk-table govuk-!-margin-bottom-3">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th data-testid="name-or-id-header" scope="col" class="govuk-table__header">Name or ID number</th>
+              <th data-testid="job-role-header" scope="col" class="govuk-table__header">Job role</th>
+              <th data-testid="pay-header" scope="col" class="govuk-table__header">Hourly pay rate or salary</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </app-new-table-pagination-wrapper>
+          </thead>
+          <tbody class="govuk-table__body asc__workers-pay-data-table" [formGroup]="workersFormGroup">
+            @for (worker of workersToShow; track worker.uid; let workerIndex = $index) {
+              <tr
+                class="govuk-table__row"
+                [formGroupName]="worker.uid"
+                [attr.data-testid]="'worker-row-' + workerIndex"
+              >
+                <td class="govuk-table__cell">
+                  {{ worker.nameOrId }}
+                </td>
+                <td class="govuk-table__cell">{{ worker?.mainJob?.title }}</td>
+                <td class="govuk-table__cell">
+                  <div class="govuk-input__wrapper">
+                    <div class="govuk-input__prefix asc__white-background" aria-hidden="true">£</div>
+                    <input
+                      [attr.data-testid]="'amount-input-box-' + $index"
+                      class="govuk-input govuk-input--width-4"
+                      [id]="'rate-' + $index"
+                      type="number"
+                      formControlName="payRate"
+                    />
+                    <label class="govuk-visually-hidden" [for]="'rate-' + $index">
+                      Hourly pay rate or salary for {{ worker.nameOrId }}
+                    </label>
+                    <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
+                      @for (button of radioButtonLabels; track $index) {
+                        <div class="govuk-radios__item">
+                          <input
+                            class="govuk-radios__input"
+                            [attr.data-testid]="button.slug + '-radio-' + workerIndex"
+                            [id]="button.slug + '-' + workerIndex"
+                            type="radio"
+                            [value]="button.value"
+                            formControlName="payValue"
+                          />
+                          <label class="govuk-label govuk-radios__label" [for]="button.slug + '-' + workerIndex">
+                            {{ button.label }}
+                          </label>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </app-new-table-pagination-wrapper>
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <div class="govuk-button-group govuk-!-margin-top-12">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Save and return</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          href="#"
+          (click)="onCancel($event)"
+        >
+          Cancel
+        </a>
+      </div>
+    </div>
   </div>
-</div>
+</form>

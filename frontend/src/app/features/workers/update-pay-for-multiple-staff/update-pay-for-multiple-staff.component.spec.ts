@@ -26,10 +26,16 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
     fields: {
       uid: fake((f) => f.datatype.uuid()),
       nameOrId: fake((f) => f.name.findName() + f.datatype.uuid()),
-      mainJob: {
-        id: sequence(),
-        title: fake((f) => f.name.jobTitle()),
-      },
+      mainJob: oneOf(
+        {
+          id: 10,
+          title: 'Care worker',
+        },
+        {
+          id: 25,
+          title: 'Senior care worker',
+        },
+      ),
       annualHourlyPay: oneOf(
         { value: 'Annually', rate: 25000 },
         { value: 'Hourly', rate: 12.5 },
@@ -46,10 +52,10 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
     workerBuilder({ overrides: { annualHourlyPay: { value: null } } }),
   ] as WorkerWithPayData[];
 
-  const buildMultipleWorkers = (num: number) => {
+  const buildMultipleWorkers = (num: number, overrides = {}) => {
     return Array(num)
       .fill(null)
-      .map(() => workerBuilder()) as WorkerWithPayData[];
+      .map(() => workerBuilder({ overrides })) as WorkerWithPayData[];
   };
 
   const payValues = ['Hourly', 'Annually', "Don't know"];
@@ -112,7 +118,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
             snapshot: {
               data: {
                 workersWithPayData: mockWorkersWithPayData,
-                jobs: AllJobs,
+                mainJobRoles: AllJobs,
               },
             },
           },
@@ -133,6 +139,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       establishmentService,
       'updateSingleEstablishmentField',
     ).and.returnValue(of(null));
+    const updateWorkersSpy = spyOn(establishmentService, 'updateWorkers').and.returnValue(of(null));
 
     const workerService = injector.inject(WorkerService);
     const getWorkersWithPayDataSpy = spyOn(workerService, 'getWorkersWithPayData');
@@ -150,6 +157,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       fixture,
       establishmentService,
       updateSingleEstablishmentFieldSpy,
+      updateWorkersSpy,
       workerService,
       getWorkersWithPayDataSpy,
       alertServiceSpy,
@@ -258,14 +266,14 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       const { fixture, getByRole } = await setup();
 
       const workersTable = getByRole('table');
-      const worker3Row = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+      const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr')!;
 
-      const payRateInputBox = within(worker3Row).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+      const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
       userEvent.type(payRateInputBox, '25000');
 
       expect(payRateInputBox.value).toEqual('25000');
 
-      userEvent.click(within(worker3Row).getByLabelText('Not known'));
+      userEvent.click(within(workerRow).getByLabelText('Not known'));
       fixture.detectChanges();
 
       expect(payRateInputBox.value).toEqual('');
@@ -275,10 +283,10 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       const { fixture, getByRole } = await setup();
 
       const workersTable = getByRole('table');
-      const worker3Row = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+      const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
 
-      const notKnownRadioButton = within(worker3Row).getByLabelText('Not known') as HTMLInputElement;
-      const payRateInputBox = within(worker3Row).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+      const notKnownRadioButton = within(workerRow).getByLabelText('Not known') as HTMLInputElement;
+      const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
 
       userEvent.click(notKnownRadioButton);
 
@@ -296,14 +304,14 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         const { fixture, getByRole } = await setup();
 
         const workersTable = getByRole('table');
-        const worker3Row = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+        const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
 
-        const payRateInputBox = within(worker3Row).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+        const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
         userEvent.type(payRateInputBox, '25000');
 
         expect(payRateInputBox.value).toEqual('25000');
 
-        userEvent.click(within(worker3Row).getByLabelText(radioButtonLabel));
+        userEvent.click(within(workerRow).getByLabelText(radioButtonLabel));
         fixture.detectChanges();
 
         expect(payRateInputBox.value).toEqual('25000');
@@ -313,10 +321,10 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         const { fixture, getByRole } = await setup();
 
         const workersTable = getByRole('table');
-        const worker3Row = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+        const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
 
-        const radioButton = within(worker3Row).getByLabelText(radioButtonLabel) as HTMLInputElement;
-        const payRateInputBox = within(worker3Row).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+        const radioButton = within(workerRow).getByLabelText(radioButtonLabel) as HTMLInputElement;
+        const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
 
         userEvent.click(radioButton);
         expect(radioButton.checked).toBeTrue();
@@ -586,7 +594,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         expect(searchBox.value).toEqual('');
       });
 
-      it('when job role filter is active, page change and sort by change should use the job role id in search', async () => {
+      it('when job role filter is active, page change and sort by change should keep the job role id in search', async () => {
         const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy, queryByTestId } = await setup({
           totalWorkerCount: 16,
         });
@@ -629,6 +637,110 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
           jobId: jobIdOfSeniorCareWorker,
         });
       });
+    });
+  });
+
+  describe('form submit', () => {
+    it('should show a "Save and return" CTA button and a cancel link', async () => {
+      const { getByRole, getByText } = await setup();
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      expect(submitButton).toBeTruthy();
+
+      const cancelLink = getByText('Cancel');
+      expect(cancelLink).toBeTruthy();
+    });
+
+    it('should return to dashboard staff records page on cancel', async () => {
+      const { getByText, routerSpy } = await setup();
+
+      const cancelLink = getByText('Cancel');
+      userEvent.click(cancelLink);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
+    });
+
+    it('should return to dashboard staff records page when user submit without making any change', async () => {
+      const { fixture, getByRole, routerSpy, alertServiceSpy, updateWorkersSpy } = await setup();
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
+      expect(updateWorkersSpy).not.toHaveBeenCalled();
+      expect(alertServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should call updateWorkers with the pay updates on submit', async () => {
+      const expectedPayload = [{ uid: mockWorkers[3].uid, annualHourlyPay: { value: 'Annually', rate: 25000 } }];
+
+      const { fixture, getByRole, updateWorkersSpy, routerSpy, alertServiceSpy } = await setup();
+
+      const workersTable = getByRole('table');
+      const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr')!;
+
+      const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
+      userEvent.click(within(workerRow).getByLabelText('Salary'));
+      userEvent.type(payRateInputBox, '25000');
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      expect(updateWorkersSpy).toHaveBeenCalledWith('mocked-uid', expectedPayload);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
+      expect(alertServiceSpy).toHaveBeenCalledWith({ type: 'success', message: 'Pay updated in 1 staff record' });
+    });
+
+    it('should handle the update for workers across different pages', async () => {
+      const mockWorkers = buildMultipleWorkers(32, { annualHourlyPay: { value: null } });
+      const pages = [mockWorkers.slice(0, 15), mockWorkers.slice(15, 30), mockWorkers.slice(30)];
+
+      const { fixture, getByRole, getByTestId, updateWorkersSpy, alertServiceSpy, getWorkersWithPayDataSpy } =
+        await setup({
+          pageOneWorkers: pages[0],
+          totalWorkerCount: 32,
+        });
+
+      getWorkersWithPayDataSpy.and.callFake((_uid, params) => {
+        const pageIndex = params?.pageIndex;
+        return of({ count: 32, workers: pages[pageIndex] });
+      });
+
+      const workersTable = getByRole('table');
+
+      const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr')!;
+      userEvent.click(within(workerRow).getByLabelText('Salary'));
+      userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), '25000');
+
+      const workerRow2 = within(workersTable).getByText(mockWorkers[13].nameOrId).closest('tr')!;
+      userEvent.click(within(workerRow2).getByLabelText('Not known'));
+
+      // click page 2
+      userEvent.click(getByTestId('pageNoLink-1')!);
+      await fixture.whenStable();
+
+      const workerRow3 = within(workersTable).getByText(mockWorkers[23].nameOrId).closest('tr')!;
+      userEvent.click(within(workerRow3).getByLabelText('Hourly'));
+      userEvent.type(within(workerRow3).getByLabelText(/Hourly pay rate or salary/), '25.5');
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      const expectedPayload = [
+        { uid: mockWorkers[3].uid, annualHourlyPay: { value: 'Annually', rate: 25000 } },
+        { uid: mockWorkers[13].uid, annualHourlyPay: { value: "Don't know", rate: null } },
+        { uid: mockWorkers[23].uid, annualHourlyPay: { value: 'Hourly', rate: 25.5 } },
+      ];
+      expect(updateWorkersSpy).toHaveBeenCalledWith('mocked-uid', expectedPayload);
+
+      expect(alertServiceSpy).toHaveBeenCalledWith({ type: 'success', message: 'Pay updated in 3 staff records' });
     });
   });
 });
