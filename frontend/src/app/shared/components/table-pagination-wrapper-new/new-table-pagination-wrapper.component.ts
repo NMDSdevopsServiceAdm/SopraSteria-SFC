@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-new-table-pagination-wrapper',
   templateUrl: './new-table-pagination-wrapper.component.html',
+  styleUrl: './new-table-pagination-wrapper.component.scss',
   standalone: false,
 })
 export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {

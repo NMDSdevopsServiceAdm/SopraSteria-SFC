@@ -1,0 +1,11 @@
+.asc__pagination-wrapper__vertical-align-center {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .row-break {
+    flex-basis: 100%;
+    height: 0;
+    margin-top: 30px;
+  }
+}

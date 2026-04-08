@@ -1,5 +1,9 @@
-<div class="govuk-grid-row govuk-util__vertical-align-center">
+<div class="govuk-grid-row asc__pagination-wrapper__vertical-align-center">
+  <ng-content select="[placeAboveSearchBox]"></ng-content>
+
   @if (totalCount > itemsPerPage) {
+    <div class="row-break"></div>
+
     <div class="govuk-grid-column-three-quarters govuk-form-group" data-testid="search">
       <ng-content select="[overrideSearchBox]">
         <app-search-input

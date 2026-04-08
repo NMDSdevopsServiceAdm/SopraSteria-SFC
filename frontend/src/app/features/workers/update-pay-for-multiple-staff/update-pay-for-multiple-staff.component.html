@@ -4,16 +4,10 @@
       <span class="govuk-caption-l" data-testid="section-heading">Staff records</span>
       <h1 class="govuk-fieldset__heading">Update pay for multiple staff</h1>
     </legend>
-    <app-new-pill-with-link
-      [linkText]="'Fast-track pay updates by job roles'"
-      [showNewPill]="true"
-      data-testid="fast-track-pay-update-link"
-      (clicked)="handleClickForFastTrackPageLink()"
-    ></app-new-pill-with-link>
   </div>
 </div>
 
-<div class="govuk-grid-row govuk-!-margin-top-4">
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-new-table-pagination-wrapper
       #paginationWrapper
@@ -25,6 +19,18 @@
       [sortOptions]="sortOptions"
       (fetchData)="getPageOfWorkers($event)"
     >
+      <ng-container placeAboveSearchBox>
+        <div class="govuk-grid-column-three-quarters">
+          <app-new-pill-with-link
+            placeAboveSearchBox
+            [linkText]="'Fast-track pay updates by job roles'"
+            [showNewPill]="true"
+            data-testid="fast-track-pay-update-link"
+            (clicked)="handleClickForFastTrackPageLink()"
+          ></app-new-pill-with-link>
+        </div>
+      </ng-container>
+
       <ng-container overrideSearchBox>
         <app-search-input-auto-suggest
           #searchBox
