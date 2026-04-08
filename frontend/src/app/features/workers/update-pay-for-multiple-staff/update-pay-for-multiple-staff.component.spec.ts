@@ -17,11 +17,11 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
-import { AllJobs } from '../../../../mockdata/jobs.js';
 
+import { AllJobs } from '../../../../mockdata/jobs';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
 
-fdescribe('UpdatePayForMultipleStaffComponent', () => {
+describe('UpdatePayForMultipleStaffComponent', () => {
   const workerBuilder = build('Worker', {
     fields: {
       uid: fake((f) => f.datatype.uuid()),

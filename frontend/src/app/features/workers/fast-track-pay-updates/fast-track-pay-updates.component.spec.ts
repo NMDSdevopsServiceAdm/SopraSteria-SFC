@@ -12,92 +12,90 @@ import userEvent from '@testing-library/user-event';
 
 describe('FastTrackPayUpdatesComponent', () => {
   const workersWithSingleJobRole = {
-    'groups': [
+    groups: [
       {
-        'jobId': 10,
-        'title': 'Care worker',
-        'workers': [
+        jobId: 10,
+        title: 'Care worker',
+        workers: [
           {
-            'uid': '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-            'mainJob': {
-              'id': 10,
-              'title': 'Care worker',
-            }
+            uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
+            mainJob: {
+              id: 10,
+              title: 'Care worker',
+            },
           },
         ],
-        'count': 1,
+        count: 1,
       },
-    ]
+    ],
   };
 
   const workersWithMultipleJobRoles = {
-    'groups': [
+    groups: [
       {
-        'jobId': 10,
-        'title': 'Care worker',
-        'workers': [
+        jobId: 10,
+        title: 'Care worker',
+        workers: [
           {
-            'uid': '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-            'mainJob': {
-              'id': 10,
-              'title': 'Care worker',
-            }
+            uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
+            mainJob: {
+              id: 10,
+              title: 'Care worker',
+            },
           },
         ],
-        'count': 5,
+        count: 5,
       },
       {
-        'jobId': 11,
-        'title': 'Senior care worker',
-        'workers': [
+        jobId: 11,
+        title: 'Senior care worker',
+        workers: [
           {
-            'uid': '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-            'mainJob': {
-              'id': 11,
-              'title': 'Senior care worker',
-            }
+            uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
+            mainJob: {
+              id: 11,
+              title: 'Senior care worker',
+            },
           },
         ],
-        'count': 2,
+        count: 2,
       },
       {
-        'jobId': 12,
-        'title': 'Manager',
-        'workers': [
+        jobId: 12,
+        title: 'Manager',
+        workers: [
           {
-            'uid': '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-            'mainJob': {
-              'id': 12,
-              'title': 'Manager',
-            }
+            uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
+            mainJob: {
+              id: 12,
+              title: 'Manager',
+            },
           },
         ],
-        'count': 1,
+        count: 1,
       },
-    ]
+    ],
   };
 
-  async function setup(overrides: any = {}){
-    const setupTools = await render(FastTrackPayUpdatesComponent,
-      {
-        imports: [ReactiveFormsModule],
-        providers: [
-          BackService,
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                data: {
-                  workersByJobRole: overrides.workersWithMultipleJobRoles ?? workersWithSingleJobRole,
-                },
+  async function setup(overrides: any = {}) {
+    const setupTools = await render(FastTrackPayUpdatesComponent, {
+      imports: [ReactiveFormsModule],
+      providers: [
+        BackService,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                workersByJobRole: overrides.workersWithMultipleJobRoles ?? workersWithSingleJobRole,
               },
             },
           },
-          provideHttpClient(),
-          provideHttpClientTesting(),
-        ],
-      },
-    );
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
 
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
@@ -113,7 +111,7 @@ describe('FastTrackPayUpdatesComponent', () => {
       component,
       showBackLinkSpy,
       setWorkersGroupedByJobRoleSpy,
-    }
+    };
   }
 
   it('should create', async () => {
@@ -121,40 +119,40 @@ describe('FastTrackPayUpdatesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('displays a Back link', async ()=> {
+  it('displays a Back link', async () => {
     const { component, showBackLinkSpy } = await setup();
     component.ngOnInit();
     expect(showBackLinkSpy).toHaveBeenCalled();
   });
 
   describe('Headings', () => {
-    it('should display the Staff records caption', async ()=> {
+    it('should display the Staff records caption', async () => {
       const { getByTestId } = await setup();
       const caption = getByTestId('caption');
-      expect(caption.textContent).toEqual('Staff records');
+      expect(caption.textContent.trim()).toEqual('Staff records');
     });
 
     it('should display the main heading', async () => {
       const { getByTestId } = await setup();
       const heading = getByTestId('heading');
-      expect(heading.textContent).toEqual('Fast-track pay updates by job roles');
+      expect(heading.textContent.trim()).toEqual('Fast-track pay updates by job roles');
     });
   });
 
   describe('Table', () => {
-    it('should include the Job role column heading', async ()=> {
+    it('should include the Job role column heading', async () => {
       const { getByTestId } = await setup();
       const heading = getByTestId('job-role-heading');
-      expect(heading.textContent).toEqual('Job role');
+      expect(heading.textContent.trim()).toEqual('Job role');
     });
 
     it('should include the New hourly pay rate or salary column heading', async () => {
       const { getByTestId } = await setup();
       const heading = getByTestId('pay-heading');
-      expect(heading.textContent).toEqual('New hourly pay rate or salary');
-    })
+      expect(heading.textContent.trim()).toEqual('New hourly pay rate or salary');
+    });
 
-    describe('Job role column contents', ()=> {
+    describe('Job role column contents', () => {
       it('should contain the details of the workers where there is one job role', async () => {
         const { getByText } = await setup();
         const content = getByText('Care worker (1 record)');
@@ -162,7 +160,7 @@ describe('FastTrackPayUpdatesComponent', () => {
       });
 
       it('should contain the details of the workers where there are multiple job roles', async () => {
-        const { getByText } = await setup({workersWithMultipleJobRoles});
+        const { getByText } = await setup({ workersWithMultipleJobRoles });
         const contentManager = getByText('Manager (1 record)');
         const contentSeniorCareWorker = getByText('Senior care worker (2 records)');
         const contentCareWorker = getByText('Care worker (5 records)');
@@ -178,13 +176,13 @@ describe('FastTrackPayUpdatesComponent', () => {
       const { getByRole } = await setup();
       const button = getByRole('button', { name: 'Continue' });
       expect(button).toBeTruthy();
-    })
+    });
 
     describe('When there is 1 job role', () => {
       it('should call the worker service with the updated pay information', async () => {
         const { fixture, getByRole, setWorkersGroupedByJobRoleSpy, getByTestId } = await setup();
 
-        const amountInputBox = getByTestId('amount-input-box-0')
+        const amountInputBox = getByTestId('amount-input-box-0');
         userEvent.type(amountInputBox, '12');
 
         const radio = getByTestId('hourly-radio-0');
@@ -196,27 +194,27 @@ describe('FastTrackPayUpdatesComponent', () => {
         button.click();
 
         const workers = {
-          'groups': [
+          groups: [
             {
-              'jobId': 10,
-              'title': 'Care worker',
-              'workers': [
+              jobId: 10,
+              title: 'Care worker',
+              workers: [
                 {
-                  'uid': '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-                  'mainJob': {
-                    'id': 10,
-                    'title': 'Care worker',
-                  }
-                }
+                  uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
+                  mainJob: {
+                    id: 10,
+                    title: 'Care worker',
+                  },
+                },
               ],
-              'count': 1,
-              'annualHourlyPay': {
+              count: 1,
+              annualHourlyPay: {
                 value: 'Hourly',
                 rate: 12,
               },
             },
-          ]
-        }
+          ],
+        };
 
         expect(setWorkersGroupedByJobRoleSpy).toHaveBeenCalledWith(workers);
       });
@@ -224,15 +222,17 @@ describe('FastTrackPayUpdatesComponent', () => {
 
     describe('When there are multiple job roles', () => {
       it('should call the worker service with the updated pay information', async () => {
-        const { fixture, getByRole, setWorkersGroupedByJobRoleSpy, getByTestId } = await setup({workersWithMultipleJobRoles});
+        const { fixture, getByRole, setWorkersGroupedByJobRoleSpy, getByTestId } = await setup({
+          workersWithMultipleJobRoles,
+        });
 
-        const firstAmountInputBox = getByTestId('amount-input-box-0')
+        const firstAmountInputBox = getByTestId('amount-input-box-0');
         userEvent.type(firstAmountInputBox, '12');
 
-        const secondAmountInputBox = getByTestId('amount-input-box-1')
+        const secondAmountInputBox = getByTestId('amount-input-box-1');
         userEvent.type(secondAmountInputBox, '14');
 
-        const thirdAmountInputBox = getByTestId('amount-input-box-2')
+        const thirdAmountInputBox = getByTestId('amount-input-box-2');
         userEvent.type(thirdAmountInputBox, '16');
 
         const firstRadioHourly = getByTestId('hourly-radio-0');
@@ -250,63 +250,63 @@ describe('FastTrackPayUpdatesComponent', () => {
         button.click();
 
         const workers = {
-          'groups': [
+          groups: [
             {
-              'jobId': 10,
-              'title': 'Care worker',
-              'workers': [
+              jobId: 10,
+              title: 'Care worker',
+              workers: [
                 {
-                  'uid': '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-                  'mainJob': {
-                    'id': 10,
-                    'title': 'Care worker',
-                  }
+                  uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
+                  mainJob: {
+                    id: 10,
+                    title: 'Care worker',
+                  },
                 },
               ],
-              'count': 5,
-              'annualHourlyPay': {
+              count: 5,
+              annualHourlyPay: {
                 value: 'Hourly',
                 rate: 12,
               },
             },
             {
-              'jobId': 11,
-              'title': 'Senior care worker',
-              'workers': [
+              jobId: 11,
+              title: 'Senior care worker',
+              workers: [
                 {
-                  'uid': '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-                  'mainJob': {
-                    'id': 11,
-                    'title': 'Senior care worker',
-                  }
+                  uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
+                  mainJob: {
+                    id: 11,
+                    title: 'Senior care worker',
+                  },
                 },
               ],
-              'count': 2,
-              'annualHourlyPay': {
+              count: 2,
+              annualHourlyPay: {
                 value: 'Annually',
                 rate: 14,
               },
             },
             {
-              'jobId': 12,
-              'title': 'Manager',
-              'workers': [
+              jobId: 12,
+              title: 'Manager',
+              workers: [
                 {
-                  'uid': '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
-                  'mainJob': {
-                    'id': 12,
-                    'title': 'Manager',
-                  }
+                  uid: '559b1bfb-3b1f-47a9-ace3-956e60fc2221',
+                  mainJob: {
+                    id: 12,
+                    title: 'Manager',
+                  },
                 },
               ],
-              'count': 1,
-              'annualHourlyPay': {
+              count: 1,
+              annualHourlyPay: {
                 value: 'Hourly',
                 rate: 16,
               },
             },
-          ]
-        }
+          ],
+        };
 
         expect(setWorkersGroupedByJobRoleSpy).toHaveBeenCalledWith(workers);
       });
