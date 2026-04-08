@@ -92,6 +92,7 @@ import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-u
 import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff/update-pay-for-multiple-staff.component';
 import { WorkersWithPayDataResolver } from '@core/resolvers/workers-with-pay-data.resolver';
+import { WorkersMainJobRolesResolver } from '@core/resolvers/workers-main-job-roles.resolver';
 
 const editTrainingRecordRoute = {
   path: 'training/:trainingRecordId',
@@ -346,7 +347,7 @@ const routes: Routes = [
   {
     path: 'update-pay-for-multiple-staff',
     component: UpdatePayForMultipleStaffComponent,
-    resolve: { jobs: JobsResolver, workersWithPayData: WorkersWithPayDataResolver },
+    resolve: { mainJobRoles: WorkersMainJobRolesResolver, workersWithPayData: WorkersWithPayDataResolver },
     data: {
       title: 'Update pay for multiple staff',
     },
