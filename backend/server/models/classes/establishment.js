@@ -460,9 +460,7 @@ class Establishment extends EntityValidator {
   }
 
   get fastTrackPayByJobRolesViewed() {
-    return this._properties.get('FastTrackPayByJobRolesViewed')
-      ? this._properties.get('FastTrackPayByJobRolesViewed').property
-      : null;
+    return this._fastTrackPayByJobRolesViewed;
   }
 
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -709,14 +707,6 @@ class Establishment extends EntityValidator {
         }
         if ('payAndPensionsMiniFlowViewed' in document) {
           this._payAndPensionsMiniFlowViewed = document.payAndPensionsMiniFlowViewed;
-        }
-
-        if ('updatePayForMultiStaffViewed' in document) {
-          this._updatePayForMultiStaffViewed = document.updatePayForMultiStaffViewed;
-        }
-
-        if ('fastTrackPayByJobRolesViewed' in document) {
-          this._fastTrackPayByJobRolesViewed = document.fastTrackPayByJobRolesViewed;
         }
       }
 

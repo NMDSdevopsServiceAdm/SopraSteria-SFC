@@ -21,7 +21,7 @@ import userEvent from '@testing-library/user-event';
 import { AllJobs } from '../../../../mockdata/jobs';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
 
-describe('UpdatePayForMultipleStaffComponent', () => {
+fdescribe('UpdatePayForMultipleStaffComponent', () => {
   const workerBuilder = build('Worker', {
     fields: {
       uid: fake((f) => f.datatype.uuid()),
@@ -87,6 +87,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
     const pageOneWorkers = overrides?.pageOneWorkers ?? mockWorkers;
     const totalWorkerCount = overrides?.totalWorkerCount ?? pageOneWorkers.length;
     const mockWorkersWithPayData = { count: totalWorkerCount, workers: pageOneWorkers };
+    const fastTrackPayByJobRolesViewed = overrides?.fastTrackPayByJobRolesViewed ?? false;
 
     const setuptools = await render(UpdatePayForMultipleStaffComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
@@ -96,7 +97,9 @@ describe('UpdatePayForMultipleStaffComponent', () => {
         AlertService,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceWithOverrides.factory(),
+          useFactory: MockEstablishmentServiceWithOverrides.factory({
+            establishment: { fastTrackPayByJobRolesViewed },
+          }),
         },
         {
           provide: WorkerService,
@@ -124,7 +127,12 @@ describe('UpdatePayForMultipleStaffComponent', () => {
     fixture.autoDetectChanges();
 
     const injector = getTestBed();
+
     const establishmentService = injector.inject(EstablishmentService);
+    const updateSingleEstablishmentFieldSpy = spyOn(
+      establishmentService,
+      'updateSingleEstablishmentField',
+    ).and.returnValue(of(null));
 
     const workerService = injector.inject(WorkerService);
     const getWorkersWithPayDataSpy = spyOn(workerService, 'getWorkersWithPayData');
@@ -141,6 +149,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       component,
       fixture,
       establishmentService,
+      updateSingleEstablishmentFieldSpy,
       workerService,
       getWorkersWithPayDataSpy,
       alertServiceSpy,
@@ -164,15 +173,52 @@ describe('UpdatePayForMultipleStaffComponent', () => {
     expect(getByText(caption)).toBeTruthy();
   });
 
-  it('should show a link to fast-track-pay-updates page', async () => {
-    const { route, getByText, routerSpy } = await setup();
-    const expectedLinkText = 'Fast-track pay updates by job roles';
+  describe('link to fast-track-pay-updates page', async () => {
+    const fastTrackLinkTestId = 'fast-track-pay-update-link';
 
-    const link = getByText(expectedLinkText);
-    expect(link).toBeTruthy();
+    it('should show a link to fast-track-pay-updates page', async () => {
+      const { route, getByTestId, routerSpy } = await setup();
+      const expectedLinkText = 'Fast-track pay updates by job roles';
 
-    userEvent.click(link);
-    expect(routerSpy).toHaveBeenCalledWith(['../fast-track-pay-updates'], { relativeTo: route });
+      const linkComponent = getByTestId(fastTrackLinkTestId);
+      expect(linkComponent).toBeTruthy();
+
+      const link = within(linkComponent).getByText(expectedLinkText);
+      expect(link).toBeTruthy();
+
+      userEvent.click(link);
+      expect(routerSpy).toHaveBeenCalledWith(['../fast-track-pay-updates'], { relativeTo: route });
+    });
+
+    it('should show the link with a NEW pill if fastTrackPayByJobRolesViewed is false', async () => {
+      const { getByTestId } = await setup({ fastTrackPayByJobRolesViewed: false });
+
+      const linkComponent = getByTestId(fastTrackLinkTestId);
+      const newPill = within(linkComponent).queryByTestId('new-pill');
+      expect(newPill).toBeTruthy();
+    });
+
+    it('should not show the link with a NEW pill if fastTrackPayByJobRolesViewed is true', async () => {
+      const { getByTestId } = await setup({ fastTrackPayByJobRolesViewed: true });
+
+      const linkComponent = getByTestId(fastTrackLinkTestId);
+      const newPill = within(linkComponent).queryByTestId('new-pill');
+      expect(newPill).toBeFalsy();
+    });
+
+    it('should call to backend to clear the NEW pill in link when fast track page link is clicked', async () => {
+      const { fixture, getByText, updateSingleEstablishmentFieldSpy } = await setup();
+      const expectedLinkText = 'Fast-track pay updates by job roles';
+
+      const link = getByText(expectedLinkText);
+      userEvent.click(link);
+
+      await fixture.whenStable();
+      expect(updateSingleEstablishmentFieldSpy).toHaveBeenCalledWith('mocked-uid', {
+        property: 'fastTrackPayByJobRolesViewed',
+        value: true,
+      });
+    });
   });
 
   describe('workers table', () => {

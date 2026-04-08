@@ -2,8 +2,8 @@ import lodash from 'lodash';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
-import { Component, ElementRef, signal, viewChild, WritableSignal } from '@angular/core';
-import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { Component, signal, viewChild, WritableSignal } from '@angular/core';
+import { FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Establishment,
@@ -47,9 +47,8 @@ export class UpdatePayForMultipleStaffComponent {
   public sortOptions = SortStaffOptionsForUpdatePay;
   public workplaceUid: string;
   public allJobs: Array<Job>;
-  public allJobTitles: Array<string>;
-  public allJobTitlesLowerCase: Array<string>;
   public jobRoleDataProvider: WritableSignal<JobRoleDataProvider> = signal(null);
+  public showNewPillForFastTrackLink: boolean = true;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -67,13 +66,14 @@ export class UpdatePayForMultipleStaffComponent {
     const firstPageWorkers = this.route.snapshot.data.workersWithPayData?.workers ?? [];
     this.workplace = this.establishmentService.establishment;
     this.workplaceUid = this.workplace.uid;
+    this.showNewPillForFastTrackLink = !this.workplace.fastTrackPayByJobRolesViewed;
 
     const totalWorkerCount = this.route.snapshot.data.workersWithPayData?.count;
     this.currentWorkerCount = totalWorkerCount;
     this.totalWorkerCount = totalWorkerCount;
 
     this.allJobs = this.route.snapshot.data.jobs;
-    this.buildDataProvider();
+    this.buildJobDataProvider();
 
     this.workersToShow = firstPageWorkers;
     this.setupForm();
@@ -94,10 +94,8 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   private addWorkersToForm(workers: WorkerWithPayData[]): void {
-    const workersFormGroup = this.form.get('workers') as FormGroup;
-
     workers.forEach((worker) => {
-      workersFormGroup.addControl(worker.uid, this.buildFormControlsForWorker(worker));
+      this.workersFormGroup.addControl(worker.uid, this.buildFormControlsForWorker(worker));
     });
   }
 
@@ -112,7 +110,7 @@ export class UpdatePayForMultipleStaffComponent {
         payRate.setValue(null, { emitEvent: false });
       });
 
-    const clearNotKnownWhenTypeInPayRate = payRate.valueChanges
+    const clearNotKnownRadioButtonWhenTypeInPayRate = payRate.valueChanges
       .pipe(
         filter((newValue) => newValue !== ''),
         filter(() => payValue.value === DontKnow),
@@ -122,13 +120,31 @@ export class UpdatePayForMultipleStaffComponent {
       });
 
     this.subscriptions.add(clearPayRateWhenSelectNotKnown);
-    this.subscriptions.add(clearNotKnownWhenTypeInPayRate);
+    this.subscriptions.add(clearNotKnownRadioButtonWhenTypeInPayRate);
 
     return workerFormControls;
   }
 
   public handleClickForFastTrackPageLink(): void {
-    this.router.navigate(['../fast-track-pay-updates'], { relativeTo: this.route });
+    const data = {
+      property: 'fastTrackPayByJobRolesViewed',
+      value: true,
+    };
+
+    this.router
+      .navigate(['../fast-track-pay-updates'], { relativeTo: this.route })
+      .then(() => this.setFastTrackPayByJobRolesViewed());
+  }
+
+  private setFastTrackPayByJobRolesViewed(): void {
+    const data = {
+      property: 'fastTrackPayByJobRolesViewed',
+      value: true,
+    };
+
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe(),
+    );
   }
 
   public getPageOfWorkers(event: SearchEvent): void {
@@ -148,7 +164,7 @@ export class UpdatePayForMultipleStaffComponent {
     this.addWorkersToForm(workers);
   }
 
-  public buildDataProvider() {
+  public buildJobDataProvider() {
     const allJobs = [...this.allJobs];
     const dataProvider: JobRoleDataProvider = (searchTerm: string) => {
       if (!searchTerm) {
@@ -158,11 +174,11 @@ export class UpdatePayForMultipleStaffComponent {
       const searchTermInLowerCase = searchTerm.trim().toLowerCase();
 
       const matchedJobs = allJobs.filter((job) => {
-        return job.title.toLowerCase().includes(searchTermInLowerCase);
+        return job.title && job.title.toLowerCase().includes(searchTermInLowerCase);
       });
 
       const resultsMatchTheStartComeFirst = (job: Job) =>
-        job.title.toLowerCase().startsWith(searchTermInLowerCase) ? 1 : 2;
+        job.title && job.title.toLowerCase().startsWith(searchTermInLowerCase) ? 1 : 2;
       const matchesWithUpdateOrders = lodash.sortBy(matchedJobs, [resultsMatchTheStartComeFirst, 'title']);
 
       return matchesWithUpdateOrders.map((job) => {
