@@ -6,33 +6,29 @@ import { AutoSuggestDataProvider, AutoSuggestResult } from '@shared/auto-suggest
 @Component({
   selector: 'app-new-auto-suggest',
   templateUrl: './new-auto-suggest.component.html',
-  styleUrls: [
-    './new-auto-suggest.component.scss',
-    '../search-input/search-input.component.scss',
-    '../auto-suggest/auto-suggest.component.scss',
-  ],
+  styleUrls: ['./new-auto-suggest.component.scss'],
   standalone: false,
 })
 export class NewAutoSuggestComponent<T> implements OnInit {
-  @Input() inputId: string = 'auto-suggest';
+  @Input() inputBoxId: string = 'auto-suggest';
   @Input() dataProvider: AutoSuggestDataProvider<T>;
   @Input() label: string = '';
   @Input() accessibleLabel: string = '';
   @Input() showEllipsis: boolean = false;
   @Input() hasError: boolean = false;
-  @Output() clickItemEvent: EventEmitter<T> = new EventEmitter();
+  @Output() emitInput: EventEmitter<T> = new EventEmitter();
 
   public showSuggestion = signal(false);
   public textInput = new FormControl('');
-  public searchTerm: Signal<string> = toSignal(this.textInput.valueChanges, { initialValue: '' });
+  public inputSignal: Signal<string> = toSignal(this.textInput.valueChanges, { initialValue: '' });
 
   private _suggestions = computed(() => {
-    const currentSearchTerm = this.searchTerm();
-    if (!currentSearchTerm || !this.dataProvider) {
+    const currentInputValue = this.inputSignal();
+    if (!currentInputValue || !this.dataProvider) {
       return [];
     }
 
-    return this.dataProvider(currentSearchTerm);
+    return this.dataProvider(currentInputValue);
   });
 
   constructor() {
@@ -53,15 +49,11 @@ export class NewAutoSuggestComponent<T> implements OnInit {
     this.showSuggestion.set(false);
     if (suggestResult) {
       this.textInput.setValue(suggestResult.suggestion, { emitEvent: false });
-      this.clickItemEvent.emit(suggestResult.dataValue);
+      this.emitInput.emit(suggestResult.dataValue);
     }
   }
 
   public clearTextInput(): void {
     this.textInput.patchValue(null);
-  }
-
-  public onBlur(): void {
-    console.log('onblur called');
   }
 }

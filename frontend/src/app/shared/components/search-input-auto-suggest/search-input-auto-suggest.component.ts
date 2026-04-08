@@ -9,12 +9,14 @@ import { NewAutoSuggestComponent } from '../auto-suggest-new/new-auto-suggest.co
   standalone: false,
 })
 export class SearchInputAutoSuggestComponent<T> {
+  @Input() dataProvider: AutoSuggestDataProvider<T>;
+
   @Input() ref = 'search';
+  @Input() inputBoxId = this.ref; // bridge naming convention change
   @Input() searchButtonName = 'search';
   @Input() label = 'Search';
   @Input() accessibleLabel: string = '';
   @Input() showClearResults = true;
-  @Input() dataProvider: AutoSuggestDataProvider<T>;
   @Input() showSearchIcon = false;
 
   @Output() emitInput = new EventEmitter<T>();

@@ -12,11 +12,8 @@
     ></app-new-pill-with-link>
   </div>
 </div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full govuk-!-margin-top-8"></div>
-</div>
 
-<div class="govuk-grid-row">
+<div class="govuk-grid-row govuk-!-margin-top-4">
   <div class="govuk-grid-column-full">
     <app-new-table-pagination-wrapper
       #paginationWrapper
@@ -28,7 +25,7 @@
       [sortOptions]="sortOptions"
       (fetchData)="getPageOfWorkers($event)"
     >
-      <ng-container searchBoxContainer>
+      <ng-container overrideSearchBox>
         <app-search-input-auto-suggest
           #searchBox
           ref="'job-role-search'"

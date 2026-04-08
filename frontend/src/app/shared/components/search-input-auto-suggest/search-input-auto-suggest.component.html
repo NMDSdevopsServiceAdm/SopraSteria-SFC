@@ -1,37 +1,22 @@
 <div class="govuk-!-width-full input--search">
-  <label [for]="ref" class="govuk-label"
+  <label [for]="inputBoxId" class="govuk-label"
     >{{ label }}
     @if (accessibleLabel) {
       <span class="govuk-visually-hidden"> {{ accessibleLabel }}</span>
     }
   </label>
+
   <div class="govuk-grid-column-two-thirds govuk-util__light-bg govuk-!-padding-2">
     <app-new-auto-suggest
       #searchBox
-      [inputId]="ref"
+      [inputBoxId]="inputBoxId"
       [label]="label"
       [dataProvider]="dataProvider"
       [accessibleLabel]="accessibleLabel"
-      (clickItemEvent)="handleOnSubmit($event)"
+      (emitInput)="handleOnSubmit($event)"
     >
     </app-new-auto-suggest>
   </div>
-
-  @if (showSearchIcon) {
-    <div>
-      <button
-        class="govuk-button button-override--search govuk-!-margin-bottom-0"
-        name="search"
-        type="button"
-        (click)="emitSearch()"
-        data-testid="search-icon"
-        data-module="govuk-button"
-        aria-label="search button"
-      >
-        <img src="/assets/images/search-icon.svg" alt="" aria-hidden="true" />
-      </button>
-    </div>
-  }
 
   @if (searched && showClearResults) {
     <div class="govuk-grid-column-one-third govuk-!-padding-top-2 govuk-!-padding-bottom-2">
