@@ -1,4 +1,5 @@
 import { OverlayModule } from '@angular/cdk/overlay';
+import { CdkListboxModule } from '@angular/cdk/listbox';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -161,6 +162,7 @@ import { SearchInputAutoSuggestComponent } from './components/search-input-auto-
     RouterModule,
     OverlayModule,
     A11yModule,
+    CdkListboxModule,
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
   ],

@@ -6,15 +6,19 @@
     type="text"
     [ngClass]="{ 'overflow-ellipsis': showEllipsis }"
     [formControl]="textInput"
+    (keydown.enter)="$event.preventDefault()"
   />
   @if (showSuggestion() && suggestions.length > 0) {
-    <ul data-testid="tray-list">
+    <ul cdkListbox data-testid="tray-list" role="listbox">
       @for (item of suggestions; track item.dataValue.id) {
         <li
           [class]="{ 'tray-list-item': showEllipsis }"
           (click)="onClick(item)"
           [tabIndex]="0"
           (keyup.enter)="onClick(item)"
+          role="option"
+          [cdkOption]="item"
+          [attr.aria-describedby]="inputBoxId"
         >
           {{ item.suggestion }}
         </li>

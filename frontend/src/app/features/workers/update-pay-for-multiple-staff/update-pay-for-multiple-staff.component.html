@@ -68,7 +68,7 @@
                 [formGroupName]="worker.uid"
                 [attr.data-testid]="'worker-row-' + workerIndex"
               >
-                <td class="govuk-table__cell">
+                <td class="govuk-table__cell" [id]="'worker-name-' + workerIndex">
                   {{ worker.nameOrId }}
                 </td>
                 <td class="govuk-table__cell">{{ worker?.mainJob?.title }}</td>
@@ -95,6 +95,7 @@
                             type="radio"
                             [value]="button.value"
                             formControlName="payValue"
+                            [attr.aria-describedby]="'worker-name-' + workerIndex"
                           />
                           <label class="govuk-label govuk-radios__label" [for]="button.slug + '-' + workerIndex">
                             {{ button.label }}
