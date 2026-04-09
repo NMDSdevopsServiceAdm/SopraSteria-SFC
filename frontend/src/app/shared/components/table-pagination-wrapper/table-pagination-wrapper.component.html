@@ -2,8 +2,6 @@
   <ng-content select="[placeAboveSearchBox]"></ng-content>
 
   @if (totalCount > itemsPerPage) {
-    <div class="asc__spacing-between-link-and-searchbox"></div>
-
     <div class="govuk-grid-column-three-quarters govuk-form-group" data-testid="search">
       <ng-content select="[overrideSearchBox]">
         <app-search-input

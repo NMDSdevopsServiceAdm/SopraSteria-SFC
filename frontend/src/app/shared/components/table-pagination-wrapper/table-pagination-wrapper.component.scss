@@ -1,19 +1,18 @@
 .asc__pagination-wrapper__vertical-align-center {
-  display: flex;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  grid-row-gap: 20px;
   align-items: center;
-  flex-wrap: wrap;
 
-  .asc__spacing-between-link-and-searchbox {
-    flex-basis: 100%;
-    height: 0;
-    margin-top: 20px;
+  margin-bottom: -20px;
+
+  .govuk-grid-column-three-quarters {
+    width: auto;
+    grid-column: 1;
   }
 
-  .asc__spacing-between-link-and-searchbox:first-child {
-    display: none;
-  }
-
-  #sort-by-container {
-    margin-left: auto;
+  .govuk-grid-column-one-quarter {
+    width: auto;
+    grid-column: 2;
   }
 }
