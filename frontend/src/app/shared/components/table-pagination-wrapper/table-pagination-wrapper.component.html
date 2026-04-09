@@ -1,15 +1,5 @@
 <div class="govuk-grid-row govuk-util__vertical-align-center">
-  @if (showUpdatePayForMultipleStaffLinkOnTopOfSearchBar){
-  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-6">
-    <app-new-pill-with-link
-      [linkText]="updatePayForMultipleStaffLinkText"
-      [showNewPill]="showNewPill"
-      data-testid="updatePayForMultipleStaffLinkOnTopOfSearchBar"
-      (click)="handleOnClick()"
-    ></app-new-pill-with-link>
-  </div>
-  } @if(totalCount > itemsPerPage){
-  <div class="govuk-grid-column-three-quarters" data-testid="search">
+  <div *ngIf="totalCount > itemsPerPage" class="govuk-grid-column-three-quarters" data-testid="search">
     <app-search-input
       ref="search"
       [accessibleLabel]="accessibleLabel"
@@ -18,16 +8,6 @@
       (emitInput)="handleSearch($event)"
     ></app-search-input>
   </div>
-  } @else if (showUpdatePayForMultipleStaffLinkWhenNoSearchBar){
-  <div class="govuk-grid-column-three-quarters govuk-!-padding-top-7">
-    <app-new-pill-with-link
-      [linkText]="updatePayForMultipleStaffLinkText"
-      [showNewPill]="showNewPill"
-      data-testid="updatePayForMultipleStaffLinkWhenNoSearchBar"
-      (clicked)="handleOnClick($event)"
-    ></app-new-pill-with-link>
-  </div>
-  }
 
   <div
     data-testid="sortBy"
