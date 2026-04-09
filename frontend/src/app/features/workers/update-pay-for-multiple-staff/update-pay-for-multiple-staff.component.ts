@@ -137,12 +137,18 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   private setFastTrackPayByJobRolesViewed(): void {
+    if (this.workplace.fastTrackPayByJobRolesViewed) {
+      return;
+    }
+
     const data = {
       property: 'fastTrackPayByJobRolesViewed',
       value: true,
     };
 
-    this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe();
+    this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe(() => {
+      this.establishmentService.setState({ ...this.workplace, fastTrackPayByJobRolesViewed: true });
+    });
   }
 
   private convertJobRoleNameToId(queryParams: QueryParamsForBackend): QueryParamsForWorkerWithPayData {

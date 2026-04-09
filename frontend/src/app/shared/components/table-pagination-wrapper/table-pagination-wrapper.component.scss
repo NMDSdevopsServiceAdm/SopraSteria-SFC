@@ -4,8 +4,6 @@
   grid-row-gap: 20px;
   align-items: center;
 
-  margin-bottom: -20px;
-
   .govuk-grid-column-three-quarters {
     width: auto;
     grid-column: 1;
@@ -14,5 +12,9 @@
   .govuk-grid-column-one-quarter {
     width: auto;
     grid-column: 2;
+  }
+
+  &.govuk-grid-row:after {
+    display: none;
   }
 }

@@ -214,7 +214,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       expect(newPill).toBeFalsy();
     });
 
-    it('should call to backend to clear the NEW pill in link when fast track page link is clicked', async () => {
+    it('should call to backend to set fastTrackPayByJobRolesViewed to true when fast track page link is clicked', async () => {
       const { fixture, getByText, updateSingleEstablishmentFieldSpy } = await setup();
       const expectedLinkText = 'Fast-track pay updates by job roles';
 
@@ -222,10 +222,25 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       userEvent.click(link);
 
       await fixture.whenStable();
+
       expect(updateSingleEstablishmentFieldSpy).toHaveBeenCalledWith('mocked-uid', {
         property: 'fastTrackPayByJobRolesViewed',
         value: true,
       });
+    });
+
+    it('should not make the backend call if fastTrackPayByJobRolesViewed is already set to true', async () => {
+      const { fixture, getByText, updateSingleEstablishmentFieldSpy } = await setup({
+        fastTrackPayByJobRolesViewed: true,
+      });
+      const expectedLinkText = 'Fast-track pay updates by job roles';
+
+      const link = getByText(expectedLinkText);
+      userEvent.click(link);
+
+      await fixture.whenStable();
+
+      expect(updateSingleEstablishmentFieldSpy).not.toHaveBeenCalled();
     });
   });
 
