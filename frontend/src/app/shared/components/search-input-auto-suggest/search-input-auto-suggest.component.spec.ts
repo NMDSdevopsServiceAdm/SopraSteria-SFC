@@ -6,7 +6,7 @@ import lodash from 'lodash';
 import { SearchInputAutoSuggestComponent } from './search-input-auto-suggest.component';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('SearchInputAutoSuggestComponent', () => {
+describe('SearchInputAutoSuggestComponent', () => {
   const jobs = ['Registered Nurse', 'Care worker', 'Care coordinator'];
   const mockDataProvider = (textInput: string) => {
     return jobs.filter((job) => job.toLowerCase().includes(textInput.toLowerCase()));

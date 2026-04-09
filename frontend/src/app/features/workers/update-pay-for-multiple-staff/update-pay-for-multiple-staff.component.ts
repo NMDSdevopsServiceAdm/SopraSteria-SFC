@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
 import { Component, signal, viewChild, WritableSignal } from '@angular/core';
-import { FormControl, FormGroup, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Establishment,
@@ -22,8 +22,8 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { NewTablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper-new/new-table-pagination-wrapper.component';
 import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
+import { NewTablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper-new/new-table-pagination-wrapper.component';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -58,7 +58,7 @@ export class UpdatePayForMultipleStaffComponent {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private formBuilder: UntypedFormBuilder,
+    private formBuilder: FormBuilder,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService,
     private backLinkService: BackLinkService,
@@ -117,7 +117,7 @@ export class UpdatePayForMultipleStaffComponent {
 
     const clearNotKnownRadioButtonWhenTypeInPayRate = payRate.valueChanges
       .pipe(
-        filter((newValue) => newValue !== ''),
+        filter((newValue) => !!newValue),
         filter(() => payValue.value === DontKnow),
       )
       .subscribe(() => {
@@ -193,7 +193,7 @@ export class UpdatePayForMultipleStaffComponent {
 
       const suggestedJobs = allJobsTitles.filter((jobTitle) => {
         return jobTitle && jobTitle.toLowerCase().includes(searchTermInLowerCase);
-      });
+      }) as string[];
 
       const matchStartComeFirst = (jobTitle: string) =>
         jobTitle && jobTitle.toLowerCase().startsWith(searchTermInLowerCase) ? 1 : 2;

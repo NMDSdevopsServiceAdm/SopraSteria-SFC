@@ -4,7 +4,7 @@ import { NewAutoSuggestComponent } from './new-auto-suggest.component';
 import userEvent from '@testing-library/user-event';
 import { CdkListboxModule } from '@angular/cdk/listbox';
 
-fdescribe('NewAutoSuggestComponent', () => {
+describe('NewAutoSuggestComponent', () => {
   async function setup(overrides: any = {}) {
     const jobs = ['Registered Nurse', 'Care worker', 'Care coordinator'];
     const mockDataProvider = (textInput: string) => {
