@@ -1,7 +1,7 @@
 import { Component, computed, effect, EventEmitter, Input, OnInit, Output, signal, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
-import { AutoSuggestDataProvider, AutoSuggestResult } from '@shared/auto-suggest.model';
+import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
 
 @Component({
   selector: 'app-new-auto-suggest',
@@ -9,13 +9,13 @@ import { AutoSuggestDataProvider, AutoSuggestResult } from '@shared/auto-suggest
   styleUrls: ['../auto-suggest/auto-suggest.component.scss'],
   standalone: false,
 })
-export class NewAutoSuggestComponent<T> implements OnInit {
+export class NewAutoSuggestComponent implements OnInit {
   @Input() inputBoxId: string = 'auto-suggest';
-  @Input() dataProvider: AutoSuggestDataProvider<T>;
+  @Input() dataProvider: AutoSuggestDataProvider;
   @Input() accessibleLabel: string = '';
   @Input() showEllipsis: boolean = false;
   @Input() hasError: boolean = false;
-  @Output() emitInput: EventEmitter<T> = new EventEmitter();
+  @Output() emitInput: EventEmitter<string> = new EventEmitter();
 
   public showSuggestion = signal(false);
   public textInput = new FormControl('');
@@ -40,15 +40,19 @@ export class NewAutoSuggestComponent<T> implements OnInit {
 
   ngOnInit(): void {}
 
-  get suggestions(): Array<AutoSuggestResult<T>> {
+  get suggestions(): Array<string> {
     return this._suggestions();
   }
 
-  public onClick(suggestResult: AutoSuggestResult<T>): void {
+  get value(): string | null {
+    return this.textInput.value;
+  }
+
+  public onClick(chosenOption: string): void {
     this.showSuggestion.set(false);
-    if (suggestResult) {
-      this.textInput.setValue(suggestResult.suggestion, { emitEvent: false });
-      this.emitInput.emit(suggestResult.dataValue);
+    if (chosenOption) {
+      this.textInput.setValue(chosenOption, { emitEvent: false });
+      this.emitInput.emit(chosenOption);
     }
   }
 

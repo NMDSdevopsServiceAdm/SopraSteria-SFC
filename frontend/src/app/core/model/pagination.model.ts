@@ -1,7 +1,7 @@
 export interface SearchEvent {
   index: number;
   itemsPerPage: number;
-  searchTerm: string;
+  searchTerm?: string;
   sortByValue: string;
 }
 
@@ -26,15 +26,5 @@ export const parseSearchEvent = (searchEvent: SearchEvent): QueryParamsForBacken
     itemsPerPage: itemsPerPage,
     sortBy: sortByValue,
     ...(searchTerm ? { searchTerm } : {}),
-  };
-};
-
-export const parseSearchEventForWorkerWithPayData = (searchEvent: SearchEvent): QueryParamsForWorkerWithPayData => {
-  const { index, itemsPerPage, sortByValue, searchTerm } = searchEvent;
-  return {
-    pageIndex: index,
-    itemsPerPage: itemsPerPage,
-    sortBy: sortByValue,
-    ...(searchTerm ? { jobId: Number(searchTerm) } : {}),
   };
 };

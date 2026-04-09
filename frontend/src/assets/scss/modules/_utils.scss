@@ -133,6 +133,10 @@
   width: fit-content;
 }
 
+.asc-util__full-width {
+  width: 100%;
+}
+
 .asc-font-19 {
   @include govuk-font($size: 19);
 }

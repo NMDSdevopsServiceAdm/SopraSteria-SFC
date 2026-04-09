@@ -1,82 +1,137 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import userEvent from '@testing-library/user-event';
+import lodash from 'lodash';
 
 import { SearchInputAutoSuggestComponent } from './search-input-auto-suggest.component';
+import userEvent from '@testing-library/user-event';
 
-describe('SearchInputAutoSuggestComponent', () => {
-  // const setup = (accessibleLabel?: string, ref?: string) =>
-  //   render(SearchInputComponent, {
-  //     imports: [FormsModule, ReactiveFormsModule],
-  //     componentProperties: {
-  //       accessibleLabel,
-  //       ref,
-  //       prevSearch: '',
-  //       label: 'Search',
-  //     },
-  //   });
-  // it('should create', async () => {
-  //   const component = await setup();
-  //   expect(component).toBeTruthy();
-  // });
-  // it('renders the input and submit cta', async () => {
-  //   const component = await setup();
-  //   expect(component.getByLabelText('Search')).toBeTruthy();
-  //   expect(component.getByRole('button', { name: 'search' })).toBeTruthy();
-  // });
-  // it('allows the submit button name to set', async () => {
-  //   const component = await setup();
-  //   expect(component.getByRole('button', { name: 'search' })).toBeTruthy();
-  //   component.rerender({ componentProperties: { searchButtonName: 'new name of button' } });
-  //   expect(component.getByRole('button', { name: 'new name of button' })).toBeTruthy();
-  // });
-  // it('allows an accessibleLabel to be added for screen readers', async () => {
-  //   const component = await setup('for something');
-  //   expect(component.queryByLabelText('Search')).toBeNull();
-  //   expect(component.getByLabelText('Search for something')).toBeTruthy();
-  // });
-  // it('emits the searchTerm on submit', async () => {
-  //   const component = await setup();
-  //   const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
-  //   userEvent.type(component.getByLabelText('Search'), 'pete');
-  //   userEvent.click(component.getByRole('button', { name: 'search' }));
-  //   expect(emitSpy).toHaveBeenCalledOnceWith('pete');
-  // });
-  // it('displays "Clear search results" cta if user submits a search', async () => {
-  //   const component = await setup();
-  //   const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
-  //   userEvent.type(component.getByLabelText('Search'), 'ab');
-  //   userEvent.click(component.getByRole('button', { name: 'search' }));
-  //   expect(emitSpy).toHaveBeenCalledOnceWith('ab');
-  //   expect(component.findByRole('button', { name: 'Clear search results' })).toBeTruthy();
-  // });
-  // it('resets the search on clicking of "Clear search results" cta', async () => {
-  //   const component = await setup();
-  //   userEvent.type(component.getByLabelText('Search'), 'ab');
-  //   userEvent.click(component.getByRole('button', { name: 'search' }));
-  //   expect(component.findByRole('button', { name: 'Clear search results' })).toBeTruthy();
-  //   const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
-  //   userEvent.click(component.getByRole('button', { name: 'Clear search results' }));
-  //   expect(component.queryByRole('button', { name: 'Clear search results' })).toBeNull();
-  //   expect(emitSpy).toHaveBeenCalledOnceWith('');
-  // });
-  // it('does not emit search if searchTerm is an empty string', async () => {
-  //   const component = await setup();
-  //   const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
-  //   userEvent.click(component.getByRole('button', { name: 'search' }));
-  //   expect(emitSpy).not.toHaveBeenCalled();
-  // });
-  // it('allows a reference to avoid classing of rendered components', async () => {
-  //   const component = await setup(null, 'my-input-id');
-  //   const searchInput = component.getByLabelText('Search');
-  //   expect(searchInput).toBeTruthy();
-  //   expect(searchInput.id).toBe('my-input-id');
-  // });
-  // it('updates the search input and emits if a prevValue is passed in', async () => {
-  //   const component = await setup(null, null);
-  //   const emitSpy = spyOn(component.fixture.componentInstance.emitInput, 'emit');
-  //   component.fixture.componentInstance.prevSearch = 'previous search input';
-  //   component.fixture.detectChanges();
-  //   expect(emitSpy).toHaveBeenCalledWith('previous search input');
-  // });
+fdescribe('SearchInputAutoSuggestComponent', () => {
+  const jobs = ['Registered Nurse', 'Care worker', 'Care coordinator'];
+  const mockDataProvider = (textInput: string) => {
+    return jobs.filter((job) => job.toLowerCase().includes(textInput.toLowerCase()));
+  };
+
+  const setup = async (overrides: any = {}) => {
+    const componentProperties = {
+      dataProvider: mockDataProvider,
+      ...lodash.pick(overrides, [
+        'label',
+        'showSearchButton',
+        'searchButtonName',
+        'accessibleLabel',
+        'inputBoxId',
+        'ref',
+      ]),
+    };
+
+    const setupTools = await render(SearchInputAutoSuggestComponent, {
+      imports: [FormsModule, SharedModule, ReactiveFormsModule],
+      componentProperties,
+    });
+
+    const component = setupTools.fixture.componentInstance;
+
+    return { ...setupTools, component };
+  };
+  it('should create', async () => {
+    const { component } = await setup();
+    expect(component).toBeTruthy();
+  });
+
+  it('should show a input textbox', async () => {
+    const { getByRole } = await setup();
+    expect(getByRole('textbox', { name: 'Search' })).toBeTruthy();
+  });
+
+  it('should show a search button if showSearchButton is true', async () => {
+    const { queryByRole } = await setup({ showSearchButton: true });
+
+    expect(queryByRole('button', { name: 'search' })).toBeTruthy();
+  });
+
+  it('should not show the search button if showSearchButton is false', async () => {
+    const { queryByRole } = await setup({ showSearchButton: false });
+
+    expect(queryByRole('button', { name: 'search' })).toBeFalsy();
+  });
+
+  it('should allow a custom search button name', async () => {
+    const { getByRole } = await setup({ searchButtonName: 'special name', showSearchButton: true });
+
+    expect(getByRole('button', { name: 'special name' })).toBeTruthy();
+  });
+
+  it('should allow an accessibleLabel to be added for screen readers', async () => {
+    const { getByLabelText } = await setup({ label: 'Search', accessibleLabel: 'for something' });
+
+    expect(getByLabelText('Search for something')).toBeTruthy();
+  });
+
+  it('should emit the suggestion as search term when clicked on a suggestion', async () => {
+    const { component, getByLabelText, getByText } = await setup();
+
+    const emitSpy = spyOn(component.emitInput, 'emit');
+
+    userEvent.type(getByLabelText('Search'), 'care');
+    userEvent.click(getByText('Care worker'));
+
+    expect(emitSpy).toHaveBeenCalledOnceWith('Care worker');
+  });
+
+  it('should display a "Clear search results" link after user submit a search', async () => {
+    const { component, getByLabelText, getByText } = await setup();
+
+    const emitSpy = spyOn(component.emitInput, 'emit');
+    userEvent.type(getByLabelText('Search'), 'care');
+
+    userEvent.click(getByText('Care worker'));
+    expect(emitSpy).toHaveBeenCalledOnceWith('Care worker');
+
+    const clearSearchLink = getByText('Clear search results');
+    expect(clearSearchLink).toBeTruthy();
+
+    userEvent.click(clearSearchLink);
+    expect(emitSpy).toHaveBeenCalledWith('');
+  });
+
+  it('should emit the user input when search button is clicked', async () => {
+    const { component, getByLabelText, getByRole } = await setup({ showSearchButton: true });
+
+    const emitSpy = spyOn(component.emitInput, 'emit');
+
+    userEvent.type(getByLabelText('Search'), 'care');
+
+    userEvent.click(getByRole('button', { name: 'search' }));
+
+    expect(emitSpy).toHaveBeenCalledOnceWith('care');
+  });
+
+  it('should not emit search if searchTerm is empty and user clicked search button', async () => {
+    const { component, getByRole } = await setup({ showSearchButton: true });
+
+    const emitSpy = spyOn(component.emitInput, 'emit');
+
+    userEvent.click(getByRole('button', { name: 'search' }));
+
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
+
+  it('should use the given id as input box id', async () => {
+    const { getByLabelText } = await setup({ inputBoxId: 'my-input-id' });
+
+    const searchInput = getByLabelText('Search');
+    expect(searchInput).toBeTruthy();
+
+    expect(searchInput.id).toBe('my-input-id');
+  });
+
+  it('should handle the legacy "ref" input property as input box id', async () => {
+    const { getByLabelText } = await setup({ ref: 'my-input-id' });
+
+    const searchInput = getByLabelText('Search');
+    expect(searchInput).toBeTruthy();
+
+    expect(searchInput.id).toBe('my-input-id');
+  });
 });

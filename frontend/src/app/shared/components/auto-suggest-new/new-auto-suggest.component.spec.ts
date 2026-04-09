@@ -5,28 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { CdkListboxModule } from '@angular/cdk/listbox';
 
 fdescribe('NewAutoSuggestComponent', () => {
-  const jobs = [
-    {
-      id: 23,
-      title: 'Registered Nurse',
-    },
-
-    {
-      id: 10,
-      title: 'Care worker',
-    },
-
-    {
-      id: 8,
-      title: 'Care coordinator',
-    },
-  ];
-
   async function setup(overrides: any = {}) {
+    const jobs = ['Registered Nurse', 'Care worker', 'Care coordinator'];
     const mockDataProvider = (textInput: string) => {
-      return jobs
-        .filter((job) => job.title.toLowerCase().includes(textInput.toLowerCase()))
-        .map((job) => ({ suggestion: job.title, dataValue: job }));
+      return jobs.filter((job) => job.toLowerCase().includes(textInput.toLowerCase()));
     };
 
     const componentProperties = {
@@ -76,12 +58,14 @@ fdescribe('NewAutoSuggestComponent', () => {
     const { component, getByTestId, getByRole } = await setup();
     const emitInputSpy = spyOn(component.emitInput, 'emit');
 
-    userEvent.type(getByRole('textbox'), 'care');
+    const inputBox = getByRole('textbox') as HTMLInputElement;
+    userEvent.type(inputBox, 'care');
 
     const tray = getByTestId('tray-list');
     userEvent.click(within(tray).getByText('Care worker'));
 
-    expect(emitInputSpy).toHaveBeenCalledWith({ id: 10, title: 'Care worker' });
+    expect(emitInputSpy).toHaveBeenCalledWith('Care worker');
+    expect(inputBox.value).toEqual('Care worker');
   });
 
   it('should close the tray list when one of the suggestion was selected', async () => {

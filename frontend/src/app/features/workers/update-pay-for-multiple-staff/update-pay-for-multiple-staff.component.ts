@@ -11,14 +11,19 @@ import {
   StaffSummarySortByParamMap,
 } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
-import { parseSearchEventForWorkerWithPayData, SearchEvent } from '@core/model/pagination.model';
+import {
+  parseSearchEvent,
+  QueryParamsForBackend,
+  QueryParamsForWorkerWithPayData,
+  SearchEvent,
+} from '@core/model/pagination.model';
 import { WorkerWithPayData } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { JobRoleDataProvider } from '@shared/auto-suggest.model';
 import { NewTablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper-new/new-table-pagination-wrapper.component';
+import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -47,7 +52,7 @@ export class UpdatePayForMultipleStaffComponent {
   public sortOptions = SortStaffOptionsForUpdatePay;
   public workplaceUid: string;
   public allJobs: Array<Job>;
-  public jobRoleDataProvider: WritableSignal<JobRoleDataProvider> = signal(null);
+  public jobRoleDataProvider: WritableSignal<AutoSuggestDataProvider> = signal(null);
   public showNewPillForFastTrackLink: boolean = true;
 
   private subscriptions: Subscription = new Subscription();
@@ -140,8 +145,26 @@ export class UpdatePayForMultipleStaffComponent {
     this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe();
   }
 
-  public getPageOfWorkers(event: SearchEvent): void {
-    const searchParams = parseSearchEventForWorkerWithPayData(event);
+  private convertJobRoleNameToId(queryParams: QueryParamsForBackend): QueryParamsForWorkerWithPayData {
+    if (!queryParams.searchTerm) {
+      return queryParams;
+    }
+
+    const jobRoleTitle = queryParams.searchTerm;
+    const matchedJob = this.allJobs.find((job) => job.title === jobRoleTitle);
+
+    if (!matchedJob) {
+      return queryParams;
+    }
+
+    return {
+      ...lodash.omit(queryParams, 'searchTerm'),
+      jobId: matchedJob.id,
+    };
+  }
+
+  public getPageOfWorkers(searchEvent: SearchEvent): void {
+    const searchParams = this.convertJobRoleNameToId(parseSearchEvent(searchEvent));
 
     const getWorker = this.workerService
       .getWorkersWithPayData(this.workplaceUid, searchParams)
@@ -160,25 +183,24 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   public buildJobDataProvider() {
-    const allJobs = [...this.allJobs];
-    const dataProvider: JobRoleDataProvider = (searchTerm: string) => {
+    const allJobsTitles = this.allJobs.map((job) => job.title);
+    const dataProvider: AutoSuggestDataProvider = (searchTerm: string) => {
       if (!searchTerm) {
         return [];
       }
 
       const searchTermInLowerCase = searchTerm.trim().toLowerCase();
 
-      const matchedJobs = allJobs.filter((job) => {
-        return job.title && job.title.toLowerCase().includes(searchTermInLowerCase);
+      const suggestedJobs = allJobsTitles.filter((jobTitle) => {
+        return jobTitle && jobTitle.toLowerCase().includes(searchTermInLowerCase);
       });
 
-      const resultsMatchTheStartComeFirst = (job: Job) =>
-        job.title && job.title.toLowerCase().startsWith(searchTermInLowerCase) ? 1 : 2;
-      const matchesWithUpdateOrders = lodash.sortBy(matchedJobs, [resultsMatchTheStartComeFirst, 'title']);
+      const matchStartComeFirst = (jobTitle: string) =>
+        jobTitle && jobTitle.toLowerCase().startsWith(searchTermInLowerCase) ? 1 : 2;
 
-      return matchesWithUpdateOrders.map((job) => {
-        return { suggestion: job.title, dataValue: job };
-      });
+      const suggestionsWithUpdateOrders = lodash.sortBy(suggestedJobs, [matchStartComeFirst, 'title']);
+
+      return suggestionsWithUpdateOrders;
     };
 
     this.jobRoleDataProvider.set(dataProvider);

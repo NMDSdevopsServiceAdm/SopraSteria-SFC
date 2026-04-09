@@ -21,7 +21,7 @@ import userEvent from '@testing-library/user-event';
 import { AllJobs } from '../../../../mockdata/jobs';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
 
-describe('UpdatePayForMultipleStaffComponent', () => {
+fdescribe('UpdatePayForMultipleStaffComponent', () => {
   const workerBuilder = build('Worker', {
     fields: {
       uid: fake((f) => f.datatype.uuid()),

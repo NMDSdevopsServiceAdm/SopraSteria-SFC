@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, contentChild, effect } from '@angular/core';
 import { Router } from '@angular/router';
+import { SearchInput } from '@core/model/admin/search.model';
 import { SearchEvent } from '@core/model/pagination.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
@@ -11,7 +12,7 @@ import { Subscription } from 'rxjs';
   standalone: false,
 })
 export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
-  private customSearchBox = contentChild('searchBox');
+  private customSearchBox = contentChild<SearchInput>('searchBox');
 
   @Input() maintainedPageIndex: number;
   @Input() totalCount: number;
@@ -24,12 +25,7 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
   @Input() accessibleLabel: string;
   @Input() setQueryInParams: boolean = false;
   @Input() workplaceUid: string;
-  @Output() fetchData = new EventEmitter<{
-    index: number;
-    itemsPerPage: number;
-    searchTerm: string;
-    sortByValue: string;
-  }>();
+  @Output() fetchData = new EventEmitter<SearchEvent>();
 
   public sortByValue: string;
   public itemsPerPage = 15;
@@ -37,10 +33,7 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
   public sortBySelected: string;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private router: Router,
-    private establishmentService: EstablishmentService,
-  ) {
+  constructor() {
     effect(() => {
       if (this.customSearchBox()) {
         this.setUpCustomSearchBox();
@@ -73,12 +66,13 @@ export class NewTablePaginationWrapperComponent implements OnInit, OnDestroy {
 
   private setUpCustomSearchBox(): void {
     const customSearchBox = this.customSearchBox();
+    if (!customSearchBox) {
+      return;
+    }
 
     this.subscriptions.add(
-      // @ts-expect-error
-      customSearchBox.emitInput.subscribe((dataValue) => {
-        const id = dataValue?.id?.toString();
-        this.handleSearch(id);
+      customSearchBox.emitInput.subscribe((searchTerm) => {
+        this.handleSearch(searchTerm);
       }),
     );
   }
