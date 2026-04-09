@@ -17,6 +17,8 @@ import { StaffSummaryDirective } from '@shared/directives/staff-summary/staff-su
 export class StaffSummaryComponent extends StaffSummaryDirective implements OnInit {
   public showNewPill: boolean = false;
   public workplaceUid: string;
+  public showUpdatePayForMultipleStaffLink = false;
+  public updatePayForMultipleStaffLinkText = 'Update pay for multiple staff';
 
   constructor(
     protected permissionsService: PermissionsService,
@@ -34,11 +36,29 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
   protected init(): void {
     this.showNewPill = !this.workplace?.updatePayForMultiStaffViewed;
     this.workplaceUid = this.workplace.uid;
+    this.showUpdatePayForMultipleStaffLink = this.workerCount > 1;
   }
 
   public getWorkerRecordPath(event: Event, worker: Worker) {
     event.preventDefault();
     const path = ['/workplace', this.workplace.uid, 'staff-record', worker.uid, 'staff-record-summary'];
     this.router.navigate(this.wdfView ? [...path, 'wdf-summary'] : path);
+  }
+
+  private setUpdatePayForMultiStaffViewed(): void {
+    const data = {
+      property: 'updatePayForMultiStaffViewed',
+      value: true,
+    };
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplaceUid, data).subscribe(),
+    );
+  }
+
+  public handleOnClick(): void {
+    if (this.showNewPill) {
+      this.setUpdatePayForMultiStaffViewed();
+    }
+    this.router.navigate(['workplace', this.workplaceUid, 'staff-record', 'update-pay-for-multiple-staff']);
   }
 }

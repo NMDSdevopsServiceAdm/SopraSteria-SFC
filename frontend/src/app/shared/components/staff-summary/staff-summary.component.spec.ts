@@ -22,10 +22,16 @@ import { PermissionType } from '@core/model/permissions.model';
 import { SortByService } from '@core/services/sort-by.service';
 import { MockSortByService } from '@core/test-utils/MockSortByService';
 import { TabsService } from '@core/services/tabs.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 
-describe('StaffSummaryComponent', () => {
+fdescribe('StaffSummaryComponent', () => {
+  const workplaceUid = 'mocked-uid';
+
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
+    establishment.updatePayForMultiStaffViewed = overrides?.updatePayForMultiStaffViewed ?? false;
+    establishment.uid = workplaceUid;
+
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
     const setupTools = await render(StaffSummaryComponent, {
       imports: [SharedModule, RouterModule],
@@ -43,7 +49,9 @@ describe('StaffSummaryComponent', () => {
         },
         WorkerService,
         provideRouter([]),
-      provideHttpClient(), provideHttpClientTesting(),],
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
       componentProperties: {
         workplace: establishment,
         workers: workers,
@@ -54,10 +62,16 @@ describe('StaffSummaryComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.resolveTo(true);
     const workerService = injector.inject(WorkerService) as WorkerService;
 
     const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
       of({ workers: [...workers, ...workers, ...workers, ...workers, ...workers, ...workers], workerCount: 18 }),
+    );
+
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const updateSingleFieldSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+      of(null),
     );
 
     const localStorageSetSpy = spyOn(localStorage, 'setItem');
@@ -70,6 +84,8 @@ describe('StaffSummaryComponent', () => {
       router,
       component,
       workers,
+      routerSpy,
+      updateSingleFieldSpy,
       getAllWorkersSpy,
       localStorageSetSpy,
       localStorageGetSpy,
@@ -217,9 +233,8 @@ describe('StaffSummaryComponent', () => {
   describe('getWorkerRecordPath', () => {
     it('navigates to the staff record summary when not in the wdf view', async () => {
       const overrides = { permissions: ['canViewWorker'] };
-      const { component, router, workers, getByText } = await setup(overrides);
+      const { component, routerSpy, workers, getByText } = await setup(overrides);
 
-      const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
       const worker = workers[0];
       const nameLink = getByText(worker.nameOrId);
       fireEvent.click(nameLink);
@@ -277,6 +292,84 @@ describe('StaffSummaryComponent', () => {
       expect(component.sortByValue).toEqual('lastUpdateNewest');
       expect(component.searchTerm).toEqual('Ma');
       expect(component.pageIndex).toEqual(0);
+    });
+  });
+
+  describe('Update pay for multiple staff', () => {
+    const linkText = 'Update pay for multiple staff';
+
+    it('should show update-pay-for-multiple-staff-link with the new pill when updatePayForMultiStaffViewed is false, workerCount is below itemsPerPage', async () => {
+      const overrides = { updatePayForMultiStaffViewed: false, workerCount: 6 };
+
+      const { getByTestId } = await setup(overrides);
+
+      const newPillWithLink = getByTestId('update-pay-for-multiple-staff-link');
+
+      expect(newPillWithLink).toBeTruthy();
+      expect(within(newPillWithLink).getByText(linkText)).toBeTruthy();
+      expect(within(newPillWithLink).getByTestId('new-pill')).toBeTruthy();
+    });
+
+    it('should show the link without the new pill when updatePayForMultiStaffViewed is true', async () => {
+      const overrides = {
+        updatePayForMultiStaffViewed: true,
+        workerCount: 6,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const newPillWithLink = getByTestId('update-pay-for-multiple-staff-link');
+
+      expect(newPillWithLink).toBeTruthy();
+      expect(within(newPillWithLink).getByText(linkText)).toBeTruthy();
+      expect(within(newPillWithLink).queryByTestId('new-pill')).toBeFalsy();
+    });
+
+    it('should navigate to the update-pay-for-multiple-staff page', async () => {
+      const { fixture, getByTestId, routerSpy } = await setup();
+
+      const newPillWithLink = getByTestId('update-pay-for-multiple-staff-link');
+      const link = within(newPillWithLink).getByText(linkText);
+
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        'workplace',
+        workplaceUid,
+        'staff-record',
+        'update-pay-for-multiple-staff',
+      ]);
+    });
+
+    it('should call updateSingleEstablishmentField if updatePayForMultiStaffViewed is false', async () => {
+      const { fixture, getByText, updateSingleFieldSpy } = await setup({
+        updatePayForMultiStaffViewed: false,
+        workerCount: 15,
+      });
+
+      const link = getByText(linkText);
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(updateSingleFieldSpy).toHaveBeenCalledWith(workplaceUid, {
+        property: 'updatePayForMultiStaffViewed',
+        value: true,
+      });
+    });
+
+    it(`should not call updateSingleEstablishmentField if updatePayForMultiStaffViewed is true`, async () => {
+      const overrides = {
+        updatePayForMultiStaffViewed: true,
+        workerCount: 15,
+      };
+      const { fixture, getByText, updateSingleFieldSpy } = await setup(overrides);
+
+      const link = getByText(linkText);
+      fireEvent.click(link);
+      fixture.autoDetectChanges();
+
+      expect(updateSingleFieldSpy).not.toHaveBeenCalled();
     });
   });
 });

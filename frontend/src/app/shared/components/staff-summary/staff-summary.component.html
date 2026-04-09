@@ -1,19 +1,29 @@
-<app-table-pagination-wrapper
+<app-new-table-pagination-wrapper
   [totalCount]="totalWorkerCount"
   [count]="workerCount"
   [searchTerm]="searchTerm"
   [sortByParamMap]="sortByParamMap"
-  [sortByValue]="sortByValue"
   [sortOptions]="sortStaffOptions"
   accessibleLabel="for staff records"
   (fetchData)="getPageOfWorkers($event)"
   [label]="searchLabel"
   [maintainedPageIndex]="maintainedPageIndex"
-  [wdfView]="wdfView"
-  [showNewPill]="showNewPill"
-  [showUpdatePayForMultipleStaffLink]="true"
   [workplaceUid]="workplaceUid"
+  defaultSortByValue="staffNameAsc"
 >
+  @if (showUpdatePayForMultipleStaffLink) {
+    <ng-container placeAboveSearchBox>
+      <div class="govuk-grid-column-three-quarters">
+        <app-new-pill-with-link
+          placeAboveSearchBox
+          [linkText]="updatePayForMultipleStaffLinkText"
+          [showNewPill]="showNewPill"
+          data-testid="update-pay-for-multiple-staff-link"
+          (clicked)="handleOnClick()"
+        ></app-new-pill-with-link>
+      </div>
+    </ng-container>
+  }
   <table *ngIf="workerCount; else noWorkersFound" class="govuk-table">
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
@@ -65,4 +75,4 @@
       <p>Make sure that your spelling is correct.</p>
     </div>
   </ng-template>
-</app-table-pagination-wrapper>
+</app-new-table-pagination-wrapper>
