@@ -97,7 +97,7 @@ export class FastTrackConfirmationPageComponent implements OnInit {
     this.router.navigate(['/workplace', this.workplace.uid, 'update-pay-multiple-staff']).then(() => {
       this.alertService.addAlert({
         type: 'success',
-        message: 'Pay updated in ' + this.totalCount + ' staff record' + (this.totalCount === 1 ? '' : 's') + ' ',
+        message: 'Pay updated in ' + this.totalCount + ' staff record' + (this.totalCount === 1 ? '' : 's') + '',
       });
     });
   }
