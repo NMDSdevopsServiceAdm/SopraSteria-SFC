@@ -1,4 +1,4 @@
-<app-new-table-pagination-wrapper
+<app-table-pagination-wrapper
   [totalCount]="totalWorkerCount"
   [count]="workerCount"
   [searchTerm]="searchTerm"
@@ -8,8 +8,7 @@
   (fetchData)="getPageOfWorkers($event)"
   [label]="searchLabel"
   [maintainedPageIndex]="maintainedPageIndex"
-  [workplaceUid]="workplaceUid"
-  defaultSortByValue="staffNameAsc"
+  sortByValue="staffNameAsc"
 >
   @if (showUpdatePayForMultipleStaffLink) {
     <ng-container placeAboveSearchBox>
@@ -75,4 +74,4 @@
       <p>Make sure that your spelling is correct.</p>
     </div>
   </ng-template>
-</app-new-table-pagination-wrapper>
+</app-table-pagination-wrapper>

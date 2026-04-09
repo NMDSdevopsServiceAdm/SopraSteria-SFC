@@ -1,35 +1,42 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, contentChild, effect, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { SearchInput } from '@core/model/admin/search.model';
+import { SearchEvent } from '@core/model/pagination.model';
+import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-table-pagination-wrapper',
-    templateUrl: './table-pagination-wrapper.component.html',
-    standalone: false
+  selector: 'app-table-pagination-wrapper',
+  templateUrl: './table-pagination-wrapper.component.html',
+  styleUrl: './table-pagination-wrapper.component.scss',
+  standalone: false,
 })
 export class TablePaginationWrapperComponent implements OnInit {
+  private customSearchBox = contentChild<SearchInput>('searchBox');
   @Input() maintainedPageIndex: number;
   @Input() totalCount: number;
   @Input() count: number;
   @Input() sortByParamMap: Record<string, string>;
   @Input() sortByValue: string;
   @Input() sortOptions: Record<string, string>;
-  @Input() searchTerm: string;
+  @Input() searchTerm: string = '';
   @Input() label = 'Search';
   @Input() accessibleLabel: string;
   @Input() setQueryInParams: boolean = false;
-  @Output() fetchData = new EventEmitter<{
-    index: number;
-    itemsPerPage: number;
-    searchTerm: string;
-    sortByValue: string;
-  }>();
+  @Output() fetchData = new EventEmitter<SearchEvent>();
   public itemsPerPage = 15;
   public currentPageIndex = 0;
   private fragment: string;
   private tab: string;
   public sortBySelected: string;
+  private subscriptions: Subscription = new Subscription();
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+    effect(() => {
+      if (this.customSearchBox()) {
+        this.setUpCustomSearchBox();
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
@@ -64,6 +71,19 @@ export class TablePaginationWrapperComponent implements OnInit {
     this.getData();
   }
 
+  private setUpCustomSearchBox(): void {
+    const customSearchBox = this.customSearchBox();
+    if (!customSearchBox) {
+      return;
+    }
+
+    this.subscriptions.add(
+      customSearchBox.emitInput.subscribe((searchTerm) => {
+        this.handleSearch(searchTerm);
+      }),
+    );
+  }
+
   public handleSearch(searchTerm: string): void {
     this.currentPageIndex = 0;
     this.searchTerm = searchTerm;
@@ -80,13 +100,20 @@ export class TablePaginationWrapperComponent implements OnInit {
     this.getData();
   }
 
-  private getData(): void {
-    const properties = {
+  public get currentSearchParams(): SearchEvent {
+    return {
       index: this.currentPageIndex,
       itemsPerPage: this.itemsPerPage,
       searchTerm: this.searchTerm,
       sortByValue: this.sortByValue,
     };
-    this.fetchData.emit(properties);
+  }
+
+  private getData(): void {
+    this.fetchData.emit(this.currentSearchParams);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

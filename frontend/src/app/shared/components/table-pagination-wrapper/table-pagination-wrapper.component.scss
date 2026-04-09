@@ -6,6 +6,14 @@
   .asc__spacing-between-link-and-searchbox {
     flex-basis: 100%;
     height: 0;
-    margin-top: 30px;
+    margin-top: 20px;
+  }
+
+  .asc__spacing-between-link-and-searchbox:first-child {
+    display: none;
+  }
+
+  #sort-by-container {
+    margin-left: auto;
   }
 }
