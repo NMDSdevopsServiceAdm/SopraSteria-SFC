@@ -24,7 +24,7 @@ import { MockSortByService } from '@core/test-utils/MockSortByService';
 import { TabsService } from '@core/services/tabs.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
-fdescribe('StaffSummaryComponent', () => {
+describe('StaffSummaryComponent', () => {
   const workplaceUid = 'mocked-uid';
 
   async function setup(overrides: any = {}) {
