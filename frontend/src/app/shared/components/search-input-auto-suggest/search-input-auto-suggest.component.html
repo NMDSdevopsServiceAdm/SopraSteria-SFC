@@ -10,10 +10,9 @@
     <app-new-auto-suggest
       #searchBox
       [inputBoxId]="inputBoxId"
-      [label]="label"
       [dataProvider]="dataProvider"
-      [accessibleLabel]="accessibleLabel"
       (emitInput)="handleOnSubmit($event)"
+      [showEllipsis]="true"
     >
     </app-new-auto-suggest>
   </div>

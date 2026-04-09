@@ -6,13 +6,12 @@ import { AutoSuggestDataProvider, AutoSuggestResult } from '@shared/auto-suggest
 @Component({
   selector: 'app-new-auto-suggest',
   templateUrl: './new-auto-suggest.component.html',
-  styleUrls: ['./new-auto-suggest.component.scss'],
+  styleUrls: ['../auto-suggest/auto-suggest.component.scss'],
   standalone: false,
 })
 export class NewAutoSuggestComponent<T> implements OnInit {
   @Input() inputBoxId: string = 'auto-suggest';
   @Input() dataProvider: AutoSuggestDataProvider<T>;
-  @Input() label: string = '';
   @Input() accessibleLabel: string = '';
   @Input() showEllipsis: boolean = false;
   @Input() hasError: boolean = false;
@@ -20,7 +19,7 @@ export class NewAutoSuggestComponent<T> implements OnInit {
 
   public showSuggestion = signal(false);
   public textInput = new FormControl('');
-  public inputSignal: Signal<string> = toSignal(this.textInput.valueChanges, { initialValue: '' });
+  public inputSignal: Signal<string | null> = toSignal(this.textInput.valueChanges, { initialValue: '' });
 
   private _suggestions = computed(() => {
     const currentInputValue = this.inputSignal();
