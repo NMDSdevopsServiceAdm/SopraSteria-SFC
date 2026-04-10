@@ -13,7 +13,7 @@ export class SearchInputAutoSuggestComponent implements SearchInput {
   @Input() dataProvider: AutoSuggestDataProvider;
 
   @Input() ref = 'search';
-  @Input() inputBoxId: string; // bridge naming convention change
+  @Input() inputBoxId: string;
   @Input() searchButtonName = 'search';
   @Input() label = 'Search';
   @Input() accessibleLabel: string = '';
