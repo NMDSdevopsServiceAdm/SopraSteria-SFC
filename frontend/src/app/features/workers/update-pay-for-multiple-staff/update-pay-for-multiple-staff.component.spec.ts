@@ -675,6 +675,56 @@ describe('UpdatePayForMultipleStaffComponent', () => {
     });
   });
 
+  describe('jobRoleDataProvider', () => {
+    it('should return a function that generate suggestion for auto-complete child component', async () => {
+      const { component } = await setup();
+
+      const dataProvider = component.jobRoleDataProvider();
+      const suggestions = dataProvider('care');
+
+      expect(suggestions).toBeInstanceOf(Array);
+      expect(suggestions).toContain('Care worker');
+      expect(suggestions).toContain('Senior care worker');
+    });
+
+    it('should return the suggestions in alphabetic order, except the job roles that match at the start should come first', async () => {
+      const { component } = await setup();
+
+      const dataProvider = component.jobRoleDataProvider();
+
+      const searchedByCare = dataProvider('care');
+
+      const expectedJobRolesOrder = [
+        'Care coordinator',
+        'Care worker',
+        'Administrative, office staff (non care-providing)',
+        'Ancillary staff (non care-providing)',
+        'Managers and staff (care-related, but not care-providing)',
+        'Other (directly involved in providing care)',
+        'Other (not directly involved in providing care)',
+        'Senior care worker',
+      ];
+
+      expect(searchedByCare).toEqual(expectedJobRolesOrder);
+
+      const searchedByManage = dataProvider('manage');
+
+      const expectedJobRolesOrder2 = [
+        'Managers and staff (care-related, but not care-providing)',
+        'Data governance manager',
+        'Deputy manager',
+        'First-line manager',
+        'IT manager',
+        'IT service desk manager',
+        'Middle management',
+        'Registered Manager',
+        'Senior management',
+      ];
+
+      expect(searchedByManage).toEqual(expectedJobRolesOrder2);
+    });
+  });
+
   describe('form submit', () => {
     it('should show a "Save and return" CTA button and a cancel link', async () => {
       const { getByRole, getByText } = await setup();

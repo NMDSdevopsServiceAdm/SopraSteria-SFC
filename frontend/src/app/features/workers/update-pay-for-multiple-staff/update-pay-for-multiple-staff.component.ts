@@ -204,7 +204,7 @@ export class UpdatePayForMultipleStaffComponent {
       const matchStartComeFirst = (jobTitle: string) =>
         jobTitle && jobTitle.toLowerCase().startsWith(searchTermInLowerCase) ? 1 : 2;
 
-      const suggestionsWithUpdateOrders = lodash.sortBy(suggestedJobs, [matchStartComeFirst, 'title']);
+      const suggestionsWithUpdateOrders = lodash.sortBy(suggestedJobs, [matchStartComeFirst, lodash.identity]);
 
       return suggestionsWithUpdateOrders;
     };
