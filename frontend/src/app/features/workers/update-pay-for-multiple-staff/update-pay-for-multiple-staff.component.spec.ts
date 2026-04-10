@@ -653,6 +653,26 @@ describe('UpdatePayForMultipleStaffComponent', () => {
         });
       });
     });
+
+    it('should show a message about no matching result if no workers were found', async () => {
+      const { fixture, getByLabelText, getByText, getWorkersWithPayDataSpy } = await setup({
+        totalWorkerCount: 16,
+      });
+
+      getWorkersWithPayDataSpy.and.callFake((_uid) => {
+        return of({ count: 0, workers: [] });
+      });
+
+      const searchBox = getByLabelText(/Search by job role/)!;
+      userEvent.type(searchBox, 'Care');
+      const searchBoxWrapper = searchBox.parentElement!;
+
+      userEvent.click(within(searchBoxWrapper).getByText('Senior care worker'));
+      await fixture.whenStable();
+
+      expect(getByText('There are no matching results')).toBeTruthy();
+      expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
+    });
   });
 
   describe('form submit', () => {
