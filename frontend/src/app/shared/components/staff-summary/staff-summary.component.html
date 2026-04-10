@@ -8,7 +8,7 @@
   (fetchData)="getPageOfWorkers($event)"
   [label]="searchLabel"
   [maintainedPageIndex]="maintainedPageIndex"
-  sortByValue="staffNameAsc"
+  [sortByValue]="sortByValue"
 >
   @if (showUpdatePayForMultipleStaffLink) {
     <ng-container placeAboveSearchBox>
