@@ -112,7 +112,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
     const sectionHeading = getByTestId('section-heading');
 
     expect(heading.textContent).toContain('Is your workplace using the care workforce pathway?');
-    expect(sectionHeading.textContent).toEqual('Recruitment and benefits');
+    expect(sectionHeading.textContent).toEqual('Staff development');
   });
 
   it('should show a reveal text to explain what is the care workforce pathway', async () => {
@@ -376,7 +376,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
       ]);
     });
 
-    it('should navigate to cash-loyalty page when skipped the question', async () => {
+    it('should navigate to sharing-data page when skipped the question', async () => {
       const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
       userEvent.click(getByText('Skip this question'));
@@ -386,12 +386,12 @@ describe('CareWorkforcePathwayUseComponent', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'cash-loyalty',
+        'sharing-data',
       ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });
 
-    it('should navigate to cash-loyalty page after submit', async () => {
+    it('should navigate to sharing-data page after submit', async () => {
       const { getByText, routerSpy, establishmentServiceSpy } = await setup(overrides);
 
       userEvent.click(getByText('Save and continue'));
@@ -401,7 +401,7 @@ describe('CareWorkforcePathwayUseComponent', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'cash-loyalty',
+        'sharing-data',
       ]);
       expect(establishmentServiceSpy).not.toHaveBeenCalled();
     });

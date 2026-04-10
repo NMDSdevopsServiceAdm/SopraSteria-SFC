@@ -5,6 +5,7 @@ import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.mod
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 import { DateUtil } from '@core/utils/date-util';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { WorkplaceQuestion } from '@features/workplace/question/question.component';
@@ -45,6 +46,7 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends WorkplaceQuestio
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
+    protected payAndPensionService: PayAndPensionService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }

@@ -221,10 +221,12 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
 
     const heading = 'Do you provide any other services?';
     it('updates when there are no other services', () => {
+      cy.intercept('GET', '/api/establishment/*/services*').as('services');
       cy.get('[data-testid="otherServices"]').as('testId');
 
       cy.get('@testId').contains('Add').click();
 
+      cy.wait('@services');
       cy.get('h1').should('contain.text', heading);
       cy.getByLabel('No').as('NoButton');
       cy.get('@NoButton').click();
@@ -239,10 +241,13 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     });
 
     it('updates when there are other services', () => {
+      cy.intercept('GET', '/api/establishment/*/services*').as('services');
+
       cy.get('[data-testid="otherServices"]').as('testId');
 
       cy.get('@testId').contains('Add').click();
 
+      cy.wait('@services');
       cy.get('h1').should('contain.text', heading);
 
       cy.getByLabel('Yes, we provide other services').as('YesButton');
@@ -490,6 +495,84 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     });
   });
 
+  describe('sleep-ins', async () => {
+    const heading = 'Does your workplace offer sleep-ins?';
+    const mainServiceThatCanOfferSleepIns = { id: 20, name: 'Domiciliary care services' };
+
+    beforeEach(() => {
+      cy.setWorkplaceMainService(establishmentId, mainServiceThatCanOfferSleepIns.id);
+      cy.reload();
+      cy.get('[data-cy="tab-list"]').contains('Workplace').click();
+    });
+
+    it('updates offer sleeps-in and sleep-in pay if the answer is "Yes"', () => {
+      cy.get('[data-testid="offer-sleep-ins"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+      cy.getByLabel('Yes').click();
+      cy.contains('button', 'Save').click();
+
+      // second sleep in question
+      cy.get('h1').should('contain.text', 'How do you pay care and support workers for a sleep-in?');
+      cy.getByLabel('Hourly').click();
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
+    });
+
+    it('adds and updates if the answer is not "Yes"', () => {
+      cy.get('[data-testid="offer-sleep-ins"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+      cy.getByLabel('No').click();
+      cy.contains('button', 'Save').click();
+
+      cy.get('@testId').contains('No');
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
+
+      cy.getByLabel('I do not know').check();
+      cy.get('button').contains('Save').click();
+    });
+  });
+
+  describe('care and support worker travel time pay', () => {
+    const answer = 'A different travel time rate';
+    const rate = '12.21';
+    const heading = 'What do you pay care and support workers for travel time between visits?';
+    const mainService = { id: 20, name: 'Domiciliary care services' };
+
+    beforeEach(() => {
+      cy.setWorkplaceMainService(establishmentId, mainService.id);
+      cy.reload();
+      cy.get('[data-cy="tab-list"]').contains('Workplace').click();
+    });
+
+    it('updates care and support worker travel time pay', () => {
+      cy.get('[data-testid="travel-time-pay"]').as('testId');
+
+      cy.get('@testId').contains('Add').click();
+
+      cy.get('h1').should('contain.text', heading);
+
+      cy.getByLabel(answer).click();
+      cy.getByLabel('Amount (optional)').type(rate);
+      cy.contains('button', 'Save and return').click();
+
+      cy.get('@testId').contains('A different travel time rate, £12.21');
+      cy.get('@testId').contains('Change').click();
+
+      cy.get('h1').should('contain.text', heading);
+    });
+  });
+
   it('updates repeat training', () => {
     const repeatedTrainingAnswer = 'Yes, but not very often';
     const heading = "Do new care workers have to repeat training they've done with previous employers?";
@@ -564,11 +647,32 @@ export const runTestsForWorkplaceQuestions = (mockEstablishmentData) => {
     cy.get('h1').should('contain.text', heading);
   });
 
-  it('updates higher pension contributions', () => {
+  it('updates higher workplace pension contributions', () => {
     const answer = 'Yes';
-    const heading = 'Do you contribute more than the minimum 3% into workplace pensions for your care workers?';
+    const percentage = '5.5';
+    const heading =
+      'Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?';
 
     cy.get('[data-testid="higher-pension-contributions"]').as('testId');
+
+    cy.get('@testId').contains('Add').click();
+
+    cy.get('h1').should('contain.text', heading);
+    cy.getByLabel(answer).click();
+    cy.getByLabel('Actual contribution').type(percentage);
+    cy.contains('button', 'Save and return').click();
+
+    cy.get('@testId').contains('Yes, 5.5%');
+    cy.get('@testId').contains('Change').click();
+
+    cy.get('h1').should('contain.text', heading);
+  });
+
+  it('updates staff opt out of workplace pension', () => {
+    const answer = 'Yes';
+    const heading = 'Are any of your staff currently opted out of their workplace pension?';
+
+    cy.get('[data-testid="staff-opt-out-of-workplace-pension"]').as('testId');
 
     cy.get('@testId').contains('Add').click();
 

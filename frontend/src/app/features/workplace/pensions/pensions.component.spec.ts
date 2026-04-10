@@ -7,14 +7,22 @@ import { Router, RouterModule } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByLabelText, render, within } from '@testing-library/angular';
 
 import { PensionsComponent } from './pensions.component';
 import { patchRouterUrlForWorkplaceQuestions } from '@core/test-utils/patchUrlForWorkplaceQuestions';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
+import {
+  MockPayAndPensionService,
+  mockPayAndPensionsGroup1ProgressBarSections,
+  mockPayAndPensionsGroup2ProgressBarSections,
+} from '@core/test-utils/MockPayAndPensionService';
+import { ProgressBarUtil, WorkplaceFlowSections } from '@core/utils/progress-bar-util';
+import userEvent from '@testing-library/user-event';
 
 describe('PensionsComponent', () => {
-  async function setup(returnUrl = true, pension = undefined) {
-    const isInAddDetailsFlow = !returnUrl;
+  async function setup(overrides: any = { returnUrl: true, pension: undefined, pensionPercentage: undefined }) {
+    const isInAddDetailsFlow = !overrides.returnUrl;
 
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       PensionsComponent,
@@ -25,9 +33,15 @@ describe('PensionsComponent', () => {
           UntypedFormBuilder,
           {
             provide: EstablishmentService,
-            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnUrl, {
-              pensionContribution: pension,
+            useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, overrides?.returnUrl, {
+              pensionContribution: overrides?.pension,
+              pensionContributionPercentage: overrides?.pensionPercentage,
             }),
+            deps: [HttpClient],
+          },
+          {
+            provide: PayAndPensionService,
+            useFactory: MockPayAndPensionService.factory(overrides),
             deps: [HttpClient],
           },
           provideHttpClient(),
@@ -39,7 +53,7 @@ describe('PensionsComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateSingleEstablishmentField').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateEstablishmentFieldWithAudit').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -64,11 +78,61 @@ describe('PensionsComponent', () => {
 
   it('should render the headings', async () => {
     const { getByText } = await setup();
-    const heading = `Do you contribute more than the minimum 3% into workplace pensions for your care workers?`;
-    const sectionCaption = 'Recruitment and benefits';
+    const heading = `Does your company contribute more than the minimum 3% into workplace pensions for care and support workers?`;
 
-    expect(getByText(heading)).toBeTruthy;
-    expect(getByText(sectionCaption)).toBeTruthy;
+    expect(getByText(heading)).toBeTruthy();
+  });
+
+  describe('caption', () => {
+    it('should show "Pay and benefits" when in the workplace flow', async () => {
+      const { getByTestId } = await setup({ returnUrl: true, inPayAndPensionsMiniFlow: false });
+
+      const sectionCaption = 'Pay and benefits';
+      expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
+    });
+
+    it('should show "Pay and benefits" when coming from the workplace summary', async () => {
+      const { getByTestId } = await setup({
+        returnUrl: { url: ['/dashboard'], fragment: 'workplace' },
+        inPayAndPensionsMiniFlow: false,
+      });
+
+      const sectionCaption = 'Pay and benefits';
+      expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
+    });
+
+    it('should show "Workplace" when in the pay and pensions mini flow', async () => {
+      const { getByTestId } = await setup({ returnUrl: null, inPayAndPensionsMiniFlow: true });
+
+      const sectionCaption = 'Workplace';
+      expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
+    });
+  });
+
+  describe('check response text', () => {
+    it('should show if there is a previous answer and its in the inPayAndPensionsMiniFlow', async () => {
+      const { getByTestId } = await setup({ inPayAndPensionsMiniFlow: true });
+
+      const checkPreviousResponseText = getByTestId('check-previous-response');
+
+      expect(checkPreviousResponseText).toBeTruthy();
+      expect(
+        within(checkPreviousResponseText).getByText('Check your response to an older version of this question.'),
+      ).toBeTruthy();
+      expect(
+        within(checkPreviousResponseText).getByText(
+          "If you answered Yes, then we'd like to know the actual percentage contributed (optional).",
+        ),
+      ).toBeTruthy();
+    });
+
+    it('should not show if there is no answer and its in the inPayAndPensionsMiniFlow', async () => {
+      const { queryByTestId } = await setup({ inPayAndPensionsMiniFlow: false });
+
+      const checkPreviousResponseText = queryByTestId('check-previous-response');
+
+      expect(checkPreviousResponseText).toBeFalsy();
+    });
   });
 
   it('should render the reveal', async () => {
@@ -76,143 +140,257 @@ describe('PensionsComponent', () => {
 
     const reveal = getByText('Why we ask for this information');
     const revealText = getByText(
-      `This data is used to determine whether rewards and benefits act as incentives when it comes to staff retention. It also reveals the type of incentives that are being offered in the sector and how common they are.`,
+      `Workplace pensions are sometimes called 'automatic enrolment', 'company', 'occupational', 'works', or 'work-based' pensions.`,
     );
 
     expect(reveal).toBeTruthy();
     expect(revealText).toBeTruthy();
   });
 
-  it('should pre select the first radio button if the establishment has a pension value of Yes', async () => {
+  it('should display text boxes when Yes is selected', async () => {
+    const { fixture, getByTestId } = await setup();
+
+    const YesRadio = getByTestId('pensionPercentageRadio-conditional');
+
+    fireEvent.click(YesRadio);
+    fixture.detectChanges();
+
+    expect(YesRadio).toHaveClass('govuk-radios__conditional--hidden');
+  });
+
+  it('should pre select the second radio button if the establishment has a pension value of Yes', async () => {
     const pensionContribution = 'Yes';
-    const { component, fixture } = await setup(true, pensionContribution);
+    const { component, fixture } = await setup({
+      returnUrl: true,
+      pension: pensionContribution,
+      pensionPercentage: undefined,
+    });
 
     const radioButton = fixture.nativeElement.querySelector('input[id="pensionsOption-0"]');
     expect(radioButton.checked).toBeTruthy();
-    expect(component.form.value).toEqual({ pension: 'Yes' });
+    expect(component.form.value).toEqual({
+      pension: 'Yes',
+      pensionPercentage: undefined,
+    });
+  });
+
+  it('should prefill the input if the establishment has a pension Percentage value', async () => {
+    const pensionContribution = 'Yes';
+    const pensionPercentage = 100;
+
+    const { component, fixture } = await setup({
+      returnUrl: true,
+      pension: pensionContribution,
+      pensionPercentage: pensionPercentage,
+    });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.form.get('pension')?.value).toBe('Yes');
+    expect(component.form.get('pensionPercentage')?.value).toBe(100);
   });
 
   it('should pre select the second radio button if the establishment has a pension value of No', async () => {
     const pensionContribution = 'No';
-    const { component, fixture } = await setup(true, pensionContribution);
+    const { component, fixture } = await setup({ returnUrl: true, pension: pensionContribution });
 
     const radioButton = fixture.nativeElement.querySelector('input[id="pensionsOption-1"]');
     expect(radioButton.checked).toBeTruthy();
-    expect(component.form.value).toEqual({ pension: 'No' });
+    expect(component.form.value).toEqual({
+      pension: 'No',
+      pensionPercentage: undefined,
+    });
   });
 
   it(`should pre select the third radio button if the establishment has a pension value of Don't know`, async () => {
     const pensionContribution = `Don't know`;
-    const { component, fixture } = await setup(true, pensionContribution);
+    const { component, fixture } = await setup({ returnUrl: true, pension: pensionContribution });
 
     const radioButton = fixture.nativeElement.querySelector('input[id="pensionsOption-2"]');
     expect(radioButton.checked).toBeTruthy();
-    expect(component.form.value).toEqual({ pension: `Don't know` });
+    expect(component.form.value).toEqual({
+      pension: `Don't know`,
+      pensionPercentage: undefined,
+    });
   });
 
   describe('submit buttons and submitting form', () => {
-    it(`should show 'Save and continue' cta button and 'Skip this question'`, async () => {
-      const { getByText } = await setup(false);
+    describe('in the workplace flow', () => {
+      it(`should show 'Save and continue' cta button and 'Skip this question'`, async () => {
+        const { getByText } = await setup({ returnUrl: false });
 
-      expect(getByText('Save and continue')).toBeTruthy();
-      expect(getByText('Skip this question')).toBeTruthy();
+        expect(getByText('Save and continue')).toBeTruthy();
+        expect(getByText('Skip this question')).toBeTruthy();
+      });
+
+      it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
+        const { component, fixture, getByText } = await setup({ returnUrl: false });
+
+        const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+        const button = getByText('Save and continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
+
+        expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      });
+
+      it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
+        const { component, fixture, getByText } = await setup({ returnUrl: false });
+
+        const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+        const link = getByText('Skip this question');
+        fireEvent.click(link);
+        fixture.detectChanges();
+
+        expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+      });
+
+      it('should navigate to the next page when submitting from the flow', async () => {
+        const { fixture, getByText, routerSpy } = await setup({ returnUrl: false });
+
+        const button = getByText('Save and continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'staff-opt-out-of-workplace-pension',
+        ]);
+      });
+
+      const answers = [
+        { pension: 'Yes', pensionPercentage: 5 },
+        { pension: 'Yes', pensionPercentage: null },
+      ];
+      answers.forEach((answer) => {
+        it(`should navigate call the updateEstablishmentFieldWithAudit with pensionContribution ${answer.pension} and pensionContributionPercentage ${answer.pensionPercentage}`, async () => {
+          const { component, fixture, getByText, getByLabelText, routerSpy, establishmentServiceSpy } = await setup({
+            returnUrl: false,
+          });
+
+          const radioButton = getByText(answer.pension);
+          fireEvent.click(radioButton);
+
+          if (answer.pensionPercentage) {
+            const input = getByLabelText('Actual contribution');
+            userEvent.type(input, answer.pensionPercentage.toString());
+          }
+
+          fixture.detectChanges();
+
+          const button = getByText('Save and continue');
+          fireEvent.click(button);
+          fixture.detectChanges();
+
+          const dataToUpdate = {
+            pensionContribution: answer.pension,
+            pensionContributionPercentage: answer.pensionPercentage,
+          };
+
+          expect(establishmentServiceSpy).toHaveBeenCalledWith(
+            component.establishment.uid,
+            'pensionContribution',
+            dataToUpdate,
+          );
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'workplace-data',
+            'add-workplace-details',
+            'staff-opt-out-of-workplace-pension',
+          ]);
+        });
+      });
+
+      it('should navigate to the next page when skipping from the flow', async () => {
+        const { fixture, getByText, routerSpy } = await setup({ returnUrl: false });
+
+        const link = getByText('Skip this question');
+        fireEvent.click(link);
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'add-workplace-details',
+          'staff-opt-out-of-workplace-pension',
+        ]);
+      });
     });
 
-    it(`should call the setSubmitAction function with an action of continue and save as true when clicking 'Save and continue' button`, async () => {
-      const { component, fixture, getByText } = await setup(false);
+    describe('from workplace summary', () => {
+      it('should not call the updateSingleEstablishmentField when submitting form when the form has not been filled out', async () => {
+        const { fixture, getByText, establishmentServiceSpy } = await setup();
 
-      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+        const button = getByText('Save and return');
+        fireEvent.click(button);
+        fixture.detectChanges();
 
-      const button = getByText('Save and continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
+        expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      });
 
-      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
+        const { getByText } = await setup();
+
+        expect(getByText('Save and return')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
+      });
+
+      it(`should call the setSubmitAction function with an action of return and save as true when clicking 'Save and return' button`, async () => {
+        const { component, fixture, getByText } = await setup();
+
+        const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+        const button = getByText('Save and return');
+        fireEvent.click(button);
+        fixture.detectChanges();
+
+        expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      });
+
+      it(`should call the setSubmitAction function with an action of exit and save as false when clicking 'Cancel' link`, async () => {
+        const { component, fixture, getByText } = await setup();
+
+        const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+        const link = getByText('Cancel');
+        fireEvent.click(link);
+        fixture.detectChanges();
+
+        expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: false });
+      });
     });
 
-    it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
-      const { component, fixture, getByText } = await setup(false);
+    describe('in the pay and pensions mini flow', () => {
+      it('should show the "Save and continue" and "Skip this question cta buttons', async () => {
+        const { getByText } = await setup({ inPayAndPensionsMiniFlow: true });
 
-      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+        expect(getByText('Save and continue')).toBeTruthy();
+        expect(getByText('Skip this question')).toBeTruthy();
+      });
 
-      const link = getByText('Skip this question');
-      fireEvent.click(link);
-      fixture.detectChanges();
+      it('should navigate to "staff-opt-out-of-workplace-pension" page', async () => {
+        const { getByText, routerSpy, fixture } = await setup({ inPayAndPensionsMiniFlow: true });
 
-      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
-    });
+        const button = getByText('Save and continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
 
-    it('should not call the updateSingleEstablishmentField when submitting form when the form has not been filled out', async () => {
-      const { fixture, getByText, establishmentServiceSpy } = await setup();
-
-      const button = getByText('Save and return');
-      fireEvent.click(button);
-      fixture.detectChanges();
-
-      expect(establishmentServiceSpy).not.toHaveBeenCalled();
-    });
-
-    it('should navigate to the next page when submitting from the flow', async () => {
-      const { fixture, getByText, routerSpy } = await setup(false);
-
-      const button = getByText('Save and continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'workplace-data',
-        'add-workplace-details',
-        'staff-benefit-holiday-leave',
-      ]);
-    });
-
-    it('should navigate to the next page when skipping from the flow', async () => {
-      const { component, fixture, getByText, routerSpy } = await setup(false);
-
-      const link = getByText('Skip this question');
-      fireEvent.click(link);
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'workplace-data',
-        'add-workplace-details',
-        'staff-benefit-holiday-leave',
-      ]);
-    });
-
-    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const { getByText } = await setup();
-
-      expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
-
-    it(`should call the setSubmitAction function with an action of return and save as true when clicking 'Save and return' button`, async () => {
-      const { component, fixture, getByText } = await setup();
-
-      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
-
-      const button = getByText('Save and return');
-      fireEvent.click(button);
-      fixture.detectChanges();
-
-      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: true });
-    });
-
-    it(`should call the setSubmitAction function with an action of exit and save as false when clicking 'Cancel' link`, async () => {
-      const { component, fixture, getByText } = await setup();
-
-      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
-
-      const link = getByText('Cancel');
-      fireEvent.click(link);
-      fixture.detectChanges();
-
-      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'return', save: false });
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          'mocked-uid',
+          'workplace-data',
+          'workplace-summary',
+          'staff-opt-out-of-workplace-pension',
+        ]);
+      });
     });
   });
 
@@ -225,9 +403,85 @@ describe('PensionsComponent', () => {
     });
 
     it('should render the workplace progress bar when in the workplace flow', async () => {
-      const { getByTestId } = await setup(null);
+      const { getByTestId } = await setup({ returnUrl: null });
 
-      expect(getByTestId('progress-bar')).toBeTruthy();
+      const sectionIndex = ProgressBarUtil.workplaceFlowProgressBarSections().indexOf(
+        WorkplaceFlowSections.PAY_AND_BENEFITS,
+      );
+      const progressBar = getByTestId('progress-bar');
+      const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
+
+      expect(progressBar).toBeTruthy();
+      ProgressBarUtil.workplaceFlowProgressBarSections().forEach((section) => {
+        expect(within(progressBar).getByText(section)).toBeTruthy();
+      });
+      expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+
+    it('should render the pay and pension group 1 progress bar when in the mini flow', async () => {
+      const payAndPensionsGroup = 1;
+      const overrides = {
+        returnUrl: null,
+        inPayAndPensionsMiniFlow: true,
+        payAndPensionsGroup,
+        establishment: { mainService: { payAndPensionsGroup } },
+      };
+      const { getByTestId } = await setup(overrides);
+
+      const sectionIndex = 0;
+      const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
+      const progressBar = getByTestId('progress-bar');
+
+      expect(progressBar).toBeTruthy();
+      mockPayAndPensionsGroup1ProgressBarSections.forEach((section) => {
+        expect(within(progressBar).getByText(section)).toBeTruthy();
+      });
+      expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+
+    it('should render the pay and pension group 2 progress bar when in the mini flow', async () => {
+      const payAndPensionsGroup = 2;
+      const overrides = {
+        returnUrl: null,
+        inPayAndPensionsMiniFlow: true,
+        payAndPensionsGroup,
+        establishment: { mainService: { payAndPensionsGroup } },
+      };
+      const { getByTestId } = await setup(overrides);
+
+      const sectionIndex = 0;
+      const progressBarSection = getByTestId(`currentSection-${sectionIndex}`);
+      const progressBar = getByTestId('progress-bar');
+
+      expect(progressBar).toBeTruthy();
+      mockPayAndPensionsGroup2ProgressBarSections.forEach((section) => {
+        expect(within(progressBar).getByText(section)).toBeTruthy();
+      });
+      expect(progressBarSection.getAttribute('src')).toEqual('/assets/images/progress-bar/doing.svg');
+    });
+  });
+
+  describe('error messages', () => {
+    ['2', '101'].forEach((value) => {
+      it(`should show the error message when the enter value is ${value}`, async () => {
+        const { getByText, getByLabelText, fixture, getAllByText } = await setup();
+
+        const yesRadioButton = getByLabelText('Yes');
+        fireEvent.click(yesRadioButton);
+        fixture.detectChanges();
+
+        const input = getByLabelText('Actual contribution');
+        userEvent.type(input, value);
+        fixture.detectChanges();
+
+        const ctaButton = getByText('Save and return');
+        fireEvent.click(ctaButton);
+        fixture.detectChanges();
+
+        const errorMessage = 'Actual contribution must be higher than 3% and no more than 100%';
+
+        expect(getAllByText(errorMessage).length).toBe(2);
+      });
     });
   });
 });

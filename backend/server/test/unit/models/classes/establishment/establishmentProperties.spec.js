@@ -30,6 +30,13 @@ describe('EstablishmentPropertyManager', () => {
     'CareWorkforcePathwayUseProperty',
     'StaffDoDelegatedHealthcareActivitiesProperty',
     'StaffWhatKindDelegatedHealthcareActivitiesProperty',
+    'PensionContributionProperty',
+    'PensionContributionPercentageProperty',
+    'StaffOptOutOfWorkplacePensionProperty',
+    'OfferSleepInProperty',
+    'HowToPayForSleepInProperty',
+    'TravelTimePayProperty',
+    'TravelTimePayRateProperty',
   ];
 
   it('should have the correct property types', () => {

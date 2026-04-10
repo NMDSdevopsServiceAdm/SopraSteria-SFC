@@ -259,7 +259,12 @@ Cypress.Commands.add('resetNonMandatoryWorkplaceQuestions', (establishmentID) =>
       "CareWorkersCashLoyaltyForFirstTwoYears" = null,
       "SickPay" = null,
       "PensionContribution" = null,
-      "CareWorkersLeaveDaysPerYear" = null
+      "CareWorkersLeaveDaysPerYear" = null,
+      "OfferSleepIn" = null,
+      "HowToPayForSleepIn" = null,
+      "StaffOptOutOfWorkplacePension" = null,
+      "TravelTimePayOptionFK" = null,
+      "TravelTimePayRate" = null
       WHERE "EstablishmentID" = $1;`;
 
   const parameters = [establishmentID];
@@ -304,4 +309,29 @@ Cypress.Commands.add('updateEmployerTypeValue', (establishmentID, employerTypeVa
   const parameters = [establishmentID, employerTypeValue];
 
   cy.task('dbQuery', { queryString: queryString, parameters: parameters });
+});
+
+Cypress.Commands.add('setPayAndPensionsMiniFlowViewed', (establishmentID, value = true) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "PayAndPensionsMiniFlowViewed" = $2
+      WHERE "EstablishmentID" = $1;
+  `;
+  const parameters = [establishmentID, value];
+
+  cy.task('dbQuery', { queryString, parameters });
+});
+
+Cypress.Commands.add('resetPayAndPensionWorkplaceQuestions', (establishmentID) => {
+  const queryString = `UPDATE cqc."Establishment"
+      SET "PayAndPensionsMiniFlowViewed" = null,
+      "PensionContribution" = null,
+      "StaffOptOutOfWorkplacePension" = null,
+      "OfferSleepIn" = null,
+      "HowToPayForSleepIn" = null
+
+      WHERE "EstablishmentID" = $1;`;
+
+  const parameters = [establishmentID];
+
+  cy.task('dbQuery', { queryString, parameters });
 });

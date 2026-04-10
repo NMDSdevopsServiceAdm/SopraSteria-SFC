@@ -11,6 +11,7 @@ import { JobRoleNumbersTableComponent } from '@shared/components/job-role-number
 
 import { VacanciesAndTurnoverService } from '../../../core/services/vacancies-and-turnover.service';
 import { WorkplaceQuestion } from '../question/question.component';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Directive()
 export class HowManyStartersLeaversVacanciesDirective extends WorkplaceQuestion implements OnInit, OnDestroy {
@@ -38,6 +39,7 @@ export class HowManyStartersLeaversVacanciesDirective extends WorkplaceQuestion 
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
     protected vacanciesAndTurnoverService: VacanciesAndTurnoverService,
+    protected payAndPensionService: PayAndPensionService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
