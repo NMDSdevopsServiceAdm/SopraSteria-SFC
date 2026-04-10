@@ -17,7 +17,7 @@ import { WorkplaceQuestion } from '../question/question.component';
   standalone: false,
 })
 export class CareWorkforcePathwayAwarenessComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
   public careWorkforcePathwayAwarenessAnswers: CareWorkforcePathwayWorkplaceAwarenessAnswer[];
   private hasGivenNotAwareAnswer: boolean;
   private returnIsSetToHomePage: boolean;
@@ -41,7 +41,7 @@ export class CareWorkforcePathwayAwarenessComponent extends WorkplaceQuestion im
     this.setPreviousRoute();
     this.prefill();
 
-    this.skipToQuestionPage = 'cash-loyalty';
+    this.skipToQuestionPage = 'sharing-data';
     this.returnIsSetToHomePage = this.establishmentService.returnIsSetToHomePage();
   }
 

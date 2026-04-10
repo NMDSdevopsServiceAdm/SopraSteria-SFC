@@ -15,7 +15,7 @@ import { WorkplaceQuestion } from '../question/question.component';
   standalone: false,
 })
 export class AcceptPreviousCareCertificateComponent extends WorkplaceQuestion implements OnInit, OnDestroy {
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
   public previousCareCertificateOptions = [
     {
       label: 'Yes, always',

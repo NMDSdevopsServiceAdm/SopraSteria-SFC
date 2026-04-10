@@ -64,10 +64,23 @@ export const establishmentBuilder = build('Establishment', {
     },
     careWorkforcePathwayUse: {
       use: 'Yes',
-      reasons: [{ id: 1 }, { id: 10, other: 'some specific reason' }],
+      reasons: [
+        { id: 1, text: "To help define our organisation's values" },
+        { id: 10, text: 'For something else', other: 'some specific reason' },
+      ],
     },
     staffDoDelegatedHealthcareActivities: null,
     staffWhatKindDelegatedHealthcareActivities: null,
+    pensionContributionPercentage: null,
+    staffOptOutOfWorkplacePensionComponent: null,
+    offerSleepIn: null,
+    howToPayForSleepIn: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
   },
 });
 
@@ -153,6 +166,12 @@ export class MockEstablishmentService extends EstablishmentService {
     },
     careWorkforcePathwayUse: null,
     staffWhatKindDelegatedHealthcareActivities: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
   };
 
   public static factory(shareWith: any, returnToUrl = true, estObj: any = {}, childWorkplaces: any = null) {
@@ -228,6 +247,12 @@ export class MockEstablishmentService extends EstablishmentService {
       title: 'Aware of how the care workforce pathway works in practice',
     },
     careWorkforcePathwayUse: null,
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
     created: undefined,
     dataOwner: undefined,
     dataOwnershipRequested: '',
@@ -364,6 +389,10 @@ export class MockEstablishmentService extends EstablishmentService {
   ) {
     return of();
   }
+
+  updateOtherServices(establishmentId, data): Observable<any> {
+    return of(null);
+  }
 }
 
 @Injectable()
@@ -382,6 +411,13 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
       title: 'Aware of how the care workforce pathway works in practice',
     },
     careWorkforcePathwayUse: null,
+
+    travelTimePay: {
+      id: 1,
+      label: 'The same rate for travel time as for visits',
+      includeRate: false,
+      rate: null,
+    },
     created: undefined,
     dataOwner: 'Workplace',
     dataOwnershipRequested: 'mock establishment dataOwnershipRequested',
@@ -442,6 +478,10 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
 
   public get returnTo(): URLStructure {
     return;
+  }
+
+  public showSleepInsQuestions(payAndPensionsGroup: number): string {
+    return 'workplace-offer-sleep-ins';
   }
 }
 

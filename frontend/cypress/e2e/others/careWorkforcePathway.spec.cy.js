@@ -10,6 +10,7 @@ const testWorkers = ['test CWP worker 1', 'test CWP worker 2'];
 
 describe('Care workforce pathway journey', { tags: '@others' }, () => {
   before(() => {
+    cy.setPayAndPensionsMiniFlowViewed(establishmentID, true);
     cy.archiveAllWorkersInWorkplace(establishmentID);
     cy.resetWorkplaceCWPAnswers(establishmentID);
   });

@@ -66,7 +66,7 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
     const { getByText } = await setup();
     const heading = 'Do you pay care workers a cash loyalty bonus within their first 2 years of employment?';
     const helpText = 'We only want to know about bonuses given for staying in a role, not for things like performance.';
-    const sectionCaption = 'Recruitment and benefits';
+    const sectionCaption = 'Pay and benefits';
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByText(sectionCaption)).toBeTruthy;
@@ -135,14 +135,14 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
     expect(component.form.value).toEqual({ cashLoyalty: 'No' });
   });
 
-  it('should set the previous route as care workforce pathway use question page', async () => {
+  it('should set the previous route as annual leave question page', async () => {
     const { component } = await setup(false);
     expect(component.previousRoute).toEqual([
       '/workplace',
       'mocked-uid',
       'workplace-data',
       'add-workplace-details',
-      'care-workforce-pathway-use',
+      'staff-benefit-holiday-leave',
     ]);
   });
 
@@ -200,7 +200,7 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'benefits-statutory-sick-pay',
+        'staff-recruitment-capture-training-requirement',
       ]);
     });
 
@@ -216,7 +216,7 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
         'mocked-uid',
         'workplace-data',
         'add-workplace-details',
-        'benefits-statutory-sick-pay',
+        'staff-recruitment-capture-training-requirement',
       ]);
     });
 

@@ -55,7 +55,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   it('should render the heading, input and radio buttons', async () => {
     const { getByText, getByLabelText } = await setup();
     const heading = `Do new care workers have to repeat training they've done with previous employers?`;
-    const sectionCaption = 'Recruitment and benefits';
+    const sectionCaption = 'Staff development';
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByText(sectionCaption)).toBeTruthy;
@@ -274,49 +274,17 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
     });
   });
 
-  describe('Back button', () => {
-    it('should set the back link to how-many-leavers page when main service cannot do delegated healthcare activities', async () => {
-      const { component } = await setup({
-        returnTo: null,
-        establishment: {
-          mainService: {
-            canDoDelegatedHealthcareActivities: null,
-            id: 11,
-            name: 'Domestic services and home help',
-            reportingID: 10,
-          },
-        },
-      });
-
-      expect(component.previousRoute).toEqual([
-        '/workplace',
-        component.establishment.uid,
-        'workplace-data',
-        'add-workplace-details',
-        'how-many-leavers',
-      ]);
+  it('should set the back link to cash-loyalty page', async () => {
+    const { component } = await setup({
+      returnTo: null,
     });
 
-    it('should set the back link to do-you-have-vacancies page even if main service can do delegated healthcare activities', async () => {
-      const { component } = await setup({
-        returnTo: null,
-        establishment: {
-          mainService: {
-            canDoDelegatedHealthcareActivities: true,
-            id: 9,
-            name: 'Day care and day services',
-            reportingID: 6,
-          },
-        },
-      });
-
-      expect(component.previousRoute).toEqual([
-        '/workplace',
-        component.establishment.uid,
-        'workplace-data',
-        'add-workplace-details',
-        'how-many-leavers',
-      ]);
-    });
+    expect(component.previousRoute).toEqual([
+      '/workplace',
+      component.establishment.uid,
+      'workplace-data',
+      'add-workplace-details',
+      'cash-loyalty',
+    ]);
   });
 });

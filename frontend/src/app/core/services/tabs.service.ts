@@ -34,6 +34,7 @@ export const UrlPartsRelatedToTabs = [
   { urlPart: 'training-and-qualifications', tabSlug: MainDashboardTabs.tAndQTab.slug },
   { urlPart: 'benchmarks', tabSlug: MainDashboardTabs.benchmarksTab.slug },
   { urlPart: 'workplace-users', tabSlug: SubsidiaryViewTabs.workplaceUsersTab.slug },
+  { urlPart: 'workplace-data', tabSlug: MainDashboardTabs.workplaceTab.slug },
 ];
 
 @Injectable({

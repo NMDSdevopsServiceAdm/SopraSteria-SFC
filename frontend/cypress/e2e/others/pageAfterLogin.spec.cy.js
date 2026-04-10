@@ -15,6 +15,7 @@ describe('page after login', { tags: '@others' }, () => {
   };
 
   beforeEach(() => {
+    cy.setPayAndPensionsMiniFlowViewed(establishmentID, true);
     cy.revertUserAttributes(fullUserName, editUserId);
     cy.updateEmployerTypeValue(establishmentID, 'Other');
   });

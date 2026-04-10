@@ -5,6 +5,7 @@ const {
   clearDHAWorkerAnswersOnWorkplaceChange,
   clearDoDHAWorkplaceOnMainServiceChange,
   clearDHAWorkplaceAnswerOnChange,
+  clearSleepInsPayQuestionsOnOfferSleepInAnswerChange,
 } = require('./hooks/establishmentHooks');
 
 module.exports = function (sequelize, DataTypes) {
@@ -733,12 +734,61 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'CareWorkersCashLoyaltyForFirstTwoYears',
       },
+
       pensionContribution: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Yes', 'No', "Don't know"],
         field: 'PensionContribution',
       },
+
+      PensionContributionSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      PensionContributionChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      PensionContributionSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      PensionContributionChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
+      pensionContributionPercentage: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        field: 'PensionContributionPercentage',
+        get() {
+          const rawValue = this.getDataValue('pensionContributionPercentage');
+          return rawValue ? parseFloat(rawValue) : null;
+        },
+        validate: {
+          min: 3,
+          max: 100,
+        },
+      },
+      PensionContributionPercentageSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      PensionContributionPercentageChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      PensionContributionPercentageSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      PensionContributionPercentageChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
       sickPay: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -850,6 +900,129 @@ module.exports = function (sequelize, DataTypes) {
       StaffWhatKindDelegatedHealthcareActivitiesChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
+      },
+      staffOptOutOfWorkplacePension: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'StaffOptOutOfWorkplacePension',
+      },
+      StaffOptOutOfWorkplacePensionSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffOptOutOfWorkplacePensionChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      StaffOptOutOfWorkplacePensionSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      StaffOptOutOfWorkplacePensionChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
+      offerSleepIn: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: 'OfferSleepIn',
+      },
+      OfferSleepInSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      OfferSleepInChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      OfferSleepInSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      OfferSleepInChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
+      howToPayForSleepIn: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Hourly rate', 'Flat rate', 'I do not know'],
+        field: 'HowToPayForSleepIn',
+      },
+      HowToPayForSleepInSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      HowToPayForSleepInChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      HowToPayForSleepInSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      HowToPayForSleepInChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
+      TravelTimePayOptionFK: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'TravelTimePayOptionFK',
+      },
+      TravelTimePayOptionSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      TravelTimePayOptionChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      TravelTimePayOptionSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      TravelTimePayOptionChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
+      travelTimePayRate: {
+        type: DataTypes.FLOAT,
+        allowNull: true,
+        field: 'TravelTimePayRate',
+        validate: { min: 0 },
+        get() {
+          const rawValue = this.getDataValue('travelTimePayRate');
+          return rawValue ? parseFloat(rawValue) : null;
+        },
+      },
+      TravelTimePayRateSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      TravelTimePayRateChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      TravelTimePayRateSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      TravelTimePayRateChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+
+      payAndPensionsMiniFlowViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'PayAndPensionsMiniFlowViewed',
       },
       updatePayForMultiStaffViewed: {
         type: DataTypes.BOOLEAN,
@@ -1021,6 +1194,12 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'establishmentFk',
       sourceKey: 'id',
       as: 'trainingCourse',
+    });
+
+    Establishment.belongsTo(models.travelTimePayOption, {
+      foreignKey: 'TravelTimePayOptionFK',
+      targetKey: 'id',
+      as: 'travelTimePayOption',
     });
   };
 
@@ -1496,9 +1675,14 @@ module.exports = function (sequelize, DataTypes) {
         'careWorkersCashLoyaltyForFirstTwoYears',
         'sickPay',
         'pensionContribution',
+        'pensionContributionPercentage',
         'careWorkforcePathwayUse',
         'staffDoDelegatedHealthcareActivities',
         'staffWhatKindDelegatedHealthcareActivities',
+        'staffOptOutOfWorkplacePension',
+        'offerSleepIn',
+        'howToPayForSleepIn',
+        'travelTimePayRate',
       ],
       where: {
         [Op.or]: [
@@ -1575,6 +1759,11 @@ module.exports = function (sequelize, DataTypes) {
           model: sequelize.models.delegatedHealthcareActivities,
           attributes: ['id', 'bulkUploadCode'],
           as: 'delegatedHealthcareActivities',
+        },
+        {
+          model: sequelize.models.travelTimePayOption,
+          attributes: ['id', 'bulkUploadCode', 'includeRate'],
+          as: 'travelTimePayOption',
         },
       ],
     });
@@ -2763,6 +2952,11 @@ module.exports = function (sequelize, DataTypes) {
   Establishment.addHook('beforeSave', 'clearDHAWorkerAnswersOnWorkplaceChange', clearDHAWorkerAnswersOnWorkplaceChange);
   Establishment.addHook('beforeSave', 'clearDHAWorkplaceAnswerOnChange', clearDHAWorkplaceAnswerOnChange);
   Establishment.addHook('beforeSave', 'clearDoDHAWorkplaceOnMainServiceChange', clearDoDHAWorkplaceOnMainServiceChange);
+  Establishment.addHook(
+    'beforeSave',
+    'clearSleepInsPayQuestionsOnOfferSleepInAnswerChange',
+    clearSleepInsPayQuestionsOnOfferSleepInAnswerChange,
+  );
 
   return Establishment;
 };

@@ -11,6 +11,7 @@ export interface MainService {
   otherName?: string;
   reportingID?: number;
   canDoDelegatedHealthcareActivities?: boolean;
+  payAndPensionsGroup?: number;
 }
 
 export interface EmployerType {
@@ -168,6 +169,7 @@ export interface Establishment {
   peopleInterviewedInTheLastFourWeeks?: string;
   showAddWorkplaceDetailsBanner?: boolean;
   pensionContribution?: string;
+  pensionContributionPercentage?: number;
   careWorkersLeaveDaysPerYear?: string;
   careWorkersCashLoyaltyForFirstTwoYears?: string;
   sickPay?: string;
@@ -178,6 +180,16 @@ export interface Establishment {
   CWPAwarenessQuestionViewed?: boolean;
   staffDoDelegatedHealthcareActivities?: string;
   staffWhatKindDelegatedHealthcareActivities?: StaffWhatKindDelegatedHealthcareActivities;
+  offerSleepIn?: string;
+  howToPayForSleepIn?: string;
+  travelTimePay: {
+    id: number;
+    label: string;
+    includeRate: boolean;
+    rate?: number;
+  };
+  staffOptOutOfWorkplacePension?: string;
+  payAndPensionsMiniFlowViewed?: boolean;
   updatePayForMultiStaffViewed?: boolean;
   fastTrackPayByJobRolesViewed?: boolean;
 }
@@ -213,6 +225,10 @@ export enum StaffBenefitEnum {
   DONT_KNOW = "Don't know",
 }
 
+export interface PensionContribution {
+  pensionContribution?: string;
+  pensionContributionPercentage?: number;
+}
 export interface LocalIdentifiersRequest {
   localIdentifiers: LocalIdentifier[];
 }

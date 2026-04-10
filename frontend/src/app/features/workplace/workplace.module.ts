@@ -33,10 +33,6 @@ import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
 import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
-import { CheckAnswersComponent } from './check-answers/check-answers.component';
-import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
-import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
-import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers/do-you-have-leavers.component';
@@ -75,6 +71,11 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { StaffWhatKindOfDelegatedHealthcareActivitiesComponent } from './staff-what-kind-of-delegated-healthcare-activities/staff-what-kind-of-delegated-healthcare-activities.component';
 import { ChangeDataPermissionsComponent } from './change-data-permissions/change-data-permissions.component';
+import { OfferSleepInsComponent } from './offer-sleep-ins/offer-sleep-ins.component';
+import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins/how-do-you-pay-for-sleep-ins.component';
+import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
+import { TravelTimePayComponent } from './travel-time-pay/travel-time-pay.component';
+import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension/staff-opt-out-of-workplace-pension.component';
 
 @NgModule({
   imports: [
@@ -87,10 +88,6 @@ import { ChangeDataPermissionsComponent } from './change-data-permissions/change
     DataAreaTabModule,
   ],
   declarations: [
-    CheckAnswersComponent,
-    ConfirmLeaversComponent,
-    ConfirmStartersComponent,
-    ConfirmVacanciesComponent,
     CreateUserAccountComponent,
     DataSharingComponent,
     EditWorkplaceComponent,
@@ -140,6 +137,10 @@ import { ChangeDataPermissionsComponent } from './change-data-permissions/change
     StaffDoDelegatedHealthcareActivitiesComponent,
     StaffWhatKindOfDelegatedHealthcareActivitiesComponent,
     ChangeDataPermissionsComponent,
+    OfferSleepInsComponent,
+    HowDoYouPayForSleepInsComponent,
+    TravelTimePayComponent,
+    StaffOptOutOfWorkplacePensionComponent,
   ],
   providers: [
     DialogService,
@@ -157,6 +158,7 @@ import { ChangeDataPermissionsComponent } from './change-data-permissions/change
     CareWorkforcePathwayWorkplaceAwarenessAnswersResolver,
     GetDelegatedHealthcareActivitiesResolver,
     CheckIfAnyWorkerHasDHAAnsweredResolver,
+    TravelTimePayResolver,
   ],
 })
 export class WorkplaceModule {}

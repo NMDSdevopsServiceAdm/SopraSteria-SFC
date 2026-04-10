@@ -61,6 +61,14 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
   }
 
   protected onSuccess(): void {
-    this.nextQuestionPage = 'staff-recruitment-capture-training-requirement';
+    const showTravelTimePayQuestion = this.payAndPensionService.showTravelTimePayQuestion(
+      this.establishment?.mainService?.payAndPensionsGroup,
+    );
+
+    this.nextQuestionPage = 'benefits-statutory-sick-pay';
+
+    if (showTravelTimePayQuestion) {
+      this.nextQuestionPage = 'travel-time-pay';
+    }
   }
 }

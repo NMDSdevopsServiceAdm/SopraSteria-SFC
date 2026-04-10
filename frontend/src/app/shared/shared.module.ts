@@ -110,7 +110,6 @@ import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-pane
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { DisplayWorkplaceNameAddress } from './components/display-workplace-name-address/display-workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
-import { CheckAnswersWorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { CareWorkforcePathwayWorkplaceAwarenessTitle } from './pipes/care-workforce-pathway-awareness.pipe';
@@ -145,8 +144,10 @@ import { SeperatorLineComponent } from './components/seperator-line/seperator-li
 import { AddANoteAccordionComponent } from '@shared/components/accordions/add-a-note-accordion/add-a-note-accordion.component';
 import { ExternalTrainingProviderInputComponent } from './components/external-training-provider-input/external-training-provider-input.component';
 import { ShowTrainingValidityPipe } from './pipes/show-training-validity.pipe';
+import { DecimalInputWithButtonsComponent } from './components/decimal-input-with-buttons/decimal-input-with-buttons.component';
 import { AddWorkplaceDetailsPathPipe } from './pipes/add-workplace-details-path.pipe';
 import { WorkplaceSummaryPathPipe } from './pipes/workplace-summary-path.pipe';
+import { FormatMoneyWithDecimalsPipe } from './pipes/format-money-with-decimals.pipe';
 import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pill-with-link.component';
 
 @NgModule({
@@ -246,7 +247,6 @@ import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pi
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    CheckAnswersWorkplaceSummaryComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
     RegistrationSubmitButtonsComponent,
@@ -301,6 +301,8 @@ import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pi
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
+    DecimalInputWithButtonsComponent,
+    FormatMoneyWithDecimalsPipe,
     NewPillWithLinkComponent,
   ],
   exports: [
@@ -386,7 +388,6 @@ import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pi
     UserFormComponent,
     WorkplaceContinueCancelButtonComponent,
     ProgressBarComponent,
-    CheckAnswersWorkplaceSummaryComponent,
     SummaryRecordChangeComponent,
     SelectWorkplaceRadioButtonFormComponent,
     SelectWorkplaceDropdownFormComponent,
@@ -436,8 +437,10 @@ import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pi
     AddANoteAccordionComponent,
     ExternalTrainingProviderInputComponent,
     ShowTrainingValidityPipe,
+    DecimalInputWithButtonsComponent,
     AddWorkplaceDetailsPathPipe,
     WorkplaceSummaryPathPipe,
+    FormatMoneyWithDecimalsPipe,
     NewPillWithLinkComponent,
   ],
   providers: [
@@ -450,6 +453,7 @@ import { NewPillWithLinkComponent } from './components/new-pill-with-link/new-pi
     HasValuePipe,
     FormatCwpUsePipe,
     FormatWhatDhaPipe,
+    FormatMoneyWithDecimalsPipe,
   ],
 })
 export class SharedModule {}

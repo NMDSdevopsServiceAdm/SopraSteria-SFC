@@ -37,7 +37,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent
     },
   ];
 
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.STAFF_DEVELOPMNENT;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -57,7 +57,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent
   }
 
   private setPreviousRoute(): void {
-    this.previousQuestionPage = 'how-many-leavers';
+    this.previousQuestionPage = 'cash-loyalty';
   }
 
   private setupForm(): void {

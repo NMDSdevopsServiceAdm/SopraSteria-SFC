@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { WorkplaceQuestion } from '../question/question.component';
+import { PayAndPensionService } from '@core/services/pay-and-pension.service';
 
 @Component({
   selector: 'app-benefits-statutory-sick-pay',
@@ -30,7 +31,8 @@ export class BenefitsStatutorySickPayComponent extends WorkplaceQuestion impleme
     },
   ];
 
-  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.PAY_AND_BENEFITS;
+  public showTravelTimePayQuestion: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -38,6 +40,7 @@ export class BenefitsStatutorySickPayComponent extends WorkplaceQuestion impleme
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
+    protected payAndPensionService: PayAndPensionService,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
@@ -45,13 +48,18 @@ export class BenefitsStatutorySickPayComponent extends WorkplaceQuestion impleme
   protected init(): void {
     this.setupForm();
     this.prefill();
+    this.showTravelTimePayQuestion = this.payAndPensionService.showTravelTimePayQuestion(
+      this.establishment.mainService.payAndPensionsGroup,
+    );
     this.setPreviousRoute();
-
     this.skipToQuestionPage = 'pensions';
   }
 
   private setPreviousRoute(): void {
-    this.previousQuestionPage = 'cash-loyalty';
+    this.previousQuestionPage = 'how-many-leavers';
+    if (this.showTravelTimePayQuestion) {
+      this.previousQuestionPage = 'travel-time-pay';
+    }
   }
 
   private setupForm(): void {

@@ -82,6 +82,7 @@ describe('server/routes/establishments/establishmentField', () => {
 
   describe('updateEstablishmentFieldWithAudit', () => {
     let mockRequest;
+
     const setupTests = (propertyToRequest = property) => {
       mockRequest = {
         method: 'POST',
@@ -109,6 +110,42 @@ describe('server/routes/establishments/establishmentField', () => {
       expect(res.statusCode).to.equal(200);
     });
 
+    it('should accept the endpoint name starting with lowercase letter', async () => {
+      establishmentRecord.restore = sinon.stub().resolves(true);
+      establishmentRecord.load = sinon.stub().resolves(true);
+      establishmentRecord.save = sinon.stub().resolves(true);
+
+      setupTests('employerType');
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+      await updateEstablishmentFieldWithAudit(req, res);
+
+      expect(establishmentRecord.restore).to.have.been.calledWith(establishmentId);
+      expect(establishmentRecord.load).to.have.been.calledWith(req.body);
+      expect(establishmentRecord.save).to.have.been.called;
+      expect(res.statusCode).to.equal(200);
+    });
+
+    it('should add PensionContributionPercentage to filteredProperties if the property being updated is PensionContribution', async () => {
+      establishmentRecord.restore = sinon.stub().resolves(true);
+      establishmentRecord.load = sinon.stub().resolves(true);
+      establishmentRecord.save = sinon.stub().resolves(true);
+      establishmentRecord.toJSON = sinon.stub().resolves(true);
+
+      setupTests('pensionContribution');
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+      await updateEstablishmentFieldWithAudit(req, res);
+
+      expect(res.statusCode).to.equal(200);
+      expect(establishmentRecord.toJSON).to.have.been.called;
+
+      const filteredProperties = establishmentRecord.toJSON.getCall(0).args.at(-1);
+      expect(filteredProperties).to.deep.equal(['Name', 'PensionContribution', 'PensionContributionPercentage']);
+    });
+
     it('should return with 404 if the requested property to update is not on the allowed list', async () => {
       setupTests('Capacity');
       const req = httpMocks.createRequest(mockRequest);
@@ -117,6 +154,18 @@ describe('server/routes/establishments/establishmentField', () => {
 
       expect(establishmentRecord.restore).not.to.have.been.called;
       expect(res.statusCode).to.equal(404);
+    });
+
+    it('should return with 400 if the param property name is allowed but request body contain non-allowed field', async () => {
+      setupTests();
+      mockRequest.body = { isRegulated: true, nmdsId: 'B1234567' };
+
+      const req = httpMocks.createRequest(mockRequest);
+      const res = httpMocks.createResponse();
+      await updateEstablishmentFieldWithAudit(req, res);
+
+      expect(establishmentRecord.restore).not.to.have.been.called;
+      expect(res.statusCode).to.equal(400);
     });
 
     it('should respond with 404 if the establishment is not found', async () => {

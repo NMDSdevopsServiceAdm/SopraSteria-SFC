@@ -11,6 +11,7 @@ const localformatService = (thisService, showCategory = true, showCQC = true, sh
     ...(thisService.canDoDelegatedHealthcareActivities
       ? { canDoDelegatedHealthcareActivities: thisService.canDoDelegatedHealthcareActivities }
       : {}),
+    ...(thisService.payAndPensionsGroup ? { payAndPensionsGroup: thisService.payAndPensionsGroup } : {}),
   };
 
   if (showCategory) {

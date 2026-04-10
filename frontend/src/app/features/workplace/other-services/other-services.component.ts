@@ -59,8 +59,28 @@ export class OtherServicesComponent extends WorkplaceQuestion {
       ),
     );
 
+    this.setRoutes(false);
+  }
+
+  private setRoutes(inSubmit = false): void {
     this.previousQuestionPage = 'start';
-    this.skipToQuestionPage = 'service-users';
+
+    this.subscriptions.add(
+      this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
+        (response) => {
+          this.nextQuestionPage =
+            response.allServiceCapacities && response.allServiceCapacities.length
+              ? 'capacity-of-services'
+              : 'service-users';
+          this.skipToQuestionPage = this.nextQuestionPage;
+
+          if (inSubmit) {
+            this.navigate();
+          }
+        },
+        (error) => this.onError(error),
+      ),
+    );
   }
 
   private oneCheckboxRequiredIfYes(form: UntypedFormGroup) {
@@ -187,17 +207,6 @@ export class OtherServicesComponent extends WorkplaceQuestion {
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
-    this.subscriptions.add(
-      this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
-        (response) => {
-          this.nextQuestionPage =
-            response.allServiceCapacities && response.allServiceCapacities.length
-              ? 'capacity-of-services'
-              : 'service-users';
-          this.navigate();
-        },
-        (error) => this.onError(error),
-      ),
-    );
+    this.setRoutes(true);
   }
 }

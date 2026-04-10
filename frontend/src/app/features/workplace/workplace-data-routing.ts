@@ -19,7 +19,6 @@ import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-c
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { CareWorkforcePathwayAwarenessComponent } from './care-workforce-pathway-awareness/care-workforce-pathway-awareness.component';
 import { CareWorkforcePathwayUseComponent } from './care-workforce-pathway-use/care-workforce-pathway-use.component';
-import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers/do-you-have-leavers.component';
 import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
@@ -49,6 +48,12 @@ import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { OfferSleepInsComponent } from './offer-sleep-ins/offer-sleep-ins.component';
+import { HowDoYouPayForSleepInsComponent } from './how-do-you-pay-for-sleep-ins/how-do-you-pay-for-sleep-ins.component';
+import { WorkplaceSleepInsGuard } from '@core/guards/workplace-sleep-ins/workplace-sleep-ins.guard';
+import { TravelTimePayComponent } from './travel-time-pay/travel-time-pay.component';
+import { TravelTimePayResolver } from '@core/resolvers/travel-time-pay.resolver';
+import { StaffOptOutOfWorkplacePensionComponent } from './staff-opt-out-of-workplace-pension/staff-opt-out-of-workplace-pension.component';
 
 const workplaceFlowOnlyPages: Routes = [
   {
@@ -147,15 +152,6 @@ const workplaceFlowOnlyPages: Routes = [
       title: 'How many leavers',
     },
   },
-  {
-    path: 'check-answers',
-    component: CheckAnswersComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: {
-      permissions: ['canEditEstablishment'],
-      title: 'Check Answers',
-    },
-  },
 ];
 
 export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
@@ -209,7 +205,34 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
       title: 'What kind of delegated healthcare activities',
     },
   },
-
+  {
+    path: 'workplace-offer-sleep-ins',
+    component: OfferSleepInsComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Does your workplace offer sleep-ins',
+    },
+  },
+  {
+    path: 'how-do-you-pay-for-sleep-ins',
+    component: HowDoYouPayForSleepInsComponent,
+    canActivate: [CheckPermissionsGuard, WorkplaceSleepInsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'How do you pay for sleep-ins',
+    },
+  },
+  {
+    path: 'travel-time-pay',
+    component: TravelTimePayComponent,
+    canActivate: [CheckPermissionsGuard],
+    resolve: { travelTimePayOptions: TravelTimePayResolver },
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Travel time pay',
+    },
+  },
   {
     path: 'staff-recruitment-capture-training-requirement',
     component: StaffRecruitmentCaptureTrainingRequirementComponent,
@@ -274,6 +297,15 @@ export const workplaceQuestionsSharedByFlowAndSummary: Routes = [
     data: {
       permissions: ['canEditEstablishment'],
       title: 'Pensions',
+    },
+  },
+  {
+    path: 'staff-opt-out-of-workplace-pension',
+    component: StaffOptOutOfWorkplacePensionComponent,
+    canActivate: [CheckPermissionsGuard],
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Staff opt out of workplace pension',
     },
   },
   {

@@ -88,7 +88,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
   it('should show the section and the heading', async () => {
     const { getByTestId, getByText } = await setup();
 
-    const sectionCaption = 'Recruitment and benefits';
+    const sectionCaption = 'Staff development';
     const heading = 'How aware of the care workforce pathway is your workplace?';
 
     expect(within(getByTestId('section-heading')).getByText(sectionCaption)).toBeTruthy();
@@ -181,7 +181,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
         expect(getByText('Skip this question')).toBeTruthy();
       });
 
-      it("should navigate to the cash-loyalty page when clicking 'Skip this question'", async () => {
+      it("should navigate to the sharing-data page when clicking 'Skip this question'", async () => {
         const { component, fixture, getByText, routerSpy } = await setup({ returnToUrl: false });
 
         const workplaceId = component.establishment.uid;
@@ -194,7 +194,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
           workplaceId,
           'workplace-data',
           'add-workplace-details',
-          'cash-loyalty',
+          'sharing-data',
         ]);
       });
 
@@ -251,7 +251,7 @@ describe('CareWorkforcePathwayAwarenessComponent', () => {
             workplaceId,
             'workplace-data',
             'add-workplace-details',
-            'cash-loyalty',
+            'sharing-data'
           ]);
         });
       });
