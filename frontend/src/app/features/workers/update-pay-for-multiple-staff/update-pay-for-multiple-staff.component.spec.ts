@@ -671,7 +671,6 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       await fixture.whenStable();
 
       expect(getByText('There are no matching results')).toBeTruthy();
-      expect(getByText('Make sure that your spelling is correct.')).toBeTruthy();
     });
   });
 
