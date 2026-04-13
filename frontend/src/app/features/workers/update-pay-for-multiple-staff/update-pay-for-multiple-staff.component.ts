@@ -2,7 +2,7 @@ import lodash from 'lodash';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
-import { Component, signal, viewChild, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -23,7 +23,6 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
-import { NewTablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper-new/new-table-pagination-wrapper.component';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -39,8 +38,6 @@ const DontKnow = "Don't know";
   standalone: false,
 })
 export class UpdatePayForMultipleStaffComponent {
-  public paginationWrapper = viewChild.required<NewTablePaginationWrapperComponent>('paginationWrapper');
-
   public form: UntypedFormGroup;
   public workplace: Establishment;
   public totalWorkerCount: number;
