@@ -16,7 +16,7 @@ describe('Update pay for multiple workers', { tags: '@staffRecords' }, () => {
       case 0:
         return 10; // Care worker
       case 1:
-        return 25; // Senior careWorker
+        return 25; // Senior care worker
       case 2:
         return 26; // Senior management
     }

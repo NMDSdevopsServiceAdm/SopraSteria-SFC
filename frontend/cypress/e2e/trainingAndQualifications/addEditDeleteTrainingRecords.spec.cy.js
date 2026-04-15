@@ -7,7 +7,6 @@ import {
   clickUpdateLinkForRow,
   clickIntoWorkerTAndQRecordPage,
   expectTrainingRecordPageToHaveCourseDetails,
-  expectPageToHaveDetails,
 } from './trainingCourse/helpers';
 
 describe('training record', { tags: '@trainingAndQualifications' }, () => {
@@ -25,6 +24,7 @@ describe('training record', { tags: '@trainingAndQualifications' }, () => {
 
     cy.deleteTestWorkerFromDb(workerName1);
     cy.deleteTestWorkerFromDb(workerName2);
+    cy.archiveAllWorkersInWorkplace(establishmentID);
 
     cy.insertTestWorker({ establishmentID, workerName: workerName1 });
   });
