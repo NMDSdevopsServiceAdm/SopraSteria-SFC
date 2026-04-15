@@ -23,7 +23,7 @@ describe('FastTrackConfirmationPageComponent', () => {
         title: 'Care worker',
         count: 2,
         workers: [{ uid: '1' }, { uid: '2' }],
-        annualHourlyPay: { value: 'HOURLY', rate: 10 },
+        annualHourlyPay: { value: 'Hourly', rate: 10 },
       },
       {
         jobId: 2,
@@ -128,7 +128,7 @@ describe('FastTrackConfirmationPageComponent', () => {
     expect(payload.length).toBe(2);
     expect(payload[0]).toEqual({
       uid: '1',
-      annualHourlyPay: { value: 'HOURLY', rate: 10 },
+      annualHourlyPay: { value: 'Hourly', rate: 10 },
     });
   });
 
