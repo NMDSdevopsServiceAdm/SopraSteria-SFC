@@ -1,11 +1,7 @@
-<!-- TODO: add form validation in ticket #1903
-<app-error-summary
-  *ngIf="submitted && form.invalid"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
-  [serverError]="serverError"
->
-</app-error-summary> -->
+@if (submitted && workersFormGroup.invalid) {
+  <app-error-summary [formErrorsMap]="formErrorsMap" [form]="workersFormGroup" [serverError]="serverError">
+  </app-error-summary>
+}
 
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
@@ -69,7 +65,7 @@
               >
                 <div class="asc__grid-table-with-form--row" [attr.data-testid]="'worker-row-' + workerIndex">
                   @if (workerFormControl.invalid) {
-                    <p class="govuk-error-message">some error message here</p>
+                    <p class="govuk-error-message" [id]="worker.uid + '-payRate-error'">some error message here</p>
                   }
                   <div [id]="'worker-name-' + workerIndex">
                     {{ worker.nameOrId }}
@@ -91,6 +87,11 @@
                       <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
                         @for (button of radioButtonLabels; track $index) {
                           <div class="govuk-radios__item">
+                            @if ($index === 0) {
+                              <span class="govuk-visually-hidden" [id]="worker.uid + '-payValue-error'">
+                                <!-- anchor to allow error summary set  focus on radio button -->
+                              </span>
+                            }
                             <input
                               class="govuk-radios__input"
                               [attr.data-testid]="button.slug + '-radio-' + workerIndex"

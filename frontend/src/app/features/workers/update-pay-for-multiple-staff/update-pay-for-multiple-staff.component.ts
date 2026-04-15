@@ -2,7 +2,7 @@ import lodash from 'lodash';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, ElementRef, signal, ViewChild, WritableSignal } from '@angular/core';
 import { FormBuilder, FormGroup, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -23,6 +23,8 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -38,7 +40,10 @@ const DontKnow = "Don't know";
   standalone: false,
 })
 export class UpdatePayForMultipleStaffComponent {
+  @ViewChild('formEl') formEl: ElementRef;
+
   public form: UntypedFormGroup;
+  public formErrorsMap: Array<ErrorDetails> = [];
   public workplace: Establishment;
   public totalWorkerCount: number;
   public currentWorkerCount: number;
@@ -52,6 +57,8 @@ export class UpdatePayForMultipleStaffComponent {
   public jobRoleDataProvider: WritableSignal<AutoSuggestDataProvider> = signal(null);
   public showNewPillForFastTrackLink: boolean = true;
 
+  public submitted = true;
+
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -59,6 +66,7 @@ export class UpdatePayForMultipleStaffComponent {
     private establishmentService: EstablishmentService,
     private workerService: WorkerService,
     private backLinkService: BackLinkService,
+    private errorSummaryService: ErrorSummaryService,
     private router: Router,
     private alertService: AlertService,
     private route: ActivatedRoute,
@@ -80,8 +88,13 @@ export class UpdatePayForMultipleStaffComponent {
     this.workersToShow = firstPageWorkers;
     this.setupForm();
     this.addWorkersToForm(this.workersToShow);
+    this.setupFormErrorsMap();
 
     this.backLinkService.showBackLink();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   private setupForm(): void {
@@ -89,6 +102,25 @@ export class UpdatePayForMultipleStaffComponent {
       workers: this.formBuilder.group({}),
       jobRoleToSearch: null,
     });
+  }
+
+  private setupFormErrorsMap(): void {
+    const errorMapForWorkers = this.workersToShow.map((worker) => this.buildErrorMapForWorker(worker));
+    this.formErrorsMap = errorMapForWorkers;
+  }
+
+  private buildErrorMapForWorker(worker: WorkerWithPayData) {
+    const errorMap = {
+      item: `${worker.uid}.payRate`,
+      type: [
+        {
+          name: 'min',
+          message: 'some error message',
+        },
+      ],
+    };
+
+    return errorMap;
   }
 
   get workersFormGroup(): FormGroup {
