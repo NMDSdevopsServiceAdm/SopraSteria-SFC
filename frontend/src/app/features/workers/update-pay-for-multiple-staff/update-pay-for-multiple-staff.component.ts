@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
 import { Component, signal, WritableSignal } from '@angular/core';
-import { FormBuilder, FormGroup, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Establishment,
@@ -120,6 +120,8 @@ export class UpdatePayForMultipleStaffComponent {
       .subscribe(() => {
         payValue.setValue(null, { emitEvent: false });
       });
+
+    payRate.addValidators([Validators.min(10)]); // temp validator for checking error css style
 
     this.subscriptions.add(clearPayRateWhenSelectNotKnown);
     this.subscriptions.add(clearNotKnownRadioButtonWhenTypeInPayRate);

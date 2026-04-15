@@ -1,17 +1,7 @@
-.asc__workers-pay-data-table {
-  width: 100%;
-  tr {
-    td.govuk-table__cell {
-      vertical-align: baseline;
-      line-height: 1.5;
-    }
-    td:first-of-type {
-      width: 220px;
-    }
-    td:nth-of-type(2) {
-      width: 220px;
-    }
-  }
+@import 'govuk-frontend/govuk/base';
+
+.asc__grid-table-with-form--row {
+  grid-template-columns: auto 220px 480px;
 }
 
 .govuk-input__wrapper {

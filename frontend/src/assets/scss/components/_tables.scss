@@ -103,3 +103,52 @@ $error_row_padding: $govuk-gutter-half;
     padding-bottom: 6px;
   }
 }
+
+.asc__grid-table-with-form {
+  .govuk-form-group {
+    margin-bottom: 0;
+  }
+}
+
+.asc__grid-table-with-form--row {
+  // rows
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: 1fr 1fr; // to be overrided according to table design
+  align-items: baseline;
+  column-gap: 20px;
+  border-bottom: 1px solid $govuk-border-colour;
+  padding: 10px 0;
+  box-sizing: border-box;
+
+  &.asc__grid-table-with-form--header-row {
+    border-bottom: 0px;
+    font-weight: 700;
+  }
+
+  .asc__grid-table-with-form--header-row + div > & {
+    // row after header, i.e. first row
+    border-top: 1px solid $govuk-border-colour;
+  }
+
+  :last-child > & {
+    border-bottom: 1px solid $govuk-border-colour;
+  }
+
+  :not(.govuk-form-group--error):has(+ .govuk-form-group--error) > & {
+    border-bottom: 0;
+  }
+
+  :not(.govuk-form-group--error) + .govuk-form-group--error > & {
+    border-top: 1px solid $govuk-border-colour;
+  }
+
+  .govuk-error-message {
+    grid-column: 1 / -1;
+  }
+
+  div {
+    // cells
+    line-height: 1.5;
+  }
+}
