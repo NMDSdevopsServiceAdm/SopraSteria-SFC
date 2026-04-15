@@ -1,7 +1,4 @@
-@if (submitted && form.invalid) {
-<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
-}
-<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+<form #formEl (ngSubmit)="onSubmit()">
   <fieldset class="govuk-fieldset">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -25,9 +22,9 @@
               </tr>
             </thead>
 
-            <tbody class="govuk-table__body" formArrayName="workers">
+            <tbody class="govuk-table__body">
               @for (workers of filteredGroups; track $index) {
-              <tr class="govuk-table__row" [formGroupName]="$index">
+              <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
                   <div>
                     <span>{{ workers.title }} ({{ workers.count }} record{{ workers.count === 1 ? '' : 's' }})</span>

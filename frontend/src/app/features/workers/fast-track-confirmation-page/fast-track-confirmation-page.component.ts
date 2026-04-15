@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BackLinkService } from '@core/services/backLink.service';
 
-import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Establishment } from '@core/model/establishment.model';
 import { WorkersGroupedByJobRoleResponse } from '@core/model/worker.model';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -46,30 +46,10 @@ export class FastTrackConfirmationPageComponent implements OnInit {
       .filter((group) => group.annualHourlyPay?.rate != null);
 
     this.totalCount = this.filteredGroups?.reduce((sum, group) => sum + group.count, 0);
-
-    this.setupForm();
   }
 
   private setBackLink(): void {
     this.backLinkService.showBackLink();
-  }
-
-  private setupForm(): void {
-    this.form = this.formBuilder.group({
-      workers: this.formBuilder.array([]),
-    });
-
-    const workersFormArray = this.form.get('workers') as UntypedFormArray;
-
-    this.workersByJobRole.groups.forEach((group) => {
-      workersFormArray.push(
-        this.formBuilder.group({
-          workerId: group.jobId,
-          value: group.annualHourlyPay?.value || null,
-          rate: group.annualHourlyPay?.rate || null,
-        }),
-      );
-    });
   }
 
   public onSubmit(): void {
