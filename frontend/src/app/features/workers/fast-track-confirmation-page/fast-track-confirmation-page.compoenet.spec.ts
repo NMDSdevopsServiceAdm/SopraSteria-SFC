@@ -4,7 +4,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-page.component';
-import { fireEvent, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { AlertService } from '@core/services/alert.service';
 import { provideHttpClient } from '@angular/common/http';
@@ -60,7 +60,6 @@ describe('FastTrackConfirmationPageComponent', () => {
               data: {
                 establishment: establishment,
               },
-              queryParams: {},
             },
           },
         },
@@ -80,7 +79,7 @@ describe('FastTrackConfirmationPageComponent', () => {
     routerSpy.and.returnValue(Promise.resolve(true));
 
     const establishmentService = injector.inject(EstablishmentService);
-    const updateWorkersSpy = spyOn(establishmentService, 'updateWorkers').and.returnValue(of({}));
+    const updateWorkersSpy = spyOn(establishmentService, 'updateWorkers').and.returnValue(of(null));
 
     return {
       ...setupTools,
@@ -134,15 +133,14 @@ describe('FastTrackConfirmationPageComponent', () => {
 
   describe('on submit', () => {
     it('should navigate to update-pay-multiple-staff page and show banner after successful submit', async () => {
-      const { fixture, getByText, routerSpy, alertServiceSpy, component } = await setup();
+      const { fixture, routerSpy, alertServiceSpy, component } = await setup();
 
-      const saveButton = getByText('Save and return');
-
-      fireEvent.click(saveButton);
+      component.onSubmit();
 
       await fixture.whenStable();
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid, 'update-pay-multiple-staff']);
+
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
         message: 'Pay updated in 2 staff records',
@@ -152,7 +150,7 @@ describe('FastTrackConfirmationPageComponent', () => {
 
   describe('onCancel()', () => {
     it('should navigate to staff-record/fast-track-pay-updates after clicking Cancel', async () => {
-      const { getByText, routerSpy, component } = await setup();
+      const { getByText, component } = await setup();
 
       const cancelLink = getByText('Cancel');
 

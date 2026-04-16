@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BackLinkService } from '@core/services/backLink.service';
 
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Establishment } from '@core/model/establishment.model';
 import { WorkersGroupedByJobRoleResponse } from '@core/model/worker.model';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,7 +27,6 @@ export class FastTrackConfirmationPageComponent implements OnInit {
 
   constructor(
     private backLinkService: BackLinkService,
-    private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
@@ -39,8 +38,6 @@ export class FastTrackConfirmationPageComponent implements OnInit {
     this.setBackLink();
     this.workplace = this.route.snapshot.data.establishment;
     this.workersByJobRole = this.workerService.getWorkersGroupedByJobRole();
-    this.jobRoleIndex = this.route.snapshot.queryParams['index'];
-    this.jobRoleChanged = this.workersByJobRole?.groups[this.jobRoleIndex];
     this.filteredGroups = this.workersByJobRole?.groups
       .map((group, index) => ({ ...group, originalIndex: index }))
       .filter((group) => group.annualHourlyPay?.rate != null);
