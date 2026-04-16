@@ -14,6 +14,7 @@ import { of } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { Establishment } from '@core/model/establishment.model';
+
 describe('FastTrackConfirmationPageComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;

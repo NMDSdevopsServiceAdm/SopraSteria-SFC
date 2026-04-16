@@ -15,13 +15,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
   standalone: false,
 })
 export class FastTrackConfirmationPageComponent implements OnInit {
-  @ViewChild('formEl') formEl: ElementRef;
-  public form: UntypedFormGroup;
   public workplace: Establishment;
   public workersByJobRole: WorkersGroupedByJobRoleResponse;
   public totalCount: number;
   public filteredGroups: WorkersGroupedByJobRoleWithIndex[];
-  public submitted: boolean;
 
   constructor(
     private backLinkService: BackLinkService,
@@ -38,7 +35,7 @@ export class FastTrackConfirmationPageComponent implements OnInit {
     this.workersByJobRole = this.workerService.getWorkersGroupedByJobRole();
     this.filteredGroups = this.workersByJobRole?.groups
       .map((group, index) => ({ ...group, originalIndex: index }))
-      .filter((group) => group.annualHourlyPay?.rate != null);
+      .filter((group) => group.annualHourlyPay?.rate !== null);
 
     this.totalCount = this.filteredGroups?.reduce((sum, group) => sum + group.count, 0);
   }
@@ -48,8 +45,6 @@ export class FastTrackConfirmationPageComponent implements OnInit {
   }
 
   public onSubmit(): void {
-    this.submitted = true;
-
     this.establishmentService
       .updateWorkers(this.workplace.uid, this.workerPayByJobRole())
       .subscribe(() => this.onSubmitSuccess());

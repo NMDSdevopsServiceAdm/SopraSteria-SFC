@@ -1,29 +1,28 @@
-<form #formEl (ngSubmit)="onSubmit()">
-  <fieldset class="govuk-fieldset">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds-from-desktop">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <span data-testid="caption" class="govuk-caption-l">Staff records</span>
-          <h1 data-testid="heading" class="govuk-heading-l govuk-!-margin-bottom-2">
-            You're about to update pay <br />in {{ totalCount }} staff record{{ totalCount === 1 ? '' : 's' }}
-          </h1>
-        </legend>
-      </div>
+<fieldset class="govuk-fieldset">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <span data-testid="caption" class="govuk-caption-l">Staff records</span>
+        <h1 data-testid="heading" class="govuk-heading-l govuk-!-margin-bottom-2">
+          You're about to update pay <br />in {{ totalCount }} staff record{{ totalCount === 1 ? '' : 's' }}
+        </h1>
+      </legend>
     </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <div class="govuk-form-group">
-          <table class="govuk-table">
-            <thead class="govuk-table__head">
-              <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Job role</th>
-                <th scope="col" class="govuk-table__header" width="40%">New hourly pay rate or salary</th>
-                <th scope="col" class="govuk-table__header" width="5%"></th>
-              </tr>
-            </thead>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-form-group">
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">Job role</th>
+              <th scope="col" class="govuk-table__header" width="40%">New hourly pay rate or salary</th>
+              <th scope="col" class="govuk-table__header" width="5%"></th>
+            </tr>
+          </thead>
 
-            <tbody class="govuk-table__body">
-              @for (workers of filteredGroups; track $index) {
+          <tbody class="govuk-table__body">
+            @for (workers of filteredGroups; track $index) {
               <tr class="govuk-table__row">
                 <td class="govuk-table__cell">
                   <div>
@@ -35,8 +34,8 @@
                 </td>
                 <td class="govuk-table__cell">
                   <div>
-                    @if(workers.annualHourlyPay?.rate ){
-                    <span>£{{ workers.annualHourlyPay?.rate }}</span>
+                    @if (workers.annualHourlyPay?.rate) {
+                      <span>£{{ workers.annualHourlyPay?.rate }}</span>
                     }
                   </div>
                 </td>
@@ -51,22 +50,21 @@
                   </a>
                 </td>
               </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+            }
+          </tbody>
+        </table>
       </div>
     </div>
-  </fieldset>
-
-  <div class="govuk-button-group govuk-!-margin-top-12">
-    <button type="submit" class="govuk-button govuk-!-margin-right-9">Save and return</button>
-
-    <a
-      class="govuk-button govuk-button--link govuk-!-margin-left-9"
-      [routerLink]="['/workplace', workplace.uid, 'staff-record', 'fast-track-pay-updates']"
-    >
-      Cancel
-    </a>
   </div>
-</form>
+</fieldset>
+
+<div class="govuk-button-group govuk-!-margin-top-12">
+  <button type="button" (click)="onSubmit()" class="govuk-button govuk-!-margin-right-9">Save and return</button>
+
+  <a
+    class="govuk-button govuk-button--link govuk-!-margin-left-9"
+    [routerLink]="['/workplace', workplace.uid, 'staff-record', 'fast-track-pay-updates']"
+  >
+    Cancel
+  </a>
+</div>
