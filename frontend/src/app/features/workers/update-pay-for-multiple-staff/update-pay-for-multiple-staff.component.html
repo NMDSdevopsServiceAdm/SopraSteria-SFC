@@ -1,4 +1,4 @@
-@if (submitted && workersFormGroup.invalid) {
+@if (showErrors && workersFormGroup.invalid) {
   <app-error-summary [formErrorsMap]="formErrorsMap" [form]="workersFormGroup" [serverError]="serverError">
   </app-error-summary>
 }
@@ -50,8 +50,12 @@
         </ng-container>
 
         @if (workersToShow.length > 0) {
-          <div class="govuk-table govuk-!-margin-bottom-3 asc__grid-table-with-form" [formGroup]="workersFormGroup">
-            <div class="asc__grid-table-with-form--row asc__grid-table-with-form--header-row">
+          <div
+            role="table"
+            class="govuk-table govuk-!-margin-bottom-3 asc__grid-table-with-form"
+            [formGroup]="workersFormGroup"
+          >
+            <div role="rowheader" class="asc__grid-table-with-form--row asc__grid-table-with-form--header-row">
               <div data-testid="name-or-id-header">Name or ID number</div>
               <div data-testid="job-role-header">Job role</div>
               <div data-testid="pay-header">Hourly pay rate or salary</div>
@@ -61,11 +65,13 @@
               <div
                 [formGroupName]="worker.uid"
                 class="govuk-form-group"
-                [class.govuk-form-group--error]="workerFormControl.invalid"
+                [class.govuk-form-group--error]="showErrors && workerFormControl.invalid"
               >
-                <div class="asc__grid-table-with-form--row" [attr.data-testid]="'worker-row-' + workerIndex">
-                  @if (workerFormControl.invalid) {
-                    <p class="govuk-error-message" [id]="worker.uid + '-payRate-error'">some error message here</p>
+                <div role="row" class="asc__grid-table-with-form--row" [attr.data-testid]="'worker-row-' + workerIndex">
+                  @if (showErrors && workerFormControl.invalid) {
+                    <p class="govuk-error-message" [id]="worker.uid + '-payRate-error'">
+                      {{ getInlineErrorMessage(worker) }}
+                    </p>
                   }
                   <div [id]="'worker-name-' + workerIndex">
                     {{ worker.nameOrId }}

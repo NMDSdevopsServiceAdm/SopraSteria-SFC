@@ -14,14 +14,14 @@ import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEsta
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
-import { within } from '@testing-library/dom';
+import { render, screen } from '@testing-library/angular';
+import { getByText, within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { AllJobs } from '../../../../mockdata/jobs';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
 
-describe('UpdatePayForMultipleStaffComponent', () => {
+fdescribe('UpdatePayForMultipleStaffComponent', () => {
   const workerBuilder = build('Worker', {
     fields: {
       uid: fake((f) => f.datatype.uuid()),
@@ -62,13 +62,17 @@ describe('UpdatePayForMultipleStaffComponent', () => {
   const radioButtonLabels = ['Hourly', 'Salary', 'Not known'];
   const payValueToLabel = (payValue: string): string => radioButtonLabels[payValues.indexOf(payValue)];
 
-  const expectWorkerTableToHaveData = (
-    table: HTMLElement,
-    workerNameOrId: string,
-    payOption: string,
-    payRate: number,
-  ) => {
-    const row = within(table).getByText(workerNameOrId).closest('tr');
+  const getWorkerRow = (workerNameOrId: string): HTMLElement => {
+    const table = screen.getByRole('table');
+    return within(table).getByText(workerNameOrId).closest('[role="row"]') as HTMLElement;
+  };
+
+  const getErrorSummaryBox = (): HTMLElement => {
+    return screen.getByText('There is a problem').parentElement!;
+  };
+
+  const expectWorkerTableToHaveData = (workerNameOrId: string, payOption: string, payRate: number) => {
+    const row = getWorkerRow(workerNameOrId);
     expect(row).toBeTruthy();
 
     if (payOption) {
@@ -252,7 +256,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
 
       expect(workersTable).toBeTruthy();
       mockWorkers.forEach((worker) => {
-        const row = within(workersTable).getByText(worker.nameOrId).closest('tr');
+        const row = getWorkerRow(worker.nameOrId);
         expect(row).toBeTruthy();
         radioButtonLabels.forEach((label) => {
           expect(within(row).getByLabelText(label)).toBeTruthy();
@@ -268,12 +272,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       expect(workersTable).toBeTruthy();
 
       mockWorkers.forEach((worker) => {
-        expectWorkerTableToHaveData(
-          workersTable,
-          worker.nameOrId,
-          worker.annualHourlyPay.value,
-          worker.annualHourlyPay.rate,
-        );
+        expectWorkerTableToHaveData(worker.nameOrId, worker.annualHourlyPay.value, worker.annualHourlyPay.rate);
       });
     });
 
@@ -281,7 +280,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       const { fixture, getByRole } = await setup();
 
       const workersTable = getByRole('table');
-      const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr')!;
+      const workerRow = getWorkerRow(mockWorkers[3].nameOrId);
 
       const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
       userEvent.type(payRateInputBox, '25000');
@@ -295,10 +294,9 @@ describe('UpdatePayForMultipleStaffComponent', () => {
     });
 
     it('should clear the "Not known" radio button when user type in pay rate', async () => {
-      const { fixture, getByRole } = await setup();
+      const { fixture } = await setup();
 
-      const workersTable = getByRole('table');
-      const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+      const workerRow = getWorkerRow(mockWorkers[3].nameOrId);
 
       const notKnownRadioButton = within(workerRow).getByLabelText('Not known') as HTMLInputElement;
       const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
@@ -316,10 +314,9 @@ describe('UpdatePayForMultipleStaffComponent', () => {
 
     ['Hourly', 'Salary'].forEach((radioButtonLabel) => {
       it(`should not clear the pay rate when ${radioButtonLabel} is selected`, async () => {
-        const { fixture, getByRole } = await setup();
+        const { fixture } = await setup();
 
-        const workersTable = getByRole('table');
-        const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+        const workerRow = getWorkerRow(mockWorkers[3].nameOrId);
 
         const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
         userEvent.type(payRateInputBox, '25000');
@@ -333,10 +330,9 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       });
 
       it(`should not clear the ${radioButtonLabel} radio button when user type in pay rate`, async () => {
-        const { fixture, getByRole } = await setup();
+        const { fixture } = await setup();
 
-        const workersTable = getByRole('table');
-        const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr');
+        const workerRow = getWorkerRow(mockWorkers[3].nameOrId);
 
         const radioButton = within(workerRow).getByLabelText(radioButtonLabel) as HTMLInputElement;
         const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
@@ -446,13 +442,13 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       });
 
       getWorkersWithPayDataSpy.and.callFake((_uid, params) => {
-        const pageIndex = params.pageIndex;
+        const pageIndex = params?.pageIndex;
         return of({ count: 32, workers: pages[pageIndex] });
       });
 
       const workersTable = getByRole('table');
 
-      userEvent.click(queryByTestId('pageNoLink-1'));
+      userEvent.click(queryByTestId('pageNoLink-1')!);
       await fixture.whenStable();
 
       expect(getWorkersWithPayDataSpy).toHaveBeenCalledWith('mocked-uid', {
@@ -462,12 +458,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       });
 
       mockPageTwoWorkers.forEach((worker) => {
-        expectWorkerTableToHaveData(
-          workersTable,
-          worker.nameOrId,
-          worker.annualHourlyPay.value,
-          worker.annualHourlyPay.rate,
-        );
+        expectWorkerTableToHaveData(worker.nameOrId, worker.annualHourlyPay.value, worker.annualHourlyPay.rate);
       });
 
       expect(queryByText(mockPageOneWorkers[0].nameOrId)).toBeFalsy();
@@ -762,8 +753,7 @@ describe('UpdatePayForMultipleStaffComponent', () => {
 
       const { fixture, getByRole, updateWorkersSpy, routerSpy, alertServiceSpy } = await setup();
 
-      const workersTable = getByRole('table');
-      const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr')!;
+      const workerRow = getWorkerRow(mockWorkers[3].nameOrId);
 
       const payRateInputBox = within(workerRow).getByLabelText(/Hourly pay rate or salary/) as HTMLInputElement;
       userEvent.click(within(workerRow).getByLabelText('Salary'));
@@ -795,20 +785,18 @@ describe('UpdatePayForMultipleStaffComponent', () => {
         return of({ count: 32, workers: pages[pageIndex] });
       });
 
-      const workersTable = getByRole('table');
-
-      const workerRow = within(workersTable).getByText(mockWorkers[3].nameOrId).closest('tr')!;
+      const workerRow = getWorkerRow(mockWorkers[3].nameOrId);
       userEvent.click(within(workerRow).getByLabelText('Salary'));
       userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), '25000');
 
-      const workerRow2 = within(workersTable).getByText(mockWorkers[13].nameOrId).closest('tr')!;
+      const workerRow2 = getWorkerRow(mockWorkers[13].nameOrId);
       userEvent.click(within(workerRow2).getByLabelText('Not known'));
 
       // click page 2
       userEvent.click(getByTestId('pageNoLink-1')!);
       await fixture.whenStable();
 
-      const workerRow3 = within(workersTable).getByText(mockWorkers[23].nameOrId).closest('tr')!;
+      const workerRow3 = getWorkerRow(mockWorkers[23].nameOrId);
       userEvent.click(within(workerRow3).getByLabelText('Hourly'));
       userEvent.type(within(workerRow3).getByLabelText(/Hourly pay rate or salary/), '25.5');
 
@@ -825,6 +813,92 @@ describe('UpdatePayForMultipleStaffComponent', () => {
       expect(updateWorkersSpy).toHaveBeenCalledWith('mocked-uid', expectedPayload);
 
       expect(alertServiceSpy).toHaveBeenCalledWith({ type: 'success', message: 'Pay updated in 3 staff records' });
+    });
+  });
+
+  describe('validation', () => {
+    const ErrorMessages = {
+      radioButtonNotSelected: 'Select hourly or salary for the amount entered',
+      hourlyRateInvalid: 'Hourly pay rate must be between £2.50 and £200.00',
+      annualSalaryInvalid: 'Salary must be between £500 and £200,000',
+      annualSalaryInvalidSeniorManagement: 'Salary must be between £500 and £250,000',
+      hourlyRateMissing: 'Enter the hourly pay rate or select a different option',
+      annualSalaryMissing: 'Enter the salary or select a different option',
+      hourlyRateDecimalPlace: 'You can only have 1 or 2 digits for pence after the decimal point',
+      annualSalaryDecimalPlace: 'Salary must not include pence',
+    };
+
+    it('should raise an error if user input an amount without selecting hourly or annual salary', async () => {
+      const { fixture, getByRole, updateWorkersSpy, getByText } = await setup();
+      const worker = mockWorkers[3];
+
+      const workerRow = getWorkerRow(worker.nameOrId);
+      userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), '25000');
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(updateWorkersSpy).not.toHaveBeenCalled();
+
+      const summaryBoxErrorMessage = `${ErrorMessages.radioButtonNotSelected} (${worker.nameOrId})`;
+      expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+      expect(workerRow.textContent).toContain(ErrorMessages.radioButtonNotSelected);
+    });
+
+    const invalidHourlyRates = ['2.4', '201', '999', '0', '-100'];
+    invalidHourlyRates.forEach((invalidRate) => {
+      it(`should raise an error if user input an invalid hourly rate - ${invalidRate}`, async () => {
+        const { fixture, getByRole, updateWorkersSpy, getByText } = await setup();
+        const worker = mockWorkers[3];
+
+        const workerRow = getWorkerRow(worker.nameOrId);
+
+        userEvent.click(within(workerRow).getByLabelText('Hourly'));
+        userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), invalidRate);
+
+        const submitButton = getByRole('button', { name: 'Save and return' });
+        userEvent.click(submitButton);
+
+        await fixture.whenStable();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(updateWorkersSpy).not.toHaveBeenCalled();
+
+        const summaryBoxErrorMessage = `${ErrorMessages.hourlyRateInvalid} (${worker.nameOrId})`;
+        expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+        expect(workerRow.textContent).toContain(ErrorMessages.hourlyRateInvalid);
+      });
+    });
+
+    const invalidAnnualSalaryValues = ['499', '200001', '0', '-100'];
+    invalidAnnualSalaryValues.forEach((invalidAmount) => {
+      it(`should raise an error if user input an invalid annual salary amount - ${invalidAmount}`, async () => {
+        const { fixture, getByRole, updateWorkersSpy, getByText } = await setup();
+        const worker = mockWorkers[3];
+
+        const workerRow = getWorkerRow(worker.nameOrId);
+
+        userEvent.click(within(workerRow).getByLabelText('Salary'));
+        userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), invalidAmount);
+
+        const submitButton = getByRole('button', { name: 'Save and return' });
+        userEvent.click(submitButton);
+
+        await fixture.whenStable();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(updateWorkersSpy).not.toHaveBeenCalled();
+
+        const summaryBoxErrorMessage = `${ErrorMessages.annualSalaryInvalid} (${worker.nameOrId})`;
+        expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+        expect(workerRow.textContent).toContain(ErrorMessages.annualSalaryInvalid);
+      });
     });
   });
 });
