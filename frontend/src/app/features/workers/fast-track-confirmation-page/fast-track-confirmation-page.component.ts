@@ -3,7 +3,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 
 import { UntypedFormGroup } from '@angular/forms';
 import { Establishment } from '@core/model/establishment.model';
-import { WorkersGroupedByJobRoleResponse } from '@core/model/worker.model';
+import { WorkersGroupedByJobRoleResponse, WorkersGroupedByJobRoleWithIndex } from '@core/model/worker.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 import { AlertService } from '@core/services/alert.service';
@@ -20,9 +20,7 @@ export class FastTrackConfirmationPageComponent implements OnInit {
   public workplace: Establishment;
   public workersByJobRole: WorkersGroupedByJobRoleResponse;
   public totalCount: number;
-  public filteredGroups: any;
-  public jobRoleIndex: number;
-  public jobRoleChanged: any;
+  public filteredGroups: WorkersGroupedByJobRoleWithIndex[];
   public submitted: boolean;
 
   constructor(

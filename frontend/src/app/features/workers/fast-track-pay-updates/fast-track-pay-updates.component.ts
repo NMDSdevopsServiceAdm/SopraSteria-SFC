@@ -30,17 +30,14 @@ export class FastTrackPayUpdatesComponent implements OnInit {
     this.workplace = this.route.snapshot.data.establishment;
     this.workersByJobRole = this.route.snapshot.data.workersByJobRole;
 
-    // If service has no data yet, use resolver data to populate it
     let serviceData = this.workerService.getWorkersGroupedByJobRole();
 
     if (!serviceData || !serviceData.groups) {
-      // Initial flow: populate service from resolver
       serviceData = this.route.snapshot.data.workersByJobRole;
       this.workerService.setWorkersGroupedByJobRole({ groups: serviceData.groups });
     }
-
-    // Use service data as source of truth
     this.workersByJobRole = serviceData;
+
     this.setupForm();
   }
 
@@ -68,38 +65,17 @@ export class FastTrackPayUpdatesComponent implements OnInit {
 
   public onSubmit(): void {
     const workersFormValues = this.form.get('workers').value;
-    const indexToUpdate = this.route.snapshot.queryParams['index'];
 
-    let updatedWorkers;
-
-    if (indexToUpdate != null) {
-      // Coming from Change link: update only one row
-      updatedWorkers = this.workersByJobRole.groups.map((group, index) => {
-        if (+indexToUpdate === index) {
-          const formEntry = workersFormValues[index];
-          return {
-            ...group,
-            annualHourlyPay: {
-              value: formEntry.value,
-              rate: formEntry.rate,
-            },
-          };
-        }
-        return group; // keep others untouched
-      });
-    } else {
-      // Initial submission: update all rows
-      updatedWorkers = this.workersByJobRole.groups.map((group, index) => {
-        const formEntry = workersFormValues[index];
-        return {
-          ...group,
-          annualHourlyPay: {
-            value: formEntry.value,
-            rate: formEntry.rate,
-          },
-        };
-      });
-    }
+    const updatedWorkers = this.workersByJobRole.groups.map((group, index) => {
+      const formEntry = workersFormValues[index];
+      return {
+        ...group,
+        annualHourlyPay: {
+          value: formEntry.value,
+          rate: formEntry.rate,
+        },
+      };
+    });
 
     this.workerService.setWorkersGroupedByJobRole({ groups: updatedWorkers });
 

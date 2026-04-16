@@ -89,7 +89,6 @@ describe('FastTrackPayUpdatesComponent', () => {
               data: {
                 workersByJobRole: overrides.workersWithMultipleJobRoles ?? workersWithSingleJobRole,
               },
-              queryParams: {},
             },
           },
         },
@@ -112,6 +111,7 @@ describe('FastTrackPayUpdatesComponent', () => {
       component,
       showBackLinkSpy,
       setWorkersGroupedByJobRoleSpy,
+      workerService,
     };
   }
 
@@ -140,17 +140,53 @@ describe('FastTrackPayUpdatesComponent', () => {
     });
   });
 
+  it('should use resolver data and set service when service has no data', async () => {
+    const { component, setWorkersGroupedByJobRoleSpy, workerService } = await setup();
+
+    spyOn(workerService, 'getWorkersGroupedByJobRole').and.returnValue(null);
+
+    component.ngOnInit();
+
+    expect(setWorkersGroupedByJobRoleSpy).toHaveBeenCalledWith({
+      groups: workersWithSingleJobRole.groups,
+    });
+
+    expect(component.workersByJobRole).toEqual(workersWithSingleJobRole);
+  });
+
+  it('should use service data when it exists and not call setWorkersGroupedByJobRole', async () => {
+    const { component, setWorkersGroupedByJobRoleSpy, workerService } = await setup();
+
+    const mockServiceData = {
+      groups: [
+        {
+          jobId: 99,
+          title: 'Test role',
+          workers: [],
+          count: 1,
+        },
+      ],
+    };
+
+    spyOn(workerService, 'getWorkersGroupedByJobRole').and.returnValue(mockServiceData);
+
+    component.ngOnInit();
+
+    expect(setWorkersGroupedByJobRoleSpy).not.toHaveBeenCalled();
+    expect(component.workersByJobRole).toEqual(mockServiceData);
+  });
+
   describe('Table', () => {
     it('should include the Job role column heading', async () => {
       const { getByTestId } = await setup();
       const heading = getByTestId('job-role-heading');
-      expect(heading.textContent).toEqual('Job role');
+      expect(heading.textContent.trim()).toEqual('Job role');
     });
 
     it('should include the New hourly pay rate or salary column heading', async () => {
       const { getByTestId } = await setup();
       const heading = getByTestId('pay-heading');
-      expect(heading.textContent).toEqual('New hourly pay rate or salary');
+      expect(heading.textContent.trim()).toEqual('New hourly pay rate or salary');
     });
 
     describe('Job role column contents', () => {
