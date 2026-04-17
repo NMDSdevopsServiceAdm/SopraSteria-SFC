@@ -244,31 +244,12 @@ export class UpdatePayForMultipleStaffComponent {
     };
   }
 
-  public debug(): void {
-    const lastPaginationState = this.paginationParamsHistory.at(-1);
-    const opts = { '0_asc': 'staffNameAsc', '0_dsc': 'staffNameDesc', '1_asc': 'jobRoleAsc', '1_dsc': 'jobRoleDesc' };
-    const thisTime = 'staffNameAsc'; // Object.values(opts).at(i % 4)!;
-    // const thisTime = Object.values(opts).at(i % 4)!;
-    console.log(thisTime, '<--- thisTime');
-    i += 1;
-
-    if (lastPaginationState) {
-      const patch = { ...lastPaginationState, sortByValue: thisTime };
-
-      console.log(lastPaginationState.sortByValue);
-      console.log(lastPaginationState, '<--- lastPaginationState in debug func');
-
-      this.paginationWrapper.setStateWithoutEmitSearchEvent(patch);
-    }
-  }
-
   public getPageOfWorkers(searchEvent: SearchEvent): void {
     if (this.form.invalid) {
       this.showErrors = true;
       const lastPaginationState = this.paginationParamsHistory.at(-1);
 
       if (lastPaginationState) {
-        console.log(lastPaginationState, '<--- lastPaginationState');
         this.paginationWrapper.setStateWithoutEmitSearchEvent(lastPaginationState);
       }
       this.errorSummaryService.scrollToErrorSummary();
@@ -276,6 +257,7 @@ export class UpdatePayForMultipleStaffComponent {
       return;
     }
 
+    this.paginationParamsHistory.push(this.paginationWrapper.currentSearchParams);
     const searchParams = this.convertJobRoleNameToId(parseSearchEvent(searchEvent));
 
     const getWorker = this.workerService
@@ -292,6 +274,7 @@ export class UpdatePayForMultipleStaffComponent {
   private setNewWorkers(workers: WorkerWithPayData[]) {
     this.workersToShow = workers;
     this.addWorkersToForm(workers);
+    this.setupFormErrorsMap();
   }
 
   public buildJobDataProvider() {

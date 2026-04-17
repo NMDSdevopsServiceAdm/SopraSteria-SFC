@@ -1,4 +1,5 @@
-import { Component, computed, contentChild, effect, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
+import { Component, contentChild, effect, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SearchInput } from '@core/model/admin/search.model';
 import { SearchEvent } from '@core/model/pagination.model';
@@ -27,9 +28,13 @@ export class TablePaginationWrapperComponent implements OnInit {
   public currentPageIndex = 0;
   private fragment: string;
   private tab: string;
-  public sortBySelected: string;
   private subscriptions: Subscription = new Subscription();
-  constructor(private router: Router) {
+  public form: FormGroup;
+
+  constructor(
+    private router: Router,
+    private formBuilder: FormBuilder,
+  ) {
     effect(() => {
       if (this.customSearchBox()) {
         this.setUpCustomSearchBox();
@@ -38,9 +43,34 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.setupForm();
     if (this.maintainedPageIndex && this.maintainedPageIndex !== this.currentPageIndex) {
       this.currentPageIndex = this.maintainedPageIndex;
     }
+  }
+
+  get sortBySelected(): string {
+    return this.form.get('sortBySelected')!.value;
+  }
+
+  set sortBySelected(newValue: string) {
+    this.form.patchValue({ sortBySelected: newValue });
+  }
+
+  private setupForm(): void {
+    const sortBySelected = this.sortByParamReverseLookup(this.sortByValue);
+    this.form = this.formBuilder.group({ sortBySelected });
+
+    this.form.get('sortBySelected')!.valueChanges.subscribe((newValue) => {
+      this.sortBy(newValue);
+    });
+  }
+
+  private sortByParamReverseLookup(sortByValue: string) {
+    const sortByKeys = Object.keys(this.sortByParamMap);
+    const defaultValue = sortByKeys.at(0);
+    const sortBySelected = sortByKeys.find((key) => this.sortByParamMap[key] === sortByValue) ?? defaultValue;
+    return sortBySelected;
   }
 
   private checkForFragment(): void {
@@ -65,7 +95,6 @@ export class TablePaginationWrapperComponent implements OnInit {
 
   public sortBy(sortType: string): void {
     this.sortByValue = this.sortByParamMap[sortType];
-    console.log(this.sortByValue, '<--- sortByValue');
     this.currentPageIndex = 0;
     this.getData();
   }
@@ -109,9 +138,13 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   public setStateWithoutEmitSearchEvent(params: SearchEvent) {
-    const { sortByValue } = params;
+    const { sortByValue, index } = params;
 
     this.sortByValue = sortByValue;
+    const sortBySelected = this.sortByParamReverseLookup(sortByValue);
+    this.form.patchValue({ sortBySelected }, { emitEvent: false });
+
+    this.currentPageIndex = index;
   }
 
   private getData(): void {

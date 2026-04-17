@@ -9,7 +9,7 @@ import { PaginationComponent } from '../pagination/pagination.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { TablePaginationWrapperComponent } from './table-pagination-wrapper.component';
 
-fdescribe('TablePaginationWrapperCompnent', () => {
+describe('TablePaginationWrapperCompnent', () => {
   const setup = async (overrides: any = {}) => {
     const totalCount = overrides.totalCount ?? 20;
     const setQueryInParams = overrides.setQueryInParams ?? false;
@@ -189,7 +189,11 @@ fdescribe('TablePaginationWrapperCompnent', () => {
 
   describe('page index', () => {
     it('should use the value from maintainedPageIndex', async () => {
-      const { component } = await setup({ maintainedPageIndex: 1, currentPageIndex: 0 });
+      const { component } = await setup({
+        maintainedPageIndex: 1,
+        currentPageIndex: 0,
+        totalCount: 25,
+      });
 
       expect(component.currentPageIndex).toEqual(1);
     });
@@ -202,10 +206,17 @@ fdescribe('TablePaginationWrapperCompnent', () => {
   });
 
   describe('setStateWithoutEmitSearchEvent()', () => {
-    fit('should allow parent component to change the pagination params in view without triggering a search', async () => {
-      const { component, fixture, getByLabelText, emitSpy } = await setup();
+    it('should allow parent component to change the pagination params in view without triggering a search', async () => {
+      const { component, fixture, getByLabelText, queryByTestId } = await setup({ totalCount: 35 });
       const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+
+      // verify current states
       expect(sortBySelectBox.value).toEqual('0_asc');
+      expect(queryByTestId('pageNoLink-0')).toBeFalsy();
+      expect(queryByTestId('pageNoLink-1')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-2')).toBeTruthy();
+
+      expect(queryByTestId('pageNoText-0')).toBeTruthy();
 
       component.setStateWithoutEmitSearchEvent({
         index: 2,
@@ -217,14 +228,15 @@ fdescribe('TablePaginationWrapperCompnent', () => {
       fixture.detectChanges();
 
       expect(sortBySelectBox.value).toEqual('1_dsc');
+      expect(queryByTestId('pageNoLink-0')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-1')).toBeTruthy();
+      expect(queryByTestId('pageNoLink-2')).toBeFalsy();
 
-      component.sortBy('0_dsc');
-      fixture.detectChanges();
-      expect(sortBySelectBox.value).toEqual('0_dsc');
+      expect(queryByTestId('pageNoText-2')).toBeTruthy();
 
       fixture.detectChanges();
       component.setStateWithoutEmitSearchEvent({
-        index: 2,
+        index: 1,
         itemsPerPage: 15,
         searchTerm: 'test search term',
         sortByValue: 'staffNameAsc',

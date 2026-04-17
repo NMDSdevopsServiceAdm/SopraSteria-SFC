@@ -21,7 +21,7 @@ import userEvent from '@testing-library/user-event';
 import { AllJobs } from '../../../../mockdata/jobs';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff.component';
 
-fdescribe('UpdatePayForMultipleStaffComponent', () => {
+describe('UpdatePayForMultipleStaffComponent', () => {
   const workerBuilder = build('Worker', {
     fields: {
       uid: fake((f) => f.datatype.uuid()),
@@ -1051,7 +1051,7 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
     });
 
     describe('page change', () => {
-      fit('should trigger validation on sorting change', async () => {
+      it('should trigger validation on sorting change', async () => {
         const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy } = await setup();
 
         const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
