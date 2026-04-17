@@ -371,6 +371,19 @@ const getWorkersWithPayData = async (req, res) => {
   }
 };
 
+const getMainJobRoleForAllWorkers = async (req, res) => {
+  const establishmentId = req.establishmentId;
+
+  try {
+    const mainJobRoles = await models.establishment.fetchAllWorkersMainJobRole(establishmentId);
+
+    return res.status(200).json({ mainJobRoles });
+  } catch (err) {
+    console.error('GET /worker/mainJobRoles: unexpected exception: ', err);
+    return res.status(500).send({ message: 'failed to get workers main job roles' });
+  }
+};
+
 const updateLocalIdentifiers = async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
@@ -423,6 +436,7 @@ router.route('/localIdentifier').put(hasPermission('canBulkUpload'), updateLocal
 router.route('/total').get(hasPermission('canViewEstablishment'), getTotalWorkers);
 router.get('/groupedByJobRole', hasPermission('canViewWorker'), getAllWorkersGroupedByJobRole);
 router.get('/withPayData', hasPermission('canViewWorker'), getWorkersWithPayData);
+router.get('/mainJobRoles', hasPermission('canViewWorker'), getMainJobRoleForAllWorkers);
 
 router.use('/multiple-training', MutipleTrainingRecordsRoute);
 
@@ -441,3 +455,4 @@ module.exports.viewAllWorkers = viewAllWorkers;
 module.exports.getTotalWorkers = getTotalWorkers;
 module.exports.getAllWorkersGroupedByJobRole = getAllWorkersGroupedByJobRole;
 module.exports.getWorkersWithPayData = getWorkersWithPayData;
+module.exports.getMainJobRoleForAllWorkers = getMainJobRoleForAllWorkers;

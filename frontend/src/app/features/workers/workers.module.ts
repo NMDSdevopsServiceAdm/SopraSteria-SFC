@@ -92,6 +92,7 @@ import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qu
 import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-page/fast-track-confirmation-page.component';
 import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
 import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
+import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff/update-pay-for-multiple-staff.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -153,6 +154,7 @@ import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.re
     CareWorkforcePathwayWorkersSummaryComponent,
     CarryOutDelegatedHealthcareActivitiesComponent,
     WhoCarryOutDelegatedHealthcareActivitiesComponent,
+    UpdatePayForMultipleStaffComponent,
     DoYouWantToDowloadTrainAndQualsComponent,
     TrainingCourseMatchingLayoutComponent,
     SelectTrainingCourseForWorkerTraining,

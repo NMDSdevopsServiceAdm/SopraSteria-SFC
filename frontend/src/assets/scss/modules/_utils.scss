@@ -133,6 +133,10 @@
   width: fit-content;
 }
 
+.asc-util__full-width {
+  width: 100%;
+}
+
 .asc-font-19 {
   @include govuk-font($size: 19);
 }
@@ -208,4 +212,8 @@ dl.asc__name-value-pair {
   dd:first-of-type {
     margin-left: 0px;
   }
+}
+
+.asc__white-background {
+  background-color: #ffffff;
 }

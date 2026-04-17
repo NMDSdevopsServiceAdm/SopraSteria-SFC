@@ -1,0 +1,43 @@
+<div class="govuk-!-width-full input--search">
+  <label [for]="inputBoxId" class="govuk-label"
+    >{{ label }}
+    @if (accessibleLabel) {
+      <span class="govuk-visually-hidden"> {{ accessibleLabel }}</span>
+    }
+  </label>
+
+  <div class="govuk-grid-column-two-thirds govuk-util__light-bg govuk-!-padding-2 govuk__flex">
+    <app-new-auto-suggest
+      class="asc-util__full-width"
+      #searchBox
+      [inputBoxId]="inputBoxId"
+      [dataProvider]="dataProvider"
+      (emitInput)="handleSuggestionClick($event)"
+      [showEllipsis]="true"
+    >
+    </app-new-auto-suggest>
+    @if (showSearchButton) {
+      <button
+        class="govuk-button button-override--search govuk-!-margin-bottom-0"
+        name="search"
+        type="button"
+        (click)="handleSearchButtonClick($event)"
+      >
+        {{ searchButtonName }}
+        <img src="/assets/images/search-icon.svg" [attr.alt]="searchButtonName" aria-hidden="true" />
+      </button>
+    }
+  </div>
+
+  @if (searched && showClearResults) {
+    <div class="govuk-grid-column-one-third govuk-!-padding-top-2 govuk-!-padding-bottom-2">
+      <button
+        class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-util__vertical-align-center"
+        type="button"
+        (click)="handleResetSearch()"
+      >
+        Clear search results
+      </button>
+    </div>
+  }
+</div>
