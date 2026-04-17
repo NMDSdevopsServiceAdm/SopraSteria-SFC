@@ -26,7 +26,7 @@
           <tr
             class="govuk-table__row"
             [formGroupName]="$index"
-            [class.govuk-form-group--error]="submitted && workers.controls[$index].invalid"
+            [class.govuk-form-group--error]="submitted && workersFormArray.at($index).invalid"
           >
             <td class="govuk-table__cell" style="vertical-align: top; padding-top: 18px; padding-bottom: 18px">
               <div style="line-height: 1.25; display: flex; justify-content: space-between; align-items: flex-start">
@@ -43,9 +43,9 @@
               <div style="display: flex; align-items: center; flex-wrap: nowrap; gap: 15px">
                 <div class="govuk-input__wrapper">
                   <div class="govuk-input__prefix" aria-hidden="true" style="background-color: #ffffff">£</div>
-                  @if (submitted && form.get('rate').invalid) {
+                  @if (submitted && workersFormArray.at($index).get('rate')?.errors) {
                   <span id="value-error" class="govuk-error-message">
-                    <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('rate') }}
+                    {{ getFirstErrorMessage($index, 'rate') }}
                   </span>
                   }
                   <input
@@ -58,9 +58,9 @@
                 </div>
                 <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
                   <div class="govuk-radios__item" style="margin-right: 5px">
-                    @if (submitted && form.get('value').invalid) {
+                    @if (submitted && workersFormArray.at($index).get('value')?.errors) {
                     <span id="value-error" class="govuk-error-message">
-                      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('value') }}
+                      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage($index, 'value') }}
                     </span>
                     }
                     <input
@@ -74,9 +74,9 @@
                     <label class="govuk-label govuk-radios__label" for="'hourly-' + $index"> Hourly </label>
                   </div>
                   <div class="govuk-radios__item">
-                    @if (submitted && form.get('value').invalid) {
+                    @if (submitted && workersFormArray.at($index).get('value')?.errors) {
                     <span id="value-error" class="govuk-error-message">
-                      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('value') }}
+                      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage($index, 'value') }}
                     </span>
                     }
                     <input

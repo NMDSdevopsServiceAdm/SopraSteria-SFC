@@ -20,6 +20,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
   public workersByJobRole: WorkersGroupedByJobRoleResponse;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
+  public workersFormArray: UntypedFormArray;
 
   constructor(
     private backLinkService: BackLinkService,
@@ -51,15 +52,14 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       workers: this.formBuilder.array([]),
     });
 
-    const workersFormArray = this.form.get('workers') as UntypedFormArray;
+    this.workersFormArray = this.form.get('workers') as UntypedFormArray;
 
     this.workersByJobRole.groups.forEach((group) => {
-      workersFormArray.push(
+      this.workersFormArray.push(
         this.formBuilder.group(
           {
-            workerId: group.jobId,
-            value: null,
-            rate: null,
+            value: group.annualHourlyPay?.value || null,
+            rate: group.annualHourlyPay?.rate || null,
           },
           { validators: this.validateRow(group) },
         ),
@@ -69,32 +69,44 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
 
   validateRow(groupData: any) {
     return (formGroup: UntypedFormGroup) => {
-      const value = formGroup.get('value')?.value;
-      const rate = formGroup.get('rate')?.value;
+      const valueCtrl = formGroup.get('value');
+      const rateCtrl = formGroup.get('rate');
 
-      const errors: any = {};
+      const value = valueCtrl?.value;
+      const rate = rateCtrl?.value;
+
+      // clear previous errors
+      valueCtrl.setErrors(valueCtrl.errors);
+      rateCtrl.setErrors(rateCtrl.errors);
+
+      // BOTH EMPTY
+      if (!value && !rate) {
+        valueCtrl.setErrors({ required: true });
+        rateCtrl.setErrors({ required: true });
+        return null;
+      }
 
       if (!value && rate) {
-        errors.value = 'required'; // ✅ matches formErrorsMap
+        valueCtrl.setErrors({ required: true });
+      }
+
+      if (value && !rate) {
+        rateCtrl.setErrors({ required: true });
       }
 
       if (value === 'Hourly') {
         if (rate < 2.5 || rate > 200) {
-          errors.rate = 'range'; // 👈 add this type
+          rateCtrl.setErrors({ range: true });
         }
       }
 
       if (value === 'Annually') {
         if (rate && !Number.isInteger(Number(rate))) {
-          errors.rate = 'salary'; // ✅ already exists
+          rateCtrl.setErrors({ salary: true });
         }
       }
 
-      if (rate && !/^\d+(\.\d{1,2})?$/.test(rate)) {
-        errors.rate = 'limitDigit'; // ✅ already exists
-      }
-
-      return Object.keys(errors).length ? errors : null;
+      return null;
     };
   }
 
@@ -121,6 +133,7 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
+
   setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -155,10 +168,4 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       },
     ];
   }
-
-  // protected addErrorLinkFunctionality(): void {
-  //   if (!this.errorSummaryService.formEl$.value) {
-  //     this.errorSummaryService.formEl$.next(this.formEl);
-  //   }
-  // }
 }
