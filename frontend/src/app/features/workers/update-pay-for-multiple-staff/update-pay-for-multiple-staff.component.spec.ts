@@ -900,5 +900,49 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         expect(workerRow.textContent).toContain(ErrorMessages.annualSalaryInvalid);
       });
     });
+
+    it(`should raise an error if user chose Hourly but the amount is missing`, async () => {
+      const { fixture, getByRole, updateWorkersSpy, getByText } = await setup();
+      const worker = mockWorkers[3];
+
+      const workerRow = getWorkerRow(worker.nameOrId);
+
+      userEvent.click(within(workerRow).getByLabelText('Hourly'));
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(updateWorkersSpy).not.toHaveBeenCalled();
+
+      const summaryBoxErrorMessage = `${ErrorMessages.hourlyRateMissing} (${worker.nameOrId})`;
+      expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+      expect(workerRow.textContent).toContain(ErrorMessages.hourlyRateMissing);
+    });
+
+    it(`should raise an error if user chose Annual salary but the amount is missing`, async () => {
+      const { fixture, getByRole, updateWorkersSpy, getByText } = await setup();
+      const worker = mockWorkers[3];
+
+      const workerRow = getWorkerRow(worker.nameOrId);
+
+      userEvent.click(within(workerRow).getByLabelText('Salary'));
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(updateWorkersSpy).not.toHaveBeenCalled();
+
+      const summaryBoxErrorMessage = `${ErrorMessages.annualSalaryMissing} (${worker.nameOrId})`;
+      expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+      expect(workerRow.textContent).toContain(ErrorMessages.annualSalaryMissing);
+    });
   });
 });

@@ -61,16 +61,16 @@
               <div data-testid="pay-header">Hourly pay rate or salary</div>
             </div>
             @for (worker of workersToShow; track worker.uid; let workerIndex = $index) {
-              @let workerFormControl = workersFormGroup.get(worker.uid);
+              @let workerFormControl = workersFormGroup.get(`uid-${worker.uid}`);
               <div
-                [formGroupName]="worker.uid"
+                [formGroupName]="'uid-' + worker.uid"
                 class="govuk-form-group"
                 [class.govuk-form-group--error]="showErrors && workerFormControl.invalid"
               >
                 <div role="row" class="asc__grid-table-with-form--row" [attr.data-testid]="'worker-row-' + workerIndex">
                   @if (showErrors && workerFormControl.invalid) {
-                    <p class="govuk-error-message" [id]="worker.uid + '-payRate-error'">
-                      {{ getInlineErrorMessage(worker) }}
+                    <p class="govuk-error-message" [id]="'uid-' + worker.uid + '-error'">
+                      <span class="govuk-visually-hidden">Error:</span> {{ getInlineErrorMessage(worker) }}
                     </p>
                   }
                   <div [id]="'worker-name-' + workerIndex">
@@ -80,6 +80,9 @@
                   <div>
                     <div class="govuk-input__wrapper">
                       <div class="govuk-input__prefix asc__white-background" aria-hidden="true">£</div>
+                      <span class="govuk-visually-hidden" [id]="'uid-' + worker.uid + '-payRate-error'">
+                        <!-- dummy anchor to allow error summary set focus -->
+                      </span>
                       <input
                         [attr.data-testid]="'amount-input-box-' + $index"
                         class="govuk-input govuk-input--width-4"
@@ -94,8 +97,8 @@
                         @for (button of radioButtonLabels; track $index) {
                           <div class="govuk-radios__item">
                             @if ($index === 0) {
-                              <span class="govuk-visually-hidden" [id]="worker.uid + '-payValue-error'">
-                                <!-- anchor to allow error summary set  focus on radio button -->
+                              <span class="govuk-visually-hidden" [id]="'uid-' + worker.uid + '-payValue-error'">
+                                <!-- dummy anchor to allow error summary set focus -->
                               </span>
                             }
                             <input

@@ -1,7 +1,11 @@
 @import 'govuk-frontend/govuk/base';
 
 .asc__grid-table-with-form--row {
-  grid-template-columns: auto 220px 480px;
+  grid-template-columns: 220px 220px 480px;
+}
+
+.govuk-form-group--error > .asc__grid-table-with-form--row {
+  grid-template-columns: 200px 220px 480px;
 }
 
 .govuk-input__wrapper {

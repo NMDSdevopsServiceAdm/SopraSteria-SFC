@@ -9,9 +9,9 @@ import { filter } from 'rxjs/operators';
 const DefaultQuerySelector = 'input,select,textarea';
 
 @Component({
-    selector: 'app-error-summary',
-    templateUrl: './error-summary.component.html',
-    standalone: false
+  selector: 'app-error-summary',
+  templateUrl: './error-summary.component.html',
+  standalone: false,
 })
 export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public form: UntypedFormGroup;
@@ -25,7 +25,10 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;
 
-  constructor(private errorSummaryService: ErrorSummaryService, private router: Router) {}
+  constructor(
+    private errorSummaryService: ErrorSummaryService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.setKeyboardFocus();
@@ -42,6 +45,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
       combineLatest([this.errorSummaryService.formEl$, this.errorSummaryService.errorId$])
         .pipe(filter(([formEl, errorId]) => formEl !== null && errorId !== null))
         .subscribe(([formEl, errorId]) => {
+          console.log(`#${this.getErrorId(errorId)}`, '<--- this errorId');
           const errorMessage = formEl.nativeElement.querySelector(`#${this.getErrorId(errorId)}`);
           if (errorMessage) {
             const errorWrapper = errorMessage.closest('div');

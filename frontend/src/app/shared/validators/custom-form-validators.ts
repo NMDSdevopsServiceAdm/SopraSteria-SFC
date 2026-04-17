@@ -1,3 +1,4 @@
+import lodash from 'lodash';
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FILE_UPLOAD_TYPES } from '@core/constants/constants';
 import { jobOptionsEnum } from '@core/model/establishment.model';
@@ -224,6 +225,22 @@ export class CustomValidators extends Validators {
       validityPeriodInMonth.setErrors({ pattern: true });
       doesNotExpire.setErrors(null);
       return;
+    };
+
+    return validatorFunction;
+  }
+
+  static buildCompositeValidator(validatorFns: ValidatorFn[], customErrorType?: string): ValidatorFn {
+    const validatorFunction = (formControl: AbstractControl) => {
+      const results = validatorFns.map((fn) => fn(formControl));
+      const combinedResults = lodash.merge({}, ...results);
+      const hasError = !lodash.isEmpty(combinedResults);
+
+      if (customErrorType) {
+        return hasError ? { [customErrorType]: true } : null;
+      }
+
+      return hasError ? combinedResults : null;
     };
 
     return validatorFunction;
