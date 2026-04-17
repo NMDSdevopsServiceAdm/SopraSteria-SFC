@@ -35,3 +35,5 @@ export const AnnualSalaryLimitsForSeniorManagement = {
   max: 250000,
   asString: { min: '£500', max: '£250,000' },
 };
+
+export const SeniorManagementJobId = 26;

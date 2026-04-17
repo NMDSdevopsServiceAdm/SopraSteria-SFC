@@ -292,6 +292,9 @@ export const StaffSummarySortByParamMap = {
   '4_add_more_details': 'addMoreDetails',
 } as const;
 
+export type SortByKey = keyof typeof StaffSummarySortByParamMap;
+export type SortByParam = (typeof StaffSummarySortByParamMap)[SortByKey];
+
 export enum SortStaffOptions {
   '0_asc' = 'Staff name (A to Z)',
   '0_dsc' = 'Staff name (Z to A)',

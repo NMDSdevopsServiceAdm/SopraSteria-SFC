@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 
 import { Component, ElementRef, signal, ViewChild, WritableSignal } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import {
@@ -25,14 +25,12 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
 import {
-  ANNUAL_SALARY_PATTERN,
-  AnnualSalaryLimits,
-  AnnualSalaryLimitsForSeniorManagement,
-  HOURLY_PAY_PATTERN,
-  HourlyPayRateLimits,
-} from '@core/constants/constants';
+  UpdatePayForMultipleWorkerErrorMessages as ErrorMessages,
+  UpdatePayForMultipleWorkerErrorTypes as ErrorTypes,
+  buildUpdatePayForMultipleWorkerValidator,
+} from '@shared/validators/worker-pay-validators';
+import { TablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper/table-pagination-wrapper.component';
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -40,28 +38,9 @@ const radioButtonLabels = [
   { label: 'Not known', value: "Don't know", slug: 'dont-know' },
 ];
 const DontKnow = "Don't know";
+const customValidator = buildUpdatePayForMultipleWorkerValidator();
 
-enum ErrorTypes {
-  radioButtonNotSelected = 'radioButtonNotSelected',
-  hourlyRateInvalid = 'hourlyRateInvalid',
-  annualSalaryInvalid = 'annualSalaryInvalid',
-  annualSalaryInvalidSeniorManagement = 'annualSalaryInvalidSeniorManagement',
-  hourlyRateMissing = 'hourlyRateMissing',
-  annualSalaryMissing = 'annualSalaryMissing',
-  hourlyRateDecimalPlace = 'hourlyRateDecimalPlace',
-  annualSalaryDecimalPlace = 'annualSalaryDecimalPlace',
-}
-
-const ErrorMessages: Record<string, string> = {
-  [ErrorTypes.radioButtonNotSelected]: 'Select hourly or salary for the amount entered',
-  [ErrorTypes.hourlyRateInvalid]: `Hourly pay rate must be between ${HourlyPayRateLimits.asString.min} and ${HourlyPayRateLimits.asString.max}`,
-  [ErrorTypes.annualSalaryInvalid]: `Salary must be between ${AnnualSalaryLimits.asString.min} and ${AnnualSalaryLimits.asString.max}`,
-  [ErrorTypes.annualSalaryInvalidSeniorManagement]: `Salary must be between ${AnnualSalaryLimitsForSeniorManagement.asString.min} and ${AnnualSalaryLimitsForSeniorManagement.asString.max}`,
-  [ErrorTypes.hourlyRateMissing]: 'Enter the hourly pay rate or select a different option',
-  [ErrorTypes.annualSalaryMissing]: 'Enter the salary or select a different option',
-  [ErrorTypes.hourlyRateDecimalPlace]: 'You can only have 1 or 2 digits for pence after the decimal point',
-  [ErrorTypes.annualSalaryDecimalPlace]: 'Salary must not include pence',
-};
+let i = 0;
 
 @Component({
   selector: 'app-update-pay-for-multiple-staff',
@@ -71,6 +50,7 @@ const ErrorMessages: Record<string, string> = {
 })
 export class UpdatePayForMultipleStaffComponent {
   @ViewChild('formEl') formEl: ElementRef;
+  @ViewChild('paginationWrapper') paginationWrapper: TablePaginationWrapperComponent;
 
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
@@ -90,6 +70,7 @@ export class UpdatePayForMultipleStaffComponent {
   public showErrors = false;
 
   private subscriptions: Subscription = new Subscription();
+  private paginationParamsHistory: Array<SearchEvent> = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -125,6 +106,7 @@ export class UpdatePayForMultipleStaffComponent {
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
+    this.paginationParamsHistory.push(this.paginationWrapper.currentSearchParams);
   }
 
   private setupForm(): void {
@@ -150,7 +132,7 @@ export class UpdatePayForMultipleStaffComponent {
   private buildFormControlsForWorker(worker: WorkerWithPayData): FormGroup {
     const payValue = this.formBuilder.control(worker.annualHourlyPay?.value);
     const payRate = this.formBuilder.control(worker.annualHourlyPay?.rate);
-    const workerFormControls = this.formBuilder.group({ payValue, payRate });
+    const workerFormControls = this.formBuilder.group({ payValue, payRate, jobId: worker.mainJob.id, uid: worker.uid });
 
     const clearPayRateWhenSelectNotKnown = payValue.valueChanges
       .pipe(filter((newValue) => newValue === DontKnow))
@@ -167,80 +149,12 @@ export class UpdatePayForMultipleStaffComponent {
         payValue.setValue(null, { emitEvent: false });
       });
 
-    workerFormControls.setValidators(this.buildValidators(worker));
+    workerFormControls.setValidators([customValidator]);
 
     this.subscriptions.add(clearPayRateWhenSelectNotKnown);
     this.subscriptions.add(clearNotKnownRadioButtonWhenTypeInPayRate);
 
     return workerFormControls;
-  }
-
-  private buildValidators(worker: WorkerWithPayData): ValidatorFn[] {
-    const hourlyRateInvalidValidator = CustomValidators.buildCompositeValidator(
-      [
-        Validators.min(HourlyPayRateLimits.min),
-        Validators.max(HourlyPayRateLimits.max),
-        Validators.pattern(HOURLY_PAY_PATTERN),
-      ],
-      ErrorTypes.hourlyRateInvalid,
-    );
-    const hourlyRateMissingValidator = CustomValidators.buildCompositeValidator(
-      [Validators.required],
-      ErrorTypes.hourlyRateMissing,
-    );
-
-    const hourlyRateValidator = CustomValidators.buildCompositeValidator([
-      hourlyRateInvalidValidator,
-      hourlyRateMissingValidator,
-    ]);
-
-    const annualSalaryInvalidValidator = CustomValidators.buildCompositeValidator(
-      [
-        Validators.min(AnnualSalaryLimits.min),
-        Validators.max(AnnualSalaryLimits.max),
-        Validators.pattern(ANNUAL_SALARY_PATTERN),
-      ],
-      ErrorTypes.annualSalaryInvalid,
-    );
-    const annualSalaryMissingValidator = CustomValidators.buildCompositeValidator(
-      [Validators.required],
-      ErrorTypes.annualSalaryMissing,
-    );
-    const annualSalaryValidator = CustomValidators.buildCompositeValidator([
-      annualSalaryInvalidValidator,
-      annualSalaryMissingValidator,
-    ]);
-
-    const crossFieldValidator = (workerFormControls: FormGroup) => {
-      const { payRate, payValue } = workerFormControls.value ?? {};
-      const payRateControl = workerFormControls.get('payRate')!;
-      const payValueControl = workerFormControls.get('payValue')!;
-
-      if (!payValue && payRate) {
-        payValueControl.setErrors({ radioButtonNotSelected: true });
-        return null;
-      }
-
-      switch (payValue) {
-        case 'Hourly': {
-          const errorFound = hourlyRateValidator(payRateControl);
-          if (errorFound) {
-            payRateControl.setErrors(errorFound);
-          }
-          break;
-        }
-        case 'Annually': {
-          const errorFound = annualSalaryValidator(payRateControl);
-          if (errorFound) {
-            payRateControl.setErrors(errorFound);
-          }
-          break;
-        }
-      }
-    };
-
-    // @ts-ignore
-    return [crossFieldValidator];
   }
 
   private setupFormErrorsMap(): void {
@@ -249,7 +163,7 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   private buildErrorMapForWorker(worker: WorkerWithPayData): ErrorDetails[] {
-    const payRateErrors = ['hourlyRateInvalid', 'annualSalaryInvalid', 'hourlyRateMissing', 'annualSalaryMissing'];
+    const payRateErrors = lodash.without(Object.values(ErrorTypes), ErrorTypes.radioButtonNotSelected);
 
     const errorMap = [
       {
@@ -330,7 +244,38 @@ export class UpdatePayForMultipleStaffComponent {
     };
   }
 
+  public debug(): void {
+    const lastPaginationState = this.paginationParamsHistory.at(-1);
+    const opts = { '0_asc': 'staffNameAsc', '0_dsc': 'staffNameDesc', '1_asc': 'jobRoleAsc', '1_dsc': 'jobRoleDesc' };
+    const thisTime = 'staffNameAsc'; // Object.values(opts).at(i % 4)!;
+    // const thisTime = Object.values(opts).at(i % 4)!;
+    console.log(thisTime, '<--- thisTime');
+    i += 1;
+
+    if (lastPaginationState) {
+      const patch = { ...lastPaginationState, sortByValue: thisTime };
+
+      console.log(lastPaginationState.sortByValue);
+      console.log(lastPaginationState, '<--- lastPaginationState in debug func');
+
+      this.paginationWrapper.setStateWithoutEmitSearchEvent(patch);
+    }
+  }
+
   public getPageOfWorkers(searchEvent: SearchEvent): void {
+    if (this.form.invalid) {
+      this.showErrors = true;
+      const lastPaginationState = this.paginationParamsHistory.at(-1);
+
+      if (lastPaginationState) {
+        console.log(lastPaginationState, '<--- lastPaginationState');
+        this.paginationWrapper.setStateWithoutEmitSearchEvent(lastPaginationState);
+      }
+      this.errorSummaryService.scrollToErrorSummary();
+
+      return;
+    }
+
     const searchParams = this.convertJobRoleNameToId(parseSearchEvent(searchEvent));
 
     const getWorker = this.workerService
@@ -374,13 +319,12 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   private getUpdatedPayData() {
-    const touchedFormControls = Object.entries(this.workersFormGroup.controls).filter(([_workerUid, control]) => {
+    const touchedFormControls = Object.values(this.workersFormGroup.controls).filter((control) => {
       return control.dirty;
     });
-    const updates = touchedFormControls.map(([formControlKey, control]) => {
-      const { payValue, payRate } = control.value;
-      const workerUid = formControlKey.replace('uid-', '');
-      return { uid: workerUid, annualHourlyPay: { value: payValue, rate: payRate } };
+    const updates = touchedFormControls.map((formControl) => {
+      const { payValue, payRate, uid } = formControl.value;
+      return { uid, annualHourlyPay: { value: payValue, rate: payRate } };
     });
 
     return updates;
@@ -389,6 +333,7 @@ export class UpdatePayForMultipleStaffComponent {
   public onSubmit(): void {
     this.showErrors = true;
     if (this.form.invalid) {
+      this.errorSummaryService.scrollToErrorSummary();
       return;
     }
 

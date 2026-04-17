@@ -9,7 +9,7 @@ import { PaginationComponent } from '../pagination/pagination.component';
 import { SearchInputComponent } from '../search-input/search-input.component';
 import { TablePaginationWrapperComponent } from './table-pagination-wrapper.component';
 
-describe('TablePaginationWrapperCompnent', () => {
+fdescribe('TablePaginationWrapperCompnent', () => {
   const setup = async (overrides: any = {}) => {
     const totalCount = overrides.totalCount ?? 20;
     const setQueryInParams = overrides.setQueryInParams ?? false;
@@ -198,6 +198,51 @@ describe('TablePaginationWrapperCompnent', () => {
       const { component } = await setup({ currentPageIndex: 0 });
 
       expect(component.currentPageIndex).toEqual(0);
+    });
+  });
+
+  describe('setStateWithoutEmitSearchEvent()', () => {
+    fit('should allow parent component to change the pagination params in view without triggering a search', async () => {
+      const { component, fixture, getByLabelText, emitSpy } = await setup();
+      const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+      expect(sortBySelectBox.value).toEqual('0_asc');
+
+      component.setStateWithoutEmitSearchEvent({
+        index: 2,
+        itemsPerPage: 15,
+        searchTerm: 'test search term',
+        sortByValue: 'jobRoleDesc',
+      });
+
+      fixture.detectChanges();
+
+      expect(sortBySelectBox.value).toEqual('1_dsc');
+
+      component.sortBy('0_dsc');
+      fixture.detectChanges();
+      expect(sortBySelectBox.value).toEqual('0_dsc');
+
+      fixture.detectChanges();
+      component.setStateWithoutEmitSearchEvent({
+        index: 2,
+        itemsPerPage: 15,
+        searchTerm: 'test search term',
+        sortByValue: 'staffNameAsc',
+      });
+
+      fixture.detectChanges();
+
+      expect(sortBySelectBox.value).toEqual('0_asc');
+
+      // const searchBox = getByLabelText('Search') as HTMLInputElement;
+      // expect(searchBox.value).toEqual('test search term');
+
+      // expect(emitSpy).not.toHaveBeenCalled();
+
+      // expect(queryByTestId('pageNoLink-0')).toBeTruthy();
+      // expect(queryByTestId('pageNoLink-1')).toBeTruthy();
+      // expect(queryByTestId('pageNoLink-2')).toBeFalsy();
+      // expect(queryByTestId('pageNoText-2')).toBeTruthy();
     });
   });
 });

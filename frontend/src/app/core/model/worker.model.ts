@@ -1,5 +1,5 @@
 import { Contracts } from './contracts.enum';
-import { JobRole } from './job.model';
+import { Job, JobRole } from './job.model';
 import { NurseSpecialism } from './nurse-specialism.model';
 import { WDFValue } from './wdf.model';
 
@@ -194,7 +194,7 @@ export interface WorkersResponse {
 export type WorkerWithPayData = {
   uid: string;
   nameOrId: string;
-  mainJob: JobRole;
+  mainJob: Job;
   annualHourlyPay: WorkerPay;
 };
 

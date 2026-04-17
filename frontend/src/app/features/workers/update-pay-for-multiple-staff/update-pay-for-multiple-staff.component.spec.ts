@@ -12,10 +12,10 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
-import { build, fake, oneOf, sequence } from '@jackfranklin/test-data-bot';
+import { build, fake, oneOf } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen } from '@testing-library/angular';
-import { getByText, within } from '@testing-library/dom';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { AllJobs } from '../../../../mockdata/jobs';
@@ -445,8 +445,6 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
         const pageIndex = params?.pageIndex;
         return of({ count: 32, workers: pages[pageIndex] });
       });
-
-      const workersTable = getByRole('table');
 
       userEvent.click(queryByTestId('pageNoLink-1')!);
       await fixture.whenStable();
@@ -943,6 +941,141 @@ fdescribe('UpdatePayForMultipleStaffComponent', () => {
       expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
 
       expect(workerRow.textContent).toContain(ErrorMessages.annualSalaryMissing);
+    });
+
+    it(`should raise an error if the Hourly pay rate has more that 2 decimal places`, async () => {
+      const { fixture, getByRole, updateWorkersSpy, getByText } = await setup();
+      const worker = mockWorkers[3];
+
+      const workerRow = getWorkerRow(worker.nameOrId);
+
+      userEvent.click(within(workerRow).getByLabelText('Hourly'));
+      userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), '15.345');
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(updateWorkersSpy).not.toHaveBeenCalled();
+
+      const summaryBoxErrorMessage = `${ErrorMessages.hourlyRateDecimalPlace} (${worker.nameOrId})`;
+      expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+      expect(workerRow.textContent).toContain(ErrorMessages.hourlyRateDecimalPlace);
+    });
+
+    it(`should raise an error if user chose Annual salary but the amount has decimal place`, async () => {
+      const { fixture, getByRole, updateWorkersSpy, getByText } = await setup();
+      const worker = mockWorkers[3];
+
+      const workerRow = getWorkerRow(worker.nameOrId);
+
+      userEvent.click(within(workerRow).getByLabelText('Salary'));
+      userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), '30000.1');
+
+      const submitButton = getByRole('button', { name: 'Save and return' });
+      userEvent.click(submitButton);
+
+      await fixture.whenStable();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(updateWorkersSpy).not.toHaveBeenCalled();
+
+      const summaryBoxErrorMessage = `${ErrorMessages.annualSalaryDecimalPlace} (${worker.nameOrId})`;
+      expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+      expect(workerRow.textContent).toContain(ErrorMessages.annualSalaryDecimalPlace);
+    });
+
+    describe('special rule for Senior management', () => {
+      const seniorManagementWorker = workerBuilder() as WorkerWithPayData;
+      seniorManagementWorker.mainJob = {
+        id: 26,
+        title: 'Senior management',
+      };
+      seniorManagementWorker.annualHourlyPay = { value: null, rate: null };
+
+      const validAmounts = ['500', '30000', '249999', '250000'];
+      const invalidAmounts = ['499', '250001', '0', '-10'];
+
+      validAmounts.forEach((amount) => {
+        it(`should accept amount between 500 and 250,000 - ${amount}`, async () => {
+          const { fixture, getByRole, updateWorkersSpy, queryByText } = await setup({
+            pageOneWorkers: [seniorManagementWorker],
+            totalWorkerCount: 1,
+          });
+
+          const workerRow = getWorkerRow(seniorManagementWorker.nameOrId);
+
+          userEvent.click(within(workerRow).getByLabelText('Salary'));
+          userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), amount);
+
+          const submitButton = getByRole('button', { name: 'Save and return' });
+          userEvent.click(submitButton);
+
+          await fixture.whenStable();
+
+          expect(queryByText('There is a problem')).toBeFalsy();
+          expect(updateWorkersSpy).toHaveBeenCalled();
+        });
+      });
+
+      invalidAmounts.forEach((amount) => {
+        it(`should not accept amount not in range 500 ~ 250,000 - ${amount}`, async () => {
+          const { fixture, getByRole, updateWorkersSpy, queryByText } = await setup({
+            pageOneWorkers: [seniorManagementWorker],
+            totalWorkerCount: 1,
+          });
+
+          const workerRow = getWorkerRow(seniorManagementWorker.nameOrId);
+
+          userEvent.click(within(workerRow).getByLabelText('Salary'));
+          userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), amount);
+
+          const submitButton = getByRole('button', { name: 'Save and return' });
+          userEvent.click(submitButton);
+
+          await fixture.whenStable();
+
+          expect(queryByText('There is a problem')).toBeTruthy();
+          expect(updateWorkersSpy).not.toHaveBeenCalled();
+
+          const summaryBoxErrorMessage = `${ErrorMessages.annualSalaryInvalidSeniorManagement} (${seniorManagementWorker.nameOrId})`;
+          expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+          expect(workerRow.textContent).toContain(ErrorMessages.annualSalaryInvalidSeniorManagement);
+        });
+      });
+    });
+
+    describe('page change', () => {
+      fit('should trigger validation on sorting change', async () => {
+        const { fixture, getByText, getByLabelText, getWorkersWithPayDataSpy } = await setup();
+
+        const sortBySelectBox = getByLabelText('Sort by') as HTMLSelectElement;
+        expect(sortBySelectBox).toBeTruthy();
+
+        const worker = mockWorkers[3];
+
+        const workerRow = getWorkerRow(worker.nameOrId);
+
+        userEvent.type(within(workerRow).getByLabelText(/Hourly pay rate or salary/), '15');
+        userEvent.selectOptions(sortBySelectBox, getByText('Staff name (Z to A)'));
+
+        fixture.detectChanges();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getWorkersWithPayDataSpy).not.toHaveBeenCalled();
+
+        const summaryBoxErrorMessage = `${ErrorMessages.radioButtonNotSelected} (${worker.nameOrId})`;
+        expect(getErrorSummaryBox().textContent).toContain(summaryBoxErrorMessage);
+
+        expect(workerRow.textContent).toContain(ErrorMessages.radioButtonNotSelected);
+
+        expect(sortBySelectBox.value).toEqual('0_asc');
+      });
     });
   });
 });

@@ -14,7 +14,16 @@
       </ng-content>
     </div>
   }
+  sortBySelected: {{ sortBySelected }}
 
+  @for (option of sortOptions | keyvalue; track option.key) {
+    <pre>
+value: {{ option.value }}
+    {{ option.key }}
+    {{ sortBySelected }}
+    [selected] bool: {{ option.key === sortBySelected }}</pre
+    >
+  }
   @if (count > 1) {
     <div
       data-testid="sortBy"

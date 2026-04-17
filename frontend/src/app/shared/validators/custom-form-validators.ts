@@ -230,6 +230,16 @@ export class CustomValidators extends Validators {
     return validatorFunction;
   }
 
+  static alias(validatorFn: ValidatorFn, customErrorType: string): ValidatorFn {
+    const validatorFunction = (formControl: AbstractControl) => {
+      const result = validatorFn(formControl);
+      const hasError = !lodash.isEmpty(result);
+      return hasError ? { [customErrorType]: true } : null;
+    };
+
+    return validatorFunction;
+  }
+
   static buildCompositeValidator(validatorFns: ValidatorFn[], customErrorType?: string): ValidatorFn {
     const validatorFunction = (formControl: AbstractControl) => {
       const results = validatorFns.map((fn) => fn(formControl));

@@ -1,4 +1,4 @@
-import { Component, contentChild, effect, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, computed, contentChild, effect, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { SearchInput } from '@core/model/admin/search.model';
 import { SearchEvent } from '@core/model/pagination.model';
@@ -29,7 +29,6 @@ export class TablePaginationWrapperComponent implements OnInit {
   private tab: string;
   public sortBySelected: string;
   private subscriptions: Subscription = new Subscription();
-
   constructor(private router: Router) {
     effect(() => {
       if (this.customSearchBox()) {
@@ -39,7 +38,6 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
     if (this.maintainedPageIndex && this.maintainedPageIndex !== this.currentPageIndex) {
       this.currentPageIndex = this.maintainedPageIndex;
     }
@@ -67,6 +65,7 @@ export class TablePaginationWrapperComponent implements OnInit {
 
   public sortBy(sortType: string): void {
     this.sortByValue = this.sortByParamMap[sortType];
+    console.log(this.sortByValue, '<--- sortByValue');
     this.currentPageIndex = 0;
     this.getData();
   }
@@ -107,6 +106,12 @@ export class TablePaginationWrapperComponent implements OnInit {
       searchTerm: this.searchTerm,
       sortByValue: this.sortByValue,
     };
+  }
+
+  public setStateWithoutEmitSearchEvent(params: SearchEvent) {
+    const { sortByValue } = params;
+
+    this.sortByValue = sortByValue;
   }
 
   private getData(): void {
