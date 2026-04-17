@@ -150,5 +150,6 @@ $error_row_padding: $govuk-gutter-half;
   div {
     // cells
     line-height: 1.5;
+    overflow-wrap: break-word;
   }
 }
