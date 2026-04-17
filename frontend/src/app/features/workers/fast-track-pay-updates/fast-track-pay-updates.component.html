@@ -1,5 +1,5 @@
 @if (submitted && form.invalid) {
-<app-error-summary [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+<app-error-summary [formErrorsMap]="formErrorsMap" [form]="errorSummaryForm"></app-error-summary>
 }
 <form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
@@ -29,6 +29,15 @@
             [class.govuk-form-group--error]="submitted && workersFormArray.at($index).invalid"
           >
             <td class="govuk-table__cell" style="vertical-align: top; padding-top: 18px; padding-bottom: 18px">
+              @if (submitted && workersFormArray.at($index).get('rate')?.errors) {
+              <span id="value-error" class="govuk-error-message" [id]="'rate-error-' + $index">
+                {{ getRowError($index, 'rate') }}
+              </span>
+              } @if (submitted && workersFormArray.at($index).get('value')?.errors) {
+              <span class="govuk-error-message" [id]="'value-error-' + $index">
+                {{ getRowError($index, 'value') }}
+              </span>
+              }
               <div style="line-height: 1.25; display: flex; justify-content: space-between; align-items: flex-start">
                 <span>{{ workers.title }} ({{ workers.count }} record{{ workers.count === 1 ? '' : 's' }})</span>
                 <img
@@ -43,21 +52,46 @@
               <div style="display: flex; align-items: center; flex-wrap: nowrap; gap: 15px">
                 <div class="govuk-input__wrapper">
                   <div class="govuk-input__prefix" aria-hidden="true" style="background-color: #ffffff">£</div>
-                  @if (submitted && workersFormArray.at($index).get('rate')?.errors) {
-                  <span id="value-error" class="govuk-error-message">
-                    {{ getFirstErrorMessage($index, 'rate') }}
-                  </span>
-                  }
+
                   <input
-                    [attr.data-testid]="'amount-input-box-' + $index"
                     class="govuk-input govuk-input--width-4"
+                    [class.govuk-input--error]="submitted && workersFormArray.at($index).get('rate')?.invalid"
+                    [attr.aria-describedby]="
+                      submitted && workersFormArray.at($index).get('rate')?.errors ? 'rate-error-' + $index : null
+                    "
                     [formControlName]="'rate'"
                     [id]="'rate-' + $index"
                     type="number"
                   />
                 </div>
-                <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0">
+                <!-- <div class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0"> -->
+                <div
+                  class="govuk-radios govuk-radios--inline govuk-radios--small govuk-!-margin-bottom-0"
+                  [class.govuk-radios--error]="submitted && workersFormArray.at($index).get('value')?.invalid"
+                >
                   <div class="govuk-radios__item" style="margin-right: 5px">
+                    <input
+                      class="govuk-radios__input"
+                      [formControlName]="'value'"
+                      [id]="'hourly-' + $index"
+                      type="radio"
+                      value="Hourly"
+                    />
+                    <label class="govuk-label govuk-radios__label">Hourly</label>
+                  </div>
+
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      [formControlName]="'value'"
+                      [id]="'salary-' + $index"
+                      type="radio"
+                      value="Annually"
+                    />
+                    <label class="govuk-label govuk-radios__label">Salary</label>
+                  </div>
+                </div>
+                <!-- <div class="govuk-radios__item" style="margin-right: 5px">
                     @if (submitted && workersFormArray.at($index).get('value')?.errors) {
                     <span id="value-error" class="govuk-error-message">
                       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage($index, 'value') }}
@@ -72,8 +106,8 @@
                       value="Hourly"
                     />
                     <label class="govuk-label govuk-radios__label" for="'hourly-' + $index"> Hourly </label>
-                  </div>
-                  <div class="govuk-radios__item">
+                  </div> -->
+                <!-- <div class="govuk-radios__item">
                     @if (submitted && workersFormArray.at($index).get('value')?.errors) {
                     <span id="value-error" class="govuk-error-message">
                       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage($index, 'value') }}
@@ -88,8 +122,8 @@
                       value="Annually"
                     />
                     <label class="govuk-label govuk-radios__label" for="'salary-' + $index"> Salary </label>
-                  </div>
-                </div>
+                  </div> -->
+                <!-- </div> -->
               </div>
             </td>
           </tr>

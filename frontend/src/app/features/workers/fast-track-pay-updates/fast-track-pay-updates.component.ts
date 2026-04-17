@@ -60,22 +60,28 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
   private setupForm(): void {
     this.form = this.formBuilder.group({
       workers: this.formBuilder.array([]),
+
+      rate: this.formBuilder.control(null),
+      value: this.formBuilder.control(null),
     });
 
     this.workersFormArray = this.form.get('workers') as UntypedFormArray;
 
     this.workersByJobRole.groups.forEach((group) => {
       this.workersFormArray.push(
-        this.formBuilder.group({
-          workerId: group.jobId,
-          value: group.annualHourlyPay?.value || null,
-          rate: group.annualHourlyPay?.rate || null,
-        }),
+        this.formBuilder.group(
+          {
+            workerId: group.jobId,
+            value: group.annualHourlyPay?.value || null,
+            rate: group.annualHourlyPay?.rate || null,
+          },
+          { validators: this.validateRow() },
+        ),
       );
     });
   }
 
-  validateRow(groupData: any) {
+  validateRow() {
     return (formGroup: UntypedFormGroup) => {
       const valueCtrl = formGroup.get('value');
       const rateCtrl = formGroup.get('rate');
@@ -83,39 +89,100 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
       const value = valueCtrl?.value;
       const rate = rateCtrl?.value;
 
-      // clear previous errors
-      valueCtrl.setErrors(valueCtrl.errors);
-      rateCtrl.setErrors(rateCtrl.errors);
+      const valueErrors: any = {};
+      const rateErrors: any = {};
 
-      // BOTH EMPTY
       if (!value && !rate) {
-        valueCtrl.setErrors({ required: true });
-        rateCtrl.setErrors({ required: true });
-        return null;
+        valueErrors.required = true;
+        rateErrors.required = true;
       }
 
       if (!value && rate) {
-        valueCtrl.setErrors({ required: true });
+        valueErrors.required = true;
       }
 
       if (value && !rate) {
-        rateCtrl.setErrors({ required: true });
+        rateErrors.required = true;
       }
 
-      if (value === 'Hourly') {
-        if (rate < 2.5 || rate > 200) {
-          rateCtrl.setErrors({ range: true });
-        }
+      if (value === 'Hourly' && (rate < 2.5 || rate > 200)) {
+        rateErrors.range = true;
       }
 
-      if (value === 'Annually') {
-        if (rate && !Number.isInteger(Number(rate))) {
-          rateCtrl.setErrors({ salary: true });
-        }
+      if (value === 'Annually' && rate && !Number.isInteger(Number(rate))) {
+        rateErrors.salary = true;
       }
+
+      valueCtrl?.setErrors(Object.keys(valueErrors).length ? valueErrors : null);
+      rateCtrl?.setErrors(Object.keys(rateErrors).length ? rateErrors : null);
 
       return null;
     };
+  }
+
+  // 👉 Row-level error messages
+  getRowError(index: number, control: 'rate' | 'value'): string {
+    const errors = this.workersFormArray.at(index).get(control)?.errors;
+    if (!errors) return '';
+
+    if (errors['required']) {
+      return control === 'rate'
+        ? 'Enter the salary or select a different option'
+        : 'Select hourly or salary for the amount entered';
+    }
+
+    if (errors['range']) {
+      return 'Hourly pay rate must be between £2.50 and £200.00';
+    }
+
+    if (errors['salary']) {
+      return 'Salary must not include pence';
+    }
+
+    return '';
+  }
+
+  get errorSummaryForm(): UntypedFormGroup {
+    const summaryForm = this.formBuilder.group({
+      rate: this.formBuilder.control(null),
+      value: this.formBuilder.control(null),
+    });
+
+    let hasRateError = false;
+    let hasValueError = false;
+
+    this.workersFormArray.controls.forEach((group) => {
+      if (group.get('rate')?.errors) hasRateError = true;
+      if (group.get('value')?.errors) hasValueError = true;
+    });
+
+    if (hasRateError) {
+      summaryForm.get('rate')?.setErrors({ invalid: true });
+    }
+
+    if (hasValueError) {
+      summaryForm.get('value')?.setErrors({ invalid: true });
+    }
+
+    return summaryForm;
+  }
+
+  private focusFirstInvalidField(): void {
+    for (let i = 0; i < this.workersFormArray.length; i++) {
+      const group = this.workersFormArray.at(i);
+
+      if (group.invalid) {
+        if (group.get('rate')?.invalid) {
+          document.getElementById(`rate-${i}`)?.focus();
+          return;
+        }
+
+        if (group.get('value')?.invalid) {
+          document.getElementById(`hourly-${i}`)?.focus();
+          return;
+        }
+      }
+    }
   }
 
   public onSubmit(): void {
@@ -123,68 +190,39 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
 
     if (!this.form.valid) {
       this.errorSummaryService.scrollToErrorSummary();
+
+      setTimeout(() => this.focusFirstInvalidField(), 0);
       return;
     }
-    const workersFormValues = this.form.get('workers').value;
 
-    const updatedWorkers = this.workersByJobRole.groups.map((group, index) => {
-      const formEntry = workersFormValues[index];
-      return {
-        ...group,
-        annualHourlyPay: {
-          value: formEntry.value,
-          rate: formEntry.rate,
-        },
-      };
-    });
+    const updatedWorkers = this.workersFormArray.value.map((formEntry, index) => ({
+      ...this.workersByJobRole.groups[index],
+      annualHourlyPay: {
+        value: formEntry.value,
+        rate: formEntry.rate,
+      },
+    }));
 
     this.workerService.setWorkersGroupedByJobRole({ groups: updatedWorkers });
 
-    const hasAtLeastOneRate = updatedWorkers.some((group) => group.annualHourlyPay?.rate != null);
+    const hasRate = updatedWorkers.some((w) => w.annualHourlyPay?.rate != null);
 
-    if (hasAtLeastOneRate) {
+    if (hasRate) {
       this.router.navigate(['../fast-track-confirmation-page'], { relativeTo: this.route });
     } else {
       this.router.navigate(['/workplace', this.workplace.uid, 'update-pay-multiple-staff']);
     }
   }
 
-  public getFirstErrorMessage(item: string): string {
-    const errorType = Object.keys(this.form.get(item).errors)[0];
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
   setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'rate',
-        type: [
-          {
-            name: 'required',
-            message: 'Enter the salary or select a different option',
-          },
-          {
-            name: 'salary',
-            message: 'Salary must not include pence',
-          },
-          {
-            name: 'limitDigit',
-            message: 'You can only have 1 or 2 digits for pence after the decimal point',
-          },
-          {
-            name: 'range',
-            message: 'Hourly pay rate must be between £2.50 and £200.00',
-          },
-        ],
+        type: [{ name: 'invalid', message: 'Enter the salary or select a different option' }],
       },
       {
         item: 'value',
-        type: [
-          {
-            name: 'required',
-            message: 'Select hourley or salary for the amount entered',
-          },
-        ],
+        type: [{ name: 'invalid', message: 'Select hourly or salary for the amount entered' }],
       },
     ];
   }
