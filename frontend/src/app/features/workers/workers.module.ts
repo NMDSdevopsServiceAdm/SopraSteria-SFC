@@ -89,6 +89,7 @@ import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qu
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 import { IncludeTrainingCourseDetailsComponent } from '@features/training-and-qualifications/include-training-course-details/include-training-course-details.component';
+import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-page/fast-track-confirmation-page.component';
 import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
 import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
 
@@ -156,6 +157,7 @@ import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.re
     TrainingCourseMatchingLayoutComponent,
     SelectTrainingCourseForWorkerTraining,
     IncludeTrainingCourseDetailsComponent,
+    FastTrackConfirmationPageComponent,
     FastTrackPayUpdatesComponent,
   ],
   providers: [

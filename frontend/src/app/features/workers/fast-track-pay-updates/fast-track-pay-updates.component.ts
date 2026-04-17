@@ -3,7 +3,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Establishment } from '@core/model/establishment.model';
 import { WorkersGroupedByJobRoleResponse } from '@core/model/worker.model';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -28,12 +28,22 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private workerService: WorkerService,
     private errorSummaryService: ErrorSummaryService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
     this.setBackLink();
     this.workplace = this.route.snapshot.data.establishment;
     this.workersByJobRole = this.route.snapshot.data.workersByJobRole;
+
+    let serviceData = this.workerService.getWorkersGroupedByJobRole();
+
+    if (!serviceData || !serviceData.groups) {
+      serviceData = this.route.snapshot.data.workersByJobRole;
+      this.workerService.setWorkersGroupedByJobRole({ groups: serviceData.groups });
+    }
+    this.workersByJobRole = serviceData;
+
     this.setupForm();
 
     this.setupFormErrorsMap();
@@ -56,13 +66,11 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
 
     this.workersByJobRole.groups.forEach((group) => {
       this.workersFormArray.push(
-        this.formBuilder.group(
-          {
-            value: group.annualHourlyPay?.value || null,
-            rate: group.annualHourlyPay?.rate || null,
-          },
-          { validators: this.validateRow(group) },
-        ),
+        this.formBuilder.group({
+          workerId: group.jobId,
+          value: group.annualHourlyPay?.value || null,
+          rate: group.annualHourlyPay?.rate || null,
+        }),
       );
     });
   }
@@ -121,12 +129,24 @@ export class FastTrackPayUpdatesComponent implements OnInit, AfterViewInit {
 
     const updatedWorkers = this.workersByJobRole.groups.map((group, index) => {
       const formEntry = workersFormValues[index];
-      const annualHourlyPay = { value: formEntry.value, rate: formEntry.rate };
-
-      return { ...group, annualHourlyPay };
+      return {
+        ...group,
+        annualHourlyPay: {
+          value: formEntry.value,
+          rate: formEntry.rate,
+        },
+      };
     });
 
     this.workerService.setWorkersGroupedByJobRole({ groups: updatedWorkers });
+
+    const hasAtLeastOneRate = updatedWorkers.some((group) => group.annualHourlyPay?.rate != null);
+
+    if (hasAtLeastOneRate) {
+      this.router.navigate(['../fast-track-confirmation-page'], { relativeTo: this.route });
+    } else {
+      this.router.navigate(['/workplace', this.workplace.uid, 'update-pay-multiple-staff']);
+    }
   }
 
   public getFirstErrorMessage(item: string): string {

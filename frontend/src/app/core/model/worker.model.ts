@@ -182,6 +182,10 @@ export interface WorkersGroupedByJobRoleResponse {
   groups: Array<WorkersGroupedByJobRole>;
 }
 
+export type WorkersGroupedByJobRoleWithIndex = WorkersGroupedByJobRole & {
+  originalIndex: number;
+};
+
 export interface WorkersResponse {
   workers: Worker[];
   workerCount: number;

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -39,7 +40,11 @@ export class TablePaginationWrapperComponent implements OnInit, OnDestroy {
   public updatePayForMultipleStaffLinkText = 'Update pay for multiple staff';
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private router: Router, private establishmentService: EstablishmentService) {}
+  constructor(
+    private router: Router,
+    private establishmentService: EstablishmentService,
+    private workerService: WorkerService,
+  ) {}
 
   ngOnInit(): void {
     this.sortBySelected = Object.keys(this.sortByParamMap).find((key) => this.sortByParamMap[key] === this.sortByValue);
@@ -47,6 +52,7 @@ export class TablePaginationWrapperComponent implements OnInit, OnDestroy {
       this.currentPageIndex = this.maintainedPageIndex;
     }
     this.setShowUpdatePayForMultipleStaffLinkVariables();
+    this.workerService.clearWorkersGroupedByJobRole();
   }
 
   public setShowUpdatePayForMultipleStaffLinkVariables(): void {
