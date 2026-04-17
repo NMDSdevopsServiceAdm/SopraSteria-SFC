@@ -385,4 +385,8 @@ export class WorkerService {
   public setWorkersGroupedByJobRole(workers: WorkersGroupedByJobRoleResponse) {
     this._workersGroupedByJobRole = workers;
   }
+
+  public clearWorkersGroupedByJobRole(): void {
+    this._workersGroupedByJobRole = { groups: [] };
+  }
 }

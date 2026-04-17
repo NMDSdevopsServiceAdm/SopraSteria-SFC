@@ -13,6 +13,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { of } from 'rxjs';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { WorkerService } from '@core/services/worker.service';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 
 describe('TablePaginationWrapperCompnent', () => {
   const workplaceUid = 'some-uuid';
@@ -23,7 +25,15 @@ describe('TablePaginationWrapperCompnent', () => {
     const setupTools = await render(TablePaginationWrapperComponent, {
       imports: [RouterModule, ReactiveFormsModule],
       declarations: [PaginationComponent, SearchInputComponent, NewPillWithLinkComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: WorkerService,
+          useClass: MockWorkerService,
+        },
+      ],
+
       componentProperties: {
         totalCount,
         setQueryInParams,
@@ -422,6 +432,14 @@ describe('TablePaginationWrapperCompnent', () => {
 
         expect(updateSingleFieldSpy).not.toHaveBeenCalled();
       });
+    });
+
+    it('should clear workersGroupedByJobRole on init', async () => {
+      const clearSpy = spyOn(WorkerService.prototype, 'clearWorkersGroupedByJobRole').and.callThrough();
+
+      await setup();
+
+      expect(clearSpy).toHaveBeenCalled();
     });
   });
 });
