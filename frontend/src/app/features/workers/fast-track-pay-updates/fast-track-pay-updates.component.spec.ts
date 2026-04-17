@@ -111,6 +111,7 @@ describe('FastTrackPayUpdatesComponent', () => {
       component,
       showBackLinkSpy,
       setWorkersGroupedByJobRoleSpy,
+      workerService,
     };
   }
 
@@ -137,6 +138,42 @@ describe('FastTrackPayUpdatesComponent', () => {
       const heading = getByTestId('heading');
       expect(heading.textContent.trim()).toEqual('Fast-track pay updates by job roles');
     });
+  });
+
+  it('should use resolver data and set service when service has no data', async () => {
+    const { component, setWorkersGroupedByJobRoleSpy, workerService } = await setup();
+
+    spyOn(workerService, 'getWorkersGroupedByJobRole').and.returnValue(null);
+
+    component.ngOnInit();
+
+    expect(setWorkersGroupedByJobRoleSpy).toHaveBeenCalledWith({
+      groups: workersWithSingleJobRole.groups,
+    });
+
+    expect(component.workersByJobRole).toEqual(workersWithSingleJobRole);
+  });
+
+  it('should use service data when it exists and not call setWorkersGroupedByJobRole', async () => {
+    const { component, setWorkersGroupedByJobRoleSpy, workerService } = await setup();
+
+    const mockServiceData = {
+      groups: [
+        {
+          jobId: 99,
+          title: 'Test role',
+          workers: [],
+          count: 1,
+        },
+      ],
+    };
+
+    spyOn(workerService, 'getWorkersGroupedByJobRole').and.returnValue(mockServiceData);
+
+    component.ngOnInit();
+
+    expect(setWorkersGroupedByJobRoleSpy).not.toHaveBeenCalled();
+    expect(component.workersByJobRole).toEqual(mockServiceData);
   });
 
   describe('Table', () => {

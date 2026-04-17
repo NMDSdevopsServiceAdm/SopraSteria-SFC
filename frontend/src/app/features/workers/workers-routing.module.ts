@@ -88,6 +88,7 @@ import { TrainingCourseMatchingLayoutComponent } from '@features/training-and-qu
 import { SelectTrainingCourseForWorkerTraining } from '@features/training-and-qualifications/select-training-course-for-worker-training/select-training-course-for-worker-training.component';
 import { TrainingProvidersResolver } from '@core/resolvers/training/training-providers.resolver';
 import { redirectIfLinkedToTrainingCourse } from '@core/guards/redirect-if-linked-to-training-course/redirect-if-linked-to-training-course.guard';
+import { FastTrackConfirmationPageComponent } from './fast-track-confirmation-page/fast-track-confirmation-page.component';
 import { FastTrackPayUpdatesComponent } from '@features/workers/fast-track-pay-updates/fast-track-pay-updates.component';
 import { WorkersByJobRoleResolver } from '@core/resolvers/workers-by-job-role.resolver';
 import { UpdatePayForMultipleStaffComponent } from './update-pay-for-multiple-staff/update-pay-for-multiple-staff.component';
@@ -339,10 +340,19 @@ const routes: Routes = [
       title: 'Who Carry out Delegated Healthcare Activities',
     },
   },
+
   {
     path: 'fast-track-pay-updates',
     component: FastTrackPayUpdatesComponent,
     resolve: { workersByJobRole: WorkersByJobRoleResolver },
+  },
+
+  {
+    path: 'fast-track-confirmation-page',
+    component: FastTrackConfirmationPageComponent,
+    data: {
+      title: 'Fast Track Confirmation Page',
+    },
   },
   {
     path: 'update-pay-for-multiple-staff',
