@@ -17,6 +17,7 @@ import {
   QueryParamsForBackend,
   QueryParamsForWorkerWithPayData,
   SearchEvent,
+  SearchParams,
 } from '@core/model/pagination.model';
 import { WorkerWithPayData } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -32,11 +33,6 @@ import {
 } from '@shared/validators/worker-pay-validators';
 import { TablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper/table-pagination-wrapper.component';
 import { SearchInputAutoSuggestComponent } from '@shared/components/search-input-auto-suggest/search-input-auto-suggest.component';
-
-interface PaginationState extends SearchEvent {
-  searched: boolean;
-  showSuggestion: boolean;
-}
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -75,7 +71,7 @@ export class UpdatePayForMultipleStaffComponent {
   public showErrors = false;
 
   private subscriptions: Subscription = new Subscription();
-  private paginationState: PaginationState;
+  private paginationState: SearchParams;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -250,17 +246,17 @@ export class UpdatePayForMultipleStaffComponent {
   }
 
   private storePaginationState(): void {
-    const searchParams = this.paginationWrapper.currentSearchParams;
-    const searchBoxState = this.searchBox.searchBoxState;
-    this.paginationState = { ...searchParams, ...searchBoxState };
+    this.paginationState = this.paginationWrapper.currentSearchParams;
   }
 
   private revertPaginationState(): void {
     this.paginationWrapper.setStateWithoutEmitSearchEvent(this.paginationState);
-    this.searchBox.searched = this.paginationState.searched;
   }
 
-  public getPageOfWorkers(searchEvent: SearchEvent): void {
+  public handleSearchEvent(searchEvent: SearchEvent): void {
+    const callback = searchEvent?.callback;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
     if (this.form.invalid) {
       this.showErrors = true;
 
@@ -269,10 +265,16 @@ export class UpdatePayForMultipleStaffComponent {
       }
       this.errorSummaryService.scrollToErrorSummary();
 
+      if (callback) {
+        callback(false);
+      }
+
       return;
     }
 
+    this.showErrors = false;
     this.storePaginationState();
+
     const searchParams = this.convertJobRoleNameToId(parseSearchEvent(searchEvent));
 
     const getWorker = this.workerService
@@ -281,6 +283,9 @@ export class UpdatePayForMultipleStaffComponent {
       .subscribe((response) => {
         this.setNewWorkers(response.workers);
         this.currentWorkerCount = response.count;
+        if (callback) {
+          callback(true);
+        }
       });
 
     this.subscriptions.add(getWorker);

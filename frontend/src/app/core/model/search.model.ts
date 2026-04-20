@@ -1,5 +1,10 @@
 import { EventEmitter } from '@angular/core';
 
+export interface SearchWithCallback {
+  searchTerm: string;
+  callback?: (suggest: boolean) => void;
+}
+
 export interface SearchInput {
-  emitInput: EventEmitter<string>;
+  emitSearchEvent: EventEmitter<SearchWithCallback>;
 }

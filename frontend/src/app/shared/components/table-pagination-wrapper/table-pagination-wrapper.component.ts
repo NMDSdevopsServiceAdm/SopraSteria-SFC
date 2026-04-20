@@ -1,7 +1,7 @@
 import { Component, contentChild, effect, EventEmitter, Input, OnInit, Output, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SearchInput } from '@core/model/admin/search.model';
+import { SearchInput, SearchWithCallback } from '@core/model/search.model';
 import { SearchEvent } from '@core/model/pagination.model';
 import { Subscription } from 'rxjs';
 import { SearchInputComponent } from '../search-input/search-input.component';
@@ -108,8 +108,8 @@ export class TablePaginationWrapperComponent implements OnInit {
     }
 
     this.subscriptions.add(
-      customSearchBox.emitInput.subscribe((searchTerm) => {
-        this.handleSearch(searchTerm);
+      customSearchBox.emitSearchEvent.subscribe(({ searchTerm, callback }) => {
+        this.handleSearchWithCallback(searchTerm, callback);
       }),
     );
   }
@@ -121,8 +121,22 @@ export class TablePaginationWrapperComponent implements OnInit {
     if (this.setQueryInParams) {
       this.addQueryParams();
     }
-
     this.getData();
+  }
+
+  public handleSearchWithCallback(searchTerm: string, callback: SearchWithCallback['callback']): void {
+    if (!callback) {
+      this.handleSearch(searchTerm);
+      return;
+    }
+
+    const patchedCallback = (isSuccess: boolean) => {
+      callback(isSuccess);
+      if (isSuccess) {
+        this.searchTerm = searchTerm;
+      }
+    };
+    this.getDataWithCallback({ searchTerm, callback: patchedCallback });
   }
 
   public handlePageUpdate(pageIndex: number): void {
@@ -156,6 +170,11 @@ export class TablePaginationWrapperComponent implements OnInit {
 
   private getData(): void {
     this.fetchData.emit(this.currentSearchParams);
+  }
+
+  private getDataWithCallback(searchWithCallback: SearchWithCallback): void {
+    const searchEvent = { ...this.currentSearchParams, ...searchWithCallback };
+    this.fetchData.emit(searchEvent);
   }
 
   ngOnDestroy(): void {

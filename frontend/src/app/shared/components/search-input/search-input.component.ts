@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SearchInput } from '@core/model/admin/search.model';
 import { isNil } from 'lodash';
 
 type State = {
@@ -13,7 +12,7 @@ type State = {
   styleUrls: ['./search-input.component.scss'],
   standalone: false,
 })
-export class SearchInputComponent implements SearchInput {
+export class SearchInputComponent {
   @Input() ref = 'search';
   @Input() searchButtonName = 'search';
   @Input() label = 'Search';
