@@ -31,6 +31,12 @@ import {
   buildUpdatePayForMultipleWorkerValidator,
 } from '@shared/validators/worker-pay-validators';
 import { TablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper/table-pagination-wrapper.component';
+import { SearchInputAutoSuggestComponent } from '@shared/components/search-input-auto-suggest/search-input-auto-suggest.component';
+
+interface PaginationState extends SearchEvent {
+  searched: boolean;
+  showSuggestion: boolean;
+}
 
 const radioButtonLabels = [
   { label: 'Hourly', value: 'Hourly', slug: 'hourly' },
@@ -39,8 +45,6 @@ const radioButtonLabels = [
 ];
 const DontKnow = "Don't know";
 const customValidator = buildUpdatePayForMultipleWorkerValidator();
-
-let i = 0;
 
 @Component({
   selector: 'app-update-pay-for-multiple-staff',
@@ -51,6 +55,7 @@ let i = 0;
 export class UpdatePayForMultipleStaffComponent {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('paginationWrapper') paginationWrapper: TablePaginationWrapperComponent;
+  @ViewChild('searchBox') searchBox: SearchInputAutoSuggestComponent;
 
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
@@ -70,7 +75,7 @@ export class UpdatePayForMultipleStaffComponent {
   public showErrors = false;
 
   private subscriptions: Subscription = new Subscription();
-  private paginationParamsHistory: Array<SearchEvent> = [];
+  private paginationState: PaginationState;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -106,7 +111,7 @@ export class UpdatePayForMultipleStaffComponent {
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
-    this.paginationParamsHistory.push(this.paginationWrapper.currentSearchParams);
+    this.storePaginationState();
   }
 
   private setupForm(): void {
@@ -244,20 +249,30 @@ export class UpdatePayForMultipleStaffComponent {
     };
   }
 
+  private storePaginationState(): void {
+    const searchParams = this.paginationWrapper.currentSearchParams;
+    const searchBoxState = this.searchBox.searchBoxState;
+    this.paginationState = { ...searchParams, ...searchBoxState };
+  }
+
+  private revertPaginationState(): void {
+    this.paginationWrapper.setStateWithoutEmitSearchEvent(this.paginationState);
+    this.searchBox.searched = this.paginationState.searched;
+  }
+
   public getPageOfWorkers(searchEvent: SearchEvent): void {
     if (this.form.invalid) {
       this.showErrors = true;
-      const lastPaginationState = this.paginationParamsHistory.at(-1);
 
-      if (lastPaginationState) {
-        this.paginationWrapper.setStateWithoutEmitSearchEvent(lastPaginationState);
+      if (this.paginationState) {
+        this.revertPaginationState();
       }
       this.errorSummaryService.scrollToErrorSummary();
 
       return;
     }
 
-    this.paginationParamsHistory.push(this.paginationWrapper.currentSearchParams);
+    this.storePaginationState();
     const searchParams = this.convertJobRoleNameToId(parseSearchEvent(searchEvent));
 
     const getWorker = this.workerService

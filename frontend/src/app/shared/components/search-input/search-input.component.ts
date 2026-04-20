@@ -1,5 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SearchInput } from '@core/model/admin/search.model';
+import { isNil } from 'lodash';
+
+type State = {
+  searchTerm: string;
+  searched: boolean;
+};
 
 @Component({
   selector: 'app-search-input',
@@ -54,5 +60,17 @@ export class SearchInputComponent implements SearchInput {
     this.setSearched(false);
     this.setSearchTerm('');
     this.emitInput.emit(this.searchTerm);
+  }
+
+  public setState(state: Partial<State>): void {
+    const { searchTerm, searched } = state;
+
+    if (!isNil(searchTerm)) {
+      this.searchTerm = searchTerm;
+    }
+
+    if (!isNil(searched)) {
+      this.searched = searched;
+    }
   }
 }

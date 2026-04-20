@@ -3,6 +3,11 @@ import { AutoSuggestDataProvider } from '@shared/auto-suggest.model';
 import { NewAutoSuggestComponent } from '../auto-suggest-new/new-auto-suggest.component';
 import { SearchInput } from '@core/model/admin/search.model';
 
+type SearchBoxState = {
+  searched: boolean;
+  showSuggestion: boolean;
+};
+
 @Component({
   selector: 'app-search-input-auto-suggest',
   templateUrl: './search-input-auto-suggest.component.html',
@@ -50,13 +55,22 @@ export class SearchInputAutoSuggestComponent implements SearchInput {
   }
 
   private submitSearch(searchTerm: string): void {
-    this.emitInput.emit(searchTerm);
     this.setSearched(true);
+    this.emitInput.emit(searchTerm);
   }
 
   public handleResetSearch(): void {
     this.setSearched(false);
     this.emitInput.emit('');
     this.searchBox().clearTextInput();
+  }
+
+  public get searchBoxState() {
+    return { searched: this.searched, showSuggestion: this.searchBox()?.showSuggestion() } as SearchBoxState;
+  }
+
+  public setSearchBoxState({ searched, showSuggestion }: SearchBoxState): void {
+    this.searched = searched;
+    this.searchBox()?.showSuggestion.set(showSuggestion);
   }
 }

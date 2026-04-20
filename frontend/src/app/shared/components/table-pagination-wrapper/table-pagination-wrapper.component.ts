@@ -1,9 +1,10 @@
-import { Component, contentChild, effect, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, contentChild, effect, EventEmitter, Input, OnInit, Output, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SearchInput } from '@core/model/admin/search.model';
 import { SearchEvent } from '@core/model/pagination.model';
 import { Subscription } from 'rxjs';
+import { SearchInputComponent } from '../search-input/search-input.component';
 
 @Component({
   selector: 'app-table-pagination-wrapper',
@@ -13,6 +14,7 @@ import { Subscription } from 'rxjs';
 })
 export class TablePaginationWrapperComponent implements OnInit {
   private customSearchBox = contentChild<SearchInput>('searchBox');
+  private defaultSearchBox = viewChild(SearchInputComponent);
   @Input() maintainedPageIndex: number;
   @Input() totalCount: number;
   @Input() count: number;
@@ -138,13 +140,18 @@ export class TablePaginationWrapperComponent implements OnInit {
   }
 
   public setStateWithoutEmitSearchEvent(params: SearchEvent) {
-    const { sortByValue, index } = params;
+    const { sortByValue, index, searchTerm } = params;
 
     this.sortByValue = sortByValue;
     const sortBySelected = this.sortByParamReverseLookup(sortByValue);
     this.form.patchValue({ sortBySelected }, { emitEvent: false });
 
     this.currentPageIndex = index;
+
+    const defaultSearchBox = this.defaultSearchBox();
+    if (defaultSearchBox) {
+      defaultSearchBox.setState({ searchTerm });
+    }
   }
 
   private getData(): void {
